@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<definitions
+	xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+	xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  id="_cc79bfae-6912-4428-b29f-aea404d82980" 
+  name="Drawing1"
+  typeLanguage="http://www.w3.org/2001/XMLSchema" 
+	expressionLanguage="http://www.w3.org/1999/XPath" 
+  targetNamespace="http://www.trisotech.com/definitions/_cc79bfae-6912-4428-b29f-aea404d82980">
+  <process name="Activities Collection Name" isExecutable="false"
+    id="_fd2e8f4f-fc61-46c3-8c11-7f5369795445">
+    <startEvent id="_start_fd2e8f4f-fc61-46c3-8c11-7f5369795445">
+      <outgoing>_start_fd2e8f4f-fc61-d-9e75-064ebef10331</outgoing>
+    </startEvent>
+    <task name="Write blog" id="_6e96fec2-5374-45cd-9e75-064ebef10331">
+      <incoming>_start_fd2e8f4f-fc61-d-9e75-064ebef10331</incoming>
+      <outgoing>_6e96fec2-5374-45cf-ba75-50311801bab4</outgoing>
+    </task>
+    <task name="Write tweets x5" id="_e8fffb95-5502-45ef-ba75-50311801bab4">
+      <incoming>_6e96fec2-5374-45cf-ba75-50311801bab4</incoming>
+      <outgoing>_e8fffb95-5502-45e2-86a6-e84eeca991b6</outgoing>
+    </task>
+    <task name="Publish blog " id="_61cd142b-d496-4c82-86a6-e84eeca991b6">
+      <incoming>_e8fffb95-5502-45e2-86a6-e84eeca991b6</incoming>
+      <outgoing>_61cd142b-d496-4c85-ae30-b3581027d226</outgoing>
+    </task>
+    <task name="Publish tweet x5" id="_18b1dbb5-8712-4375-ae30-b3581027d226">
+      <incoming>_61cd142b-d496-4c85-ae30-b3581027d226</incoming>
+      <outgoing>_18b1dbb5-8712-4376c3-8c11-7f5369795445</outgoing>
+    </task>
+    <endEvent id="_end_fd2e8f4f-fc61-46c3-8c11-7f5369795445">
+      <incoming>_18b1dbb5-8712-4376c3-8c11-7f5369795445</incoming>
+    </endEvent>
+    <sequenceFlow sourceRef="_start_fd2e8f4f-fc61-46c3-8c11-7f5369795445"
+      targetRef="_6e96fec2-5374-45cd-9e75-064ebef10331" 
+      id="_start_fd2e8f4f-fc61-d-9e75-064ebef10331"
+      name="" />
+    <sequenceFlow sourceRef="_6e96fec2-5374-45cd-9e75-064ebef10331"
+      targetRef="_e8fffb95-5502-45ef-ba75-50311801bab4" id="_6e96fec2-5374-45cf-ba75-50311801bab4"
+      name="" />
+    <sequenceFlow sourceRef="_e8fffb95-5502-45ef-ba75-50311801bab4"
+      targetRef="_61cd142b-d496-4c82-86a6-e84eeca991b6" id="_e8fffb95-5502-45e2-86a6-e84eeca991b6"
+      name="" />
+    <sequenceFlow sourceRef="_61cd142b-d496-4c82-86a6-e84eeca991b6"
+      targetRef="_18b1dbb5-8712-4375-ae30-b3581027d226" id="_61cd142b-d496-4c85-ae30-b3581027d226"
+      name="" />
+    <sequenceFlow sourceRef="_18b1dbb5-8712-4375-ae30-b3581027d226"
+      targetRef="_end_fd2e8f4f-fc61-46c3-8c11-7f5369795445" id="_18b1dbb5-8712-4376c3-8c11-7f5369795445"
+      name="" />
+  </process>
+</definitions>

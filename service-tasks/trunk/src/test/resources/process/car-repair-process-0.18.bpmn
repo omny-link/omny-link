@@ -1,0 +1,724 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<semantic:definitions id="_1356627400500" name="Car Repair Process" targetNamespace="http://www.trisotech.com/definitions/_1356627400500" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <semantic:process isExecutable="false" id="_6">
+        <semantic:dataObject isCollection="false" id="DF1356627400797"/>
+        <semantic:dataObject isCollection="false" id="DF1356627400754"/>
+        <semantic:dataObject isCollection="false" id="DF1356627400755"/>
+        <semantic:startEvent name="Customer Arrives" id="_6-51263">
+            <semantic:outgoing>_6-126760</semantic:outgoing>
+        </semantic:startEvent>
+        <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Make Estimate" id="_6-102905">
+            <semantic:incoming>_6-126760</semantic:incoming>
+            <semantic:outgoing>_6-176833</semantic:outgoing>
+            <semantic:ioSpecification>
+                <semantic:dataInput id="Din1356627400883"/>
+                <semantic:dataOutput id="Dout1356627400881"/>
+                <semantic:inputSet>
+                    <semantic:dataInputRefs>Din1356627400883</semantic:dataInputRefs>
+                </semantic:inputSet>
+                <semantic:outputSet>
+                    <semantic:dataOutputRefs>Dout1356627400881</semantic:dataOutputRefs>
+                </semantic:outputSet>
+            </semantic:ioSpecification>
+            <semantic:dataInputAssociation id="_6-1928113">
+                <semantic:sourceRef>_6-1888608</semantic:sourceRef>
+                <semantic:targetRef>Din1356627400883</semantic:targetRef>
+            </semantic:dataInputAssociation>
+            <semantic:dataOutputAssociation id="_6-1137402">
+                <semantic:sourceRef>Dout1356627400881</semantic:sourceRef>
+                <semantic:targetRef>_6-1087187</semantic:targetRef>
+            </semantic:dataOutputAssociation>
+        </semantic:task>
+        <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Verify if Estimate Accepted" id="_6-210026">
+            <semantic:incoming>_6-176833</semantic:incoming>
+            <semantic:outgoing>_6-297078</semantic:outgoing>
+            <semantic:ioSpecification>
+                <semantic:dataInput id="Din1356627400882"/>
+                <semantic:inputSet>
+                    <semantic:dataInputRefs>Din1356627400882</semantic:dataInputRefs>
+                </semantic:inputSet>
+                <semantic:outputSet/>
+            </semantic:ioSpecification>
+            <semantic:dataInputAssociation id="_6-1191953">
+                <semantic:sourceRef>_6-1087187</semantic:sourceRef>
+                <semantic:targetRef>Din1356627400882</semantic:targetRef>
+            </semantic:dataInputAssociation>
+        </semantic:task>
+        <semantic:exclusiveGateway gatewayDirection="Unspecified" name="Accepted?" id="_6-278688">
+            <semantic:incoming>_6-297078</semantic:incoming>
+            <semantic:outgoing>_6-384391</semantic:outgoing>
+            <semantic:outgoing>_6-425172</semantic:outgoing>
+        </semantic:exclusiveGateway>
+        <semantic:endEvent name="Initial Estimate Not Accepted" id="_6-348059">
+            <semantic:incoming>_6-384391</semantic:incoming>
+        </semantic:endEvent>
+        <semantic:subProcess triggeredByEvent="false" completionQuantity="1" isForCompensation="false" startQuantity="1" name="Repair Car" id="_6-460805">
+            <semantic:incoming>_6-425172</semantic:incoming>
+            <semantic:outgoing>_6-1970105</semantic:outgoing>
+            <semantic:startEvent name="Start Repairs" id="_6-737170">
+                <semantic:outgoing>_6-815908</semantic:outgoing>
+            </semantic:startEvent>
+            <semantic:exclusiveGateway gatewayDirection="Unspecified" name="" id="_6-783470">
+                <semantic:incoming>_6-815908</semantic:incoming>
+                <semantic:incoming>_6-990368</semantic:incoming>
+                <semantic:outgoing>_6-919609</semantic:outgoing>
+            </semantic:exclusiveGateway>
+            <semantic:subProcess triggeredByEvent="true" completionQuantity="1" isForCompensation="false" startQuantity="1" name="" id="_6-651478">
+                <semantic:startEvent isInterrupting="false" name="Customer Requests Additional  Repairs" id="_6-680730">
+                    <semantic:outgoing>_6-1311120</semantic:outgoing>
+                    <semantic:signalEventDefinition/>
+                </semantic:startEvent>
+                <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Add Additional Issue to List" id="_6-1256338">
+                    <semantic:incoming>_6-1311120</semantic:incoming>
+                    <semantic:outgoing>_6-1399893</semantic:outgoing>
+                    <semantic:ioSpecification>
+                        <semantic:dataOutput id="Dout1356627400847"/>
+                        <semantic:inputSet/>
+                        <semantic:outputSet>
+                            <semantic:dataOutputRefs>Dout1356627400847</semantic:dataOutputRefs>
+                        </semantic:outputSet>
+                    </semantic:ioSpecification>
+                    <semantic:dataOutputAssociation id="_6-1425443">
+                        <semantic:sourceRef>Dout1356627400847</semantic:sourceRef>
+                        <semantic:targetRef>_6-1210318</semantic:targetRef>
+                    </semantic:dataOutputAssociation>
+                </semantic:task>
+                <semantic:endEvent name="Issue List Amended By Customer" id="_6-1354552">
+                    <semantic:incoming>_6-1399893</semantic:incoming>
+                </semantic:endEvent>
+                <semantic:dataObjectReference dataObjectRef="DF1356627400754" name="Itemized  Issues" id="_6-1210318">
+                    <semantic:dataState name="Amended"/>
+                </semantic:dataObjectReference>
+                <semantic:sequenceFlow sourceRef="_6-680730" targetRef="_6-1256338" name="" id="_6-1311120"/>
+                <semantic:sequenceFlow sourceRef="_6-1256338" targetRef="_6-1354552" name="" id="_6-1399893"/>
+            </semantic:subProcess>
+            <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Take Apart for Issue" id="_6-872331">
+                <semantic:incoming>_6-919609</semantic:incoming>
+                <semantic:outgoing>_6-1541168</semantic:outgoing>
+            </semantic:task>
+            <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Inspect for Issue" id="_6-1514214">
+                <semantic:incoming>_6-1541168</semantic:incoming>
+                <semantic:outgoing>_6-1811452</semantic:outgoing>
+            </semantic:task>
+            <semantic:exclusiveGateway gatewayDirection="Unspecified" name="" id="_6-1776798">
+                <semantic:incoming>_6-1811452</semantic:incoming>
+                <semantic:incoming>_6-1863207</semantic:incoming>
+                <semantic:outgoing>_6-1628881</semantic:outgoing>
+            </semantic:exclusiveGateway>
+            <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Handle New Found Issue" id="_6-2788153">
+                <semantic:incoming>_6-1734654</semantic:incoming>
+                <semantic:outgoing>_6-1863207</semantic:outgoing>
+            </semantic:task>
+            <semantic:exclusiveGateway gatewayDirection="Unspecified" name="" id="_6-1582713">
+                <semantic:incoming>_6-1628881</semantic:incoming>
+                <semantic:outgoing>_6-1687834</semantic:outgoing>
+                <semantic:outgoing>_6-1734654</semantic:outgoing>
+            </semantic:exclusiveGateway>
+            <semantic:subProcess triggeredByEvent="true" completionQuantity="1" isForCompensation="false" startQuantity="1" name="" id="_6-2157337">
+                <semantic:startEvent isInterrupting="true" name="Repairs Aborted" id="_6-2166825">
+                    <semantic:outgoing>_6-2258346</semantic:outgoing>
+                    <semantic:signalEventDefinition/>
+                </semantic:startEvent>
+                <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Prepare Car for remittance" id="_6-2215166">
+                    <semantic:incoming>_6-2258346</semantic:incoming>
+                    <semantic:outgoing>_6-2634208</semantic:outgoing>
+                    <semantic:ioSpecification>
+                        <semantic:dataOutput id="Dout1356627400867"/>
+                        <semantic:inputSet/>
+                        <semantic:outputSet>
+                            <semantic:dataOutputRefs>Dout1356627400867</semantic:dataOutputRefs>
+                        </semantic:outputSet>
+                    </semantic:ioSpecification>
+                    <semantic:dataOutputAssociation id="_6-2693060">
+                        <semantic:sourceRef>Dout1356627400867</semantic:sourceRef>
+                        <semantic:targetRef>_6-2657573</semantic:targetRef>
+                    </semantic:dataOutputAssociation>
+                </semantic:task>
+                <semantic:endEvent name="Repairs Aborted" id="_6-2599544">
+                    <semantic:incoming>_6-2634208</semantic:incoming>
+                    <semantic:terminateEventDefinition/>
+                </semantic:endEvent>
+                <semantic:dataObjectReference dataObjectRef="DF1356627400754" name="Itemized  Issues" id="_6-2657573">
+                    <semantic:dataState name="Completd Items"/>
+                </semantic:dataObjectReference>
+                <semantic:sequenceFlow sourceRef="_6-2166825" targetRef="_6-2215166" name="" id="_6-2258346"/>
+                <semantic:sequenceFlow sourceRef="_6-2215166" targetRef="_6-2599544" name="" id="_6-2634208"/>
+            </semantic:subProcess>
+            <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Repair Issue" id="_6-1645638">
+                <semantic:incoming>_6-1687834</semantic:incoming>
+                <semantic:outgoing>_6-2358862</semantic:outgoing>
+            </semantic:task>
+            <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Verify if more Issues on Itemized List" id="_6-2311688">
+                <semantic:incoming>_6-2358862</semantic:incoming>
+                <semantic:outgoing>_6-2362248</semantic:outgoing>
+                <semantic:ioSpecification>
+                    <semantic:dataInput id="Din1356627400874"/>
+                    <semantic:inputSet>
+                        <semantic:dataInputRefs>Din1356627400874</semantic:dataInputRefs>
+                    </semantic:inputSet>
+                    <semantic:outputSet/>
+                </semantic:ioSpecification>
+                <semantic:dataInputAssociation id="_6-2536627">
+                    <semantic:sourceRef>_6-2508241</semantic:sourceRef>
+                    <semantic:targetRef>Din1356627400874</semantic:targetRef>
+                </semantic:dataInputAssociation>
+            </semantic:task>
+            <semantic:exclusiveGateway gatewayDirection="Unspecified" name="Have further issues?" id="_6-935957">
+                <semantic:incoming>_6-2362248</semantic:incoming>
+                <semantic:outgoing>_6-990368</semantic:outgoing>
+                <semantic:outgoing>_6-1048090</semantic:outgoing>
+            </semantic:exclusiveGateway>
+            <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Prepare Car for Remittance" id="_6-2419235">
+                <semantic:incoming>_6-1048090</semantic:incoming>
+                <semantic:outgoing>_6-2474423</semantic:outgoing>
+            </semantic:task>
+            <semantic:endEvent name="Repairs Completed" id="_6-1024431">
+                <semantic:incoming>_6-2474423</semantic:incoming>
+            </semantic:endEvent>
+            <semantic:dataObjectReference dataObjectRef="DF1356627400754" name="Itemized  Issues" id="_6-2508241">
+                <semantic:dataState name="Accepted"/>
+            </semantic:dataObjectReference>
+            <semantic:sequenceFlow sourceRef="_6-737170" targetRef="_6-783470" name="" id="_6-815908"/>
+            <semantic:sequenceFlow sourceRef="_6-783470" targetRef="_6-872331" name="" id="_6-919609"/>
+            <semantic:sequenceFlow sourceRef="_6-935957" targetRef="_6-783470" name="More Issues to Repair" id="_6-990368"/>
+            <semantic:sequenceFlow sourceRef="_6-935957" targetRef="_6-2419235" name="No More Issues to Repair" id="_6-1048090"/>
+            <semantic:sequenceFlow sourceRef="_6-872331" targetRef="_6-1514214" name="" id="_6-1541168"/>
+            <semantic:sequenceFlow sourceRef="_6-1776798" targetRef="_6-1582713" name="" id="_6-1628881"/>
+            <semantic:sequenceFlow sourceRef="_6-1582713" targetRef="_6-1645638" name="No Added  Issue Found" id="_6-1687834"/>
+            <semantic:sequenceFlow sourceRef="_6-1582713" targetRef="_6-2788153" name="New Issue  Found" id="_6-1734654"/>
+            <semantic:sequenceFlow sourceRef="_6-1514214" targetRef="_6-1776798" name="" id="_6-1811452"/>
+            <semantic:sequenceFlow sourceRef="_6-2788153" targetRef="_6-1776798" name="Refuse New Issue Estimate and Continue with Original Estimate" id="_6-1863207"/>
+            <semantic:sequenceFlow sourceRef="_6-1645638" targetRef="_6-2311688" name="" id="_6-2358862"/>
+            <semantic:sequenceFlow sourceRef="_6-2311688" targetRef="_6-935957" name="" id="_6-2362248"/>
+            <semantic:sequenceFlow sourceRef="_6-2419235" targetRef="_6-1024431" name="" id="_6-2474423"/>
+        </semantic:subProcess>
+        <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Prepare Invoice" id="_6-495667">
+            <semantic:incoming>_6-1970105</semantic:incoming>
+            <semantic:outgoing>_6-2048271</semantic:outgoing>
+        </semantic:task>
+        <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Remit Car" id="_6-551229">
+            <semantic:incoming>_6-2105997</semantic:incoming>
+            <semantic:outgoing>_6-619719</semantic:outgoing>
+        </semantic:task>
+        <semantic:endEvent name="Customer Leaves Shop" id="_6-583290">
+            <semantic:incoming>_6-619719</semantic:incoming>
+        </semantic:endEvent>
+        <semantic:task completionQuantity="1" isForCompensation="false" startQuantity="1" name="Accept Payment" id="_6-2039832">
+            <semantic:incoming>_6-2048271</semantic:incoming>
+            <semantic:outgoing>_6-2105997</semantic:outgoing>
+        </semantic:task>
+        <semantic:dataObjectReference dataObjectRef="DF1356627400754" name="Itemized  Issues" id="_6-1087187">
+            <semantic:dataState name="Estimated"/>
+        </semantic:dataObjectReference>
+        <semantic:dataObjectReference dataObjectRef="DF1356627400755" name="Reported Issues" id="_6-1888608"/>
+        <semantic:sequenceFlow sourceRef="_6-51263" targetRef="_6-102905" name="" id="_6-126760"/>
+        <semantic:sequenceFlow sourceRef="_6-102905" targetRef="_6-210026" name="" id="_6-176833"/>
+        <semantic:sequenceFlow sourceRef="_6-210026" targetRef="_6-278688" name="" id="_6-297078"/>
+        <semantic:sequenceFlow sourceRef="_6-278688" targetRef="_6-348059" name="Initial Estimate Not Accepted" id="_6-384391"/>
+        <semantic:sequenceFlow sourceRef="_6-278688" targetRef="_6-460805" name="Initial Estimate Accepted" id="_6-425172"/>
+        <semantic:sequenceFlow sourceRef="_6-551229" targetRef="_6-583290" name="" id="_6-619719"/>
+        <semantic:sequenceFlow sourceRef="_6-460805" targetRef="_6-495667" name="" id="_6-1970105"/>
+        <semantic:sequenceFlow sourceRef="_6-495667" targetRef="_6-2039832" name="" id="_6-2048271"/>
+        <semantic:sequenceFlow sourceRef="_6-2039832" targetRef="_6-551229" name="" id="_6-2105997"/>
+    </semantic:process>
+    <bpmndi:BPMNDiagram documentation="" id="Trisotech.Visio-_6" name="Car Repair" resolution="96.00000267028808">
+        <bpmndi:BPMNPlane bpmnElement="_6">
+            <bpmndi:BPMNShape bpmnElement="_6-51263" id="S1356627400828__6-51263">
+                <dc:Bounds height="30.0" width="30.0" x="645.0" y="525.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-102905" id="S1356627400829__6-102905">
+                <dc:Bounds height="68.0" width="83.0" x="711.0" y="507.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-210026" id="S1356627400830__6-210026">
+                <dc:Bounds height="68.0" width="83.0" x="831.0" y="507.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-278688" isMarkerVisible="true" id="S1356627400831__6-278688">
+                <dc:Bounds height="42.0" width="42.0" x="951.0" y="520.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-348059" id="S1356627400832__6-348059">
+                <dc:Bounds height="32.0" width="32.0" x="1006.0" y="648.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-460805" isExpanded="true" id="S1356627400833__6-460805">
+                <dc:Bounds height="720.0" width="1327.0" x="1171.0" y="123.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-737170" id="S1356627400834__6-737170">
+                <dc:Bounds height="30.0" width="30.0" x="1212.0" y="368.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-783470" isMarkerVisible="true" id="S1356627400835__6-783470">
+                <dc:Bounds height="42.0" width="42.0" x="1278.0" y="362.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-651478" isExpanded="true" id="S1356627400836__6-651478">
+                <dc:Bounds height="226.0" width="426.0" x="1345.0" y="579.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-680730" id="S1356627400843__6-680730">
+                <dc:Bounds height="30.0" width="30.0" x="1387.0" y="702.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-1256338" id="S1356627400844__6-1256338">
+                <dc:Bounds height="68.0" width="83.0" x="1482.0" y="683.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-1354552" id="S1356627400845__6-1354552">
+                <dc:Bounds height="32.0" width="32.0" x="1659.0" y="701.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-1210318" id="S1356627400846__6-1210318">
+                <dc:Bounds height="38.0" width="30.0" x="1562.0" y="589.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-872331" id="S1356627400848__6-872331">
+                <dc:Bounds height="68.0" width="83.0" x="1355.0" y="349.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-1514214" id="S1356627400849__6-1514214">
+                <dc:Bounds height="68.0" width="83.0" x="1475.0" y="349.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-1776798" isMarkerVisible="true" id="S1356627400850__6-1776798">
+                <dc:Bounds height="42.0" width="42.0" x="1594.0" y="362.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-2788153" isExpanded="false" id="S1356627400851__6-2788153">
+                <dc:Bounds height="68.0" width="83.0" x="1653.0" y="243.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-1582713" isMarkerVisible="true" id="S1356627400861__6-1582713">
+                <dc:Bounds height="42.0" width="42.0" x="1752.0" y="362.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-2157337" isExpanded="true" id="S1356627400862__6-2157337">
+                <dc:Bounds height="228.0" width="451.0" x="1883.0" y="577.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-2166825" id="S1356627400863__6-2166825">
+                <dc:Bounds height="30.0" width="30.0" x="1940.0" y="701.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-2215166" id="S1356627400864__6-2215166">
+                <dc:Bounds height="68.0" width="83.0" x="2018.0" y="683.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-2599544" id="S1356627400865__6-2599544">
+                <dc:Bounds height="32.0" width="32.0" x="2231.0" y="701.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-2657573" id="S1356627400866__6-2657573">
+                <dc:Bounds height="38.0" width="30.0" x="2090.0" y="587.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-1645638" id="S1356627400868__6-1645638">
+                <dc:Bounds height="68.0" width="83.0" x="1903.0" y="349.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-2311688" id="S1356627400869__6-2311688">
+                <dc:Bounds height="68.0" width="83.0" x="2033.0" y="349.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-935957" isMarkerVisible="true" id="S1356627400870__6-935957">
+                <dc:Bounds height="42.0" width="42.0" x="2164.0" y="362.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-2419235" id="S1356627400871__6-2419235">
+                <dc:Bounds height="68.0" width="83.0" x="2288.0" y="349.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-1024431" id="S1356627400872__6-1024431">
+                <dc:Bounds height="32.0" width="32.0" x="2424.0" y="367.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-2508241" id="S1356627400873__6-2508241">
+                <dc:Bounds height="38.0" width="30.0" x="2033.0" y="243.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-495667" id="S1356627400875__6-495667">
+                <dc:Bounds height="68.0" width="83.0" x="2562.0" y="349.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-551229" id="S1356627400876__6-551229">
+                <dc:Bounds height="68.0" width="83.0" x="2785.0" y="349.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-583290" id="S1356627400877__6-583290">
+                <dc:Bounds height="32.0" width="32.0" x="2912.0" y="367.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-2039832" id="S1356627400878__6-2039832">
+                <dc:Bounds height="68.0" width="83.0" x="2678.0" y="349.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-1087187" id="S1356627400879__6-1087187">
+                <dc:Bounds height="38.0" width="30.0" x="798.0" y="645.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_6-1888608" id="S1356627400880__6-1888608">
+                <dc:Bounds height="38.0" width="30.0" x="687.0" y="420.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge bpmnElement="_6-1399893" id="E1356627400885__6-1399893">
+                <di:waypoint x="1565.0" y="717.0"/>
+                <di:waypoint x="1583.0" y="717.0"/>
+                <di:waypoint x="1659.0" y="717.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1863207" id="E1356627400886__6-1863207">
+                <di:waypoint x="1653.0" y="277.0"/>
+                <di:waypoint x="1615.0" y="277.0"/>
+                <di:waypoint x="1614.0" y="362.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-2258346" id="E1356627400887__6-2258346">
+                <di:waypoint x="1970.0" y="717.0"/>
+                <di:waypoint x="1988.0" y="717.0"/>
+                <di:waypoint x="2018.0" y="717.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-990368" id="E1356627400888__6-990368">
+                <di:waypoint x="2184.0" y="404.0"/>
+                <di:waypoint x="2184.0" y="443.0"/>
+                <di:waypoint x="1298.0" y="443.0"/>
+                <di:waypoint x="1299.0" y="404.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1734654" id="E1356627400889__6-1734654">
+                <di:waypoint x="1773.0" y="362.0"/>
+                <di:waypoint x="1773.0" y="277.0"/>
+                <di:waypoint x="1736.0" y="277.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1191953" targetElement="S1356627400830__6-210026" id="E1356627400890__6-1191953">
+                <di:waypoint x="829.0" y="664.0"/>
+                <di:waypoint x="873.0" y="664.0"/>
+                <di:waypoint x="873.0" y="575.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1687834" id="E1356627400891__6-1687834">
+                <di:waypoint x="1793.0" y="383.0"/>
+                <di:waypoint x="1811.0" y="383.0"/>
+                <di:waypoint x="1903.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1928113" targetElement="S1356627400829__6-102905" id="E1356627400892__6-1928113">
+                <di:waypoint x="718.0" y="439.0"/>
+                <di:waypoint x="753.0" y="439.0"/>
+                <di:waypoint x="753.0" y="507.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-815908" id="E1356627400893__6-815908">
+                <di:waypoint x="1242.0" y="383.0"/>
+                <di:waypoint x="1278.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-126760" id="E1356627400894__6-126760">
+                <di:waypoint x="675.0" y="541.0"/>
+                <di:waypoint x="693.0" y="541.0"/>
+                <di:waypoint x="711.0" y="541.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1425443" sourceElement="S1356627400844__6-1256338" id="E1356627400895__6-1425443">
+                <di:waypoint x="1498.0" y="683.0"/>
+                <di:waypoint x="1498.0" y="608.0"/>
+                <di:waypoint x="1562.0" y="608.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-176833" id="E1356627400896__6-176833">
+                <di:waypoint x="795.0" y="541.0"/>
+                <di:waypoint x="831.0" y="541.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1628881" id="E1356627400897__6-1628881">
+                <di:waypoint x="1635.0" y="383.0"/>
+                <di:waypoint x="1752.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-2474423" id="E1356627400898__6-2474423">
+                <di:waypoint x="2371.0" y="383.0"/>
+                <di:waypoint x="2389.0" y="383.0"/>
+                <di:waypoint x="2424.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-2105997" id="E1356627400899__6-2105997">
+                <di:waypoint x="2761.0" y="383.0"/>
+                <di:waypoint x="2785.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-297078" id="E1356627400900__6-297078">
+                <di:waypoint x="915.0" y="541.0"/>
+                <di:waypoint x="933.0" y="541.0"/>
+                <di:waypoint x="951.0" y="541.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1970105" id="E1356627400901__6-1970105">
+                <di:waypoint x="2498.0" y="383.0"/>
+                <di:waypoint x="2516.0" y="383.0"/>
+                <di:waypoint x="2562.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1811452" id="E1356627400902__6-1811452">
+                <di:waypoint x="1558.0" y="383.0"/>
+                <di:waypoint x="1576.0" y="383.0"/>
+                <di:waypoint x="1594.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-2362248" id="E1356627400903__6-2362248">
+                <di:waypoint x="2116.0" y="383.0"/>
+                <di:waypoint x="2134.0" y="383.0"/>
+                <di:waypoint x="2164.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-425172" id="E1356627400904__6-425172">
+                <di:waypoint x="971.0" y="520.0"/>
+                <di:waypoint x="971.0" y="383.0"/>
+                <di:waypoint x="1171.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-2693060" sourceElement="S1356627400864__6-2215166" id="E1356627400905__6-2693060">
+                <di:waypoint x="2035.0" y="683.0"/>
+                <di:waypoint x="2035.0" y="606.0"/>
+                <di:waypoint x="2090.0" y="606.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-384391" id="E1356627400906__6-384391">
+                <di:waypoint x="971.0" y="561.0"/>
+                <di:waypoint x="971.0" y="663.0"/>
+                <di:waypoint x="1006.0" y="664.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1048090" id="E1356627400907__6-1048090">
+                <di:waypoint x="2205.0" y="383.0"/>
+                <di:waypoint x="2223.0" y="383.0"/>
+                <di:waypoint x="2288.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1137402" sourceElement="S1356627400829__6-102905" id="E1356627400908__6-1137402">
+                <di:waypoint x="753.0" y="575.0"/>
+                <di:waypoint x="753.0" y="664.0"/>
+                <di:waypoint x="798.0" y="664.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1541168" id="E1356627400909__6-1541168">
+                <di:waypoint x="1439.0" y="383.0"/>
+                <di:waypoint x="1475.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-919609" id="E1356627400910__6-919609">
+                <di:waypoint x="1319.0" y="383.0"/>
+                <di:waypoint x="1337.0" y="383.0"/>
+                <di:waypoint x="1355.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-2048271" id="E1356627400911__6-2048271">
+                <di:waypoint x="2645.0" y="383.0"/>
+                <di:waypoint x="2678.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-2634208" id="E1356627400912__6-2634208">
+                <di:waypoint x="2101.0" y="717.0"/>
+                <di:waypoint x="2119.0" y="717.0"/>
+                <di:waypoint x="2231.0" y="717.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-2358862" id="E1356627400913__6-2358862">
+                <di:waypoint x="1986.0" y="383.0"/>
+                <di:waypoint x="2033.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-2536627" targetElement="S1356627400869__6-2311688" id="E1356627400914__6-2536627">
+                <di:waypoint x="2063.0" y="262.0"/>
+                <di:waypoint x="2088.0" y="262.0"/>
+                <di:waypoint x="2089.0" y="349.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-1311120" id="E1356627400915__6-1311120">
+                <di:waypoint x="1417.0" y="717.0"/>
+                <di:waypoint x="1435.0" y="717.0"/>
+                <di:waypoint x="1482.0" y="717.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_6-619719" id="E1356627400916__6-619719">
+                <di:waypoint x="2868.0" y="383.0"/>
+                <di:waypoint x="2886.0" y="383.0"/>
+                <di:waypoint x="2912.0" y="383.0"/>
+                <bpmndi:BPMNLabel/>
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+    <semantic:relationship type="BPSimData">
+        <semantic:extensionElements>
+            <bpsim:BPSimData xmlns:bpsim="http://www.bpsim.org/schemas/1.0">
+                <bpsim:Scenario author="Tim Stephenson" created="2012-06-13T09:47:00" id="scenario1" modified="2012-12-20T13:19:00" name="Scenario 1: Main flow without sub-processes">
+
+                    <bpsim:ScenarioParameters baseTimeUnit="min" replication="3">
+                        <bpsim:Duration>
+                            <bpsim:DurationParameter value="PT60H"/>
+                        </bpsim:Duration>
+                    </bpsim:ScenarioParameters>
+                    
+                    <bpsim:ElementParameters elementRef="_6">
+                        <bpsim:ControlParameters>
+                            <bpsim:TriggerCount>
+                                <bpsim:ResultRequest>count</bpsim:ResultRequest>
+                            </bpsim:TriggerCount>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                    
+        			<bpsim:ElementParameters elementRef="_6-1645638">
+                        <bpsim:PropertyParameters>
+                            <bpsim:Property name="noOfIssues">
+                                <bpsim:ParameterValue instance="getProperty('noOfIssues') - 1"/>
+                            </bpsim:Property>
+                        </bpsim:PropertyParameters>
+                    </bpsim:ElementParameters>
+
+        			<bpsim:ElementParameters elementRef="_6-2788153">
+                        <bpsim:PropertyParameters>
+                            <bpsim:Property name="noOfIssues">
+                                <bpsim:ParameterValue instance="getProperty('noOfIssues') + 1"/>
+                            </bpsim:Property>
+                        </bpsim:PropertyParameters>
+                    </bpsim:ElementParameters>
+                    
+                    <bpsim:ElementParameters elementRef="_6-990368">
+                        <bpsim:ControlParameters>
+                            <!-- have more issues -->
+                            <bpsim:Condition>
+                                <bpsim:ExpressionParameter instance="noOfIssues" value="getProperty('noOfIssues') != 0"/>
+        					</bpsim:Condition>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+
+        			<bpsim:ElementParameters elementRef="_6-1048090">
+                        <bpsim:ControlParameters>
+                            <!-- no more issues -->
+                            <bpsim:Condition>
+                                <bpsim:ExpressionParameter instance="noOfIssues" value="getProperty('noOfIssues') = 0"/>
+        					</bpsim:Condition>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters> 
+
+                    <bpsim:ElementParameters elementRef="_6-51263">
+                        <bpsim:ControlParameters>
+                            <bpsim:InterTriggerTimer>
+                                <bpsim:DurationParameter value="PT24M"/>
+                            </bpsim:InterTriggerTimer>
+                            <bpsim:TriggerCount>
+                                <bpsim:ResultRequest>count</bpsim:ResultRequest>
+                            </bpsim:TriggerCount>
+                        </bpsim:ControlParameters>
+                        <bpsim:PropertyParameters>
+                            <bpsim:Property name="noOfIssues">
+                                <bpsim:TruncatedNormalDistribution max="1000" mean="2" min="1" standardDeviation="1"/>
+                            </bpsim:Property>
+                        </bpsim:PropertyParameters>
+                    </bpsim:ElementParameters>
+            
+                    <bpsim:ElementParameters elementRef="_6-425172">
+                        <bpsim:ControlParameters>
+                            <bpsim:Probability>
+                                <bpsim:FloatingParameter value="0.67"/>
+                            </bpsim:Probability>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                    <bpsim:ElementParameters elementRef="_6-384391">
+                        <bpsim:ControlParameters>
+                            <bpsim:Probability>
+                                <bpsim:FloatingParameter value="0.33"/>
+                            </bpsim:Probability>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                    <bpsim:ElementParameters elementRef="_6-1734654">
+                        <bpsim:ControlParameters>
+                            <bpsim:Probability>
+                                <bpsim:FloatingParameter value="0.25"/>
+                            </bpsim:Probability>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                    <bpsim:ElementParameters elementRef="_6-1687834">
+                        <bpsim:ControlParameters>
+                            <bpsim:Probability>
+                                <bpsim:FloatingParameter value="0.75"/>
+                            </bpsim:Probability>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                    <bpsim:ElementParameters elementRef="_6-126760">
+                        <bpsim:ControlParameters>
+                            <bpsim:TriggerCount>
+                                <bpsim:ResultRequest>count</bpsim:ResultRequest>
+                            </bpsim:TriggerCount>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                    <bpsim:ElementParameters elementRef="_6-1645638">
+                        <bpsim:ControlParameters>
+                            <bpsim:TriggerCount>
+                                <bpsim:ResultRequest>count</bpsim:ResultRequest>
+                            </bpsim:TriggerCount>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                    <bpsim:ElementParameters elementRef="_6-583290">
+                        <bpsim:ControlParameters>
+                            <bpsim:TriggerCount>
+                                <bpsim:ResultRequest>count</bpsim:ResultRequest>
+                            </bpsim:TriggerCount>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                    <bpsim:ElementParameters elementRef="_6-348059">
+                        <bpsim:ControlParameters>
+                            <bpsim:TriggerCount>
+                                <bpsim:ResultRequest>count</bpsim:ResultRequest>
+                            </bpsim:TriggerCount>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                    <bpsim:ElementParameters elementRef="_6-737170">
+                        <bpsim:ControlParameters>
+                            <bpsim:TriggerCount>
+                                <bpsim:ResultRequest>count</bpsim:ResultRequest>
+                            </bpsim:TriggerCount>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                    <bpsim:ElementParameters elementRef="_6-1024431">
+                        <bpsim:ControlParameters>
+                            <bpsim:TriggerCount>
+                                <bpsim:ResultRequest>count</bpsim:ResultRequest>
+                            </bpsim:TriggerCount>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                </bpsim:Scenario>
+				
+                <bpsim:Scenario id="scenario2" name="Scenario 2: Main and secondary paths" author="Tim Stephenson" inherits="scenario1">
+                    <bpsim:ElementParameters elementRef="_6-2166825">
+                        <bpsim:ControlParameters>
+                            <bpsim:Probability>
+                                <bpsim:FloatingParameter value="0.05"/>
+                            </bpsim:Probability>
+                            <bpsim:InterTriggerTimer>
+                                <bpsim:DurationParameter value="PT0M"/>
+                            </bpsim:InterTriggerTimer>
+                            <bpsim:TriggerCount>
+                                <bpsim:ResultRequest>count</bpsim:ResultRequest>
+                                <bpsim:FloatingParameter value="1"/>
+                            </bpsim:TriggerCount>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                    <bpsim:ElementParameters elementRef="_6-2599544">
+                        <bpsim:ControlParameters>
+                            <bpsim:TriggerCount>
+                                <bpsim:ResultRequest>count</bpsim:ResultRequest>
+                            </bpsim:TriggerCount>
+                        </bpsim:ControlParameters>
+                    </bpsim:ElementParameters>
+                </bpsim:Scenario>
+            </bpsim:BPSimData>
+        </semantic:extensionElements>
+        <semantic:source>_1356627400500</semantic:source>
+        <semantic:target>_1356627400500</semantic:target>
+    </semantic:relationship>
+</semantic:definitions>
+
