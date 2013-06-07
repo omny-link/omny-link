@@ -22,6 +22,9 @@
 		<xsl:attribute name="isExecutable">true</xsl:attribute>
 	</xsl:template>
   
+  <!-- 
+    Convert all non-user tasks into user tasks.
+  -->
   <xsl:template match="semantic:task|task">
     <xsl:variable name="elName">
       <xsl:choose>
@@ -36,6 +39,20 @@
     </xsl:variable>
     <xsl:element name="{$elName}">
       <xsl:apply-templates select="@*"/>
+      <xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>
+  
+  <!-- 
+    Convert unsupported service tasks into user tasks.
+  -->
+  <xsl:template match="semantic:serviceTask|serviceTask">
+    <xsl:comment> Service Task converter </xsl:comment>
+    <xsl:variable name="elName">
+      <xsl:text>userTask</xsl:text>
+    </xsl:variable>
+    <xsl:element name="{$elName}">
+      <xsl:apply-templates select="@*[not(local-name='delegateExpression')]"/>
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>

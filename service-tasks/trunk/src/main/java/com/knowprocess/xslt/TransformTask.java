@@ -31,6 +31,7 @@ public class TransformTask implements JavaDelegate {
 
     public String transform(String xml) {
         TransformerFactory factory = TransformerFactory.newInstance();
+        factory.setURIResolver(new ClasspathResourceResolver());
         InputStream xsltStream = null;
         StringWriter out = new StringWriter();
         try {
