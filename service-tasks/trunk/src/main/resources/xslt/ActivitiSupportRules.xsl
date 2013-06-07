@@ -51,10 +51,11 @@
   
   <xsl:template match="semantic:eventBasedGateway|eventBasedGateway|semantic:exclusiveGateway|exclusiveGateway|semantic:inclusiveGateway|inclusiveGateway|semantic:parallelGateway|parallelGateway">
     <xsl:choose>
-      <xsl:when test="text()">
+      <xsl:when test="text() and normalize-space(text())!=''">
         <xsl:text>ERROR: </xsl:text>
         <xsl:value-of select="local-name(.)"/>
-        <xsl:text> must be empty.</xsl:text>
+        <xsl:text> must be empty, in fact contains: </xsl:text>
+        <xsl:value-of select="normalize-space(text())"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>Pass: </xsl:text>

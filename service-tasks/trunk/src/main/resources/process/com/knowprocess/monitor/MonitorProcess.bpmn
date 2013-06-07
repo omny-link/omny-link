@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.knowprocess.com/monitor">
+  <process id="monitorProcess" name="Monitor process" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="servicetask1"></sequenceFlow>
+    <sequenceFlow id="up" name="Yes" sourceRef="available" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${up == true}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="available" name="Available?"></exclusiveGateway>
+    <sequenceFlow id="flow3" sourceRef="reviewResponse" targetRef="available"></sequenceFlow>
+    <sequenceFlow id="down" name="No" sourceRef="available" targetRef="mailtask1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${up != true}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow5" sourceRef="mailtask1" targetRef="endevent2"></sequenceFlow>
+    <serviceTask id="servicetask1" name="Check resource" activiti:class="com.knowprocess.resource.spi.Fetcher"></serviceTask>
+    <serviceTask id="mailtask1" name="Alert ops team" activiti:type="mail">
+      <extensionElements>
+        <activiti:field name="to">
+          <activiti:string>tim@knowprocess.com</activiti:string>
+        </activiti:field>
+        <activiti:field name="subject">
+          <activiti:string>monitor process says site is down</activiti:string>
+        </activiti:field>
+        <activiti:field name="text">
+          <activiti:expression>Please investigate site: ${resourceUrl}</activiti:expression>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow6" sourceRef="servicetask1" targetRef="reviewResponse"></sequenceFlow>
+    <scriptTask id="reviewResponse" name="Review resource response" scriptFormat="javascript">
+      <script>if (resource == null || resource.indexOf(expectedContent) == -1) { 
+  java.lang.System.out.println("Setting 'up' false");
+  execution.setVariable('up', false);
+} else { 
+   java.lang.System.out.println("Setting 'up' true");
+  execution.setVariable('up', true);
+}</script>
+    </scriptTask>
+    <textAnnotation id="textannotation1">
+      <text>IN: 
+  resource
+  expectedContent</text>
+    </textAnnotation>
+    <association id="association1" sourceRef="textannotation1" targetRef="startevent1"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_monitorProcess">
+    <bpmndi:BPMNPlane bpmnElement="monitorProcess" id="BPMNPlane_monitorProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="30.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="available" id="BPMNShape_available">
+        <omgdc:Bounds height="40.0" width="40.0" x="360.0" y="117.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="508.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="508.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask1" id="BPMNShape_servicetask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="96.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="mailtask1" id="BPMNShape_mailtask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="348.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
+        <omgdc:Bounds height="50.0" width="100.0" x="30.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reviewResponse" id="BPMNShape_reviewResponse">
+        <omgdc:Bounds height="55.0" width="105.0" x="228.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="65.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="96.0" y="137.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="up" id="BPMNEdge_up">
+        <omgdi:waypoint x="400.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="508.0" y="137.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="13.0" width="100.0" x="10.0" y="0.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="333.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.0" y="137.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="down" id="BPMNEdge_down">
+        <omgdi:waypoint x="380.0" y="157.0"></omgdi:waypoint>
+        <omgdi:waypoint x="400.0" y="220.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="13.0" width="100.0" x="10.0" y="0.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="453.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="508.0" y="247.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="201.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="228.0" y="137.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

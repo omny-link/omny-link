@@ -2,12 +2,15 @@ package com.knowprocess.resource.spi;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
@@ -28,6 +31,7 @@ import com.knowprocess.resource.internal.gdrive.GDriveRepository;
  */
 public class Fetcher implements JavaDelegate {
 
+    private static final int MAX_VAR_LENGTH = 4000;
     public static final String PROTOCOL = "classpath://";
 
     public Fetcher() {
@@ -99,8 +103,22 @@ public class Fetcher implements JavaDelegate {
         } else if ("png".equalsIgnoreCase(ext)) {
             return "image/png";
         } else {
+            try {
+                URL url = new URL(resourceUrl);
+                if (url.getFile().length() == 0 || url.getFile().equals("/")) {
+                    // this is presumably going to be an html homepage
+                    // until proven otherwise!
+                } else {
+                    System.out.println("Assuming html content from: "
+                            + resourceUrl + ". Could be unsafe");
+                }
+                return "text/html";
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             // catch all, treat as binary
-            return "application/octet-stream";
+                return "application/octet-stream";
+            }
         }
     }
 
@@ -191,8 +209,21 @@ public class Fetcher implements JavaDelegate {
         } else if (resource != null) {
             System.out.println("fetching " + resource
                     + " into process context.");
+            execution.setVariable("resourceUrl", resource);
             execution.setVariable("resourceName", getResourceName(resource));
-            execution.setVariable("resource", fetchToString(resource));
+            String content = fetchToString(resource);
+            if (content.length() > MAX_VAR_LENGTH) {
+                // we have a problem, cannot store in the standard Activiti DB
+                if (content.contains("<html")) {
+                    // Take a chance on truncation
+                    content = content.substring(0, MAX_VAR_LENGTH);
+                } else {
+                    throw new ActivitiException(
+                            "Resource is too large to store as a process variable: "
+                                    + resource);
+                }
+            }
+            execution.setVariable("resource", content);
         } else {
             throw new IllegalStateException(
                     "You must specify resource(s) to fetch.");
