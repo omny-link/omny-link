@@ -113,20 +113,19 @@ public class GDriveRepository implements Repository,
     public void init() {
         long start = new Date().getTime();
         try {
-            try {
-                HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-                // authorization
-                Credential credential = authorize();
-                // set up the global Drive instance
-                drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, null)
-                        .setHttpRequestInitializer(credential)
-                        .setApplicationName("knowprocess-cloudcast").build();
+            HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+            // authorization
+            Credential credential = authorize();
+            // set up the global Drive instance
+            drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, null)
+                    .setHttpRequestInitializer(credential)
+                    .setApplicationName("knowprocess-cloudcast").build();
 
-            } catch (IOException e) {
-                System.err.println(e.getMessage());
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Throwable e) {
+            System.err.println(e.getClass().getName() + ":" + e.getMessage());
+            throw new RuntimeException(
+                    "Unable to init access to GDrive, have you provided the secret?",
+                    e);
         }
         System.out.println("initialisation took: "
                 + (new Date().getTime() - start));
