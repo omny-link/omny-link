@@ -68,8 +68,8 @@
   
   <xsl:template match="semantic:intermediateCatchEvent|intermediateCatchEvent">
     <xsl:choose>
-      <xsl:when test="not(semantic:messageEventDefinition|semantic:signalEventDefinition)">
-        <xsl:text>ERROR: Intermediate catch events must specify exactly one of: messageEventDefinition, signalEventDefinition</xsl:text>
+      <xsl:when test="not(semantic:messageEventDefinition|semantic:signalEventDefinition|semantic:timerEventDefinition)">
+        <xsl:text>ERROR: Intermediate catch events must specify exactly one of: messageEventDefinition, signalEventDefinition or timerEventDefinition</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>Pass: intermediateEvent '</xsl:text>

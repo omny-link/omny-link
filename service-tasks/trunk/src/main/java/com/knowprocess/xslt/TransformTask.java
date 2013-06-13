@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -30,6 +33,10 @@ public class TransformTask implements JavaDelegate {
     }
 
     public String transform(String xml) {
+        return transform(xml, new HashMap<String, String>());
+    }
+
+    public String transform(String xml, Map<String, String> params) {
         TransformerFactory factory = TransformerFactory.newInstance();
         factory.setURIResolver(new ClasspathResourceResolver());
         InputStream xsltStream = null;
@@ -41,6 +48,9 @@ public class TransformTask implements JavaDelegate {
             Result outputTarget = new StreamResult(out);
             Source xmlSource = new StreamSource(new StringReader(xml.trim()));
             Transformer t = factory.newTransformer(xsltSource);
+            for (Entry<String, String> entry : params.entrySet()) {
+                t.setParameter(entry.getKey(), entry.getValue());
+            }
             t.transform(xmlSource, outputTarget);
         } catch (TransformerConfigurationException e) {
             // TODO Auto-generated catch block
