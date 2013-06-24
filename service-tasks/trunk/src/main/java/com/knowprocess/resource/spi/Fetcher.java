@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
@@ -42,8 +41,7 @@ public class Fetcher implements JavaDelegate {
         String repoUri = "mem://string";
 
         MemRepository repo = (MemRepository) getRepository(repoUri);
-        fetchToRepo(resourceUrl,
-                getResourceName(resourceUrl), repo);
+        fetchToRepo(resourceUrl, getResourceName(resourceUrl), repo);
         System.out.println("resource:" + repo.getString());
         return repo.getString();
     }
@@ -64,8 +62,7 @@ public class Fetcher implements JavaDelegate {
 
     public void fetchToRepo(String resourceUrl, String repoUri)
             throws IOException {
-        fetchToRepo(resourceUrl,
-                getResourceName(resourceUrl),
+        fetchToRepo(resourceUrl, getResourceName(resourceUrl),
                 getRepository(repoUri));
     }
 
@@ -116,7 +113,7 @@ public class Fetcher implements JavaDelegate {
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            // catch all, treat as binary
+                // catch all, treat as binary
                 return "application/octet-stream";
             }
         }
@@ -212,18 +209,22 @@ public class Fetcher implements JavaDelegate {
             execution.setVariable("resourceUrl", resource);
             execution.setVariable("resourceName", getResourceName(resource));
             String content = fetchToString(resource);
-            if (content.length() > MAX_VAR_LENGTH) {
-                // we have a problem, cannot store in the standard Activiti DB
-                if (content.contains("<html")) {
-                    // Take a chance on truncation
-                    content = content.substring(0, MAX_VAR_LENGTH);
-                } else {
-                    throw new ActivitiException(
-                            "Resource is too large to store as a process variable: "
-                                    + resource);
-                }
-            }
-            execution.setVariable("resource", content);
+            // TODO check and cleanup
+            // if (content.length() > MAX_VAR_LENGTH) {
+            // // we have a problem, cannot store in the standard Activiti DB
+            // if (content.contains("<html")) {
+            // // Take a chance on truncation
+            // content = content.substring(0, MAX_VAR_LENGTH);
+            // } else {
+            // String msg = "Resource is too large ("
+            // + content.length()
+            // + " bytes) to store as a process variable: "
+            // + resource;
+            // System.out.println(msg);
+            // // throw new ActivitiException(msg);
+            // }
+            // }
+            execution.setVariable("resource", content.getBytes());
         } else {
             throw new IllegalStateException(
                     "You must specify resource(s) to fetch.");

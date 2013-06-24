@@ -1,14 +1,19 @@
 package com.knowprocess.deployment;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import org.activiti.engine.EngineServices;
 import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
+import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
 import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.ProcessInstance;
 
 /**
  * Handles deployment of BPMN 2 processes.
@@ -35,21 +40,59 @@ import org.activiti.engine.repository.ProcessDefinition;
  */
 public class DeploymentService implements JavaDelegate {
 
-    private ProcessEngine processEngine;
+    // public static final String EXECUTABLE_PROCESS_PARTICIPANTS =
+    // "processParticipantToExecute";
+    private EngineServices processEngine;
+    private boolean failedBefore;
 
-    public String deployBpmnResource(String resource) {
-        String piid = "TODO";
-        // fetch
-        // tweak
-        // validate
-        // deploy
-        // start
-        return piid;
+    /**
+     * Default constructor. Used when executed as service task.
+     */
+    public DeploymentService() {
+        // processEngine = ProcessEngines.getDefaultProcessEngine();
     }
 
-    protected ProcessDefinition deployBpmnResource(String name, String bpmnDefinition)
-            throws Exception {
-        getLogger().info(String.format("Deploying %1$s", bpmnDefinition));
+    public DeploymentService(ProcessEngine processEngine) {
+        this.processEngine = processEngine;
+    }
+
+    public ProcessInstance submitDeploymentRequest(String resource) {
+        Map<String, Object> vars = new HashMap<String, Object>();
+        return submitDeploymentRequest(resource, vars);
+    }
+
+    public ProcessInstance submitDeploymentRequest(String resource,
+            Map<String, Object> deploymentInstructions) {
+        deploymentInstructions.put("resource", resource);
+
+        ProcessInstance processInstance = null;
+        try {
+            RuntimeService runtimeService = getProcessEngine()
+                    .getRuntimeService();
+            processInstance = runtimeService.startProcessInstanceByKey(
+                    "deploymentProcess", deploymentInstructions);
+
+            System.out.println("id " + processInstance.getId() + " "
+                    + processInstance.getProcessDefinitionId());
+        } catch (org.activiti.engine.ActivitiObjectNotFoundException e) {
+            if (failedBefore) {
+                throw e;
+            } else {
+                failedBefore = true;
+                System.out
+                        .println("Exception starting deploymentProcess, assume new system so try commissioning");
+                deployDeploymentProcess("process/com/knowprocess/deployment/DeploymentProcess.bpmn");
+                processInstance = submitDeploymentRequest(resource,
+                        deploymentInstructions);
+            }
+        }
+        return processInstance;
+    }
+
+    protected Deployment deployBpmnResource(String name,
+            String bpmnDefinition) throws Exception {
+        getLogger().info(
+                String.format("Deploying as %1$s: %2$s", name, bpmnDefinition));
         RepositoryService repoSvc = getProcessEngine().getRepositoryService();
         // String resource = url.toExternalForm().substring(
         // url.toExternalForm().indexOf(".jar!") + ".jar!".length()
@@ -57,14 +100,30 @@ public class DeploymentService implements JavaDelegate {
         try {
             Deployment deployment = repoSvc.createDeployment()
                     .addString(name, bpmnDefinition).deploy();
+            if (deployment instanceof DeploymentEntity) {
+                System.out.println("deployment entity returned");
+                DeploymentEntity de = (DeploymentEntity) deployment;
+                System.out.println("deployment entity returned");
+                // List<ProcessDefinition> list = de
+                // .getDeployedArtifacts(ProcessDefinition.class);
+                //
+                // ProcessDefinition processDefinition = list.get(0);
+                // System.out.println(processDefinition);
+            }
             getLogger()
                     .info(String.format("... deployment ok: %1$s at %2$s",
                             deployment.getId(), deployment.getDeploymentTime()));
-
-            ProcessDefinition template = getProcessEngine()
-                    .getRepositoryService().createProcessDefinitionQuery()
-                    .deploymentId(deployment.getId()).singleResult();
-            return template;
+            //
+            // Deployment result = repoSvc.createDeploymentQuery()
+            // .deploymentId(deployment.getId()).singleResult();
+            // assert result != null;
+            //
+            // ProcessDefinition template =
+            // repoSvc.createProcessDefinitionQuery()
+            // .deploymentId(deployment.getId()).singleResult();
+            // System.out.println("template: " + template);
+            // return template;
+            return deployment;
         } catch (Exception e) {
             getLogger().severe(
                     String.format("Exception during deployment: %1$s: %2$s", e
@@ -84,10 +143,16 @@ public class DeploymentService implements JavaDelegate {
     // return null;
     // }
 
-    private ProcessEngine getProcessEngine() {
-        if (processEngine == null) {
-            processEngine = ProcessEngines.getDefaultProcessEngine();
-        }
+    public void setProcessEngine(ProcessEngine processEngine) {
+        this.processEngine = processEngine;
+    }
+
+    private EngineServices getProcessEngine() {
+        // if (processEngine == null) {
+        // System.out
+        // .println("You should ensure a process engine is injected in prod environments this is a testing convenience only!");
+        // processEngine = ProcessEngines.getDefaultProcessEngine();
+        // }
         return processEngine;
     }
 
@@ -97,13 +162,26 @@ public class DeploymentService implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
-        ProcessDefinition definition = deployBpmnResource(
-                (String) execution.getVariable("resourceName"),
-                (String) execution.getVariable("resource"));
-        // Almost certain that we will not be able to persist the resource due
-        // to length and anyway no need now so set to null
-        execution.setVariable("resource", null);
-        execution.setVariable("template", definition);
+        processEngine = execution.getEngineServices();
+
+        String resource = null ; 
+        Object tmp = execution.getVariable("resource"); 
+        if (tmp instanceof String ) { 
+            resource = (String) tmp;
+        } else {
+            resource = new String((byte[]) tmp);
+        }
+
+        // TODO for some reason the execution cannot query proc def before the
+        // JavaDelegate has completed
+//        ProcessDefinition definition = deployBpmnResource(
+//                (String) execution.getVariable("resourceName"), resource);
+//        System.out.println("Template: " + definition);
+        // execution.setVariable("templateId", definition.getId());
+        // execution.setVariable("deploymentId", value);
+        Deployment deployment = deployBpmnResource(
+                (String) execution.getVariable("resourceName"), resource);
+        execution.setVariable("deploymentId", deployment.getId());
     }
 
     /*
@@ -116,4 +194,19 @@ public class DeploymentService implements JavaDelegate {
      * deploymentBuilder.addString(getResourceName(resource),
      * getText(resource)); }
      */
+
+    private void deployDeploymentProcess(String resource) {
+        RepositoryService repositoryService = getProcessEngine()
+                .getRepositoryService();
+        Deployment deployment = repositoryService.createDeployment()
+                .addClasspathResource(resource).deploy();
+        System.out.println("deployment returned: " + deployment);
+
+        List<Deployment> deployments = getProcessEngine()
+                .getRepositoryService().createDeploymentQuery().list();
+        for (Deployment d : deployments) {
+            System.out.println("deployment from search: " + d.getName() + "("
+                    + d.getId() + ")");
+        }
+    }
 }

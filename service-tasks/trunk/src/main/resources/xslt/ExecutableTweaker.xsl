@@ -27,6 +27,33 @@
   -->
   <xsl:param name="processParticipantToExecute"/>
   
+  <xsl:template match="semantic:exclusiveGateway|exclusiveGateway">
+    <xsl:variable name="id">
+      <xsl:value-of select="@id"/>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="not(@default) and count(//semantic:sequenceFlow[@sourceRef=$id])">
+        <xsl:comment>
+          <xsl:text>Setting first sequence flow as default from gateway: </xsl:text>
+          <xsl:value-of select="@id"/>
+        </xsl:comment>
+        <xsl:copy>
+          <xsl:attribute name="default">
+            <xsl:value-of select="//semantic:sequenceFlow[@sourceRef=$id]/@id"/>
+          </xsl:attribute>
+          <xsl:apply-templates select="@*"/>
+          <xsl:apply-templates/>
+        </xsl:copy>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>
+          <xsl:apply-templates select="@*"/>
+          <xsl:apply-templates/>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
   <!-- TODO this looks like a restriction in Activiti that could (ought) to be removed -->
   <xsl:template match="semantic:message[not(@name)]">
     <xsl:copy>
@@ -91,15 +118,39 @@
   <!-- 
     Convert unsupported service tasks into user tasks.
   -->
-  <xsl:template match="semantic:serviceTask|serviceTask">
-    <xsl:comment> Service Task converted to user task and assigned to initiator</xsl:comment>
+  <xsl:template match="semantic:receiveTask|receiveTask|semantic:sendTask|sendTask|semantic:serviceTask|serviceTask">
+    <xsl:comment>
+      <xsl:value-of select="local-name(.)"/>
+      <xsl:text> converted to user task and assigned to initiator.</xsl:text>
+    </xsl:comment>
+    <xsl:text>&#x0A;</xsl:text>
     <xsl:element name="userTask">
       <xsl:attribute name="activiti:assignee">${initiator}</xsl:attribute>
-      <xsl:apply-templates select="@*[not(local-name='delegateExpression')]"/>
+      <xsl:apply-templates select="@*[not(local-name(.)='delegateExpression' or local-name(.)='messageRef')]"/>
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
   
+  <!-- 
+  <xsl:template match="semantic:sequenceFlow|sequenceFlow">
+    <xsl:variable name="id" select="@id"/>
+    <xsl:variable name="sourceId" select="@sourceRef"/>
+    <xsl:variable name="source" select="//*[@id=$sourceId]"/>
+    <xsl:choose>
+      <xsl:when test="local-name($source) = 'exclusiveGateway' and count(//semantic:sequenceFlow[@sourceRef=$source/@id])>1 and not(./semantic:conditionExpression) and $source/@default!=$id">
+        <xsl:text>ERROR: REQUIRED: Need condition on sequence flow with id: </xsl:text>
+        <xsl:value-of select="@id"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>
+          <xsl:apply-templates select="@*"/>
+          <xsl:apply-templates/>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+   -->
+   
 	<!-- standard copy template -->
 	<xsl:template match="@*|node()">
 		<xsl:copy>

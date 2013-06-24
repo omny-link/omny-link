@@ -9,7 +9,7 @@
       <google.oauth.version>1.14.1-beta</google.oauth.version>
       <google.drive.version>v2-rev64-1.14.1-beta</google.drive.version>
       <java.version>1.6</java.version>
-      <activiti-version>5.12</activiti-version>
+      <activiti-version>5.13</activiti-version>
   </properties>
   <repositories>
     <repository>

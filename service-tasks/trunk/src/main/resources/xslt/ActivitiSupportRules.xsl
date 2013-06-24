@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  Notes on what is NOT supported by Activiti (yet)
+    - sendTask
+    - throwing intermediate message event
+
+-->
 <xsl:stylesheet version="1.0" 
     xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
     xmlns:bpsim="http://www.bpsim.org/schemas/1.0" 
@@ -7,7 +13,8 @@
     xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" 
     xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:activiti="http://activiti.org/bpmn">
 	<xsl:output omit-xml-declaration="yes"/>
   
   <xsl:template match="semantic:definitions|definitions">
@@ -31,6 +38,7 @@
         <xsl:text>', checks of the specific event type follow.</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
+    <xsl:apply-templates select="child::node()"/>
   </xsl:template>
   
   <xsl:template match="semantic:endEvent|endEvent">
@@ -50,12 +58,21 @@
   </xsl:template>
   
   <xsl:template match="semantic:eventBasedGateway|eventBasedGateway|semantic:exclusiveGateway|exclusiveGateway|semantic:inclusiveGateway|inclusiveGateway|semantic:parallelGateway|parallelGateway">
+    <xsl:variable name="id">
+      <xsl:value-of select="@id"/>
+    </xsl:variable>
     <xsl:choose>
       <xsl:when test="text() and normalize-space(text())!=''">
         <xsl:text>ERROR: </xsl:text>
         <xsl:value-of select="local-name(.)"/>
         <xsl:text> must be empty, in fact contains: </xsl:text>
         <xsl:value-of select="normalize-space(text())"/>
+      </xsl:when>
+      <xsl:when test="not(@default) and count(//semantic:sequenceFlow[@sourceRef=$id])">
+        <xsl:text>ERROR: </xsl:text>
+        <xsl:value-of select="local-name(.)"/>
+        <xsl:text> requires default: </xsl:text>
+        <xsl:value-of select="@id"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>Pass: </xsl:text>
@@ -69,7 +86,7 @@
   <xsl:template match="semantic:intermediateCatchEvent|intermediateCatchEvent">
     <xsl:choose>
       <xsl:when test="not(semantic:messageEventDefinition|semantic:signalEventDefinition|semantic:timerEventDefinition)">
-        <xsl:text>ERROR: Intermediate catch events must specify exactly one of: messageEventDefinition, signalEventDefinition or timerEventDefinition</xsl:text>
+        <xsl:text>ERROR: Intermediate catch events must specify exactly one of: messageEventDefinition, signalEventDefinition or timerEventDefinition.</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>Pass: intermediateEvent '</xsl:text>
@@ -81,8 +98,11 @@
   
   <xsl:template match="semantic:intermediateThrowEvent|intermediateThrowEvent">
     <xsl:choose>
-      <xsl:when test="text() and not(semantic:signalEventDefinition)">
-        <xsl:text>ERROR: Intermediate throw events must be empty or specify exactly one of: signalEventDefinition</xsl:text>
+      <xsl:when test="text() and not(semantic:incoming|semantic:outgoing|semantic:signalEventDefinition)">
+        <xsl:text>ERROR: Intermediate throw events must be empty or specify exactly one of: signalEventDefinition.</xsl:text>
+      </xsl:when>
+      <xsl:when test="semantic:messageEventDefinition">
+        <xsl:text>ERROR: Intermediate throw events of type messageEventDefinition are not supported.</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>Pass: intermediateThrowEvent '</xsl:text>
@@ -105,16 +125,30 @@
   </xsl:template>
   
   <xsl:template match="semantic:sequenceFlow|sequenceFlow">
+    <xsl:variable name="id" select="@id"/>
+    <xsl:variable name="sourceId" select="@sourceRef"/>
+    <xsl:variable name="source" select="//*[@id=$sourceId]"/>
     <xsl:choose>
       <xsl:when test="not(@sourceRef) or not(@targetRef)">
         <xsl:text>ERROR: Sequence flows require both source and target references.</xsl:text>
       </xsl:when>
-      <xsl:when test="text() and not(semantic:conditionExpression)">
-        <xsl:text>ERROR: Sequence flows must be empty or specify exactly one of: conditionExpression</xsl:text>
+      <xsl:when test="local-name($source) = 'exclusiveGateway' and $source/@default=$id">
+        <xsl:text>Pass: Default flow of exclusive gateway: </xsl:text>
+        <xsl:value-of select="@id"/>
+      </xsl:when>
+      <xsl:when test="local-name($source) = 'exclusiveGateway' and ./semantic:conditionExpression">
+        <xsl:text>Pass: Conditional flow of exclusive gateway: </xsl:text>
+        <xsl:value-of select="@id"/>
+      </xsl:when>
+      <xsl:when test="local-name($source) = 'exclusiveGateway' and count(//semantic:sequenceFlow[@sourceRef=$source/@id])>1">
+        <xsl:text>ERROR: Need condition on sequence flow with id: </xsl:text>
+        <xsl:value-of select="@id"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:text>Pass: sequenceFlow</xsl:text>
+        <xsl:text>Pass: sequenceFlow with id: </xsl:text>
         <xsl:value-of select="@id"/>
+        <xsl:text>. No. of outgoing flows: </xsl:text>
+        <xsl:value-of select="count(//semantic:sequenceFlow[@sourceRef=$source/@id])"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -147,6 +181,21 @@
     </xsl:choose>
   </xsl:template>
   
+  <xsl:template match="semantic:timeCycle|timeCycle|semantic:timeDate|timeDate|semantic:timeDuration|timeDuration ">
+    <xsl:choose>
+      <xsl:when test="not(text())">
+        <xsl:text>ERROR: </xsl:text>
+        <xsl:value-of select="local-name(.)"/>
+        <xsl:text> must specify the timer specification in the element body.</xsl:text>
+        <xsl:value-of select="@id"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>Pass: timerCycle</xsl:text>
+        <xsl:value-of select="@id"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
   <xsl:template match="semantic:timerEventDefinition|timerEventDefinition">
     <xsl:choose>
       <xsl:when test="not(semantic:timeDate|semantic:timeDuration|semantic:timeCycle)">
@@ -158,15 +207,15 @@
         <xsl:value-of select="@id"/>
       </xsl:otherwise>
     </xsl:choose>
+    <xsl:apply-templates select="child::node()"/>
   </xsl:template>
   
   <xsl:template match="semantic:userTask|userTask">
     <xsl:choose>
-      <!-- 
-      <xsl:when test="text() and not(semantic:errorEventDefinition|semantic:messageEventDefinition|semantic:timerEventDefinition)">
-        <xsl:text>ERROR: Start events must be empty or specify exactly one of: errorEventDefinition, messageEventDefinition, timerEventDefinition</xsl:text>
+      <xsl:when test="not(.//semantic:resourceAssignmentExpression|.//semantic:resourceRef|@activiti:assignee|@activiti:candidateUsers|activiti:candidateGroups)">
+        <xsl:text>ERROR: User task must provide a resourceAssignmentExpression or resourceRef: </xsl:text>
+        <xsl:value-of select="@id"/>
       </xsl:when>
-       -->
       <xsl:when test="text() and (semantic:extensionElements|semantic:incoming|semantic:outgoing)">
         <xsl:text>Ignored: extensionElements, incoming [flow] and/or outgoing [flow] of </xsl:text>
         <xsl:value-of select="@id"/>

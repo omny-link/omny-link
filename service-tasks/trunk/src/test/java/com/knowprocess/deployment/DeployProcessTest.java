@@ -1,18 +1,14 @@
 package com.knowprocess.deployment;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
-import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.task.Task;
 import org.activiti.engine.test.ActivitiRule;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,54 +17,92 @@ import com.knowprocess.resource.spi.Fetcher;
 
 public class DeployProcessTest {
 
+    private static final String INITIATOR = "tim@knowprocess.com";
+    private static final int DEFAULT_PRIORITY = 50;
     @Rule
-    public ActivitiRule activitiRule = new ActivitiRule();
+    public ActivitiRule activitiRule = new ActivitiRule("test-activiti.cfg.xml");
+
+    private DeploymentService svc;
+
+    @Before
+    public void setUp() {
+        svc = new DeploymentService(activitiRule.getProcessEngine());
+    }
+
+    @Test
+    public void testSuccessfulDeploymentRequest() throws Exception {
+        Authentication.setAuthenticatedUserId(INITIATOR);
+
+        ProcessInstance processInstance = svc
+                .submitDeploymentRequest(Fetcher.PROTOCOL
+                        + "/process/MyProcess.bpmn");
+
+        List<String> errors = (List<String>) activitiRule.getRuntimeService()
+                .getVariable(processInstance.getId(), "errors");
+        for (String error : errors) {
+            System.out.println(error);
+        }
+        assertEquals(0, errors.size());
+
+        // TODO at this stage the process does not complete normally so cancel
+        // it.
+        activitiRule.getRuntimeService().deleteProcessInstance(
+                processInstance.getId(), "Clean up test data");
+    }
 
     @Test
     public void testSimpleDiscoveryAcceleratorProcess() throws Exception {
-        deployDeploymentProcess("process/com/knowprocess/deployment/DeploymentProcess.bpmn");
-        deployAndRun(Fetcher.PROTOCOL + "/process/activities.bpmn");
+        Authentication.setAuthenticatedUserId(INITIATOR);
+
+        ProcessInstance processInstance = svc
+                .submitDeploymentRequest(Fetcher.PROTOCOL
+                        + "/process/activities.bpmn");
+        // activitiRule.assertAssignedTaskExists("Fix process", INITIATOR,
+        // DEFAULT_PRIORITY);
+
+        // TODO at this stage the process does not complete normally so cancel
+        // it.
+        activitiRule.getRuntimeService().deleteProcessInstance(
+                processInstance.getId(), "Clean up test data");
+
+        Authentication.setAuthenticatedUserId(null);
+    }
+
+    @Test
+    public void testMiwgInvoiceDemoProcess() throws Exception {
+        Authentication.setAuthenticatedUserId(INITIATOR);
+
+        HashMap<String, Object> vars = new HashMap<String, Object>();
+        vars.put("processParticipantToExecute",
+                "Process Engine - Invoice Receipt");
+        ProcessInstance processInstance = svc.submitDeploymentRequest(
+                Fetcher.PROTOCOL
+                        + "/process/4-yaoqiang-invoice-en-collaboration.bpmn",
+                vars);
+
+        // Task task = activitiRule.assertAssignedTaskExists("Fix process",
+        // INITIATOR, DEFAULT_PRIORITY);
+        // System.out.println("task: " + task.getName() + "(" + task.getId()
+        // + "), assigned to: " + task.getAssignee());
+
+        List<String> errors = (List<String>) activitiRule.getRuntimeService()
+                .getVariable(processInstance.getId(), "errors");
+        for (String error : errors) {
+            System.out.println(error);
+        }
+        assertEquals(2, errors.size());
+
+        // TODO at this stage the process does not complete normally so cancel
+        // it.
+        activitiRule.getRuntimeService().deleteProcessInstance(
+                processInstance.getId(), "Clean up test data");
     }
 
     @Test
     @Ignore
     public void testBPSimCarRepairProcess() throws Exception {
-        deployDeploymentProcess("process/com/knowprocess/deployment/DeploymentProcess.bpmn");
-        deployAndRun(Fetcher.PROTOCOL + "/process/car-repair-process-0.18.bpmn");
+        svc.submitDeploymentRequest(Fetcher.PROTOCOL
+                + "/process/car-repair-process-0.18.bpmn");
     }
 
-    private void deployAndRun(String resource) {
-        Map<String, Object> variableMap = new HashMap<String, Object>();
-        // variableMap.put("resource", Fetcher.PROTOCOL + "/" + resource);
-        variableMap.put("resource", resource);
-
-        RuntimeService runtimeService = activitiRule.getRuntimeService();
-        ProcessInstance processInstance = runtimeService
-                .startProcessInstanceByKey("deploymentProcess", variableMap);
-        assertNotNull(processInstance.getId());
-        System.out.println("id " + processInstance.getId() + " "
-                + processInstance.getProcessDefinitionId());
-
-        List<Task> tasks = activitiRule.getTaskService().createTaskQuery()
-                .list();
-        assertEquals(1, tasks.size());
-        System.out.println("task: " + tasks.get(0).getName() + "("
-                + tasks.get(0).getId() + "), assigned to: "
-                + tasks.get(0).getAssignee());
-    }
-
-    private void deployDeploymentProcess(String resource) {
-        RepositoryService repositoryService = activitiRule
-                .getRepositoryService();
-        Deployment deployment = repositoryService.createDeployment()
-                .addClasspathResource(resource).deploy();
-        System.out.println("deployment returned: " + deployment);
-
-        List<Deployment> deployments = activitiRule.getRepositoryService()
-                .createDeploymentQuery().list();
-        for (Deployment d : deployments) {
-            System.out.println("deployment from search: " + d.getName() + "("
-                    + d.getId() + ")");
-        }
-    }
 }

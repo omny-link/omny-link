@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.knowprocess.com/deployment">
   <process id="deploymentProcess" name="Deployment process" isExecutable="true">
-    <startEvent id="startevent1" name="Start"></startEvent>
+    <startEvent id="startevent1" name="Start" activiti:initiator="initiator"></startEvent>
     <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="servicetask1"></sequenceFlow>
     <serviceTask id="servicetask1" name="Fetch resource" activiti:class="com.knowprocess.resource.spi.Fetcher"></serviceTask>
     <sequenceFlow id="flow2" sourceRef="servicetask1" targetRef="tweakProcess"></sequenceFlow>
@@ -11,27 +11,40 @@
         <activiti:field name="xsltField">
           <activiti:string>/xslt/ExecutableTweaker.xsl</activiti:string>
         </activiti:field>
+        <activiti:field name="xsltParamsField">
+          <activiti:string>processParticipantToExecute</activiti:string>
+        </activiti:field>
       </extensionElements>
     </serviceTask>
-    <serviceTask id="validateProcess" name="Validate process" activiti:class="com.knowprocess.deployment.Validator"></serviceTask>
+    <serviceTask id="validateProcess" name="Validate process" activiti:class="com.knowprocess.xslt.TransformTask">
+      <extensionElements>
+        <activiti:field name="xsltField">
+          <activiti:string>/xslt/KpSupportRules.xsl</activiti:string>
+        </activiti:field>
+        <activiti:field name="outputField">
+          <activiti:string>messages</activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
     <sequenceFlow id="valid" name="Valid" sourceRef="exclusivegateway1" targetRef="deployProcess">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${empty errors}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow5" sourceRef="deployProcess" targetRef="startProcess"></sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="deployProcess" targetRef="servicetask2"></sequenceFlow>
     <serviceTask id="deployProcess" name="Deploy process" activiti:class="com.knowprocess.deployment.DeploymentService"></serviceTask>
     <endEvent id="endevent1" name="End"></endEvent>
-    <sequenceFlow id="flow6" sourceRef="startProcess" targetRef="endevent1"></sequenceFlow>
-    <scriptTask id="startProcess" name="Start process" scriptFormat="javascript">
-      <script>; </script>
-    </scriptTask>
+    <sequenceFlow id="flow6" sourceRef="servicetask2" targetRef="endevent1"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow7" sourceRef="validateProcess" targetRef="exclusivegateway1"></sequenceFlow>
-    <userTask id="usertask1" name="User Task"></userTask>
-    <sequenceFlow id="invalid" name="Invalid" sourceRef="exclusivegateway1" targetRef="usertask1">
+    <userTask id="fixProcess" name="Fix process" activiti:assignee="${initiator}"></userTask>
+    <sequenceFlow id="invalid" name="Invalid" sourceRef="exclusivegateway1" targetRef="fixProcess">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!empty errors}]]></conditionExpression>
     </sequenceFlow>
     <endEvent id="endevent2" name="End"></endEvent>
-    <sequenceFlow id="flow8" sourceRef="usertask1" targetRef="endevent2"></sequenceFlow>
+    <sequenceFlow id="flow8" sourceRef="fixProcess" targetRef="endevent2"></sequenceFlow>
+    <serviceTask id="servicetask2" name="Start process" activiti:async="true" activiti:class="com.knowprocess.deployment.ProcessStarterService"></serviceTask>
+    <textAnnotation id="textannotation1">
+      <text>Enter your text here</text>
+    </textAnnotation>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_deploymentProcess">
     <bpmndi:BPMNPlane bpmnElement="deploymentProcess" id="BPMNPlane_deploymentProcess">
@@ -53,17 +66,20 @@
       <bpmndi:BPMNShape bpmnElement="deployProcess" id="BPMNShape_deployProcess">
         <omgdc:Bounds height="55.0" width="105.0" x="593.0" y="40.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="startProcess" id="BPMNShape_startProcess">
-        <omgdc:Bounds height="55.0" width="105.0" x="730.0" y="40.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
         <omgdc:Bounds height="40.0" width="40.0" x="570.0" y="127.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
-        <omgdc:Bounds height="55.0" width="105.0" x="593.0" y="190.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
         <omgdc:Bounds height="35.0" width="35.0" x="753.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="fixProcess" id="BPMNShape_fixProcess">
+        <omgdc:Bounds height="55.0" width="105.0" x="593.0" y="190.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
+        <omgdc:Bounds height="50.0" width="100.0" x="60.0" y="50.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask2" id="BPMNShape_servicetask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="730.0" y="40.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="65.0" y="147.0"></omgdi:waypoint>
