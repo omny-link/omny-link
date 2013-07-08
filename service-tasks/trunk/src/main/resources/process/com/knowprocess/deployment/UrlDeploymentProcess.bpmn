@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.knowprocess.com/deployment">
+  <process id="urlDeploymentProcess" name="Url deployment process" isExecutable="true">
+    <startEvent id="startevent1" name="Start" activiti:initiator="initiator"></startEvent>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="servicetask1"></sequenceFlow>
+    <serviceTask id="servicetask1" name="Fetch resource" activiti:class="com.knowprocess.resource.spi.Fetcher"></serviceTask>
+    <callActivity id="callDeploymentProcess" name="Call deployment process" calledElement="deploymentProcess">
+      <extensionElements>
+        <activiti:in source="resourceName" target="resourceName"></activiti:in>
+        <activiti:in source="resource" target="resource"></activiti:in>
+        <activiti:in source="initiator" target="initiator"></activiti:in>
+        <activiti:out source="errors" target="errors"></activiti:out>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="flow2" sourceRef="servicetask1" targetRef="callDeploymentProcess"></sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="callDeploymentProcess" targetRef="servicetask2"></sequenceFlow>
+    <serviceTask id="servicetask2" name="Log vars" activiti:class="com.knowprocess.resource.spi.Logger"></serviceTask>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow5" sourceRef="servicetask2" targetRef="endevent2"></sequenceFlow>
+    <textAnnotation id="textannotation1">
+      <text>IN
+---
+resource: URL of resource to be loaded </text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_urlDeploymentProcess">
+    <bpmndi:BPMNPlane bpmnElement="urlDeploymentProcess" id="BPMNPlane_urlDeploymentProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="30.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask1" id="BPMNShape_servicetask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="110.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
+        <omgdc:Bounds height="92.0" width="311.0" x="30.0" y="20.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="callDeploymentProcess" id="BPMNShape_callDeploymentProcess">
+        <omgdc:Bounds height="55.0" width="105.0" x="270.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask2" id="BPMNShape_servicetask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="374.0" y="38.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="534.0" y="48.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="65.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="110.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="215.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="322.0" y="120.0"></omgdi:waypoint>
+        <omgdi:waypoint x="426.0" y="93.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="479.0" y="65.0"></omgdi:waypoint>
+        <omgdi:waypoint x="534.0" y="65.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

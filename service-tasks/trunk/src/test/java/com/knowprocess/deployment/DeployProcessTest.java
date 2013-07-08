@@ -1,6 +1,7 @@
 package com.knowprocess.deployment;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,12 +34,13 @@ public class DeployProcessTest {
     public void testSuccessfulDeploymentRequest() throws Exception {
         Authentication.setAuthenticatedUserId(INITIATOR);
 
-        ProcessInstance processInstance = svc
+        ProcessInstance mainProc = svc
                 .submitDeploymentRequest(Fetcher.PROTOCOL
                         + "/process/MyProcess.bpmn");
-
+        ProcessInstance subProc = findDeploymentInstance(mainProc);
         List<String> errors = (List<String>) activitiRule.getRuntimeService()
-                .getVariable(processInstance.getId(), "errors");
+                .getVariable(subProc.getId(), "errors");
+        assertNotNull(errors);
         for (String error : errors) {
             System.out.println(error);
         }
@@ -46,8 +48,41 @@ public class DeployProcessTest {
 
         // TODO at this stage the process does not complete normally so cancel
         // it.
-        activitiRule.getRuntimeService().deleteProcessInstance(
-                processInstance.getId(), "Clean up test data");
+        // activitiRule.getRuntimeService().deleteProcessInstance(
+        // mainProc.getId(), "Clean up test data");
+    }
+
+    private ProcessInstance findDeploymentInstance(ProcessInstance mainProc) {
+        List<ProcessInstance> instances = activitiRule.getRuntimeService()
+                .createProcessInstanceQuery().list();
+        // the second (last) will be the sub-proc
+        ProcessInstance subProc = null;
+        for (ProcessInstance instance : instances) {
+            System.out.println("instance: " + instance.getId() + " "
+                    + instance.getProcessDefinitionId());
+            if (!instance.getId().equals(mainProc.getId())) {
+                subProc = instance;
+            }
+        }
+        assertNotNull(subProc);
+        return subProc;
+    }
+
+    @Test
+    public void testAddGatewayDefault() {
+        Authentication.setAuthenticatedUserId(INITIATOR);
+
+        ProcessInstance mainProc = svc.submitDeploymentRequest(Fetcher.PROTOCOL
+                + "/process/SetGatewayDefaultTestProcess.bpmn");
+
+        ProcessInstance subProc = findDeploymentInstance(mainProc);
+        List<String> errors = (List<String>) activitiRule.getRuntimeService()
+                .getVariable(subProc.getId(), "errors");
+        assertNotNull(errors);
+        for (String error : errors) {
+            System.out.println(error);
+        }
+        assertEquals(0, errors.size());
     }
 
     @Test
@@ -75,27 +110,23 @@ public class DeployProcessTest {
         HashMap<String, Object> vars = new HashMap<String, Object>();
         vars.put("processParticipantToExecute",
                 "Process Engine - Invoice Receipt");
-        ProcessInstance processInstance = svc.submitDeploymentRequest(
+        ProcessInstance mainProc = svc.submitDeploymentRequest(
                 Fetcher.PROTOCOL
                         + "/process/4-yaoqiang-invoice-en-collaboration.bpmn",
                 vars);
 
-        // Task task = activitiRule.assertAssignedTaskExists("Fix process",
-        // INITIATOR, DEFAULT_PRIORITY);
-        // System.out.println("task: " + task.getName() + "(" + task.getId()
-        // + "), assigned to: " + task.getAssignee());
-
+        ProcessInstance subProc = findDeploymentInstance(mainProc);
         List<String> errors = (List<String>) activitiRule.getRuntimeService()
-                .getVariable(processInstance.getId(), "errors");
+                .getVariable(subProc.getId(), "errors");
         for (String error : errors) {
             System.out.println(error);
         }
-        assertEquals(2, errors.size());
+        assertEquals(11, errors.size());
 
         // TODO at this stage the process does not complete normally so cancel
         // it.
         activitiRule.getRuntimeService().deleteProcessInstance(
-                processInstance.getId(), "Clean up test data");
+                mainProc.getId(), "Clean up test data");
     }
 
     @Test

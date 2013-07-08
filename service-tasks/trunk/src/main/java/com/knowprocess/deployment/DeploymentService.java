@@ -40,6 +40,8 @@ import org.activiti.engine.runtime.ProcessInstance;
  */
 public class DeploymentService implements JavaDelegate {
 
+    private static final String DEPLOYMENT_PROCESS_RESOURCE = "process/com/knowprocess/deployment/DeploymentProcess.bpmn";
+    private static final String URL_DEPLOYMENT_PROCESS_RESOURCE = "process/com/knowprocess/deployment/UrlDeploymentProcess.bpmn";
     // public static final String EXECUTABLE_PROCESS_PARTICIPANTS =
     // "processParticipantToExecute";
     private EngineServices processEngine;
@@ -56,41 +58,68 @@ public class DeploymentService implements JavaDelegate {
         this.processEngine = processEngine;
     }
 
-    public ProcessInstance submitDeploymentRequest(String resource) {
+    public ProcessInstance submitDeploymentRequest(String resourceUrl) {
         Map<String, Object> vars = new HashMap<String, Object>();
-        return submitDeploymentRequest(resource, vars);
+        return submitDeploymentRequest(resourceUrl, vars);
     }
 
-    public ProcessInstance submitDeploymentRequest(String resource,
+    public ProcessInstance submitDeploymentRequest(String resourceName,
+            String resourceBody, Map<String, Object> vars) {
+        vars.put("resourceName", resourceName);
+        vars.put("resource", resourceBody.getBytes());
+        ProcessInstance processInstance = null;
+        try {
+            RuntimeService runtimeService = getProcessEngine()
+                    .getRuntimeService();
+            processInstance = runtimeService.startProcessInstanceByKey(
+                    "deploymentProcess", vars);
+
+            System.out.println("id " + processInstance.getId() + " "
+                    + processInstance.getProcessDefinitionId());
+        } catch (org.activiti.engine.ActivitiObjectNotFoundException e) {
+            commission(e);
+            processInstance = submitDeploymentRequest(resourceName,
+                    resourceBody, vars);
+        }
+        return processInstance;
+    }
+
+    public ProcessInstance submitDeploymentRequest(String resourceUrl,
             Map<String, Object> deploymentInstructions) {
-        deploymentInstructions.put("resource", resource);
+        deploymentInstructions.put("resource", resourceUrl);
 
         ProcessInstance processInstance = null;
         try {
             RuntimeService runtimeService = getProcessEngine()
                     .getRuntimeService();
             processInstance = runtimeService.startProcessInstanceByKey(
-                    "deploymentProcess", deploymentInstructions);
+                    "urlDeploymentProcess", deploymentInstructions);
 
             System.out.println("id " + processInstance.getId() + " "
                     + processInstance.getProcessDefinitionId());
         } catch (org.activiti.engine.ActivitiObjectNotFoundException e) {
-            if (failedBefore) {
-                throw e;
-            } else {
-                failedBefore = true;
-                System.out
-                        .println("Exception starting deploymentProcess, assume new system so try commissioning");
-                deployDeploymentProcess("process/com/knowprocess/deployment/DeploymentProcess.bpmn");
-                processInstance = submitDeploymentRequest(resource,
-                        deploymentInstructions);
-            }
+            commission(e);
+            processInstance = submitDeploymentRequest(resourceUrl,
+                    deploymentInstructions);
         }
         return processInstance;
     }
 
-    protected Deployment deployBpmnResource(String name,
-            String bpmnDefinition) throws Exception {
+    private void commission(
+            org.activiti.engine.ActivitiObjectNotFoundException e) {
+        if (failedBefore) {
+            throw e;
+        } else {
+            failedBefore = true;
+            System.out
+                    .println("Exception starting deploymentProcess, assume new system so try commissioning");
+            deployDeploymentProcess(DEPLOYMENT_PROCESS_RESOURCE);
+            deployDeploymentProcess(URL_DEPLOYMENT_PROCESS_RESOURCE);
+        }
+    }
+
+    protected Deployment deployBpmnResource(String name, String bpmnDefinition)
+            throws Exception {
         getLogger().info(
                 String.format("Deploying as %1$s: %2$s", name, bpmnDefinition));
         RepositoryService repoSvc = getProcessEngine().getRepositoryService();
@@ -164,9 +193,9 @@ public class DeploymentService implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
         processEngine = execution.getEngineServices();
 
-        String resource = null ; 
-        Object tmp = execution.getVariable("resource"); 
-        if (tmp instanceof String ) { 
+        String resource = null;
+        Object tmp = execution.getVariable("resource");
+        if (tmp instanceof String) {
             resource = (String) tmp;
         } else {
             resource = new String((byte[]) tmp);
@@ -174,9 +203,9 @@ public class DeploymentService implements JavaDelegate {
 
         // TODO for some reason the execution cannot query proc def before the
         // JavaDelegate has completed
-//        ProcessDefinition definition = deployBpmnResource(
-//                (String) execution.getVariable("resourceName"), resource);
-//        System.out.println("Template: " + definition);
+        // ProcessDefinition definition = deployBpmnResource(
+        // (String) execution.getVariable("resourceName"), resource);
+        // System.out.println("Template: " + definition);
         // execution.setVariable("templateId", definition.getId());
         // execution.setVariable("deploymentId", value);
         Deployment deployment = deployBpmnResource(

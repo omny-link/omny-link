@@ -2,9 +2,6 @@
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.knowprocess.com/deployment">
   <process id="deploymentProcess" name="Deployment process" isExecutable="true">
     <startEvent id="startevent1" name="Start" activiti:initiator="initiator"></startEvent>
-    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="servicetask1"></sequenceFlow>
-    <serviceTask id="servicetask1" name="Fetch resource" activiti:class="com.knowprocess.resource.spi.Fetcher"></serviceTask>
-    <sequenceFlow id="flow2" sourceRef="servicetask1" targetRef="tweakProcess"></sequenceFlow>
     <sequenceFlow id="flow3" sourceRef="tweakProcess" targetRef="validateProcess"></sequenceFlow>
     <serviceTask id="tweakProcess" name="Tweak process" activiti:class="com.knowprocess.xslt.TransformTask">
       <extensionElements>
@@ -31,10 +28,7 @@
     </sequenceFlow>
     <sequenceFlow id="flow5" sourceRef="deployProcess" targetRef="servicetask2"></sequenceFlow>
     <serviceTask id="deployProcess" name="Deploy process" activiti:class="com.knowprocess.deployment.DeploymentService"></serviceTask>
-    <endEvent id="endevent1" name="End"></endEvent>
-    <sequenceFlow id="flow6" sourceRef="servicetask2" targetRef="endevent1"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
-    <sequenceFlow id="flow7" sourceRef="validateProcess" targetRef="exclusivegateway1"></sequenceFlow>
     <userTask id="fixProcess" name="Fix process" activiti:assignee="${initiator}"></userTask>
     <sequenceFlow id="invalid" name="Invalid" sourceRef="exclusivegateway1" targetRef="fixProcess">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!empty errors}]]></conditionExpression>
@@ -42,20 +36,24 @@
     <endEvent id="endevent2" name="End"></endEvent>
     <sequenceFlow id="flow8" sourceRef="fixProcess" targetRef="endevent2"></sequenceFlow>
     <serviceTask id="servicetask2" name="Start process" activiti:async="true" activiti:class="com.knowprocess.deployment.ProcessStarterService"></serviceTask>
+    <sequenceFlow id="flow9" sourceRef="startevent1" targetRef="tweakProcess"></sequenceFlow>
+    <sequenceFlow id="flow10" sourceRef="validateProcess" targetRef="servicetask3"></sequenceFlow>
+    <serviceTask id="servicetask3" name="Log vars 1" activiti:class="com.knowprocess.resource.spi.Logger"></serviceTask>
+    <sequenceFlow id="flow11" sourceRef="servicetask3" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="usertask1" name="Log vars 2"></userTask>
+    <sequenceFlow id="flow12" sourceRef="servicetask2" targetRef="usertask1"></sequenceFlow>
+    <endEvent id="endevent3" name="End"></endEvent>
+    <sequenceFlow id="flow13" sourceRef="usertask1" targetRef="endevent3"></sequenceFlow>
     <textAnnotation id="textannotation1">
-      <text>Enter your text here</text>
+      <text>IN
+---
+resource: Bytes of resource to be loaded </text>
     </textAnnotation>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_deploymentProcess">
     <bpmndi:BPMNPlane bpmnElement="deploymentProcess" id="BPMNPlane_deploymentProcess">
       <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="30.0" y="130.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="servicetask1" id="BPMNShape_servicetask1">
-        <omgdc:Bounds height="55.0" width="105.0" x="110.0" y="120.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
-        <omgdc:Bounds height="35.0" width="35.0" x="860.0" y="50.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="tweakProcess" id="BPMNShape_tweakProcess">
         <omgdc:Bounds height="55.0" width="105.0" x="260.0" y="120.0"></omgdc:Bounds>
@@ -76,19 +74,20 @@
         <omgdc:Bounds height="55.0" width="105.0" x="593.0" y="190.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
-        <omgdc:Bounds height="50.0" width="100.0" x="60.0" y="50.0"></omgdc:Bounds>
+        <omgdc:Bounds height="92.0" width="311.0" x="30.0" y="20.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="servicetask2" id="BPMNShape_servicetask2">
         <omgdc:Bounds height="55.0" width="105.0" x="730.0" y="40.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
-        <omgdi:waypoint x="65.0" y="147.0"></omgdi:waypoint>
-        <omgdi:waypoint x="110.0" y="147.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
-        <omgdi:waypoint x="215.0" y="147.0"></omgdi:waypoint>
-        <omgdi:waypoint x="260.0" y="147.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape bpmnElement="servicetask3" id="BPMNShape_servicetask3">
+        <omgdc:Bounds height="55.0" width="105.0" x="460.0" y="50.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="706.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="840.0" y="133.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
         <omgdi:waypoint x="365.0" y="147.0"></omgdi:waypoint>
         <omgdi:waypoint x="410.0" y="147.0"></omgdi:waypoint>
@@ -96,14 +95,6 @@
       <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
         <omgdi:waypoint x="698.0" y="67.0"></omgdi:waypoint>
         <omgdi:waypoint x="730.0" y="67.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
-        <omgdi:waypoint x="835.0" y="67.0"></omgdi:waypoint>
-        <omgdi:waypoint x="860.0" y="67.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
-        <omgdi:waypoint x="515.0" y="147.0"></omgdi:waypoint>
-        <omgdi:waypoint x="570.0" y="147.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="valid" id="BPMNEdge_valid">
         <omgdi:waypoint x="590.0" y="127.0"></omgdi:waypoint>
@@ -122,6 +113,27 @@
       <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
         <omgdi:waypoint x="698.0" y="217.0"></omgdi:waypoint>
         <omgdi:waypoint x="753.0" y="217.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="65.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="260.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="462.0" y="120.0"></omgdi:waypoint>
+        <omgdi:waypoint x="512.0" y="105.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="565.0" y="77.0"></omgdi:waypoint>
+        <omgdi:waypoint x="590.0" y="77.0"></omgdi:waypoint>
+        <omgdi:waypoint x="590.0" y="127.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="782.0" y="95.0"></omgdi:waypoint>
+        <omgdi:waypoint x="758.0" y="120.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="811.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="840.0" y="150.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

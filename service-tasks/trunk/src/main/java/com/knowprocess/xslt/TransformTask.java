@@ -1,6 +1,5 @@
 package com.knowprocess.xslt;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -64,7 +63,7 @@ public class TransformTask implements JavaDelegate {
         } finally {
             try {
                 xsltStream.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 ;
             }
         }

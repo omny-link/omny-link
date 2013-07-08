@@ -31,15 +31,16 @@
     <xsl:variable name="id">
       <xsl:value-of select="@id"/>
     </xsl:variable>
+    
     <xsl:choose>
-      <xsl:when test="not(@default) and count(//semantic:sequenceFlow[@sourceRef=$id])">
+      <xsl:when test="not(@default) and count(//semantic:sequenceFlow[@sourceRef=$id]) > 1 and count(//semantic:sequenceFlow[@sourceRef=$id and not(semantic:conditionExpression|conditionExpression)]) = 1">
         <xsl:comment>
-          <xsl:text>Setting first sequence flow as default from gateway: </xsl:text>
+          <xsl:text>Setting default for gateway: </xsl:text>
           <xsl:value-of select="@id"/>
         </xsl:comment>
         <xsl:copy>
           <xsl:attribute name="default">
-            <xsl:value-of select="//semantic:sequenceFlow[@sourceRef=$id]/@id"/>
+            <xsl:value-of select="//semantic:sequenceFlow[@sourceRef=$id and not(conditionExpression)]/@id"/>
           </xsl:attribute>
           <xsl:apply-templates select="@*"/>
           <xsl:apply-templates/>
@@ -92,6 +93,18 @@
         <xsl:value-of select="//semantic:resource[@id=$id]/@name"/>
       </xsl:element>
     </xsl:element>
+  </xsl:template>
+  
+  <xsl:template match="semantic:startEvent|startEvent">
+    <xsl:copy>
+      <xsl:if test="not(@activiti:initiator)">
+        <xsl:attribute name="activiti:initiator">
+          <xsl:text>initiator</xsl:text>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:apply-templates select="@*"/>
+      <xsl:apply-templates/>
+    </xsl:copy>
   </xsl:template>
   
   <!-- 
