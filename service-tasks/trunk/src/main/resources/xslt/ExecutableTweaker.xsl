@@ -7,6 +7,10 @@
   Tweaks applied: 
   - set isExecutable to true.
   - Manual task -> User task 
+  - Set default transition for exclusive gateway
+  - Suppress non-executable process
+  - Add an activiti initiator (named 'initiator') if one does not exist. 
+  - Convert unsupported service tasks into user tasks.
   
 -->
 <xsl:stylesheet version="1.0" 
