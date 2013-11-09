@@ -46,6 +46,14 @@ public class Fetcher implements JavaDelegate {
         return repo.getString();
     }
 
+	public byte[] fetchToByteArray(String resourceUrl) throws IOException {
+		String repoUri = "mem://bytes";
+
+		MemRepository repo = (MemRepository) getRepository(repoUri);
+		fetchToRepo(resourceUrl, getResourceName(resourceUrl), repo);
+		return repo.getBytes();
+	}
+
     public void fetchToRepo(String resourceUrl, String resourceName,
             Repository repo) throws IOException {
         Resource resource = getResource(resourceUrl);
@@ -97,6 +105,8 @@ public class Fetcher implements JavaDelegate {
             return "application/json";
         } else if ("mp3".equalsIgnoreCase(ext)) {
             return "audio/mpeg3";
+		} else if ("pdf".equalsIgnoreCase(ext)) {
+			return "application/pdf";
         } else if ("png".equalsIgnoreCase(ext)) {
             return "image/png";
         } else {

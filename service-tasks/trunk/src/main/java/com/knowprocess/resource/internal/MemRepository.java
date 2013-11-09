@@ -1,5 +1,6 @@
 package com.knowprocess.resource.internal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,9 +32,20 @@ public class MemRepository implements Repository {
                 e.printStackTrace();
             }
             this.obj = sb.toString();
-        } else {
+		} else if (mimeType.equals("application/pdf")) {
+			
+			byte[] buffer = new byte[1024];
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+			int bytesRead;
+			while ((bytesRead = is.read(buffer)) != -1) {
+				baos.write(buffer, 0, bytesRead);
+			}
+			this.obj = baos.toByteArray();
+
+		} else {
             throw new IllegalArgumentException(
-                    "Only text/* mime types and application/json supported at this stage.");
+					"Only text/* mime types, application/pdf and application/json supported at this stage.");
         }
     }
 
@@ -43,4 +55,11 @@ public class MemRepository implements Repository {
     public String getString() {
         return (String) obj;
     }
+
+	public byte[] getBytes() {
+		if (!(obj instanceof byte[])) {
+			throw new IllegalStateException("Object is of type: "+ obj.getClass().getCanonicalName()); 
+		}
+		return (byte[]) obj;
+	}
 }

@@ -3,7 +3,11 @@ package com.knowprocess.resource.spi;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,4 +55,29 @@ public class FetcherTest {
             fail();
         }
     }
+
+	@Test
+	public void testUrlPdfResourceToBlob() {
+		FileWriter writer = null;
+		try {
+			byte[] pdf = svc
+					.fetchToByteArray("https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/85869/release-carbon-footprint-dec2012.pdf");
+			System.out.println("PDF: " + pdf);
+			assertNotNull(pdf);
+
+			File file = new File("testUrlPdfResourceToBlob.pdf");
+			OutputStream pdfout = new FileOutputStream(file);
+			pdfout.write(pdf);
+			System.out.println("Wrote pdf to: " + file);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		} finally {
+			try {
+				writer.close();
+			} catch (Exception e) {
+			}
+		}
+	}
 }
