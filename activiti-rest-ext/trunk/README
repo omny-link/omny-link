@@ -1,0 +1,7 @@
+History
+-------
+
+From Activiti 5.13's REST rewrite the REST client is sufficient for many tasks 
+but unfortunately it still uses a Restlet architecture that does not lend itself 
+to simple extensions. So this is a reduced set of the previous 'bbc-explorer' 
+containing just what needs to be added to support the Know Process HTML client.
