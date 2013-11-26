@@ -207,7 +207,7 @@ public class Fetcher implements JavaDelegate {
 
         Object obj = execution.getVariable("resources");
         String resource = (String) execution.getVariable("resource");
-
+		execution.setVariable("error", "");
 		try {
 			if (obj != null && obj instanceof Map<?, ?>) {
 				Map<String, String> feedMap = (Map<String, String>) obj;
@@ -248,9 +248,9 @@ public class Fetcher implements JavaDelegate {
 						"You must specify resource(s) to fetch.");
 			}
 		} catch (Exception e) {
-			String msg = e.getClass().getName() + ":" + e.getMessage();
-			System.out.println(msg);
-			execution.setVariable("error", msg);
+			String errorMsg = e.getClass().getName() + ":" + e.getMessage();
+			System.out.println(errorMsg);
+			execution.setVariable("error", errorMsg);
         }
     }
     private String checkRepoUri(String repoUri) {
