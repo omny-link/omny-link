@@ -1,5 +1,6 @@
 package com.knowprocess.resource.spi;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -22,14 +23,16 @@ import java.io.InputStream;
  */
 public interface Resource {
 
-	    /**
-     * Fetch the executable specification.
-     * 
-     * @param uri
-     *            The URI of the specification. Different implementations may
-     *            interpret this as a URL or some other identifier by which to
-     *            locate the specification table.
-     * @return HTML string as described at the interface level.
-     */
-	InputStream getResource(String uri);
+	/**
+	 * Fetch the executable specification.
+	 * 
+	 * @param uri
+	 *            The URI of the specification. Different implementations may
+	 *            interpret this as a URL or some other identifier by which to
+	 *            locate the specification table.
+	 * @return HTML string as described at the interface level.
+	 * @throws IOException
+	 *             If cannot access resource, includes host not found.
+	 */
+	InputStream getResource(String uri) throws IOException;
 }

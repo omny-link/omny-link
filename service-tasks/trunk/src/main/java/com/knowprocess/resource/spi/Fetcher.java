@@ -63,7 +63,11 @@ public class Fetcher implements JavaDelegate {
             is = resource.getResource(resourceUrl);
             repo.write(resourceName, getMime(resourceUrl), new Date(), is);
         } finally {
-            is.close();
+			try {
+				is.close();
+			} catch (Exception e) {
+				;
+			}
         }
 
     }
@@ -203,44 +207,52 @@ public class Fetcher implements JavaDelegate {
 
         Object obj = execution.getVariable("resources");
         String resource = (String) execution.getVariable("resource");
-        if (obj != null && obj instanceof Map<?, ?>) {
-            Map<String, String> feedMap = (Map<String, String>) obj;
-            for (Entry<String, String> entry : feedMap.entrySet()) {
-                System.out.println("pushing " + entry.getKey() + " to "
-                        + repoUri);
-                fetchToRepo(entry.getValue(), entry.getKey(), repoUri);
-            }
-        } else if (resource != null && repoUri != null) {
-            System.out.println("pushing " + resource + " to " + repoUri);
-            fetchToRepo(resource, repoUri);
-        } else if (resource != null) {
-            System.out.println("fetching " + resource
-                    + " into process context.");
-            execution.setVariable("resourceUrl", resource);
-            execution.setVariable("resourceName", getResourceName(resource));
-            String content = fetchToString(resource);
-            // TODO check and cleanup
-            // if (content.length() > MAX_VAR_LENGTH) {
-            // // we have a problem, cannot store in the standard Activiti DB
-            // if (content.contains("<html")) {
-            // // Take a chance on truncation
-            // content = content.substring(0, MAX_VAR_LENGTH);
-            // } else {
-            // String msg = "Resource is too large ("
-            // + content.length()
-            // + " bytes) to store as a process variable: "
-            // + resource;
-            // System.out.println(msg);
-            // // throw new ActivitiException(msg);
-            // }
-            // }
-            execution.setVariable("resource", content.getBytes());
-        } else {
-            throw new IllegalStateException(
-                    "You must specify resource(s) to fetch.");
+
+		try {
+			if (obj != null && obj instanceof Map<?, ?>) {
+				Map<String, String> feedMap = (Map<String, String>) obj;
+				for (Entry<String, String> entry : feedMap.entrySet()) {
+					System.out.println("pushing " + entry.getKey() + " to "
+							+ repoUri);
+					fetchToRepo(entry.getValue(), entry.getKey(), repoUri);
+				}
+			} else if (resource != null && repoUri != null) {
+				System.out.println("pushing " + resource + " to " + repoUri);
+				fetchToRepo(resource, repoUri);
+			} else if (resource != null) {
+				System.out.println("fetching " + resource
+						+ " into process context.");
+				execution.setVariable("resourceUrl", resource);
+				execution
+						.setVariable("resourceName", getResourceName(resource));
+				String content = fetchToString(resource);
+				// TODO check and cleanup
+				// if (content.length() > MAX_VAR_LENGTH) {
+				// // we have a problem, cannot store in the standard Activiti
+				// DB
+				// if (content.contains("<html")) {
+				// // Take a chance on truncation
+				// content = content.substring(0, MAX_VAR_LENGTH);
+				// } else {
+				// String msg = "Resource is too large ("
+				// + content.length()
+				// + " bytes) to store as a process variable: "
+				// + resource;
+				// System.out.println(msg);
+				// // throw new ActivitiException(msg);
+				// }
+				// }
+				execution.setVariable("resource", content.getBytes());
+			} else {
+				throw new IllegalStateException(
+						"You must specify resource(s) to fetch.");
+			}
+		} catch (Exception e) {
+			String msg = e.getClass().getName() + ":" + e.getMessage();
+			System.out.println(msg);
+			execution.setVariable("error", msg);
         }
     }
-
     private String checkRepoUri(String repoUri) {
         if (repoUri == null) {
             System.out

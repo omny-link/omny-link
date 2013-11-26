@@ -32,7 +32,7 @@ public class UrlResource implements Resource {
         this.password = password.trim();
     }
 
-    public InputStream getResource(String sUrl) {
+	public InputStream getResource(String sUrl) throws IOException {
         URL url;
         HttpURLConnection connection = null;
         InputStream is = null;
@@ -69,6 +69,8 @@ public class UrlResource implements Resource {
             // throw new IOException(String.valueOf(code));
             // }
             is = connection.getInputStream();
+		} catch (IOException e) {
+			throw e;
         } catch (Exception e) {
             // TODO log and potentially rethrow
             e.printStackTrace();
