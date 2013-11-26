@@ -78,7 +78,7 @@ public class GDriveRepository implements Repository,
     private File metadata;
     private boolean debug = true;
 
-    public GDriveRepository() {
+	public GDriveRepository() throws IOException {
         init();
     }
 
@@ -110,7 +110,7 @@ public class GDriveRepository implements Repository,
                 new LocalServerReceiver()).authorize("user");
     }
 
-    public void init() {
+	public void init() throws IOException {
         long start = new Date().getTime();
         try {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -121,9 +121,9 @@ public class GDriveRepository implements Repository,
                     .setHttpRequestInitializer(credential)
                     .setApplicationName("knowprocess-cloudcast").build();
 
-        } catch (Throwable e) {
+		} catch (Exception e) {
             System.err.println(e.getClass().getName() + ":" + e.getMessage());
-            throw new RuntimeException(
+			throw new GDriveConfigurationException(
                     "Unable to init access to GDrive, have you provided the secret?",
                     e);
         }

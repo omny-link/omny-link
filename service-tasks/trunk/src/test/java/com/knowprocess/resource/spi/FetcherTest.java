@@ -12,6 +12,8 @@ import java.io.OutputStream;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.knowprocess.resource.internal.gdrive.GDriveConfigurationException;
+
 public class FetcherTest {
 
     private Fetcher svc;
@@ -29,7 +31,10 @@ public class FetcherTest {
     public void testUploadImageToRootFolder() {
         try {
             svc.fetchToRepo(resourceUrl, repoUri);
-        } catch (IOException e) {
+		} catch (GDriveConfigurationException e) {
+			System.err
+					.println("Skipping test as GDrive not configured, did you supply a secret?");
+		} catch (IOException e) {
             e.printStackTrace();
             fail();
         }
