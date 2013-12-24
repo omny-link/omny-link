@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.knowprocess</groupId>
   <artifactId>activiti-rest-ext</artifactId>
-  <version>0.0.1</version>
+  <version>0.1.0</version>
   <name>Activiti REST enhancements</name>
   <inceptionYear>2012</inceptionYear>
   <organization>
@@ -27,6 +27,11 @@
     <repository>
       <id>Alfresco Maven Repository</id>
       <url>https://maven.alfresco.com/nexus/content/groups/public/</url>
+    </repository>
+    <repository>
+      <id>kp-snapshot-repository</id>
+      <name>KnowProcess Snapshot Repository</name>
+      <url>https://repository-bigbpmcloud.forge.cloudbees.com/snapshot/</url>
     </repository>
   </repositories>
   
@@ -150,5 +155,20 @@
       <version>1.7.5</version>
     </dependency> -->
     <!-- END Activiti -->
+    
+    <dependency>
+      <groupId>com.knowprocess</groupId>
+      <artifactId>service-tasks</artifactId>
+      <!-- NOTE: this does not work on Jenkins (fine locally)
+        <version>[0.0.1,1.0.0)</version>
+      -->
+      <version>0.0.1</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 </project>

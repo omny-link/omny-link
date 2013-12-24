@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.knowprocess</groupId>
+  <groupId>com.knowprocess.activiti</groupId>
   <artifactId>service-tasks</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <name>Service tasks for use in Activiti process engine</name>
   <properties>
       <google.http.version>1.14.1-beta</google.http.version>
@@ -107,6 +107,13 @@
       <groupId>org.subethamail</groupId>
       <artifactId>subethasmtp-wiser</artifactId>
       <version>1.2</version>
+      <optional>true</optional>
+    </dependency>
+    <!-- Sugar CRM -->
+    <dependency>
+      <groupId>com.knowprocess</groupId>
+      <artifactId>sugarcrm</artifactId>
+      <version>0.1</version>
       <optional>true</optional>
     </dependency>
   </dependencies>
