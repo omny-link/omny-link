@@ -5,3 +5,14 @@ From Activiti 5.13's REST rewrite the REST client is sufficient for many tasks
 but unfortunately it still uses a Restlet architecture that does not lend itself 
 to simple extensions. So this is a reduced set of the previous 'bbc-explorer' 
 containing just what needs to be added to support the Know Process HTML client.
+
+Known Issues
+------------
+
+0.1 - ? - revision ??
+---------------------
+- UserProfileResource (/ext/profile): GET and PUT all user, group and userinfo 
+  in one request.
+- MessageResource (/msg/{bpmnMsgName}): PUT starts new process by message. By 
+  convention the message name should be namespace.descriptiveName. Message 
+  itself is passed to process as string (e.g. suiutable for parsing as JSON). 
