@@ -26,6 +26,13 @@ import org.activiti.engine.identity.User;
 import com.knowprocess.activiti.model.GroupVO;
 import com.knowprocess.activiti.model.ProfileVO;
 
+/**
+ * User profile resource allowing creation and retrieval of User, Group and
+ * UserInfo data in a single call.
+ * 
+ * @author timstephenson
+ * 
+ */
 @Path("/ext/profile")
 public class UserProfileResource {
 
