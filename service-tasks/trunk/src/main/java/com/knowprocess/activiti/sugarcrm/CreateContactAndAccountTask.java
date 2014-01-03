@@ -3,6 +3,7 @@ package com.knowprocess.activiti.sugarcrm;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
 
+import com.knowprocess.crm.CrmService;
 import com.knowprocess.sugarcrm.api.SugarAccount;
 import com.knowprocess.sugarcrm.api.SugarContact;
 import com.knowprocess.sugarcrm.api.SugarService;
@@ -13,9 +14,10 @@ import com.knowprocess.sugarcrm.api.SugarSession;
  * 
  * @author tstephen
  */
-public class CreateContactAndAccountTask implements JavaDelegate {
+public class CreateContactAndAccountTask extends SugarTask implements
+		JavaDelegate {
 
-	private SugarService svc;
+	CrmService svc;
 
     /**
      * Default constructor. Used when executed as service task.
@@ -26,16 +28,7 @@ public class CreateContactAndAccountTask implements JavaDelegate {
 
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
-		SugarSession session = (SugarSession) execution
-				.getVariable("sugarSession");
-		if (session == null) {
-			session = new SugarSession(
-					(String) execution.getVariable("sugarUsername"),
-					(String) execution.getVariable("sugarPassword"),
-					(String) execution.getVariable("sugarBaseUrl"));
-		}
-		svc.login(session);
-		System.out.println("session id: " + session.getSessionId());
+		SugarSession session = doSugarUserLogin(execution, svc);
 
 		SugarContact contact = (SugarContact) execution
 				.getVariable("sugarContact");

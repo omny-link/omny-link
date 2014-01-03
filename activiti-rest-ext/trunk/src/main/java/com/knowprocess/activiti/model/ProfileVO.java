@@ -31,6 +31,12 @@ public class ProfileVO implements User, Serializable {
 
 	private static final String KINDLE = "kindle";
 
+	private static final String SUGAR_URL = "sugarUrl";
+
+	private static final String SUGAR_PASSWORD = "sugarPassword";
+
+	private static final String SUGAR_USERNAME = "sugarUsername";
+
     private String username;
 
     private String email;
@@ -212,6 +218,32 @@ public class ProfileVO implements User, Serializable {
 		addInfo(KINDLE, kindleAddress);
 	}
 
+	public String getSugarUsername() {
+		String handle = getInfo().get(SUGAR_USERNAME);
+		return handle == null ? " - " : handle;
+	}
+
+	public void setSugarUsername(String handle) {
+		addInfo(SUGAR_USERNAME, handle);
+	}
+
+	public String getSugarPassword() {
+		String handle = getInfo().get(SUGAR_PASSWORD);
+		return handle == null ? " - " : handle;
+	}
+
+	public void setSugarPassword(String handle) {
+		addInfo(SUGAR_PASSWORD, handle);
+	}
+
+	public String getSugarUrl() {
+		String handle = getInfo().get(SUGAR_URL);
+		return handle == null ? " - " : handle;
+	}
+
+	public void setSugarUrl(String handle) {
+		addInfo(SUGAR_URL, handle);
+	}
     @XmlTransient
     public String getId() {
         return getUsername();

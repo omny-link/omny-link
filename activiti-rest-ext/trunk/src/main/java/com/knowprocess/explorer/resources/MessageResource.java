@@ -19,6 +19,7 @@ import javax.ws.rs.core.UriInfo;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngines;
+import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.runtime.ProcessInstance;
 
 /**
@@ -49,11 +50,16 @@ public class MessageResource {
 	public Response sendMessage(@Context SecurityContext sc,
 			@PathParam("msgId") String msgId, String jsonBody) {
 		logger.info("sendMessage: " + msgId + ", json:" + jsonBody);
-
+		if (sc.getUserPrincipal() == null) {
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+		String username = sc.getUserPrincipal().getName();
+		logger.info(" ... from " + username);
 		try {
 			Map<String, Object> vars = new HashMap<String, Object>();
 			vars.put(msgId, jsonBody);
 			String bizKey = msgId + " - " + new Date().getTime();
+			Authentication.setAuthenticatedUserId(username);
 			ProcessInstance instance = processEngine.getRuntimeService()
 					.startProcessInstanceByMessage(msgId, bizKey, vars);
 
@@ -70,6 +76,8 @@ public class MessageResource {
 			logger.severe(e.getClass().getName() + ": " + e.getMessage());
 			return Response.status(Response.Status.BAD_REQUEST)
 					.build();
+		} finally {
+			Authentication.setAuthenticatedUserId(null);
 		}
 	}
 }
