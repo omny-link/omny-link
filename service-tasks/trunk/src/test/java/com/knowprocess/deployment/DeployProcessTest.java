@@ -6,29 +6,64 @@ import static org.junit.Assert.assertNotNull;
 import java.util.HashMap;
 import java.util.List;
 
+import org.activiti.engine.ActivitiObjectNotFoundException;
+import org.activiti.engine.ActivitiOptimisticLockingException;
+import org.activiti.engine.form.FormProperty;
+import org.activiti.engine.form.TaskFormData;
+import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.identity.Authentication;
+import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.test.ActivitiRule;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import com.knowprocess.resource.spi.Fetcher;
+import com.knowprocess.test.ExtendedRule;
 
 public class DeployProcessTest {
 
     private static final String INITIATOR = "tim@knowprocess.com";
-    private static final int DEFAULT_PRIORITY = 50;
+
     @Rule
-    public ActivitiRule activitiRule = new ActivitiRule("test-activiti.cfg.xml");
+	public ExtendedRule activitiRule = new ExtendedRule("test-activiti.cfg.xml");
 
     private DeploymentService svc;
 
     @Before
     public void setUp() {
         svc = new DeploymentService(activitiRule.getProcessEngine());
+		svc.commission();
     }
+
+	@After
+	public void tearDown() {
+		List<Deployment> defs = activitiRule.getRepositoryService()
+				.createDeploymentQuery().list();
+		for (Deployment deployment : defs) {
+			try {
+				activitiRule.getRepositoryService().deleteDeployment(
+						deployment.getId(), true);
+			} catch (ActivitiObjectNotFoundException e) {
+				System.err.println("Unable to complete tear down:"
+						+ e.getMessage());
+			} catch (ActivitiOptimisticLockingException e) {
+				System.err.println("Unable to complete tear down:"
+						+ e.getMessage());
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} finally {
+					// try again
+					tearDown();
+				}
+			}
+		}
+	}
 
     @Test
     public void testSuccessfulDeploymentRequest() throws Exception {
@@ -36,7 +71,7 @@ public class DeployProcessTest {
 
         ProcessInstance mainProc = svc
                 .submitDeploymentRequest(Fetcher.PROTOCOL
-                        + "/process/MyProcess.bpmn");
+				+ "/process/MyProcess.bpmn", true);
         ProcessInstance subProc = findDeploymentInstance(mainProc);
         List<String> errors = (List<String>) activitiRule.getRuntimeService()
                 .getVariable(subProc.getId(), "errors");
@@ -73,7 +108,7 @@ public class DeployProcessTest {
         Authentication.setAuthenticatedUserId(INITIATOR);
 
         ProcessInstance mainProc = svc.submitDeploymentRequest(Fetcher.PROTOCOL
-                + "/process/SetGatewayDefaultTestProcess.bpmn");
+				+ "/process/SetGatewayDefaultTestProcess.bpmn", true);
 
         ProcessInstance subProc = findDeploymentInstance(mainProc);
         List<String> errors = (List<String>) activitiRule.getRuntimeService()
@@ -89,11 +124,46 @@ public class DeployProcessTest {
     public void testSimpleDiscoveryAcceleratorProcess() throws Exception {
         Authentication.setAuthenticatedUserId(INITIATOR);
 
-        ProcessInstance processInstance = svc
-                .submitDeploymentRequest(Fetcher.PROTOCOL
-                        + "/process/activities.bpmn");
-        // activitiRule.assertAssignedTaskExists("Fix process", INITIATOR,
-        // DEFAULT_PRIORITY);
+		// Start process ...
+		ProcessInstance processInstance = svc.submitDeploymentRequest(
+				Fetcher.PROTOCOL + "/process/activities.bpmn", true);
+
+		// ... assert that it flows to the 'fixProcess' task with 4 errors
+		// and no messages
+		String taskId = activitiRule.assertTaskExists("Fix process", INITIATOR,
+				true);
+		List<String> errors = (List<String>) activitiRule.getTaskService()
+				.getVariable(taskId, "errors");
+		for (String error : errors) {
+			System.out.println(error);
+		}
+		assertEquals(4, errors.size());
+		List<String> messages = (List<String>) activitiRule.getTaskService()
+				.getVariable(taskId, "messages");
+		for (String msg : messages) {
+			System.out.println(msg);
+		}
+		assertEquals(0, messages.size());
+
+		// ... ensure that we have the errors and messages vars in the form
+		TaskFormData data = activitiRule.getFormService().getTaskFormData(
+				taskId);
+		for (FormProperty prop : data.getFormProperties()) {
+			System.out.println(prop.getName() + ":" + prop.getValue());
+		}
+		assertEquals(2, data.getFormProperties().size());
+
+		List<HistoricVariableInstance> list = activitiRule.getHistoryService()
+				.createHistoricVariableInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.list();
+		for (HistoricVariableInstance historicVariableInstance : list) {
+			System.out.println("Audit trail has var: "
+					+ historicVariableInstance.getVariableName() + " = "
+					+ historicVariableInstance.getValue());
+		}
+
+		activitiRule.dumpProcessState(processInstance.getId());
 
         // TODO at this stage the process does not complete normally so cancel
         // it.
@@ -110,10 +180,9 @@ public class DeployProcessTest {
         HashMap<String, Object> vars = new HashMap<String, Object>();
         vars.put("processParticipantToExecute",
                 "Process Engine - Invoice Receipt");
-        ProcessInstance mainProc = svc.submitDeploymentRequest(
-                Fetcher.PROTOCOL
-                        + "/process/4-yaoqiang-invoice-en-collaboration.bpmn",
-                vars);
+		ProcessInstance mainProc = svc.submitDeploymentRequest(Fetcher.PROTOCOL
+				+ "/process/4-yaoqiang-invoice-en-collaboration.bpmn", vars,
+				true);
 
         ProcessInstance subProc = findDeploymentInstance(mainProc);
         List<String> errors = (List<String>) activitiRule.getRuntimeService()
@@ -133,7 +202,7 @@ public class DeployProcessTest {
     @Ignore
     public void testBPSimCarRepairProcess() throws Exception {
         svc.submitDeploymentRequest(Fetcher.PROTOCOL
-                + "/process/car-repair-process-0.18.bpmn");
+				+ "/process/car-repair-process-0.18.bpmn", true);
     }
 
 }

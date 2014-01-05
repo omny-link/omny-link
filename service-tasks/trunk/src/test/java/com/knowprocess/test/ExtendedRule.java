@@ -27,6 +27,7 @@ import org.activiti.engine.test.ActivitiRule;
  * 
  */
 public class ExtendedRule extends ActivitiRule {
+	public static final int DEFAULT_PRIORITY = 50;
     private Map<String, Object> emptyData = Collections.emptyMap();
 
     public ExtendedRule(String alternateConfig) {
@@ -92,6 +93,9 @@ public class ExtendedRule extends ActivitiRule {
                     + ", complete?: "
                     + (ai.getEndTime() == null ? "outstanding" : ai
                             .getEndTime()));
+			if (ai.getActivityType().equals("callActivity")) {
+				dumpProcessState(ai.getCalledProcessInstanceId());
+			}
         }
     }
 
@@ -116,9 +120,12 @@ public class ExtendedRule extends ActivitiRule {
     public String assertTaskExists(String taskName, String participant,
             boolean assigned, String formKey, Date dueDate) {
         return assertTaskExists(taskName, participant, assigned, formKey,
-                dueDate, 50, null);
+				dueDate, DEFAULT_PRIORITY, null);
     }
 
+	/**
+	 * @return taskId.
+	 */
     public String assertTaskExists(String taskName, String participant,
             boolean assigned, String formKey, Date dueDate, int priority,
             String bizKey) {

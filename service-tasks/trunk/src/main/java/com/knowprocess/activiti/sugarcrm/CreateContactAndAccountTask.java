@@ -3,28 +3,17 @@ package com.knowprocess.activiti.sugarcrm;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
 
-import com.knowprocess.crm.CrmService;
 import com.knowprocess.sugarcrm.api.SugarAccount;
 import com.knowprocess.sugarcrm.api.SugarContact;
-import com.knowprocess.sugarcrm.api.SugarService;
 import com.knowprocess.sugarcrm.api.SugarSession;
 
 /**
- * Wraps Sugar CRM client as an Activiti service task.
+ * Create and link Sugar CRM Contact and Account from an Activiti service task.
  * 
  * @author tstephen
  */
 public class CreateContactAndAccountTask extends SugarTask implements
 		JavaDelegate {
-
-	CrmService svc;
-
-    /**
-     * Default constructor. Used when executed as service task.
-     */
-    public CreateContactAndAccountTask() {
-		svc = new SugarService();
-	}
 
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {

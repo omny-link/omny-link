@@ -1,5 +1,8 @@
 package com.knowprocess.deployment;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +49,7 @@ public class DeploymentService implements JavaDelegate {
     // "processParticipantToExecute";
     private EngineServices processEngine;
     private boolean failedBefore;
+	private DateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
 
     /**
      * Default constructor. Used when executed as service task.
@@ -60,33 +64,44 @@ public class DeploymentService implements JavaDelegate {
 
     public ProcessInstance submitDeploymentRequest(String resourceUrl) {
         Map<String, Object> vars = new HashMap<String, Object>();
-        return submitDeploymentRequest(resourceUrl, vars);
+        return submitDeploymentRequest(resourceUrl, vars, false);
     }
 
+	public ProcessInstance submitDeploymentRequest(String resourceUrl,
+			boolean startInstance) {
+		Map<String, Object> vars = new HashMap<String, Object>();
+		return submitDeploymentRequest(resourceUrl, vars, startInstance);
+	}
+
     public ProcessInstance submitDeploymentRequest(String resourceName,
-            String resourceBody, Map<String, Object> vars) {
+            String resourceBody, Map<String, Object> vars, boolean startInstance) {
         vars.put("resourceName", resourceName);
         vars.put("resource", resourceBody.getBytes());
+		vars.put("startInstance", Boolean.valueOf(startInstance));
         ProcessInstance processInstance = null;
         try {
-            RuntimeService runtimeService = getProcessEngine()
+			RuntimeService runtimeService = getProcessEngine()
                     .getRuntimeService();
-            processInstance = runtimeService.startProcessInstanceByKey(
-                    "deploymentProcess", vars);
+			String bizKey = "Process Definition: " + resourceName + " "
+					+ isoFormatter.format(new Date());
+			processInstance = runtimeService.startProcessInstanceByKey(
+					"deploymentProcess", bizKey, vars);
 
             System.out.println("id " + processInstance.getId() + " "
                     + processInstance.getProcessDefinitionId());
         } catch (org.activiti.engine.ActivitiObjectNotFoundException e) {
             commission(e);
             processInstance = submitDeploymentRequest(resourceName,
-                    resourceBody, vars);
+                    resourceBody, vars, startInstance);
         }
         return processInstance;
     }
 
     public ProcessInstance submitDeploymentRequest(String resourceUrl,
-            Map<String, Object> deploymentInstructions) {
+            Map<String, Object> deploymentInstructions, boolean startInstance) {
         deploymentInstructions.put("resource", resourceUrl);
+		deploymentInstructions.put("startInstance",
+				Boolean.valueOf(startInstance));
 
         ProcessInstance processInstance = null;
         try {
@@ -100,10 +115,15 @@ public class DeploymentService implements JavaDelegate {
         } catch (org.activiti.engine.ActivitiObjectNotFoundException e) {
             commission(e);
             processInstance = submitDeploymentRequest(resourceUrl,
-                    deploymentInstructions);
+                    deploymentInstructions, startInstance);
         }
         return processInstance;
     }
+
+	public void commission() {
+		deployDeploymentProcess(DEPLOYMENT_PROCESS_RESOURCE);
+		deployDeploymentProcess(URL_DEPLOYMENT_PROCESS_RESOURCE);
+	}
 
     private void commission(
             org.activiti.engine.ActivitiObjectNotFoundException e) {

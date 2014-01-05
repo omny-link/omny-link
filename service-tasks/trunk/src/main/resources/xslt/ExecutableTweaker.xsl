@@ -24,6 +24,9 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:activiti="http://activiti.org/bpmn">
   
+  <xsl:output method="xml" omit-xml-declaration="no" indent="yes"
+     cdata-section-elements="activiti:expression documentation semantic:script script"/>
+  
   <!-- 
     When the BPMN file contains more than one process there should be a 
     collaboration containing participants. We'll specify one of these 

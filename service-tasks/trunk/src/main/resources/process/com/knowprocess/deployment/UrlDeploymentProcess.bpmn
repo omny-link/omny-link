@@ -9,7 +9,9 @@
         <activiti:in source="resourceName" target="resourceName"></activiti:in>
         <activiti:in source="resource" target="resource"></activiti:in>
         <activiti:in source="initiator" target="initiator"></activiti:in>
+        <activiti:in source="startInstance" target="startInstance"></activiti:in>
         <activiti:out source="errors" target="errors"></activiti:out>
+        <activiti:out source="messages" target="messages"></activiti:out>
       </extensionElements>
     </callActivity>
     <sequenceFlow id="flow2" sourceRef="servicetask1" targetRef="callDeploymentProcess"></sequenceFlow>
@@ -18,7 +20,8 @@
     <textAnnotation id="textannotation1">
       <text>IN
 ---
-resource: URL of resource to be loaded </text>
+resource: URL of resource to be loaded.
+startInstance: true if an instance is to be started (provided deployment succeeds).</text>
     </textAnnotation>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_urlDeploymentProcess">
