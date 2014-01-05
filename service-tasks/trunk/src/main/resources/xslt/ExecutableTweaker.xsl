@@ -148,6 +148,44 @@
     </xsl:element>
   </xsl:template>
   
+  <!-- Pass thru template of the service tasks that are supported follows -->
+  
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.activiti.sugarcrm.CreateContactAndAccountTask']|serviceTask[@activiti:class='com.knowprocess.activiti.sugarcrm.CreateContactAndAccountTask']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.activiti.sugarcrm.CreateLeadTask']|serviceTask[@activiti:class='com.knowprocess.activiti.sugarcrm.CreateLeadTask']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.activiti.sugarcrm.GetContactTask']|serviceTask[@activiti:class='com.knowprocess.activiti.sugarcrm.GetContactTask']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.deployment.DeploymentService']|serviceTask[@activiti:class='com.knowprocess.deployment.DeploymentService']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.fbook.FacebookTask']|serviceTask[@activiti:class='com.knowprocess.fbook.FacebookTask']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.resource.spi.Fetcher']|serviceTask[@activiti:class='com.knowprocess.resource.spi.Fetcher']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.identity.IdentityTask']|serviceTask[@activiti:class='com.knowprocess.identity.IdentityTask']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.xslt.TransformTask']|serviceTask[@activiti:class='com.knowprocess.xslt.TransformTask']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
+  <xsl:template match="semantic:serviceTask[@activiti:type='mail']|serviceTask[@activiti:type='mail']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
   <!-- 
   <xsl:template match="semantic:sequenceFlow|sequenceFlow">
     <xsl:variable name="id" select="@id"/>
