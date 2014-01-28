@@ -52,7 +52,7 @@ public class MonitorProcessTest {
         // Since site does not exist we should get a message that it is down.
         try {
             mailServer.dumpMailSent();
-			mailServer.assertEmailSend(0, true,
+			mailServer.assertEmailSend(0, false,
 					"monitor process says site is down", "",
 					"donotreply@knowprocess.com", "tim@knowprocess.com", null);
         } catch (Exception e) {
