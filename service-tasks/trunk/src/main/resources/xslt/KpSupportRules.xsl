@@ -21,10 +21,14 @@
   <xsl:template match="semantic:serviceTask|serviceTask">
     <xsl:choose>
       <xsl:when test="@activiti:class = 'com.knowprocess.resource.spi.Fetcher'">
-        <xsl:text>ERROR: Cannot handle service task '</xsl:text>
+        <xsl:text>INFO: Can handle service task '</xsl:text>
         <xsl:value-of select="./@id"/>
         <xsl:text>' with Activiti extension: </xsl:text>
         <xsl:value-of select="@activiti:class"/>
+      </xsl:when>
+      <xsl:when test="@activiti:type = 'mail'">
+        <xsl:text>INFO: Can handle mail service task '</xsl:text>
+        <xsl:value-of select="./@id"/>
       </xsl:when>
       <xsl:when test="@activiti:class">
         <xsl:text>ERROR: Cannot handle service task '</xsl:text>

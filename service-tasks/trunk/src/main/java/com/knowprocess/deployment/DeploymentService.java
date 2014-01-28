@@ -98,7 +98,13 @@ public class DeploymentService implements JavaDelegate {
     }
 
     public ProcessInstance submitDeploymentRequest(String resourceUrl,
-            Map<String, Object> deploymentInstructions, boolean startInstance) {
+			Map<String, Object> deploymentInstructions) {
+		return submitDeploymentRequest(resourceUrl, deploymentInstructions,
+				false);
+	}
+
+	public ProcessInstance submitDeploymentRequest(String resourceUrl,
+			Map<String, Object> deploymentInstructions, boolean startInstance) {
         deploymentInstructions.put("resource", resourceUrl);
 		deploymentInstructions.put("startInstance",
 				Boolean.valueOf(startInstance));

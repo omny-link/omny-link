@@ -25,13 +25,38 @@ import org.activiti.engine.impl.el.FixedValue;
 
 public class TransformTask implements JavaDelegate {
     private static final int MAX_VAR_LENGTH = 4000;
-    private String xsltResource;
+	private static final TransformerFactory factory = TransformerFactory
+			.newInstance();
+	public static final String ERROR_KEY = "ERROR";
+	public static final String IGNORED_KEY = "IGNORED";
+	public static final String PASS_KEY = "PASS";
     private FixedValue xsltParamsField;
     private FixedValue xsltField;
     private FixedValue outputField;
+	private Transformer[] transformers;
 
-    public void setXsltResource(String xsltResource) {
-        this.xsltResource = xsltResource;
+	public TransformTask() {
+		super();
+		factory.setURIResolver(new ClasspathResourceResolver());
+	}
+
+	public void setXsltResource(String xsltResource)
+			throws TransformerConfigurationException {
+		String[] resources = xsltResource.split(",");
+		transformers = new Transformer[resources.length];
+		for (int i = 0 ; i < resources.length ; i++) {
+			InputStream is = null;
+			try {
+				is = getClass().getResourceAsStream(resources[i]);
+				transformers[i] = factory.newTransformer(new StreamSource(is));
+			} finally {
+				try {
+					is.close();
+				} catch (Exception e) {
+					;
+				}
+			}
+		}
     }
 
     public String transform(String xml) {
@@ -39,39 +64,35 @@ public class TransformTask implements JavaDelegate {
     }
 
     public String transform(String xml, Map<String, String> params) {
-        TransformerFactory factory = TransformerFactory.newInstance();
-        factory.setURIResolver(new ClasspathResourceResolver());
-        InputStream xsltStream = null;
-        StringWriter out = new StringWriter();
         try {
-            xsltStream = getClass().getResourceAsStream(xsltResource);
-            System.out.println("xsl: " + xsltStream);
-            Source xsltSource = new StreamSource(xsltStream);
-            Result outputTarget = new StreamResult(out);
-            Source xmlSource = new StreamSource(new StringReader(xml.trim()));
-            Transformer t = factory.newTransformer(xsltSource);
-            for (Entry<String, String> entry : params.entrySet()) {
-                t.setParameter(entry.getKey(), entry.getValue());
-            }
-            t.transform(xmlSource, outputTarget);
+			for (Transformer t : transformers) {
+				xml = transformOnce(t, xml, params);
+			}
         } catch (TransformerConfigurationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (TransformerException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } finally {
-            try {
-                xsltStream.close();
-            } catch (Exception e) {
-                ;
-            }
         }
-        System.out.println("transform result: " + out.getBuffer().toString());
-        return out.getBuffer().toString();
+        System.out.println("transform result: " + xml);
+        return xml;
     }
 
-    @Override
+	private String transformOnce(Transformer t, String xml,
+			Map<String, String> params) throws TransformerException {
+    	StringWriter out = new StringWriter();
+    	Result outputTarget = new StreamResult(out);
+        Source xmlSource = new StreamSource(new StringReader(xml.trim()));
+
+		for (Entry<String, String> entry : params.entrySet()) {
+			t.setParameter(entry.getKey(), entry.getValue());
+		}
+		t.transform(xmlSource, outputTarget);
+		return out.getBuffer().toString();
+	}
+
+	@Override
     public void execute(DelegateExecution execution) throws Exception {
         Object tmp = execution.getVariable("resource");
         String resource = null;

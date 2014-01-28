@@ -1,23 +1,26 @@
 package com.knowprocess.test.mailserver;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.activation.DataHandler;
+import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.junit.rules.ExternalResource;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
 
 public class TestMailServer extends ExternalResource {
-    protected Wiser wiser = new Wiser();
+	private static final List<String> EMPTY_LIST = Collections.emptyList();
+	protected Wiser wiser = new Wiser();
 
     @Override
     protected void before() throws Throwable {
@@ -45,44 +48,77 @@ public class TestMailServer extends ExternalResource {
             System.out.println("  to: " + wiserMessage.getEnvelopeReceiver());
             System.out.println("  subject: "
                     + wiserMessage.getMimeMessage().getSubject());
-            System.out.println("  content: "
-                    + wiserMessage.getMimeMessage().getContent());
+            Object content = wiserMessage.getMimeMessage().getContent();
+			if (content instanceof String) {
+				System.out.println("  content: " + content);
+			} else {
+				dumpBodyPart(content);
+			}
         }
     }
 
-    protected void assertEmailSend(MimeMessage mimeMessage, boolean htmlMail,
+	private void dumpBodyPart(Object content) throws MessagingException,
+			IOException {
+		MimeMultipart mm = (MimeMultipart) content;
+		for (int i = 0; i < mm.getCount(); i++) {
+			BodyPart part = mm.getBodyPart(i);
+			if (part.getContent() instanceof MimeMultipart) {
+				dumpBodyPart(part.getContent());
+			} else {
+				System.out.println("  " + i + ": " + part.getContent());
+			}
+		}
+	}
+
+	public void assertEmailSend(int idx, boolean htmlMail, String subject,
+			String txtMessage, String from, String to, String cc)
+			throws IOException, MessagingException {
+		assertEmailSend(wiser.getMessages().get(idx).getMimeMessage(),
+				htmlMail, subject, txtMessage, from,
+				Arrays.asList(new String[] { to }),
+				cc == null ? null : Arrays.asList(new String[] { cc }));
+	}
+
+	public void assertEmailSend(int idx, boolean htmlMail, String subject,
+			String txtMessage, String from, List<String> to, List<String> cc)
+			throws IOException, MessagingException {
+		assertEmailSend(wiser.getMessages().get(idx).getMimeMessage(),
+				htmlMail, subject, txtMessage, from, to, cc);
+	}
+
+	public void assertEmailSend(int idx, boolean htmlMail, String subject,
+			String txtMessage, String from, List<String> to)
+			throws IOException, MessagingException {
+		assertEmailSend(idx, htmlMail, subject, txtMessage, from, to,
+				EMPTY_LIST);
+	}
+
+	protected void assertEmailSend(MimeMessage mimeMessage, boolean htmlMail,
             String subject, String txtMessage, String from, List<String> to,
-            List<String> cc) throws IOException {
-        try {
-            if (htmlMail) {
-                assertTrue(mimeMessage.getContentType().contains(
-                        "multipart/mixed"));
-            } else {
-                assertTrue(mimeMessage.getContentType().contains("text/plain"));
+			List<String> cc) throws IOException, MessagingException {
+		if (htmlMail) {
+			assertTrue(mimeMessage.getContentType().contains("multipart/mixed"));
+		} else {
+			assertTrue(mimeMessage.getContentType().contains("text/plain"));
+		}
+
+		assertTrue(mimeMessage.getHeader("Subject", null).contains(subject));
+		// Test from is either long or short form of sender
+		String longFrom = "\"" + from + "\" <" + from.toString() + ">";
+		assertTrue(longFrom.equals(mimeMessage.getHeader("From", null))
+				|| from.equals(mimeMessage.getHeader("From", null)));
+		System.out.println("Msg body: " + getMessage(mimeMessage));
+		assertTrue(getMessage(mimeMessage).contains(txtMessage));
+
+		for (String t : to) {
+			assertTrue(mimeMessage.getHeader("To", null).contains(t));
+		}
+
+		if (cc != null) {
+			for (String c : cc) {
+				assertTrue(mimeMessage.getHeader("Cc", null).contains(c));
             }
-
-            assertTrue(mimeMessage.getHeader("Subject", null).contains(subject));
-            // Test from is either long or short form of sender
-            String longFrom = "\"" + from + "\" <" + from.toString() + ">";
-            assertTrue(longFrom.equals(mimeMessage.getHeader("From", null))
-                    || from.equals(mimeMessage.getHeader("From", null)));
-            System.out.println("Msg body: " + getMessage(mimeMessage));
-            assertTrue(getMessage(mimeMessage).contains(txtMessage));
-
-            for (String t : to) {
-                assertTrue(mimeMessage.getHeader("To", null).contains(t));
-            }
-
-            if (cc != null) {
-                for (String c : cc) {
-                    assertTrue(mimeMessage.getHeader("Cc", null).contains(c));
-                }
-            }
-
-        } catch (MessagingException e) {
-            fail(e.getMessage());
         }
-
     }
 
     protected String getMessage(MimeMessage mimeMessage)
@@ -93,16 +129,5 @@ public class TestMailServer extends ExternalResource {
         baos.flush();
         String msg = baos.toString();
         return msg;
-    }
-
-    public void assertMessage(int idx, String recipient, String subject) {
-        WiserMessage msg = wiser.getMessages().get(idx);
-        assertEquals(recipient, msg.getEnvelopeReceiver());
-        try {
-            assertEquals(subject, msg.getMimeMessage().getSubject());
-        } catch (MessagingException e) {
-            fail("Subject not as expected, " + e.getMessage());
-        }
-
     }
 }

@@ -11,11 +11,21 @@ import com.knowprocess.resource.spi.Repository;
 
 public class MemRepository implements Repository {
 
+	private String name;
     private Object obj;
 
-    @Override
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
     public void write(String resourceName, String mimeType, Date created,
             InputStream is) throws IOException {
+		setName(resourceName);
         if (mimeType.startsWith("text") || mimeType.equals("application/json")) {
             Reader reader = null;
             StringBuffer sb = new StringBuffer();

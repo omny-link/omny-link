@@ -21,7 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import com.knowprocess.resource.spi.Fetcher;
-import com.knowprocess.test.ExtendedRule;
+import com.knowprocess.test.activiti.ExtendedRule;
 
 public class DeployProcessTest {
 

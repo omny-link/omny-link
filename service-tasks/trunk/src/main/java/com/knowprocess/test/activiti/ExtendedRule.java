@@ -1,4 +1,4 @@
-package com.knowprocess.test;
+package com.knowprocess.test.activiti;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -71,7 +71,10 @@ public class ExtendedRule extends ActivitiRule {
 
             Map<String, Object> variables = runtimeService.getVariables(piid);
             for (Map.Entry entry : variables.entrySet()) {
-                System.out.println(entry.getKey() + " = " + entry.getValue());
+				System.out.println(entry.getKey()
+						+ " = "
+						+ (entry.getValue() == null ? "null " : entry
+								.getValue()));
             }
         } else {
             assertEquals(0, list.size());

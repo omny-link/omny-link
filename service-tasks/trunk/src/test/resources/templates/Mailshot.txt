@@ -1,0 +1,19 @@
+Dear ${mailData.get('addressee.firstName')},
+
+${mailData.get('addressee.rememberMeBy')}
+
+ HELL YEAH! THE MAILSHOT SENDER WILL ACTUALLY SEND AND HAVE CONFIGURABLE TEXT. 
+
+Trakeo (www.trakeo.com) is launching a new product to xxxx. We would really appreciate if you could take a couple of minutes to help us understand the greatest challenges to you in the area of sustainability. 
+
+We are using a third party survey tool to ensure your responses will be anonymous, but if you would like to receive the aggregated results or learn more about our offering just let me know. 
+
+Click here to start survey: 
+
+If you have any further questions, feel free to give me a call or drop me a mail. 
+
+Kind regards,
+${mailData.get('assignedTo.firstName')}
+${mailData.get('assignedTo.mobile')}
+${mailData.get('assignedTo.email')}
+www.trakeo.com (link to SRP landing page) 

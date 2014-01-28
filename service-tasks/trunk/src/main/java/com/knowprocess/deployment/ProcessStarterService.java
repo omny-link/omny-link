@@ -11,14 +11,17 @@ public class ProcessStarterService implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
         System.out.println("ProcessStarterService.execute");
         String id = (String) execution.getVariable("deploymentId");
+		System.out.println("Seeking deployment with id: " + id);
         ProcessDefinition pd = execution.getEngineServices()
                 .getRepositoryService().createProcessDefinitionQuery()
                 .deploymentId(id).singleResult();
+		System.out.println("... found deployment: " + pd);
+		System.out.println("... id: " + pd.getId());
         ProcessInstance processInstance = execution.getEngineServices()
                 .getRuntimeService()
                 .startProcessInstanceById(pd.getId());
-        System.out.println("started proc: " + processInstance.getId());
-        execution.setVariable("processInstanceId", processInstance.getId());
+		System.out.println("started proc: " + processInstance);
+		execution.setVariable("processInstanceId", processInstance.getId());
     }
 
 }
