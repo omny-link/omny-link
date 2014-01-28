@@ -9,10 +9,14 @@ containing just what needs to be added to support the Know Process HTML client.
 Known Issues
 ------------
 
-0.1 - ? - revision ??
----------------------
+0.1.0 - 28 Jan 14 - revision ??
+-------------------------------
 - UserProfileResource (/ext/profile): GET and PUT all user, group and userinfo 
   in one request.
 - MessageResource (/msg/{bpmnMsgName}): PUT starts new process by message. By 
   convention the message name should be namespace.descriptiveName. Message 
-  itself is passed to process as string (e.g. suiutable for parsing as JSON). 
+  itself is passed to process as string (e.g. suitable for parsing as JSON).
+- DeploymentResource (/msg/repository/deployments): 
+  - POST that will accept a multi-part upload (bpmn or other resource files).
+  - POST that accepts URL encoded form to specify a BPMN URL resource to put
+    through the UrlDeploymentProcess.
