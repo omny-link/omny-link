@@ -7,9 +7,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -44,20 +46,53 @@ public class MessageResource {
 		assert processEngine != null;
 	}
 
-	@PUT
+	@GET
 	@Path("/{msgId}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response sendMessage(@Context SecurityContext sc,
+	public Response doInOutMep(@Context SecurityContext sc,
+			@PathParam("msgId") String msgId,
+			@QueryParam("query") String jsonBody) {
+		logger.info("getMessage: " + msgId + ", json:" + jsonBody);
+
+		Map<String, Object> vars = new HashMap<String, Object>();
+		vars.put("query", msgId);
+		vars.put(msgId, jsonBody);
+		Response response = handleMep(sc, msgId, jsonBody, vars);
+		String locationHeader = (String) response.getMetadata().get("Location")
+				.get(0);
+		System.out.println("location: " + locationHeader);
+		String id = locationHeader.substring(locationHeader.lastIndexOf('/'));
+		System.out.println("id: " + id);
+		String msg = (String) processEngine.getRuntimeService().getVariable(id,
+				msgId);
+		System.out.println("msg: " + msg);
+
+		return Response.ok(msg).build();
+	}
+
+	@POST
+	@Path("/{msgId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response doInOnlyMep(@Context SecurityContext sc,
 			@PathParam("msgId") String msgId, String jsonBody) {
 		logger.info("sendMessage: " + msgId + ", json:" + jsonBody);
+
+		Map<String, Object> vars = new HashMap<String, Object>();
+		vars.put("message", msgId);
+		vars.put(msgId, jsonBody);
+
+		return handleMep(sc, msgId, jsonBody, vars);
+	}
+
+	public Response handleMep(SecurityContext sc, String msgId,
+			String jsonBody, Map<String, Object> vars) {
 		if (sc.getUserPrincipal() == null) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
 		String username = sc.getUserPrincipal().getName();
 		logger.info(" ... from " + username);
 		try {
-			Map<String, Object> vars = new HashMap<String, Object>();
-			vars.put(msgId, jsonBody);
+
 			String bizKey = msgId + " - " + new Date().getTime();
 			Authentication.setAuthenticatedUserId(username);
 			ProcessInstance instance = processEngine.getRuntimeService()
