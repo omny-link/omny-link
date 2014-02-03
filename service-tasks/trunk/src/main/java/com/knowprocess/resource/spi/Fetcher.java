@@ -90,7 +90,7 @@ public class Fetcher implements JavaDelegate {
 	public String fetchToString(InputStream is, String resourceName, String mime)
 			throws IOException {
 		MemRepository repo = (MemRepository) getRepository("mem://string");
-		fetchToRepo(is, resourceName, mime, repo);
+		fetchToRepo(resourceName, mime, is, repo);
 		return repo.getString();
 	}
 
@@ -105,12 +105,20 @@ public class Fetcher implements JavaDelegate {
 	public void fetchToRepo(String resourceUrl, String resourceName,
 			Repository repo) throws IOException {
 		Resource resource = getResource(resourceUrl);
-		fetchToRepo(resource.getResource(resourceUrl), resourceName,
-				getMime(resourceUrl), repo);
+		try {
+			fetchToRepo(resourceName, getMime(resourceUrl),
+					resource.getResource(resourceUrl), repo);
+		} catch (Throwable e) {
+			// TODO 
+			System.err.println("***************");
+			e.printStackTrace();
+		}
 	}
 
-	public void fetchToRepo(InputStream is, String resourceName, String mime,
-			Repository repo) throws IOException {
+	protected void fetchToRepo(String resourceName, String mime,
+			InputStream is, Repository repo) throws IOException {
+		System.out.println(String.format("fetchToRepo(%1$s, %2$s, %3$s, %4$s)",
+				is, resourceName, mime, repo));
 		try {
 			repo.write(resourceName, mime, new Date(), is);
 		} finally {
@@ -178,7 +186,7 @@ public class Fetcher implements JavaDelegate {
 				return "text/html";
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 				// catch all, treat as binary
 				return "application/octet-stream";
 			}
@@ -305,7 +313,8 @@ public class Fetcher implements JavaDelegate {
 				// }
 				String resourceKey = (String) (outputVar == null ? RESOURCE_KEY
 						: outputVar.getValue(execution));
-
+				System.out.println(String.format("Setting %1$s to %2$s",
+						resourceKey, content));
 				if (getMime(resource).equals("application/json")) {
 					System.out.println("Detected JSON");
 					JsonReader reader = Json.createReader(new StringReader(

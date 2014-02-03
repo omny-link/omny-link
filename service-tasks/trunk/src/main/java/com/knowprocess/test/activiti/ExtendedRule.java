@@ -69,20 +69,32 @@ public class ExtendedRule extends ActivitiRule {
                 }
             }
 
-            Map<String, Object> variables = runtimeService.getVariables(piid);
-            for (Map.Entry entry : variables.entrySet()) {
-				System.out.println(entry.getKey()
-						+ " = "
-						+ (entry.getValue() == null ? "null " : entry
-								.getValue()));
-            }
+            dumpVariables(piid);
         } else {
             assertEquals(0, list.size());
             System.out.println("found '" + list.size()
                     + "' proc instances, assume ended");
         }
 
-        System.out.println("Audit info for process: " + piid);
+        dumpAuditTrail(piid);
+    }
+
+	public void dumpVariables(String piid) {
+		System.out.println(String.format(
+				"************ Process variables for %1$s ************", piid));
+		Map<String, Object> variables = runtimeService.getVariables(piid);
+		for (Map.Entry<String, ?> entry : variables.entrySet()) {
+			System.out.println(entry.getKey()
+					+ " = "
+					+ (entry.getValue() == null ? "null " : entry
+							.getValue()));
+		}
+	}
+
+	public void dumpAuditTrail(String piid) {
+		System.out.println(String.format(
+				"************* Audit info for process: %1$s *************",
+				piid));
         List<HistoricActivityInstance> activityHistory = historyService
                 .createHistoricActivityInstanceQuery().processInstanceId(piid)
                 .list();
@@ -100,7 +112,7 @@ public class ExtendedRule extends ActivitiRule {
 				dumpProcessState(ai.getCalledProcessInstanceId());
 			}
         }
-    }
+	}
 
     public String assertAssignedTaskExists(String taskName, String participant) {
         return assertTaskExists(taskName, participant, true, null);

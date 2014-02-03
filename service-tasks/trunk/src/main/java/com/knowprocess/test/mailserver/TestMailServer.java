@@ -42,7 +42,8 @@ public class TestMailServer extends ExternalResource {
     public void dumpMailSent()
             throws MessagingException, IOException {
         List<WiserMessage> messages = wiser.getMessages();
-        System.out.println("found " + messages.size() + " messages.");
+		System.out.println(String.format(
+				"*********** Sent %1$s messages ***********", messages.size()));
         for (WiserMessage wiserMessage : messages) {
             System.out.println("  from: " + wiserMessage.getEnvelopeSender());
             System.out.println("  to: " + wiserMessage.getEnvelopeReceiver());

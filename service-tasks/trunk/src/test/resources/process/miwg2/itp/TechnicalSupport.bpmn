@@ -1,0 +1,763 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Created by Process Modeler 6  for Microsoft Visio (http://www.itp-commerce.com)-->
+<definitions targetNamespace="http://www.trisotech.com/definitions/_1364754887369" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:itp="http://www.itp-commerce.com/BPMN2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL schemas/BPMN20.xsd" exporter="Process Modeler 6 for Microsoft Visio" exporterVersion="6.2769.13758 " name="Technical Support Process v0.20" itp:creationDate="28.01.2014 13:35:49" itp:modificationDate="28.01.2014 13:42:11" itp:createdWithVersion="6.2769.13758 " itp:conformanceSubClass="Full" id="_1364754887369" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC">
+  <process id="WFP-40005-1" name="Front Office" processType="None">
+    <intermediateCatchEvent id="_10-433" name="Solution received from 1st level of support">
+      <incoming>_10-450</incoming>
+      <outgoing>_10-454</outgoing>
+      <messageEventDefinition messageRef="Message_1364754887705" />
+    </intermediateCatchEvent>
+    <manualTask id="_10-57" name="Get issue description from customer">
+      <incoming>_10-108</incoming>
+      <incoming>_10-456</incoming>
+      <outgoing>_10-136</outgoing>
+    </manualTask>
+    <endEvent id="_10-219" name="Customer issue resolved">
+      <incoming>_10-233</incoming>
+    </endEvent>
+    <manualTask id="_10-235" name="Request 1st level support">
+      <incoming>_10-971</incoming>
+      <outgoing>_10-450</outgoing>
+    </manualTask>
+    <exclusiveGateway id="_10-114" gatewayDirection="Diverging">
+      <incoming>_10-136</incoming>
+      <outgoing>_10-189</outgoing>
+      <outgoing>_10-286</outgoing>
+    </exclusiveGateway>
+    <manualTask id="_10-138" name="Provide solution to customer">
+      <incoming>_10-189</incoming>
+      <incoming>_10-454</incoming>
+      <outgoing>_10-217</outgoing>
+    </manualTask>
+    <startEvent id="_10-42" name="Customer issue report">
+      <outgoing>_10-108</outgoing>
+      <messageEventDefinition messageRef="Message_1364754887699" />
+    </startEvent>
+    <manualTask id="_10-920" name="Inform customer the issue is going to be escalated">
+      <incoming>_10-286</incoming>
+      <outgoing>_10-971</outgoing>
+    </manualTask>
+    <exclusiveGateway id="_10-195" gatewayDirection="Diverging">
+      <incoming>_10-217</incoming>
+      <outgoing>_10-233</outgoing>
+      <outgoing>_10-456</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="_10-108" sourceRef="_10-42" targetRef="_10-57">
+    </sequenceFlow>
+    <sequenceFlow id="_10-136" sourceRef="_10-57" targetRef="_10-114">
+    </sequenceFlow>
+    <sequenceFlow id="_10-189" name="Able to  provide solution" sourceRef="_10-114" targetRef="_10-138">
+      <conditionExpression>test='Able to  provide solution'</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_10-217" sourceRef="_10-138" targetRef="_10-195">
+    </sequenceFlow>
+    <sequenceFlow id="_10-233" name="Solution is effective" sourceRef="_10-195" targetRef="_10-219">
+      <conditionExpression>test='Solution is effective'</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_10-286" name="Unable to  provide solution" sourceRef="_10-114" targetRef="_10-920">
+      <conditionExpression>test='Unable to  provide solution'</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_10-450" sourceRef="_10-235" targetRef="_10-433">
+    </sequenceFlow>
+    <sequenceFlow id="_10-454" sourceRef="_10-433" targetRef="_10-138">
+    </sequenceFlow>
+    <sequenceFlow id="_10-456" name="Solution is not effective" sourceRef="_10-195" targetRef="_10-57">
+      <conditionExpression>test='Solution is not effective'</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_10-971" sourceRef="_10-920" targetRef="_10-235">
+    </sequenceFlow>
+  </process>
+  <process id="WFP-40005-2" name="1st Level Techical Support Agent" processType="None">
+    <startEvent id="_10-288" name="1st level Issue">
+      <outgoing>_10-354</outgoing>
+      <messageEventDefinition messageRef="Message_1364754887704" />
+    </startEvent>
+    <manualTask id="_10-458" name="Request 2nd level support">
+      <incoming>_10-509</incoming>
+      <outgoing>_10-740</outgoing>
+    </manualTask>
+    <endEvent id="_10-577" name="Issue handled by 1st level support">
+      <incoming>_10-591</incoming>
+    </endEvent>
+    <manualTask id="_10-380" name="Provide solution to Front Office">
+      <incoming>_10-431</incoming>
+      <incoming>_10-744</incoming>
+      <outgoing>_10-591</outgoing>
+    </manualTask>
+    <manualTask id="_10-303" name="Find solution 1st level issue">
+      <incoming>_10-354</incoming>
+      <outgoing>_10-378</outgoing>
+    </manualTask>
+    <intermediateCatchEvent id="_10-723" name="Solution received from 2nd level of support">
+      <incoming>_10-740</incoming>
+      <outgoing>_10-744</outgoing>
+      <messageEventDefinition messageRef="Message_1364754887707" />
+    </intermediateCatchEvent>
+    <exclusiveGateway id="_10-356" gatewayDirection="Diverging">
+      <incoming>_10-378</incoming>
+      <outgoing>_10-431</outgoing>
+      <outgoing>_10-509</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="_10-354" sourceRef="_10-288" targetRef="_10-303">
+    </sequenceFlow>
+    <sequenceFlow id="_10-378" sourceRef="_10-303" targetRef="_10-356">
+    </sequenceFlow>
+    <sequenceFlow id="_10-431" name="Able to provide  1st level solution" sourceRef="_10-356" targetRef="_10-380">
+      <conditionExpression>test='Able to provide  1st level solution'</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_10-509" name="Unable to provide 1st level solution" sourceRef="_10-356" targetRef="_10-458">
+      <conditionExpression>test='Unable to provide 1st level solution'</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_10-591" sourceRef="_10-380" targetRef="_10-577">
+    </sequenceFlow>
+    <sequenceFlow id="_10-740" sourceRef="_10-458" targetRef="_10-723">
+    </sequenceFlow>
+    <sequenceFlow id="_10-744" sourceRef="_10-723" targetRef="_10-380">
+    </sequenceFlow>
+  </process>
+  <process id="WFP-40005-3" name="Supplier" processType="None">
+    <endEvent id="_10-902" name="Issue handled by supplier">
+      <incoming>_10-916</incoming>
+    </endEvent>
+    <manualTask id="_10-794" name="Find solution supplier issue">
+      <incoming>_10-845</incoming>
+      <outgoing>_10-898</outgoing>
+    </manualTask>
+    <manualTask id="_10-847" name="Provide solution to 2nd level support">
+      <incoming>_10-898</incoming>
+      <outgoing>_10-916</outgoing>
+    </manualTask>
+    <startEvent id="_10-781" name="Supplier Issue">
+      <outgoing>_10-845</outgoing>
+      <messageEventDefinition messageRef="Message_1364754887709" />
+    </startEvent>
+    <sequenceFlow id="_10-845" sourceRef="_10-781" targetRef="_10-794">
+    </sequenceFlow>
+    <sequenceFlow id="_10-898" sourceRef="_10-794" targetRef="_10-847">
+    </sequenceFlow>
+    <sequenceFlow id="_10-916" sourceRef="_10-847" targetRef="_10-902">
+    </sequenceFlow>
+  </process>
+  <process id="WFP-40005-5" name="2nd Level Techical Support Agent" processType="None">
+    <exclusiveGateway id="_10-593" gatewayDirection="Diverging">
+      <incoming>_10-615</incoming>
+      <outgoing>_10-668</outgoing>
+      <outgoing>_10-721</outgoing>
+    </exclusiveGateway>
+    <manualTask id="_10-670" name="Request supplier support">
+      <incoming>_10-721</incoming>
+      <outgoing>_10-777</outgoing>
+    </manualTask>
+    <manualTask id="_10-526" name="Find solution 2nd level issue">
+      <incoming>_10-975</incoming>
+      <outgoing>_10-615</outgoing>
+    </manualTask>
+    <startEvent id="_10-511" name="2nd  level Issue">
+      <outgoing>_10-975</outgoing>
+      <messageEventDefinition messageRef="Message_1364754887706" />
+    </startEvent>
+    <intermediateCatchEvent id="_10-760" name="Solution received from supplier">
+      <incoming>_10-777</incoming>
+      <outgoing>_10-779</outgoing>
+      <messageEventDefinition messageRef="Message_1364754887708" />
+    </intermediateCatchEvent>
+    <manualTask id="_10-617" name="Provide solution to 1st level support">
+      <incoming>_10-668</incoming>
+      <incoming>_10-779</incoming>
+      <outgoing>_10-977</outgoing>
+    </manualTask>
+    <endEvent id="_10-746" name="Issue handled by  2 nd level support">
+      <incoming>_10-977</incoming>
+    </endEvent>
+    <sequenceFlow id="_10-615" sourceRef="_10-526" targetRef="_10-593">
+    </sequenceFlow>
+    <sequenceFlow id="_10-668" name="Able to provide  2nd level solution" sourceRef="_10-593" targetRef="_10-617">
+      <conditionExpression>test='Able to provide  2nd level solution'</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_10-721" name="Unable to provide 2nd level solution" sourceRef="_10-593" targetRef="_10-670">
+      <conditionExpression>test='Unable to provide 2nd level solution'</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_10-777" sourceRef="_10-670" targetRef="_10-760">
+    </sequenceFlow>
+    <sequenceFlow id="_10-779" sourceRef="_10-760" targetRef="_10-617">
+    </sequenceFlow>
+    <sequenceFlow id="_10-975" sourceRef="_10-511" targetRef="_10-526">
+    </sequenceFlow>
+    <sequenceFlow id="_10-977" sourceRef="_10-617" targetRef="_10-746">
+    </sequenceFlow>
+  </process>
+  <message id="Message_1364754887699">
+  </message>
+  <message id="Message_1364754887700">
+  </message>
+  <message id="Message_1364754887701">
+  </message>
+  <message id="Message_1364754887702">
+  </message>
+  <message id="Message_1364754887703">
+  </message>
+  <message id="Message_1364754887704">
+  </message>
+  <message id="Message_1364754887705">
+  </message>
+  <message id="Message_1364754887706">
+  </message>
+  <message id="Message_1364754887707">
+  </message>
+  <message id="Message_1364754887708">
+  </message>
+  <message id="Message_1364754887709">
+  </message>
+  <message id="Message_1364754887710">
+  </message>
+  <collaboration id="C1364754887698">
+    <participant id="_8e7cc4bc-7908-4f27-821f-bb0f8d024b74" name="Front Office" processRef="WFP-40005-1">
+    </participant>
+    <participant id="_5f51a66c-098a-4ca4-ba26-94919f8d61e9" name="1st Level Techical Support Agent" processRef="WFP-40005-2">
+    </participant>
+    <participant id="_5f43b572-9c18-4f3f-ad2a-1ec5ba246df3" name="Supplier" processRef="WFP-40005-3">
+    </participant>
+    <participant id="_762c7137-d465-47d8-8672-31f3cf1e613e" name="2nd Level Techical Support Agent" processRef="WFP-40005-5">
+    </participant>
+    <participant id="_2b776685-c881-4e47-8853-d1b76ed3e33f" name="Customer">
+    </participant>
+    <messageFlow id="_10-55" sourceRef="_2b776685-c881-4e47-8853-d1b76ed3e33f" targetRef="_10-42" messageRef="Message_1364754887699">
+    </messageFlow>
+    <messageFlow id="_10-110" sourceRef="_10-57" targetRef="_2b776685-c881-4e47-8853-d1b76ed3e33f" messageRef="Message_1364754887700">
+    </messageFlow>
+    <messageFlow id="_10-112" sourceRef="_2b776685-c881-4e47-8853-d1b76ed3e33f" targetRef="_10-57" messageRef="Message_1364754887701">
+    </messageFlow>
+    <messageFlow id="_10-191" sourceRef="_10-138" targetRef="_2b776685-c881-4e47-8853-d1b76ed3e33f" messageRef="Message_1364754887702">
+    </messageFlow>
+    <messageFlow id="_10-193" sourceRef="_2b776685-c881-4e47-8853-d1b76ed3e33f" targetRef="_10-138" messageRef="Message_1364754887703">
+    </messageFlow>
+    <messageFlow id="_10-301" sourceRef="_10-235" targetRef="_10-288" messageRef="Message_1364754887704">
+    </messageFlow>
+    <messageFlow id="_10-452" sourceRef="_10-380" targetRef="_10-433" messageRef="Message_1364754887705">
+    </messageFlow>
+    <messageFlow id="_10-524" sourceRef="_10-458" targetRef="_10-511" messageRef="Message_1364754887706">
+    </messageFlow>
+    <messageFlow id="_10-742" sourceRef="_10-617" targetRef="_10-723" messageRef="Message_1364754887707">
+    </messageFlow>
+    <messageFlow id="_10-900" sourceRef="_10-847" targetRef="_10-760" messageRef="Message_1364754887708">
+    </messageFlow>
+    <messageFlow id="_10-918" sourceRef="_10-670" targetRef="_10-781" messageRef="Message_1364754887709">
+    </messageFlow>
+    <messageFlow id="_10-973" sourceRef="_10-920" targetRef="_2b776685-c881-4e47-8853-d1b76ed3e33f" messageRef="Message_1364754887710">
+    </messageFlow>
+  </collaboration>
+  <bpmndi:BPMNDiagram name="Scenario 1" resolution="72">
+    <bpmndi:BPMNPlane id="_1" bpmnElement="C1364754887698">
+      <bpmndi:BPMNShape id="_FA3765DF-0FFF-4ECE-B27A-22B0DC608609" bpmnElement="_8e7cc4bc-7908-4f27-821f-bb0f8d024b74" isHorizontal="true" itp:label="Front Office" itp:elementType="participant">
+        <dc:Bounds x="215.99998582677176" y="262.877966929134" width="701.9999716535433" height="265.49997165354335" />
+        <bpmndi:BPMNLabel labelStyle="_7728b96f-11aa-4b2a-acc3-515bb122a261">
+          <dc:Bounds x="223.2" y="360.751124409449" width="14.4" height="69.84" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_0C9A9451-6EED-4BE0-BED6-43F641B71091" bpmnElement="_10-433" itp:label="Solution received from 1st level of support" itp:elementType="intermediateCatchEvent">
+        <dc:Bounds x="658.4999811023622" y="439.87793385826774" width="23.999981102362206" height="23.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="622.8" y="466.231124409449" width="95.04" height="20.16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_64F25F33-E9D6-4CD7-A151-7FFD5E1C7B18" bpmnElement="_10-57" itp:label="Get issue description from customer" itp:elementType="manualTask">
+        <dc:Bounds x="308.24998582677171" y="426.37793385826774" width="62.249981102362206" height="50.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <dc:Bounds x="311.4" y="429.871124409449" width="55.44" height="43.92" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_AC0F836F-38AA-473D-B747-4FB3DE8CF24C" bpmnElement="_10-219" itp:label="Customer issue resolved" itp:elementType="endEvent">
+        <dc:Bounds x="861.7499433070866" y="312.37792440944884" width="23.999981102362206" height="23.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="829.08" y="338.431124409449" width="90" height="10.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_6B8D80E7-D251-4A20-8B8F-3A13C1050CB6" bpmnElement="_10-235" itp:label="Request 1st level support" itp:elementType="manualTask">
+        <dc:Bounds x="569.24998582677165" y="426.37793385826774" width="62.249981102362206" height="50.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <dc:Bounds x="568.8" y="439.951124409449" width="63.36" height="23.76" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_3BDE07BB-B436-4CC6-9866-21EB6F72EDA8" bpmnElement="_10-114" isMarkerVisible="true" itp:label="(unnamed)" itp:elementType="exclusiveGateway">
+        <dc:Bounds x="389.25001417322835" y="436.12793858267719" width="31.499971653543305" height="31.499971653543305" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="404.64" y="470.191124409449" width="0" height="9.36" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_D6DF0BD1-D9AD-48EF-9799-B9EE3F95BA00" bpmnElement="_10-138" itp:label="Provide solution to customer" itp:elementType="manualTask">
+        <dc:Bounds x="639.74997637795286" y="298.87792440944884" width="62.249981102362206" height="50.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <dc:Bounds x="644.76" y="307.471124409449" width="52.56" height="33.84" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_9A9C38C0-7693-4F76-9721-A68ADECDD474" bpmnElement="_10-42" itp:label="Customer issue report" itp:elementType="startEvent">
+        <dc:Bounds x="258.75" y="440.62792440944884" width="22.5" height="22.5" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="229.68" y="465.151124409449" width="80.64" height="10.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_88AF2C76-AD63-4F65-A290-B1B43C21D6AC" bpmnElement="_10-920" itp:label="Inform customer the issue is going to be escalated" itp:elementType="manualTask">
+        <dc:Bounds x="479.99997637795275" y="426.37793385826774" width="62.249981102362206" height="50.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <dc:Bounds x="478.8" y="424.831124409449" width="64.8" height="54" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_93F5FCCF-31DE-4228-B763-6D9BA7CB8D05" bpmnElement="_10-195" isMarkerVisible="true" itp:label="(unnamed)" itp:elementType="exclusiveGateway">
+        <dc:Bounds x="746.99995748031506" y="308.62792913385829" width="31.499971653543305" height="31.499971653543305" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="762.48" y="342.751124409449" width="0" height="9.36" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_04F726F5-C4B3-4526-9342-16E625405FD1" bpmnElement="_10-108" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="281.25" y="451.87792440944884" />
+        <di:waypoint x="308.24997165354335" y="451.87792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="290.52" y="435.991124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_384D6790-DD58-4931-9E03-748C8761A88B" bpmnElement="_10-136" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="370.4999811023622" y="451.87792440944884" />
+        <di:waypoint x="389.25" y="451.87792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="376.2" y="435.991124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_DF5E0E3E-BE84-4C4F-A71D-4EC462886DD8" bpmnElement="_10-189" itp:label="Able to  provide solution" itp:elementType="sequenceFlow">
+        <di:waypoint x="405" y="436.12792440944895" />
+        <di:waypoint x="405" y="324.37791496062994" />
+        <di:waypoint x="508.76277165354333" y="324.37791496062994" />
+        <di:waypoint x="639.7499622047244" y="324.37791496062994" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="357.48" y="315.751124409449" width="95.76" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_9F08B57C-E0F9-47B6-BF6D-911C994F357C" bpmnElement="_10-217" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="701.9999716535433" y="324.37791496062994" />
+        <di:waypoint x="746.9999716535433" y="324.37791496062994" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="720.36" y="308.551124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_13A3B589-B8E3-4C9D-BDC8-9047B10F2B5F" bpmnElement="_10-233" itp:label="Solution is effective" itp:elementType="sequenceFlow">
+        <di:waypoint x="778.4999433070866" y="324.37791496062994" />
+        <di:waypoint x="861.74991496062989" y="324.37791496062994" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="780.48" y="308.551124409449" width="79.2" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_28D9B37C-FC45-4992-B9B1-9EEAEED9A882" bpmnElement="_10-286" itp:label="Unable to  provide solution" itp:elementType="sequenceFlow">
+        <di:waypoint x="420.74997165354335" y="451.87792440944884" />
+        <di:waypoint x="479.9999622047244" y="451.87792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="398.16" y="435.991124409449" width="105.12" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_844C406B-119B-4AC8-A8DF-775008851906" bpmnElement="_10-450" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="631.4999527559055" y="451.87792440944884" />
+        <di:waypoint x="658.49995275590561" y="451.87792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="641.16" y="435.991124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_EBE014C3-C045-4409-B528-B030AE6AB2EB" bpmnElement="_10-454" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="670.4999716535433" y="439.87790551181115" />
+        <di:waypoint x="670.874966929134" y="349.87787716535445" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="673.56" y="386.311124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_B1A25E22-1D19-47B7-9F7D-47992E16F9DC" bpmnElement="_10-456" itp:label="Solution is not effective" itp:elementType="sequenceFlow">
+        <di:waypoint x="762.74994330708671" y="340.12788661417324" />
+        <di:waypoint x="762.74994330708671" y="490.87785826771653" />
+        <di:waypoint x="674.24998110236231" y="490.87785826771653" />
+        <di:waypoint x="603.7499622047244" y="490.87785826771653" />
+        <di:waypoint x="339.7499716535433" y="490.87785826771653" />
+        <di:waypoint x="339.7499716535433" y="477.37788661417324" />
+        <di:waypoint x="339.37497637795281" y="477.37791496062994" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="627.84" y="482.071124409449" width="92.16" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_506D2C3F-6B17-498F-AAC7-2B5A94793601" bpmnElement="_10-971" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="542.24997165354341" y="451.87792440944884" />
+        <di:waypoint x="569.2499716535433" y="451.87792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="551.88" y="435.991124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BD59C77A-A092-4B0E-B56C-D02A0626BD68" bpmnElement="_5f51a66c-098a-4ca4-ba26-94919f8d61e9" isHorizontal="true" itp:label="1st Level Techical Support Agent" itp:elementType="participant">
+        <dc:Bounds x="215.99998582677176" y="573.377924409449" width="701.9999716535433" height="180" />
+        <bpmndi:BPMNLabel labelStyle="_7728b96f-11aa-4b2a-acc3-515bb122a261">
+          <dc:Bounds x="223.2" y="588.991124409449" width="28.8" height="149.04" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_60BE5D2E-E981-40DF-8CE0-C47A0F7CBEE6" bpmnElement="_10-288" itp:label="1st level Issue" itp:elementType="startEvent">
+        <dc:Bounds x="258.75" y="616.12792440944884" width="22.5" height="22.5" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="243.72" y="640.111124409449" width="52.56" height="10.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_DD92C9C0-D251-4798-8286-3F48E33C86EB" bpmnElement="_10-458" itp:label="Request 2nd level support" itp:elementType="manualTask">
+        <dc:Bounds x="479.99997637795275" y="673.87793385826774" width="62.249981102362206" height="50.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <dc:Bounds x="479.52" y="687.631124409449" width="63.36" height="23.76" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_1DBA4B99-3BB4-48FB-A467-715F72B777BB" bpmnElement="_10-577" itp:label="Issue handled by 1st level support" itp:elementType="endEvent">
+        <dc:Bounds x="861.7499433070866" y="615.37793385826774" width="23.999981102362206" height="23.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="826.92" y="641.191124409449" width="94.32" height="20.16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_C7ADDC0F-3A95-4171-B139-577CB7E57E3C" bpmnElement="_10-380" itp:label="Provide solution to Front Office" itp:elementType="manualTask">
+        <dc:Bounds x="639.74997637795286" y="601.87793385826774" width="62.249981102362206" height="50.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <dc:Bounds x="641.52" y="610.591124409449" width="59.04" height="33.84" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_76FFC68F-CAFC-4BBF-ABA1-311B7859B633" bpmnElement="_10-303" itp:label="Find solution 1st level issue" itp:elementType="manualTask">
+        <dc:Bounds x="302.25000472440945" y="601.87793385826774" width="62.249981102362206" height="50.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <dc:Bounds x="301.68" y="610.591124409449" width="63.36" height="33.84" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_E014C11F-680E-488A-9F11-56083C37B51F" bpmnElement="_10-723" itp:label="Solution received from 2nd level of support" itp:elementType="intermediateCatchEvent">
+        <dc:Bounds x="658.4999811023622" y="687.37793385826774" width="23.999981102362206" height="23.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="621.72" y="713.191124409449" width="97.2" height="20.16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_C3D84E41-AF83-4666-9DDB-BEC00F4E5B12" bpmnElement="_10-356" isMarkerVisible="true" itp:label="(unnamed)" itp:elementType="exclusiveGateway">
+        <dc:Bounds x="389.25001417322835" y="611.62793858267719" width="31.499971653543305" height="31.499971653543305" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="404.64" y="645.871124409449" width="0" height="9.36" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_F107BA64-A950-4D96-84DB-DA1EDB8666A9" bpmnElement="_10-354" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="281.25" y="627.37792440944884" />
+        <di:waypoint x="302.24999055118116" y="627.37792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="287.64" y="611.671124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_0BC76E15-FFE6-430F-84F1-FEA182116445" bpmnElement="_10-378" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="364.49997165354335" y="627.37792440944884" />
+        <di:waypoint x="389.25" y="627.37792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="372.6" y="611.671124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_3EA0D68C-48A9-47E7-B2F9-340AB117869C" bpmnElement="_10-431" itp:label="Able to provide  1st level solution" itp:elementType="sequenceFlow">
+        <di:waypoint x="420.74997165354335" y="627.37792440944884" />
+        <di:waypoint x="639.7499622047244" y="627.37792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="466.2" y="611.671124409449" width="127.44" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_882F69B2-01DA-4E1B-BF58-BF944BB61B05" bpmnElement="_10-509" itp:label="Unable to provide 1st level solution" itp:elementType="sequenceFlow">
+        <di:waypoint x="405" y="643.12792440944884" />
+        <di:waypoint x="405" y="699.37792440944884" />
+        <di:waypoint x="479.9999622047244" y="699.37792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="337.32" y="690.871124409449" width="134.64" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_BD0EACC1-CFE9-4D59-BBF7-1D71ACD146E4" bpmnElement="_10-591" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="701.9999716535433" y="627.37792440944884" />
+        <di:waypoint x="861.74991496062989" y="627.37792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="777.96" y="611.671124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_CA0F5C0A-E67D-4DAD-AAB0-F441E79A0546" bpmnElement="_10-740" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="542.24997165354341" y="699.37792440944884" />
+        <di:waypoint x="658.49995275590561" y="699.37792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="596.52" y="683.671124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_58B55AAB-6F43-4920-A040-B5F7B7EE26C9" bpmnElement="_10-744" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="670.4999716535433" y="687.377905511811" />
+        <di:waypoint x="670.874966929134" y="652.87794330708664" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="673.56" y="661.351124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_92DAA29A-43AE-461E-BB6F-F84596E2ACF8" bpmnElement="_5f43b572-9c18-4f3f-ad2a-1ec5ba246df3" isHorizontal="true" itp:label="Supplier" itp:elementType="participant">
+        <dc:Bounds x="215.99998582677176" y="1014.3779385826773" width="701.9999716535433" height="125.99997165354331" />
+        <bpmndi:BPMNLabel labelStyle="_7728b96f-11aa-4b2a-acc3-515bb122a261">
+          <dc:Bounds x="223.2" y="1051.95112440945" width="14.4" height="51.12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_9E5CD21D-3ECD-457F-B144-5426BE547F9E" bpmnElement="_10-902" itp:label="Issue handled by supplier" itp:elementType="endEvent">
+        <dc:Bounds x="861.7499433070866" y="1065.3779338582679" width="23.999981102362206" height="23.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="827.64" y="1091.55112440945" width="92.88" height="10.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_A3A0232C-4C63-43EA-A134-2599C75C54CA" bpmnElement="_10-794" itp:label="Find solution supplier issue" itp:elementType="manualTask">
+        <dc:Bounds x="409.49998582677171" y="1051.8779338582679" width="62.249981102362206" height="50.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <dc:Bounds x="408.96" y="1060.59112440945" width="63.36" height="33.84" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_15DC29A2-5ECE-4221-ACC7-89189CBCEB4E" bpmnElement="_10-847" itp:label="Provide solution to 2nd level support" itp:elementType="manualTask">
+        <dc:Bounds x="639.74997637795286" y="1051.8779338582679" width="62.249981102362206" height="50.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <dc:Bounds x="644.76" y="1055.55112440945" width="52.56" height="43.92" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_C604A5FF-21A8-4186-AAA7-9A6F6DC07247" bpmnElement="_10-781" itp:label="Supplier Issue" itp:elementType="startEvent">
+        <dc:Bounds x="260.99997165354335" y="1066.127924409449" width="22.5" height="22.5" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="245.52" y="1090.11112440945" width="53.28" height="10.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_0DE0059D-69BF-4F09-B821-1DFC4B28A733" bpmnElement="_10-845" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="283.49997165354335" y="1077.377924409449" />
+        <di:waypoint x="409.49997165354335" y="1077.377924409449" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="342.36" y="1061.67112440945" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_D0C6025D-5E20-4D2B-8642-E26270CF1F8A" bpmnElement="_10-898" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="471.7499811023622" y="1077.377924409449" />
+        <di:waypoint x="639.7499622047244" y="1077.377924409449" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="551.88" y="1061.67112440945" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_D88F2BEC-805B-45DD-B0B7-2167529CFEBA" bpmnElement="_10-916" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="701.9999716535433" y="1077.377924409449" />
+        <di:waypoint x="861.74991496062989" y="1077.377924409449" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="777.96" y="1061.67112440945" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_102D319D-C8C9-4F67-8F56-05BABF4A142C" bpmnElement="_762c7137-d465-47d8-8672-31f3cf1e613e" isHorizontal="true" itp:label="2nd Level Techical Support Agent" itp:elementType="participant">
+        <dc:Bounds x="215.99998582677176" y="793.877924409449" width="701.9999716535433" height="184.50000000000003" />
+        <bpmndi:BPMNLabel labelStyle="_7728b96f-11aa-4b2a-acc3-515bb122a261">
+          <dc:Bounds x="223.2" y="792.391124409449" width="14.4" height="187.2" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_E3BFE403-6ED5-47A3-8029-BD8A57F2E4E8" bpmnElement="_10-593" isMarkerVisible="true" itp:label="(unnamed)" itp:elementType="exclusiveGateway">
+        <dc:Bounds x="389.25001417322835" y="838.1279196850395" width="31.499971653543305" height="31.499971653543305" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="404.64" y="872.671124409449" width="0" height="9.36" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_84211FE5-A648-431B-9378-7B6854055DD3" bpmnElement="_10-670" itp:label="Request supplier support" itp:elementType="manualTask">
+        <dc:Bounds x="479.99997637795275" y="900.37794330708664" width="62.249981102362206" height="50.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <dc:Bounds x="489.24" y="908.671124409449" width="43.92" height="33.84" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_9700C228-792A-450E-82AC-D97D4ABC438D" bpmnElement="_10-526" itp:label="Find solution 2nd level issue" itp:elementType="manualTask">
+        <dc:Bounds x="302.25000472440945" y="828.37791496063" width="62.249981102362206" height="50.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <dc:Bounds x="301.68" y="836.671124409449" width="63.36" height="33.84" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_8FD8DBD1-7BE6-47CF-ABEE-5531A5575177" bpmnElement="_10-511" itp:label="2nd  level Issue" itp:elementType="startEvent">
+        <dc:Bounds x="258.75" y="842.62790551181115" width="22.5" height="22.5" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="241.2" y="866.911124409449" width="57.6" height="10.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_7FC8748B-592E-48F8-8569-D8E2BE04154E" bpmnElement="_10-760" itp:label="Solution received from supplier" itp:elementType="intermediateCatchEvent">
+        <dc:Bounds x="658.4999811023622" y="913.87794330708664" width="23.999981102362206" height="23.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="629.28" y="939.991124409449" width="82.08" height="20.16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_5ED41304-09A6-4AAC-A9A0-11368B2F495F" bpmnElement="_10-617" itp:label="Provide solution to 1st level support" itp:elementType="manualTask">
+        <dc:Bounds x="639.74997637795286" y="828.37791496063" width="62.249981102362206" height="50.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <dc:Bounds x="644.76" y="831.631124409449" width="52.56" height="43.92" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_98892204-2B26-4708-817C-89ED8DF64937" bpmnElement="_10-746" itp:label="Issue handled by  2 nd level support" itp:elementType="endEvent">
+        <dc:Bounds x="861.7499433070866" y="841.87791496063" width="23.999981102362206" height="23.999981102362206" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="823.32" y="867.991124409449" width="101.52" height="20.16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="_5F0D6125-C76F-4943-9ED9-F69099F2114B" bpmnElement="_10-615" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="364.49997165354335" y="853.87790551181115" />
+        <di:waypoint x="389.25" y="853.87790551181115" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="372.6" y="838.471124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_4B9254A7-ACE1-451B-AE18-C8F868555F2C" bpmnElement="_10-668" itp:label="Able to provide  2nd level solution" itp:elementType="sequenceFlow">
+        <di:waypoint x="420.74997165354335" y="853.87790551181115" />
+        <di:waypoint x="639.7499622047244" y="853.87790551181115" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="465.12" y="838.471124409449" width="129.6" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_C2B3F2B9-8E5C-4C48-879C-35A6A5BAF8F0" bpmnElement="_10-721" itp:label="Unable to provide 2nd level solution" itp:elementType="sequenceFlow">
+        <di:waypoint x="405" y="869.62793385826774" />
+        <di:waypoint x="405" y="925.87793385826774" />
+        <di:waypoint x="479.9999622047244" y="925.87793385826774" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="336.24" y="916.951124409449" width="136.8" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_23F60C97-8BC7-4D87-A374-F157BD781A90" bpmnElement="_10-777" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="542.24997165354341" y="925.87793385826774" />
+        <di:waypoint x="658.49995275590561" y="925.87793385826774" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="596.52" y="910.471124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_D0AEF065-8BF4-4F53-ADE5-F5B30F3464FA" bpmnElement="_10-779" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="670.4999716535433" y="913.87794330708675" />
+        <di:waypoint x="670.874966929134" y="879.377924409449" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="673.56" y="888.151124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_D14C624D-2C5C-4208-8CF0-73D41358E123" bpmnElement="_10-975" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="281.25" y="853.87790551181115" />
+        <di:waypoint x="302.24999055118116" y="853.87790551181115" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="287.64" y="838.471124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_2DF487FD-63E4-4951-B28F-CED2F009EC0C" bpmnElement="_10-977" itp:label="(unnamed)" itp:elementType="sequenceFlow">
+        <di:waypoint x="701.9999716535433" y="853.87790551181115" />
+        <di:waypoint x="861.74991496062989" y="853.87790551181115" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="777.96" y="838.471124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_618D4E0A-6782-4B99-A430-F27773AAC95C" bpmnElement="_10-55" itp:label="(unnamed)" itp:elementType="messageFlow">
+        <di:waypoint x="270" y="231.37795275590554" />
+        <di:waypoint x="270" y="288.07086614173227" />
+        <di:waypoint x="270" y="288.07086614173227" />
+        <di:waypoint x="270" y="440.62786771653555" />
+        <di:waypoint x="270" y="440.62792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="271.8" y="327.271124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_49762A77-8971-457A-BC1A-7DDA12188463" bpmnElement="_10-110" itp:label="(unnamed)" itp:elementType="messageFlow">
+        <di:waypoint x="328.99997480314966" y="426.37790551181115" />
+        <di:waypoint x="328.99997480314966" y="231.37795275590554" />
+        <di:waypoint x="327.7499811023622" y="231.37795275590554" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="317.88" y="320.071124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_9B236B93-B33E-4C8F-9AC0-AF7C7CCD5B23" bpmnElement="_10-112" itp:label="(unnamed)" itp:elementType="messageFlow">
+        <di:waypoint x="349.74997795275596" y="231.37795275590554" />
+        <di:waypoint x="349.74997795275596" y="288.07086614173227" />
+        <di:waypoint x="349.74997795275596" y="288.07086614173227" />
+        <di:waypoint x="349.74997795275596" y="426.37790551181115" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="352.44" y="320.071124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_45CAF678-A1A8-48BC-8829-7C8172233EC7" bpmnElement="_10-191" itp:label="(unnamed)" itp:elementType="messageFlow">
+        <di:waypoint x="660.4999653543307" y="298.87795275590554" />
+        <di:waypoint x="660.4999653543307" y="231.37795275590554" />
+        <di:waypoint x="661.50000000000011" y="231.37795275590554" />
+        <di:waypoint x="661.49994330708671" y="231.37795275590554" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="663.48" y="256.711124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_1DFC756B-1472-4CEC-95EC-8751A13A05E9" bpmnElement="_10-193" itp:label="(unnamed)" itp:elementType="messageFlow">
+        <di:waypoint x="681.2499401574803" y="231.37795275590554" />
+        <di:waypoint x="681.2499401574803" y="288.07086614173227" />
+        <di:waypoint x="681.2499401574803" y="288.07086614173227" />
+        <di:waypoint x="681.2499401574803" y="298.87786771653555" />
+        <di:waypoint x="681.2499401574803" y="298.87795275590554" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="671.4" y="256.711124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_0FC7E4FA-4840-4B05-B337-A43368511959" bpmnElement="_10-301" itp:label="(unnamed)" itp:elementType="messageFlow">
+        <di:waypoint x="600.37497637795275" y="477.37791496062994" />
+        <di:waypoint x="600.37497637795275" y="499.87791496062994" />
+        <di:waypoint x="270.37499527559055" y="499.87791496062994" />
+        <di:waypoint x="270.37499527559055" y="616.12789606299214" />
+        <di:waypoint x="270" y="616.12792440944884" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="266.76" y="491.431124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_93D0450C-FB09-4A90-A1B7-B94868123930" bpmnElement="_10-452" itp:label="(unnamed)" itp:elementType="messageFlow">
+        <di:waypoint x="670.874966929134" y="601.87793385826774" />
+        <di:waypoint x="670.874966929134" y="591.24801259842525" />
+        <di:waypoint x="670.4999716535433" y="591.24801259842525" />
+        <di:waypoint x="670.4999716535433" y="463.87794330708664" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="659.88" y="524.551124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_02D3BE23-E464-4E94-93EB-41C23475C842" bpmnElement="_10-524" itp:label="(unnamed)" itp:elementType="messageFlow">
+        <di:waypoint x="511.12496692913385" y="724.87791496062994" />
+        <di:waypoint x="511.12496692913385" y="738.37791496062994" />
+        <di:waypoint x="270.37499527559055" y="738.37791496062994" />
+        <di:waypoint x="270.37499527559055" y="842.62787716535445" />
+        <di:waypoint x="270" y="842.62790551181115" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="266.76" y="729.751124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_F4E3B82C-9ADF-4668-8D97-F350963F383A" bpmnElement="_10-742" itp:label="(unnamed)" itp:elementType="messageFlow">
+        <di:waypoint x="670.874966929134" y="828.37791496063" />
+        <di:waypoint x="670.874966929134" y="817.74799370078745" />
+        <di:waypoint x="670.4999716535433" y="817.74799370078745" />
+        <di:waypoint x="670.4999716535433" y="711.37794330708675" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="659.88" y="761.431124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_D8112136-E6B7-41B6-94A6-6CAFF9755600" bpmnElement="_10-900" itp:label="(unnamed)" itp:elementType="messageFlow">
+        <di:waypoint x="670.874966929134" y="1051.8779055118112" />
+        <di:waypoint x="670.874966929134" y="1041.2479842519685" />
+        <di:waypoint x="670.4999716535433" y="1041.2479842519685" />
+        <di:waypoint x="670.4999716535433" y="937.87789606299225" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="659.88" y="986.071124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_587D80FD-9D34-424B-A5B5-EB713F8CC0D4" bpmnElement="_10-918" itp:label="(unnamed)" itp:elementType="messageFlow">
+        <di:waypoint x="511.12496692913385" y="951.377924409449" />
+        <di:waypoint x="511.12496692913385" y="964.87795275590554" />
+        <di:waypoint x="272.62499527559055" y="964.87795275590554" />
+        <di:waypoint x="272.62499527559055" y="1066.1278677165355" />
+        <di:waypoint x="272.24997165354335" y="1066.127924409449" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="268.92" y="956.551124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="_D36857E7-85B9-405A-A007-B19BE114737E" bpmnElement="_10-973" itp:label="(unnamed)" itp:elementType="messageFlow">
+        <di:waypoint x="511.12496692913385" y="426.37790551181115" />
+        <di:waypoint x="511.12496692913385" y="231.37795275590554" />
+        <di:waypoint x="510.74997165354335" y="231.37795275590554" />
+        <bpmndi:BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <dc:Bounds x="500.04" y="320.071124409449" width="7.92" height="17.28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_0E192CA1-5678-4F11-9B2E-4B2125D200A8" bpmnElement="_2b776685-c881-4e47-8853-d1b76ed3e33f" isHorizontal="true" itp:label="Customer" itp:elementType="participant">
+        <dc:Bounds x="215.99998582677176" y="177.377966929134" width="701.9999716535433" height="53.999971653543312" />
+        <bpmndi:BPMNLabel labelStyle="_7728b96f-11aa-4b2a-acc3-515bb122a261">
+          <dc:Bounds x="223.2" y="178.231124409449" width="28.8" height="51.84" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+    <bpmndi:BPMNLabelStyle id="_7728b96f-11aa-4b2a-acc3-515bb122a261">
+      <dc:Font name="Arial" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </bpmndi:BPMNLabelStyle>
+    <bpmndi:BPMNLabelStyle id="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+      <dc:Font name="Arial" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </bpmndi:BPMNLabelStyle>
+    <bpmndi:BPMNLabelStyle id="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+      <dc:Font name="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </bpmndi:BPMNLabelStyle>
+  </bpmndi:BPMNDiagram>
+</definitions>

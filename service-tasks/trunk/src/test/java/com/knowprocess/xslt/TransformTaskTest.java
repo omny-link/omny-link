@@ -35,7 +35,7 @@ public class TransformTaskTest {
 			System.out.println("result: " + result);
 			assertNotNull(result);
 
-			assertResults(result);
+			assertResults(result, 2, 14, 22);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -54,14 +54,14 @@ public class TransformTaskTest {
 			System.out.println("result: " + result);
 			assertNotNull(result);
 
-			assertResults(result);
+			assertResults(result, 2, 8, 22);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
 	}
 
-	private void assertResults(String result) {
+	private void assertResults(String result, int expectedErrors, int expectedIgnores, int expectedPasses) {
 		String[] messages = result.split("\\n", 0);
 		System.out.println("messages found: " + messages.length);
 		List<String> ignored = new ArrayList<String>();
@@ -83,9 +83,9 @@ public class TransformTaskTest {
 		System.err.println("ERRORS:" + errors.size());
 		System.err.println("IGNORED:" + ignored.size());
 		System.err.println("PASSED:" + passed.size());
-		assertEquals(2, errors.size());
-		assertEquals(14, ignored.size());
-		assertEquals(22, passed.size());
+		assertEquals(expectedErrors, errors.size());
+		assertEquals(expectedIgnores, ignored.size());
+		assertEquals(expectedPasses, passed.size());
 	}
 
 }

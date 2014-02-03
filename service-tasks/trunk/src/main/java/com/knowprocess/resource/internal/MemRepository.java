@@ -25,6 +25,8 @@ public class MemRepository implements Repository {
 	@Override
     public void write(String resourceName, String mimeType, Date created,
             InputStream is) throws IOException {
+		//System.out.println(String.format("write(%1$s, %2$s, %3$s, %4$s)",
+		//		resourceName, mimeType, created, is));
 		setName(resourceName);
         if (mimeType.startsWith("text") || mimeType.equals("application/json")) {
             Reader reader = null;
@@ -37,7 +39,7 @@ public class MemRepository implements Repository {
                     // need to reset to avoid carried over chars last time thru
                     buf = new char[1024];
                 }
-            } catch (IOException e) {
+			} catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

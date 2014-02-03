@@ -74,7 +74,8 @@ public class FetcherTest {
 	public void testDeploymentResourceToString() {
 		try {
 			Deployment deployment = activitiRule.getRepositoryService()
-					.createDeployment().name("Mailshot.txt")
+					.createDeployment().name("TestMailshotDeployment")
+					.addClasspathResource("process/TestMailshot.bpmn")
 					.addClasspathResource("templates/Mailshot.txt").deploy();
 			assertNotNull(deployment);
 			System.out.println("deployment id: " + deployment.getId());
@@ -86,8 +87,8 @@ public class FetcherTest {
 			assertTrue(resource.length() > 0);
 
 			svc.setRepositoryService(activitiRule.getRepositoryService());
-			String txt = svc.fetchToString("activiti://" + deployment.getName()
-					+ "/templates/Mailshot.txt");
+			String txt = svc
+					.fetchToString("activiti://TestMailshot/templates/Mailshot.txt");
 			System.out.println("TEXT: " + txt);
 			assertNotNull(txt);
 			assertTrue(txt.contains("Kind regards,"));

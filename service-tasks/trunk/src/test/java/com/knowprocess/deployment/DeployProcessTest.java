@@ -190,7 +190,7 @@ public class DeployProcessTest {
         for (String error : errors) {
             System.out.println(error);
         }
-        assertEquals(11, errors.size());
+		assertEquals(12, errors.size());
 
         // TODO at this stage the process does not complete normally so cancel
         // it.
@@ -204,5 +204,11 @@ public class DeployProcessTest {
         svc.submitDeploymentRequest(Fetcher.PROTOCOL
 				+ "/process/car-repair-process-0.18.bpmn", true);
     }
+
+	@Test
+	public void testMiwg2FrontOfficeProcess() throws Exception {
+		svc.submitDeploymentRequest(Fetcher.PROTOCOL
+				+ "/process/miwg2/activiti/Front_Office.bpmn", true);
+	}
 
 }

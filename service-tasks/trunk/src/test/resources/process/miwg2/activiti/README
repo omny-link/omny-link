@@ -1,0 +1,8 @@
+Changes requested of group: 
+
+1. Stipulate default from exclusive gateways
+
+2. Change manual tasks to user (or other) 
+
+3. Cannot join two sequence flows in a user task immediately after the start 
+   event.

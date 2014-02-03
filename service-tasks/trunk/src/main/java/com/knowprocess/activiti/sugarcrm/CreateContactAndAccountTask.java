@@ -3,8 +3,8 @@ package com.knowprocess.activiti.sugarcrm;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
 
+import com.knowprocess.crm.CrmRecord;
 import com.knowprocess.sugarcrm.api.SugarAccount;
-import com.knowprocess.sugarcrm.api.SugarContact;
 import com.knowprocess.sugarcrm.api.SugarSession;
 
 /**
@@ -19,7 +19,7 @@ public class CreateContactAndAccountTask extends SugarTask implements
 	public void execute(DelegateExecution execution) throws Exception {
 		SugarSession session = doSugarUserLogin(execution, svc);
 
-		SugarContact contact = (SugarContact) execution
+		CrmRecord contact = (CrmRecord) execution
 				.getVariable("sugarContact");
 		System.out.println("contact:" + contact.getNameValueListAsJson());
 

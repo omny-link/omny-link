@@ -34,6 +34,40 @@
   -->
   <xsl:param name="processParticipantToExecute"/>
   
+  <xsl:template match="bpmndi:BPMNEdge|BPMNEdge">
+    <xsl:variable name="bpmnId" select="@bpmnElement"/>
+    <xsl:if test="//process[@name=$processParticipantToExecute]//@id=$bpmnId">
+      <xsl:copy>
+        <xsl:apply-templates select="@*"/>
+        <xsl:apply-templates/>
+      </xsl:copy>
+    </xsl:if>
+  </xsl:template>
+  
+  <xsl:template match="BPMNShape">
+    <xsl:variable name="bpmnId" select="@bpmnElement"/>
+	  <xsl:if test="//participant[@name=$processParticipantToExecute]/@id=$bpmnId or //process[@name=$processParticipantToExecute]//@id=$bpmnId">
+	    <xsl:copy>
+	      <xsl:apply-templates select="@*"/>
+	      <xsl:apply-templates/>
+	    </xsl:copy>
+	  </xsl:if>
+  </xsl:template>
+  
+  <xsl:template match="semantic:collaboration|collaboration">
+    <xsl:copy>
+      <xsl:choose>
+        <xsl:when test="$processParticipantToExecute!=''">
+          <xsl:apply-templates select="participant[@name=$processParticipantToExecute]"/>  
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:apply-templates select="participant"/>
+        </xsl:otherwise>
+      </xsl:choose>
+      
+    </xsl:copy>
+  </xsl:template>
+  
   <xsl:template match="semantic:exclusiveGateway|exclusiveGateway">
     <xsl:variable name="id">
       <xsl:value-of select="@id"/>
@@ -84,6 +118,16 @@
       <xsl:text>)</xsl:text>
     </xsl:comment>
   </xsl:template>
+  <xsl:template match="process[@id!=//participant[@name=$processParticipantToExecute]/@processRef]">
+    <xsl:variable name="id"><xsl:value-of select="@id"/></xsl:variable>
+    <xsl:comment>
+      <xsl:text>Suppressing non-executable process: </xsl:text>
+      <xsl:value-of select="//participant[@processRef=$id]/@name"/>
+      <xsl:text> (</xsl:text>
+      <xsl:value-of select="$id"/>
+      <xsl:text>)</xsl:text>
+    </xsl:comment>
+  </xsl:template>
   
 	<xsl:template match="semantic:process/@isExecutable">
 		<xsl:attribute name="isExecutable">true</xsl:attribute>
@@ -117,10 +161,10 @@
   <!-- 
     Convert all non-user tasks into user tasks.
   -->
-  <xsl:template match="semantic:task|task">
+  <xsl:template match="semantic:manualTask|manualTask|semantic:task|task">
     <xsl:variable name="elName">
       <xsl:choose>
-        <xsl:when test="name(.) = 'task'">
+        <xsl:when test="name(.) = 'manualTask' or name(.) = 'task'">
           <xsl:text>userTask</xsl:text>
         </xsl:when>
         <xsl:otherwise>
@@ -129,7 +173,25 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+    <xsl:variable name="process" select="parent::node()"/>
+    <xsl:for-each select="//collaboration/participant">
+      <xsl:choose>
+        <xsl:when test="$process/@id=@processRef">
+          <xsl:text>HELLO 2!</xsl:text>
+            <xsl:value-of select="@name"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>GOODBYE 2</xsl:text>
+          <xsl:attribute name="activiti:assignee">${initiator}</xsl:attribute>
+        </xsl:otherwise>
+      </xsl:choose>
+      </xsl:for-each>
     <xsl:element name="{$elName}">
+      <xsl:attribute name="activiti:candidateGroups">*
+      <xsl:apply-templates select="//collaboration/participant[@processRef=$process/@id]" mode="resource">
+        <xsl:with-param name="id" select="@id"/>
+        <xsl:with-param name="process" select="parent::node()"/>
+      </xsl:apply-templates></xsl:attribute>
       <xsl:apply-templates select="@*"/>
       <xsl:apply-templates/>
     </xsl:element>
@@ -145,7 +207,10 @@
     </xsl:comment>
     <xsl:text>&#x0A;</xsl:text>
     <xsl:element name="userTask">
-      <xsl:attribute name="activiti:assignee">${initiator}</xsl:attribute>
+      <xsl:apply-templates select="//collaboration/participant" mode="resource">
+        <xsl:with-param name="id" select="@id"/>
+        <xsl:with-param name="process" select="parent::node()"/>
+      </xsl:apply-templates>
       <xsl:apply-templates select="@*[not(local-name(.)='delegateExpression' or local-name(.)='messageRef')]"/>
       <xsl:apply-templates/>
     </xsl:element>
@@ -164,7 +229,11 @@
   <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.activiti.sugarcrm.GetContactTask']|serviceTask[@activiti:class='com.knowprocess.activiti.sugarcrm.GetContactTask']">
     <xsl:copy-of select="."/>
   </xsl:template>
-  
+
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.activiti.sugarcrm.RecordMailToLeadTask']|serviceTask[@activiti:class='com.knowprocess.activiti.sugarcrm.RecordMailToLeadTask']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+    
   <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.deployment.DeploymentService']|serviceTask[@activiti:class='com.knowprocess.deployment.DeploymentService']">
     <xsl:copy-of select="."/>
   </xsl:template>
@@ -208,6 +277,24 @@
     </xsl:choose>
   </xsl:template>
    -->
+   
+  <xsl:template match="collaboration/participant" mode="resource">
+    <xsl:param name="id"/>
+    <xsl:param name="process"/>
+      
+    <xsl:value-of select="$process/@id"/>*  
+    <xsl:value-of select="//collaboration/participant[@processRef=$process/@id]"/>^
+    <xsl:value-of select="$process/@id=@processRef"/>%
+    <xsl:choose>
+      <xsl:when test="$process/@id=@processRef">
+        <xsl:text>HELLO!</xsl:text>
+          <xsl:value-of select="@name"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>GOODBYE ${initiator}</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template> 
    
 	<!-- standard copy template -->
 	<xsl:template match="@*|node()">

@@ -15,6 +15,12 @@ import com.knowprocess.sugarcrm.api.SugarSession;
  */
 public class SugarTask {
 
+	public static final String SUGAR_URL = "sugarUrl";
+	public static final String SUGAR_PASSWORD = "sugarPassword";
+	public static final String SUGAR_USERNAME = "sugarUsername";
+	protected static final int RESULT_START = 0;
+	protected static final int RESULT_SIZE = 20;
+
 	protected CrmService svc;
 
 	/**
@@ -30,8 +36,8 @@ public class SugarTask {
 				.getVariable("sugarSession");
 		if (session == null) {
 			session = new SugarSession(
-					(String) execution.getVariable("sugarUsername"),
-					(String) execution.getVariable("sugarPassword"),
+					(String) execution.getVariable(SUGAR_USERNAME),
+					(String) execution.getVariable(SUGAR_PASSWORD),
 					(String) execution.getVariable("sugarBaseUrl"));
 		}
 		svc.login(session);
@@ -50,9 +56,9 @@ public class SugarTask {
 							+ userId);
 			IdentityService idSvc = execution.getEngineServices()
 					.getIdentityService();
-			String usr = idSvc.getUserInfo(userId, "sugarUsername");
-			String pwd = idSvc.getUserInfo(userId, "sugarPassword");
-			String url = idSvc.getUserInfo(userId, "sugarUrl");
+			String usr = idSvc.getUserInfo(userId, SUGAR_USERNAME);
+			String pwd = idSvc.getUserInfo(userId, SUGAR_PASSWORD);
+			String url = idSvc.getUserInfo(userId, SUGAR_URL);
 			System.out.println("usr:" + usr + ", pwd null?:" + (pwd == null)
 					+ ", url:" + url);
 			session = new SugarSession(usr, pwd, url);

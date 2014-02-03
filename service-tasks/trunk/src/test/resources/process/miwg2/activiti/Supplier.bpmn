@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:itp="http://www.itp-commerce.com/BPMN2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="Process Modeler 6 for Microsoft Visio" exporterVersion="6.2769.13758 " id="_1364754887369" itp:conformanceSubClass="Full" itp:createdWithVersion="6.2769.13758 " itp:creationDate="28.01.2014 13:35:49" itp:modificationDate="28.01.2014 13:42:11" name="Technical Support Process v0.20" targetNamespace="http://www.trisotech.com/definitions/_1364754887369" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL schemas/BPMN20.xsd">
+  <!--Suppressing non-executable process: Front Office (WFP-40005-1)-->
+  <!--Suppressing non-executable process: 1st Level Techical Support Agent (WFP-40005-2)-->
+  <process id="WFP-40005-3" name="Supplier" processType="None">
+    <endEvent id="_10-902" name="Issue handled by supplier">
+      <incoming>_10-916</incoming>
+    </endEvent>
+    <manualTask id="_10-794" name="Find solution supplier issue">
+      <incoming>_10-845</incoming>
+      <outgoing>_10-898</outgoing>
+    </manualTask>
+    <manualTask id="_10-847" name="Provide solution to 2nd level support">
+      <incoming>_10-898</incoming>
+      <outgoing>_10-916</outgoing>
+    </manualTask>
+    <startEvent xmlns:activiti="http://activiti.org/bpmn" activiti:initiator="initiator" id="_10-781" name="Supplier Issue">
+      <outgoing>_10-845</outgoing>
+      <messageEventDefinition messageRef="Message_1364754887709"/>
+    </startEvent>
+    <sequenceFlow id="_10-845" sourceRef="_10-781" targetRef="_10-794">
+    </sequenceFlow>
+    <sequenceFlow id="_10-898" sourceRef="_10-794" targetRef="_10-847">
+    </sequenceFlow>
+    <sequenceFlow id="_10-916" sourceRef="_10-847" targetRef="_10-902">
+    </sequenceFlow>
+  </process>
+  <!--Suppressing non-executable process: 2nd Level Techical Support Agent (WFP-40005-5)-->
+  <message id="Message_1364754887699">
+  </message>
+  <message id="Message_1364754887700">
+  </message>
+  <message id="Message_1364754887701">
+  </message>
+  <message id="Message_1364754887702">
+  </message>
+  <message id="Message_1364754887703">
+  </message>
+  <message id="Message_1364754887704">
+  </message>
+  <message id="Message_1364754887705">
+  </message>
+  <message id="Message_1364754887706">
+  </message>
+  <message id="Message_1364754887707">
+  </message>
+  <message id="Message_1364754887708">
+  </message>
+  <message id="Message_1364754887709">
+  </message>
+  <message id="Message_1364754887710">
+  </message>
+  <collaboration>
+<participant id="_5f43b572-9c18-4f3f-ad2a-1ec5ba246df3" name="Supplier" processRef="WFP-40005-3">
+    </participant>
+</collaboration>
+  <BPMNDiagram name="Scenario 1" resolution="72">
+    <BPMNPlane bpmnElement="C1364754887698" id="_1">
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <BPMNShape bpmnElement="_5f43b572-9c18-4f3f-ad2a-1ec5ba246df3" id="_92DAA29A-43AE-461E-BB6F-F84596E2ACF8" isHorizontal="true" itp:elementType="participant" itp:label="Supplier">
+        <Bounds height="125.99997165354331" width="701.9999716535433" x="215.99998582677176" y="1014.3779385826773"/>
+        <BPMNLabel labelStyle="_7728b96f-11aa-4b2a-acc3-515bb122a261">
+          <Bounds height="51.12" width="14.4" x="223.2" y="1051.95112440945"/>
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape bpmnElement="_10-902" id="_9E5CD21D-3ECD-457F-B144-5426BE547F9E" itp:elementType="endEvent" itp:label="Issue handled by supplier">
+        <Bounds height="23.999981102362206" width="23.999981102362206" x="861.7499433070866" y="1065.3779338582679"/>
+        <BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <Bounds height="10.8" width="92.88" x="827.64" y="1091.55112440945"/>
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape bpmnElement="_10-794" id="_A3A0232C-4C63-43EA-A134-2599C75C54CA" itp:elementType="manualTask" itp:label="Find solution supplier issue">
+        <Bounds height="50.999981102362206" width="62.249981102362206" x="409.49998582677171" y="1051.8779338582679"/>
+        <BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <Bounds height="33.84" width="63.36" x="408.96" y="1060.59112440945"/>
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape bpmnElement="_10-847" id="_15DC29A2-5ECE-4221-ACC7-89189CBCEB4E" itp:elementType="manualTask" itp:label="Provide solution to 2nd level support">
+        <Bounds height="50.999981102362206" width="62.249981102362206" x="639.74997637795286" y="1051.8779338582679"/>
+        <BPMNLabel labelStyle="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+          <Bounds height="43.92" width="52.56" x="644.76" y="1055.55112440945"/>
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape bpmnElement="_10-781" id="_C604A5FF-21A8-4186-AAA7-9A6F6DC07247" itp:elementType="startEvent" itp:label="Supplier Issue">
+        <Bounds height="22.5" width="22.5" x="260.99997165354335" y="1066.127924409449"/>
+        <BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <Bounds height="10.8" width="53.28" x="245.52" y="1090.11112440945"/>
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNEdge bpmnElement="_10-845" id="_0DE0059D-69BF-4F09-B821-1DFC4B28A733" itp:elementType="sequenceFlow" itp:label="(unnamed)">
+        <waypoint x="283.49997165354335" y="1077.377924409449"/>
+        <waypoint x="409.49997165354335" y="1077.377924409449"/>
+        <BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <Bounds height="17.28" width="7.92" x="342.36" y="1061.67112440945"/>
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge bpmnElement="_10-898" id="_D0C6025D-5E20-4D2B-8642-E26270CF1F8A" itp:elementType="sequenceFlow" itp:label="(unnamed)">
+        <waypoint x="471.7499811023622" y="1077.377924409449"/>
+        <waypoint x="639.7499622047244" y="1077.377924409449"/>
+        <BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <Bounds height="17.28" width="7.92" x="551.88" y="1061.67112440945"/>
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge bpmnElement="_10-916" id="_D88F2BEC-805B-45DD-B0B7-2167529CFEBA" itp:elementType="sequenceFlow" itp:label="(unnamed)">
+        <waypoint x="701.9999716535433" y="1077.377924409449"/>
+        <waypoint x="861.74991496062989" y="1077.377924409449"/>
+        <BPMNLabel labelStyle="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+          <Bounds height="17.28" width="7.92" x="777.96" y="1061.67112440945"/>
+        </BPMNLabel>
+      </BPMNEdge>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    </BPMNPlane>
+    <BPMNLabelStyle id="_7728b96f-11aa-4b2a-acc3-515bb122a261">
+      <Font isBold="false" isItalic="false" isStrikeThrough="false" isUnderline="false" name="Arial" size="12"/>
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="_156b3ea8-1e63-4b18-a89f-5fe4d70521af">
+      <Font isBold="false" isItalic="false" isStrikeThrough="false" isUnderline="false" name="Arial" size="8"/>
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="_c0f9df4e-5bc8-4a49-ba7c-3a8efddb9e33">
+      <Font isBold="false" isItalic="false" isStrikeThrough="false" isUnderline="false" name="Arial" size="10"/>
+    </BPMNLabelStyle>
+  </BPMNDiagram>
+</definitions>
+
