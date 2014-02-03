@@ -95,6 +95,8 @@ public class MessageResource {
 
 			String bizKey = msgId + " - " + new Date().getTime();
 			Authentication.setAuthenticatedUserId(username);
+			vars.put("initiator", sc.getUserPrincipal().getName());
+
 			ProcessInstance instance = processEngine.getRuntimeService()
 					.startProcessInstanceByMessage(msgId, bizKey, vars);
 
