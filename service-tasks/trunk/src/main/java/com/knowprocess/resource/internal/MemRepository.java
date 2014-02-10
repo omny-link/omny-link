@@ -47,7 +47,8 @@ public class MemRepository implements Repository {
                 e.printStackTrace();
             }
             this.obj = sb.toString();
-		} else if (mimeType.equals("application/pdf")) {
+		} else if (mimeType.equals("application/pdf")
+				|| mimeType.equals("application/octet-stream")) {
 			
 			byte[] buffer = new byte[1024];
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -60,7 +61,7 @@ public class MemRepository implements Repository {
 
 		} else {
             throw new IllegalArgumentException(
-					"Only text/* mime types, application/pdf and application/json supported at this stage.");
+					"Only text/* mime types, application/json, application/octet-stream and application/pdf supported at this stage.");
         }
     }
 

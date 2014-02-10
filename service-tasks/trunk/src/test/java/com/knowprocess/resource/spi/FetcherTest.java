@@ -100,15 +100,15 @@ public class FetcherTest {
 
 	@Test
 	public void testUrlPdfResourceToBlob() {
-		FileWriter writer = null;
+		OutputStream pdfout = null;
 		try {
 			byte[] pdf = svc
-					.fetchToByteArray("https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/85869/release-carbon-footprint-dec2012.pdf");
+					.fetchToByteArray("https://drive.google.com/file/d/0B5_RMKb7E01EbDgtVzNyUk5kVnJ0M1QxMVBDS0hKQW83SXM0/edit?usp=sharing");
 			System.out.println("PDF: " + pdf);
 			assertNotNull(pdf);
 
 			File file = new File("testUrlPdfResourceToBlob.pdf");
-			OutputStream pdfout = new FileOutputStream(file);
+			pdfout = new FileOutputStream(file);
 			pdfout.write(pdf);
 			System.out.println("Wrote pdf to: " + file);
 
@@ -122,7 +122,7 @@ public class FetcherTest {
 			fail(e.getMessage());
 		} finally {
 			try {
-				writer.close();
+				pdfout.close();
 			} catch (Exception e) {
 			}
 		}

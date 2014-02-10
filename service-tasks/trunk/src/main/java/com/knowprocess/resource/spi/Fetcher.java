@@ -109,7 +109,8 @@ public class Fetcher implements JavaDelegate {
 		String repoUri = "mem://bytes";
 
 		MemRepository repo = (MemRepository) getRepository(repoUri);
-		fetchToRepo(resourceUrl, getResourceName(resourceUrl), repo);
+		fetchToRepo(getResourceName(resourceUrl), "application/octet-stream",
+				getResource(resourceUrl).getResource(resourceUrl), repo);
 		return repo.getBytes();
 	}
 
