@@ -103,21 +103,27 @@ public class TestMailServer extends ExternalResource {
 			assertTrue(mimeMessage.getContentType().contains("text/plain"));
 		}
 
-		assertTrue(mimeMessage.getHeader("Subject", null).contains(subject));
+		assertTrue("Message does not have expected subject: " + subject,
+				mimeMessage.getHeader("Subject", null).contains(subject));
 		// Test from is either long or short form of sender
 		String longFrom = "\"" + from + "\" <" + from.toString() + ">";
-		assertTrue(longFrom.equals(mimeMessage.getHeader("From", null))
+		assertTrue(
+				"Message not from the expected sender: " + longFrom,
+				longFrom.equals(mimeMessage.getHeader("From", null))
 				|| from.equals(mimeMessage.getHeader("From", null)));
 		System.out.println("Msg body: " + getMessage(mimeMessage));
-		assertTrue(getMessage(mimeMessage).contains(txtMessage));
+		assertTrue("Message does not contain expected content: " + txtMessage,
+				getMessage(mimeMessage).contains(txtMessage));
 
 		for (String t : to) {
-			assertTrue(mimeMessage.getHeader("To", null).contains(t));
+			assertTrue("Message does not contain expected recipient: " + t,
+					mimeMessage.getHeader("To", null).contains(t));
 		}
 
 		if (cc != null) {
 			for (String c : cc) {
-				assertTrue(mimeMessage.getHeader("Cc", null).contains(c));
+				assertTrue("Message does not contain expected cc recipient: "
+						+ c, mimeMessage.getHeader("Cc", null).contains(c));
             }
         }
     }
