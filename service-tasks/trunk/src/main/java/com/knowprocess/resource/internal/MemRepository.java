@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.util.Date;
 
 import com.knowprocess.resource.spi.Repository;
@@ -30,12 +31,14 @@ public class MemRepository implements Repository {
 		setName(resourceName);
         if (mimeType.startsWith("text") || mimeType.equals("application/json")) {
             Reader reader = null;
-            StringBuffer sb = new StringBuffer();
+			StringWriter sb = new StringWriter();
             try {
                 char[] buf = new char[1024];
                 reader = new InputStreamReader(is, "UTF-8");
-                while (reader.read(buf) != -1) {
-                    sb.append(buf);
+                int charsRead = 0 ; 
+                while ((charsRead = reader.read(buf)) != -1) {
+					System.out.println("BUF: " + new String(buf));
+					sb.write(buf, 0, charsRead);
                     // need to reset to avoid carried over chars last time thru
                     buf = new char[1024];
                 }

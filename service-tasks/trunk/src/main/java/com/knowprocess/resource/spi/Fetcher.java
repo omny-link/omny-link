@@ -50,6 +50,10 @@ public class Fetcher implements JavaDelegate {
 	private static final String RESOURCE_KEY = "resource";
 	private static final int MAX_VAR_LENGTH = 4000;
 	public static final String PROTOCOL = "classpath://";
+
+	private Expression resourceUsername;
+	private Expression resourcePassword;
+
 	private Expression globalResource;
 	private Expression outputVar;
 	private RepositoryService repositoryService;
@@ -70,6 +74,13 @@ public class Fetcher implements JavaDelegate {
 		this.globalResource = globalResource;
 	}
 
+	public void setResourceUsername(Expression resourceUsername) {
+		this.resourceUsername = resourceUsername;
+	}
+
+	public void setResourcePassword(Expression resourcePassword) {
+		this.resourcePassword = resourcePassword;
+	}
 	// public String getOutputVar() {
 	// return outputVar;
 	// }
@@ -219,7 +230,11 @@ public class Fetcher implements JavaDelegate {
 	 *             If the resourceUrl cannot be supported.
 	 */
 	private Resource getResource(String resourceUrl) throws IOException {
-		if (resourceUrl.toLowerCase().startsWith("http")) {
+		if (resourceUrl.toLowerCase().startsWith("http")
+				&& resourceUsername != null && resourcePassword != null) {
+			return new UrlResource(resourceUsername.getExpressionText(),
+					resourcePassword.getExpressionText());
+		} else if (resourceUrl.toLowerCase().startsWith("http")) {
 			return new UrlResource();
 		} else if (resourceUrl.toLowerCase().startsWith("classpath")) {
 			return new ClasspathResource();
