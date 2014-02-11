@@ -25,12 +25,11 @@
   
   <repositories>
     <repository>
-      <id>Alfresco Maven Repository</id>
-      <url>https://maven.alfresco.com/nexus/content/groups/public/</url>
+      <id>kp-release-repository</id>
+      <url>https://repository-bigbpmcloud.forge.cloudbees.com/release/</url>
     </repository>
     <repository>
       <id>kp-snapshot-repository</id>
-      <name>KnowProcess Snapshot Repository</name>
       <url>https://repository-bigbpmcloud.forge.cloudbees.com/snapshot/</url>
     </repository>
   </repositories>
@@ -162,7 +161,7 @@
       <!-- NOTE: this does not work on Jenkins (fine locally)
         <version>[0.0.1,1.0.0)</version>
       -->
-      <version>0.0.2</version>
+      <version>0.1.0</version>
       <exclusions>
         <exclusion>
           <artifactId>jcl-over-slf4j</artifactId>
