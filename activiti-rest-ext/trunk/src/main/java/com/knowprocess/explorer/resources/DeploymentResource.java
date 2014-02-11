@@ -261,7 +261,7 @@ public class DeploymentResource {
 		System.out.println("id " + processInstance.getId() + " "
 				+ processInstance.getProcessDefinitionId());
 		URI createdUri = uriInfo.getBaseUriBuilder()
-				.path("/service/runtime/process-instances")
+				.path("/service/runtime/process-instances/{id}")
 				.build(processInstance.getId());
 		return Response.created(createdUri).build();// entity(createdContent).build();
 													// }

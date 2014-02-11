@@ -1,8 +1,10 @@
 package com.knowprocess.explorer.resources;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -19,10 +21,14 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.activiti.engine.ActivitiException;
+import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngines;
+import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.runtime.ProcessInstance;
+
+import com.knowprocess.jaxrs.test.MockUriInfo;
 
 /**
  * Handle REST requests sending BPMN message events to start or modify process
@@ -46,6 +52,10 @@ public class MessageResource {
 		assert processEngine != null;
 	}
 
+	protected void setUriInfo(MockUriInfo mockUriInfo) {
+		this.uriInfo = mockUriInfo;
+	}
+
 	@GET
 	@Path("/{msgId}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -53,21 +63,37 @@ public class MessageResource {
 			@PathParam("msgId") String msgId,
 			@QueryParam("query") String jsonBody) {
 		logger.info("getMessage: " + msgId + ", json:" + jsonBody);
-
-		Map<String, Object> vars = new HashMap<String, Object>();
-		vars.put("query", msgId);
-		vars.put(msgId, jsonBody);
-		Response response = handleMep(sc, msgId, jsonBody, vars);
-		String locationHeader = (String) response.getMetadata().get("Location")
-				.get(0);
-		System.out.println("location: " + locationHeader);
-		String id = locationHeader.substring(locationHeader.lastIndexOf('/'));
-		System.out.println("id: " + id);
-		String msg = (String) processEngine.getRuntimeService().getVariable(id,
-				msgId);
-		System.out.println("msg: " + msg);
-
-		return Response.ok(msg).build();
+		String msg = "";
+		try {
+			Map<String, Object> vars = new HashMap<String, Object>();
+			vars.put("query", msgId);
+			vars.put(msgId, jsonBody);
+			Response response = handleMep(sc, msgId, jsonBody, vars);
+			URI locationHeader = (URI) response.getMetadata().get("Location")
+					.get(0);
+			System.out.println("location: " + locationHeader);
+			String header = locationHeader.toURL().toExternalForm();
+			String id = header.substring(header.lastIndexOf('/') + 1);
+			System.out.println("id: " + id);
+			try {
+				msg = (String) processEngine.getRuntimeService().getVariable(
+						id, msgId);
+			} catch (ActivitiObjectNotFoundException e) {
+				// assume process is closed
+				HistoricVariableInstance instance = processEngine
+						.getHistoryService()
+						.createHistoricVariableInstanceQuery()
+						.processInstanceId(id).variableName(msgId)
+						.singleResult();
+				msg = (String) instance.getValue();
+			}
+			System.out.println("msg: " + msg);
+			return Response.ok(msg).contentLocation(locationHeader).build();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return Response.ok(msg).build();
+		}
 	}
 
 	@POST
@@ -75,13 +101,18 @@ public class MessageResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response doInOnlyMep(@Context SecurityContext sc,
 			@PathParam("msgId") String msgId, String jsonBody) {
-		logger.info("sendMessage: " + msgId + ", json:" + jsonBody);
+		long start = System.currentTimeMillis();
+		logger.info("doInOnlyMep: " + msgId + ", json:" + jsonBody);
 
 		Map<String, Object> vars = new HashMap<String, Object>();
 		vars.put("message", msgId);
 		vars.put(msgId, jsonBody);
 
-		return handleMep(sc, msgId, jsonBody, vars);
+		Response response = handleMep(sc, msgId, jsonBody, vars);
+
+		logger.info(String.format("doInOnlyMep took: %1$s ms",
+				(System.currentTimeMillis() - start)));
+		return response;
 	}
 
 	public Response handleMep(SecurityContext sc, String msgId,
@@ -100,21 +131,27 @@ public class MessageResource {
 			ProcessInstance instance = processEngine.getRuntimeService()
 					.startProcessInstanceByMessage(msgId, bizKey, vars);
 
-			URI uri = uriInfo.getBaseUriBuilder()
-					.path("/service/runtime/process-instances")
+			List<ProcessInstance> list = processEngine.getRuntimeService()
+					.createProcessInstanceQuery()
+					.processInstanceId(instance.getId()).list();
+			String path = "/service/runtime/process-instances/{id}";
+			if (list.size() == 0) {
+				// already ended
+				path = "/service/history/historic-process-instances/{id}";
+			}
+			URI uri = uriInfo.getBaseUriBuilder().path(path)
 					.build(instance.getId());
 			return Response.created(uri).build();
 		} catch (ActivitiException e) {
 			logger.severe(e.getClass().getName() + ": " + e.getMessage());
 			e.printStackTrace(System.err);
-			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.build();
+			return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
 		} catch (Exception e) {
 			logger.severe(e.getClass().getName() + ": " + e.getMessage());
-			return Response.status(Response.Status.BAD_REQUEST)
-					.build();
+			return Response.status(Response.Status.BAD_REQUEST).build();
 		} finally {
 			Authentication.setAuthenticatedUserId(null);
 		}
 	}
+
 }
