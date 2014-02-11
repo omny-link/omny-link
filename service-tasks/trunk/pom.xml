@@ -14,8 +14,8 @@
   </properties>
   <repositories>
     <repository>
-      <id>Activiti</id>
-      <url>https://maven.alfresco.com/nexus/content/repositories/activiti</url>
+      <id>kp-snapshot-repository</id>
+      <url>https://repository-bigbpmcloud.forge.cloudbees.com/snapshot/</url>
     </repository>
   </repositories>
   <dependencies>
