@@ -28,8 +28,6 @@ import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.runtime.ProcessInstance;
 
-import com.knowprocess.jaxrs.test.MockUriInfo;
-
 /**
  * Handle REST requests sending BPMN message events to start or modify process
  * instances.
@@ -52,8 +50,8 @@ public class MessageResource {
 		assert processEngine != null;
 	}
 
-	protected void setUriInfo(MockUriInfo mockUriInfo) {
-		this.uriInfo = mockUriInfo;
+	protected void setUriInfo(UriInfo uriInfo) {
+		this.uriInfo = uriInfo;
 	}
 
 	@GET
