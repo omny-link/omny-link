@@ -153,19 +153,6 @@
       <artifactId>commons-fileupload</artifactId>
       <version>1.2.1</version>
     </dependency>
-    <!-- Should be included as transitive dependency of activiti-engine, but is not being -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-      <version>${spring.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-      <version>${spring.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   
   <build>
