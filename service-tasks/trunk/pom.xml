@@ -14,6 +14,10 @@
   </properties>
   <repositories>
     <repository>
+      <id>kp-release-repository</id>
+      <url>https://repository-bigbpmcloud.forge.cloudbees.com/release/</url>
+    </repository>
+    <repository>
       <id>kp-snapshot-repository</id>
       <url>https://repository-bigbpmcloud.forge.cloudbees.com/snapshot/</url>
     </repository>
