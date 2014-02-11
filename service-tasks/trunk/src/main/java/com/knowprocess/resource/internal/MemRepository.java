@@ -37,7 +37,6 @@ public class MemRepository implements Repository {
                 reader = new InputStreamReader(is, "UTF-8");
                 int charsRead = 0 ; 
                 while ((charsRead = reader.read(buf)) != -1) {
-					System.out.println("BUF: " + new String(buf));
 					sb.write(buf, 0, charsRead);
                     // need to reset to avoid carried over chars last time thru
                     buf = new char[1024];
