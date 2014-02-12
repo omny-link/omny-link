@@ -11,7 +11,8 @@
   </organization>
   
   <properties>
-    <java.version>1.6</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.7</java.version>
     <jersey.version>1.12</jersey.version>
     <!-- own patched version of activiti -->
     <!--<activiti-version>5.8-20120322</activiti-version> -->
