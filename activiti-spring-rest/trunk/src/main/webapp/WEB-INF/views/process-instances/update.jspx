@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_org_activiti_spring_rest_model_ProcessInstance" idField="id_" modelAttribute="processInstance" path="/process-instances" versionField="Version" z="iK4GY3ASikvHthDKssz1+7lLj7A=">
+        <field:input field="activityId" id="c_org_activiti_spring_rest_model_ProcessInstance_activityId" z="skA9Yrn5PiBmeONX6nrWLav9zZ8="/>
+        <field:input field="id" id="c_org_activiti_spring_rest_model_ProcessInstance_id" z="4E0+Itn/3NUThbGYEp3wHuH+DYA="/>
+        <field:input field="parentId" id="c_org_activiti_spring_rest_model_ProcessInstance_parentId" z="PH+otpAOGR+Z6DMZnYCqVDLI3CU="/>
+        <field:input field="processInstanceId" id="c_org_activiti_spring_rest_model_ProcessInstance_processInstanceId" z="inOICylC98ikZ7u9dIDCo9ijP+E="/>
+        <field:checkbox field="ended" id="c_org_activiti_spring_rest_model_ProcessInstance_ended" z="hIM37U8qpDf65yDmjv5heRDPWq8="/>
+        <field:input field="businessKey" id="c_org_activiti_spring_rest_model_ProcessInstance_businessKey" z="9R59nx3nektFCG1EK8a40kv2++k="/>
+        <field:input field="processDefinitionId" id="c_org_activiti_spring_rest_model_ProcessInstance_processDefinitionId" z="cD+hh8Mm58L9C1iNDqpkuYJsMAE="/>
+        <field:checkbox field="suspended" id="c_org_activiti_spring_rest_model_ProcessInstance_suspended" z="ahWVVcRa67JEkrAolIRADe/zK70="/>
+    </form:update>
+</div>

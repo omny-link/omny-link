@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="processdefinitions/list">
+        <put-attribute name="body" value="/WEB-INF/views/processdefinitions/list.jspx"/>
+    </definition>
+<definition extends="default" name="processdefinitions/show">
+        <put-attribute name="body" value="/WEB-INF/views/processdefinitions/show.jspx"/>
+    </definition>
+<definition extends="default" name="processdefinitions/create">
+        <put-attribute name="body" value="/WEB-INF/views/processdefinitions/create.jspx"/>
+    </definition>
+<definition extends="default" name="processdefinitions/update">
+        <put-attribute name="body" value="/WEB-INF/views/processdefinitions/update.jspx"/>
+    </definition>
+<definition extends="default" name="process-definitions/list">
+        <put-attribute name="body" value="/WEB-INF/views/process-definitions/list.jspx"/>
+    </definition>
+<definition extends="default" name="process-definitions/show">
+        <put-attribute name="body" value="/WEB-INF/views/process-definitions/show.jspx"/>
+    </definition>
+<definition extends="default" name="process-definitions/create">
+        <put-attribute name="body" value="/WEB-INF/views/process-definitions/create.jspx"/>
+    </definition>
+<definition extends="default" name="process-definitions/update">
+        <put-attribute name="body" value="/WEB-INF/views/process-definitions/update.jspx"/>
+    </definition>
+</tiles-definitions>
