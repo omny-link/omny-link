@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_org_activiti_spring_rest_model_FormProperty" object="${formproperty}" path="/formpropertys" z="iqa5Do71doz/yxgXhX4ZIiKq3kw=">
+        <field:display field="id" id="s_org_activiti_spring_rest_model_FormProperty_id" object="${formproperty}" z="y4gBcArXPmASDZdOEuE5pJepoEM="/>
+        <field:display field="name" id="s_org_activiti_spring_rest_model_FormProperty_name" object="${formproperty}" z="iT0/0hKiyj3A8vgZQ8AFphVVmRs="/>
+        <field:display field="type" id="s_org_activiti_spring_rest_model_FormProperty_type" object="${formproperty}" z="b+Lld/+/4dSNMMPQ0XDGCouVyNo="/>
+        <field:display field="readable" id="s_org_activiti_spring_rest_model_FormProperty_readable" object="${formproperty}" z="rFbro5X1sauC0+r4V00UNu26M6o="/>
+        <field:display field="writeable" id="s_org_activiti_spring_rest_model_FormProperty_writeable" object="${formproperty}" z="FAmTGgccuGtSF23KzV0Uolc7UVw="/>
+        <field:display field="required" id="s_org_activiti_spring_rest_model_FormProperty_required" object="${formproperty}" z="PLJqncJnqhjQMTLsw+zKxNXcoEY="/>
+        <field:display field="datePattern" id="s_org_activiti_spring_rest_model_FormProperty_datePattern" object="${formproperty}" z="uPg9PFlv6MHn15cK3gAOR7kyrxw="/>
+        <field:display field="enumValues" id="s_org_activiti_spring_rest_model_FormProperty_enumValues" object="${formproperty}" z="fNBCPJ5WEew1amg4hMfaeMNPbDU="/>
+    </page:show>
+</div>

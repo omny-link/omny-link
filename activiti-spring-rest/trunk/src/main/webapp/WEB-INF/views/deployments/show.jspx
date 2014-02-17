@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_org_activiti_spring_rest_model_Deployment" object="${deployment}" path="/deployments" z="1Ixpob6DiQxYvXiQ+3KsiQei2BQ=">
+        <field:display field="id" id="s_org_activiti_spring_rest_model_Deployment_id" object="${deployment}" z="o/JmiUvinudhE+CxdnrFuRO2DVM="/>
+        <field:display field="name" id="s_org_activiti_spring_rest_model_Deployment_name" object="${deployment}" z="LpOB0OfwU1lAbhmu6VdQwITXhT8="/>
+        <field:display date="true" dateTimePattern="${deployment_deploymenttime_date_format}" field="deploymentTime" id="s_org_activiti_spring_rest_model_Deployment_deploymentTime" object="${deployment}" z="72gTo2s7yiW+iX17H1nCWZYNrT4="/>
+        <field:display field="category" id="s_org_activiti_spring_rest_model_Deployment_category" object="${deployment}" z="1K7jU8M/g30DomMctavkURwrnmA="/>
+        <field:display field="url" id="s_org_activiti_spring_rest_model_Deployment_url" object="${deployment}" z="J5qBV2KHg+PR22ImwIwCgZSqA2g="/>
+    </page:show>
+</div>
