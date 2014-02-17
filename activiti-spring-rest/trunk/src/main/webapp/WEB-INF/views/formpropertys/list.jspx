@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_org_activiti_spring_rest_model_FormProperty" items="${formpropertys}" z="PN7myfV1Gj1G1VV+MwIp+KAmzDg=">
+        <table:table data="${formpropertys}" id="l_org_activiti_spring_rest_model_FormProperty" path="/formpropertys" typeIdFieldName="id_" z="ahNnjQDO687+rdqQ2yInebUh54o=">
+            <table:column id="c_org_activiti_spring_rest_model_FormProperty_id" property="id" z="QJDNruGTyd8ndG9/hyOUjNNFTOo="/>
+            <table:column id="c_org_activiti_spring_rest_model_FormProperty_name" property="name" z="GL0ZLc2WgIMAXocVNMP+GlKiOIc="/>
+            <table:column id="c_org_activiti_spring_rest_model_FormProperty_type" property="type" z="jmo6fDkGxTQdsj8QUYz9tKZ4/5I="/>
+            <table:column id="c_org_activiti_spring_rest_model_FormProperty_readable" property="readable" z="dR6p3RlnSOqiG9xr5ba8XpijqUg="/>
+            <table:column id="c_org_activiti_spring_rest_model_FormProperty_writeable" property="writeable" z="TzYRRlib+k+a2bX3d7O1pteOt0U="/>
+            <table:column id="c_org_activiti_spring_rest_model_FormProperty_required" property="required" z="l1/rIjRpahb1mjFbUqo3gQQjy98="/>
+        </table:table>
+    </page:list>
+</div>

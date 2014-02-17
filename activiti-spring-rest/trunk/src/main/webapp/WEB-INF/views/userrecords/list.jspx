@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_org_activiti_spring_rest_model_UserRecord" items="${userrecords}" z="83YIPkwweYGp9/3MoJ3jBMXWuaQ=">
+        <table:table data="${userrecords}" id="l_org_activiti_spring_rest_model_UserRecord" path="/userrecords" typeIdFieldName="id_" z="3v2L5GpNYXbbpMIzclbsJYvybKw=">
+            <table:column id="c_org_activiti_spring_rest_model_UserRecord_id" property="id" z="tt9MeAyYxVnoWc/YHkF99wyiMA0="/>
+            <table:column id="c_org_activiti_spring_rest_model_UserRecord_firstName" property="firstName" z="PXbkwkZP6a+skoRkvllmUWMj7Nk="/>
+            <table:column id="c_org_activiti_spring_rest_model_UserRecord_lastName" property="lastName" z="1SW2Lzf1okBPDuxDSeOs1u30y14="/>
+            <table:column id="c_org_activiti_spring_rest_model_UserRecord_email" property="email" z="tLaFT/bzYckLt69L3US//XCeRr4="/>
+        </table:table>
+    </page:list>
+</div>

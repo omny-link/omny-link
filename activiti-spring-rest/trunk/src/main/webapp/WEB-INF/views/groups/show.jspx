@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_org_activiti_spring_rest_model_UserGroup" object="${usergroup}" path="/groups" z="mXS+2JUd84qJByNGgaaTN+FsUWI=">
+        <field:display field="id" id="s_org_activiti_spring_rest_model_UserGroup_id" object="${usergroup}" z="J7dAwSELfXpSdg7d1ySGRvvcj7w="/>
+        <field:display field="name" id="s_org_activiti_spring_rest_model_UserGroup_name" object="${usergroup}" z="dpscGil1kC+drpMyq3ygiCfI6/8="/>
+        <field:display field="type" id="s_org_activiti_spring_rest_model_UserGroup_type" object="${usergroup}" z="r1irdN3fEGYDUagQTwTFE7MQT+0="/>
+        <field:display field="users" id="s_org_activiti_spring_rest_model_UserGroup_users" object="${usergroup}" z="rEeRixhAizzSVXS4J/waVBK72V0="/>
+    </page:show>
+</div>
