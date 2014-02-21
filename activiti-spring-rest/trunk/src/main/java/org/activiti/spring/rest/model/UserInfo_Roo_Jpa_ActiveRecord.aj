@@ -14,7 +14,7 @@ privileged aspect UserInfo_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager UserInfo.entityManager;
     
-    public static final List<String> UserInfo.fieldNames4OrderClauseFilter = java.util.Arrays.asList("key", "value", "userRecord");
+    public static final List<String> UserInfo.fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "key", "value", "userRecord");
     
     public static final EntityManager UserInfo.entityManager() {
         EntityManager em = new UserInfo().entityManager;
@@ -41,8 +41,8 @@ privileged aspect UserInfo_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery(jpaQuery, UserInfo.class).getResultList();
     }
     
-    public static UserInfo UserInfo.findUserInfo(Long id) {
-        if (id == null) return null;
+    public static UserInfo UserInfo.findUserInfo(String id) {
+        if (id == null || id.length() == 0) return null;
         return entityManager().find(UserInfo.class, id);
     }
     

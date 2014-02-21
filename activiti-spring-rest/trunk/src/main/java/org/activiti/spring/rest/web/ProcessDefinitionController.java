@@ -1,5 +1,7 @@
 package org.activiti.spring.rest.web;
 import org.activiti.spring.rest.model.ProcessDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RooWebScaffold(path = "process-definitions", formBackingObject = ProcessDefinition.class)
 @RooWebJson(jsonObject = ProcessDefinition.class)
 public class ProcessDefinitionController {
+
+	protected static final Logger LOGGER = LoggerFactory
+			.getLogger(UserRecordController.class);
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> showJson(@PathVariable("id") String id) {

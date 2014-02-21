@@ -5,9 +5,6 @@ package org.activiti.spring.rest.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Version;
 import org.activiti.spring.rest.model.Task;
 
@@ -15,22 +12,9 @@ privileged aspect Task_Roo_Jpa_Entity {
     
     declare @type: Task: @Entity;
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_")
-    private Long Task.id_;
-    
     @Version
     @Column(name = "version")
     private Integer Task.version;
-    
-    public Long Task.getId_() {
-        return this.id_;
-    }
-    
-    public void Task.setId_(Long id) {
-        this.id_ = id;
-    }
     
     public Integer Task.getVersion() {
         return this.version;

@@ -17,11 +17,11 @@ privileged aspect Deployment_Roo_Equals {
             return true;
         }
         Deployment rhs = (Deployment) obj;
-        return new EqualsBuilder().append(category, rhs.category).append(deploymentTime, rhs.deploymentTime).append(id, rhs.id).append(id_, rhs.id_).append(name, rhs.name).append(url, rhs.url).isEquals();
+        return new EqualsBuilder().append(category, rhs.category).append(deploymentTime, rhs.deploymentTime).append(id, rhs.id).append(name, rhs.name).append(url, rhs.url).isEquals();
     }
     
     public int Deployment.hashCode() {
-        return new HashCodeBuilder().append(category).append(deploymentTime).append(id).append(id_).append(name).append(url).toHashCode();
+        return new HashCodeBuilder().append(category).append(deploymentTime).append(id).append(name).append(url).toHashCode();
     }
     
 }

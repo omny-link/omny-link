@@ -41,9 +41,9 @@ privileged aspect Execution_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery(jpaQuery, Execution.class).getResultList();
     }
     
-    public static Execution Execution.findExecution(Long id_) {
-        if (id_ == null) return null;
-        return entityManager().find(Execution.class, id_);
+    public static Execution Execution.findExecution(String id) {
+        if (id == null || id.length() == 0) return null;
+        return entityManager().find(Execution.class, id);
     }
     
     public static List<Execution> Execution.findExecutionEntries(int firstResult, int maxResults) {
@@ -73,7 +73,7 @@ privileged aspect Execution_Roo_Jpa_ActiveRecord {
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
-            Execution attached = Execution.findExecution(this.id_);
+            Execution attached = Execution.findExecution(this.id);
             this.entityManager.remove(attached);
         }
     }

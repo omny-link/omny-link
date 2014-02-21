@@ -3,13 +3,13 @@
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <page:list id="pl_org_activiti_spring_rest_model_ProcessDefinition" items="${processdefinitions}" z="Rhwg+97Bkr0KaPSgJH9/s+pDGpw=">
-        <table:table data="${processdefinitions}" id="l_org_activiti_spring_rest_model_ProcessDefinition" path="/process-definitions" typeIdFieldName="id_" z="dl2KCkUdlqkLqHqXZ/0xPppAraI=">
+        <table:table data="${processdefinitions}" id="l_org_activiti_spring_rest_model_ProcessDefinition" path="/process-definitions" z="thyACoNncbqRHFWS6EAhOMDe9yU=">
             <table:column id="c_org_activiti_spring_rest_model_ProcessDefinition_name" property="name" z="1EcFGnh06U0CXjkj5x1yfaYAodw="/>
             <table:column id="c_org_activiti_spring_rest_model_ProcessDefinition_category" property="category" z="CNyF6Gn5PlKe1O4JWwZjcWvQG+c="/>
             <table:column id="c_org_activiti_spring_rest_model_ProcessDefinition_description" property="description" z="3N01T3MUlrvESmPLFJIzHswlYHg="/>
             <table:column id="c_org_activiti_spring_rest_model_ProcessDefinition_version" property="version" z="qi3b6jW66iPe6VevhlyT1TyKIbw="/>
             <table:column id="c_org_activiti_spring_rest_model_ProcessDefinition_resourceName" property="resourceName" z="vwnehq0uHIm6p92gE7bQiGEb4ko="/>
-            <table:column id="c_org_activiti_spring_rest_model_ProcessDefinition_id" property="id" z="OJoMunZ5cJPn6rVkene4OmXs1BE="/>
+            <table:column id="c_org_activiti_spring_rest_model_ProcessDefinition_deploymentId" property="deploymentId" z="CUncU3d5Tv071Rww1O7nIcYJzoo="/>
         </table:table>
     </page:list>
 </div>

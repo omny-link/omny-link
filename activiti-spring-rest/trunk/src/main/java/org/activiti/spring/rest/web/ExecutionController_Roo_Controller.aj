@@ -27,7 +27,7 @@ privileged aspect ExecutionController_Roo_Controller {
         }
         uiModel.asMap().clear();
         execution.persist();
-        return "redirect:/executions/" + encodeUrlPathSegment(execution.getId_().toString(), httpServletRequest);
+        return "redirect:/executions/" + encodeUrlPathSegment(execution.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(params = "form", produces = "text/html")
@@ -36,10 +36,10 @@ privileged aspect ExecutionController_Roo_Controller {
         return "executions/create";
     }
     
-    @RequestMapping(value = "/{id_}", produces = "text/html")
-    public String ExecutionController.show(@PathVariable("id_") Long id_, Model uiModel) {
-        uiModel.addAttribute("execution", Execution.findExecution(id_));
-        uiModel.addAttribute("itemId", id_);
+    @RequestMapping(value = "/{id}", produces = "text/html")
+    public String ExecutionController.show(@PathVariable("id") String id, Model uiModel) {
+        uiModel.addAttribute("execution", Execution.findExecution(id));
+        uiModel.addAttribute("itemId", id);
         return "executions/show";
     }
     
@@ -65,18 +65,18 @@ privileged aspect ExecutionController_Roo_Controller {
         }
         uiModel.asMap().clear();
         execution.merge();
-        return "redirect:/executions/" + encodeUrlPathSegment(execution.getId_().toString(), httpServletRequest);
+        return "redirect:/executions/" + encodeUrlPathSegment(execution.getId().toString(), httpServletRequest);
     }
     
-    @RequestMapping(value = "/{id_}", params = "form", produces = "text/html")
-    public String ExecutionController.updateForm(@PathVariable("id_") Long id_, Model uiModel) {
-        populateEditForm(uiModel, Execution.findExecution(id_));
+    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    public String ExecutionController.updateForm(@PathVariable("id") String id, Model uiModel) {
+        populateEditForm(uiModel, Execution.findExecution(id));
         return "executions/update";
     }
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.DELETE, produces = "text/html")
-    public String ExecutionController.delete(@PathVariable("id_") Long id_, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        Execution execution = Execution.findExecution(id_);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
+    public String ExecutionController.delete(@PathVariable("id") String id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+        Execution execution = Execution.findExecution(id);
         execution.remove();
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());

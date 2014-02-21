@@ -26,7 +26,6 @@ privileged aspect ExecutionDataOnDemand_Roo_DataOnDemand {
         Execution obj = new Execution();
         setActivityId(obj, index);
         setEnded(obj, index);
-        setId(obj, index);
         setParentId(obj, index);
         setProcessInstanceId(obj, index);
         return obj;
@@ -40,11 +39,6 @@ privileged aspect ExecutionDataOnDemand_Roo_DataOnDemand {
     public void ExecutionDataOnDemand.setEnded(Execution obj, int index) {
         Boolean ended = Boolean.TRUE;
         obj.setEnded(ended);
-    }
-    
-    public void ExecutionDataOnDemand.setId(Execution obj, int index) {
-        String id = "id_" + index;
-        obj.setId(id);
     }
     
     public void ExecutionDataOnDemand.setParentId(Execution obj, int index) {
@@ -66,14 +60,14 @@ privileged aspect ExecutionDataOnDemand_Roo_DataOnDemand {
             index = data.size() - 1;
         }
         Execution obj = data.get(index);
-        Long id = obj.getId_();
+        String id = obj.getId();
         return Execution.findExecution(id);
     }
     
     public Execution ExecutionDataOnDemand.getRandomExecution() {
         init();
         Execution obj = data.get(rnd.nextInt(data.size()));
-        Long id = obj.getId_();
+        String id = obj.getId();
         return Execution.findExecution(id);
     }
     

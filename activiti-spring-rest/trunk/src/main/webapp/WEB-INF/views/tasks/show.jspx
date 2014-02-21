@@ -7,7 +7,6 @@
         <field:display date="true" dateTimePattern="${task_createtime_date_format}" field="createTime" id="s_org_activiti_spring_rest_model_Task_createTime" object="${task}" z="IHLjdQNgsLdUzN0OFV6M2LtzKeU="/>
         <field:display field="delegateState" id="s_org_activiti_spring_rest_model_Task_delegateState" object="${task}" z="ClgLUFG88qGl+j4oowSiqB4BKjE="/>
         <field:display field="description" id="s_org_activiti_spring_rest_model_Task_description" object="${task}" z="LN4LLPCKsSDU8F9+u0bwePyGujI="/>
-        <field:display field="id" id="s_org_activiti_spring_rest_model_Task_id" object="${task}" z="A99eg6glrruWCq8zKv6ckR2QQZg="/>
         <field:display field="name" id="s_org_activiti_spring_rest_model_Task_name" object="${task}" z="0PJK+R+SLnHDE+n8XaYLxHSHdF0="/>
         <field:display field="owner" id="s_org_activiti_spring_rest_model_Task_owner" object="${task}" z="UDQb2B9cPWFVQWEzsQnt30Qfu28="/>
         <field:display field="parentTaskId" id="s_org_activiti_spring_rest_model_Task_parentTaskId" object="${task}" z="XGCa7jj4HC88XdL2IGnlWOjfbPY="/>

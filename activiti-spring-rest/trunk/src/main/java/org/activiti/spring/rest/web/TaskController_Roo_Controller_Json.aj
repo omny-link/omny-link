@@ -18,10 +18,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 privileged aspect TaskController_Roo_Controller_Json {
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> TaskController.showJson(@PathVariable("id_") Long id_) {
-        Task task = Task.findTask(id_);
+    public ResponseEntity<String> TaskController.showJson(@PathVariable("id") String id) {
+        Task task = Task.findTask(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (task == null) {
@@ -60,21 +60,21 @@ privileged aspect TaskController_Roo_Controller_Json {
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> TaskController.updateFromJson(@RequestBody String json, @PathVariable("id_") Long id_) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> TaskController.updateFromJson(@RequestBody String json, @PathVariable("id") String id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Task task = Task.fromJsonToTask(json);
-        task.setId_(id_);
+        task.setId(id);
         if (task.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-    public ResponseEntity<String> TaskController.deleteFromJson(@PathVariable("id_") Long id_) {
-        Task task = Task.findTask(id_);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> TaskController.deleteFromJson(@PathVariable("id") String id) {
+        Task task = Task.findTask(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         if (task == null) {

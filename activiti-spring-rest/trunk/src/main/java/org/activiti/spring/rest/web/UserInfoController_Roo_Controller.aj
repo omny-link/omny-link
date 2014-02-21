@@ -38,7 +38,7 @@ privileged aspect UserInfoController_Roo_Controller {
     }
     
     @RequestMapping(value = "/{id}", produces = "text/html")
-    public String UserInfoController.show(@PathVariable("id") Long id, Model uiModel) {
+    public String UserInfoController.show(@PathVariable("id") String id, Model uiModel) {
         uiModel.addAttribute("userinfo", UserInfo.findUserInfo(id));
         uiModel.addAttribute("itemId", id);
         return "userinfoes/show";
@@ -70,13 +70,13 @@ privileged aspect UserInfoController_Roo_Controller {
     }
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
-    public String UserInfoController.updateForm(@PathVariable("id") Long id, Model uiModel) {
+    public String UserInfoController.updateForm(@PathVariable("id") String id, Model uiModel) {
         populateEditForm(uiModel, UserInfo.findUserInfo(id));
         return "userinfoes/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
-    public String UserInfoController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String UserInfoController.delete(@PathVariable("id") String id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         UserInfo userInfo = UserInfo.findUserInfo(id);
         userInfo.remove();
         uiModel.asMap().clear();

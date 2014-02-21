@@ -13,6 +13,5 @@
         <field:display field="key" id="s_org_activiti_spring_rest_model_ProcessDefinition_key" object="${processdefinition}" z="4dF99xljiWAd2S9rSzbH2sXXoLc="/>
         <field:display field="formKey" id="s_org_activiti_spring_rest_model_ProcessDefinition_formKey" object="${processdefinition}" z="JdUvkKB+lcOBMQBmSb3984RZUZM="/>
         <field:display field="formProperties" id="s_org_activiti_spring_rest_model_ProcessDefinition_formProperties" object="${processdefinition}" z="QBeIgENhcUlfcquonekustfBd6Y="/>
-        <field:display field="id" id="s_org_activiti_spring_rest_model_ProcessDefinition_id" object="${processdefinition}" z="Qfxj+nMduTrMZxZGzA2uOUC70bU="/>
     </page:show>
 </div>

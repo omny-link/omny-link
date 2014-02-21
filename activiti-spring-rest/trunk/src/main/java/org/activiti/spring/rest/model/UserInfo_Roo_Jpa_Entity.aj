@@ -5,9 +5,6 @@ package org.activiti.spring.rest.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Version;
 import org.activiti.spring.rest.model.UserInfo;
 
@@ -15,22 +12,9 @@ privileged aspect UserInfo_Roo_Jpa_Entity {
     
     declare @type: UserInfo: @Entity;
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long UserInfo.id;
-    
     @Version
     @Column(name = "version")
     private Integer UserInfo.version;
-    
-    public Long UserInfo.getId() {
-        return this.id;
-    }
-    
-    public void UserInfo.setId(Long id) {
-        this.id = id;
-    }
     
     public Integer UserInfo.getVersion() {
         return this.version;

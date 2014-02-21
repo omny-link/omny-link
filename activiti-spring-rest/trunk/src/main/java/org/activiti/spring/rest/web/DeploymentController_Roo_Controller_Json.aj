@@ -18,10 +18,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 privileged aspect DeploymentController_Roo_Controller_Json {
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> DeploymentController.showJson(@PathVariable("id_") Long id_) {
-        Deployment deployment = Deployment.findDeployment(id_);
+    public ResponseEntity<String> DeploymentController.showJson(@PathVariable("id") String id) {
+        Deployment deployment = Deployment.findDeployment(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (deployment == null) {
@@ -60,21 +60,21 @@ privileged aspect DeploymentController_Roo_Controller_Json {
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> DeploymentController.updateFromJson(@RequestBody String json, @PathVariable("id_") Long id_) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> DeploymentController.updateFromJson(@RequestBody String json, @PathVariable("id") String id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Deployment deployment = Deployment.fromJsonToDeployment(json);
-        deployment.setId_(id_);
+        deployment.setId(id);
         if (deployment.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-    public ResponseEntity<String> DeploymentController.deleteFromJson(@PathVariable("id_") Long id_) {
-        Deployment deployment = Deployment.findDeployment(id_);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> DeploymentController.deleteFromJson(@PathVariable("id") String id) {
+        Deployment deployment = Deployment.findDeployment(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         if (deployment == null) {
