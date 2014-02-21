@@ -40,11 +40,11 @@ privileged aspect ExecutionIntegrationTest_Roo_IntegrationTest {
     public void ExecutionIntegrationTest.testFindExecution() {
         Execution obj = dod.getRandomExecution();
         Assert.assertNotNull("Data on demand for 'Execution' failed to initialize correctly", obj);
-        Long id = obj.getId_();
+        String id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Execution' failed to provide an identifier", id);
         obj = Execution.findExecution(id);
         Assert.assertNotNull("Find method for 'Execution' illegally returned null for id '" + id + "'", obj);
-        Assert.assertEquals("Find method for 'Execution' returned the incorrect identifier", id, obj.getId_());
+        Assert.assertEquals("Find method for 'Execution' returned the incorrect identifier", id, obj.getId());
     }
     
     @Test
@@ -73,7 +73,7 @@ privileged aspect ExecutionIntegrationTest_Roo_IntegrationTest {
     public void ExecutionIntegrationTest.testFlush() {
         Execution obj = dod.getRandomExecution();
         Assert.assertNotNull("Data on demand for 'Execution' failed to initialize correctly", obj);
-        Long id = obj.getId_();
+        String id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Execution' failed to provide an identifier", id);
         obj = Execution.findExecution(id);
         Assert.assertNotNull("Find method for 'Execution' illegally returned null for id '" + id + "'", obj);
@@ -87,14 +87,14 @@ privileged aspect ExecutionIntegrationTest_Roo_IntegrationTest {
     public void ExecutionIntegrationTest.testMergeUpdate() {
         Execution obj = dod.getRandomExecution();
         Assert.assertNotNull("Data on demand for 'Execution' failed to initialize correctly", obj);
-        Long id = obj.getId_();
+        String id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Execution' failed to provide an identifier", id);
         obj = Execution.findExecution(id);
         boolean modified =  dod.modifyExecution(obj);
         Integer currentVersion = obj.getVersion();
         Execution merged = obj.merge();
         obj.flush();
-        Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId_(), id);
+        Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(), id);
         Assert.assertTrue("Version for 'Execution' failed to increment on merge and flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
     
@@ -103,7 +103,7 @@ privileged aspect ExecutionIntegrationTest_Roo_IntegrationTest {
         Assert.assertNotNull("Data on demand for 'Execution' failed to initialize correctly", dod.getRandomExecution());
         Execution obj = dod.getNewTransientExecution(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'Execution' failed to provide a new transient entity", obj);
-        Assert.assertNull("Expected 'Execution' identifier to be null", obj.getId_());
+        Assert.assertNull("Expected 'Execution' identifier to be null", obj.getId());
         try {
             obj.persist();
         } catch (final ConstraintViolationException e) {
@@ -115,14 +115,14 @@ privileged aspect ExecutionIntegrationTest_Roo_IntegrationTest {
             throw new IllegalStateException(msg.toString(), e);
         }
         obj.flush();
-        Assert.assertNotNull("Expected 'Execution' identifier to no longer be null", obj.getId_());
+        Assert.assertNotNull("Expected 'Execution' identifier to no longer be null", obj.getId());
     }
     
     @Test
     public void ExecutionIntegrationTest.testRemove() {
         Execution obj = dod.getRandomExecution();
         Assert.assertNotNull("Data on demand for 'Execution' failed to initialize correctly", obj);
-        Long id = obj.getId_();
+        String id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Execution' failed to provide an identifier", id);
         obj = Execution.findExecution(id);
         obj.remove();

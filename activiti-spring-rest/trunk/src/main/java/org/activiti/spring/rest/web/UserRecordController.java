@@ -1,4 +1,6 @@
 package org.activiti.spring.rest.web;
+import javax.servlet.http.HttpServletRequest;
+
 import org.activiti.spring.rest.model.UserRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 
 @RooWebJson(jsonObject = UserRecord.class)
@@ -30,7 +28,8 @@ public class UserRecordController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
 	public ResponseEntity<String> showJson(@PathVariable("id") String id, HttpServletRequest request) {
-		LOGGER.info("%1$s /%2$s", RequestMethod.GET, id);
+		LOGGER.info(String
+				.format("%1$s %2$s/%3$s", RequestMethod.GET, PATH, id));
 		
 		System.out.println("id from req: "+ request.getServletPath());
 		id = request.getServletPath().substring(request.getServletPath().lastIndexOf('/')+1);

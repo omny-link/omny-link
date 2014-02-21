@@ -8,6 +8,14 @@ import org.activiti.spring.rest.model.UserRecord;
 
 privileged aspect UserInfo_Roo_JavaBean {
     
+    public String UserInfo.getId() {
+        return this.id;
+    }
+    
+    public void UserInfo.setId(String id) {
+        this.id = id;
+    }
+    
     public String UserInfo.getKey() {
         return this.key;
     }

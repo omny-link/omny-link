@@ -7,13 +7,18 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
+import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
+import org.activiti.spring.rest.web.UserRecordController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.roo.addon.equals.RooEquals;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -24,9 +29,6 @@ import org.springframework.roo.addon.tostring.RooToString;
 
 import flexjson.JSONSerializer;
 
-import org.activiti.engine.ActivitiObjectNotFoundException;
-
-
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord
@@ -35,14 +37,19 @@ import org.activiti.engine.ActivitiObjectNotFoundException;
 @RooJson
 public class UserRecord {
 
+	protected static final Logger LOGGER = LoggerFactory
+			.getLogger(UserRecordController.class);
+
 	private static final String[] JSON_FIELDS = { "assignee", "createTime",
 			"id", "name", "owner", "parentUserId", "priority",
-			"processDefinitionId", "suspended", "identityDefinitionKey" };
+			"processDefinitionId", "suspended", "identityDefinitionKey",
+			"userGroups", "userInfos" };
 
 	private static ProcessEngine processEngine;
 
 	/**
      */
+	@Id
 	private String id;
 
 	/**
@@ -73,7 +80,7 @@ public class UserRecord {
 
 	public UserRecord(org.activiti.engine.identity.User u) {
 		this();
-		System.out.println("Wrapping user: " + u);
+		LOGGER.info("Wrapping user: " + u);
 		setId(u.getId());
 		setFirstName(u.getFirstName());
 		setLastName(u.getLastName());
@@ -97,24 +104,27 @@ public class UserRecord {
 	}
 
 	public static UserRecord findUserRecord(String id) {
-		System.out.println("Find user with id: " + id);
+		LOGGER.info(String.format("findUserRecord with id: %1$s", id));
 		try {
 			IdentityService svc = processEngine.getIdentityService();
-			User user = svc.createUserQuery().userId(id)
-					.singleResult();
-			if (user==null) { 
-				throw new ActivitiObjectNotFoundException("User with id:"+id, User.class);
+			User user = svc.createUserQuery().userId(id).singleResult();
+			if (user == null) {
+				throw new ActivitiObjectNotFoundException("User with id:" + id,
+						User.class);
 			}
-			
+
 			UserRecord wrappedUser = new UserRecord(user);
 			String username = wrappedUser.getId();
 			List<Group> list = svc.createGroupQuery().groupMember(username)
 					.list();
+			LOGGER.debug(String.format("Found %1$d groups", list.size()));
 			for (Group group : list) {
 				wrappedUser.getUserGroups().add(new UserGroup(group));
 			}
 
 			List<String> userInfoKeys = svc.getUserInfoKeys(username);
+			LOGGER.debug(String.format("Found %1$d userInfo records",
+					list.size()));
 			for (String key : userInfoKeys) {
 				wrappedUser.getUserInfos().add(
 						new UserInfo(wrappedUser, key, svc.getUserInfo(
@@ -122,11 +132,11 @@ public class UserRecord {
 			}
 			return wrappedUser;
 		} catch (ActivitiObjectNotFoundException e) {
-			System.out.println(e.getMessage()); 
-			throw e; 
+			LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
+			throw e;
 		} catch (Exception e) {
-			System.out.println(e.getClass().getName()+":"+e.getMessage());
-			e.printStackTrace();
+			LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
+			e.printStackTrace(System.err);
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
@@ -146,7 +156,6 @@ public class UserRecord {
 
 	public static List<UserRecord> findAllUserRecords(String sortFieldName,
 			String sortOrder) {
-		System.out.println("pe: " + processEngine);
 		// TODO honour sort order
 		return wrap(processEngine.getIdentityService().createUserQuery().list());
 	}
@@ -170,7 +179,6 @@ public class UserRecord {
 	}
 
 	public static String toJsonArray(Collection<UserRecord> collection) {
-
 		return toJsonArray(collection, JSON_FIELDS);
 	}
 

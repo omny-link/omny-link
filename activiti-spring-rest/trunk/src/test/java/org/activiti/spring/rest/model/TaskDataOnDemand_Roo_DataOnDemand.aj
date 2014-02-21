@@ -35,7 +35,6 @@ privileged aspect TaskDataOnDemand_Roo_DataOnDemand {
         setDescription(obj, index);
         setDueDate(obj, index);
         setFormKey(obj, index);
-        setId(obj, index);
         setName(obj, index);
         setOwner(obj, index);
         setParentTaskId(obj, index);
@@ -80,11 +79,6 @@ privileged aspect TaskDataOnDemand_Roo_DataOnDemand {
     public void TaskDataOnDemand.setFormKey(Task obj, int index) {
         String formKey = "formKey_" + index;
         obj.setFormKey(formKey);
-    }
-    
-    public void TaskDataOnDemand.setId(Task obj, int index) {
-        String id = "id_" + index;
-        obj.setId(id);
     }
     
     public void TaskDataOnDemand.setName(Task obj, int index) {
@@ -136,14 +130,14 @@ privileged aspect TaskDataOnDemand_Roo_DataOnDemand {
             index = data.size() - 1;
         }
         Task obj = data.get(index);
-        Long id = obj.getId_();
+        String id = obj.getId();
         return Task.findTask(id);
     }
     
     public Task TaskDataOnDemand.getRandomTask() {
         init();
         Task obj = data.get(rnd.nextInt(data.size()));
-        Long id = obj.getId_();
+        String id = obj.getId();
         return Task.findTask(id);
     }
     

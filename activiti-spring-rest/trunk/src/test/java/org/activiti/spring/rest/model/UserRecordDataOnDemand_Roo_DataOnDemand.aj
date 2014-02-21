@@ -27,7 +27,6 @@ privileged aspect UserRecordDataOnDemand_Roo_DataOnDemand {
         UserRecord obj = new UserRecord();
         setEmail(obj, index);
         setFirstName(obj, index);
-        setId(obj, index);
         setLastName(obj, index);
         setProcessEngine(obj, index);
         return obj;
@@ -41,11 +40,6 @@ privileged aspect UserRecordDataOnDemand_Roo_DataOnDemand {
     public void UserRecordDataOnDemand.setFirstName(UserRecord obj, int index) {
         String firstName = "firstName_" + index;
         obj.setFirstName(firstName);
-    }
-    
-    public void UserRecordDataOnDemand.setId(UserRecord obj, int index) {
-        String id = "id_" + index;
-        obj.setId(id);
     }
     
     public void UserRecordDataOnDemand.setLastName(UserRecord obj, int index) {
@@ -67,14 +61,14 @@ privileged aspect UserRecordDataOnDemand_Roo_DataOnDemand {
             index = data.size() - 1;
         }
         UserRecord obj = data.get(index);
-        Long id = obj.getId_();
+        String id = obj.getId();
         return UserRecord.findUserRecord(id);
     }
     
     public UserRecord UserRecordDataOnDemand.getRandomUserRecord() {
         init();
         UserRecord obj = data.get(rnd.nextInt(data.size()));
-        Long id = obj.getId_();
+        String id = obj.getId();
         return UserRecord.findUserRecord(id);
     }
     

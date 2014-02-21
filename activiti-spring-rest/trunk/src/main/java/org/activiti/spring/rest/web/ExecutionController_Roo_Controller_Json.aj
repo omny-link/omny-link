@@ -18,10 +18,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 privileged aspect ExecutionController_Roo_Controller_Json {
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> ExecutionController.showJson(@PathVariable("id_") Long id_) {
-        Execution execution = Execution.findExecution(id_);
+    public ResponseEntity<String> ExecutionController.showJson(@PathVariable("id") String id) {
+        Execution execution = Execution.findExecution(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (execution == null) {
@@ -60,21 +60,21 @@ privileged aspect ExecutionController_Roo_Controller_Json {
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> ExecutionController.updateFromJson(@RequestBody String json, @PathVariable("id_") Long id_) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> ExecutionController.updateFromJson(@RequestBody String json, @PathVariable("id") String id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Execution execution = Execution.fromJsonToExecution(json);
-        execution.setId_(id_);
+        execution.setId(id);
         if (execution.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-    public ResponseEntity<String> ExecutionController.deleteFromJson(@PathVariable("id_") Long id_) {
-        Execution execution = Execution.findExecution(id_);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> ExecutionController.deleteFromJson(@PathVariable("id") String id) {
+        Execution execution = Execution.findExecution(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         if (execution == null) {
