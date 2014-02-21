@@ -1,4 +1,5 @@
 package org.activiti.spring.rest.model;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import org.springframework.roo.addon.equals.RooEquals;
@@ -15,6 +16,11 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooSerializable
 @RooJson
 public class UserInfo {
+
+    /**
+     */
+	@Id
+    private String id;
 
     /**
      */

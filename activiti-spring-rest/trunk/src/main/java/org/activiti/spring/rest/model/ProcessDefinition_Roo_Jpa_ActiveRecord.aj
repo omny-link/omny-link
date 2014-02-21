@@ -22,11 +22,6 @@ privileged aspect ProcessDefinition_Roo_Jpa_ActiveRecord {
         return em;
     }
     
-    public static ProcessDefinition ProcessDefinition.findProcessDefinition(Long id_) {
-        if (id_ == null) return null;
-        return entityManager().find(ProcessDefinition.class, id_);
-    }
-    
     @Transactional
     public void ProcessDefinition.persist() {
         if (this.entityManager == null) this.entityManager = entityManager();
@@ -39,7 +34,7 @@ privileged aspect ProcessDefinition_Roo_Jpa_ActiveRecord {
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
-            ProcessDefinition attached = ProcessDefinition.findProcessDefinition(this.id_);
+            ProcessDefinition attached = ProcessDefinition.findProcessDefinition(this.id);
             this.entityManager.remove(attached);
         }
     }

@@ -53,14 +53,14 @@ privileged aspect UserInfoDataOnDemand_Roo_DataOnDemand {
             index = data.size() - 1;
         }
         UserInfo obj = data.get(index);
-        Long id = obj.getId();
+        String id = obj.getId();
         return UserInfo.findUserInfo(id);
     }
     
     public UserInfo UserInfoDataOnDemand.getRandomUserInfo() {
         init();
         UserInfo obj = data.get(rnd.nextInt(data.size()));
-        Long id = obj.getId();
+        String id = obj.getId();
         return UserInfo.findUserInfo(id);
     }
     

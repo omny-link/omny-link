@@ -40,11 +40,11 @@ privileged aspect DeploymentIntegrationTest_Roo_IntegrationTest {
     public void DeploymentIntegrationTest.testFindDeployment() {
         Deployment obj = dod.getRandomDeployment();
         Assert.assertNotNull("Data on demand for 'Deployment' failed to initialize correctly", obj);
-        Long id = obj.getId_();
+        String id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Deployment' failed to provide an identifier", id);
         obj = Deployment.findDeployment(id);
         Assert.assertNotNull("Find method for 'Deployment' illegally returned null for id '" + id + "'", obj);
-        Assert.assertEquals("Find method for 'Deployment' returned the incorrect identifier", id, obj.getId_());
+        Assert.assertEquals("Find method for 'Deployment' returned the incorrect identifier", id, obj.getId());
     }
     
     @Test
@@ -73,7 +73,7 @@ privileged aspect DeploymentIntegrationTest_Roo_IntegrationTest {
     public void DeploymentIntegrationTest.testFlush() {
         Deployment obj = dod.getRandomDeployment();
         Assert.assertNotNull("Data on demand for 'Deployment' failed to initialize correctly", obj);
-        Long id = obj.getId_();
+        String id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Deployment' failed to provide an identifier", id);
         obj = Deployment.findDeployment(id);
         Assert.assertNotNull("Find method for 'Deployment' illegally returned null for id '" + id + "'", obj);
@@ -87,14 +87,14 @@ privileged aspect DeploymentIntegrationTest_Roo_IntegrationTest {
     public void DeploymentIntegrationTest.testMergeUpdate() {
         Deployment obj = dod.getRandomDeployment();
         Assert.assertNotNull("Data on demand for 'Deployment' failed to initialize correctly", obj);
-        Long id = obj.getId_();
+        String id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Deployment' failed to provide an identifier", id);
         obj = Deployment.findDeployment(id);
         boolean modified =  dod.modifyDeployment(obj);
         Integer currentVersion = obj.getVersion();
         Deployment merged = obj.merge();
         obj.flush();
-        Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId_(), id);
+        Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(), id);
         Assert.assertTrue("Version for 'Deployment' failed to increment on merge and flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
     }
     
@@ -103,7 +103,7 @@ privileged aspect DeploymentIntegrationTest_Roo_IntegrationTest {
         Assert.assertNotNull("Data on demand for 'Deployment' failed to initialize correctly", dod.getRandomDeployment());
         Deployment obj = dod.getNewTransientDeployment(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'Deployment' failed to provide a new transient entity", obj);
-        Assert.assertNull("Expected 'Deployment' identifier to be null", obj.getId_());
+        Assert.assertNull("Expected 'Deployment' identifier to be null", obj.getId());
         try {
             obj.persist();
         } catch (final ConstraintViolationException e) {
@@ -115,14 +115,14 @@ privileged aspect DeploymentIntegrationTest_Roo_IntegrationTest {
             throw new IllegalStateException(msg.toString(), e);
         }
         obj.flush();
-        Assert.assertNotNull("Expected 'Deployment' identifier to no longer be null", obj.getId_());
+        Assert.assertNotNull("Expected 'Deployment' identifier to no longer be null", obj.getId());
     }
     
     @Test
     public void DeploymentIntegrationTest.testRemove() {
         Deployment obj = dod.getRandomDeployment();
         Assert.assertNotNull("Data on demand for 'Deployment' failed to initialize correctly", obj);
-        Long id = obj.getId_();
+        String id = obj.getId();
         Assert.assertNotNull("Data on demand for 'Deployment' failed to provide an identifier", id);
         obj = Deployment.findDeployment(id);
         obj.remove();

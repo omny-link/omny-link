@@ -17,11 +17,11 @@ privileged aspect ProcessInstance_Roo_Equals {
             return true;
         }
         ProcessInstance rhs = (ProcessInstance) obj;
-        return new EqualsBuilder().append(activityId, rhs.activityId).append(businessKey, rhs.businessKey).append(ended, rhs.ended).append(id, rhs.id).append(id_, rhs.id_).append(parentId, rhs.parentId).append(processDefinitionId, rhs.processDefinitionId).append(processInstanceId, rhs.processInstanceId).append(suspended, rhs.suspended).isEquals();
+        return new EqualsBuilder().append(activityId, rhs.activityId).append(businessKey, rhs.businessKey).append(ended, rhs.ended).append(id, rhs.id).append(parentId, rhs.parentId).append(processDefinitionId, rhs.processDefinitionId).append(processInstanceId, rhs.processInstanceId).append(suspended, rhs.suspended).isEquals();
     }
     
     public int ProcessInstance.hashCode() {
-        return new HashCodeBuilder().append(activityId).append(businessKey).append(ended).append(id).append(id_).append(parentId).append(processDefinitionId).append(processInstanceId).append(suspended).toHashCode();
+        return new HashCodeBuilder().append(activityId).append(businessKey).append(ended).append(id).append(parentId).append(processDefinitionId).append(processInstanceId).append(suspended).toHashCode();
     }
     
 }

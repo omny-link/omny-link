@@ -3,8 +3,7 @@
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <page:list id="pl_org_activiti_spring_rest_model_Deployment" items="${deployments}" z="nUmzBBUTRpPfQorntMt3i+nuUFg=">
-        <table:table data="${deployments}" id="l_org_activiti_spring_rest_model_Deployment" path="/deployments" typeIdFieldName="id_" z="GHzy2LfXmZWy/hUhTzG+QeGMkMo=">
-            <table:column id="c_org_activiti_spring_rest_model_Deployment_id" property="id" z="ni9+qGlnvgJW1NH5BuUqAZFFaD4="/>
+        <table:table data="${deployments}" id="l_org_activiti_spring_rest_model_Deployment" path="/deployments" z="HFY0VpTWolZpCyKVVzk4Gtv5cDI=">
             <table:column id="c_org_activiti_spring_rest_model_Deployment_name" property="name" z="Bf3JGM9tEam5J8xWU3qTOZj90CM="/>
             <table:column date="true" dateTimePattern="${deployment_deploymenttime_date_format}" id="c_org_activiti_spring_rest_model_Deployment_deploymentTime" property="deploymentTime" z="KlZzcLoD6BAkdYxJCoFY23znRfA="/>
             <table:column id="c_org_activiti_spring_rest_model_Deployment_category" property="category" z="lenBQhowdv2qiw5vP3KQkX18rIc="/>

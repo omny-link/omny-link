@@ -28,7 +28,7 @@ privileged aspect ProcessDefinitionController_Roo_Controller {
         }
         uiModel.asMap().clear();
         processDefinition.persist();
-        return "redirect:/process-definitions/" + encodeUrlPathSegment(processDefinition.getId_().toString(), httpServletRequest);
+        return "redirect:/process-definitions/" + encodeUrlPathSegment(processDefinition.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(params = "form", produces = "text/html")
@@ -37,10 +37,10 @@ privileged aspect ProcessDefinitionController_Roo_Controller {
         return "process-definitions/create";
     }
     
-    @RequestMapping(value = "/{id_}", produces = "text/html")
-    public String ProcessDefinitionController.show(@PathVariable("id_") Long id_, Model uiModel) {
-        uiModel.addAttribute("processdefinition", ProcessDefinition.findProcessDefinition(id_));
-        uiModel.addAttribute("itemId", id_);
+    @RequestMapping(value = "/{id}", produces = "text/html")
+    public String ProcessDefinitionController.show(@PathVariable("id") String id, Model uiModel) {
+        uiModel.addAttribute("processdefinition", ProcessDefinition.findProcessDefinition(id));
+        uiModel.addAttribute("itemId", id);
         return "process-definitions/show";
     }
     
@@ -66,18 +66,18 @@ privileged aspect ProcessDefinitionController_Roo_Controller {
         }
         uiModel.asMap().clear();
         processDefinition.merge();
-        return "redirect:/process-definitions/" + encodeUrlPathSegment(processDefinition.getId_().toString(), httpServletRequest);
+        return "redirect:/process-definitions/" + encodeUrlPathSegment(processDefinition.getId().toString(), httpServletRequest);
     }
     
-    @RequestMapping(value = "/{id_}", params = "form", produces = "text/html")
-    public String ProcessDefinitionController.updateForm(@PathVariable("id_") Long id_, Model uiModel) {
-        populateEditForm(uiModel, ProcessDefinition.findProcessDefinition(id_));
+    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    public String ProcessDefinitionController.updateForm(@PathVariable("id") String id, Model uiModel) {
+        populateEditForm(uiModel, ProcessDefinition.findProcessDefinition(id));
         return "process-definitions/update";
     }
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.DELETE, produces = "text/html")
-    public String ProcessDefinitionController.delete(@PathVariable("id_") Long id_, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        ProcessDefinition processDefinition = ProcessDefinition.findProcessDefinition(id_);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
+    public String ProcessDefinitionController.delete(@PathVariable("id") String id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+        ProcessDefinition processDefinition = ProcessDefinition.findProcessDefinition(id);
         processDefinition.remove();
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());

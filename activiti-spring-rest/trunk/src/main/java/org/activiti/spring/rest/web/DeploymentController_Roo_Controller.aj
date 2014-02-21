@@ -29,7 +29,7 @@ privileged aspect DeploymentController_Roo_Controller {
         }
         uiModel.asMap().clear();
         deployment.persist();
-        return "redirect:/deployments/" + encodeUrlPathSegment(deployment.getId_().toString(), httpServletRequest);
+        return "redirect:/deployments/" + encodeUrlPathSegment(deployment.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(params = "form", produces = "text/html")
@@ -38,11 +38,11 @@ privileged aspect DeploymentController_Roo_Controller {
         return "deployments/create";
     }
     
-    @RequestMapping(value = "/{id_}", produces = "text/html")
-    public String DeploymentController.show(@PathVariable("id_") Long id_, Model uiModel) {
+    @RequestMapping(value = "/{id}", produces = "text/html")
+    public String DeploymentController.show(@PathVariable("id") String id, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
-        uiModel.addAttribute("deployment", Deployment.findDeployment(id_));
-        uiModel.addAttribute("itemId", id_);
+        uiModel.addAttribute("deployment", Deployment.findDeployment(id));
+        uiModel.addAttribute("itemId", id);
         return "deployments/show";
     }
     
@@ -69,18 +69,18 @@ privileged aspect DeploymentController_Roo_Controller {
         }
         uiModel.asMap().clear();
         deployment.merge();
-        return "redirect:/deployments/" + encodeUrlPathSegment(deployment.getId_().toString(), httpServletRequest);
+        return "redirect:/deployments/" + encodeUrlPathSegment(deployment.getId().toString(), httpServletRequest);
     }
     
-    @RequestMapping(value = "/{id_}", params = "form", produces = "text/html")
-    public String DeploymentController.updateForm(@PathVariable("id_") Long id_, Model uiModel) {
-        populateEditForm(uiModel, Deployment.findDeployment(id_));
+    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    public String DeploymentController.updateForm(@PathVariable("id") String id, Model uiModel) {
+        populateEditForm(uiModel, Deployment.findDeployment(id));
         return "deployments/update";
     }
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.DELETE, produces = "text/html")
-    public String DeploymentController.delete(@PathVariable("id_") Long id_, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        Deployment deployment = Deployment.findDeployment(id_);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
+    public String DeploymentController.delete(@PathVariable("id") String id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+        Deployment deployment = Deployment.findDeployment(id);
         deployment.remove();
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());

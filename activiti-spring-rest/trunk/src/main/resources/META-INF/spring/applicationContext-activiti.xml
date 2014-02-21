@@ -33,7 +33,23 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
   
   <!-- JEE container managed data source (both DEV and PROD) -->
   <bean id="activitiDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-      <property name="jndiName" value="java:comp/env/jdbc/ActivitiDB"/>
+    <property name="jndiName" value="java:comp/env/jdbc/ActivitiDB"/>
+    <property name="defaultObject" ref="developmentDataSource" />
+  </bean>
+
+  <bean id="dbProperties"
+    class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="classpath:META-INF/spring/db.properties" />
+    <!-- Allow other PropertyPlaceholderConfigurer to run as well -->
+    <property name="ignoreUnresolvablePlaceholders" value="true" />
+  </bean>
+
+  <bean id="developmentDataSource"
+        class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+    <property name="driverClass" value="${jdbc.driver}" />
+    <property name="url" value="${jdbc.url}" />
+    <property name="username" value="${jdbc.username}" />
+    <property name="password" value="${jdbc.password}" />
   </bean>
 
   <bean id="transactionManager"

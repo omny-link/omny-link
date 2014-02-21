@@ -40,11 +40,11 @@ privileged aspect ProcessDefinitionIntegrationTest_Roo_IntegrationTest {
     public void ProcessDefinitionIntegrationTest.testFindProcessDefinition() {
         ProcessDefinition obj = dod.getRandomProcessDefinition();
         Assert.assertNotNull("Data on demand for 'ProcessDefinition' failed to initialize correctly", obj);
-        Long id = obj.getId_();
+        String id = obj.getId();
         Assert.assertNotNull("Data on demand for 'ProcessDefinition' failed to provide an identifier", id);
         obj = ProcessDefinition.findProcessDefinition(id);
         Assert.assertNotNull("Find method for 'ProcessDefinition' illegally returned null for id '" + id + "'", obj);
-        Assert.assertEquals("Find method for 'ProcessDefinition' returned the incorrect identifier", id, obj.getId_());
+        Assert.assertEquals("Find method for 'ProcessDefinition' returned the incorrect identifier", id, obj.getId());
     }
     
     @Test
@@ -73,7 +73,7 @@ privileged aspect ProcessDefinitionIntegrationTest_Roo_IntegrationTest {
     public void ProcessDefinitionIntegrationTest.testFlush() {
         ProcessDefinition obj = dod.getRandomProcessDefinition();
         Assert.assertNotNull("Data on demand for 'ProcessDefinition' failed to initialize correctly", obj);
-        Long id = obj.getId_();
+        String id = obj.getId();
         Assert.assertNotNull("Data on demand for 'ProcessDefinition' failed to provide an identifier", id);
         obj = ProcessDefinition.findProcessDefinition(id);
         Assert.assertNotNull("Find method for 'ProcessDefinition' illegally returned null for id '" + id + "'", obj);
@@ -87,14 +87,14 @@ privileged aspect ProcessDefinitionIntegrationTest_Roo_IntegrationTest {
     public void ProcessDefinitionIntegrationTest.testMergeUpdate() {
         ProcessDefinition obj = dod.getRandomProcessDefinition();
         Assert.assertNotNull("Data on demand for 'ProcessDefinition' failed to initialize correctly", obj);
-        Long id = obj.getId_();
+        String id = obj.getId();
         Assert.assertNotNull("Data on demand for 'ProcessDefinition' failed to provide an identifier", id);
         obj = ProcessDefinition.findProcessDefinition(id);
         boolean modified =  dod.modifyProcessDefinition(obj);
         Integer currentVersion = obj.getVersion_();
         ProcessDefinition merged = obj.merge();
         obj.flush();
-        Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId_(), id);
+        Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(), id);
         Assert.assertTrue("Version for 'ProcessDefinition' failed to increment on merge and flush directive", (currentVersion != null && obj.getVersion_() > currentVersion) || !modified);
     }
     
@@ -103,7 +103,7 @@ privileged aspect ProcessDefinitionIntegrationTest_Roo_IntegrationTest {
         Assert.assertNotNull("Data on demand for 'ProcessDefinition' failed to initialize correctly", dod.getRandomProcessDefinition());
         ProcessDefinition obj = dod.getNewTransientProcessDefinition(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'ProcessDefinition' failed to provide a new transient entity", obj);
-        Assert.assertNull("Expected 'ProcessDefinition' identifier to be null", obj.getId_());
+        Assert.assertNull("Expected 'ProcessDefinition' identifier to be null", obj.getId());
         try {
             obj.persist();
         } catch (final ConstraintViolationException e) {
@@ -115,14 +115,14 @@ privileged aspect ProcessDefinitionIntegrationTest_Roo_IntegrationTest {
             throw new IllegalStateException(msg.toString(), e);
         }
         obj.flush();
-        Assert.assertNotNull("Expected 'ProcessDefinition' identifier to no longer be null", obj.getId_());
+        Assert.assertNotNull("Expected 'ProcessDefinition' identifier to no longer be null", obj.getId());
     }
     
     @Test
     public void ProcessDefinitionIntegrationTest.testRemove() {
         ProcessDefinition obj = dod.getRandomProcessDefinition();
         Assert.assertNotNull("Data on demand for 'ProcessDefinition' failed to initialize correctly", obj);
-        Long id = obj.getId_();
+        String id = obj.getId();
         Assert.assertNotNull("Data on demand for 'ProcessDefinition' failed to provide an identifier", id);
         obj = ProcessDefinition.findProcessDefinition(id);
         obj.remove();

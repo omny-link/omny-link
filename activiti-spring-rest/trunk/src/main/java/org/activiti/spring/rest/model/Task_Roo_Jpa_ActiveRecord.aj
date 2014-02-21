@@ -22,6 +22,11 @@ privileged aspect Task_Roo_Jpa_ActiveRecord {
         return em;
     }
     
+    public static Task Task.findTask(String id) {
+        if (id == null || id.length() == 0) return null;
+        return entityManager().find(Task.class, id);
+    }
+    
     @Transactional
     public void Task.persist() {
         if (this.entityManager == null) this.entityManager = entityManager();
@@ -34,7 +39,7 @@ privileged aspect Task_Roo_Jpa_ActiveRecord {
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
-            Task attached = Task.findTask(this.id_);
+            Task attached = Task.findTask(this.id);
             this.entityManager.remove(attached);
         }
     }

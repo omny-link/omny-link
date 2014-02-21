@@ -17,11 +17,11 @@ privileged aspect ProcessDefinition_Roo_Equals {
             return true;
         }
         ProcessDefinition rhs = (ProcessDefinition) obj;
-        return new EqualsBuilder().append(category, rhs.category).append(deploymentId, rhs.deploymentId).append(description, rhs.description).append(diagramResourceName, rhs.diagramResourceName).append(formKey, rhs.formKey).append(id, rhs.id).append(id_, rhs.id_).append(key, rhs.key).append(name, rhs.name).append(resourceName, rhs.resourceName).append(version, rhs.version).isEquals();
+        return new EqualsBuilder().append(category, rhs.category).append(deploymentId, rhs.deploymentId).append(description, rhs.description).append(diagramResourceName, rhs.diagramResourceName).append(formKey, rhs.formKey).append(id, rhs.id).append(key, rhs.key).append(name, rhs.name).append(resourceName, rhs.resourceName).append(version, rhs.version).isEquals();
     }
     
     public int ProcessDefinition.hashCode() {
-        return new HashCodeBuilder().append(category).append(deploymentId).append(description).append(diagramResourceName).append(formKey).append(id).append(id_).append(key).append(name).append(resourceName).append(version).toHashCode();
+        return new HashCodeBuilder().append(category).append(deploymentId).append(description).append(diagramResourceName).append(formKey).append(id).append(key).append(name).append(resourceName).append(version).toHashCode();
     }
     
 }

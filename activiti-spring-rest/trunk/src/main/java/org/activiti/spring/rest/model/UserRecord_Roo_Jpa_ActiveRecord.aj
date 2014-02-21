@@ -14,17 +14,12 @@ privileged aspect UserRecord_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager UserRecord.entityManager;
     
-    public static final List<String> UserRecord.fieldNames4OrderClauseFilter = java.util.Arrays.asList("JSON_FIELDS", "processEngine", "id", "firstName", "lastName", "email", "userInfos", "userGroups");
+    public static final List<String> UserRecord.fieldNames4OrderClauseFilter = java.util.Arrays.asList("LOGGER", "JSON_FIELDS", "processEngine", "id", "firstName", "lastName", "email", "userInfos", "userGroups");
     
     public static final EntityManager UserRecord.entityManager() {
         EntityManager em = new UserRecord().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
-    }
-    
-    public static UserRecord UserRecord.findUserRecord(Long id_) {
-        if (id_ == null) return null;
-        return entityManager().find(UserRecord.class, id_);
     }
     
     @Transactional
@@ -39,7 +34,7 @@ privileged aspect UserRecord_Roo_Jpa_ActiveRecord {
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
-            UserRecord attached = UserRecord.findUserRecord(this.id_);
+            UserRecord attached = UserRecord.findUserRecord(this.id);
             this.entityManager.remove(attached);
         }
     }

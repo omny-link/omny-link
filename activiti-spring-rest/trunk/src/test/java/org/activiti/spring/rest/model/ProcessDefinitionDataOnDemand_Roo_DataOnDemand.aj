@@ -30,7 +30,6 @@ privileged aspect ProcessDefinitionDataOnDemand_Roo_DataOnDemand {
         setDescription(obj, index);
         setDiagramResourceName(obj, index);
         setFormKey(obj, index);
-        setId(obj, index);
         setKey(obj, index);
         setName(obj, index);
         setProcessEngine(obj, index);
@@ -62,11 +61,6 @@ privileged aspect ProcessDefinitionDataOnDemand_Roo_DataOnDemand {
     public void ProcessDefinitionDataOnDemand.setFormKey(ProcessDefinition obj, int index) {
         String formKey = "formKey_" + index;
         obj.setFormKey(formKey);
-    }
-    
-    public void ProcessDefinitionDataOnDemand.setId(ProcessDefinition obj, int index) {
-        String id = "id_" + index;
-        obj.setId(id);
     }
     
     public void ProcessDefinitionDataOnDemand.setKey(ProcessDefinition obj, int index) {
@@ -103,14 +97,14 @@ privileged aspect ProcessDefinitionDataOnDemand_Roo_DataOnDemand {
             index = data.size() - 1;
         }
         ProcessDefinition obj = data.get(index);
-        Long id = obj.getId_();
+        String id = obj.getId();
         return ProcessDefinition.findProcessDefinition(id);
     }
     
     public ProcessDefinition ProcessDefinitionDataOnDemand.getRandomProcessDefinition() {
         init();
         ProcessDefinition obj = data.get(rnd.nextInt(data.size()));
-        Long id = obj.getId_();
+        String id = obj.getId();
         return ProcessDefinition.findProcessDefinition(id);
     }
     

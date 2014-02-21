@@ -1,4 +1,6 @@
 package org.activiti.spring.rest.model;
+import javax.persistence.Id;
+
 import org.springframework.roo.addon.equals.RooEquals;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -20,6 +22,7 @@ public class Execution {
 
     /**
      */
+	@Id
     private String id;
 
     /**

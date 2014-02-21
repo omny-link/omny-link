@@ -3,7 +3,7 @@
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <form:create id="fc_org_activiti_spring_rest_model_Deployment" modelAttribute="deployment" path="/deployments" render="${empty dependencies}" z="lGdV5DkNeppXgE/X6nHondn8jhY=">
-        <field:input field="id" id="c_org_activiti_spring_rest_model_Deployment_id" z="JPhcYT38win7GwIB3btT0HdL9z4="/>
+        <field:input field="id" id="c_org_activiti_spring_rest_model_Deployment_id" required="true" z="J9u4J9bw+dtnDzDviImbgbvqa60="/>
         <field:input field="name" id="c_org_activiti_spring_rest_model_Deployment_name" z="RCxkR9Tc2Ax+aEpBRbLgq/DzfiU="/>
         <field:datetime dateTimePattern="${deployment_deploymenttime_date_format}" field="deploymentTime" id="c_org_activiti_spring_rest_model_Deployment_deploymentTime" z="TJcl01Teq5j1YsBXT8NZScnN7lI="/>
         <field:input field="category" id="c_org_activiti_spring_rest_model_Deployment_category" z="tq3c4XtX4samrIg3cAUWCiyTfPQ="/>

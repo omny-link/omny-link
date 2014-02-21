@@ -17,11 +17,11 @@ privileged aspect Execution_Roo_Equals {
             return true;
         }
         Execution rhs = (Execution) obj;
-        return new EqualsBuilder().append(activityId, rhs.activityId).append(ended, rhs.ended).append(id, rhs.id).append(id_, rhs.id_).append(parentId, rhs.parentId).append(processInstanceId, rhs.processInstanceId).isEquals();
+        return new EqualsBuilder().append(activityId, rhs.activityId).append(ended, rhs.ended).append(id, rhs.id).append(parentId, rhs.parentId).append(processInstanceId, rhs.processInstanceId).isEquals();
     }
     
     public int Execution.hashCode() {
-        return new HashCodeBuilder().append(activityId).append(ended).append(id).append(id_).append(parentId).append(processInstanceId).toHashCode();
+        return new HashCodeBuilder().append(activityId).append(ended).append(id).append(parentId).append(processInstanceId).toHashCode();
     }
     
 }

@@ -30,7 +30,7 @@ privileged aspect TaskController_Roo_Controller {
         }
         uiModel.asMap().clear();
         task.persist();
-        return "redirect:/tasks/" + encodeUrlPathSegment(task.getId_().toString(), httpServletRequest);
+        return "redirect:/tasks/" + encodeUrlPathSegment(task.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(params = "form", produces = "text/html")
@@ -39,11 +39,11 @@ privileged aspect TaskController_Roo_Controller {
         return "tasks/create";
     }
     
-    @RequestMapping(value = "/{id_}", produces = "text/html")
-    public String TaskController.show(@PathVariable("id_") Long id_, Model uiModel) {
+    @RequestMapping(value = "/{id}", produces = "text/html")
+    public String TaskController.show(@PathVariable("id") String id, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
-        uiModel.addAttribute("task", Task.findTask(id_));
-        uiModel.addAttribute("itemId", id_);
+        uiModel.addAttribute("task", Task.findTask(id));
+        uiModel.addAttribute("itemId", id);
         return "tasks/show";
     }
     
@@ -70,18 +70,18 @@ privileged aspect TaskController_Roo_Controller {
         }
         uiModel.asMap().clear();
         task.merge();
-        return "redirect:/tasks/" + encodeUrlPathSegment(task.getId_().toString(), httpServletRequest);
+        return "redirect:/tasks/" + encodeUrlPathSegment(task.getId().toString(), httpServletRequest);
     }
     
-    @RequestMapping(value = "/{id_}", params = "form", produces = "text/html")
-    public String TaskController.updateForm(@PathVariable("id_") Long id_, Model uiModel) {
-        populateEditForm(uiModel, Task.findTask(id_));
+    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    public String TaskController.updateForm(@PathVariable("id") String id, Model uiModel) {
+        populateEditForm(uiModel, Task.findTask(id));
         return "tasks/update";
     }
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.DELETE, produces = "text/html")
-    public String TaskController.delete(@PathVariable("id_") Long id_, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        Task task = Task.findTask(id_);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
+    public String TaskController.delete(@PathVariable("id") String id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+        Task task = Task.findTask(id);
         task.remove();
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());

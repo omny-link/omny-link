@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -62,6 +63,7 @@ public class Task {
 
 	/**
      */
+	@Id
 	private String id;
 
 	/**

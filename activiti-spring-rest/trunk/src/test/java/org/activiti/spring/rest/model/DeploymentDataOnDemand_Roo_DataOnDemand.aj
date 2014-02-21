@@ -30,7 +30,6 @@ privileged aspect DeploymentDataOnDemand_Roo_DataOnDemand {
         Deployment obj = new Deployment();
         setCategory(obj, index);
         setDeploymentTime(obj, index);
-        setId(obj, index);
         setName(obj, index);
         setProcessEngine(obj, index);
         setUrl(obj, index);
@@ -45,11 +44,6 @@ privileged aspect DeploymentDataOnDemand_Roo_DataOnDemand {
     public void DeploymentDataOnDemand.setDeploymentTime(Deployment obj, int index) {
         Date deploymentTime = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setDeploymentTime(deploymentTime);
-    }
-    
-    public void DeploymentDataOnDemand.setId(Deployment obj, int index) {
-        String id = "id_" + index;
-        obj.setId(id);
     }
     
     public void DeploymentDataOnDemand.setName(Deployment obj, int index) {
@@ -76,14 +70,14 @@ privileged aspect DeploymentDataOnDemand_Roo_DataOnDemand {
             index = data.size() - 1;
         }
         Deployment obj = data.get(index);
-        Long id = obj.getId_();
+        String id = obj.getId();
         return Deployment.findDeployment(id);
     }
     
     public Deployment DeploymentDataOnDemand.getRandomDeployment() {
         init();
         Deployment obj = data.get(rnd.nextInt(data.size()));
-        Long id = obj.getId_();
+        String id = obj.getId();
         return Deployment.findDeployment(id);
     }
     

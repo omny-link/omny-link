@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.Id;
+
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.form.StartFormData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ public class ProcessDefinition {
 
 	private static ProcessEngine processEngine;
 
+	@Id
 	private String id;
 
 	/**
