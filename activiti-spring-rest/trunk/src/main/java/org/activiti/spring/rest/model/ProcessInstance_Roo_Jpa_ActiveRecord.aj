@@ -11,6 +11,11 @@ privileged aspect ProcessInstance_Roo_Jpa_ActiveRecord {
     
     public static final List<String> ProcessInstance.fieldNames4OrderClauseFilter = java.util.Arrays.asList("processEngine", "businessKey", "processDefinitionId", "suspended");
     
+    public static ProcessInstance ProcessInstance.findProcessInstance(String id) {
+        if (id == null || id.length() == 0) return null;
+        return entityManager().find(ProcessInstance.class, id);
+    }
+    
     @Transactional
     public ProcessInstance ProcessInstance.merge() {
         if (this.entityManager == null) this.entityManager = entityManager();

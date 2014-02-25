@@ -4,7 +4,7 @@
     <jsp:output omit-xml-declaration="yes"/>
     <form:create id="fc_org_activiti_spring_rest_model_ProcessInstance" modelAttribute="processInstance" path="/process-instances" render="${empty dependencies}" z="SSREyKI1tY51ky7fReOdmss6AuY=">
         <field:input field="activityId" id="c_org_activiti_spring_rest_model_ProcessInstance_activityId" z="skA9Yrn5PiBmeONX6nrWLav9zZ8="/>
-        <field:input field="id" id="c_org_activiti_spring_rest_model_ProcessInstance_id" z="4E0+Itn/3NUThbGYEp3wHuH+DYA="/>
+        <field:input field="id" id="c_org_activiti_spring_rest_model_ProcessInstance_id" required="true" z="2OShC1Y2DGbuJtB07pj/ir0WuXQ="/>
         <field:input field="parentId" id="c_org_activiti_spring_rest_model_ProcessInstance_parentId" z="PH+otpAOGR+Z6DMZnYCqVDLI3CU="/>
         <field:input field="processInstanceId" id="c_org_activiti_spring_rest_model_ProcessInstance_processInstanceId" z="inOICylC98ikZ7u9dIDCo9ijP+E="/>
         <field:checkbox field="ended" id="c_org_activiti_spring_rest_model_ProcessInstance_ended" z="hIM37U8qpDf65yDmjv5heRDPWq8="/>

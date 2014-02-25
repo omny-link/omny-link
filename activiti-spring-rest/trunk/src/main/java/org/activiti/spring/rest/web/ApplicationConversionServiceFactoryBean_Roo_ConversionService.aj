@@ -8,9 +8,11 @@ import org.activiti.spring.rest.model.Execution;
 import org.activiti.spring.rest.model.Form;
 import org.activiti.spring.rest.model.FormProperty;
 import org.activiti.spring.rest.model.ProcessDefinition;
+import org.activiti.spring.rest.model.ProcessInstance;
 import org.activiti.spring.rest.model.Task;
 import org.activiti.spring.rest.model.UserGroup;
 import org.activiti.spring.rest.model.UserInfo;
+import org.activiti.spring.rest.model.UserRecord;
 import org.activiti.spring.rest.web.ApplicationConversionServiceFactoryBean;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.core.convert.converter.Converter;
@@ -116,6 +118,22 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         };
     }
     
+    public Converter<ProcessInstance, String> ApplicationConversionServiceFactoryBean.getProcessInstanceToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<org.activiti.spring.rest.model.ProcessInstance, java.lang.String>() {
+            public String convert(ProcessInstance processInstance) {
+                return new StringBuilder().append(processInstance.getActivityId()).append(' ').append(processInstance.getParentId()).append(' ').append(processInstance.getProcessInstanceId()).append(' ').append(processInstance.getBusinessKey()).toString();
+            }
+        };
+    }
+    
+    public Converter<String, ProcessInstance> ApplicationConversionServiceFactoryBean.getIdToProcessInstanceConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, org.activiti.spring.rest.model.ProcessInstance>() {
+            public org.activiti.spring.rest.model.ProcessInstance convert(java.lang.String id) {
+                return ProcessInstance.findProcessInstance(id);
+            }
+        };
+    }
+    
     public Converter<Task, String> ApplicationConversionServiceFactoryBean.getTaskToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<org.activiti.spring.rest.model.Task, java.lang.String>() {
             public String convert(Task task) {
@@ -172,6 +190,22 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         };
     }
     
+    public Converter<UserRecord, String> ApplicationConversionServiceFactoryBean.getUserRecordToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<org.activiti.spring.rest.model.UserRecord, java.lang.String>() {
+            public String convert(UserRecord userRecord) {
+                return new StringBuilder().append(userRecord.getFirstName()).append(' ').append(userRecord.getLastName()).append(' ').append(userRecord.getEmail()).toString();
+            }
+        };
+    }
+    
+    public Converter<String, UserRecord> ApplicationConversionServiceFactoryBean.getIdToUserRecordConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, org.activiti.spring.rest.model.UserRecord>() {
+            public org.activiti.spring.rest.model.UserRecord convert(java.lang.String id) {
+                return UserRecord.findUserRecord(id);
+            }
+        };
+    }
+    
     public void ApplicationConversionServiceFactoryBean.installLabelConverters(FormatterRegistry registry) {
         registry.addConverter(getDeploymentToStringConverter());
         registry.addConverter(getIdToDeploymentConverter());
@@ -185,6 +219,8 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         registry.addConverter(getStringToFormPropertyConverter());
         registry.addConverter(getProcessDefinitionToStringConverter());
         registry.addConverter(getIdToProcessDefinitionConverter());
+        registry.addConverter(getProcessInstanceToStringConverter());
+        registry.addConverter(getIdToProcessInstanceConverter());
         registry.addConverter(getTaskToStringConverter());
         registry.addConverter(getIdToTaskConverter());
         registry.addConverter(getUserGroupToStringConverter());
@@ -192,6 +228,8 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         registry.addConverter(getStringToUserGroupConverter());
         registry.addConverter(getUserInfoToStringConverter());
         registry.addConverter(getIdToUserInfoConverter());
+        registry.addConverter(getUserRecordToStringConverter());
+        registry.addConverter(getIdToUserRecordConverter());
     }
     
     public void ApplicationConversionServiceFactoryBean.afterPropertiesSet() {

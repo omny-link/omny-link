@@ -2,11 +2,11 @@
 <div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
-    <form:update id="fu_org_activiti_spring_rest_model_UserRecord" idField="id_" modelAttribute="userRecord" path="/userrecords" versionField="Version" z="P8U1fw0ddIISwJAGDZCzgQkzGNM=">
-        <field:input field="id" id="c_org_activiti_spring_rest_model_UserRecord_id" z="BSVHmljCWExwFrsbJyvyJG84YwA="/>
+    <form:update id="fu_org_activiti_spring_rest_model_UserRecord" modelAttribute="userRecord" path="/userrecords" versionField="Version" z="0tl39Vkngfu3LXSaPgy6d3CaUqQ=">
         <field:input field="firstName" id="c_org_activiti_spring_rest_model_UserRecord_firstName" z="irBUlbDd0dUau1PA6ncl55QyoPw="/>
         <field:input field="lastName" id="c_org_activiti_spring_rest_model_UserRecord_lastName" z="KAjz5HM3MlUKyV2xOGrkANDjwvI="/>
         <field:input field="email" id="c_org_activiti_spring_rest_model_UserRecord_email" validationMessageCode="field_invalid_email" z="Y2o9xGWTT6Uyo/LPBFSfrdbF5QU="/>
         <field:simple field="userInfos" id="c_org_activiti_spring_rest_model_UserRecord_userInfos" messageCode="entity_reference_not_managed" messageCodeAttribute="User Info" z="6DwKwTlx3s5p3LbQRaGXAqxYOYw="/>
+        <field:select field="userGroups" id="c_org_activiti_spring_rest_model_UserRecord_userGroups" itemValue="id_" items="${usergroups}" multiple="true" path="/groups" z="SvOKqJ9JZnKwQl8f4mXnxvIiUnY="/>
     </form:update>
 </div>

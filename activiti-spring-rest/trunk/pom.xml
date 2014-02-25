@@ -551,6 +551,7 @@
           <stopKey>STOP</stopKey>
           <contextPath>/</contextPath>
         </configuration>
+        <!-- 
         <executions>
           <execution>
             <id>start-jetty</id>
@@ -571,6 +572,7 @@
             </goals>
           </execution>
 </executions>
+ -->
             </plugin>
         </plugins>
         <pluginManagement>

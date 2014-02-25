@@ -6,6 +6,7 @@
         <field:input field="id" id="c_org_activiti_spring_rest_model_UserGroup_id" z="TB+TTRrDrENZfFp6SORb82y0my8="/>
         <field:input field="name" id="c_org_activiti_spring_rest_model_UserGroup_name" z="EB9pkGCzKRilxVGWyEz5sIJN+Pw="/>
         <field:input field="type" id="c_org_activiti_spring_rest_model_UserGroup_type" z="nSaC1mJVNueltXnI2oyfEN2w+0c="/>
+        <field:select field="users" id="c_org_activiti_spring_rest_model_UserGroup_users" itemValue="id" items="${userrecords}" multiple="true" path="/userrecords" z="MbHQaVaEdU2PWLVR1MpNv/1Bis4="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_org_activiti_spring_rest_model_UserGroup" render="${not empty dependencies}" z="vJL+SzEhJxIp4Yd/T9cPPiOYA7g="/>
 </div>

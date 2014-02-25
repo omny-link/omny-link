@@ -5,6 +5,6 @@
     <form:update id="fu_org_activiti_spring_rest_model_UserInfo" modelAttribute="userInfo" path="/userinfoes" versionField="Version" z="SmyyOVqObvuiaLRClO4lsbOlGEY=">
         <field:input field="key" id="c_org_activiti_spring_rest_model_UserInfo_key" z="kEGg9MPTuU57xVzrnVkMSB9A14g="/>
         <field:input field="value" id="c_org_activiti_spring_rest_model_UserInfo_value" z="GmB9B5N7ilWolhIw5Ms3I+wMmss="/>
-        <field:select field="userRecord" id="c_org_activiti_spring_rest_model_UserInfo_userRecord" itemValue="id_" items="${userrecords}" path="/userrecords" z="KPQ9h/LgFs1T5orE4NjSUmiFsQE="/>
+        <field:select field="userRecord" id="c_org_activiti_spring_rest_model_UserInfo_userRecord" itemValue="id" items="${userrecords}" path="/userrecords" z="wfLdOQ4rKyyHo8XasCAeEGVth1U="/>
     </form:update>
 </div>
