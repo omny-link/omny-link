@@ -11,5 +11,7 @@
         <field:display field="deploymentId" id="s_org_activiti_spring_rest_model_ProcessDefinition_deploymentId" object="${processdefinition}" z="vufyFFWPVhPEqpU/7XPOgZNVD0I="/>
         <field:display field="diagramResourceName" id="s_org_activiti_spring_rest_model_ProcessDefinition_diagramResourceName" object="${processdefinition}" z="PLRrsTMyryLo0xq7ZW92sP55eiA="/>
         <field:display field="key" id="s_org_activiti_spring_rest_model_ProcessDefinition_key" object="${processdefinition}" z="4dF99xljiWAd2S9rSzbH2sXXoLc="/>
+        <field:display field="formKey" id="s_org_activiti_spring_rest_model_ProcessDefinition_formKey" object="${processdefinition}" z="JdUvkKB+lcOBMQBmSb3984RZUZM="/>
+        <field:display field="formProperties" id="s_org_activiti_spring_rest_model_ProcessDefinition_formProperties" object="${processdefinition}" z="QBeIgENhcUlfcquonekustfBd6Y="/>
     </page:show>
 </div>

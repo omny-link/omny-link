@@ -3,9 +3,9 @@
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <page:show id="ps_org_activiti_spring_rest_model_UserRecord" object="${userrecord}" path="/userrecords" z="3m7hTx8IVUxoIW4iWN1EZWxyPmg=">
-        <field:display field="id" id="s_org_activiti_spring_rest_model_UserRecord_id" object="${userrecord}" z="Mc8RL0I7cFb5B+ZVPV9ynisMaHQ="/>
         <field:display field="firstName" id="s_org_activiti_spring_rest_model_UserRecord_firstName" object="${userrecord}" z="G4QE8ZbDH1zWV7UNOVKpCmtGGZA="/>
         <field:display field="lastName" id="s_org_activiti_spring_rest_model_UserRecord_lastName" object="${userrecord}" z="PnFW34kNrEVUYkv5mnJbOhPak3Y="/>
         <field:display field="email" id="s_org_activiti_spring_rest_model_UserRecord_email" object="${userrecord}" z="0OCJwFKrZWx77GcR4yu3mq4b+7U="/>
+        <field:display field="userGroups" id="s_org_activiti_spring_rest_model_UserRecord_userGroups" object="${userrecord}" z="36jluzee3Q+snur3sJkilrGcyEQ="/>
     </page:show>
 </div>

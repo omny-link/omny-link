@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RooWebJson(jsonObject = Task.class)
 public class TaskController {
 
-	protected static final Logger LOGGER = LoggerFactory
-			.getLogger(UserRecordController.class);
-
+    protected static final Logger LOGGER = LoggerFactory
+    		.getLogger(TaskController.class);
 }

@@ -13,6 +13,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RooWebScaffold(path = "executions", formBackingObject = Execution.class)
 public class ExecutionController {
 
-	protected static final Logger LOGGER = LoggerFactory
-			.getLogger(UserRecordController.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(ExecutionController.class);
 }

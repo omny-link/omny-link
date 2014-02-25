@@ -7,6 +7,7 @@
             <table:column id="c_org_activiti_spring_rest_model_UserGroup_id" property="id" z="iE990dYBnP0Ae0oCsqxbnWhKUh4="/>
             <table:column id="c_org_activiti_spring_rest_model_UserGroup_name" property="name" z="w26sd5bhmgzrtB839ydeRdGIrBA="/>
             <table:column id="c_org_activiti_spring_rest_model_UserGroup_type" property="type" z="UcDu4UuYIFCvxgacibYoyH51k74="/>
+            <table:column id="c_org_activiti_spring_rest_model_UserGroup_users" property="users" z="CUNv8B/+STLK823G3jxKasEtnvU="/>
         </table:table>
     </page:list>
 </div>
