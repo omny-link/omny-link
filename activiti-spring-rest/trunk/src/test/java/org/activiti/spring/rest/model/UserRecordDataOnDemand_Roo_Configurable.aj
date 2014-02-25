@@ -3,11 +3,11 @@
 
 package org.activiti.spring.rest.model;
 
-import org.activiti.spring.rest.model.ProcessInstanceIntegrationTest;
+import org.activiti.spring.rest.model.UserRecordDataOnDemand;
 import org.springframework.beans.factory.annotation.Configurable;
 
-privileged aspect ProcessInstanceIntegrationTest_Roo_Configurable {
+privileged aspect UserRecordDataOnDemand_Roo_Configurable {
     
-    declare @type: ProcessInstanceIntegrationTest: @Configurable;
+    declare @type: UserRecordDataOnDemand: @Configurable;
     
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RooWebScaffold(path = "userinfoes", formBackingObject = UserInfo.class)
 public class UserInfoController {
-	protected static final Logger LOGGER = LoggerFactory
-			.getLogger(UserRecordController.class);
+
+    protected static final Logger LOGGER = LoggerFactory
+    		.getLogger(UserInfoController.class);
 }

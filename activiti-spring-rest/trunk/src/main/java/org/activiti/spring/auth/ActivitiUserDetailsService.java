@@ -3,15 +3,15 @@ package org.activiti.spring.auth;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.activiti.engine.IdentityService;
+import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.identity.User;
+import org.activiti.spring.rest.web.UserRecordController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.IdentityService;
-import org.activiti.engine.identity.User;
-import org.activiti.spring.rest.web.UserRecordController;
 
-public class ActivitiExternalAuthService extends ExternalAuthenticationService{ 
+public class ActivitiUserDetailsService extends ExternalUserDetailsService{ 
 
 	private static final String PROC_FULFIL_ACCOUNT = "FulfilAccount";
 
@@ -33,6 +33,9 @@ public class ActivitiExternalAuthService extends ExternalAuthenticationService{
 			user.setLastName(userDetails.getSurname());
 			
 //			idSvc.saveUser(user); 
+			// TODO This will only work when the process engine has been
+			// injected need to add an alternative using REST invocation for
+			// other cases.
 			try { 
 			
 				Map<String, Object> vars = new HashMap<String, Object>();

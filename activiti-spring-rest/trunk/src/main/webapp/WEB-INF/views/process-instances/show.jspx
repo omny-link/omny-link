@@ -4,7 +4,6 @@
     <jsp:output omit-xml-declaration="yes"/>
     <page:show id="ps_org_activiti_spring_rest_model_ProcessInstance" object="${processinstance}" path="/process-instances" z="vMjI9BRfYn5KODLRNfkEGPa7N4I=">
         <field:display field="activityId" id="s_org_activiti_spring_rest_model_ProcessInstance_activityId" object="${processinstance}" z="/4lFVWTrTfgn75SMAgQEhjop5o4="/>
-        <field:display field="id" id="s_org_activiti_spring_rest_model_ProcessInstance_id" object="${processinstance}" z="R16Ni1ynCE5RxEGwjzrcgkvaKf0="/>
         <field:display field="parentId" id="s_org_activiti_spring_rest_model_ProcessInstance_parentId" object="${processinstance}" z="KISjZkk9ixbltVWmYKVLc3otffU="/>
         <field:display field="processInstanceId" id="s_org_activiti_spring_rest_model_ProcessInstance_processInstanceId" object="${processinstance}" z="5YGThE9QmqxLJkf7CXt1k93l6BE="/>
         <field:display field="ended" id="s_org_activiti_spring_rest_model_ProcessInstance_ended" object="${processinstance}" z="p32wOn70WiQKMCjx+jPR00uUUhI="/>

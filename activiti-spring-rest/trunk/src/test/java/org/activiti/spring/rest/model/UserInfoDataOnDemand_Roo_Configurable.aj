@@ -3,11 +3,11 @@
 
 package org.activiti.spring.rest.model;
 
-import org.activiti.spring.rest.model.ExecutionIntegrationTest;
+import org.activiti.spring.rest.model.UserInfoDataOnDemand;
 import org.springframework.beans.factory.annotation.Configurable;
 
-privileged aspect ExecutionIntegrationTest_Roo_Configurable {
+privileged aspect UserInfoDataOnDemand_Roo_Configurable {
     
-    declare @type: ExecutionIntegrationTest: @Configurable;
+    declare @type: UserInfoDataOnDemand: @Configurable;
     
 }

@@ -11,6 +11,9 @@
         <field:input field="deploymentId" id="c_org_activiti_spring_rest_model_ProcessDefinition_deploymentId" validationMessageCode="field_invalid_integer" z="yQ4rV+yBRKPrtC3yTgDcmP6X12s="/>
         <field:input field="diagramResourceName" id="c_org_activiti_spring_rest_model_ProcessDefinition_diagramResourceName" z="GeuzCtTQsmzHFqu2n2Ltb13ryC8="/>
         <field:input field="key" id="c_org_activiti_spring_rest_model_ProcessDefinition_key" z="W44XlpgU3a7WyJEh0MCxatZwOOk="/>
+        <field:input field="formKey" id="c_org_activiti_spring_rest_model_ProcessDefinition_formKey" z="L4q7hPF33MHJsFZhbg67cNdyJbg="/>
+        <field:input field="formProperties" id="c_org_activiti_spring_rest_model_ProcessDefinition_formProperties" z="Q2VyPf3BWZqviifIc8caV1RpK28="/>
+        <field:input field="id" id="c_org_activiti_spring_rest_model_ProcessDefinition_id" required="true" z="BskrWRSHeUCOy+KCPMPP37/g65o="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_org_activiti_spring_rest_model_ProcessDefinition" render="${not empty dependencies}" z="EMKIyKnjb9KEGQ1Fwedh/GQ6WMw="/>
 </div>
