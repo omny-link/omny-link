@@ -65,11 +65,11 @@ public class ProcessInstance extends Execution {
 				.createProcessInstanceQuery().list());
 	}
 
-	public static ProcessInstance findProcessInstance(Long id) {
+	public static ProcessInstance findProcessInstance(String id) {
 		return wrap(
 				processEngine.getRuntimeService()
 						.createProcessInstanceQuery()
-						.processDefinitionId(String.valueOf(id)).list()).get(0);
+						.processDefinitionId(id).list()).get(0);
 	}
 
 	public static List<ProcessInstance> findProcessInstanceEntries(

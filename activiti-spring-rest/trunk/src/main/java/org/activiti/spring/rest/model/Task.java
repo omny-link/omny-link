@@ -141,12 +141,12 @@ public class Task {
 		}
 	}
 
-	public static Task findTask(Long id) {
+	public static Task findTask(String id) {
 		Task task = wrap(
 				processEngine.getTaskService().createTaskQuery()
 						.taskId(String.valueOf(id)).list()).get(0);
 		TaskFormData formData = processEngine.getFormService().getTaskFormData(
-				String.valueOf(id));
+				id);
 		task.setDeploymentId(formData.getDeploymentId());
 		task.setFormKey(formData.getFormKey());
 		for (org.activiti.engine.form.FormProperty prop : formData
