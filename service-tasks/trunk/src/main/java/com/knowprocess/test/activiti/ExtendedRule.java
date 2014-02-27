@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.form.TaskFormData;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
@@ -33,6 +34,15 @@ public class ExtendedRule extends ActivitiRule {
 
 	public ExtendedRule(String alternateConfig) {
 		super(alternateConfig);
+	}
+
+	public ExtendedRule(ProcessEngine pe) {
+		super(pe);
+		formService = pe.getFormService();
+		historyService = pe.getHistoryService();
+		repositoryService = pe.getRepositoryService();
+		runtimeService = pe.getRuntimeService();
+		taskService = pe.getTaskService();
 	}
 
 	public void dumpProcessState(String piid) {

@@ -22,26 +22,10 @@ privileged aspect Deployment_Roo_Jpa_ActiveRecord {
         return em;
     }
     
-    public static Deployment Deployment.findDeployment(String id) {
-        if (id == null || id.length() == 0) return null;
-        return entityManager().find(Deployment.class, id);
-    }
-    
     @Transactional
     public void Deployment.persist() {
         if (this.entityManager == null) this.entityManager = entityManager();
         this.entityManager.persist(this);
-    }
-    
-    @Transactional
-    public void Deployment.remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        if (this.entityManager.contains(this)) {
-            this.entityManager.remove(this);
-        } else {
-            Deployment attached = Deployment.findDeployment(this.id);
-            this.entityManager.remove(attached);
-        }
     }
     
     @Transactional

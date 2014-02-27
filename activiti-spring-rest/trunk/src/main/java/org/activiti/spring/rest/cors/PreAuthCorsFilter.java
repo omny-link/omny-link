@@ -1,9 +1,6 @@
 package org.activiti.spring.rest.cors;
 
 import java.io.IOException;
-import java.security.Principal;
-import java.util.Collection;
-import java.util.Collections;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -14,8 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.activiti.spring.auth.ExternalUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
@@ -25,59 +20,6 @@ public class PreAuthCorsFilter extends AbstractPreAuthenticatedProcessingFilter 
 	protected static final Logger LOGGER = LoggerFactory
 			.getLogger(ExternalUserDetailsService.class);
 
-	public class PreAuthenticatedAuthentication implements Authentication {
-
-		private static final long serialVersionUID = 123456780453475486L;
-
-		private String username;
-
-		public PreAuthenticatedAuthentication(String extractPrincipal) {
-			this.username = extractPrincipal;
-		}
-
-		@Override
-		public String getName() {
-			return username;
-		}
-
-		@Override
-		public Collection<? extends GrantedAuthority> getAuthorities() {
-			return Collections.emptySet();
-		}
-
-		@Override
-		public Object getCredentials() {
-			return "N/A";
-		}
-
-		@Override
-		public Object getDetails() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Object getPrincipal() {
-			return new Principal() {
-
-				@Override
-				public String getName() {
-					return username;
-				}
-			};
-		}
-
-		@Override
-		public boolean isAuthenticated() {
-			return true;
-		}
-
-		@Override
-		public void setAuthenticated(boolean isAuthenticated)
-				throws IllegalArgumentException {
-		}
-
-	}
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,

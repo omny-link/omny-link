@@ -19,6 +19,7 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 import flexjson.JSONSerializer;
 
@@ -76,6 +77,11 @@ public class Deployment {
 		Deployment.processEngine = pe;
 	}
 
+	@Transactional
+	public void remove() {
+		processEngine.getRepositoryService().deleteDeployment(getId());
+	}
+
 	public static long countDeployments() {
 		return processEngine.getRepositoryService().createDeploymentQuery()
 				.count();
@@ -86,10 +92,10 @@ public class Deployment {
 				.createDeploymentQuery().list());
 	}
 
-	public static Deployment findDeployment(Long id) {
+	public static Deployment findDeployment(String id) {
 		return wrap(
 				processEngine.getRepositoryService().createDeploymentQuery()
-						.deploymentId(String.valueOf(id)).list()).get(0);
+						.deploymentId(id).list()).get(0);
 	}
 
 	public static List<Deployment> findDeploymentEntries(int firstResult,
