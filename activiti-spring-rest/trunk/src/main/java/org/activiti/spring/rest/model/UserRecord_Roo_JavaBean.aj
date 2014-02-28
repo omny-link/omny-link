@@ -42,20 +42,20 @@ privileged aspect UserRecord_Roo_JavaBean {
         this.email = email;
     }
     
-    public Set<UserInfo> UserRecord.getUserInfos() {
-        return this.userInfos;
+    public Set<UserInfo> UserRecord.getInfo() {
+        return this.info;
     }
     
-    public void UserRecord.setUserInfos(Set<UserInfo> userInfos) {
-        this.userInfos = userInfos;
+    public void UserRecord.setInfo(Set<UserInfo> info) {
+        this.info = info;
     }
     
-    public Set<UserGroup> UserRecord.getUserGroups() {
-        return this.userGroups;
+    public Set<UserGroup> UserRecord.getGroups() {
+        return this.groups;
     }
     
-    public void UserRecord.setUserGroups(Set<UserGroup> userGroups) {
-        this.userGroups = userGroups;
+    public void UserRecord.setGroups(Set<UserGroup> groups) {
+        this.groups = groups;
     }
     
 }
