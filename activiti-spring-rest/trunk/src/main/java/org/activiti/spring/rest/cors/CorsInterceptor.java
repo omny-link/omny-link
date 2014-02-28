@@ -6,12 +6,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.activiti.spring.auth.ExternalUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 public class CorsInterceptor extends HandlerInterceptorAdapter {
 
 	protected static final Logger LOGGER = LoggerFactory
 			.getLogger(ExternalUserDetailsService.class);
+
+	@Autowired
+	protected CorsFilter corsFilter;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request,
@@ -21,7 +25,7 @@ public class CorsInterceptor extends HandlerInterceptorAdapter {
 		if (origin == null) {
 			LOGGER.info("... No Origin header, continue as non-CORS.");
 			return true;
-		} else if (CorsFilter.getAllowedOrigins().contains(origin)) {
+		} else if (corsFilter.getAllowedOrigins().contains(origin)) {
 			response.addHeader("Access-Control-Allow-Origin", origin);
 			LOGGER.info(String.format("... Cross origin allowed from %1$s",
 					origin));
