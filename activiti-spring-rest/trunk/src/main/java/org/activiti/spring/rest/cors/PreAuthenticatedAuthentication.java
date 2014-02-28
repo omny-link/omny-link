@@ -7,7 +7,8 @@ import java.util.Collections;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-public class PreAuthenticatedAuthentication implements Authentication {
+public class PreAuthenticatedAuthentication implements Authentication,
+		Principal {
 
 	private static final long serialVersionUID = 123456780453475486L;
 
@@ -52,13 +53,7 @@ public class PreAuthenticatedAuthentication implements Authentication {
 
 	@Override
 	public Object getPrincipal() {
-		return new Principal() {
-
-			@Override
-			public String getName() {
-				return email;
-			}
-		};
+		return this;
 	}
 
 	@Override
