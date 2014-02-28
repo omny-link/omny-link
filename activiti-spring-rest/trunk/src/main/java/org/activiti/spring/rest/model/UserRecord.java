@@ -16,7 +16,6 @@ import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
-import org.activiti.spring.rest.web.UserRecordController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +37,12 @@ import flexjson.JSONSerializer;
 public class UserRecord {
 
 	protected static final Logger LOGGER = LoggerFactory
-			.getLogger(UserRecordController.class);
+			.getLogger(UserRecord.class);
 
 	private static final String[] JSON_FIELDS = { "assignee", "createTime",
 			"id", "name", "owner", "parentUserId", "priority",
 			"processDefinitionId", "suspended", "identityDefinitionKey",
-			"userGroups", "userInfos" };
+			"groups", "info" };
 
 	private static ProcessEngine processEngine;
 
@@ -67,12 +66,12 @@ public class UserRecord {
 	/**
      */
 	@OneToMany(cascade = CascadeType.ALL)
-	private Set<UserInfo> userInfos = new HashSet<UserInfo>();
+	private Set<UserInfo> info = new HashSet<UserInfo>();
 
 	/**
      */
 	@ManyToMany(cascade = CascadeType.ALL)
-	private Set<UserGroup> userGroups = new HashSet<UserGroup>();
+	private Set<UserGroup> groups = new HashSet<UserGroup>();
 
 	public UserRecord() {
 		super();
@@ -119,14 +118,14 @@ public class UserRecord {
 					.list();
 			LOGGER.debug(String.format("Found %1$d groups", list.size()));
 			for (Group group : list) {
-				wrappedUser.getUserGroups().add(new UserGroup(group));
+				wrappedUser.getGroups().add(new UserGroup(group));
 			}
 
 			List<String> userInfoKeys = svc.getUserInfoKeys(username);
 			LOGGER.debug(String.format("Found %1$d userInfo records",
 					list.size()));
 			for (String key : userInfoKeys) {
-				wrappedUser.getUserInfos().add(
+				wrappedUser.getInfo().add(
 						new UserInfo(wrappedUser, key, svc.getUserInfo(
 								username, key)));
 			}
@@ -175,7 +174,9 @@ public class UserRecord {
 
 	public String toJson(String[] fields) {
 		return new JSONSerializer().include(fields).exclude("*.class")
-				.exclude("*.processEngine").serialize(this);
+				.exclude("*.processEngine")
+				//.transform(new UserInfoTransformer(), "info")
+				.serialize(this);
 	}
 
 	public static String toJsonArray(Collection<UserRecord> collection) {
