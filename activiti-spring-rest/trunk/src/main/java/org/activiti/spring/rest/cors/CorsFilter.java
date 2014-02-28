@@ -23,6 +23,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class CorsFilter extends OncePerRequestFilter {
 
+	private static final String CORS_PROPS = "/META-INF/cors.properties";
+
 	protected static final String REQUEST_METHOD = "Access-Control-Request-Method";
 
 	protected static final String MAX_AGE = "Access-Control-Max-Age";
@@ -36,15 +38,15 @@ public class CorsFilter extends OncePerRequestFilter {
 	protected static final Logger LOGGER = LoggerFactory
 			.getLogger(CorsFilter.class);
 
-	protected static Set<String> allowedOrigins;
+	protected Set<String> allowedOrigins;
 
-	protected static Set<String> getAllowedOrigins() throws IOException {
+	protected Set<String> getAllowedOrigins() throws IOException {
 		if (allowedOrigins == null) {
-			LOGGER.debug("Init allowed domains for CORS...");
+			LOGGER.debug(String.format(
+					"Init allowed domains for CORS from %1$s...", CORS_PROPS));
 			Properties prop = new Properties();
 
-			InputStream in = CorsFilter.class
-					.getResourceAsStream("/META-INF/cors.properties");
+			InputStream in = CorsFilter.class.getResourceAsStream(CORS_PROPS);
 			prop.load(in);
 			in.close();
 
@@ -53,6 +55,14 @@ public class CorsFilter extends OncePerRequestFilter {
 		}
 		LOGGER.debug("... allowed: " + allowedOrigins);
 		return allowedOrigins;
+	}
+
+	public void setAllowedOrigins(String allowedOrigins) {
+		LOGGER.debug(String.format(
+				"Setting allowed domains for CORS to %1$s...", allowedOrigins));
+
+		this.allowedOrigins = new HashSet<String>(Arrays.asList(allowedOrigins
+				.split(",")));
 	}
 
 	@Override
@@ -105,7 +115,7 @@ public class CorsFilter extends OncePerRequestFilter {
 			} else {
 				LOGGER.info(String
 						.format("... CORS handling abandoned due to missing header: %1$s. This can be normal if a CORS request is forwarded internally (as in an OpenId authentication).",
-						REQUEST_METHOD));
+								REQUEST_METHOD));
 			}
 		}
 
