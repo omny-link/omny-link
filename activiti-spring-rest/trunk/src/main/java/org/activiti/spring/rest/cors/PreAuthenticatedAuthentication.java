@@ -52,7 +52,7 @@ public class PreAuthenticatedAuthentication implements Authentication,
 	}
 
 	@Override
-	public Object getPrincipal() {
+	public PreAuthenticatedAuthentication getPrincipal() {
 		return this;
 	}
 
