@@ -1,47 +1,26 @@
 package org.activiti.spring.rest.cors;
 
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Collections;
 
+import org.activiti.spring.auth.ExternalUserDetails;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 
-public class PreAuthenticatedAuthentication implements Authentication,
-		Principal {
+public class PreAuthenticatedAuthentication extends ExternalUserDetails
+		implements Authentication, Principal {
 
 	private static final long serialVersionUID = 123456780453475486L;
 
-	private String email;
-
 	public PreAuthenticatedAuthentication(String extractPrincipal) {
-		this.email = extractPrincipal;
+		super(extractPrincipal, "");
 	}
 
 	public void setName(String e) {
-		email = e;
-	}
-
-	@Override
-	public String getName() {
-		return email;
-	}
-
-	public void setEmail(String e) {
-		email = e;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.emptySet();
+		super.setUsername(e);
 	}
 
 	@Override
 	public Object getCredentials() {
+		LOGGER.debug("Call to get credentials returns n/a");
 		return "N/A";
 	}
 
@@ -53,11 +32,13 @@ public class PreAuthenticatedAuthentication implements Authentication,
 
 	@Override
 	public PreAuthenticatedAuthentication getPrincipal() {
+		LOGGER.debug(String.format("get principal returns %1$s", getUsername()));
 		return this;
 	}
 
 	@Override
 	public boolean isAuthenticated() {
+		LOGGER.debug(String.format("is authenticated returns %1$s", true));
 		return true;
 	}
 

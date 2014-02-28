@@ -20,7 +20,6 @@ public class PreAuthCorsFilter extends AbstractPreAuthenticatedProcessingFilter 
 	protected static final Logger LOGGER = LoggerFactory
 			.getLogger(ExternalUserDetailsService.class);
 
-
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
@@ -33,11 +32,14 @@ public class PreAuthCorsFilter extends AbstractPreAuthenticatedProcessingFilter 
 				+ req.getServerPort();
 		if (referer == null || !referer.startsWith(thisOrigin)) {
 			LOGGER.info("Cross origin request detected");
-
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(new PreAuthenticatedAuthentication(
-					extractPrincipal(req)));
-
+			String user = extractPrincipal(req);
+			if (user != null) {
+				SecurityContext context = SecurityContextHolder.getContext();
+				context.setAuthentication(new PreAuthenticatedAuthentication(
+						user));
+			} else {
+				LOGGER.debug("Not authenticated, continue filter chain to authentication");
+			}
 		} else {
 			LOGGER.info("Same origin");
 		}
@@ -54,6 +56,9 @@ public class PreAuthCorsFilter extends AbstractPreAuthenticatedProcessingFilter 
 			for (String param : params) {
 				if (param.startsWith("email")) {
 					user = param.substring(param.indexOf("=") + 1);
+					if (user != null && user.trim().length() == 0) {
+						user = null;
+					}
 					LOGGER.info("Detected Pre-authenticated user: " + user);
 				}
 			}
