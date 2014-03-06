@@ -1,6 +1,5 @@
 package org.activiti.spring.rest.web;
 
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -59,60 +58,75 @@ public class MessageController {
 		// TODO need to look into why but the PathVariable is truncated at the
 		// last . so 'kp.foo' arrives as 'kp'. To work around this clients
 		// should send kp.foo.json or similar/
-		LOGGER.info("getMessage: " + msgId + ", json:" + jsonBody);
-		String msg = "";
+		LOGGER.info(String.format("handling In-Out MEP to: %1$s, json: %2$s",
+				msgId, jsonBody));
+		String id = "";
 		Map<String, Object> vars = new HashMap<String, Object>();
-		vars.put("query", msgId);
-		vars.put(msgId, jsonBody);
-		ResponseEntity<String> response = handleMep(uriBuilder, msgId,
-				jsonBody, vars);
-		String locationHeader = response.getHeaders().get("Location").get(0);
-		LOGGER.debug("location: " + locationHeader);
-		String id = locationHeader
-				.substring(locationHeader.lastIndexOf('/') + 1);
-		LOGGER.debug("id: " + id);
+		HttpHeaders headers = null;
 		try {
-			msg = (String) processEngine.getRuntimeService().getVariable(id,
-					msgId);
+			ResponseEntity<String> response = handleMep(uriBuilder, msgId,
+					jsonBody, vars);
+			if (response.getStatusCode().compareTo(HttpStatus.BAD_REQUEST) < 0) {
+				headers = response.getHeaders();
+				String locationHeader = response.getHeaders().get("Location")
+						.get(0);
+				LOGGER.debug("location: " + locationHeader);
+				id = locationHeader
+						.substring(locationHeader.lastIndexOf('/') + 1);
+				LOGGER.debug("id: " + id);
+
+				String msg = (String) processEngine.getRuntimeService()
+						.getVariable(
+						id, msgId);
+				LOGGER.debug("msg: " + msg);
+				return new ResponseEntity(msg, headers, HttpStatus.OK);
+			} else {
+				return response;
+			}
 		} catch (ActivitiObjectNotFoundException e) {
 			// assume process is closed
 			HistoricVariableInstance instance = processEngine
 					.getHistoryService().createHistoricVariableInstanceQuery()
 					.processInstanceId(id).variableName(msgId).singleResult();
-			msg = (String) instance.getValue();
+			String msg = (String) instance.getValue();
+			LOGGER.debug("msg: " + msg);
+			return new ResponseEntity(msg, headers, HttpStatus.OK);
+		} catch (Exception e) {
+			ReportableException e2 = new ReportableException(e.getClass()
+					.getName() + ":" + e.getMessage(), e);
+			return new ResponseEntity(e2.toJson(), headers,
+					HttpStatus.BAD_REQUEST);
 		}
-		LOGGER.debug("msg: " + msg);
-		return new ResponseEntity(msg, response.getHeaders(), HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/{msgId}", headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> doInOnlyMep(UriComponentsBuilder uriBuilder,
-			@PathVariable("msgId") String msgId, @RequestParam String jsonBody) {
+			@PathVariable("msgId") String msgId, @RequestParam String json) {
 		long start = System.currentTimeMillis();
-		LOGGER.info("doInOnlyMep: " + msgId + ", json:" + jsonBody);
+		LOGGER.info("handling In-Only MEP: " + msgId + ", json:" + json);
 
 		Map<String, Object> vars = new HashMap<String, Object>();
-		vars.put("message", msgId);
-		vars.put(msgId, jsonBody);
+		ResponseEntity<String> response = handleMep(uriBuilder, msgId, json,
+				vars);
 
-		ResponseEntity<String> response = handleMep(uriBuilder, msgId,
-				jsonBody, vars);
-
-		LOGGER.info(String.format("doInOnlyMep took: %1$s ms",
+		LOGGER.debug(String.format("doInOnlyMep took: %1$s ms",
 				(System.currentTimeMillis() - start)));
 		return response;
 	}
 
 	protected ResponseEntity<String> handleMep(UriComponentsBuilder uriBuilder,
 			String msgId, String jsonBody, Map<String, Object> vars) {
-		if (SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal() == null) {
-			return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+		if (SecurityContextHolder.getContext().getAuthentication() == null
+				|| "anonymousUser".equals(SecurityContextHolder.getContext()
+						.getAuthentication().getName())) {
+			ReportableException e = new ReportableException(
+					"Please ensure you are logged in before sending messages");
+			return new ResponseEntity(e.toJson(), HttpStatus.UNAUTHORIZED);
 		}
 		String username = SecurityContextHolder.getContext()
 				.getAuthentication().getName();
-		LOGGER.info(" ... from " + username);
+		LOGGER.debug(" ... from (getName) " + username);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
@@ -120,8 +134,13 @@ public class MessageController {
 		try {
 			String bizKey = msgId + " - " + new Date().getTime();
 			Authentication.setAuthenticatedUserId(username);
-			vars.put("initiator", username);
+			vars.put("messageName", msgId);
+			vars.put(msgId, jsonBody);
+			// TODO deprecate query param?
+			vars.put("query", jsonBody);
 
+			vars.put("initiator", username);
+			LOGGER.debug(String.format("vars: %1$s", vars));
 			ProcessInstance instance = processEngine.getRuntimeService()
 					.startProcessInstanceByMessage(msgId, bizKey, vars);
 
@@ -137,18 +156,18 @@ public class MessageController {
 			}
 			headers.add("Location",
 					uriBuilder.path(a.value()[0] + "/" + instance.getId())
-					.build().toUriString());
+							.build().toUriString());
 			return new ResponseEntity<String>(headers, HttpStatus.CREATED);
 		} catch (ActivitiException e) {
-			LOGGER.error(e.getClass().getName() + ": " + e.getMessage());
-			if (LOGGER.isDebugEnabled()) {
-				e.printStackTrace(System.err);
-			}
-			return new ResponseEntity<String>(headers,
+			ReportableException e2 = new ReportableException(e.getClass()
+					.getName() + ":" + e.getMessage(), e);
+			return new ResponseEntity<String>(e2.toJson(), headers,
 					HttpStatus.SERVICE_UNAVAILABLE);
 		} catch (Exception e) {
-			LOGGER.error(e.getClass().getName() + ": " + e.getMessage());
-			return new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+			ReportableException e2 = new ReportableException(e.getClass()
+					.getName() + ":" + e.getMessage(), e);
+			return new ResponseEntity<String>(e2.toJson(), headers,
+					HttpStatus.BAD_REQUEST);
 		} finally {
 			Authentication.setAuthenticatedUserId(null);
 		}

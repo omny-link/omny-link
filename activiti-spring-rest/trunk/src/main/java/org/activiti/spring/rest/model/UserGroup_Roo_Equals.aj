@@ -17,11 +17,11 @@ privileged aspect UserGroup_Roo_Equals {
             return true;
         }
         UserGroup rhs = (UserGroup) obj;
-        return new EqualsBuilder().append(id, rhs.id).append(id_, rhs.id_).append(name, rhs.name).append(type, rhs.type).isEquals();
+        return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).append(type, rhs.type).isEquals();
     }
     
     public int UserGroup.hashCode() {
-        return new HashCodeBuilder().append(id).append(id_).append(name).append(type).toHashCode();
+        return new HashCodeBuilder().append(id).append(name).append(type).toHashCode();
     }
     
 }

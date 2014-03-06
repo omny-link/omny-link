@@ -28,7 +28,7 @@ privileged aspect UserGroupController_Roo_Controller {
         }
         uiModel.asMap().clear();
         userGroup.persist();
-        return "redirect:/groups/" + encodeUrlPathSegment(userGroup.getId_().toString(), httpServletRequest);
+        return "redirect:/groups/" + encodeUrlPathSegment(userGroup.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(params = "form", produces = "text/html")
@@ -37,10 +37,10 @@ privileged aspect UserGroupController_Roo_Controller {
         return "groups/create";
     }
     
-    @RequestMapping(value = "/{id_}", produces = "text/html")
-    public String UserGroupController.show(@PathVariable("id_") Long id_, Model uiModel) {
-        uiModel.addAttribute("usergroup", UserGroup.findUserGroup(id_));
-        uiModel.addAttribute("itemId", id_);
+    @RequestMapping(value = "/{id}", produces = "text/html")
+    public String UserGroupController.show(@PathVariable("id") String id, Model uiModel) {
+        uiModel.addAttribute("usergroup", UserGroup.findUserGroup(id));
+        uiModel.addAttribute("itemId", id);
         return "groups/show";
     }
     
@@ -66,18 +66,18 @@ privileged aspect UserGroupController_Roo_Controller {
         }
         uiModel.asMap().clear();
         userGroup.merge();
-        return "redirect:/groups/" + encodeUrlPathSegment(userGroup.getId_().toString(), httpServletRequest);
+        return "redirect:/groups/" + encodeUrlPathSegment(userGroup.getId().toString(), httpServletRequest);
     }
     
-    @RequestMapping(value = "/{id_}", params = "form", produces = "text/html")
-    public String UserGroupController.updateForm(@PathVariable("id_") Long id_, Model uiModel) {
-        populateEditForm(uiModel, UserGroup.findUserGroup(id_));
+    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    public String UserGroupController.updateForm(@PathVariable("id") String id, Model uiModel) {
+        populateEditForm(uiModel, UserGroup.findUserGroup(id));
         return "groups/update";
     }
     
-    @RequestMapping(value = "/{id_}", method = RequestMethod.DELETE, produces = "text/html")
-    public String UserGroupController.delete(@PathVariable("id_") Long id_, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        UserGroup userGroup = UserGroup.findUserGroup(id_);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
+    public String UserGroupController.delete(@PathVariable("id") String id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+        UserGroup userGroup = UserGroup.findUserGroup(id);
         userGroup.remove();
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import org.activiti.engine.ProcessEngine;
 import org.activiti.spring.rest.model.UserGroup;
 import org.activiti.spring.rest.model.UserGroupDataOnDemand;
 import org.springframework.stereotype.Component;
@@ -24,20 +25,20 @@ privileged aspect UserGroupDataOnDemand_Roo_DataOnDemand {
     
     public UserGroup UserGroupDataOnDemand.getNewTransientUserGroup(int index) {
         UserGroup obj = new UserGroup();
-        setId(obj, index);
         setName(obj, index);
+        setProcessEngine(obj, index);
         setType(obj, index);
         return obj;
-    }
-    
-    public void UserGroupDataOnDemand.setId(UserGroup obj, int index) {
-        String id = "id_" + index;
-        obj.setId(id);
     }
     
     public void UserGroupDataOnDemand.setName(UserGroup obj, int index) {
         String name = "name_" + index;
         obj.setName(name);
+    }
+    
+    public void UserGroupDataOnDemand.setProcessEngine(UserGroup obj, int index) {
+        ProcessEngine processEngine = null;
+        obj.setProcessEngine(processEngine);
     }
     
     public void UserGroupDataOnDemand.setType(UserGroup obj, int index) {
@@ -54,14 +55,14 @@ privileged aspect UserGroupDataOnDemand_Roo_DataOnDemand {
             index = data.size() - 1;
         }
         UserGroup obj = data.get(index);
-        Long id = obj.getId_();
+        String id = obj.getId();
         return UserGroup.findUserGroup(id);
     }
     
     public UserGroup UserGroupDataOnDemand.getRandomUserGroup() {
         init();
         UserGroup obj = data.get(rnd.nextInt(data.size()));
-        Long id = obj.getId_();
+        String id = obj.getId();
         return UserGroup.findUserGroup(id);
     }
     

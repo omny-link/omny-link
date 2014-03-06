@@ -2,6 +2,8 @@ package com.knowprocess.activiti.sugarcrm;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.delegate.DelegateExecution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.knowprocess.crm.CrmService;
 import com.knowprocess.sugarcrm.api.SugarService;
@@ -14,6 +16,9 @@ import com.knowprocess.sugarcrm.api.SugarSession;
  * 
  */
 public class SugarTask {
+
+	protected static final Logger LOGGER = LoggerFactory
+			.getLogger(SugarTask.class);
 
 	public static final String SUGAR_URL = "sugarUrl";
 	public static final String SUGAR_PASSWORD = "sugarPassword";
@@ -41,7 +46,7 @@ public class SugarTask {
 					(String) execution.getVariable("sugarBaseUrl"));
 		}
 		svc.login(session);
-		System.out.println("session id: " + session.getSessionId());
+		LOGGER.debug("Sugar session id: " + session.getSessionId());
 		return session;
 	}
 
@@ -51,20 +56,19 @@ public class SugarTask {
 				.getVariable("sugarSession");
 		if (session == null) {
 			String userId = (String) execution.getVariable("initiator");
-			System.out
-					.println("Logging into Sugar using credentials attached to "
+			LOGGER.info("Logging into Sugar using credentials attached to "
 							+ userId);
 			IdentityService idSvc = execution.getEngineServices()
 					.getIdentityService();
 			String usr = idSvc.getUserInfo(userId, SUGAR_USERNAME);
 			String pwd = idSvc.getUserInfo(userId, SUGAR_PASSWORD);
 			String url = idSvc.getUserInfo(userId, SUGAR_URL);
-			System.out.println("usr:" + usr + ", pwd null?:" + (pwd == null)
+			LOGGER.debug("usr:" + usr + ", pwd null?:" + (pwd == null)
 					+ ", url:" + url);
 			session = new SugarSession(usr, pwd, url);
 		}
 		svc.login(session);
-		System.out.println("session id: " + session.getSessionId());
+		LOGGER.debug("session id: " + session.getSessionId());
 		return session;
 	}
 }

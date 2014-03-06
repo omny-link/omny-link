@@ -106,17 +106,15 @@ public class DeploymentController {
 				return new ResponseEntity(deployment, headers,
 						HttpStatus.CREATED);
 			} else {
-				LOGGER.error("Rejected BPMN as unsupported, see log for details.");
-				return new ResponseEntity("Process is invalid",
+				ReportableException e2 = new ReportableException(
+						"Rejected BPMN as unsupported, see log for details.");
+				return new ResponseEntity(e2.toJson(),
 						HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
-			LOGGER.error(e.getClass() + ":" + e.getMessage());
-			if (LOGGER.isDebugEnabled()) {
-				e.printStackTrace(System.err);
-			}
-			return new ResponseEntity(e.getClass().getName() + ": "
-					+ e.getMessage(), HttpStatus.BAD_REQUEST);
+			ReportableException e2 = new ReportableException(e.getClass()
+					.getName() + ":" + e.getMessage(), e);
+			return new ResponseEntity(e2.toJson(), HttpStatus.BAD_REQUEST);
 		}
 	}
 

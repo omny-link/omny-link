@@ -10,6 +10,4 @@ privileged aspect UserGroup_Roo_Serializable {
     
     declare parents: UserGroup implements Serializable;
     
-    private static final long UserGroup.serialVersionUID = 1L;
-    
 }

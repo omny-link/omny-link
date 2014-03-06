@@ -1,8 +1,10 @@
 package org.activiti.spring.rest.model;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +27,9 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 
 import flexjson.JSONSerializer;
 
@@ -34,7 +39,7 @@ import flexjson.JSONSerializer;
 @RooEquals
 @RooSerializable
 @RooJson
-public class UserRecord {
+public class UserRecord implements Principal, User, UserDetails {
 
 	protected static final Logger LOGGER = LoggerFactory
 			.getLogger(UserRecord.class);
@@ -73,6 +78,10 @@ public class UserRecord {
 	@ManyToMany(cascade = CascadeType.ALL)
 	private Set<UserGroup> groups = new HashSet<UserGroup>();
 
+	private String pwd;
+
+	private Collection<GrantedAuthority> authorities = new LinkedList<GrantedAuthority>();
+
 	public UserRecord() {
 		super();
 	}
@@ -86,11 +95,17 @@ public class UserRecord {
 		setEmail(u.getEmail());
 	}
 
+	public UserRecord(String username) {
+		this();
+		LOGGER.info("Stub User from username: " + username);
+		setId(username);
+	}
+
 	// Autowiring static fields is obviously dangerous, but should be ok in this
 	// case as PE is thread safe.
 	@Autowired(required = true)
 	public void setProcessEngine(ProcessEngine pe) {
-		System.out.println("XXX UserRecord.setProcessEngine:" + pe);
+		LOGGER.debug("UserRecord.setProcessEngine:" + pe);
 		UserRecord.processEngine = pe;
 	}
 
@@ -168,13 +183,18 @@ public class UserRecord {
 		return list2;
 	}
 
+	@Transactional
+	public void remove() {
+		processEngine.getIdentityService().deleteUser(id);
+	}
+
 	public String toJson() {
 		return toJson(JSON_FIELDS);
 	}
 
 	public String toJson(String[] fields) {
 		return new JSONSerializer().include(fields).exclude("*.class")
-				.exclude("*.processEngine")
+				.exclude("*.password").exclude("*.processEngine")
 				//.transform(new UserInfoTransformer(), "info")
 				.serialize(this);
 	}
@@ -187,7 +207,57 @@ public class UserRecord {
 			String[] fields) {
 		System.out.println("toJsonArray....");
 		return new JSONSerializer().exclude("*.class")
+                .exclude("*.password")
 				.exclude("*.processEngine").include(fields)
 				.serialize(collection);
 	}
+
+	@Override
+	public String getPassword() {
+		return pwd;
+	}
+
+	@Override
+	public void setPassword(String pwd) {
+		this.pwd = pwd;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return authorities;
+	}
+
+	@Override
+	public String getUsername() {
+		return getId();
+	}
+
+	public String getName() {
+		return getId();
+	}
+
+	public String getFullName() {
+		return String.format("%1$s %2$s", getFirstName(), getLastName());
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
 }

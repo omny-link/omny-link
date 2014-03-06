@@ -19,21 +19,31 @@ public class SendLinkedInMessageTask extends LinkedInTask implements
 		}
 		final LinkedInApiClient client = getClient(userId);
 
-		System.out.println("Sending message to users with ids:"
-				+ userIdsToMessage);
+		if (userIdsToMessage.size() == 0) {
+			userIdsToMessage.add("~"); // mail self
+		}
+		LOGGER.debug(String
+				.format("Sending message '%1$s' to users with ids: %2$s, with credentials attached to %3$s",
+						subject, userIdsToMessage, userId));
 		client.sendMessage(userIdsToMessage, subject, message);
-		System.out
-				.println("Your message has been sent. Check the LinkedIn site for confirmation.");
+		LOGGER.debug("Your message has been sent. Check the LinkedIn site for confirmation.");
 	}
 
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
+		LOGGER.debug("Invoked send LinkedIn message task");
 		setIdentityService(execution.getEngineServices().getIdentityService());
+		Object ids = execution.getVariable(ID_LIST_KEY);
+		if (ids instanceof String) {
+			ids = Arrays.asList(((String) ids).split(","));
+		} else if (!(ids instanceof List)) {
+			throw new IllegalArgumentException(String.format(
+					"Process variable %1$s must be either a String or List",
+					ID_LIST_KEY));
+		}
 		sendMessage((String) execution.getVariable("initiator"),
 				(String) execution.getVariable(SUBJECT_KEY),
-				(String) execution.getVariable(MESSAGE_KEY),
-				Arrays.asList(((String) execution.getVariable(ID_LIST_KEY))
-						.split(",")));
+				(String) execution.getVariable(MESSAGE_KEY), (List<String>) ids);
 	}
 
 }

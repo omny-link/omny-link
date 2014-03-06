@@ -73,49 +73,52 @@ public class CorsFilter extends OncePerRequestFilter {
 		if (origin == null) {
 			LOGGER.debug("CORS filter has nothing to do as Origin header is not specified.");
 		} else {
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info(String.format(
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(String.format(
 						"Handling CORS request from: %1$s to %2$s ...", origin,
 						request.getMethod() + " "
 								+ request.getRequestURL().toString()));
 			}
 
 			String requestMethod = request.getHeader(REQUEST_METHOD);
-			if (requestMethod != null) {
-				if (getAllowedOrigins().contains(origin)) {
-					LOGGER.debug("... CORS allowed.");
+			if (requestMethod == null) {
+				LOGGER.warn(String
+						.format("... CORS handling from %2$s to %3$s abandoned due to missing header: %1$s. This can be normal if a CORS request is forwarded internally (as in an OpenId authentication).",
+								REQUEST_METHOD, origin, request.getMethod()
+										+ " "
+										+ request.getRequestURL().toString()));
+			} else if (getAllowedOrigins().contains(origin)) {
+				LOGGER.debug("... Cross-origin allowed.");
 
-					// Spec calls for a single header and misconfiguration of
-					// filters can break this...
-					addOnlyOneHeader(response, ALLOW_ORIGIN, origin);
+				// Spec calls for a single header and misconfiguration of
+				// filters can break this...
+				addOnlyOneHeader(response, ALLOW_ORIGIN, origin);
 
-					// TODO Potentially add this here if needed.
-					// If the list of exposed headers is not empty add one or
-					// more
-					// Access-Control-Expose-Headers headers, with as values the
-					// header field names given in the list of exposed headers.
+				// TODO Potentially add this here if needed.
+				// If the list of exposed headers is not empty add one or
+				// more
+				// Access-Control-Expose-Headers headers, with as values the
+				// header field names given in the list of exposed headers.
 
-					// The following only applies to 'pre-flight' request
-					// Note this is the actual pre-flight method not the
-					// proposed
-					// CORS method that will follow
-					if ("OPTIONS".equals(request.getMethod())) {
-						// TODO parse Access-Control-Request-Headers
-						addOnlyOneHeader(response, MAX_AGE, "1800");
-						addOnlyOneHeader(response, ALLOW_METHODS,
-								"GET, POST, PUT, DELETE");
-						addOnlyOneHeader(
-								response,
-								ALLOW_HEADERS,
-								"Accept, Accept-Encoding, Accept-Language, Access-Control-Request-Headers, Access-Control-Request-Method, Authorization, Cache-Control, Connection, Content-Type, Host, Origin, Referer, User-Agent");
-					}
-				} else {
-					LOGGER.debug("... CORS disallowed.");
+				// The following only applies to 'pre-flight' request
+				// Note this is the actual pre-flight method not the
+				// proposed
+				// CORS method that will follow
+				if ("OPTIONS".equals(request.getMethod())) {
+					// TODO parse Access-Control-Request-Headers
+					addOnlyOneHeader(response, MAX_AGE, "1800");
+					addOnlyOneHeader(response, ALLOW_METHODS,
+							"GET, POST, PUT, DELETE");
+					addOnlyOneHeader(
+							response,
+							ALLOW_HEADERS,
+							"Accept, Accept-Encoding, Accept-Language, Access-Control-Request-Headers, Access-Control-Request-Method, Authorization, Cache-Control, Connection, Content-Type, Host, Origin, Referer, User-Agent");
 				}
 			} else {
-				LOGGER.info(String
-						.format("... CORS handling abandoned due to missing header: %1$s. This can be normal if a CORS request is forwarded internally (as in an OpenId authentication).",
-								REQUEST_METHOD));
+				LOGGER.warn(String.format(
+						"... Cross origin disallowed from %1$s to %2$s",
+						origin, request.getMethod() + " "
+								+ request.getRequestURL().toString()));
 			}
 		}
 

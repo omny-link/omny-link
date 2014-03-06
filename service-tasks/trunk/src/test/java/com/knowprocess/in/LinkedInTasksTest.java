@@ -1,56 +1,16 @@
 package com.knowprocess.in;
 
-import java.util.Collections;
+import static org.junit.Assert.assertTrue;
 
-import org.activiti.engine.IdentityService;
-import org.activiti.engine.test.ActivitiRule;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Rule;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Test;
 
-public class LinkedInTasksTest {
+import com.google.code.linkedinapi.schema.Connections;
+import com.knowprocess.in.filters.IndustryInterestsFilter;
 
-	private static final String INITIATOR = "tim@knowprocess.com";
-
-	@Rule
-	public ActivitiRule activitiRule = new ActivitiRule("test-activiti.cfg.xml");
-
-	@Before
-	public void beforeClass() {
-		String consumerKey = System.getProperty(LinkedInTask.CONSUMER_KEY_KEY);
-		String consumerSecret = System.getProperty(LinkedInTask.CONSUMER_SECRET_KEY);
-		String accessToken = System.getProperty(LinkedInTask.ACCESS_TOKEN_KEY);
-		String accessSecret = System
-				.getProperty(LinkedInTask.ACCESS_TOKEN_SECRET_KEY);
-
-		if (consumerKey == null || consumerSecret == null
-				|| accessSecret == null || accessToken == null) {
-			Assume.assumeTrue(
-					"No credentials supplied to connect to LinkedIn. Assume test pass.",
-					false);
-		}
-		createTestUser(LinkedInTask.APP_USER_ID,
-				LinkedInTask.CONSUMER_KEY_KEY,
-				consumerKey,
-				LinkedInTask.CONSUMER_SECRET_KEY,
-				consumerSecret);
-
-		createTestUser(
-				INITIATOR,
-				LinkedInTask.ACCESS_TOKEN_KEY,
-				accessToken,
-				LinkedInTask.ACCESS_TOKEN_SECRET_KEY,
-				accessSecret);
-	}
-
-	private void createTestUser(String userId, String key, String keyValue,
-			String secret, String secretValue) {
-		IdentityService svc = activitiRule.getIdentityService();
-		svc.saveUser(svc.newUser(userId));
-		svc.setUserInfo(userId, key, keyValue);
-		svc.setUserInfo(userId, secret, secretValue);
-	}
+public class LinkedInTasksTest extends AbstractLinkedInTest {
 
 	@Test
 	public void testSendMessage() {
@@ -67,6 +27,41 @@ public class LinkedInTasksTest {
 		svc.postStatus(INITIATOR, "Hello!");
 
 		svc.removeCurrentStatus(INITIATOR);
+	}
 
+	@Test
+	public void testGetConnectionIds() {
+		GetConnectionsTask svc = new GetConnectionsTask();
+		svc.setIdentityService(activitiRule.getIdentityService());
+		Connections conns = svc.getConnections(INITIATOR);
+		PersonFilter filter = svc.getFilter("");
+		List<String> idsOfConnections = svc.getIdsOfConnections(conns, filter);
+		String connectionsJson = svc.getConnectionsAsJson(conns, filter);
+		System.out.println(connectionsJson);
+		assertTrue(idsOfConnections.size() >= 355);
+	}
+
+	@Test
+	public void testGetNameFilteredConnectionIds() {
+		GetConnectionsTask svc = new GetConnectionsTask();
+		svc.setIdentityService(activitiRule.getIdentityService());
+		Connections conns = svc.getConnections(INITIATOR);
+		PersonFilter filter = svc.getFilter("Stephenson");
+		List<String> idsOfConnections = svc.getIdsOfConnections(conns, filter);
+		String connectionsJson = svc.getConnectionsAsJson(conns, filter);
+		System.out.println(connectionsJson);
+		assertTrue(idsOfConnections.size() >= 3);
+	}
+
+	@Test
+	public void testGetIndustryFilteredConnectionIds() {
+		GetConnectionsTask svc = new GetConnectionsTask();
+		svc.setIdentityService(activitiRule.getIdentityService());
+		Connections conns = svc.getConnections(INITIATOR);
+		PersonFilter filter = new IndustryInterestsFilter("Internet");
+		List<String> idsOfConnections = svc.getIdsOfConnections(conns, filter);
+		String connectionsJson = svc.getConnectionsAsJson(conns, filter);
+		System.out.println(connectionsJson);
+		assertTrue(idsOfConnections.size() >= 1);
 	}
 }
