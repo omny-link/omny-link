@@ -58,4 +58,12 @@ privileged aspect UserRecord_Roo_JavaBean {
         this.groups = groups;
     }
     
+    public String UserRecord.getPwd() {
+        return this.pwd;
+    }
+    
+    public void UserRecord.setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+    
 }

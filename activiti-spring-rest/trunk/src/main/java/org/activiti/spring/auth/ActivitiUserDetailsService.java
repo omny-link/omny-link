@@ -21,7 +21,7 @@ public class ActivitiUserDetailsService extends ExternalUserDetailsService{
 	@Autowired 
 	protected ProcessEngine processEngine ; 
 	
-	public void updateLocalUser(ExternalUserDetails userDetails) {
+	public void updateLocalUser(User userDetails) {
 		IdentityService idSvc = processEngine.getIdentityService(); 
 		long count = idSvc.createUserQuery().userEmail(userDetails.getEmail()).count(); 
 		if (count == 0) { 
@@ -29,8 +29,8 @@ public class ActivitiUserDetailsService extends ExternalUserDetailsService{
 			User user = idSvc.newUser(userDetails.getEmail()); 
 			user.setId(userDetails.getEmail());
 			user.setEmail(userDetails.getEmail());
-			user.setFirstName(userDetails.getForename());
-			user.setLastName(userDetails.getSurname());
+			user.setFirstName(userDetails.getFirstName());
+			user.setLastName(userDetails.getLastName());
 			
 //			idSvc.saveUser(user); 
 			// TODO This will only work when the process engine has been

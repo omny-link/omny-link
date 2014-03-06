@@ -2,6 +2,8 @@ package org.activiti.spring.auth;
 
 import java.util.List;
 
+import org.activiti.engine.identity.User;
+import org.activiti.spring.rest.model.UserRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
@@ -26,7 +28,7 @@ public class ExternalUserDetailsService implements UserDetailsService, Applicati
 	public UserDetails loadUserByUsername(String username)
 			throws UsernameNotFoundException, DataAccessException {
 		LOGGER.info("loadUserByUsername: " + username);
-		return new ExternalUserDetails(username, "");
+		return new UserRecord(username);
 	}
 	/** This method is called whenever authentication with a third party
 	 * authentication provider (such as OpenID and Facebook) succeeded. We
@@ -39,16 +41,21 @@ public class ExternalUserDetailsService implements UserDetailsService, Applicati
 			// Make sure the details we have on records match the attributes we got from the provider
 			OpenIDAuthenticationToken token = (OpenIDAuthenticationToken)auth;
 			List<OpenIDAttribute> attributes = token.getAttributes();
-			ExternalUserDetails userDetails = (ExternalUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			User userDetails = (User) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal();
 			for(OpenIDAttribute attr : attributes) {
 				// See sec:openid-attribute in spring config
 				if(attr.getName().equals("email") && attr.getValues().get(0)!=null)
 					userDetails.setEmail(attr.getValues().get(0));
 				if(attr.getName().equals("forename")&& attr.getValues().get(0)!=null)
-					userDetails.setForename(attr.getValues().get(0));
+					userDetails.setFirstName(attr.getValues().get(0));
 				if(attr.getName().equals("surname")&& attr.getValues().get(0)!=null)
-					userDetails.setSurname(attr.getValues().get(0));
+					userDetails.setLastName(attr.getValues().get(0));
 			}
+			// This is a bit of a hack but until here we only have OpenId not 
+			// the email that we want to use as user id 
+			userDetails.setId(userDetails.getEmail());
+			
 			updateLocalUser(userDetails);
 //		}else if(auth instanceof OAuth2AuthenticationToken) {
 //			OAuth2AuthenticationToken oAuth2 = (OAuth2AuthenticationToken)auth;
@@ -77,7 +84,7 @@ public class ExternalUserDetailsService implements UserDetailsService, Applicati
 	 * @param userDetails
 	 *            Details received from the external authentication service.
 	 */
-	public void updateLocalUser(ExternalUserDetails userDetails) {
+	public void updateLocalUser(User userDetails) {
 		;
 	}
 }

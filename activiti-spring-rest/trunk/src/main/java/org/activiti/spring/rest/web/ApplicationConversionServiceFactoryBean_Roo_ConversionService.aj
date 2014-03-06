@@ -152,23 +152,15 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     public Converter<UserGroup, String> ApplicationConversionServiceFactoryBean.getUserGroupToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<org.activiti.spring.rest.model.UserGroup, java.lang.String>() {
             public String convert(UserGroup userGroup) {
-                return new StringBuilder().append(userGroup.getId()).append(' ').append(userGroup.getName()).append(' ').append(userGroup.getType()).toString();
+                return new StringBuilder().append(userGroup.getName()).append(' ').append(userGroup.getType()).toString();
             }
         };
     }
     
-    public Converter<Long, UserGroup> ApplicationConversionServiceFactoryBean.getIdToUserGroupConverter() {
-        return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.activiti.spring.rest.model.UserGroup>() {
-            public org.activiti.spring.rest.model.UserGroup convert(java.lang.Long id) {
-                return UserGroup.findUserGroup(id);
-            }
-        };
-    }
-    
-    public Converter<String, UserGroup> ApplicationConversionServiceFactoryBean.getStringToUserGroupConverter() {
+    public Converter<String, UserGroup> ApplicationConversionServiceFactoryBean.getIdToUserGroupConverter() {
         return new org.springframework.core.convert.converter.Converter<java.lang.String, org.activiti.spring.rest.model.UserGroup>() {
-            public org.activiti.spring.rest.model.UserGroup convert(String id) {
-                return getObject().convert(getObject().convert(id, Long.class), UserGroup.class);
+            public org.activiti.spring.rest.model.UserGroup convert(java.lang.String id) {
+                return UserGroup.findUserGroup(id);
             }
         };
     }
@@ -208,7 +200,6 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         registry.addConverter(getIdToTaskConverter());
         registry.addConverter(getUserGroupToStringConverter());
         registry.addConverter(getIdToUserGroupConverter());
-        registry.addConverter(getStringToUserGroupConverter());
         registry.addConverter(getUserInfoToStringConverter());
         registry.addConverter(getIdToUserInfoConverter());
     }

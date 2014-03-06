@@ -48,18 +48,6 @@ privileged aspect UserRecordController_Roo_Controller_Json {
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
     
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> UserRecordController.updateFromJson(@RequestBody String json, @PathVariable("id") String id) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        UserRecord userRecord = UserRecord.fromJsonToUserRecord(json);
-        userRecord.setId(id);
-        if (userRecord.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
-    
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> UserRecordController.deleteFromJson(@PathVariable("id") String id) {
         UserRecord userRecord = UserRecord.findUserRecord(id);

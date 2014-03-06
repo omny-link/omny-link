@@ -3,7 +3,6 @@ package org.activiti.spring.rest.cors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.activiti.spring.auth.ExternalUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 public class CorsInterceptor extends HandlerInterceptorAdapter {
 
 	protected static final Logger LOGGER = LoggerFactory
-			.getLogger(ExternalUserDetailsService.class);
+			.getLogger(CorsInterceptor.class);
 
 	@Autowired
 	protected CorsFilter corsFilter;
@@ -21,9 +20,9 @@ public class CorsInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler) throws Exception {
 		String origin = request.getHeader("Origin");
-		LOGGER.info("Checking CORS headers ...");
+		LOGGER.debug("Checking CORS headers ...");
 		if (origin == null) {
-			LOGGER.info("... No Origin header, continue as non-CORS.");
+			LOGGER.debug("... No Origin header, continue as non-CORS.");
 			return true;
 		} else if (corsFilter.getAllowedOrigins().contains(origin)) {
 			response.addHeader("Access-Control-Allow-Origin", origin);

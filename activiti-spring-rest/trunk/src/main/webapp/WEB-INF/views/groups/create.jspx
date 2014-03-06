@@ -3,7 +3,7 @@
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <form:create id="fc_org_activiti_spring_rest_model_UserGroup" modelAttribute="userGroup" path="/groups" render="${empty dependencies}" z="beSrdT8sY4Kl5e0egoVocxBtb/w=">
-        <field:input field="id" id="c_org_activiti_spring_rest_model_UserGroup_id" z="TB+TTRrDrENZfFp6SORb82y0my8="/>
+        <field:input field="id" id="c_org_activiti_spring_rest_model_UserGroup_id" required="true" z="+plTIuGH8zE16Dc4RHuuXeXHE/w="/>
         <field:input field="name" id="c_org_activiti_spring_rest_model_UserGroup_name" z="EB9pkGCzKRilxVGWyEz5sIJN+Pw="/>
         <field:input field="type" id="c_org_activiti_spring_rest_model_UserGroup_type" z="nSaC1mJVNueltXnI2oyfEN2w+0c="/>
         <field:select field="users" id="c_org_activiti_spring_rest_model_UserGroup_users" itemValue="id" items="${userrecords}" multiple="true" path="/userrecords" z="MbHQaVaEdU2PWLVR1MpNv/1Bis4="/>

@@ -14,7 +14,7 @@ privileged aspect UserRecord_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager UserRecord.entityManager;
     
-    public static final List<String> UserRecord.fieldNames4OrderClauseFilter = java.util.Arrays.asList("LOGGER", "JSON_FIELDS", "processEngine", "id", "firstName", "lastName", "email", "info", "groups");
+    public static final List<String> UserRecord.fieldNames4OrderClauseFilter = java.util.Arrays.asList("LOGGER", "JSON_FIELDS", "processEngine", "id", "firstName", "lastName", "email", "info", "groups", "pwd");
     
     public static final EntityManager UserRecord.entityManager() {
         EntityManager em = new UserRecord().entityManager;
@@ -26,17 +26,6 @@ privileged aspect UserRecord_Roo_Jpa_ActiveRecord {
     public void UserRecord.persist() {
         if (this.entityManager == null) this.entityManager = entityManager();
         this.entityManager.persist(this);
-    }
-    
-    @Transactional
-    public void UserRecord.remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        if (this.entityManager.contains(this)) {
-            this.entityManager.remove(this);
-        } else {
-            UserRecord attached = UserRecord.findUserRecord(this.id);
-            this.entityManager.remove(attached);
-        }
     }
     
     @Transactional
