@@ -2,20 +2,20 @@ package org.activiti.spring.rest.cors;
 
 import java.security.Principal;
 
-import org.activiti.spring.auth.ExternalUserDetails;
+import org.activiti.spring.rest.model.UserRecord;
 import org.springframework.security.core.Authentication;
 
-public class PreAuthenticatedAuthentication extends ExternalUserDetails
+public class PreAuthenticatedAuthentication extends UserRecord
 		implements Authentication, Principal {
 
 	private static final long serialVersionUID = 123456780453475486L;
 
-	public PreAuthenticatedAuthentication(String extractPrincipal) {
-		super(extractPrincipal, "");
+	public PreAuthenticatedAuthentication(String username) {
+		super(username);
 	}
 
-	public void setName(String e) {
-		super.setUsername(e);
+	public void setName(String id) {
+		super.setId(id);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class PreAuthenticatedAuthentication extends ExternalUserDetails
 
 	@Override
 	public PreAuthenticatedAuthentication getPrincipal() {
-		LOGGER.debug(String.format("get principal returns %1$s", getUsername()));
+		LOGGER.debug(String.format("get principal returns %1$s", getId()));
 		return this;
 	}
 
@@ -45,6 +45,11 @@ public class PreAuthenticatedAuthentication extends ExternalUserDetails
 	@Override
 	public void setAuthenticated(boolean isAuthenticated)
 			throws IllegalArgumentException {
+	}
+
+	@Override
+	public String getName() {
+		return getId();
 	}
 
 }

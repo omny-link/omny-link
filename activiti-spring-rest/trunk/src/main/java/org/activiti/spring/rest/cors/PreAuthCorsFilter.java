@@ -8,7 +8,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.activiti.spring.auth.ExternalUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContext;
@@ -18,7 +17,7 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 public class PreAuthCorsFilter extends AbstractPreAuthenticatedProcessingFilter {
 
 	protected static final Logger LOGGER = LoggerFactory
-			.getLogger(ExternalUserDetailsService.class);
+			.getLogger(PreAuthCorsFilter.class);
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,

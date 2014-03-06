@@ -2,8 +2,7 @@
 <div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
-    <form:update id="fu_org_activiti_spring_rest_model_UserGroup" idField="id_" modelAttribute="userGroup" path="/groups" versionField="Version" z="Jc32WEcyfYLqZh/P1rBxTTeNI88=">
-        <field:input field="id" id="c_org_activiti_spring_rest_model_UserGroup_id" z="TB+TTRrDrENZfFp6SORb82y0my8="/>
+    <form:update id="fu_org_activiti_spring_rest_model_UserGroup" modelAttribute="userGroup" path="/groups" versionField="Version" z="GIeXKxqO9vJFjrhYPu46CSBHMUM=">
         <field:input field="name" id="c_org_activiti_spring_rest_model_UserGroup_name" z="EB9pkGCzKRilxVGWyEz5sIJN+Pw="/>
         <field:input field="type" id="c_org_activiti_spring_rest_model_UserGroup_type" z="nSaC1mJVNueltXnI2oyfEN2w+0c="/>
         <field:select field="users" id="c_org_activiti_spring_rest_model_UserGroup_users" itemValue="id" items="${userrecords}" multiple="true" path="/userrecords" z="MbHQaVaEdU2PWLVR1MpNv/1Bis4="/>

@@ -29,6 +29,7 @@ privileged aspect UserRecordDataOnDemand_Roo_DataOnDemand {
         setFirstName(obj, index);
         setLastName(obj, index);
         setProcessEngine(obj, index);
+        setPwd(obj, index);
         return obj;
     }
     
@@ -50,6 +51,11 @@ privileged aspect UserRecordDataOnDemand_Roo_DataOnDemand {
     public void UserRecordDataOnDemand.setProcessEngine(UserRecord obj, int index) {
         ProcessEngine processEngine = null;
         obj.setProcessEngine(processEngine);
+    }
+    
+    public void UserRecordDataOnDemand.setPwd(UserRecord obj, int index) {
+        String pwd = "pwd_" + index;
+        obj.setPwd(pwd);
     }
     
     public UserRecord UserRecordDataOnDemand.getSpecificUserRecord(int index) {
