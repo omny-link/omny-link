@@ -31,35 +31,13 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     <property name="password" value="${jdbc.password}" />
   </bean>-->
   
-  <!-- JEE container managed data source (both DEV and PROD) -->
-  <bean id="activitiDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName" value="java:comp/env/jdbc/ActivitiDB"/>
-    <property name="defaultObject" ref="developmentDataSource" />
-  </bean>
-
-  <bean id="dbProperties"
-    class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="location" value="classpath:META-INF/spring/db.properties" />
-    <!-- Allow other PropertyPlaceholderConfigurer to run as well -->
-    <property name="ignoreUnresolvablePlaceholders" value="true" />
-  </bean>
-
-  <bean id="developmentDataSource"
-        class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
-    <property name="driverClass" value="${jdbc.driver}" />
-    <property name="url" value="${jdbc.url}" />
-    <property name="username" value="${jdbc.username}" />
-    <property name="password" value="${jdbc.password}" />
-  </bean>
-
   <bean id="transactionManager"
     class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-    <property name="dataSource" ref="activitiDataSource" />
+    <property name="dataSource" ref="dataSource" />
   </bean>
  
-
   <bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
-    <property name="dataSource" ref="activitiDataSource" />
+    <property name="dataSource" ref="dataSource" />
     <property name="transactionManager" ref="transactionManager" />
     <property name="databaseSchemaUpdate" value="true" />
     <property name="jobExecutorActivate" value="false" />
@@ -68,12 +46,12 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
       There is supposed to be filtering in place to avoid duplicates but need to test. 
       Also don't know if the /*/ will work. 
     <property name="deploymentResources" value="classpath*:/process/com/knowprocess/*/.*.bpmn" />
--->
+    -->
 
-    <!-- Embedded dev server 
+    <!-- Embedded dev server --> 
     <property name="mailServerHost" value="localhost" />
     <property name="mailServerPort" value="5025" />
-    -->
+    
     <!-- SendGrid server 
     <property name="mailServerHost" value="smtp.sendgrid.net" />
     <property name="mailServerPort" value="587" />
@@ -82,19 +60,19 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     <property name="mailServerPassword" value="" />
     -->
 
-    <!-- GMail server -->
+    <!-- GMail server
     <property name="mailServerHost" value="smtp.gmail.com" />
     <property name="mailServerPort" value="465" />
     <property name="mailServerUseTLS" value="true" />
     <property name="mailServerUseSSL" value="true" />    
-    <property name="mailServerUsername" value="info@trakeo.com" />
-    <property name="mailServerPassword" value="EDh9wHyC" />
-    
+    <property name="mailServerUsername" value="" />
+    <property name="mailServerPassword" value="" />
+    -->
     <property name="mailServerDefaultFrom" value="Tim Stephenson &lt;tim@trakeo.com>" />
   </bean>
 	  
-	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
-	  <property name="processEngineConfiguration" ref="processEngineConfiguration" />
-	</bean>
+  <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
+    <property name="processEngineConfiguration" ref="processEngineConfiguration" />
+  </bean>
 	
 </beans>
