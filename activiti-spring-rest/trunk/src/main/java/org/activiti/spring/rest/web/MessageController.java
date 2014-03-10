@@ -44,9 +44,17 @@ public class MessageController {
 
 	protected static ProcessEngine processEngine;
 
+	/**
+	 * Whether messages may be sent anonymously. Default: false.
+	 */
+	// TODO cannot figure how to get spring do property substitution
+	// @Value("${message.allowAnonymous}")
+	private String allowAnonymous = "true";
+
 	@Autowired
 	public void setProcessEngine(ProcessEngine pe) {
 		MessageController.processEngine = pe;
+		System.out.println("PE type is: " + pe.getClass().getName());
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/{msgId}", headers = "Accept=application/json")
@@ -120,9 +128,14 @@ public class MessageController {
 		if (SecurityContextHolder.getContext().getAuthentication() == null
 				|| "anonymousUser".equals(SecurityContextHolder.getContext()
 						.getAuthentication().getName())) {
-			ReportableException e = new ReportableException(
-					"Please ensure you are logged in before sending messages");
-			return new ResponseEntity(e.toJson(), HttpStatus.UNAUTHORIZED);
+			LOGGER.debug("allow Anonymous is set to " + allowAnonymous);
+			if (Boolean.valueOf(allowAnonymous)) {
+				LOGGER.warn("No user associated with this message, this may result in errors if the process author expected a username.");
+			} else {
+				ReportableException e = new ReportableException(
+						"Please ensure you are logged in before sending messages");
+				return new ResponseEntity(e.toJson(), HttpStatus.UNAUTHORIZED);
+			}
 		}
 		String username = SecurityContextHolder.getContext()
 				.getAuthentication().getName();
