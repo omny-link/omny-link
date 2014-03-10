@@ -51,16 +51,5 @@
         <context:exclude-filter expression=".*_Roo_.*" type="regex"/>
         <context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
     </context:component-scan>
-<!-- 
-    <jee:jndi-lookup id="activitiDataSource" jndi-name="jdbc/ActivitiDB"/>
-    <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
-    </bean>
-    <tx:annotation-driven mode="aspectj" transaction-manager="transactionManager"/>
-     -->
-    
-    <bean class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" id="entityManagerFactory">
-        <property name="persistenceUnitName" value="activiti"/>
-        <property name="dataSource" ref="activitiDataSource"/>
-    </bean>
+
 </beans>
