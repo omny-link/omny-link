@@ -3,10 +3,12 @@
 
 package org.activiti.spring.rest.model;
 
+import java.util.Collection;
 import java.util.Set;
 import org.activiti.spring.rest.model.UserGroup;
 import org.activiti.spring.rest.model.UserInfo;
 import org.activiti.spring.rest.model.UserRecord;
+import org.springframework.security.core.GrantedAuthority;
 
 privileged aspect UserRecord_Roo_JavaBean {
     
@@ -64,6 +66,10 @@ privileged aspect UserRecord_Roo_JavaBean {
     
     public void UserRecord.setPwd(String pwd) {
         this.pwd = pwd;
+    }
+    
+    public void UserRecord.setAuthorities(Collection<GrantedAuthority> authorities) {
+        this.authorities = authorities;
     }
     
 }

@@ -14,8 +14,6 @@ privileged aspect Form_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager Form.entityManager;
     
-    public static final List<String> Form.fieldNames4OrderClauseFilter = java.util.Arrays.asList("processEngine", "formKey", "deploymentId", "processDefinitionId", "processDefinitionUrl", "formId", "formUrl");
-    
     public static final EntityManager Form.entityManager() {
         EntityManager em = new Form().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -30,17 +28,6 @@ privileged aspect Form_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM Form o", Form.class).getResultList();
     }
     
-    public static List<Form> Form.findAllForms(String sortFieldName, String sortOrder) {
-        String jpaQuery = "SELECT o FROM Form o";
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                jpaQuery = jpaQuery + " " + sortOrder;
-            }
-        }
-        return entityManager().createQuery(jpaQuery, Form.class).getResultList();
-    }
-    
     public static Form Form.findForm(Long id) {
         if (id == null) return null;
         return entityManager().find(Form.class, id);
@@ -48,17 +35,6 @@ privileged aspect Form_Roo_Jpa_ActiveRecord {
     
     public static List<Form> Form.findFormEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM Form o", Form.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
-    }
-    
-    public static List<Form> Form.findFormEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
-        String jpaQuery = "SELECT o FROM Form o";
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                jpaQuery = jpaQuery + " " + sortOrder;
-            }
-        }
-        return entityManager().createQuery(jpaQuery, Form.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional
