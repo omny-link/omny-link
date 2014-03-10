@@ -3,7 +3,6 @@
 
 package org.activiti.spring.rest.model;
 
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.activiti.spring.rest.model.UserGroup;
@@ -13,8 +12,6 @@ privileged aspect UserGroup_Roo_Jpa_ActiveRecord {
     
     @PersistenceContext
     transient EntityManager UserGroup.entityManager;
-    
-    public static final List<String> UserGroup.fieldNames4OrderClauseFilter = java.util.Arrays.asList("serialVersionUID", "processEngine", "id", "name", "type", "users");
     
     public static final EntityManager UserGroup.entityManager() {
         EntityManager em = new UserGroup().entityManager;

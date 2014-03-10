@@ -3,7 +3,6 @@
 
 package org.activiti.spring.rest.model;
 
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.activiti.spring.rest.model.ProcessDefinition;
@@ -13,8 +12,6 @@ privileged aspect ProcessDefinition_Roo_Jpa_ActiveRecord {
     
     @PersistenceContext
     transient EntityManager ProcessDefinition.entityManager;
-    
-    public static final List<String> ProcessDefinition.fieldNames4OrderClauseFilter = java.util.Arrays.asList("JSON_FIELDS", "processEngine", "id", "name", "category", "description", "version", "resourceName", "deploymentId", "diagramResourceName", "key", "formKey", "formProperties");
     
     public static final EntityManager ProcessDefinition.entityManager() {
         EntityManager em = new ProcessDefinition().entityManager;

@@ -3,7 +3,6 @@
 
 package org.activiti.spring.rest.model;
 
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.activiti.spring.rest.model.Task;
@@ -13,8 +12,6 @@ privileged aspect Task_Roo_Jpa_ActiveRecord {
     
     @PersistenceContext
     transient EntityManager Task.entityManager;
-    
-    public static final List<String> Task.fieldNames4OrderClauseFilter = java.util.Arrays.asList("JSON_FIELDS", "processEngine", "assignee", "createTime", "dueDate", "delegateState", "description", "id", "name", "owner", "parentTaskId", "priority", "processDefinitionId", "taskDefinitionKey", "suspended", "formKey", "deploymentId", "formProperties");
     
     public static final EntityManager Task.entityManager() {
         EntityManager em = new Task().entityManager;

@@ -35,8 +35,12 @@ privileged aspect ExecutionController_Roo_Controller_Json {
     public ResponseEntity<String> ExecutionController.listJson() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        List<Execution> result = Execution.findAllExecutions();
-        return new ResponseEntity<String>(Execution.toJsonArray(result), headers, HttpStatus.OK);
+        try {
+            List<Execution> result = Execution.findAllExecutions();
+            return new ResponseEntity<String>(Execution.toJsonArray(result), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
@@ -45,9 +49,13 @@ privileged aspect ExecutionController_Roo_Controller_Json {
         execution.persist();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
-        headers.add("Location",uriBuilder.path(a.value()[0]+"/"+execution.getId().toString()).build().toUriString());
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try {
+            RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
+            headers.add("Location",uriBuilder.path(a.value()[0]+"/"+execution.getId().toString()).build().toUriString());
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -57,7 +65,11 @@ privileged aspect ExecutionController_Roo_Controller_Json {
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try {
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
@@ -77,11 +89,15 @@ privileged aspect ExecutionController_Roo_Controller_Json {
         Execution execution = Execution.findExecution(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        if (execution == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            if (execution == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            execution.remove();
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        execution.remove();
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
 }
