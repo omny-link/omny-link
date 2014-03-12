@@ -14,6 +14,8 @@ privileged aspect UserInfo_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager UserInfo.entityManager;
     
+    public static final List<String> UserInfo.fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "key", "value", "userRecord");
+    
     public static final EntityManager UserInfo.entityManager() {
         EntityManager em = new UserInfo().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect UserInfo_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM UserInfo o", UserInfo.class).getResultList();
     }
     
+    public static List<UserInfo> UserInfo.findAllUserInfoes(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM UserInfo o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, UserInfo.class).getResultList();
+    }
+    
     public static UserInfo UserInfo.findUserInfo(String id) {
         if (id == null || id.length() == 0) return null;
         return entityManager().find(UserInfo.class, id);
@@ -35,6 +48,17 @@ privileged aspect UserInfo_Roo_Jpa_ActiveRecord {
     
     public static List<UserInfo> UserInfo.findUserInfoEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM UserInfo o", UserInfo.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<UserInfo> UserInfo.findUserInfoEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM UserInfo o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, UserInfo.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

@@ -21,13 +21,17 @@ privileged aspect ProcessInstanceController_Roo_Controller_Json {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ProcessInstanceController.showJson(@PathVariable("id") String id) {
-        ProcessInstance processInstance = ProcessInstance.findProcessInstance(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (processInstance == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            ProcessInstance processInstance = ProcessInstance.findProcessInstance(id);
+            if (processInstance == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(processInstance.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(processInstance.toJson(), headers, HttpStatus.OK);
     }
     
     @RequestMapping(headers = "Accept=application/json")
@@ -45,11 +49,11 @@ privileged aspect ProcessInstanceController_Roo_Controller_Json {
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> ProcessInstanceController.createFromJson(@RequestBody String json, UriComponentsBuilder uriBuilder) {
-        ProcessInstance processInstance = ProcessInstance.fromJsonToProcessInstance(json);
-        processInstance.persist();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            ProcessInstance processInstance = ProcessInstance.fromJsonToProcessInstance(json);
+            processInstance.persist();
             RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
             headers.add("Location",uriBuilder.path(a.value()[0]+"/"+processInstance.getId().toString()).build().toUriString());
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
@@ -60,12 +64,12 @@ privileged aspect ProcessInstanceController_Roo_Controller_Json {
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> ProcessInstanceController.createFromJsonArray(@RequestBody String json) {
-        for (ProcessInstance processInstance: ProcessInstance.fromJsonArrayToProcessInstances(json)) {
-            processInstance.persist();
-        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            for (ProcessInstance processInstance: ProcessInstance.fromJsonArrayToProcessInstances(json)) {
+                processInstance.persist();
+            }
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -76,20 +80,24 @@ privileged aspect ProcessInstanceController_Roo_Controller_Json {
     public ResponseEntity<String> ProcessInstanceController.updateFromJson(@RequestBody String json, @PathVariable("id") String id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        ProcessInstance processInstance = ProcessInstance.fromJsonToProcessInstance(json);
-        processInstance.setId(id);
-        if (processInstance.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            ProcessInstance processInstance = ProcessInstance.fromJsonToProcessInstance(json);
+            processInstance.setId(id);
+            if (processInstance.merge() == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> ProcessInstanceController.deleteFromJson(@PathVariable("id") String id) {
-        ProcessInstance processInstance = ProcessInstance.findProcessInstance(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            ProcessInstance processInstance = ProcessInstance.findProcessInstance(id);
             if (processInstance == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }

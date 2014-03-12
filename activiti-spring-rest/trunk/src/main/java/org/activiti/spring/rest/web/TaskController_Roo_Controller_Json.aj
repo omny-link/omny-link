@@ -21,13 +21,17 @@ privileged aspect TaskController_Roo_Controller_Json {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> TaskController.showJson(@PathVariable("id") String id) {
-        Task task = Task.findTask(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (task == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            Task task = Task.findTask(id);
+            if (task == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(task.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(task.toJson(), headers, HttpStatus.OK);
     }
     
     @RequestMapping(headers = "Accept=application/json")
@@ -45,11 +49,11 @@ privileged aspect TaskController_Roo_Controller_Json {
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> TaskController.createFromJson(@RequestBody String json, UriComponentsBuilder uriBuilder) {
-        Task task = Task.fromJsonToTask(json);
-        task.persist();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            Task task = Task.fromJsonToTask(json);
+            task.persist();
             RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
             headers.add("Location",uriBuilder.path(a.value()[0]+"/"+task.getId().toString()).build().toUriString());
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
@@ -60,12 +64,12 @@ privileged aspect TaskController_Roo_Controller_Json {
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> TaskController.createFromJsonArray(@RequestBody String json) {
-        for (Task task: Task.fromJsonArrayToTasks(json)) {
-            task.persist();
-        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            for (Task task: Task.fromJsonArrayToTasks(json)) {
+                task.persist();
+            }
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -76,20 +80,24 @@ privileged aspect TaskController_Roo_Controller_Json {
     public ResponseEntity<String> TaskController.updateFromJson(@RequestBody String json, @PathVariable("id") String id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        Task task = Task.fromJsonToTask(json);
-        task.setId(id);
-        if (task.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            Task task = Task.fromJsonToTask(json);
+            task.setId(id);
+            if (task.merge() == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> TaskController.deleteFromJson(@PathVariable("id") String id) {
-        Task task = Task.findTask(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            Task task = Task.findTask(id);
             if (task == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }

@@ -21,13 +21,17 @@ privileged aspect ExecutionController_Roo_Controller_Json {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ExecutionController.showJson(@PathVariable("id") String id) {
-        Execution execution = Execution.findExecution(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (execution == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            Execution execution = Execution.findExecution(id);
+            if (execution == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(execution.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(execution.toJson(), headers, HttpStatus.OK);
     }
     
     @RequestMapping(headers = "Accept=application/json")
@@ -45,11 +49,11 @@ privileged aspect ExecutionController_Roo_Controller_Json {
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> ExecutionController.createFromJson(@RequestBody String json, UriComponentsBuilder uriBuilder) {
-        Execution execution = Execution.fromJsonToExecution(json);
-        execution.persist();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            Execution execution = Execution.fromJsonToExecution(json);
+            execution.persist();
             RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
             headers.add("Location",uriBuilder.path(a.value()[0]+"/"+execution.getId().toString()).build().toUriString());
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
@@ -60,12 +64,12 @@ privileged aspect ExecutionController_Roo_Controller_Json {
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> ExecutionController.createFromJsonArray(@RequestBody String json) {
-        for (Execution execution: Execution.fromJsonArrayToExecutions(json)) {
-            execution.persist();
-        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            for (Execution execution: Execution.fromJsonArrayToExecutions(json)) {
+                execution.persist();
+            }
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -76,20 +80,24 @@ privileged aspect ExecutionController_Roo_Controller_Json {
     public ResponseEntity<String> ExecutionController.updateFromJson(@RequestBody String json, @PathVariable("id") String id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        Execution execution = Execution.fromJsonToExecution(json);
-        execution.setId(id);
-        if (execution.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            Execution execution = Execution.fromJsonToExecution(json);
+            execution.setId(id);
+            if (execution.merge() == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> ExecutionController.deleteFromJson(@PathVariable("id") String id) {
-        Execution execution = Execution.findExecution(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            Execution execution = Execution.findExecution(id);
             if (execution == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }

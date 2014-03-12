@@ -21,13 +21,17 @@ privileged aspect DeploymentController_Roo_Controller_Json {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> DeploymentController.showJson(@PathVariable("id") String id) {
-        Deployment deployment = Deployment.findDeployment(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (deployment == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            Deployment deployment = Deployment.findDeployment(id);
+            if (deployment == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(deployment.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(deployment.toJson(), headers, HttpStatus.OK);
     }
     
     @RequestMapping(headers = "Accept=application/json")
@@ -45,11 +49,11 @@ privileged aspect DeploymentController_Roo_Controller_Json {
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> DeploymentController.createFromJson(@RequestBody String json, UriComponentsBuilder uriBuilder) {
-        Deployment deployment = Deployment.fromJsonToDeployment(json);
-        deployment.persist();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            Deployment deployment = Deployment.fromJsonToDeployment(json);
+            deployment.persist();
             RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
             headers.add("Location",uriBuilder.path(a.value()[0]+"/"+deployment.getId().toString()).build().toUriString());
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
@@ -60,12 +64,12 @@ privileged aspect DeploymentController_Roo_Controller_Json {
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> DeploymentController.createFromJsonArray(@RequestBody String json) {
-        for (Deployment deployment: Deployment.fromJsonArrayToDeployments(json)) {
-            deployment.persist();
-        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            for (Deployment deployment: Deployment.fromJsonArrayToDeployments(json)) {
+                deployment.persist();
+            }
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -76,20 +80,24 @@ privileged aspect DeploymentController_Roo_Controller_Json {
     public ResponseEntity<String> DeploymentController.updateFromJson(@RequestBody String json, @PathVariable("id") String id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        Deployment deployment = Deployment.fromJsonToDeployment(json);
-        deployment.setId(id);
-        if (deployment.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            Deployment deployment = Deployment.fromJsonToDeployment(json);
+            deployment.setId(id);
+            if (deployment.merge() == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> DeploymentController.deleteFromJson(@PathVariable("id") String id) {
-        Deployment deployment = Deployment.findDeployment(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            Deployment deployment = Deployment.findDeployment(id);
             if (deployment == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
