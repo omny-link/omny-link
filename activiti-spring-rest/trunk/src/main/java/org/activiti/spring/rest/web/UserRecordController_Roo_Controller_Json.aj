@@ -33,11 +33,11 @@ privileged aspect UserRecordController_Roo_Controller_Json {
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> UserRecordController.createFromJson(@RequestBody String json, UriComponentsBuilder uriBuilder) {
-        UserRecord userRecord = UserRecord.fromJsonToUserRecord(json);
-        userRecord.persist();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            UserRecord userRecord = UserRecord.fromJsonToUserRecord(json);
+            userRecord.persist();
             RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
             headers.add("Location",uriBuilder.path(a.value()[0]+"/"+userRecord.getId().toString()).build().toUriString());
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
@@ -48,12 +48,12 @@ privileged aspect UserRecordController_Roo_Controller_Json {
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> UserRecordController.createFromJsonArray(@RequestBody String json) {
-        for (UserRecord userRecord: UserRecord.fromJsonArrayToUserRecords(json)) {
-            userRecord.persist();
-        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            for (UserRecord userRecord: UserRecord.fromJsonArrayToUserRecords(json)) {
+                userRecord.persist();
+            }
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -62,10 +62,10 @@ privileged aspect UserRecordController_Roo_Controller_Json {
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> UserRecordController.deleteFromJson(@PathVariable("id") String id) {
-        UserRecord userRecord = UserRecord.findUserRecord(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            UserRecord userRecord = UserRecord.findUserRecord(id);
             if (userRecord == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }

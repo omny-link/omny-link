@@ -3,10 +3,13 @@
 
 package org.activiti.spring.rest.model;
 
+import java.util.List;
 import org.activiti.spring.rest.model.ProcessInstance;
 import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect ProcessInstance_Roo_Jpa_ActiveRecord {
+    
+    public static final List<String> ProcessInstance.fieldNames4OrderClauseFilter = java.util.Arrays.asList("processEngine", "businessKey", "processDefinitionId", "suspended");
     
     @Transactional
     public ProcessInstance ProcessInstance.merge() {

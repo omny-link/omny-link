@@ -21,13 +21,17 @@ privileged aspect FormPropertyController_Roo_Controller_Json {
     @RequestMapping(value = "/{id_}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> FormPropertyController.showJson(@PathVariable("id_") Long id_) {
-        FormProperty formProperty = FormProperty.findFormProperty(id_);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (formProperty == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            FormProperty formProperty = FormProperty.findFormProperty(id_);
+            if (formProperty == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(formProperty.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(formProperty.toJson(), headers, HttpStatus.OK);
     }
     
     @RequestMapping(headers = "Accept=application/json")
@@ -45,11 +49,11 @@ privileged aspect FormPropertyController_Roo_Controller_Json {
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> FormPropertyController.createFromJson(@RequestBody String json, UriComponentsBuilder uriBuilder) {
-        FormProperty formProperty = FormProperty.fromJsonToFormProperty(json);
-        formProperty.persist();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            FormProperty formProperty = FormProperty.fromJsonToFormProperty(json);
+            formProperty.persist();
             RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
             headers.add("Location",uriBuilder.path(a.value()[0]+"/"+formProperty.getId().toString()).build().toUriString());
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
@@ -60,12 +64,12 @@ privileged aspect FormPropertyController_Roo_Controller_Json {
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> FormPropertyController.createFromJsonArray(@RequestBody String json) {
-        for (FormProperty formProperty: FormProperty.fromJsonArrayToFormPropertys(json)) {
-            formProperty.persist();
-        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            for (FormProperty formProperty: FormProperty.fromJsonArrayToFormPropertys(json)) {
+                formProperty.persist();
+            }
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -76,20 +80,24 @@ privileged aspect FormPropertyController_Roo_Controller_Json {
     public ResponseEntity<String> FormPropertyController.updateFromJson(@RequestBody String json, @PathVariable("id_") Long id_) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        FormProperty formProperty = FormProperty.fromJsonToFormProperty(json);
-        formProperty.setId_(id_);
-        if (formProperty.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            FormProperty formProperty = FormProperty.fromJsonToFormProperty(json);
+            formProperty.setId_(id_);
+            if (formProperty.merge() == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(value = "/{id_}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> FormPropertyController.deleteFromJson(@PathVariable("id_") Long id_) {
-        FormProperty formProperty = FormProperty.findFormProperty(id_);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try {
+            FormProperty formProperty = FormProperty.findFormProperty(id_);
             if (formProperty == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
