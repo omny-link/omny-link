@@ -3,6 +3,7 @@
 
 package org.activiti.spring.rest.model;
 
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.activiti.spring.rest.model.Deployment;
@@ -12,6 +13,8 @@ privileged aspect Deployment_Roo_Jpa_ActiveRecord {
     
     @PersistenceContext
     transient EntityManager Deployment.entityManager;
+    
+    public static final List<String> Deployment.fieldNames4OrderClauseFilter = java.util.Arrays.asList("processEngine", "id", "name", "deploymentTime", "category", "url");
     
     public static final EntityManager Deployment.entityManager() {
         EntityManager em = new Deployment().entityManager;
