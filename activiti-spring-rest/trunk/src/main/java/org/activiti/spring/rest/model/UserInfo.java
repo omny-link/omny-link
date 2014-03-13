@@ -1,8 +1,5 @@
 package org.activiti.spring.rest.model;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
@@ -12,6 +9,7 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.stereotype.Component;
 
 @RooJavaBean
 @RooToString
@@ -19,6 +17,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooEquals
 @RooSerializable
 @RooJson
+@Component
 public class UserInfo {
 
 	/**

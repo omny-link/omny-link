@@ -19,6 +19,7 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import flexjson.JSONSerializer;
@@ -29,6 +30,7 @@ import flexjson.JSONSerializer;
 @RooEquals
 @RooSerializable
 @RooJson
+@Component
 public class Deployment {
 
 	private static ProcessEngine processEngine;

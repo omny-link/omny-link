@@ -19,8 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.roo.addon.equals.RooEquals;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
+import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @RooJavaBean
@@ -28,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RooJpaActiveRecord
 @RooEquals
 @RooSerializable
+@RooJson
+@Component
 public class UserGroup implements Group {
 
 	protected static final Logger LOGGER = LoggerFactory
