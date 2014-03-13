@@ -57,8 +57,6 @@ public class GetConnectionsTask extends LinkedInTask implements JavaDelegate {
 		
 		for (Person person : connections.getPersonList()) {
 			if (filter.match(person)) {
-				// System.out.println(Arrays.asList(person.getClass().getFields()));
-
 				personBuilder.add("id", person.getId());
 				personBuilder.add("firstName", person.getFirstName());
 				personBuilder.add("lastName", person.getLastName());
@@ -96,8 +94,7 @@ public class GetConnectionsTask extends LinkedInTask implements JavaDelegate {
 		try {
 			sw.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 		return sw.toString();
 	}
