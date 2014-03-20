@@ -10,29 +10,28 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 public class CorsInterceptor extends HandlerInterceptorAdapter {
 
-	protected static final Logger LOGGER = LoggerFactory
-			.getLogger(CorsInterceptor.class);
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(CorsInterceptor.class);
 
-	@Autowired
-	protected CorsFilter corsFilter;
+    @Autowired
+    protected CorsFilter corsFilter;
 
-	@Override
-	public boolean preHandle(HttpServletRequest request,
-			HttpServletResponse response, Object handler) throws Exception {
-		String origin = request.getHeader("Origin");
-		LOGGER.debug("Checking CORS headers ...");
-		if (origin == null) {
-			LOGGER.debug("... No Origin header, continue as non-CORS.");
-			return true;
-		} else if (corsFilter.getAllowedOrigins().contains(origin)) {
-			response.addHeader("Access-Control-Allow-Origin", origin);
-			LOGGER.info(String.format("... Cross origin allowed from %1$s",
-					origin));
-			return true;
-		} else {
-			LOGGER.warn(String.format("... Cross origin disallowed from %1$s",
-					origin));
-			return false;
-		}
-	}
+    @Override
+    public boolean preHandle(HttpServletRequest request,
+            HttpServletResponse response, Object handler) throws Exception {
+        String origin = request.getHeader("Origin");
+        LOGGER.debug("Checking CORS headers ...");
+        if (origin == null) {
+            LOGGER.debug("... No Origin header, continue as non-CORS.");
+            return true;
+        } else if (corsFilter.getAllowedOrigins().contains(origin)) {
+            LOGGER.info(String.format("... Cross origin allowed from %1$s",
+                    origin));
+            return true;
+        } else {
+            LOGGER.warn(String.format("... Cross origin disallowed from %1$s",
+                    origin));
+            return false;
+        }
+    }
 }
