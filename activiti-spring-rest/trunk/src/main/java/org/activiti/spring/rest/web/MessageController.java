@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -73,7 +74,7 @@ public class MessageController {
         HttpHeaders headers = null;
         try {
             ResponseEntity<String> response = handleMep(uriBuilder, msgId,
-                    jsonBody, vars);
+                    jsonBody, vars, 0);
             if (response.getStatusCode().compareTo(HttpStatus.BAD_REQUEST) < 0) {
                 headers = response.getHeaders();
                 String locationHeader = response.getHeaders().get("Location")
@@ -115,7 +116,7 @@ public class MessageController {
 
         Map<String, Object> vars = new HashMap<String, Object>();
         ResponseEntity<String> response = handleMep(uriBuilder, msgId, json,
-                vars);
+                vars, 0);
 
         LOGGER.debug(String.format("doInOnlyMep took: %1$s ms",
                 (System.currentTimeMillis() - start)));
@@ -123,7 +124,7 @@ public class MessageController {
     }
 
     protected ResponseEntity<String> handleMep(UriComponentsBuilder uriBuilder,
-            String msgId, String jsonBody, Map<String, Object> vars) {
+            String msgId, String jsonBody, Map<String, Object> vars, int retry) {
         if (SecurityContextHolder.getContext().getAuthentication() == null
                 || "anonymousUser".equals(SecurityContextHolder.getContext()
                         .getAuthentication().getName())) {
@@ -170,6 +171,16 @@ public class MessageController {
                     uriBuilder.path(a.value()[0] + "/" + instance.getId())
                             .build().toUriString());
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (CannotCreateTransactionException e) { 
+        	LOGGER.error(e.getClass().getName() + ":"+e.getMessage(), e);
+        	if (e.getCause() instanceof  com.mysql.jdbc.exceptions.jdbc4.CommunicationsException && retry<3) { 
+        		LOGGER.error("Confirmed timeout exception, retrying...");
+        		return handleMep(uriBuilder, msgId, jsonBody, vars, ++retry);
+        	} else { 
+        		ReportableException e2 = new ReportableException("Cause is not timeout or retries exceeds limit", e);
+                return new ResponseEntity<String>(e2.toJson(), headers,
+                        HttpStatus.SERVICE_UNAVAILABLE);
+        	}
         } catch (ActivitiException e) {
             ReportableException e2 = new ReportableException(e.getClass()
                     .getName() + ":" + e.getMessage(), e);
