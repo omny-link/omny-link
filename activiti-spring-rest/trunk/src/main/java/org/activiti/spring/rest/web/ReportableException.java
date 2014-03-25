@@ -1,5 +1,10 @@
 package org.activiti.spring.rest.web;
 
+import java.util.Iterator;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +47,25 @@ public class ReportableException extends Exception {
         }
     }
 
-    public String toJson() {
+	public ReportableException(ConstraintViolationException e) {
+		this(e.getMessage());
+
+		StringBuffer sb = new StringBuffer();
+		for (Iterator<ConstraintViolation<?>> it = e.getConstraintViolations()
+				.iterator(); it.hasNext();) {
+			ConstraintViolation<?> violation = it.next();
+			sb.append(violation.getRootBeanClass() + "."
+					+ violation.getPropertyPath() + " "
+					+ violation.getMessage() + ". Value found was "
+					+ violation.getInvalidValue());
+			if (it.hasNext()) {
+				sb.append(";");
+			}
+		}
+		this.details = sb.toString();
+	}
+
+	public String toJson() {
         return String.format("{\"error\":\"%1$s\",\"details\":\"%2$s\"}",
                 getMessage(), details);
     }
