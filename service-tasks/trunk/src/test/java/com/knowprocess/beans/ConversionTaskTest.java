@@ -12,33 +12,33 @@ import com.knowprocess.sugarcrm.api.SugarLead;
 
 public class ConversionTaskTest {
 
-	private static Person person;
-	private static ConversionTask svc;
+    private static Person person;
+    private static ConversionTask svc;
 
-	@BeforeClass
-	public static void setUpClass() {
-		person = new PersonImpl();
-		person.setFirstName("Alistair");
-		person.setLastName("Cook");
+    @BeforeClass
+    public static void setUpClass() {
+        person = new PersonImpl();
+        person.setFirstName("Alistair");
+        person.setLastName("Cook");
 
-		svc = new ConversionTask();
-	}
+        svc = new ConversionTask();
+    }
 
-	@Test
-	public void testLinkedInPersonToSugar() {
-		SugarLead lead = (SugarLead) new LinkedInPersonToSugarLead()
-				.convert(person);
-		assertNotNull(lead);
-		assertEquals(person.getFirstName(), lead.getFirstName());
-		assertEquals(person.getLastName(), lead.getLastName());
-	}
+    @Test
+    public void testLinkedInPersonToSugar() {
+        SugarLead lead = (SugarLead) new LinkedInPersonToSugarLead()
+                .convert(person);
+        assertNotNull(lead);
+        assertEquals(person.getFirstName(), lead.getFirstName());
+        assertEquals(person.getLastName(), lead.getLastName());
+    }
 
-	@Test
-	public void testConversionTask() {
-		SugarLead lead = svc.convert(person, SugarLead.class);
-		assertNotNull(lead);
-		assertEquals(person.getFirstName(), lead.getFirstName());
-		assertEquals(person.getLastName(), lead.getLastName());
-	}
+    @Test
+    public void testConversionTask() {
+        SugarLead lead = svc.convert(person, SugarLead.class);
+        assertNotNull(lead);
+        assertEquals(person.getFirstName(), lead.getFirstName());
+        assertEquals(person.getLastName(), lead.getLastName());
+    }
 
 }
