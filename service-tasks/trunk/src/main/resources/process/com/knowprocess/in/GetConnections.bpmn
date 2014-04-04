@@ -17,8 +17,6 @@
     <scriptTask id="scripttask1" name="Set filter" scriptFormat="javascript" activiti:autoStoreVariables="false">
       <script>var msg = execution.getVariable("kp.linkedInConnections");
 println("Message: " + msg);
-println(" is empty?: " + msg==='');
-println(" is empty 2?: " + msg.length==0);
 var filter = null; 
 try {
   if (msg!==undefined) {
