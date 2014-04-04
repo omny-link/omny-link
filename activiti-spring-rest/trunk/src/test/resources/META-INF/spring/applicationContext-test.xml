@@ -38,19 +38,12 @@
         <context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
     </context:component-scan>
 
-  <bean id="dbProperties"
-    class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="location" value="classpath:META-INF/spring/db.properties" />
-    <!-- Allow other PropertyPlaceholderConfigurer to run as well -->
-    <property name="ignoreUnresolvablePlaceholders" value="true" />
-  </bean>
-
   <bean id="dataSource"
         class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
-    <property name="driverClass" value="${jdbc.driver}" />
-    <property name="url" value="${jdbc.url}" />
-    <property name="username" value="${jdbc.username}" />
-    <property name="password" value="${jdbc.password}" />
+    <property name="driverClass" value="org.h2.Driver" />
+    <property name="url" value="jdbc:h2:mem:activiti;DB_CLOSE_DELAY=1000" />
+    <property name="username" value="sa" />
+    <property name="password" value="" />
   </bean>
    
   <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager">
