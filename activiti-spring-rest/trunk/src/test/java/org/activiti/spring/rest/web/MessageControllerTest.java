@@ -10,10 +10,8 @@ import java.util.Map.Entry;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.spring.rest.cors.PreAuthenticatedAuthentication;
 import org.junit.After;
 import org.junit.Before;
@@ -31,85 +29,118 @@ import com.knowprocess.test.activiti.ExtendedRule;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({
-		"/META-INF/spring/applicationContext-activiti-spring-rest.xml",
-		"/META-INF/spring/applicationContext-test.xml" })
+        "/META-INF/spring/applicationContext-activiti-spring-rest.xml",
+        "/META-INF/spring/applicationContext-test.xml" })
 public class MessageControllerTest {
 
-	private static final String BASE_URL = "http://localhost";
+    private static final String BASE_URL = "http://localhost";
 
-	private static final String MSG_NAME = "kp.testInOutMep";
+    private static final String MSG_NAME = "kp.testInOutMep";
 
-	private static final String PROCESS_NAME = "MessageControllerTest";
+    private static final String PROCESS_IN_OUT_NAME = "MessageControllerTest";
+    private static final String PROCESS_IN_ONLY_NAME = "MessageControllerInOnlyTest";
+    private static final String USERNAME = "tim@knowprocess.com";
 
-	private static final String PROCESS_RESOURCE = "processes/" + PROCESS_NAME
-			+ ".bpmn";
+    @Rule
+    public ExtendedRule activitiRule;
 
-	private static final String USERNAME = "tim@knowprocess.com";
+    private Map<String, Object> variableMap;
 
-	@Rule
-	public ExtendedRule activitiRule;
+    private MessageController svc;
 
-	private Map<String, Object> variableMap;
+    @Autowired
+    public ProcessEngine processEngine;
 
-	private MessageController svc;
+    @Before
+    public void setUp() {
+        activitiRule = new ExtendedRule(processEngine);
+        variableMap = new HashMap<String, Object>();
 
-	@Autowired
-	public ProcessEngine processEngine;
+        svc = new MessageController();
+        svc.setProcessEngine(processEngine);
 
-	@Before
-	public void setUp() {
-		activitiRule = new ExtendedRule(processEngine);
-		variableMap = new HashMap<String, Object>();
+        SecurityContextHolder.getContext().setAuthentication(
+                new PreAuthenticatedAuthentication(USERNAME));
+    }
 
-		svc = new MessageController();
-		svc.setProcessEngine(processEngine);
+    @After
+    public void tearDown() {
+        IdentityService idSvc = processEngine.getIdentityService();
+        idSvc.deleteUser(USERNAME);
+    }
 
-		SecurityContextHolder.getContext().setAuthentication(
-				new PreAuthenticatedAuthentication(USERNAME));
-	}
+    @Test
+    public void testInOnlyMep() {
+        deploy(PROCESS_IN_ONLY_NAME);
 
-	@After
-	public void tearDown() {
-		IdentityService idSvc = processEngine.getIdentityService();
-		idSvc.deleteUser(USERNAME);
-	}
+        String json = "[{\"contact\":{\"firstName\":\"John\","
+                + "\"email\":\"john@knowprocess.com\"}}]";
+        variableMap.put(MSG_NAME, json);
 
-	@Test
-	public void testInOutMep() {
-		Deployment deployment = processEngine.getRepositoryService()
-				.createDeployment().name(PROCESS_NAME)
-				.addClasspathResource(PROCESS_RESOURCE)
-				.deploy();
-		assertNotNull(deployment);
+        Authentication.setAuthenticatedUserId(USERNAME);
+        variableMap.put("initiator", USERNAME);
 
-		String json = "[{\"contact\":{\"firstName\":\"John\","
-				+ "\"email\":\"john@knowprocess.com\"}}]";
-		variableMap.put(MSG_NAME, json);
+        ResponseEntity<String> response = svc.doInOnlyMep(
+                UriComponentsBuilder.fromHttpUrl(BASE_URL), MSG_NAME, json);
+        for (Entry<String, List<String>> entry : response.getHeaders()
+                .entrySet()) {
+            System.out.println("response header: " + entry.getKey() + ": "
+                    + entry.getValue());
+        }
+        assertEquals("Did not expect any body to response", null,
+                response.getBody());
 
-		Authentication.setAuthenticatedUserId(USERNAME);
-		variableMap.put("initiator", USERNAME);
-		RuntimeService runtimeService = processEngine.getRuntimeService();
-		ProcessInstance processInstance = runtimeService
-				.startProcessInstanceByMessage(MSG_NAME, variableMap);
-		assertNotNull(processInstance.getId());
-		System.out.println("id " + processInstance.getId() + " "
-				+ processInstance.getProcessDefinitionId());
+        // String piid = svc.parseInstanceIdFromLocation(response);
+        // activitiRule.assertComplete(processInstance);
 
-		ResponseEntity<String> response = svc.doInOutMep(
-				UriComponentsBuilder.fromHttpUrl(BASE_URL), MSG_NAME, json);
-		for (Entry<String, List<String>> entry : response.getHeaders()
-				.entrySet()) {
-			System.out.println("response header: " + entry.getKey() + ": "
-					+ entry.getValue());
-		}
-		System.out.println("response body: " + response.getBody());
-		assertEquals("{\"initiator\": \"" + USERNAME + "\"}",
-				response.getBody());
-		activitiRule.assertVariableValue(processInstance.getId(), "initiator",
-				USERNAME);
+        assertEquals("Location has wrong value", "http://acme.com/foo/bar/123",
+                response.getHeaders().get("Location").get(0));
+    }
 
-		activitiRule.assertComplete(processInstance);
-		activitiRule.dumpVariables(processInstance.getId());
-	}
+    @Test
+    public void testInOutMep() {
+        deploy(PROCESS_IN_OUT_NAME);
+
+        String json = "[{\"contact\":{\"firstName\":\"John\","
+                + "\"email\":\"john@knowprocess.com\"}}]";
+        variableMap.put(MSG_NAME, json);
+
+        Authentication.setAuthenticatedUserId(USERNAME);
+        variableMap.put("initiator", USERNAME);
+
+        ResponseEntity<String> response = svc.doInOutMep(
+                UriComponentsBuilder.fromHttpUrl(BASE_URL), MSG_NAME, json);
+        for (Entry<String, List<String>> entry : response.getHeaders()
+                .entrySet()) {
+            System.out.println("response header: " + entry.getKey() + ": "
+                    + entry.getValue());
+        }
+        System.out.println("response body: " + response.getBody());
+        assertEquals("{\"initiator\": \"" + USERNAME + "\"}",
+                response.getBody());
+
+        assertNotNull("No Location header set.",
+                response.getHeaders().get("Location"));
+        String piid = svc.parseInstanceIdFromLocation(response);
+        activitiRule.assertVariableValue(piid, "initiator",
+                USERNAME);
+        assertEquals("Location has wrong value",
+                "http://localhost/process-instances/" + piid, response
+                        .getHeaders().get("Location").get(0));
+
+        activitiRule.assertComplete(piid);
+        activitiRule.dumpVariables(piid);
+    }
+
+    private void deploy(String processName) {
+        Deployment deployment = processEngine.getRepositoryService()
+                .createDeployment().name(processName)
+                .addClasspathResource(getProcessResource(processName)).deploy();
+        assertNotNull(deployment);
+    }
+
+    private String getProcessResource(String processName) {
+        return "processes/" + processName + ".bpmn";
+    }
 
 }
