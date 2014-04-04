@@ -27,16 +27,6 @@ privileged aspect Execution_Roo_Json {
         .use(null, Execution.class).deserialize(json);
     }
     
-    public static String Execution.toJsonArray(Collection<Execution> collection) {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(collection);
-    }
-    
-    public static String Execution.toJsonArray(Collection<Execution> collection, String[] fields) {
-        return new JSONSerializer()
-        .include(fields).exclude("*.class").serialize(collection);
-    }
-    
     public static Collection<Execution> Execution.fromJsonArrayToExecutions(String json) {
         return new JSONDeserializer<List<Execution>>()
         .use("values", Execution.class).deserialize(json);
