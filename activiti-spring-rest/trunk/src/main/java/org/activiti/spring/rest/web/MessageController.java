@@ -2,17 +2,15 @@ package org.activiti.spring.rest.web;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.validation.ConstraintViolationException;
 
 import org.activiti.engine.ActivitiException;
-import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.spring.rest.ActivitiRestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,33 +75,17 @@ public class MessageController {
         try {
             ResponseEntity<String> response = handleMep(uriBuilder, msgId,
                     json, vars, 0);
-            if (response.getStatusCode().compareTo(HttpStatus.BAD_REQUEST) < 0) {
-                headers = response.getHeaders();
-                String locationHeader = response.getHeaders().get("Location")
-                        .get(0);
-                LOGGER.debug("location: " + locationHeader);
-                id = locationHeader
-                        .substring(locationHeader.lastIndexOf('/') + 1);
-                LOGGER.debug("id: " + id);
-
-                String msg = (String) processEngine.getRuntimeService()
-                        .getVariable(id, msgId);
-                LOGGER.debug("msg: " + msg);
-                return new ResponseEntity(msg, headers, HttpStatus.OK);
-            } else {
-                return response;
-            }
-        } catch (ActivitiObjectNotFoundException e) {
-            // assume process is closed
-            LOGGER.debug(String
-                    .format("Activiti object not found: %1$s. Assume process is ended...",
-                            e.getMessage()));
-            HistoricVariableInstance instance = processEngine
-                    .getHistoryService().createHistoricVariableInstanceQuery()
-                    .processInstanceId(id).variableName(msgId).singleResult();
-            String msg = (String) instance.getValue();
+            headers = response.getHeaders();
+            id = parseInstanceIdFromLocation(response);
+            String msg = (String) org.activiti.spring.rest.model.ProcessInstance
+                    .findProcessInstance(id).getProcessVariables().get(msgId);
             LOGGER.debug("msg: " + msg);
             return new ResponseEntity(msg, headers, HttpStatus.OK);
+        } catch (ActivitiRestException e) {
+            ReportableException e2 = new ReportableException(e.getClass()
+                    .getName() + ":" + e.getMessage(), e);
+            return new ResponseEntity(e2.toJson(), headers,
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             ReportableException e2 = new ReportableException(e.getClass()
                     .getName() + ":" + e.getMessage(), e);
@@ -144,7 +126,7 @@ public class MessageController {
         }
         String username = SecurityContextHolder.getContext()
                 .getAuthentication().getName();
-        LOGGER.debug(" ... from (getName) " + username);
+        LOGGER.debug(" ... from " + username);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -161,20 +143,22 @@ public class MessageController {
             LOGGER.debug(String.format("vars: %1$s", vars));
             ProcessInstance instance = processEngine.getRuntimeService()
                     .startProcessInstanceByMessage(msgId, bizKey, vars);
-
-            List<ProcessInstance> list = processEngine.getRuntimeService()
-                    .createProcessInstanceQuery()
-                    .processInstanceId(instance.getId()).list();
-            RequestMapping a = ProcessInstanceController.class
-                    .getAnnotation(RequestMapping.class);
-            if (list.size() == 0) {
-                // already ended
-                // a =
-                // HistoryController.class.getAnnotation(RequestMapping.class);
+            org.activiti.spring.rest.model.ProcessInstance pi = org.activiti.spring.rest.model.ProcessInstance
+                    .findProcessInstance(instance.getId());
+            if (pi.getProcessVariables().containsKey("Location")) {
+                String path = pi.getProcessVariables().get("Location")
+                        .toString();
+                if (!path.startsWith("http")) {
+                    path = uriBuilder.path(path).build().toUriString();
+                }
+                headers.add("Location", path);
+            } else {
+                RequestMapping a = ProcessInstanceController.class
+                        .getAnnotation(RequestMapping.class);
+                headers.add("Location",
+                        uriBuilder.path(a.value()[0] + "/" + instance.getId())
+                                .build().toUriString());
             }
-            headers.add("Location",
-                    uriBuilder.path(a.value()[0] + "/" + instance.getId())
-                            .build().toUriString());
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
         } catch (CannotCreateTransactionException e) {
             LOGGER.error(e.getClass().getName() + ":" + e.getMessage(), e);
@@ -227,6 +211,20 @@ public class MessageController {
         } else {
             LOGGER.error(e.getMessage(), e);
             return null;
+        }
+    }
+
+    protected String parseInstanceIdFromLocation(ResponseEntity<String> response) {
+        if (response.getStatusCode().compareTo(HttpStatus.BAD_REQUEST) < 0) {
+            String locationHeader = response.getHeaders().get("Location")
+                    .get(0);
+            LOGGER.debug("location: " + locationHeader);
+            String id = locationHeader.substring(locationHeader
+                    .lastIndexOf('/') + 1);
+            LOGGER.debug("id: " + id);
+            return id;
+        } else {
+            throw new ActivitiRestException("Cannot find location");
         }
     }
 
