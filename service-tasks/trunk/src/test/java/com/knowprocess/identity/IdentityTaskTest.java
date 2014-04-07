@@ -22,7 +22,7 @@ public class IdentityTaskTest {
     private String[] groups;
 
     @Rule
-    public ActivitiRule activitiRule = new ActivitiRule();
+    public ActivitiRule activitiRule = new ActivitiRule("test-activiti.cfg.xml");
 
     @Before
     public void setUp() throws Exception {
