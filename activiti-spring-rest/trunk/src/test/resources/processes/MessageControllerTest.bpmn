@@ -11,7 +11,7 @@
     <scriptTask id="scripttask1" name="Set output message" scriptFormat="javascript" activiti:autoStoreVariables="false">
       <script><![CDATA[
 var msgOut = '{"initiator": "'+execution.getVariable('initiator')+'"}'; 
-execution.setVariable('kp.testInOutMep',msgOut);
+execution.setVariable(execution.getVariable('messageName'),msgOut);
       ]]></script>
     </scriptTask>
   </process>

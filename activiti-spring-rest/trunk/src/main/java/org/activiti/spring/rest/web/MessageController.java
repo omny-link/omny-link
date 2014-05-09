@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.script.ScriptException;
 import javax.validation.ConstraintViolationException;
 
 import org.activiti.engine.ActivitiException;
@@ -11,6 +12,7 @@ import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.spring.rest.ActivitiRestException;
+import org.activiti.spring.rest.beans.MessageRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,9 @@ public class MessageController {
 
     protected static ProcessEngine processEngine;
 
+    @Autowired
+    protected MessageRegistry messageRegistry;
+
     /**
      * Whether messages may be sent anonymously. Default: false.
      */
@@ -75,10 +80,14 @@ public class MessageController {
         try {
             ResponseEntity<String> response = handleMep(uriBuilder, msgId,
                     json, vars, 0);
+            if (response.getStatusCode() != HttpStatus.CREATED) {
+                return response;
+            }
             headers = response.getHeaders();
             id = parseInstanceIdFromLocation(response);
             String msg = (String) org.activiti.spring.rest.model.ProcessInstance
-                    .findProcessInstance(id).getProcessVariables().get(msgId);
+                    .findProcessInstance(id).getProcessVariables()
+                    .get(getMessageVarName(msgId));
             LOGGER.debug("msg: " + msg);
             return new ResponseEntity(msg, headers, HttpStatus.OK);
         } catch (ActivitiRestException e) {
@@ -134,8 +143,10 @@ public class MessageController {
         try {
             String bizKey = msgId + " - " + new Date().getTime();
             Authentication.setAuthenticatedUserId(username);
-            vars.put("messageName", msgId);
-            vars.put(msgId, jsonBody);
+            String modifiedMsgId = getMessageVarName(msgId);
+            vars.put("messageName", modifiedMsgId);
+            vars.put(modifiedMsgId,
+                    messageRegistry.deserialiseMessage(msgId, jsonBody));
             // TODO deprecate query param?
             vars.put("query", jsonBody);
 
@@ -179,10 +190,19 @@ public class MessageController {
         } catch (ActivitiException e) {
             LOGGER.error(e.getMessage(), e);
             ReportableException e2 = null;
-            ConstraintViolationException cve = isCausedBy(e,
-                    ConstraintViolationException.class.getName());
+
+            ConstraintViolationException cve = (ConstraintViolationException) isCausedBy(
+                    e, ConstraintViolationException.class.getName());
+            ScriptException se = (ScriptException) isCausedBy(e,
+                    ScriptException.class.getName());
             if (cve != null) {
                 e2 = new ReportableException(cve);
+                return new ResponseEntity<String>(e2.toJson(), headers,
+                        HttpStatus.BAD_REQUEST);
+            } else if (se != null && se.getMessage().contains("OptimisticLock")) {
+                LOGGER.info("Script Exception message: " + se.getMessage());
+                e2 = new ReportableException(
+                        "Optimistic locking exception, please reload the record and try again.");
                 return new ResponseEntity<String>(e2.toJson(), headers,
                         HttpStatus.BAD_REQUEST);
             } else {
@@ -191,7 +211,7 @@ public class MessageController {
                 return new ResponseEntity<String>(e2.toJson(), headers,
                         HttpStatus.SERVICE_UNAVAILABLE);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             LOGGER.error(e.getMessage(), e);
             ReportableException e2 = new ReportableException(e.getClass()
                     .getName() + ":" + e.getMessage(), e);
@@ -202,10 +222,16 @@ public class MessageController {
         }
     }
 
-    private ConstraintViolationException isCausedBy(Throwable e,
-            String className) {
-        if (e.getCause().getClass().getName().equals(className)) {
-            return (ConstraintViolationException) e.getCause();
+    private String getMessageVarName(String msgId) {
+        // Fix message name to avoid dot notation scripting errors
+        return msgId.replace('.', '_');
+    }
+
+    private Throwable isCausedBy(Throwable e, String className) {
+        LOGGER.info("Considering cause: " + e.getCause());
+        if (e.getCause() != null
+                && e.getCause().getClass().getName().equals(className)) {
+            return e.getCause();
         } else if (e.getCause() != null) {
             return isCausedBy(e.getCause(), className);
         } else {

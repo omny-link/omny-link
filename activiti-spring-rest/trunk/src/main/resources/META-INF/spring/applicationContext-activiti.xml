@@ -43,6 +43,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     <property name="transactionManager" ref="transactionManager" />
     <property name="databaseSchemaUpdate" value="true" />
     <property name="jobExecutorActivate" value="false" />
+    <property name="history" value="full" />
     
     <!-- 
       There is supposed to be filtering in place to avoid duplicates but need to test. 
