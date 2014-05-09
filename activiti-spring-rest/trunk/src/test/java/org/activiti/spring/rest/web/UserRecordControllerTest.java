@@ -26,8 +26,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({
-        "/META-INF/spring/applicationContext-activiti-spring-rest.xml",
-        "/META-INF/spring/applicationContext-test.xml" })
+ "/META-INF/spring/applicationContext-test.xml",
+        "/META-INF/spring/applicationContext-activiti-spring-rest.xml" })
 public class UserRecordControllerTest {
 
     private static final String USER_ID = "tim@knowprocess.com";

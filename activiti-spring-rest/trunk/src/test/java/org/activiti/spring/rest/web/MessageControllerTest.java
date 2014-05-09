@@ -10,12 +10,14 @@ import java.util.Map.Entry;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.spring.rest.beans.MessageRegistry;
 import org.activiti.spring.rest.cors.PreAuthenticatedAuthentication;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +26,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.knowprocess.test.activiti.ExtendedRule;
+import org.toxos.activiti.assertion.ProcessAssert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({
-        "/META-INF/spring/applicationContext-activiti-spring-rest.xml",
-        "/META-INF/spring/applicationContext-test.xml" })
+@ContextConfiguration({ "/META-INF/spring/applicationContext-test.xml",
+        "/META-INF/spring/applicationContext-activiti-spring-rest.xml" })
 public class MessageControllerTest {
 
     private static final String BASE_URL = "http://localhost";
@@ -41,8 +41,8 @@ public class MessageControllerTest {
     private static final String PROCESS_IN_ONLY_NAME = "MessageControllerInOnlyTest";
     private static final String USERNAME = "tim@knowprocess.com";
 
-    @Rule
-    public ExtendedRule activitiRule;
+    // @Rule
+    // public ActivitiRule activitiRule;
 
     private Map<String, Object> variableMap;
 
@@ -53,11 +53,14 @@ public class MessageControllerTest {
 
     @Before
     public void setUp() {
-        activitiRule = new ExtendedRule(processEngine);
+        // activitiRule = new ActivitiRule(processEngine);
+        // assertNotNull(activitiRule);
+        // assertNotNull(activitiRule.getRuntimeService());
         variableMap = new HashMap<String, Object>();
 
         svc = new MessageController();
         svc.setProcessEngine(processEngine);
+        svc.messageRegistry = new MessageRegistry();
 
         SecurityContextHolder.getContext().setAuthentication(
                 new PreAuthenticatedAuthentication(USERNAME));
@@ -122,14 +125,26 @@ public class MessageControllerTest {
         assertNotNull("No Location header set.",
                 response.getHeaders().get("Location"));
         String piid = svc.parseInstanceIdFromLocation(response);
-        activitiRule.assertVariableValue(piid, "initiator",
-                USERNAME);
+        ProcessAssert.assertHistoricProcessVariableLatestValueEquals(piid,
+                "initiator", USERNAME);
         assertEquals("Location has wrong value",
                 "http://localhost/process-instances/" + piid, response
                         .getHeaders().get("Location").get(0));
 
-        activitiRule.assertComplete(piid);
-        activitiRule.dumpVariables(piid);
+        List<ProcessInstance> instances = processEngine.getRuntimeService()
+                .createProcessInstanceQuery().processInstanceId(piid).list();
+        assertEquals(0, instances.size());
+
+        HistoricProcessInstance pi = processEngine.getHistoryService()
+                .createHistoricProcessInstanceQuery().processInstanceId(piid)
+                .singleResult();
+        assertNotNull(pi);
+
+        // TODO cannot use this assertion...
+        // java.lang.NullPointerException
+        // at
+        // org.toxos.activiti.assertion.LogMessageProvider.loadBundle(LogMessageProvider.java:74)
+        // ProcessAssert.assertProcessEnded(piid);
     }
 
     private void deploy(String processName) {
