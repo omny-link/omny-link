@@ -23,12 +23,17 @@ public class MessageRegistry {
         this.properties = properties;
     }
 
-    protected String getTypeForMessage(String messageType) {
-        return properties.getProperty(messageType, messageType);
+    protected String getTypeForMessage(final String messageType) {
+        String type = properties.getProperty(messageType, messageType).trim();
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("Found type %1$s for message type %2$s",
+                    type, messageType));
+        }
+        return type;
     }
 
     public Object deserialiseMessage(String msgType, String jsonBody) {
-        msgType = getTypeForMessage(msgType);
+        msgType = getTypeForMessage(msgType.trim());
         Object msgBean = null;
         try {
             Class<?> msgClass = getClass().getClassLoader().loadClass(msgType);

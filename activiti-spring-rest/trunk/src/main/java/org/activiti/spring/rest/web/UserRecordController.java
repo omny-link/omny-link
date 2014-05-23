@@ -89,14 +89,14 @@ public class UserRecordController {
         }
         IdentityService idSvc = processEngine.getIdentityService();
         LOGGER.debug(String.format("Updating user record for %1$s...", id));
-        //try {
+        try {
             idSvc.saveUser(user);
-        //} catch (Exception e) {
+        } catch (Exception e) {
             // TODO saveUser is supposed to be proof against this (see JavaDoc
             // 'Saves the user. If the user already existed, the user is
             // updated.')
-        //    LOGGER.warn("Error saving user, hope this means it's already there. NOTE that this will lose any updates to the user itself");
-        //}
+            LOGGER.warn("Error saving user, hope this means it's already there. NOTE that this will lose any updates to the user itself");
+        }
        LOGGER.debug("... done");
         for (UserInfo info : userRecord.getInfo()) {
             String userInfo = idSvc.getUserInfo(id, info.getKey());

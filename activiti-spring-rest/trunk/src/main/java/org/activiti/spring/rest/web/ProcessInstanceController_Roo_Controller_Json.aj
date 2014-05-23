@@ -34,19 +34,6 @@ privileged aspect ProcessInstanceController_Roo_Controller_Json {
         }
     }
     
-    @RequestMapping(headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<String> ProcessInstanceController.listJson() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        try {
-            List<ProcessInstance> result = ProcessInstance.findAllProcessInstances();
-            return new ResponseEntity<String>(ProcessInstance.toJsonArray(result), headers, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> ProcessInstanceController.createFromJson(@RequestBody String json, UriComponentsBuilder uriBuilder) {
         HttpHeaders headers = new HttpHeaders();

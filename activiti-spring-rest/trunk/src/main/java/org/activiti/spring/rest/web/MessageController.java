@@ -1,5 +1,6 @@
 package org.activiti.spring.rest.web;
 
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +75,6 @@ public class MessageController {
         // should send kp.foo.json or similar/
         LOGGER.info(String.format("handling In-Out MEP to: %1$s, json: %2$s",
                 msgId, json));
-        String id = "";
         Map<String, Object> vars = new HashMap<String, Object>();
         HttpHeaders headers = null;
         try {
@@ -84,10 +84,26 @@ public class MessageController {
                 return response;
             }
             headers = response.getHeaders();
-            id = parseInstanceIdFromLocation(response);
-            String msg = (String) org.activiti.spring.rest.model.ProcessInstance
-                    .findProcessInstance(id).getProcessVariables()
+            Object o = org.activiti.spring.rest.model.ProcessInstance
+                    .findProcessInstance((String) vars.get("piid"))
+                    .getProcessVariables()
                     .get(getMessageVarName(msgId));
+            LOGGER.debug(String.format("Object to return: %1$s", o));
+            String msg = "";
+            try {
+                Method toJson = o.getClass().getMethod("toJson", new Class[0]);
+
+                if (toJson != null) {
+                    msg = (String) toJson.invoke(o, null);
+                } else if (o != null) {
+                    msg = o.toString();
+                }
+            } catch (java.lang.NoSuchMethodException e) {
+                // Tant pis!
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn("No toJson method on " + o);
+                }
+            }
             LOGGER.debug("msg: " + msg);
             return new ResponseEntity(msg, headers, HttpStatus.OK);
         } catch (ActivitiRestException e) {
@@ -119,8 +135,9 @@ public class MessageController {
         return response;
     }
 
-    protected ResponseEntity<String> handleMep(UriComponentsBuilder uriBuilder,
-            String msgId, String jsonBody, Map<String, Object> vars, int retry) {
+    protected ResponseEntity<String> handleMep(
+            final UriComponentsBuilder uriBuilder, String msgId,
+            String jsonBody, final Map<String, Object> vars, int retry) {
         if (SecurityContextHolder.getContext().getAuthentication() == null
                 || "anonymousUser".equals(SecurityContextHolder.getContext()
                         .getAuthentication().getName())) {
@@ -154,6 +171,7 @@ public class MessageController {
             LOGGER.debug(String.format("vars: %1$s", vars));
             ProcessInstance instance = processEngine.getRuntimeService()
                     .startProcessInstanceByMessage(msgId, bizKey, vars);
+            vars.put("piid", instance.getId());
             org.activiti.spring.rest.model.ProcessInstance pi = org.activiti.spring.rest.model.ProcessInstance
                     .findProcessInstance(instance.getId());
             if (pi.getProcessVariables().containsKey("Location")) {
@@ -224,7 +242,9 @@ public class MessageController {
 
     private String getMessageVarName(String msgId) {
         // Fix message name to avoid dot notation scripting errors
-        return msgId.replace('.', '_');
+        msgId = msgId.replace('.', '_');
+        LOGGER.debug(String.format("Message name: %1$s", msgId));
+        return msgId;
     }
 
     private Throwable isCausedBy(Throwable e, String className) {
