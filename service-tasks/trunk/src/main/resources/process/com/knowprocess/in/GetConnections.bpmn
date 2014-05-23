@@ -15,7 +15,7 @@
     <sequenceFlow id="flow2" sourceRef="scripttask2" targetRef="endevent1"></sequenceFlow>
     <sequenceFlow id="flow3" sourceRef="messagestartevent1" targetRef="scripttask1"></sequenceFlow>
     <scriptTask id="scripttask1" name="Set filter" scriptFormat="javascript" activiti:autoStoreVariables="false">
-      <script>var msg = execution.getVariable("kp.linkedInConnections");
+      <script>var msg = execution.getVariable(execution.getVariable('messageName'));
 println("Message: " + msg);
 var filter = null; 
 try {
@@ -34,7 +34,7 @@ execution.setVariable("filter",filter);</script>
     </scriptTask>
     <sequenceFlow id="flow4" sourceRef="servicetask1" targetRef="scripttask2"></sequenceFlow>
     <scriptTask id="scripttask2" name="Set response message" scriptFormat="javascript" activiti:autoStoreVariables="false">
-      <script>execution.setVariable("kp.linkedInConnections",execution.getVariable('connections'));</script>
+      <script>execution.setVariable(execution.getVariable('messageName'),execution.getVariable('connections'));</script>
     </scriptTask>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_getLinkedInConnections">

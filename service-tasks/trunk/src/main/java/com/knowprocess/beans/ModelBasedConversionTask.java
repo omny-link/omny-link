@@ -14,6 +14,7 @@ public class ModelBasedConversionTask extends ModelBasedConversionService
     private Expression trgtPkgExpr;
 
     private Expression srcVar;
+    private Expression trgtType;
 
     private Expression trgtVar;
 
@@ -37,6 +38,10 @@ public class ModelBasedConversionTask extends ModelBasedConversionService
         this.srcVar = srcVar;
     }
 
+    public void setTargetType(Expression trgtType) {
+        this.trgtType = trgtType;
+    }
+
     public void setTargetVar(Expression trgtVar) {
         this.trgtVar = trgtVar;
     }
@@ -47,8 +52,20 @@ public class ModelBasedConversionTask extends ModelBasedConversionService
         String domain = (String) domainExpr.getValue(exec);
         String trgtPkg = (String) trgtPkgExpr.getValue(exec);
         init(modelResource, domain, (String) srcPkg.getValue(exec), trgtPkg);
-        Object trgt = convert(srcVar.getValue(exec));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("About to convert %1$s (%2$s) to %3$s",
+                    srcVar.getExpressionText(), srcVar.getValue(exec),
+                    trgtType.getExpressionText()));
+        }
+        Class<?> clazz = getClass().getClassLoader().loadClass(
+                trgtType.getExpressionText());
+        Object trgt = convert(srcVar.getValue(exec), clazz);
         exec.setVariable(trgtVar.getExpressionText(), trgt);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(String.format(
+                    "Converted %1$s to %2$s and stored as %3$s",
+                    srcVar.getValue(exec), trgt, trgtVar.getExpressionText()));
+        }
     }
 
 }

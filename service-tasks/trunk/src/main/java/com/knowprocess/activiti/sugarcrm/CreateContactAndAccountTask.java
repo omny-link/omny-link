@@ -19,22 +19,41 @@ public class CreateContactAndAccountTask extends SugarTask implements
 	public void execute(DelegateExecution execution) throws Exception {
 		SugarSession session = doSugarUserLogin(execution, svc);
 
-		CrmRecord contact = (CrmRecord) execution
-				.getVariable("sugarContact");
-		System.out.println("contact:" + contact.getNameValueListAsJson());
+        CrmRecord contact = getSugarContact(execution);
+        LOGGER.debug(String.format(
+                "Contact: %1$s",
+                contact == null ? "not found" : contact
+                        .getNameValueListAsJson()));
 
 		SugarAccount acct = (SugarAccount) execution
 				.getVariable("sugarAccount");
-		System.out.println("acct:" + acct.getNameValueListAsJson());
+        // Workaround for the fact Sugar does not create 1 to 1 associations.
+        // TODO need to implement in JS script in ModeledConversionService
+        if (acct == null) {
+            acct = (SugarAccount) contact.getCustom("account");
+        }
+        LOGGER.debug(String.format("Account: %1$s", acct == null ? "not found"
+                : acct.getNameValueListAsJson()));
 
 		if (contact != null && acct != null) {
-			svc.createAccountWithPrimeContact(session, contact, acct);
+            CrmRecord newContact = svc.createAccountWithPrimeContact(session,
+                    contact, acct);
+            LOGGER.info(String
+                    .format("Created contact with id %1$s and associated it to account",
+                    newContact.getId()));
+            putIdInContext(execution, newContact.getId());
 		} else { 
 			if (contact != null) {
-				svc.createContact(session, contact);
+                CrmRecord newContact = svc.createContact(session, contact);
+                LOGGER.info(String.format("Created contact with id %1$s",
+                        newContact.getId()));
+                putIdInContext(execution, newContact.getId());
 			}
 			if (acct != null) {
-				svc.createAccount(session, acct);
+                CrmRecord newAcct = svc.createAccount(session, acct);
+                LOGGER.info(String.format("Created account with id %1$s",
+                        newAcct.getId()));
+                putIdInContext(execution, newAcct.getId());
 			}
 		}
 	}

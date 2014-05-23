@@ -27,8 +27,16 @@ public class LeadActivity implements Serializable {
         return dateOfActivity;
     }
 
+    public void setDateOfActivity(Date dateOfActivity) {
+        this.dateOfActivity = dateOfActivity;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String desc) {
+        this.description = desc;
     }
 
 }

@@ -21,9 +21,9 @@ public class ModeledConversionTest {
 
     @Before
     public void setUp() throws Exception {
-        conversionService = new ModelBasedConversionService("/uml2/domain.xml",
-                "Sugar", "com.knowprocess.beans.model",
-                "com.knowprocess.sugarcrm.api");
+        conversionService = new ModelBasedConversionService();
+        conversionService.init("/uml2/domain.xml", "Sugar",
+                "com.knowprocess.beans.model", "com.knowprocess.sugarcrm.api");
     }
 
     @After
@@ -54,5 +54,18 @@ public class ModeledConversionTest {
                 SugarAccount.class));
     }
 
+    @Test
+    public void testSugarActivityToLeadActivity() {
+        assertTrue(
+                "Cannot support expected conversion from SugarLead to LeadActivity",
+                conversionService.canConvert(SugarLead.class,
+                LeadActivity.class));
+        SugarLead sLead = new SugarLead("User read article XYZ");
+        assertNotNull(sLead.getDescription());
+        LeadActivity lead = conversionService
+                .convert(sLead, LeadActivity.class);
+        System.out.println("sugar activity converted to: " + lead);
+        assertEquals(sLead.getDescription(), lead.getDescription());
+    }
 
 }

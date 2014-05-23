@@ -2,9 +2,11 @@ package com.knowprocess.activiti.sugarcrm;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.delegate.DelegateExecution;
+import org.activiti.engine.delegate.Expression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.knowprocess.crm.CrmRecord;
 import com.knowprocess.crm.CrmService;
 import com.knowprocess.sugarcrm.api.SugarService;
 import com.knowprocess.sugarcrm.api.SugarSession;
@@ -28,6 +30,10 @@ public class SugarTask {
 
 	protected CrmService svc;
 
+    protected Expression srcVar;
+
+    protected Expression trgtVar;
+
 	/**
 	 * Default constructor. Used when executed as service task.
 	 */
@@ -35,7 +41,15 @@ public class SugarTask {
 		svc = new SugarService();
 	}
 
-	protected SugarSession doSugarLogin(DelegateExecution execution,
+    public void setSourceVar(Expression srcVar) {
+        this.srcVar = srcVar;
+    }
+
+    public void setTargetVar(Expression trgtVar) {
+        this.trgtVar = trgtVar;
+    }
+
+    protected SugarSession doSugarLogin(DelegateExecution execution,
 			CrmService svc) {
 		SugarSession session = (SugarSession) execution
 				.getVariable("sugarSession");
@@ -71,4 +85,21 @@ public class SugarTask {
 		LOGGER.debug("session id: " + session.getSessionId());
 		return session;
 	}
+
+    protected CrmRecord getSugarContact(DelegateExecution execution) {
+        if (srcVar == null) {
+            return (CrmRecord) execution.getVariable("sugarContact");
+        } else {
+            throw new RuntimeException(
+                    "Implicit type conversion not yet implemented");
+            // CrmRecord record = execution.getVariable(inputVarName);
+            // return record;
+        }
+    }
+
+    protected void putIdInContext(DelegateExecution execution, String id) {
+        if (trgtVar != null) {
+            execution.setVariable(trgtVar.getExpressionText(), id);
+        }
+    }
 }

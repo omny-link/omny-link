@@ -37,7 +37,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     <property name="dataSource" ref="dataSource" />
   </bean>
  
-
+  <context:property-placeholder location="classpath*:META-INF/spring/*.properties"/>
   <bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
     <property name="dataSource" ref="dataSource" />
     <property name="transactionManager" ref="transactionManager" />
@@ -52,8 +52,12 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     -->
 
     <!-- Embedded dev server --> 
-    <property name="mailServerHost" value="localhost" />
-    <property name="mailServerPort" value="5025" />
+    <property name="mailServerHost" value="${mailServerHost}" />
+    <property name="mailServerPort" value="${mailServerPort}" />
+    <property name="mailServerUseTLS" value="${mailServerUseTLS}" />
+    <property name="mailServerUseSSL" value="${mailServerUseSSL}" />    
+    <property name="mailServerUsername" value="${mailServerUsername}" />
+    <property name="mailServerPassword" value="${mailServerPassword}" />
     
     <!-- SendGrid server 
     <property name="mailServerHost" value="smtp.sendgrid.net" />

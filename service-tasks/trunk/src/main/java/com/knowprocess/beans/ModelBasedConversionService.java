@@ -2,8 +2,6 @@ package com.knowprocess.beans;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,6 +28,8 @@ public class ModelBasedConversionService extends GenericConversionService
 
     private XPathExpression attrMappingExpr;
 
+    private XPathExpression entityMappingExpr;
+
     protected XPathFactory xFactory = XPathFactory.newInstance();
 
     protected XPath xPath = xFactory.newXPath();
@@ -42,11 +42,11 @@ public class ModelBasedConversionService extends GenericConversionService
 
     private XPathExpression mappingExpr;
 
-    private Map<String, Class<?>> mappings;
+    // private Map<String, Class<?>> mappings;
 
     public ModelBasedConversionService() {
         super();
-        mappings = new HashMap<String, Class<?>>();
+        // mappings = new HashMap<String, Class<?>>();
     }
 
     public ModelBasedConversionService(String modelResource, String domain,
@@ -57,6 +57,11 @@ public class ModelBasedConversionService extends GenericConversionService
 
     protected void init(String modelResource, String domain, String srcPkg,
             String trgtPkg) {
+        LOGGER.info(
+                String.format("Init conversion service for %1$s domain of model %2$s. "
+                        + "\n  Source package: %3$s, "
+                        + "\n  Target package: %4$s", domain, modelResource,
+                srcPkg, trgtPkg));
         try {
             Document document = parseModel(modelResource, domain);
 
@@ -76,26 +81,31 @@ public class ModelBasedConversionService extends GenericConversionService
                         Class<?> trgtType = getClass().getClassLoader()
                                 .loadClass(trgtPkg + "." + trgtName);
 
-                        // init a converter with the JS script and add to this
-                        // conversion service
-                        LOGGER.info(String.format(
-                                "Registering converter from %1$s to %2$s.",
-                                srcName, trgtName));
-                        JSConverter converter = new JSConverter(srcType,
-                                trgtType, createScript(domain, srcPkg, srcName,
-                                        trgtPkg, trgtName,
-                                        (NodeList) getMappingExpr().evaluate(
-                                                entity,
-                                                XPathConstants.NODESET)));
-                        addConverter(srcType, trgtType, converter);
-                        mappings.put(srcType.getName(), trgtType);
+                        String entityToProfileScript = createToProfileScript(domain, srcPkg, srcName,
+                                trgtPkg, trgtName,
+                                (NodeList) getAttrMappingExpr().evaluate(
+                                        entity,
+                                        XPathConstants.NODESET));
+                        addConverter(srcType, trgtType, entityToProfileScript);
+
+                        String entityFromProfileScript = createFromProfileScript(
+                                domain,
+                                trgtPkg,
+                                trgtName,
+                                srcPkg,
+                                srcName,
+                                (NodeList) getAttrMappingExpr().evaluate(
+                                        entity, XPathConstants.NODESET));
+                        addConverter(trgtType, srcType, entityFromProfileScript);
                     } catch (ClassNotFoundException e) {
-                        // if (LOGGER.isDebugEnabled()) {
-                        // LOGGER.error(e.getMessage(), e);
-                        // }
                         LOGGER.warn(String
-                                .format("No class found for one or both of source %1$s or target %2$s defined in model %3$s",
-                                        srcName, trgtName, modelResource));
+                                .format("No class found for one or both of source %1$s or target %2$s defined in model %3$s, detail: %4$s.",
+                                        srcName, trgtName, modelResource,
+                                        e.getMessage()));
+                        e.printStackTrace();
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug(e.getMessage(), e);
+                        }
                     }
                 }
             }
@@ -109,7 +119,18 @@ public class ModelBasedConversionService extends GenericConversionService
 
     }
 
-    private XPathExpression getAttrMappingExpr()
+    private void addConverter(Class<?> srcType, Class<?> trgtType,
+            String entityToProfileScript) {
+        LOGGER.info(String.format("Registering converter from %1$s to %2$s.",
+                srcType.getName(), trgtType.getName()));
+
+        JSConverter converter = new JSConverter(srcType,
+                trgtType, entityToProfileScript);
+        addConverter(srcType, trgtType, converter);
+        // mappings.put(srcType.getName(), trgtType);
+    }
+
+    private XPathExpression getValueMappingExpr()
             throws XPathExpressionException {
         if (attrMappingExpr == null) {
             attrMappingExpr = xPath.compile("@value");
@@ -117,11 +138,20 @@ public class ModelBasedConversionService extends GenericConversionService
         return attrMappingExpr;
     }
 
-    private XPathExpression getMappingExpr() throws XPathExpressionException {
+    private XPathExpression getAttrMappingExpr() throws XPathExpressionException {
         if (mappingExpr == null) {
             mappingExpr = xPath.compile("superitem[@id='attributes']/item");
         }
         return mappingExpr;
+    }
+
+    private XPathExpression getEntityMappingExpr()
+            throws XPathExpressionException {
+        if (entityMappingExpr == null) {
+            entityMappingExpr = xPath
+                    .compile("superitem[@id='attributes']/item");
+        }
+        return entityMappingExpr;
     }
 
     private XPathExpression getTrgtNameExpr(String domain)
@@ -181,7 +211,7 @@ public class ModelBasedConversionService extends GenericConversionService
         }
     }
 
-    private String createScript(String domain, String srcPkg, String srcType,
+    private String createToProfileScript(String domain, String srcPkg, String srcType,
             String trgtPkg, String trgtType, NodeList attributes)
             throws XPathExpressionException {
         // LOGGER.debug("Define conversion script from " + attributes);
@@ -191,8 +221,10 @@ public class ModelBasedConversionService extends GenericConversionService
         sb.append("importPackage(Packages." + srcPkg + ");\n");
         sb.append("importPackage(Packages." + trgtPkg + ");\n");
         sb.append("var o = new ").append(trgtType).append("();\n");
+        // Surrogate key is not modelled
+        sb.append("o.id = src.id;\n");
         for (int i = 0; i < attributes.getLength(); i++) {
-            String val = getAttrMappingExpr().evaluate(attributes.item(i));
+            String val = getValueMappingExpr().evaluate(attributes.item(i));
             if (val.contains(startMarker) && val.contains("»")) {
                 String value = val.substring(val.indexOf(startMarker)
                         + startMarker.length(), val.indexOf('»'));
@@ -213,12 +245,39 @@ public class ModelBasedConversionService extends GenericConversionService
         return sb.toString();
     }
 
-    protected Object convert(Object value) {
-        if (value == null) {
-            return null;
-        } else {
-            return convert(value, mappings.get(value.getClass().getName()));
+    private String createFromProfileScript(String domain, String srcPkg,
+            String srcType, String trgtPkg, String trgtType, NodeList attributes)
+            throws XPathExpressionException {
+        // LOGGER.debug("Define conversion script from " + attributes);
+        String startMarker = "«" + domain + ".";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("importPackage(Packages." + srcPkg + ");\n");
+        sb.append("importPackage(Packages." + trgtPkg + ");\n");
+        sb.append("var o = new ").append(trgtType).append("();\n");
+        // Surrogate key is not modelled
+        sb.append("o.id = src.id;\n");
+        for (int i = 0; i < attributes.getLength(); i++) {
+            String val = getValueMappingExpr().evaluate(attributes.item(i));
+            if (val.contains(startMarker) && val.contains("»")) {
+                String value = val.substring(val.indexOf(startMarker)
+                        + startMarker.length(), val.indexOf('»'));
+                String key = val.substring(val.indexOf('+') + 1,
+                        val.indexOf(':'));
+                sb.append("o.")
+                        .append(key)
+                        .append(" = (src.").append(key)
+                        .append(" === undefined ? src.getCustom('")
+                        .append(value).append("'").append("): src.")
+                        .append(key).append(");\n");
+            } else {
+                LOGGER.warn("No mapping found for: " + val);
+            }
         }
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(" script created:\n" + sb.toString());
+        }
+        return sb.toString();
     }
 
 }
