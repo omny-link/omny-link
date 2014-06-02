@@ -103,6 +103,7 @@ public class MessageController {
                 if (LOGGER.isWarnEnabled()) {
                     LOGGER.warn("No toJson method on " + o);
                 }
+                msg = o.toString();
             }
             LOGGER.debug("msg: " + msg);
             return new ResponseEntity(msg, headers, HttpStatus.OK);
