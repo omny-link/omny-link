@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.knowprocess.beans.model.AccountInfo;
+import com.knowprocess.beans.model.ActionType;
 import com.knowprocess.beans.model.Contact;
 import com.knowprocess.beans.model.LeadActivity;
 import com.knowprocess.sugarcrm.api.SugarAccount;
@@ -35,11 +36,18 @@ public class ModeledConversionTest {
         assertTrue(conversionService.canConvert(LeadActivity.class,
                 SugarLead.class));
         LeadActivity lead = new LeadActivity("User read article XYZ");
+        lead.setActionType(ActionType.DOWNLOAD);
         assertNotNull(lead.getDateOfActivity());
+
         SugarLead sLead = conversionService.convert(lead, SugarLead.class);
         System.out.println("sugar activity created: " + sLead);
         assertEquals(lead.getDateOfActivity(), sLead.getDateEntered());
         assertEquals(lead.getDescription(), sLead.getDescription());
+        assertNotNull("Action type not found",
+                sLead.getCustom("action_website_c"));
+        assertEquals(lead.getActionType().getId(),
+                sLead.getCustom("action_website_c"));
+
     }
 
     @Test

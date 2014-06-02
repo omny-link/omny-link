@@ -10,8 +10,11 @@ public class LeadActivity implements Serializable {
      */
     private static final long serialVersionUID = -4058597813090948518L;
 
+    private String id;
     private String description;
     private Date dateOfActivity;
+
+    private ActionType actionType;
 
     public LeadActivity() {
         super();
@@ -21,6 +24,15 @@ public class LeadActivity implements Serializable {
     public LeadActivity(String description) {
         this();
         this.description = description;
+    }
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Date getDateOfActivity() {
@@ -37,6 +49,14 @@ public class LeadActivity implements Serializable {
 
     public void setDescription(String desc) {
         this.description = desc;
+    }
+
+    public void setActionType(ActionType type) {
+        this.actionType = type;
+    }
+
+    public ActionType getActionType() {
+        return this.actionType;
     }
 
 }

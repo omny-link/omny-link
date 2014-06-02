@@ -21,6 +21,7 @@
         <activiti:field name="sourcePackage" expression="com.knowprocess.beans.model"></activiti:field>
         <activiti:field name="targetPackage" expression="com.knowprocess.sugarcrm.api"></activiti:field>
         <activiti:field name="sourceVar" expression="${source}"></activiti:field>
+        <activiti:field name="targetType" expression="com.knowprocess.sugarcrm.api.SugarLead"></activiti:field>
         <activiti:field name="targetVar" expression="target"></activiti:field>
       </extensionElements>
       <incoming>_14</incoming>
