@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import flexjson.JSONSerializer;
 
+@SuppressWarnings("serial")
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord
