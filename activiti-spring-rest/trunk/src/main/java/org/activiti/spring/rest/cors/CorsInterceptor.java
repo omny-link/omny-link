@@ -24,7 +24,7 @@ public class CorsInterceptor extends HandlerInterceptorAdapter {
         if (origin == null) {
             LOGGER.debug("... No Origin header, continue as non-CORS.");
             return true;
-        } else if (corsFilter.getAllowedOrigins().contains(origin)) {
+        } else if (corsFilter.isAllowed(origin)) {
             LOGGER.info(String.format("... Cross origin allowed from %1$s",
                     origin));
             return true;

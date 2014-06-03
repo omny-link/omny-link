@@ -83,7 +83,7 @@ public class CorsFilter extends OncePerRequestFilter {
             }
 
             String requestMethod = request.getHeader(REQUEST_METHOD);
-            if (getAllowedOrigins().contains(origin)) {
+            if (isAllowed(origin)) {
                 LOGGER.debug("... Cross-origin allowed.");
 
                 // Spec calls for a single header and misconfiguration of
@@ -138,6 +138,20 @@ public class CorsFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    protected boolean isAllowed(String origin) throws IOException {
+        for (String allowedOrigin : getAllowedOrigins()) {
+            LOGGER.debug(String.format("Check if %1$s matches %2$s", origin,
+                    allowedOrigin));
+            if (origin.matches(allowedOrigin)) {
+                LOGGER.info(String.format(
+                        "Allowing request from %1$s as matches %2$s", origin,
+                        allowedOrigin));
+                return true;
+            }
+        }
+        return false;
     }
 
     protected void addOnlyOneHeader(HttpServletResponse response,
