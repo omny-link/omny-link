@@ -38,8 +38,15 @@ public class MessageRegistry {
         try {
             Class<?> msgClass = getClass().getClassLoader().loadClass(msgType);
             msgBean = msgClass.newInstance();
-            Method method = msgClass.getMethod(
-                    "fromJsonTo" + msgClass.getSimpleName(), String.class);
+            Method method;
+            if (jsonBody.trim().startsWith("[")) {
+                method = msgClass.getMethod(
+                        "fromJsonArrayTo" + msgClass.getSimpleName() + "s",
+                        String.class);
+            } else {
+                method = msgClass.getMethod(
+                        "fromJsonTo" + msgClass.getSimpleName(), String.class);
+            }
             msgBean = method.invoke(msgBean, jsonBody);
         } catch (Exception e) {
             String msg = "Unable to deserialise message, will pass raw message to process instead.";
