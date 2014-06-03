@@ -3,6 +3,8 @@ package org.activiti.spring.rest.beans;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
+
 import org.activiti.spring.rest.model.Task;
 import org.junit.Test;
 
@@ -37,4 +39,18 @@ public class MessageRegistryTest {
         assertEquals(description, task.getDescription());
         assertEquals(priority, task.getPriority().intValue());
     }
+
+    @Test
+    public void testArrayTodoMessages() {
+        String json = "[{\"assignee\":\"" + userEmail + "\"}]";
+        String msgType = "org.activiti.spring.rest.model.Task";
+
+        List<Task> list = (List<Task>) msgRegistry.deserialiseMessage(msgType,
+                json);
+        assertNotNull(list);
+        System.out.println("list: " + list);
+        assertEquals(1, list.size());
+        assertEquals(userEmail, list.get(0).getAssignee());
+    }
+
 }
