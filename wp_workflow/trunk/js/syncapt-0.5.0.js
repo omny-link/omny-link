@@ -5,17 +5,23 @@ EASING_DURATION = 500;
 TAB = 9;
 ENTER = 13;
 
-
-var $p = new App();
 if ($ == undefined && jQuery != undefined) { 
   console.log('aliasing jQuery to $'); 
   $ = jQuery; 
 }
+$.fn.moustache = function(data) {
+  //console.debug('invoking moustache template with data: '+JSON.stringify(data));
+  var output = Mustache.render($(this).html(),data); 
+  //console.debug('produces: '+output);
+  this.empty().append(output);
+};
+
 $(document).ready(function() {
   console.log('Ready event fired, binding actions to data-p attributes...');
   $p.init();
 });
 
+var $p = new App();
 function App() {
   this.server = 'http://api.syncapt.com:8080';
   //this.server = 'http://localhost:9090';
@@ -245,6 +251,34 @@ function App() {
 	    });
     });
   };
+  this.getResource = function(resource, searchExpr, callback) {
+    console.log('get resource "'+resource+'", filtered by: '+JSON.stringify(searchExpr));
+    if ($p.isOffline()) {
+      callback(JSON.parse(localStorage['GET_'+resource]));
+    } else {
+      return $.ajax({
+        type: 'GET',
+        url: app.server+resource,
+        contentType: 'application/json',
+        data: searchExpr,
+        dataType: 'text',
+        username: app.username,
+        password: app.password,
+        done: function() {
+          console.debug('Received reply');
+        },
+        success: function(response) {
+          console.debug('Received reply');
+          localStorage['GET_'+resource]=response;
+          callback(JSON.parse(response));
+        },
+        error: function(jqXHR, textStatus, errorThrown) { 
+          console.log('ERROR '+ jqXHR.statusCode());
+          console.log('error:'+textStatus+':'+errorThrown);
+        }
+      });
+    }
+  };
   this.hideActivityIndicator = function(msg) {
 	  if (msg === undefined) msg = 'Success!';
 	  $('.p-messages').empty().append(msg).removeClass('blink');
@@ -253,6 +287,9 @@ function App() {
 	  /*setTimeout(function() {
 		  $('.p-messages').fadeOut();
 	  }, EASING_DURATION*10);*/
+  };
+  this.isOffline = function() { 
+    return false; 
   };
   this.sendMessage = function(mep, msgName, msg) {
     console.log('Sending '+msgName+' as mep: '+mep);
