@@ -1,0 +1,27 @@
+<div>
+  <h1>Syncapt Settings</h1>
+  <form method="post" action="options.php">
+<!--
+    <input type="hidden" name="option_page" value="">
+-->
+    <input type="hidden" name="action" value="update">
+    <table class="form-table">
+      <tbody>
+        <tr>
+          <th scope="row"><label for="serverUrl">Syncapt URL</label></th>
+          <td><input name="blogname" type="text" id="serverUrl" value="https://www.knowprocess.com" class="regular-text"></td>
+        </tr>
+        <tr>
+          <th scope="row"><label for="clientKey">Client Key</label></th>
+          <td><input name="blogname" type="text" id="clientKey" value="firmgains" class="regular-text"></td>
+        </tr>
+        <tr>
+          <th scope="row"><label for="clientSecret">Client Secret</label></th>
+          <td><input name="blogname" type="text" id="clientSecret" value="foo-bar" class="regular-text"></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="Save Changes"></p>
+  </form>
+
+</div>

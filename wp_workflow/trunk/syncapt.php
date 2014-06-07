@@ -11,9 +11,30 @@
 ?>
 
 <?php
+  define("P_ID", 'wp-workflow');
   define("P_VERSION", "0.5.0");
+  define("P_NAME", 'Syncapt');
   define("P_DEBUG", false);
+  //require_once('/var/www-wordpress-dev/wp-content/wp-includes/pluggable.php');
+if(!function_exists('wp_get_current_user')) {
+    include(ABSPATH . "wp-includes/pluggable.php"); 
+}
+if(!function_exists('wp_add_menu')) {
+//    include(ABSPATH . "wp-includes/plugin.php"); 
+}
   require_once("includes/shortcodes.php");
+//  require_once("includes/admin.php");
+
+  if ( is_admin() ) { // admin actions
+    add_action( 'admin_menu', 'add_p_admin_menu' );
+    add_action( 'admin_init', 'register_p_admin_settings' );
+  } else {
+    // non-admin enqueues, actions, and filters
+    add_action( 'wp_enqueue_styles', 'p_load_styles' );
+    add_action( 'wp_enqueue_scripts', 'p_load_scripts' );
+  }
+  add_action( 'init', 'p_create_mail_page' );
+  add_action( 'wp_ajax_change_subscription', 'change_subscription' );
 
   function syncapt_wp_footer() {
     echo 'Running Syncapt plugin!';
@@ -23,7 +44,7 @@
   function p_load_styles() {
     if ( is_admin() ) {
       wp_enqueue_style(
-        'syncapt-plugin-admin',
+        P_ID.'-admin',
         plugins_url( 'css/admin-0.5.0.css', __FILE__ ),
         array(),
         null, /* Force no version as query string */
@@ -31,7 +52,7 @@
       );
     } else {
       wp_enqueue_style(
-        'syncapt-plugin-frontend',
+        P_ID.'-frontend',
         plugins_url( 'css/frontend-0.5.0.css', __FILE__ ),
         array(  ),
         null, /* Force no version as query string */
@@ -39,7 +60,6 @@
       );
     }
   }
-  add_action( 'init', 'p_load_styles' );
 
   function p_load_scripts() {
     if ( is_admin() ) {
@@ -53,15 +73,28 @@
       */
     } else {
       wp_enqueue_script(
-        'syncapt-client',
-        plugins_url( 'js/syncapt-0.4.0.js', __FILE__ ),
+        'moustache.js',
+        plugins_url( 'js/moustache.js', __FILE__ ),
+        array(),
+        null, /* Force no version as query string */
+        true /* Force load in footer */
+      );
+      wp_enqueue_script(
+        P_ID.'-client',
+        plugins_url( 'js/syncapt-0.5.0.js', __FILE__ ),
+        array( 'jquery' ),
+        null, /* Force no version as query string */
+        true /* Force load in footer */
+      );
+      wp_enqueue_script(
+        P_ID.'-ui',
+        plugins_url( 'js/app-0.5.0.js', __FILE__ ),
         array( 'jquery' ),
         null, /* Force no version as query string */
         true /* Force load in footer */
       );
     }
   }
-  add_action( 'init', 'p_load_scripts' );
 
   function p_create_mail_page() { 
     $page = get_page_by_path('syncapt-mail');
@@ -80,7 +113,60 @@
       wp_insert_post( $post );
     }
   } 
-  add_action( 'init', 'p_create_mail_page' );
   
+  /** Render the settings / options page in the admin dashboard */
+  function p_options_page() {
+    if ( !current_user_can( 'manage_options' ) )  {
+      wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+    }?>
+    <div class="wrap">
+    <h2>Syncapt Settings</h2>
+    <form method="post" action="options.php">
+      <table class="form-table">
+        <tr valign="top">
+          <th scope="row">Syncapt URL</th>
+          <td><input type="text" name="server_url" value="<?php echo get_option('server_url'); ?>" /></td>
+        </tr>
+        <tr valign="top">
+          <th scope="row">API key</th>
+          <td><input type="text" name="api_key" value="<?php echo get_option('api_key'); ?>" /></td>
+        </tr>
+        <tr valign="top">
+          <th scope="row">API secret</th>
+          <td><input type="text" name="api_secret" value="<?php echo get_option('api_secret'); ?>" /></td>
+        </tr>
+      </table>
+    <?php 
+    settings_fields( P_ID.'-basic-group' );
+    do_settings_sections( P_ID.'-basic-group' );
+    submit_button();?>
+    </form>
+    </div>
+    <?php
+  }
 
+  function add_p_admin_menu() {
+    add_options_page( P_NAME.' Options', P_NAME, 'manage_options', P_ID, 'p_options_page' );
+  }
+
+  function register_p_admin_settings() { 
+    error_log('Registering settings...');
+    register_setting( P_ID.'-basic-group', 'server_url' );
+    register_setting( P_ID.'-basic-group', 'api_key' );
+    register_setting( P_ID.'-basic-group', 'api_secret' );
+  }
+
+  function change_subscription() {
+    if (!empty($_POST['syncapt_user']) && !empty($_POST['syncapt_pass'])) {
+      //error_log('Request to change subscription WITH expected params: syncapt_user and syncapt_pass: '.$_POST['syncapt_user']);
+      $user = wp_get_current_user();
+
+      update_user_meta( $user->ID, 'syncapt_user', $_POST['syncapt_user']);
+      update_user_meta( $user->ID, 'syncapt_pass', $_POST['syncapt_pass']);
+      die();
+    } else {
+      error_log('Request to change subscription without expected params: syncapt_user and syncapt_pass');
+      die($st);
+    }
+  }
 ?>
