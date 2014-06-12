@@ -1,0 +1,23 @@
+      <script type="text/javascript">
+        function requestProduct() {
+          $('.p-messages').empty().append('Sending...').show();
+          $p.sendMessage('inOnly','com.trakeo.procure.NewProduct.json',JSON.stringify($p.newProduct));
+        }
+        jQuery(document).ready(function() {
+          ;
+        });
+      </script>
+      <form id="newProductForm" class="" role="form">
+      
+        <div class="p-messages" style="display:none;"> </div>
+
+        <div id="newProductDetails">
+          <input class="form-control" data-p-bind="$p.newProduct.name" type="text" name="name" placeholder="Name*" required title="Please enter the product name"/>
+        </div>
+        <div>
+          <input data-p-action="requestProduct();" type="button" value="Submit" id="send" class="btn btn-fwd">
+        </div>
+        <p>Fields marked <span class="mandatory">*</span> are mandatory.</p> 
+    </form>
+             
+
