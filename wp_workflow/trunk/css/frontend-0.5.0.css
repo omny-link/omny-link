@@ -1,0 +1,11 @@
+.p-error, .p-mandatory { 
+  color: #f00;
+}
+
+:invalid { 
+  border: solid 1px #f00 !important;
+}
+
+:focus:invalid { 
+  border: solid 1px #f00 !important;
+}

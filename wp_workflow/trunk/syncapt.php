@@ -1,8 +1,8 @@
 <?php
 /*
-* Plugin Name: Syncapt
+* Plugin Name: Sandbox
 * Plugin URI: http://knowprocess.com/wp-plugins/syncapt
-* Description: Syncapt integrates the whole web with your WordPress app.
+* Description: Integrates the whole web with your WordPress app.
 * Author: Tim Stephenson
 * Version: 0.5.0
 * Author URI: http://knowprocess.com
@@ -14,23 +14,17 @@
   define("P_ID", 'wp-workflow');
   define("P_VERSION", "0.5.0");
   define("P_NAME", 'Syncapt');
-  define("P_DEBUG", false);
-  //require_once('/var/www-wordpress-dev/wp-content/wp-includes/pluggable.php');
-if(!function_exists('wp_get_current_user')) {
-    include(ABSPATH . "wp-includes/pluggable.php"); 
-}
-if(!function_exists('wp_add_menu')) {
-//    include(ABSPATH . "wp-includes/plugin.php"); 
-}
+  define("P_DEBUG", true);
   require_once("includes/shortcodes.php");
-//  require_once("includes/admin.php");
 
   if ( is_admin() ) { // admin actions
+    error_log('IS admin, should be loadding...');
     add_action( 'admin_menu', 'add_p_admin_menu' );
     add_action( 'admin_init', 'register_p_admin_settings' );
   } else {
     // non-admin enqueues, actions, and filters
-    add_action( 'wp_enqueue_styles', 'p_load_styles' );
+    // Not sure of the rights and wrongs but wp_enqueue_styles did not work
+    add_action( 'wp_head', 'p_load_styles' );
     add_action( 'wp_enqueue_scripts', 'p_load_scripts' );
   }
   add_action( 'init', 'p_create_mail_page' );
@@ -45,7 +39,7 @@ if(!function_exists('wp_add_menu')) {
     if ( is_admin() ) {
       wp_enqueue_style(
         P_ID.'-admin',
-        plugins_url( 'css/admin-0.5.0.css', __FILE__ ),
+        plugins_url( 'css/admin-'.P_VERSION.'.css', __FILE__ ),
         array(),
         null, /* Force no version as query string */
         'screen'
@@ -53,7 +47,7 @@ if(!function_exists('wp_add_menu')) {
     } else {
       wp_enqueue_style(
         P_ID.'-frontend',
-        plugins_url( 'css/frontend-0.5.0.css', __FILE__ ),
+        plugins_url( 'css/frontend-'.P_VERSION.'.css', __FILE__ ),
         array(  ),
         null, /* Force no version as query string */
         'screen'
@@ -81,14 +75,14 @@ if(!function_exists('wp_add_menu')) {
       );
       wp_enqueue_script(
         P_ID.'-client',
-        plugins_url( 'js/syncapt-0.5.0.js', __FILE__ ),
+        plugins_url( 'js/syncapt-'.P_VERSION.'.js', __FILE__ ),
         array( 'jquery' ),
         null, /* Force no version as query string */
         true /* Force load in footer */
       );
       wp_enqueue_script(
         P_ID.'-ui',
-        plugins_url( 'js/app-0.5.0.js', __FILE__ ),
+        plugins_url( 'js/app-'.P_VERSION.'.js', __FILE__ ),
         array( 'jquery' ),
         null, /* Force no version as query string */
         true /* Force load in footer */
@@ -169,4 +163,5 @@ if(!function_exists('wp_add_menu')) {
       die($st);
     }
   }
+    add_action( 'wp_enqueue_styles', 'p_load_styles' );
 ?>

@@ -4,6 +4,7 @@
 EASING_DURATION = 500;
 TAB = 9;
 ENTER = 13;
+REQUIRED = '<span class="mandatory">*</span>';
 
 if ($ == undefined && jQuery != undefined) { 
   console.log('aliasing jQuery to $'); 
@@ -23,6 +24,7 @@ $(document).ready(function() {
 
 var $p = new App();
 function App() {
+  this.enhanceForms=true;
   this.server = 'http://api.syncapt.com:8080';
   //this.server = 'http://localhost:9090';
   this.init = function() {
@@ -118,6 +120,12 @@ function App() {
     });
   };
   this.bindControls = function() {
+    $('input[data-p-bind]')
+      .addClass('form-control')
+      .before(function(i) { 
+        return '<label id="'+this.id+'">'+this.placeholder+(this.required ? REQUIRED : '')+'</label>';
+     })
+      .wrap('<div class="form-group">');
     $('[data-p-bind]').each(function(i,d) {
       if ($(d).data('p-type')=='number') $(d).autoNumeric('init', {mDec:0});
       var val = eval($(d).data('p-bind'));
