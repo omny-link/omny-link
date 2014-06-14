@@ -38,9 +38,9 @@ function App() {
     var parts = expr.split('.');
     var ref = '';
     for (idx in parts) {
-      //console.log('Needs initialising? '+ref);
       if (ref.length >0) ref+='.';
       ref+=(parts[idx]);
+      //console.log('Needs initialising? '+ref);
       var obj = eval(ref);
       if (obj == undefined && idx<(parts.length-1)) {
         console.log('Initialising '+ref);
@@ -120,30 +120,40 @@ function App() {
     });
   };
   this.bindControls = function() {
-    $('input[data-p-bind]')
+    $('[data-p-bind].decorate')
       .addClass('form-control')
       .before(function(i) { 
-        return '<label id="'+this.id+'">'+this.placeholder+(this.required ? REQUIRED : '')+'</label>';
+        return '<label id="'+this.id+'">'+this.name+(this.required ? REQUIRED : '')+'</label>';
      })
+      .removeClass('decorate')
+      .wrap('<div class="form-group">');
+    $('[data-p-display].decorate')
+      .addClass('form-control')
+      .removeClass('decorate')
       .wrap('<div class="form-group">');
     $('[data-p-bind]').each(function(i,d) {
-      if ($(d).data('p-type')=='number') $(d).autoNumeric('init', {mDec:0});
-      var val = eval($(d).data('p-bind'));
-      $(d).on('blur', function() {
-        var cmd = ($(d).data('p-type')=='number') 
-            ? $(d).data('p-bind')+'="'+$(d).autoNumeric('get')+'";'
-            : $(d).data('p-bind')+'="'+$(d).val()+'";';
-        if ($(d).val().length==0) cmd = $(d).data('p-bind')+'=null;';
-        console.log('updating data model for '+d.name+' using '+cmd);
-        eval(cmd);
-      });
+      // check we do not have moustache template
+      if ($(d).data('p-bind').indexOf('{')==-1) {
+        console.debug('binding control '+d.name+' to '+$(d).data('p-bind'));
+        if ($(d).data('p-type')=='number') $(d).autoNumeric('init', {mDec:0});
+        var val = eval($(d).data('p-bind'));
+        $(d).on('blur', function() {
+          var cmd = ($(d).data('p-type')=='number') 
+              ? $(d).data('p-bind')+'="'+$(d).autoNumeric('get')+'";'
+              : $(d).data('p-bind')+'="'+$(d).val()+'";';
+          if ($(d).val().length==0) cmd = $(d).data('p-bind')+'=null;';
+          console.log('updating data model for '+d.name+' using '+cmd);
+          eval(cmd);
+          $p.sync();
+        });
+      }
     });
     $('[data-p-display]').each(function(i,d) {
       if ($(d).data('p-type')=='number') $(d).autoNumeric('init', {mDec:0});
     });
   };
-	this.bindSectionsToNav = function() {
-	  $('[data-p-section]').each(function(i,d) {
+  this.bindSectionsToNav = function() {
+    $('[data-p-section]').each(function(i,d) {
       console.log('bind nav handler to '+$(d).data('p-section'));
       $(d).on('click',function() {
         var sect = $(d).data('p-section');
@@ -155,7 +165,7 @@ function App() {
         $('#'+sect).delay(500).removeClass('hide').fadeIn(500);
       });
     });
-	};
+  };
   this.bindTables = function() {
     $('[data-p-table]').each(function(i,d) {
       var entity = $(d).data('p-table');
@@ -168,7 +178,7 @@ function App() {
           { data: "email", validator: this.emailValidator, allowInvalid: false },
           { data: "phone" },
           {
-        	data: "mailingLists",
+          data: "mailingLists",
           /* autocomplete only supports single select
            * type: "autocomplete",
           source: ["Committee", "Meetings", "Volunteers", ""], //empty string is a valid value
@@ -191,12 +201,12 @@ function App() {
          * consider custom renderer: http://handsontable.com/demo/renderers_html.html
          * or http://handsontable.com/demo/prepopulate.html
         dataSchema: { name: "",
-        	childrenStartYears: "",
-        	email: "",
-        	phone: "",
-        	mailingLists: "",
-        	crb: false,
-        	firstAid: false
+          childrenStartYears: "",
+          email: "",
+          phone: "",
+          mailingLists: "",
+          crb: false,
+          firstAid: false
         },*/
         removeRowPlugin: true,
         afterChange: function (change, source) {
@@ -204,59 +214,59 @@ function App() {
             return; //don't save this change
           } else if (source === 'edit') {
             console.log('type change:'+typeof change);
-    			  console.log('json change:'+JSON.stringify(change));
-    			  window.change = change;
-		        row = change[0][0];
-		        col = change[0][1];
-		        from = change[0][2];
-		        to = change[0][3];
-		        console.log('my change:'+row+','+col+' from '+from+' to '+to);
+            console.log('json change:'+JSON.stringify(change));
+            window.change = change;
+            row = change[0][0];
+            col = change[0][1];
+            from = change[0][2];
+            to = change[0][3];
+            console.log('my change:'+row+','+col+' from '+from+' to '+to);
 
-		        if (row>=pta.data.length) { // create
-		      	console.log('create new record');
-		      	var p = new Person();
-		      	pta.data.push(p);
-		      	pta.set(row,col,to);
-		      } else { // update
-		      	console.log('TODO update record: '+row);
-		      	//pta.data.splice(row,1);
-		      	//var p = pta.data[row];
-		      	// LAST USED pta.set(row,col,to);
-  //		    	pta.data.push(p);
-		        }
-    			  //pta.save();
-    			} else {
-    				console.log('type change:'+typeof change);
-    				console.log(' source:'+source);
-    			}
+            if (row>=pta.data.length) { // create
+            console.log('create new record');
+            var p = new Person();
+            pta.data.push(p);
+            pta.set(row,col,to);
+          } else { // update
+            console.log('TODO update record: '+row);
+            //pta.data.splice(row,1);
+            //var p = pta.data[row];
+            // LAST USED pta.set(row,col,to);
+  //          pta.data.push(p);
+            }
+            //pta.save();
+          } else {
+            console.log('type change:'+typeof change);
+            console.log(' source:'+source);
+          }
           console.log('Autosaved (' + change.length + ' cell' + (change.length > 1 ? 's' : '') + ')');
           console.log('... source: '+source+', change:'+change);
-  //	        pta.data.push(new Person(change.splice(0,1)));
+  //          pta.data.push(new Person(change.splice(0,1)));
         },
         afterRemoveRow: function(idx, amount) {
-    	    console.log('removed row: '+idx+','+amount);
+          console.log('removed row: '+idx+','+amount);
   //          pta.data.splice(idx, amount);
-    	    //pta.save();
+          //pta.save();
         }
       });
       $('html, body').css("cursor", "wait");
       return $.ajax({
-	      type: 'GET',
-	      url: $p.server+'/'+entity,
-	      contentType: 'application/json',
-	      dataType: 'json',
-	      success: function(response) {
-	        console.log('success fetching data');
+        type: 'GET',
+        url: $p.server+'/'+entity,
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function(response) {
+          console.log('success fetching data');
           //localStorage['GET_repository_definitions']=response;
-	        hot.loadData(response);
-	        $('html, body').css("cursor", "auto");
-	      },
-	      error: function(jqXHR, textStatus, errorThrown) {
-	        console.log('error:'+textStatus+':'+errorThrown);
-	        console.log('  headers: '+JSON.stringify(jqXHR.getAllResponseHeaders()));
-	        $('html, body').css("cursor", "auto");
-	      }
-	    });
+          hot.loadData(response);
+          $('html, body').css("cursor", "auto");
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          console.log('error:'+textStatus+':'+errorThrown);
+          console.log('  headers: '+JSON.stringify(jqXHR.getAllResponseHeaders()));
+          $('html, body').css("cursor", "auto");
+        }
+      });
     });
   };
   this.getResource = function(resource, searchExpr, callback) {
@@ -288,13 +298,13 @@ function App() {
     }
   };
   this.hideActivityIndicator = function(msg) {
-	  if (msg === undefined) msg = 'Success!';
-	  $('.p-messages').empty().append(msg).removeClass('blink');
-	  document.body.style.cursor='auto';
-	  // enable to allow messages to fade away
-	  /*setTimeout(function() {
-		  $('.p-messages').fadeOut();
-	  }, EASING_DURATION*10);*/
+    if (msg === undefined) msg = 'Success!';
+    $('.p-messages').empty().append(msg).removeClass('blink');
+    document.body.style.cursor='auto';
+    // enable to allow messages to fade away
+    /*setTimeout(function() {
+      $('.p-messages').fadeOut();
+    }, EASING_DURATION*10);*/
   };
   this.isOffline = function() { 
     return false; 
@@ -335,8 +345,8 @@ function App() {
     });
   };
   this.showActivityIndicator = function(msg) {
-	  document.body.style.cursor='progress';
-	  this.showMessage(msg);
+    document.body.style.cursor='progress';
+    this.showMessage(msg);
   };
   this.showMessage = function(msg, additionalClass) {
     if (msg === undefined) msg = 'Working...';
@@ -345,29 +355,41 @@ function App() {
   this.sync = function() {
     //console.log('... contact is: '+JSON.stringify($p.contact));
     $('[data-p-bind]').each(function(i,d) {
-      $p.initObj($(d), 'p-bind');
-      // create data binding
-      var val = eval($(d).data('p-bind'));
-      console.log('... '+i+':'+val+' into '+d.name);
-      $(d).val(val);
-      if ($(d).data('p-type')=='number') $(d).autoNumeric('init', {mDec:0});
-      if (val != undefined && $(d).data('p-type')=='number') $(d).autoNumeric('set',val);
+      // check we do not have moustache template
+      if ($(d).data('p-bind').indexOf('{')==-1) {
+        $p.initObj($(d), 'p-bind');
+        // create data binding
+        var val = eval($(d).data('p-bind'));
+        console.log('... '+i+':'+val+' into '+d.name);
+        $(d).val(val);
+        if ($(d).data('p-type')=='number') $(d).autoNumeric('init', {mDec:0});
+        if (val != undefined && $(d).data('p-type')=='number') $(d).autoNumeric('set',val);
+      }
     });
     $('[data-p-combo-bind]').each(function(i,d) {
+      // check we do not have moustache template
+      if ($(d).data('p-combo-bind').indexOf('{')==-1) {
       $p.initObj($(d), 'p-combo-bind');
       var val = eval($(d).data('p-combo-display'));
       if ($(d).data('p-l10n')!=undefined && $p.l10n!=undefined) val=$p.l10n.getLabelText(val);
       $(d).val(val);
+      }
     });
     $('[data-p-display]').each(function(i,d) {
+      // check we do not have moustache template
+      if ($(d).data('p-display').indexOf('{')==-1) {
       $p.initObj($(d), 'p-display');
-      // create display only binding
-      var val = eval($(d).data('p-display'));
-      if ($(d).data('p-l10n')!=undefined && $p.l10n!=undefined) val=$p.l10n.getLabelText(val);
-      console.log('... '+i+':'+val+' into '+d.name);
-      $(d).empty().append(val);
-      if ($(d).data('p-type')=='number') $(d).autoNumeric('init', {mDec:0});
-      if (val != undefined && $(d).data('p-type')=='number') $(d).autoNumeric('set',val);
+      // check we do not have moustache template
+      if ($(d).data('p-display').indexOf('{')==-1) {
+        // create display only binding
+        var val = eval($(d).data('p-display'));
+        if ($(d).data('p-l10n')!=undefined && $p.l10n!=undefined) val=$p.l10n.getLabelText(val);
+        console.log('... '+i+':'+val+' into '+d.name);
+        $(d).empty().append(val);
+        if ($(d).data('p-type')=='number') $(d).autoNumeric('init', {mDec:0});
+        if (val != undefined && $(d).data('p-type')=='number') $(d).autoNumeric('set',val);
+      }
+      }
     });
   };
 }
