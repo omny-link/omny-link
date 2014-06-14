@@ -3,9 +3,14 @@
 }
 
 :invalid { 
-  border: solid 1px #f00 !important;
+  border: solid 1px #f99 !important;
 }
 
 :focus:invalid { 
   border: solid 1px #f00 !important;
 }
+
+label { 
+  font-weight: bold; 
+}
+
