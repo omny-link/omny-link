@@ -1,0 +1,85 @@
+      <link href="../css/frontend-0.5.0.css"/>
+      <style>
+       .col { 
+         width:50%;
+      }
+      </style>
+      <script src="../js/moustache.js"></script>
+      <script src="../js/jquery-1.9.1.js"></script>
+      <script type="text/javascript" src="../js/syncapt-0.5.0.js"></script>
+      <script type="text/javascript">
+        function addQuestion(type) {
+          if (type == undefined) type = 'question';
+          var idx = $p.survey.questions.length;
+          console.log('Invoked addQuestion of type: '+type+' at idx: '+idx);
+          $p.survey.questions[idx] = new Object();
+          $p.survey.questions[idx].idx = idx;
+          $('#surveyDesign').append('<div id="question'+idx+'"></div>');
+          $('#surveyDesign #question'+idx).html($('#'+type+'Template').html()).moustache($p.survey.questions[idx]);
+          $('#surveyPreview').append('<div id="previewQ'+idx+'"></div>');
+          $('#surveyPreview #previewQ'+idx).html($('#'+type+'PreviewTemplate').html()).moustache($p.survey.questions[idx]);
+          $p.bindControls();
+          $p.sync();
+        }
+        function saveSurvey() {
+          $('.p-messages').empty().append('Sending...').show();
+          $p.sendMessage('inOnly','com.knowprocess.survey.Survey.json',JSON.stringify($p.survey));
+        }
+        jQuery(document).ready(function() {
+          if ($p.survey.questions == undefined) $p.survey.questions = [];
+        });
+      </script>
+
+      <div id="questionTemplate" style="display:none">
+        <fieldset>
+          <input class="decorate" data-p-bind="$p.survey.questions[{{idx}}].question" type="text" id="question" name="Question" placeholder="Type your question here" required title="Please enter the survey question"/>
+        </fieldset>
+      </div>
+        
+      <div id="multiChoiceQTemplate" style="display:none">
+        <fieldset>
+          <input class="decorate" data-p-bind="$p.survey.questions[{{idx}}].question" type="text" id="question" name="Question" placeholder="Type your question here" required title="Please enter the survey question"/>
+          <input class="decorate" data-p-bind="$p.survey.questions[{{idx}}].answer1" type="text" id="answer1" name="Answer 1" placeholder="" required title=""/>
+          <input class="decorate" data-p-bind="$p.survey.questions[{{idx}}].answer2" type="text" id="answer2" name="Answer 2" placeholder="" required title=""/>
+          <input class="decorate" data-p-bind="$p.survey.questions[{{idx}}].answer3" type="text" id="answer3" name="Answer 3" placeholder="" required title=""/>
+        </fieldset>
+      </div>
+
+      <div id="questionPreviewTemplate" style="display:none">
+        <fieldset>
+          <span class="decorate" data-p-display="$p.survey.questions[{{idx}}].question" id="question" name="Question" title="Please enter the survey question"></span>
+          <textarea data-p-bind="$p.survey.questions[{{idx}}].response" id="response" name="response" rows="3"> </textarea>
+        </fieldset>
+      </div>
+
+      <div id="multiChoiceQPreviewTemplate" style="display:none">
+        <fieldset>
+          <span class="decorate" data-p-display="$p.survey.questions[{{idx}}].question" type="text" id="question" name="Question" placeholder="Type your question here" required title="Please enter the survey question"></span>
+          <span class="decorate" data-p-display="$p.survey.questions[{{idx}}].answer1" type="text" id="answer1" name="Answer 1" placeholder="" required title=""></span>
+          <input data-p-bind="$p.survey.questions[{{idx}}].answer1" type="radio" name="response" id="optionsRadios1" value="option1" checked>
+          <span class="decorate" data-p-display="$p.survey.questions[{{idx}}].answer2" type="text" id="answer2" name="Answer 2" placeholder="" required title=""></span>
+          <input data-p-bind="$p.survey.questions[{{idx}}].answer2" type="radio" name="response" id="optionsRadios2" value="option2">
+          <span class="decorate" data-p-display="$p.survey.questions[{{idx}}].answer3" type="text" id="answer3" name="Answer 3" placeholder="" required title=""></span>
+          <input data-p-bind="$p.survey.questions[{{idx}}].answer3" type="radio" name="response" id="optionsRadios2" value="option2">
+        </fieldset>
+      </div>
+
+      <form id="surveyForm" class="" role="form">
+      
+        <div class="p-messages" style="display:none;"> </div>
+
+        <div class="col" id="surveyDesign">
+          <input class="decorate" data-p-bind="$p.survey.name" type="text" id="name" name="Name" placeholder="Name*" required title="Please enter the survey name"/>
+        </div>
+        <div>
+          <input data-p-action="saveSurvey();" type="button" value="Submit" id="send" class="btn btn-fwd">
+          <input data-p-action="addQuestion('multiChoiceQ');" type="button" value="Add Multi-Choice Question" class="btn">
+          <input data-p-action="addQuestion();" type="button" value="Add Question" class="btn">
+        </div>
+        <div class="col" id="surveyPreview">
+          <h2 data-p-display="$p.survey.name">Survey: </h2>
+          <p>Fields marked <span class="mandatory">*</span> are mandatory.</p> 
+        </col>
+    </form>
+             
+
