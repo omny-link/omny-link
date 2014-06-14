@@ -1,0 +1,42 @@
+      <style>
+        .btn { 
+          margin-top: 20px;
+        }
+       input,textarea {
+         width: 75%;
+       }
+       input[type="radio"],input[type="checkbox"] {
+         width: 10%;
+       }
+       input[type="button"],input[type="reset"],input[type="submit"] {
+         width: 30%;
+       }
+
+      </style>
+      <script type="text/javascript">
+        function requestProduct() {
+          $('.p-messages').empty().append('Sending...').show();
+          $p.sendMessage('inOnly','com.trakeo.procure.NewProduct.json',JSON.stringify($p.newProduct));
+        }
+        jQuery(document).ready(function() {
+          ;
+        });
+      </script>
+      <form id="newProductForm" class="" role="form">
+      
+        <div class="p-messages" style="display:none;"> </div>
+
+        <div id="newProductDetails">
+          <input class="decorate" data-p-bind="$p.newProduct.name" type="text" id="name" name="Name" placeholder="Name" required title="Please enter the product name"/>
+          <input class="decorate" data-p-bind="$p.newProduct.supplierName" type="text" id="supplierName" name="Supplier Name" placeholder="Supplier Name" required title="Please enter the supplier's name"/>
+          <input class="decorate" data-p-bind="$p.newProduct.productUrl" type="text" id="productUrl" name="Product URL" placeholder="Product Url" required title="Please enter the product url"/>
+          <input class="decorate" data-p-bind="$p.newProduct.productRef" type="text" id="productRef" name="Product Reference" placeholder="Product Code or Reference" required title="Please enter the product's code or reference number"/>
+          <input class="decorate" data-p-bind="$p.newProduct.productImage" type="text" id="productImageUrl" name="Product Image Url" placeholder="Product Image" title="Optionally you may enter a URL to an image of the product to aid in identification"/>
+        </div>
+        <div>
+          <input data-p-action="requestProduct();" type="button" value="Submit" id="send" class="btn btn-fwd">
+        </div>
+        <p>Fields marked <span class="mandatory">*</span> are mandatory.</p> 
+    </form>
+             
+
