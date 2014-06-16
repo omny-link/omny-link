@@ -1,5 +1,17 @@
+.p-messages {
+  padding:10px;
+  margin-bottom: 10px;
+}
+.btn:disabled,.p-disabled { 
+  border: 1px solid #777;
+  background-color: #ccc;
+}
 .p-error, .p-mandatory { 
   color: #f00;
+}
+.p-success { 
+  border: 1px solid #77ff77;
+  background-color: #ccffcc;
 }
 
 :invalid { 
