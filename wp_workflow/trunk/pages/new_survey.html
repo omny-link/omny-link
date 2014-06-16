@@ -43,7 +43,11 @@
         }
         function saveSurvey() {
           $('.p-messages').empty().append('Sending...').show();
-          $p.sendMessage('inOnly','com.knowprocess.survey.Survey.json',JSON.stringify($p.survey));
+          $('.btn').attr('disabled','disabled').addClass('p-disabled');
+          $p.sendMessage('inOnly','com.knowprocess.survey.Survey.json',JSON.stringify($p.survey))
+            .done(function(data) {
+              $('.p-messages').addClass('p-success');
+            });
         }
         jQuery(document).ready(function() {
           $p.survey = new Object();
