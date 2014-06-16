@@ -16,7 +16,13 @@
       <script type="text/javascript">
         function requestProduct() {
           $('.p-messages').empty().append('Sending...').show();
-          $p.sendMessage('inOnly','com.trakeo.procure.NewProduct.json',JSON.stringify($p.newProduct));
+          $('#requestProduct').attr('disabled','disabled').css('background-color','#ccc');
+          $p.sendMessage('inOnly','com.trakeo.procure.RequestedProduct.json',JSON.stringify($p.newProduct))
+            .done(function(data) {
+              $('.p-messages').addClass('p-success');
+              $('#newProductDetails').slideToggle();
+              $('#afterSubmit').slideToggle();
+            });
         }
         jQuery(document).ready(function() {
           ;
@@ -32,11 +38,10 @@
           <input class="decorate" data-p-bind="$p.newProduct.productUrl" type="text" id="productUrl" name="Product URL" placeholder="Product Url" required title="Please enter the product url"/>
           <input class="decorate" data-p-bind="$p.newProduct.productRef" type="text" id="productRef" name="Product Reference" placeholder="Product Code or Reference" required title="Please enter the product's code or reference number"/>
           <input class="decorate" data-p-bind="$p.newProduct.productImage" type="text" id="productImageUrl" name="Product Image Url" placeholder="Product Image" title="Optionally you may enter a URL to an image of the product to aid in identification"/>
+          <div>
+            <input data-p-action="requestProduct();" type="button" value="Submit" id="requestProduct" class="btn btn-fwd">
+            </div>
+            <p>Fields marked <span class="mandatory">*</span> are mandatory.</p> 
         </div>
-        <div>
-          <input data-p-action="requestProduct();" type="button" value="Submit" id="send" class="btn btn-fwd">
-        </div>
-        <p>Fields marked <span class="mandatory">*</span> are mandatory.</p> 
     </form>
              
-
