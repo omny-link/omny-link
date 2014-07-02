@@ -1,12 +1,16 @@
 <?php
 
-  // shortcode [p_page page="page"]
+  // shortcode [p_page page="page" capability="required-capability"]
   function p_page_shortcode( $atts ) {
     $a = shortcode_atts( array(
         'page' => 'about',
     ), $atts );
     ob_start();
-    $temp_content = file_get_contents(plugins_url( 'pages/'.$a['page'].'.html', dirname(__FILE__) ));
+    if (empty($a['capability']) || current_user_can($a['capability'])) { 
+      $temp_content = file_get_contents(plugins_url( 'pages/'.$a['page'].'.html', dirname(__FILE__) ));
+    } else{ 
+      $temp_content = file_get_contents(plugins_url( 'pages/not_allowed.html', dirname(__FILE__) ));
+    } 
     ob_end_clean();
     return $temp_content;
   }

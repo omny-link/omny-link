@@ -1,0 +1,9 @@
+0.5.1
+-----
+- Fix initialisation bug that made plugin not play nice with FirmGains theme. 
+- Added role check so may only be used by users with admin role. 
+
+0.5.0
+-----
+- First time JS was packaged as a proper WP plugin. 
+- Added shortcode to send pro-forma mail.  
