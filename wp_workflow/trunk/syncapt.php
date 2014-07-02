@@ -4,7 +4,7 @@
 * Plugin URI: http://knowprocess.com/wp-plugins/syncapt
 * Description: Integrates the whole web with your WordPress app.
 * Author: Tim Stephenson
-* Version: 0.5.0
+* Version: 0.5.1
 * Author URI: http://knowprocess.com
 * License: GPLv2 or later
 */
@@ -12,13 +12,12 @@
 
 <?php
   define("P_ID", 'wp-workflow');
-  define("P_VERSION", "0.5.0");
+  define("P_VERSION", "0.5.1");
   define("P_NAME", 'Syncapt');
-  define("P_DEBUG", true);
+  define("P_DEBUG", false);
   require_once("includes/shortcodes.php");
 
   if ( is_admin() ) { // admin actions
-    error_log('IS admin, should be loadding...');
     add_action( 'admin_menu', 'add_p_admin_menu' );
     add_action( 'admin_init', 'register_p_admin_settings' );
   } else {
@@ -27,6 +26,7 @@
     add_action( 'wp_head', 'p_load_styles' );
     add_action( 'wp_enqueue_scripts', 'p_load_scripts' );
   }
+  add_action( 'init', 'p_create_capabilities' );
   add_action( 'init', 'p_create_mail_page' );
   add_action( 'wp_ajax_change_subscription', 'change_subscription' );
 
@@ -81,6 +81,13 @@
         true /* Force load in footer */
       );
       wp_enqueue_script(
+        P_ID.'-email',
+        plugins_url( 'js/email-'.P_VERSION.'.js', __FILE__ ),
+        array( 'jquery' ),
+        null, /* Force no version as query string */
+        true /* Force load in footer */
+      );
+      wp_enqueue_script(
         P_ID.'-ui',
         plugins_url( 'js/app-'.P_VERSION.'.js', __FILE__ ),
         array( 'jquery' ),
@@ -89,6 +96,15 @@
       );
     }
   }
+
+  function p_create_capabilities() { 
+    // gets the author role
+    $role = get_role( 'administrator' );
+
+    // This only works, because it accesses the class instance.
+    // would allow the author to edit others' posts for current theme only
+    $role->add_cap( 'send_email' ); 
+  } 
 
   function p_create_mail_page() { 
     $page = get_page_by_path('syncapt-mail');

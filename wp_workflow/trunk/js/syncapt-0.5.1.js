@@ -123,7 +123,7 @@ function App() {
     $('[data-p-bind].decorate')
       .addClass('form-control')
       .before(function(i) { 
-        return '<label id="'+this.id+'">'+this.name+(this.required ? REQUIRED : '')+'</label>';
+        return '<label for="'+this.id+'">'+this.name+(this.required ? REQUIRED : '')+'</label>';
      })
       .removeClass('decorate')
       .wrap('<div class="form-group">');
