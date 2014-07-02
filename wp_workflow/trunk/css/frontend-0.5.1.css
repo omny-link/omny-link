@@ -14,12 +14,15 @@
   background-color: #ccffcc;
 }
 
+input, select, textarea { 
+  border: solid 1px #999;
+}
 :invalid { 
-  border: solid 1px #f99 !important;
+  border: solid 1px #f99;
 }
 
 :focus:invalid { 
-  border: solid 1px #f00 !important;
+  border: solid 1px #f00;
 }
 
 label { 
