@@ -1,3 +1,23 @@
+        function sendMail() {
+          $('.p-messages').empty().append('Sending...').show();
+          $p.sendMessage('inOnly','com.knowprocess.mail.MailData.json',JSON.stringify($p.mail));
+        }
+        $(document).ready(function() {
+          console.debug('Document ready handler...');
+          loadTemplates();
+        });
+        function loadTemplates() {
+          $.getJSON(
+              "/wp-content/plugins/syncapt/emails/templates.php", 
+              function(templates) {
+                console.debug("Have "+templates.length+" templates: "+templates);
+                $('#templates-ctl').empty();
+                for (idx in templates) { 
+                  $('#templates-ctl').append('<option name="'+templates[idx]+'">'+templates[idx]+'</option>');
+                }
+              });
+        };
+
 $ = jQuery;
 $.fn.moustache = function(data) {
   //console.debug('invoking moustache template with data: '+JSON.stringify(data));
@@ -64,8 +84,8 @@ function MarkupParser() {
   };
 }
 
-var app = new App(new Controller()); 
-//app.init();
+var wf = new App(new Controller()); 
+//wf.init();
 
 /**
  * Encapsulates access to data whether from server or local. 
@@ -83,14 +103,14 @@ function App(controller) {
   this.markupParser = new MarkupParser();
   this.connect = function(url) { 
     console.log('connect to '+url);
-    app.server = url;
+    wf.server = url;
     var userId = getSearchParameters()['email'];
     if (userId === undefined) {
-        app.identity(); 
+        wf.identity(); 
     } else {
       console.log('Logged in as '+userId);
-      app.username = userId; 
-          app.ctrl.loadImage(app.username); 
+      wf.username = userId; 
+          wf.ctrl.loadImage(wf.username); 
     } 
     //$($('.nav li[class="active"] a')[0]).click();
   };
@@ -102,15 +122,15 @@ function App(controller) {
       console.log('Environment: PhoneGap/Cordova');
     }
     // dynamically create nav 
-    $('#nav').moustache(app);
+    $('#nav').moustache(wf);
       console.log('Setting up menu'); 
     // localise strings
-//    if (app.urlParam('locale')!==undefined && app.urlParam('locale')!=null) {
-//      app.locale = app.urlParam('locale');
+//    if (wf.urlParam('locale')!==undefined && wf.urlParam('locale')!=null) {
+//      wf.locale = wf.urlParam('locale');
 //    }
-    //i18n.localize(app.locale);
+    //i18n.localize(wf.locale);
     // Enable self-test
-    if (app.urlParam('test')!==undefined && app.urlParam('test')!=null) {
+    if (wf.urlParam('test')!==undefined && wf.urlParam('test')!=null) {
       $('#selfTest').removeClass('hidden');
     }
     // set up search 
@@ -118,19 +138,19 @@ function App(controller) {
       // Note that keydown does not contain the last key stroke as keypress does
       var key = ev.keyCode || ev.charCode;
         if( key == TAB || key == ENTER ) {
-          app.taskList(app.markupParser.parse($('.search-query').val()));
+          wf.taskList(wf.markupParser.parse($('.search-query').val()));
           //console.log('after tasklist'); 
           ev.preventDefault();
         }
     });
     
-    $('#serverUrl').val(app.server);
-    app.connect(app.server); 
+    $('#serverUrl').val(wf.server);
+    wf.connect(wf.server); 
 
     // Setup to be performed every time we change data. 
     $(document).ajaxSuccess(function() {
       console.log( "Triggered ajaxSuccess handler." );
-      app.initDeferred();
+      wf.initDeferred();
     });
   };
   this.initDeferred = function() {
@@ -196,7 +216,7 @@ function App(controller) {
     console.log('setting category of '+definitionId+' to '+newCategory); 
     return $.ajax({
       type: 'PUT',
-      url: app.server+'/process-definitions/'+definitionId,
+      url: wf.server+'/process-definitions/'+definitionId,
       contentType: 'application/json',
       data: '{"category" : "'+newCategory+'"}',
       dataType: 'json',
@@ -209,18 +229,18 @@ function App(controller) {
     });
   };
   this.definitionList = function() {
-    if (app.ctrl.offline) {
-      app.ctrl.loadInstanceList(JSON.parse(localStorage['GET_repository_definitions']));
+    if (wf.ctrl.offline) {
+      wf.ctrl.loadInstanceList(JSON.parse(localStorage['GET_repository_definitions']));
     } else {
       return $.ajax({
         type: 'GET',
-        url: app.server+'/process-definitions',
+        url: wf.server+'/process-definitions',
         contentType: 'application/json',
         dataType: 'text',
         success: function(response) {
           console.log('success fetching definitions');
           localStorage['GET_repository_definitions']=response;
-          app.ctrl.renderDefinitionsList(JSON.parse(response));
+          wf.ctrl.renderDefinitionsList(JSON.parse(response));
         },
         error: function(jqXHR, textStatus, errorThrown) { 
           console.log('error:'+textStatus+':'+errorThrown);
@@ -231,25 +251,25 @@ function App(controller) {
   };
   this.definitionUpload = function (formId) {
     console.log('definitionUpload, id: '+formId);
-    app.showActivityIndicator('Uploading definition...');
+    wf.showActivityIndicator('Uploading definition...');
     
     var formElement = document.getElementById(formId);
     var formData = new FormData(formElement);
     return $.ajax({
         type: 'POST',
-        url: app.server+'/deployments',
+        url: wf.server+'/deployments',
         data: formData,
         cache: false,
         contentType: false,
         processData: false,
         success: function(response) {
 //          console.log('successfully uploaded definition');
-          app.hideActivityIndicator('successfully uploaded definition');
+          wf.hideActivityIndicator('successfully uploaded definition');
         },
         error: function(jqXHR, textStatus, errorThrown) { 
         console.log(textStatus+':'+errorThrown+','+jqXHR.responseText);
         var resp = JSON.parse(jqXHR.responseText.replace(/\n/g,''));
-          app.hideActivityIndicator('Failed to upload definition, error is: '+resp.error);
+          wf.hideActivityIndicator('Failed to upload definition, error is: '+resp.error);
         }
       });
   };
@@ -257,7 +277,7 @@ function App(controller) {
     console.log('delete: '+ deploymentId);
     return $.ajax({
         type: 'DELETE',
-        url: app.server+'/deployments/'+deploymentId,
+        url: wf.server+'/deployments/'+deploymentId,
         contentType: 'application/json',
         dataType: 'text',
         success: function() {
@@ -273,7 +293,7 @@ function App(controller) {
     console.log('delete instance: '+ instanceId);
     return $.ajax({
         type: 'DELETE',
-        url: app.server+'/process-instances/'+instanceId,
+        url: wf.server+'/process-instances/'+instanceId,
         contentType: 'application/json',
         dataType: 'json',
         success: function(response) {
@@ -301,27 +321,27 @@ function App(controller) {
     console.log('find identity of current user');
     return $.ajax({
         type: 'GET',
-        url: app.server+'/identity.jspx',
+        url: wf.server+'/identity.jspx',
         contentType: 'application/json',
         dataType: 'json',
         success: function(response) {
           console.log('success fetching identity:'+response);
           if (response.email === undefined) {
             // no authenticated session in the bpms server 
-            window.location.href = app.server + '/login.html';
+            window.location.href = wf.server + '/login.html';
           } else {
-            app.currentIdentity = response;
-            app.username = app.currentIdentity.email;
-            app.ctrl.loadImage(app.username); 
+            wf.currentIdentity = response;
+            wf.username = wf.currentIdentity.email;
+            wf.ctrl.loadImage(wf.username); 
           }
         },
         error: function(jqXHR, textStatus, errorThrown) { 
           console.log(textStatus+':'+errorThrown);
           // no authenticated session in the bpms server 
-          if (app.server=='') {
-            app.showActivityIndicator('Enter BPMS server url to connect to.'); 
+          if (wf.server=='') {
+            wf.showActivityIndicator('Enter BPMS server url to connect to.'); 
           } else { 
-            window.location.href = app.server + '/login?callback='+window.location.href;
+            window.location.href = wf.server + '/login?callback='+window.location.href;
           }
         }
     });
@@ -330,17 +350,17 @@ function App(controller) {
     console.log('loading instance start form: '+ id+', '+name);
     return $.ajax({
         type: 'GET',
-        url: app.server+'/process-definitions/'+id,
+        url: wf.server+'/process-definitions/'+id,
         contentType: 'application/json',
         dataType: 'json',
         success: function(response) {
           console.log('success fetching instance:'+response);
-          app.activeInstance = response ;
-          app.activeInstance.name=name;
-          app.addFormControls(app.activeInstance);
-          $('#instance').html($('#startFormTemplate').html()).moustache(app.activeInstance);
+          wf.activeInstance = response ;
+          wf.activeInstance.name=name;
+          wf.addFormControls(wf.activeInstance);
+          $('#instance').html($('#startFormTemplate').html()).moustache(wf.activeInstance);
           $('#startInstanceModal .btn-primary').on('click', function() {
-            app.newInstance(app.activeInstance.processDefinitionId,$('#instance').serializeArray());
+            wf.newInstance(wf.activeInstance.processDefinitionId,$('#instance').serializeArray());
           });
         },
         error: function(jqXHR, textStatus, errorThrown) { 
@@ -365,12 +385,12 @@ function App(controller) {
   };
   this.instanceList = function(searchExpr) {
     console.info('instance list, filtered by: '+JSON.stringify(searchExpr));
-    if (app.ctrl.offline) {
-      app.ctrl.loadInstanceList(JSON.parse(localStorage['GET_runtime_instances']));
+    if (wf.ctrl.offline) {
+      wf.ctrl.loadInstanceList(JSON.parse(localStorage['GET_runtime_instances']));
     } else {
       return $.ajax({
           type: 'GET',
-          url: app.server+'/process-instances',
+          url: wf.server+'/process-instances',
           contentType: 'application/json',
   //        data: { "tags":tags },
           dataType: 'text',
@@ -378,7 +398,7 @@ function App(controller) {
             localStorage['GET_runtime_instances']=response;
             var json = JSON.parse(response);
             console.log('success fetching instance list:'+json.length);
-            app.ctrl.loadInstanceList(json);
+            wf.ctrl.loadInstanceList(json);
           },
           error: function(jqXHR, textStatus, errorThrown) { 
             console.log('error:'+textStatus);
@@ -387,7 +407,7 @@ function App(controller) {
     }
   };
   this.loadForm = function(task) {
-    app.showActivityIndicator('Loading...');
+    wf.showActivityIndicator('Loading...');
     // formKey is a logical name (URI) not URL but for now at least we will
     // assume can convert to URL by adding html
     if (!task.formKey.endsWith('.html')) task.formKey += '.html';
@@ -408,16 +428,16 @@ function App(controller) {
           default: 
             $('#taskModal .form-inline').empty().append(response);
           }
-          app.hideActivityIndicator();
+          wf.hideActivityIndicator();
         },
         error: function(jqXHR, textStatus, errorThrown) { 
           console.log('error:'+textStatus);
-          app.hideActivityIndicator();
+          wf.hideActivityIndicator();
         }
     });  
   };
   this.logout = function() { 
-    window.location.href = app.server+'/resources/j_spring_security_logout';
+    window.location.href = wf.server+'/resources/j_spring_security_logout';
   }
   this.nav = function() {
     console.log('nav');
@@ -440,19 +460,19 @@ function App(controller) {
     });
     var payload = '{ "processDefinitionId":"'+processDefinitionId+'","businessKey":"'+bizKey+'","variables":'+JSON.stringify(varArr)+' }';
     console.log('Payload:'+payload);
-    app.showActivityIndicator('Starting instance...');
+    wf.showActivityIndicator('Starting instance...');
     return $.ajax({
         type: 'POST',
-        url: app.server+'/process-instances',
+        url: wf.server+'/process-instances',
         contentType: 'application/json',
         data: payload,
         dataType: 'json',
         success: function(response) {
           console.log('successfully start instance:'+JSON.stringify(response));
-          app.instance = response.data; 
-//          console.log('instances found: '+app.instance.length);
+          wf.instance = response.data; 
+//          console.log('instances found: '+wf.instance.length);
 //          $('#instances').moustache(app);
-          app.hideActivityIndicator('Instance started successfully');
+          wf.hideActivityIndicator('Instance started successfully');
         },
         error: function(jqXHR, textStatus, errorThrown) { 
           console.log('error:'+textStatus);
@@ -461,7 +481,7 @@ function App(controller) {
   };
   this.newMessage = function(mep, msgName, msg) {
     console.log('starting '+msgName+'="'+msg+'" as mep: '+mep);
-    app.showActivityIndicator('Starting instance...');
+    wf.showActivityIndicator('Starting instance...');
     var type = (mep == 'inOut' ? 'GET' : 'POST');
     // this strips non-significant white space
     msg = (msg.length==0 ? '' : JSON.stringify(JSON.parse(msg)));
@@ -469,43 +489,43 @@ function App(controller) {
     console.log('msg: '+ msg); 
     return $.ajax({
       type: type,
-      url: app.server+'/msg/'+msgName,
+      url: wf.server+'/msg/'+msgName,
       /*contentType: 'application/json', uncomment to send as single JSON blob instead of form params*/
       data: d,
       dataType: 'text',
       timeout: 30000,
       success: function(response, textStatus, request) {
         console.log('successfully start instance by msg: '+request.getResponseHeader('Location'));
-        app.hideActivityIndicator('Instance started successfully');
+        wf.hideActivityIndicator('Instance started successfully');
       },
       error: function(jqXHR, textStatus, errorThrown) { 
-      app.hideActivityIndicatorWithError(jqXHR);
+      wf.hideActivityIndicatorWithError(jqXHR);
       }
     });
   };
   this.profile = function() {
-    console.log('loading profile for: '+ app.username);
+    console.log('loading profile for: '+ wf.username);
     return $.ajax({
         type: 'GET',
-        url: app.server+'/users/'+app.username,
+        url: wf.server+'/users/'+wf.username,
         contentType: 'application/json',
         dataType: 'json',
         success: function(response) {
           console.log('success fetching profile:'+response);
           var tmp = new Array(); 
-          app.activeProfile = response ;
-          $.each(app.activeProfile.info, function(i,d) {
+          wf.activeProfile = response ;
+          $.each(wf.activeProfile.info, function(i,d) {
 //            console.log(i+':'+d.key+'='+d.value);
             tmp[d.key.replace('.','_')]=d.value;
           });
-          app.activeProfile.info = tmp; 
-          $('#linkedInForm').attr('action', app.server+'/linkedin');
-          $('#linkedInForm input').val(app.activeProfile.email);
-          app.activeProfile.info['linkedIn_connect']=(app.activeProfile.info['linkedIn_secret']===undefined); 
-          if (!app.activeProfile.info['linkedIn_connect']) $('#linkedInConnectedMsg').removeClass('hidden');
-          $('#profile').html($('#profileTemplate').html()).moustache(app.activeProfile);
+          wf.activeProfile.info = tmp; 
+          $('#linkedInForm').attr('action', wf.server+'/linkedin');
+          $('#linkedInForm input').val(wf.activeProfile.email);
+          wf.activeProfile.info['linkedIn_connect']=(wf.activeProfile.info['linkedIn_secret']===undefined); 
+          if (!wf.activeProfile.info['linkedIn_connect']) $('#linkedInConnectedMsg').removeClass('hidden');
+          $('#profile').html($('#profileTemplate').html()).moustache(wf.activeProfile);
           /*$('#startInstanceModal .btn-primary').on('click', function(){
-            app.newInstance(app.activeInstance.processDefinitionId,$('#instance').serializeArray());
+            wf.newInstance(wf.activeInstance.processDefinitionId,$('#instance').serializeArray());
           });*/
         },
         error: function(jqXHR, textStatus, errorThrown) { 
@@ -525,49 +545,49 @@ function App(controller) {
     }
     var payload = JSON.stringify(profile);
     console.log('Payload:'+payload);
-    app.showActivityIndicator('Updating profile...');
+    wf.showActivityIndicator('Updating profile...');
     return $.ajax({
         type: 'PUT',
         /* .json to work around spring mvc weirdnessthat removes extension */
-        url: app.server+'/users/'+profile.username+'.json',
+        url: wf.server+'/users/'+profile.username+'.json',
         contentType: 'application/json',
         data: payload,
         dataType: 'text',
         success: function(response) {
           console.log('successfully updated profile:'+JSON.stringify(response));
-          app.activeProfile = response.data; 
-//          console.log('instances found: '+app.instance.length);
+          wf.activeProfile = response.data; 
+//          console.log('instances found: '+wf.instance.length);
 //          $('#instances').moustache(app);
-          app.hideActivityIndicator('Profile updated successfully');
-//          app.taskList();
+          wf.hideActivityIndicator('Profile updated successfully');
+//          wf.taskList();
         },
         error: function(jqXHR, textStatus, errorThrown) { 
           console.log(textStatus+':'+errorThrown);
-          app.hideActivityIndicator(textStatus+':'+errorThrown);
+          wf.hideActivityIndicator(textStatus+':'+errorThrown);
         }
     }); 
   };
   this.sopList = function() {
     console.log('sops');
-    app.sops = [
+    wf.sops = [
                { key:"GTD", name:"Collect Stuff", description:"Collect everything that is competing for your time to 'Get Things Done'" }
              ];
     $('#sops').moustache(app);
   };
   this.task = function(id, name, businessKey) {
     console.log('loading task: '+ id+', '+name);
-    if (app.ctrl.offline) {
-      app.ctrl.loadTask(id, name, businessKey, JSON.parse(localStorage['GET_runtime_tasks']));
+    if (wf.ctrl.offline) {
+      wf.ctrl.loadTask(id, name, businessKey, JSON.parse(localStorage['GET_runtime_tasks']));
     } else {
       return $.ajax({
         type: 'GET',
-        url: app.server+'/tasks/'+escape(id),
-        /*url: app.server+'/form/form-data?taskId='+id,*/
+        url: wf.server+'/tasks/'+escape(id),
+        /*url: wf.server+'/form/form-data?taskId='+id,*/
         contentType: 'application/json',
         dataType: 'json',
         success: function(response) {
           console.log('success fetching task:'+JSON.stringify(response));
-          app.ctrl.loadTask(id, name, businessKey, [response]);
+          wf.ctrl.loadTask(id, name, businessKey, [response]);
         },
         error: function(jqXHR, textStatus, errorThrown) { 
           console.log(textStatus+':'+errorThrown);
@@ -577,27 +597,27 @@ function App(controller) {
   };
   this.taskList = function(searchExpr) {
     console.log('task list, filtered by: '+JSON.stringify(searchExpr));
-    $p.getResource('/tasks',searchExpr,app.ctrl.taskList);
+    $p.getResource('/tasks',searchExpr,wf.ctrl.taskList);
   };
   this.updateTask = function(taskId, varArr) {
     console.log('updateTask of '+taskId+', passing '+varArr);
     var action = 'complete';
     var payload = '{ "action":"'+action+'","variables":'+JSON.stringify(varArr)+' }';
     console.log('Payload:'+payload);
-    app.showActivityIndicator('Submitting task...');
+    wf.showActivityIndicator('Submitting task...');
     return $.ajax({
         type: 'POST',
-        url: app.server+'/tasks/'+taskId,
+        url: wf.server+'/tasks/'+taskId,
         contentType: 'application/json',
         data: payload,
         dataType: 'text',
         success: function(response) {
           console.log('successfully updated task:'+JSON.stringify(response));
-          app.activeTask = response.data; 
-//          console.log('instances found: '+app.instance.length);
+          wf.activeTask = response.data; 
+//          console.log('instances found: '+wf.instance.length);
 //          $('#instances').moustache(app);
-          app.hideActivityIndicator('Task submitted successfully');
-          app.taskList();
+          wf.hideActivityIndicator('Task submitted successfully');
+          wf.taskList();
         },
         error: function(jqXHR, textStatus, errorThrown) { 
           console.log(textStatus+':'+errorThrown);
@@ -608,16 +628,16 @@ function App(controller) {
     console.log('uploadDefinition, passing: '+ varArr);
     var payload = '{ "variables":'+JSON.stringify(varArr)+' }';
     console.log('Payload:'+payload);
-    app.showActivityIndicator('Submitting new definition...');
+    wf.showActivityIndicator('Submitting new definition...');
     return $.ajax({
       type: 'POST',
-      url: app.server+'/deployments',
+      url: wf.server+'/deployments',
       contentType: 'application/json',
       data: payload,
       dataType: 'json',
       success: function(response) {
         console.log('successfully uploaded definition:'+JSON.stringify(response));
-        app.hideActivityIndicator('successfully uploaded definition');
+        wf.hideActivityIndicator('successfully uploaded definition');
       },
       error: function(jqXHR, textStatus, errorThrown) { 
         console.log(textStatus+':'+errorThrown);
@@ -664,19 +684,19 @@ function App(controller) {
 function Controller() {
   this.offline = false;
   this.renderDefinitionsList = function(definitionObjs) {
-    app.definitions = bpms.adapt(definitionObjs);
-    $.each(app.definitions, function(i,d) {
+    wf.definitions = bpms.adapt(definitionObjs);
+    $.each(wf.definitions, function(i,d) {
       if (d.name==null) d.name=d.key;
     });
     $('#definitions').html($('#definitionsTemplate').html()).moustache(app);
     $('[data-instance]').click(function() { 
-      app.instance($(this).data('instance'), $(this).data('name')); 
+      wf.instance($(this).data('instance'), $(this).data('name')); 
     });
     // set up editable handlers
     $('.a-definition-category[contenteditable]').on('input',function() {
       console.log('fired change handler for '+$(this).data('id'));
       if ($(this).text().trim().length > 0) {
-        app.definitionCategory($(this).data('id'), $(this).text().trim());
+        wf.definitionCategory($(this).data('id'), $(this).text().trim());
       }
     });
   };
@@ -688,36 +708,36 @@ function Controller() {
       $(selector+' > a').append('<img class="img-rounded" style="margin-top:5px;" title="Logged in as '+uname+'. Image from Gravatar.com" src="http://www.gravatar.com/avatar/'+hex_md5(uname)+'?s='+size+'&d=mm"/>')
   };
   this.loadInstanceList = function(instanceObjs) {
-    app.instances = bpms.adapt(instanceObjs);
-    console.log('instances found: '+app.instances.length);
+    wf.instances = bpms.adapt(instanceObjs);
+    console.log('instances found: '+wf.instances.length);
     $('#instances').html($('#instancesTemplate').html()).moustache(app);
   };
   this.loadTask = function(id, name, businessKey, taskObjs) {
     console.log('load task id:'+id+', name'+name);
-    app.activeTask = taskFromTasks(taskObjs, id);
-    app.activeTask.name=name;
-    $('#taskTitle').html($('#taskTitleTemplate').html()).moustache(app.activeTask);
+    wf.activeTask = taskFromTasks(taskObjs, id);
+    wf.activeTask.name=name;
+    $('#taskTitle').html($('#taskTitleTemplate').html()).moustache(wf.activeTask);
     $('#taskModal .a-business-key').empty().append(businessKey);
-    if (app.activeTask.formKey == null) {
-        app.addFormControls(app.activeTask);
-        $('#task').html($('#formDataTemplate').html()).moustache(app.activeTask);
+    if (wf.activeTask.formKey == null) {
+        wf.addFormControls(wf.activeTask);
+        $('#task').html($('#formDataTemplate').html()).moustache(wf.activeTask);
     } else {
-      app.loadForm(app.activeTask);
+      wf.loadForm(wf.activeTask);
     }
     $('#taskModal .btn-primary').on('click', function(){
-      app.updateTask(app.activeTask.taskId,$('#task').serializeArray());
+      wf.updateTask(wf.activeTask.taskId,$('#task').serializeArray());
     });
   };
   this.loadTaskList = function(taskObjs) {
     console.log('success fetching task list');
-    app.tasks = bpms.adapt(taskObjs);
-    $.each(app.tasks, function(i,d) {
+    wf.tasks = bpms.adapt(taskObjs);
+    $.each(wf.tasks, function(i,d) {
       d.createString = i18n.getAgeString(new Date(d.createTime));
       d.dueString = i18n.getDeadlineString(new Date(d.dueDate));
     });
     $('#tasks').html($('#tasksTemplate').html()).moustache(app);
     $.each($('#tasks .a-business-key'), function(i,d) {
-      var key = app.instanceBusinessKey($(d).data('instance'));
+      var key = wf.instanceBusinessKey($(d).data('instance'));
       console.log('found key: '+key);
       if (key!==undefined) {
         $(d).empty().append(key);
@@ -725,12 +745,12 @@ function Controller() {
       }
     });
     $('[data-task]').click(function() { 
-      app.task($(this).data('task'), $(this).data('name'), $(this).data('business-key')); 
+      wf.task($(this).data('task'), $(this).data('name'), $(this).data('business-key')); 
     });
   };
   this.sendMessage = function(mep, msgName, msg, formId) {
     $('#'+formId+' .a-response').addClass('hidden');
-    jqXHR = app.newMessage(mep, msgName, msg); 
+    jqXHR = wf.newMessage(mep, msgName, msg); 
     jqXHR.success(function(response, textStatus, request) {
       $('#'+formId+' .a-response').removeClass('hidden');
       var location = request.getResponseHeader('Location'); 

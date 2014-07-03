@@ -41,16 +41,14 @@
         P_ID.'-admin',
         plugins_url( 'css/admin-'.P_VERSION.'.css', __FILE__ ),
         array(),
-        null, /* Force no version as query string */
-        'screen'
+        null /* Force no version as query string */
       );
     } else {
       wp_enqueue_style(
         P_ID.'-frontend',
         plugins_url( 'css/frontend-'.P_VERSION.'.css', __FILE__ ),
-        array(  ),
-        null, /* Force no version as query string */
-        'screen'
+        array(),
+        null /* Force no version as query string */
       );
     }
   }
@@ -81,15 +79,8 @@
         true /* Force load in footer */
       );
       wp_enqueue_script(
-        P_ID.'-email',
-        plugins_url( 'js/email-'.P_VERSION.'.js', __FILE__ ),
-        array( 'jquery' ),
-        null, /* Force no version as query string */
-        true /* Force load in footer */
-      );
-      wp_enqueue_script(
         P_ID.'-ui',
-        plugins_url( 'js/app-'.P_VERSION.'.js', __FILE__ ),
+        plugins_url( 'js/workflow-'.P_VERSION.'.js', __FILE__ ),
         array( 'jquery' ),
         null, /* Force no version as query string */
         true /* Force load in footer */
