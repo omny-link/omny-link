@@ -7,7 +7,12 @@
     ), $atts );
     ob_start();
     if (empty($a['capability']) || current_user_can($a['capability'])) { 
-      $temp_content = file_get_contents(plugins_url( 'pages/'.$a['page'].'.html', dirname(__FILE__) ));
+      if (is_readable(get_template_directory().'/pages/'.$a['page'].'.html')) {
+        $temp_content = file_get_contents(get_template_directory().'/pages/'.$a['page'].'.html'); 
+      } else { 
+        error_log('Cannot read: '.get_template_directory().'/pages/'.$a['page'].'.html. Attempt to fallback to file within plugin');
+        $temp_content = file_get_contents(plugins_url( 'pages/'.$a['page'].'.html', dirname(__FILE__) ));
+      }
     } else{ 
       $temp_content = file_get_contents(plugins_url( 'pages/not_allowed.html', dirname(__FILE__) ));
     } 
