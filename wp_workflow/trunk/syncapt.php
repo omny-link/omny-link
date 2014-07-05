@@ -1,16 +1,14 @@
 <?php
 /*
-* Plugin Name: Sandbox
-* Plugin URI: http://knowprocess.com/wp-plugins/syncapt
-* Description: Integrates the whole web with your WordPress app.
-* Author: Tim Stephenson
-* Version: 0.5.1
-* Author URI: http://knowprocess.com
-* License: GPLv2 or later
-*/
-?>
+ * Plugin Name: Syncapt
+ * Plugin URI: http://knowprocess.com/wp-plugins/syncapt
+ * Description: Integrates the whole web with your WordPress app.
+ * Author: Tim Stephenson
+ * Version: 0.5.1
+ * Author URI: http://knowprocess.com
+ * License: GPLv2 or later
+ */
 
-<?php
   define("P_ID", 'wp-workflow');
   define("P_VERSION", "0.5.1");
   define("P_NAME", 'Syncapt');
@@ -73,14 +71,14 @@
       );
       wp_enqueue_script(
         P_ID.'-client',
-        plugins_url( 'js/syncapt-'.P_VERSION.'.js', __FILE__ ),
+        plugins_url( 'js/syncapt-'.P_VERSION.(P_DEBUG ? '' : '.min').'.js', __FILE__ ),
         array( 'jquery' ),
         null, /* Force no version as query string */
         true /* Force load in footer */
       );
       wp_enqueue_script(
         P_ID.'-ui',
-        plugins_url( 'js/workflow-'.P_VERSION.'.js', __FILE__ ),
+        plugins_url( 'js/workflow-'.P_VERSION.(P_DEBUG ? '' : '.min').'.js', __FILE__ ),
         array( 'jquery' ),
         null, /* Force no version as query string */
         true /* Force load in footer */
