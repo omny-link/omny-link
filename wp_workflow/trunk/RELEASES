@@ -1,3 +1,8 @@
+0.6.0
+-----
+- Add support for radio inputs annotated with data-p-bind
+- Added polyfill to allow use of console in older IE browsers
+
 0.5.1
 -----
 - Fix initialisation bug that made plugin not play nice with FirmGains theme. 

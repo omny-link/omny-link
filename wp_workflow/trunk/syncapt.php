@@ -4,15 +4,15 @@
  * Plugin URI: http://knowprocess.com/wp-plugins/syncapt
  * Description: Integrates the whole web with your WordPress app.
  * Author: Tim Stephenson
- * Version: 0.5.1
+ * Version: 0.6.0
  * Author URI: http://knowprocess.com
  * License: GPLv2 or later
  */
 
   define("P_ID", 'wp-workflow');
-  define("P_VERSION", "0.5.1");
+  define("P_VERSION", "0.6.0");
   define("P_NAME", 'Syncapt');
-  define("P_DEBUG", false);
+  define("P_DEBUG", true);
   require_once("includes/shortcodes.php");
 
   if ( is_admin() ) { // admin actions
@@ -29,7 +29,7 @@
   add_action( 'wp_ajax_change_subscription', 'change_subscription' );
 
   function syncapt_wp_footer() {
-    echo 'Running Syncapt plugin!';
+    echo 'Running Syncapt plugin in debug mode!';
   }
   if (P_DEBUG) add_action( 'wp_footer', 'syncapt_wp_footer' );
 
