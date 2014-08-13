@@ -4,7 +4,7 @@
         }
         $(document).ready(function() {
           console.debug('Document ready handler...');
-          loadTemplates();
+          if ($('#templates-ctl').length>0) loadTemplates();
         });
         function loadTemplates() {
           $.getJSON(
