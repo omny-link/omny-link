@@ -2,6 +2,7 @@
 -----
 - Add support for radio inputs annotated with data-p-bind
 - Added polyfill to allow use of console in older IE browsers
+- Make email loadTemplates conditional to minimise chance of missing templates impacting other functionality
 
 0.5.1
 -----

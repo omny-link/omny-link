@@ -17,12 +17,15 @@
 input, select, textarea { 
   border: solid 1px #999;
 }
-:invalid { 
+
+input:invalid, select:invalid, textarea:invalid { 
   border: solid 1px #f99;
 }
 
-:focus:invalid { 
-  border: solid 1px #f00;
+input:focus:invalid, 
+select:focus:invalid, 
+textarea:focus:invalid { 
+  border: solid 1px #f99;
 }
 
 label { 
