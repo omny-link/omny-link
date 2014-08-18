@@ -373,14 +373,17 @@ function App() {
   this.sync = function() {
     //console.log('... contact is: '+JSON.stringify($p.contact));
     $('[data-p-bind]').each(function(i,d) {
-      // check we do not have moustache template
+      // check we do not have moustache template 
       if ($(d).data('p-bind').indexOf('{')==-1) {
         $p.initObj($(d), 'p-bind');
         // create data binding
         var val = eval($(d).data('p-bind'));
-        if (val != undefined) {
+        // if val is set and not dealing with an unchecked radio, set ctrl value
+        if (val != undefined  && !($(d).attr('type')=='radio' && $(d).attr('checked')==undefined)) {
           console.log('... '+i+':'+val+' into '+d.name);
           $(d).val(val);
+        } else { 
+          console.log('... '+i+' skipping: isRadio? '+($(d).attr('type')=='radio')+', isUnchecked?'+($(d).attr('checked')==undefined));
         }
         if ($(d).data('p-type')=='number') $(d).autoNumeric('init', {mDec:0});
         if (val != undefined && $(d).data('p-type')=='number') $(d).autoNumeric('set',val);
