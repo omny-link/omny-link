@@ -70,11 +70,19 @@ function App() {
       eval($(d).data('p-init')+'=new Object();');
     });
     $p.sync();
+    //$p.bindReadyHandlers();
     $p.bindActionHandlers();
     $p.bindControls();
     $p.bindCombos();
     $p.bindTables();
     $p.bindSectionsToNav();
+  };
+  this.bindReadyHandlers = function() {
+    $('[data-p-ready]').each(function(i,d) {
+      var f = $(d).attr('data-p-ready');
+      console.info(f);
+      eval(f);
+    });
   };
   this.bindActionHandlers = function() {
     $('[data-p-action]').click(function(ev) {
