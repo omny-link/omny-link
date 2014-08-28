@@ -1,18 +1,18 @@
 <?php
 /*
  * Plugin Name: Syncapt
- * Plugin URI: http://knowprocess.com/wp-plugins/syncapt
+ * Plugin URI: http://knowprocess.com/wp-plugins/syncapt 
  * Description: Integrates the whole web with your WordPress app.
  * Author: Tim Stephenson
  * Version: 0.6.0
- * Author URI: http://knowprocess.com
+ * Author URI: http://syncapt.com
  * License: GPLv2 or later
  */
 
   define("P_ID", 'wp-workflow');
   define("P_VERSION", "0.6.0");
   define("P_NAME", 'Syncapt');
-  define("P_DEBUG", true);
+  define("P_DEBUG", false);
   require_once("includes/shortcodes.php");
 
   if ( is_admin() ) { // admin actions
