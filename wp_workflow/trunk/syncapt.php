@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Syncapt
  * Plugin URI: http://knowprocess.com/wp-plugins/syncapt 
- * Description: Integrates the whole web with your WordPress app.
+ * Description: Integrates web APIs with your WordPress app.
  * Author: Tim Stephenson
  * Version: 0.6.0
  * Author URI: http://syncapt.com
@@ -16,8 +16,8 @@
   require_once("includes/shortcodes.php");
 
   if ( is_admin() ) { // admin actions
-    add_action( 'admin_menu', 'add_p_admin_menu' );
-    add_action( 'admin_init', 'register_p_admin_settings' );
+    //add_action( 'admin_menu', 'add_p_admin_menu' );
+    //add_action( 'admin_init', 'register_p_admin_settings' );
   } else {
     // non-admin enqueues, actions, and filters
     // Not sure of the rights and wrongs but wp_enqueue_styles did not work
@@ -25,7 +25,7 @@
     add_action( 'wp_enqueue_scripts', 'p_load_scripts' );
   }
   add_action( 'init', 'p_create_capabilities' );
-  add_action( 'init', 'p_create_mail_page' );
+  //add_action( 'init', 'p_create_mail_page' );
   add_action( 'wp_ajax_change_subscription', 'change_subscription' );
 
   function syncapt_wp_footer() {
