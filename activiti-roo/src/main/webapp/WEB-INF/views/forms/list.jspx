@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_org_activiti_spring_rest_model_Form" items="${forms}" z="qc7MuX6tvrLFbYyDsdEnqCW2/30=">
+        <table:table data="${forms}" id="l_org_activiti_spring_rest_model_Form" path="/forms" z="FpcdLXHebypUf6ES8ouCnB7D6Lk=">
+            <table:column id="c_org_activiti_spring_rest_model_Form_formKey" property="formKey" z="4BpX0a28gqr9B/nePUPmiMdqxsA="/>
+            <table:column id="c_org_activiti_spring_rest_model_Form_deploymentId" property="deploymentId" z="QzgJzcDhMpkW2avOUKLBueAeKjQ="/>
+            <table:column id="c_org_activiti_spring_rest_model_Form_processDefinitionId" property="processDefinitionId" z="SQBz/vEJLuR2p3zLIfc6UIF3mKo="/>
+            <table:column id="c_org_activiti_spring_rest_model_Form_processDefinitionUrl" property="processDefinitionUrl" z="5JPpqt7J503QWNdSiwOLcrbkV5I="/>
+            <table:column id="c_org_activiti_spring_rest_model_Form_formId" property="formId" z="Q0Zzb3cRThBqdkYzG1jesnkn7bY="/>
+            <table:column id="c_org_activiti_spring_rest_model_Form_formUrl" property="formUrl" z="eNiNojXVdMpP9u1Hg2UEup8duV4="/>
+        </table:table>
+    </page:list>
+</div>

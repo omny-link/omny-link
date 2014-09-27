@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_org_activiti_spring_rest_model_ProcessInstance" object="${processinstance}" path="/processinstances" z="49Yny3JlbDzHgiASmDv53Ixzs7I=">
+        <field:display field="activityId" id="s_org_activiti_spring_rest_model_ProcessInstance_activityId" object="${processinstance}" z="/4lFVWTrTfgn75SMAgQEhjop5o4="/>
+        <field:display field="id" id="s_org_activiti_spring_rest_model_ProcessInstance_id" object="${processinstance}" z="R16Ni1ynCE5RxEGwjzrcgkvaKf0="/>
+        <field:display field="parentId" id="s_org_activiti_spring_rest_model_ProcessInstance_parentId" object="${processinstance}" z="KISjZkk9ixbltVWmYKVLc3otffU="/>
+        <field:display field="processInstanceId" id="s_org_activiti_spring_rest_model_ProcessInstance_processInstanceId" object="${processinstance}" z="5YGThE9QmqxLJkf7CXt1k93l6BE="/>
+        <field:display field="ended" id="s_org_activiti_spring_rest_model_ProcessInstance_ended" object="${processinstance}" z="p32wOn70WiQKMCjx+jPR00uUUhI="/>
+        <field:display field="businessKey" id="s_org_activiti_spring_rest_model_ProcessInstance_businessKey" object="${processinstance}" z="mes972YRJATpt8dLGVp1VPL15b8="/>
+        <field:display field="processDefinitionId" id="s_org_activiti_spring_rest_model_ProcessInstance_processDefinitionId" object="${processinstance}" z="x1PmZEC/vYPIeXPfLAFH+A6kAdk="/>
+        <field:display field="suspended" id="s_org_activiti_spring_rest_model_ProcessInstance_suspended" object="${processinstance}" z="wT/QCXyRQy7KiQ3LY7OTOoQaJeM="/>
+    </page:show>
+</div>
