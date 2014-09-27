@@ -39,10 +39,15 @@
             <name>Spring Roo Repository</name>
             <url>http://spring-roo-repository.springsource.org/release</url>
         </repository>
-    <repository>
+        <repository>
             <id>EclipseLink Repo</id>
             <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
             <name>EclipseLink Repo</name>
+        </repository>
+        <repository>
+            <id>kp-release-repository</id>
+            <url>http://repository-bigbpmcloud.forge.cloudbees.com/release/</url>
+            <name>Know Process repo</name>
         </repository>
     </repositories>
     <pluginRepositories>

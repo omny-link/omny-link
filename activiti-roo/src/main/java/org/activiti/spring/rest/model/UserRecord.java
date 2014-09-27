@@ -24,6 +24,9 @@ import org.springframework.roo.addon.tostring.RooToString;
 
 import flexjson.JSONSerializer;
 
+import org.activiti.engine.ActivitiObjectNotFoundException;
+
+
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord
@@ -99,6 +102,10 @@ public class UserRecord {
 			IdentityService svc = processEngine.getIdentityService();
 			User user = svc.createUserQuery().userId(id)
 					.singleResult();
+			if (user==null) { 
+				throw new ActivitiObjectNotFoundException("User with id:"+id, User.class);
+			}
+			
 			UserRecord wrappedUser = new UserRecord(user);
 			String username = wrappedUser.getId();
 			List<Group> list = svc.createGroupQuery().groupMember(username)
@@ -114,7 +121,11 @@ public class UserRecord {
 								username, key)));
 			}
 			return wrappedUser;
+		} catch (ActivitiObjectNotFoundException e) {
+			System.out.println(e.getMessage()); 
+			throw e; 
 		} catch (Exception e) {
+			System.out.println(e.getClass().getName()+":"+e.getMessage());
 			e.printStackTrace();
 			throw new RuntimeException(e.getMessage(), e);
 		}
