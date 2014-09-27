@@ -15,6 +15,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
         <property name="createDemoModels" value="true" />
   </bean>
   -->
+  
   <!-- LOCAL (non container) database connection
   <bean id="dbProperties"
     class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -30,20 +31,19 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     <property name="password" value="${jdbc.password}" />
   </bean>-->
   
-  <!-- JEE container managed data source (both DEV and PROD) 
-  <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+  <!-- JEE container managed data source (both DEV and PROD) -->
+  <bean id="activitiDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jdbc/ActivitiDB"/>
-  </bean>-->
+  </bean>
 
-  <!-- in main spring context 
   <bean id="transactionManager"
     class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-    <property name="dataSource" ref="dataSource" />
+    <property name="dataSource" ref="activitiDataSource" />
   </bean>
- -->
+ 
 
   <bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
-    <property name="dataSource" ref="dataSource" />
+    <property name="dataSource" ref="activitiDataSource" />
     <property name="transactionManager" ref="transactionManager" />
     <property name="databaseSchemaUpdate" value="true" />
     <property name="jobExecutorActivate" value="false" />
