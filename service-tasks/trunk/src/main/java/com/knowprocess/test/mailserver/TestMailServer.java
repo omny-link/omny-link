@@ -108,7 +108,8 @@ public class TestMailServer extends ExternalResource {
 		// Test from is either long or short form of sender
 		String longFrom = "\"" + from + "\" <" + from.toString() + ">";
 		assertTrue(
-				"Message not from the expected sender: " + longFrom,
+                "Message not from the expected sender, expected: " + from
+                        + " but was: " + mimeMessage.getHeader("From", null),
 				longFrom.equals(mimeMessage.getHeader("From", null))
 				|| from.equals(mimeMessage.getHeader("From", null)));
 		System.out.println("Msg body: " + getMessage(mimeMessage));

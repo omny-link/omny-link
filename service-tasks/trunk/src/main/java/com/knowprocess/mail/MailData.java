@@ -24,7 +24,19 @@ public class MailData implements Serializable {
 		properties = new Properties();
 	}
 
-	public MailData fromJson(String json) {
+    /**
+     * Synonym for <code>fromJson</code> to conform to Spring Roo naming
+     * conventions.
+     * 
+     * @see fromJson
+     * @param json
+     * @return instance parsed from the json parameter.
+     */
+    public MailData fromJsonToMailData(String json) {
+        return fromJson(json);
+    }
+
+    public MailData fromJson(String json) {
 		this.json = json;
 		parse(json);
 		return this;

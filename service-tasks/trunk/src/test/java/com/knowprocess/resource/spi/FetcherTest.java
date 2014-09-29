@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.UnknownHostException;
@@ -107,7 +106,8 @@ public class FetcherTest {
 			System.out.println("PDF: " + pdf);
 			assertNotNull(pdf);
 
-			File file = new File("testUrlPdfResourceToBlob.pdf");
+            File file = new File(new File("target"),
+                    "testUrlPdfResourceToBlob.pdf");
 			pdfout = new FileOutputStream(file);
 			pdfout.write(pdf);
 			System.out.println("Wrote pdf to: " + file);
