@@ -103,18 +103,26 @@ public class TestMailServer extends ExternalResource {
 			assertTrue(mimeMessage.getContentType().contains("text/plain"));
 		}
 
-		assertTrue("Message does not have expected subject: " + subject,
+        assertTrue(
+                String.format(
+                        "Message does not have expected subject. Expected: %1$s, received: %2$s",
+                        subject, mimeMessage.getHeader("Subject", null)),
 				mimeMessage.getHeader("Subject", null).contains(subject));
 		// Test from is either long or short form of sender
 		String longFrom = "\"" + from + "\" <" + from.toString() + ">";
-		assertTrue(
-                "Message not from the expected sender, expected: " + from
-                        + " but was: " + mimeMessage.getHeader("From", null),
+        assertTrue(
+                String.format(
+                        "Message not from the expected sender, expected: %1$s but was: %2$s",
+                        from, mimeMessage.getHeader("From", null)),
 				longFrom.equals(mimeMessage.getHeader("From", null))
 				|| from.equals(mimeMessage.getHeader("From", null)));
 		System.out.println("Msg body: " + getMessage(mimeMessage));
-		assertTrue("Message does not contain expected content: " + txtMessage,
-				getMessage(mimeMessage).contains(txtMessage));
+        assertTrue(
+                String.format(
+                        "Message does not contain expected content: %1$s, received: %2$s",
+                        txtMessage, 
+                        getMessage(mimeMessage).contains(txtMessage)), 
+                getMessage(mimeMessage).contains(txtMessage));
 
 		for (String t : to) {
 			assertTrue("Message does not contain expected recipient: " + t,
@@ -123,8 +131,8 @@ public class TestMailServer extends ExternalResource {
 
 		if (cc != null) {
 			for (String c : cc) {
-				assertTrue("Message does not contain expected cc recipient: "
-						+ c, mimeMessage.getHeader("Cc", null).contains(c));
+                assertTrue("Message does not contain expected cc recipient: "
+                        + c, mimeMessage.getHeader("Cc", null).contains(c));
             }
         }
     }
