@@ -44,8 +44,10 @@ public class RestPost extends RestService implements JavaDelegate {
     @Override
     public void execute(DelegateExecution execution) throws Exception {
         String resource = (String) globalResource.getValue(execution);
-        String usr = (String) resourceUsername.getValue(execution);
-        String pwd = (String) resourcePassword.getValue(execution);
+        String usr = (String) (resourceUsername == null ? null
+                : resourceUsername.getValue(execution));
+        String pwd = (String) (resourcePassword == null ? null
+                : resourcePassword.getValue(execution));
         System.out.println("POSTing to " + resource + " as " + usr);
 
         List<String> ff = Arrays.asList(((String) formFields
@@ -69,7 +71,12 @@ public class RestPost extends RestService implements JavaDelegate {
             data.put(name, value);
         }
 
-        UrlResource ur = new UrlResource(usr, pwd);
+        UrlResource ur = null;
+        if (usr == null || pwd == null) {
+            ur = new UrlResource();
+        } else {
+            ur = new UrlResource(usr, pwd);
+        }
         InputStream is = null;
         try {
             is = ur.getResource(resource, "POST",
