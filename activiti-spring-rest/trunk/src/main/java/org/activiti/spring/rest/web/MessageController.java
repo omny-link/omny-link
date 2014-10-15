@@ -49,7 +49,7 @@ public class MessageController {
     protected static ProcessEngine processEngine;
 
     @Autowired
-    protected MessageRegistry messageRegistry;
+    public MessageRegistry messageRegistry;
 
     /**
      * Whether messages may be sent anonymously. Default: false.
@@ -151,24 +151,28 @@ public class MessageController {
                 return new ResponseEntity(e.toJson(), HttpStatus.UNAUTHORIZED);
             }
         }
-        String username = SecurityContextHolder.getContext()
-                .getAuthentication().getName();
-        LOGGER.debug(" ... from " + username);
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
 
         try {
             String bizKey = msgId + " - " + new Date().getTime();
-            Authentication.setAuthenticatedUserId(username);
             String modifiedMsgId = getMessageVarName(msgId);
             vars.put("messageName", modifiedMsgId);
+            System.err.println("Message registry: " + messageRegistry);
             vars.put(modifiedMsgId,
                     messageRegistry.deserialiseMessage(msgId, jsonBody));
             // TODO deprecate query param?
             vars.put("query", jsonBody);
 
-            vars.put("initiator", username);
+            try {
+                String username = SecurityContextHolder.getContext()
+                        .getAuthentication().getName();
+                LOGGER.debug(" ... from " + username);
+                Authentication.setAuthenticatedUserId(username);
+                vars.put("initiator", username);
+            } catch (Exception e) {
+                LOGGER.warn("No initiator username available, attempting to continue");
+            }
             LOGGER.debug(String.format("vars: %1$s", vars));
             ProcessInstance instance = processEngine.getRuntimeService()
                     .startProcessInstanceByMessage(msgId, bizKey, vars);
