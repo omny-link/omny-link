@@ -4,7 +4,7 @@
     <groupId>com.knowprocess.bpm</groupId>
     <artifactId>bpm-server</artifactId>
     <packaging>war</packaging>
-    <version>1.1.0.BUILD-SNAPSHOT</version>
+    <version>1.1.0</version>
     <name>BPM Server</name>
     <inceptionYear>2012</inceptionYear>
     <properties>
@@ -416,7 +416,7 @@
               <artifactId>commons-logging</artifactId>
             </exclusion>
             <exclusion>
-              <groupId>xercesImpl</groupId>
+              <groupId>xerces</groupId>
               <artifactId>xercesImpl</artifactId>
             </exclusion>
             <exclusion>
@@ -439,6 +439,16 @@
           <groupId>com.knowprocess.activity</groupId>
           <artifactId>activity</artifactId>
           <version>0.1.0.BUILD-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+          <groupId>com.unloq</groupId>
+          <artifactId>unloq</artifactId>
+          <version>1.1.0</version>
+        </dependency>
+        <dependency>
+          <groupId>com.knowprocess.jem</groupId>
+          <artifactId>jem-processes</artifactId>
+          <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     
@@ -469,7 +479,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                  <archiveClasses>true</archiveClasses>
+                  <!--<archiveClasses>true</archiveClasses>-->
                   <!-- <webXml>target/web.xml</webXml>-->
                 </configuration>
             </plugin>
@@ -604,9 +614,9 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat-maven-plugin</artifactId>
-                <version>1.1</version>
+                <version>2.2</version>
             </plugin>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
@@ -627,6 +637,11 @@
         </plugins>
         <pluginManagement>
           <plugins>
+            <plugin>
+              <groupId>org.apache.tomcat.maven</groupId>
+              <artifactId>tomcat7-maven-plugin</artifactId>
+              <version>2.2</version>
+            </plugin>
             <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
             <plugin>
               <groupId>org.eclipse.m2e</groupId>

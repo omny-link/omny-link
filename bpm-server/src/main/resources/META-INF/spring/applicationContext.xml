@@ -33,10 +33,10 @@
     -->
     <context:spring-configured/>
 
-    <jee:jndi-lookup id="dataSource" jndi-name="jdbc/UnloqDB"/>
+    <jee:jndi-lookup id="dataSource" jndi-name="jdbc/KnowProcessDB"/>
     <!-- TS 21 Jun 13 use JEE data source 
     <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-      <property name="jndiName" value="java:comp/env/jdbc/UnloqDB"/>
+      <property name="jndiName" value="java:comp/env/jdbc/KnowProcessDB"/>
     </bean>-->
     <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
