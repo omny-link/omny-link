@@ -3,7 +3,7 @@
   <property name="dist" value="${basedir}/.."/>
   <property name="m2_repo" value="${user.home}/.m2/repository"/>
   <property name="src" value="${basedir}"/>
-  <property name="version" value="0.6.0"/>
+  <property name="version" value="0.7.0"/>
   <property name="zipName" value="syncapt.zip"/>
 
   <target name="clean">
