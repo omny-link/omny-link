@@ -25,7 +25,7 @@
     <!-- url: The JDBC connection url for connecting to your MySQL database.
          -->
 
-  <Resource name="jdbc/UnloqDB" auth="Container" type="javax.sql.DataSource"
+  <Resource name="jdbc/KnowProcessDB" auth="Container" type="javax.sql.DataSource"
                maxActive="100" maxIdle="30" maxWait="10000"
                username="activiti" password="activiti" 
                driverClassName="com.mysql.jdbc.Driver"

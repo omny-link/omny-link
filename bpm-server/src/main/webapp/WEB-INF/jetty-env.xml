@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
-  <New id="UnloqDB" class="org.eclipse.jetty.plus.jndi.Resource">
-    <Arg>jdbc/UnloqDB</Arg>
+  <New id="KnowProcessDB" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>jdbc/KnowProcessDB</Arg>
     <Arg>
-     
       <New class="org.apache.commons.dbcp.BasicDataSource">
         <Set name="defaultAutoCommit">false</Set>
         <Set name="url">jdbc:mysql://localhost:3306/activitidb</Set>
@@ -12,15 +11,6 @@
         <Set name="username">activiti</Set>
         <Set name="password">activiti</Set>
       </New>
-    <!-- local dev  
-      <New class="org.apache.commons.dbcp.BasicDataSource">
-        <Set name="defaultAutoCommit">false</Set>
-        <Set name="url">jdbc:mysql://ec2-50-19-213-178.compute-1.amazonaws.com:3306/unloqdb4</Set>
-        <Set name="driverClassName">com.mysql.jdbc.Driver</Set>
-        <Set name="username">unloq4</Set>
-        <Set name="password">wsnOu77y</Set>
-      </New>
-      -->
     </Arg>
   </New>
 </Configure>
