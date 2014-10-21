@@ -10,6 +10,15 @@
 	      $random_password = wp_generate_password( $length=12, $include_standard_special_chars=false );
 	      $user_id = wp_create_user( $user_name, $random_password, $user_name );
         if (P_DEBUG) error_log('Created user id '.$user_id.' with username: '.$user_name);
+
+        // Now store any user info we have received 
+        foreach($_POST as $key=>$value) {
+          if ($key != 'log' && $key != 'action') {
+            if(P_DEBUG) error_log( "Storing user field: $key=$value" );
+            update_user_meta( $user_id, $key, $value );
+          }
+        }
+
         $xmlResponse = new WP_Ajax_Response(array(
            'what'=>'Registration',
            'action'=>'p_register_async',
