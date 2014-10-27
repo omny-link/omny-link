@@ -39,7 +39,11 @@ public class MessageRegistry {
             Class<?> msgClass = getClass().getClassLoader().loadClass(msgType);
             msgBean = msgClass.newInstance();
             Method method;
-            if (jsonBody.trim().startsWith("[")) {
+            if (msgType.equals("com.knowprocess.mail.MailData")) {
+                // TODO abusing the MailData class should be replaced with
+                // native javax.json support
+                method = msgClass.getMethod("fromJson", String.class);
+            } else if (jsonBody.trim().startsWith("[")) {
                 method = msgClass.getMethod(
                         "fromJsonArrayTo" + msgClass.getSimpleName() + "s",
                         String.class);

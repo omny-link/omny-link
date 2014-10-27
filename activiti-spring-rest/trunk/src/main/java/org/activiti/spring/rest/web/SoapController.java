@@ -1,6 +1,5 @@
 package org.activiti.spring.rest.web;
 
-import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,14 +23,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- * Handle REST requests sending BPMN message events to start or modify process
+ * Handle SOAP requests sending BPMN message events to start or modify process
  * instances.
  * 
  * @author Tim Stephenson
@@ -39,17 +38,19 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 // @RooWebJson(jsonObject = Deployment.class)
 @Controller
-@RequestMapping("/msg")
+@RequestMapping("/soap")
 // @RooWebScaffold(path = "msg", formBackingObject = Deployment.class)
-public class MessageController {
+public class SoapController {
+
+    private static final String A_1_2 = "a_1_2>";
 
     protected static final Logger LOGGER = LoggerFactory
-            .getLogger(MessageController.class);
+            .getLogger(SoapController.class);
 
     protected static ProcessEngine processEngine;
 
     @Autowired
-    public MessageRegistry messageRegistry;
+    protected MessageRegistry messageRegistry;
 
     /**
      * Whether messages may be sent anonymously. Default: false.
@@ -61,52 +62,43 @@ public class MessageController {
     @Autowired
     public void setProcessEngine(ProcessEngine pe) {
         LOGGER.debug("Injected process engine into " + getClass().getName());
-        MessageController.processEngine = pe;
+        SoapController.processEngine = pe;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{msgId}", headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "/{msgId}", headers = "Accept=application/soap+xml")
     @ResponseBody
     public final ResponseEntity<String> doInOutMep(
             UriComponentsBuilder uriBuilder,
             @PathVariable("msgId") String msgId,
-            @RequestParam(required = false, value = "query") String json) {
+ @RequestBody String soap) {
         // TODO need to look into why but the PathVariable is truncated at the
         // last . so 'kp.foo' arrives as 'kp'. To work around this clients
         // should send kp.foo.json or similar/
         LOGGER.info(String.format("handling In-Out MEP to: %1$s, json: %2$s",
-                msgId, json));
+                msgId, soap));
+        String id = "";
         Map<String, Object> vars = new HashMap<String, Object>();
         HttpHeaders headers = null;
         try {
-            ResponseEntity<String> response = handleMep(uriBuilder, msgId,
-                    json, vars, 0);
-            if (response.getStatusCode() != HttpStatus.CREATED) {
-                return response;
-            }
-            headers = response.getHeaders();
-            Object o = org.activiti.spring.rest.model.ProcessInstance
-                    .findProcessInstance((String) vars.get("piid"))
-                    .getProcessVariables()
-                    .get(getMessageVarName(msgId));
-            LOGGER.debug(String.format("Object to return: %1$s", o));
-            String msg = "";
-            try {
-                Method toJson = o.getClass().getMethod("toJson", new Class[0]);
+            // ResponseEntity<String> response = handleMep(uriBuilder, msgId,
+            // json, vars, 0);
+            // if (response.getStatusCode() != HttpStatus.CREATED) {
+            // return response;
+            // }
+            // headers = response.getHeaders();
+            // id = parseInstanceIdFromLocation(response);
+            // String msg = (String)
+            // org.activiti.spring.rest.model.ProcessInstance
+            // .findProcessInstance(id).getProcessVariables()
+            // .get(getMessageVarName(msgId));
+            // LOGGER.debug("msg: " + msg);
 
-                if (toJson != null) {
-                    msg = (String) toJson.invoke(o, null);
-                } else if (o != null) {
-                    msg = o.toString();
-                }
-            } catch (java.lang.NoSuchMethodException e) {
-                // Tant pis!
-                if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("No toJson method on " + o);
-                }
-                msg = o.toString();
-            }
-            LOGGER.debug("msg: " + msg);
-            return new ResponseEntity(msg, headers, HttpStatus.OK);
+            String msg = handleMep(soap);
+
+            headers.add("Content-Type", "application/xml");
+            return new ResponseEntity<String>(msg, headers, HttpStatus.OK);
+
+            // return new ResponseEntity(msg, headers, HttpStatus.OK);
         } catch (ActivitiRestException e) {
             ReportableException e2 = new ReportableException(e.getClass()
                     .getName() + ":" + e.getMessage(), e);
@@ -120,25 +112,53 @@ public class MessageController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{msgId}", headers = "Accept=application/json")
+    private String handleMep(String soap) {
+        System.out.println("Received body text:" + soap);
+        if (soap.indexOf(":a_1_1") != -1) {
+            // Test A.1.1 - no response expected
+            return null;
+        } else if (soap.indexOf(":a_1_2") != -1) {
+            // Test A.1.2 response expected
+            StringBuilder sb = new StringBuilder();
+            sb.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:test=\"http://www.omg.org/bpmn/miwg/test/\"><soapenv:Header/><soapenv:Body><test:a_1_2Response>");
+            sb.append("Hello ");
+            int start = soap.indexOf(A_1_2);
+            sb.append(soap.substring(start + A_1_2.length() + 1,
+                    soap.indexOf("<", start)));
+            sb.append("</test:a_1_2Response></soapenv:Body></soapenv:Envelope>");
+            return sb.toString();
+        } else {
+            System.err.println("ERROR: unexpected message: " + soap);
+            return null;
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/{msgId}", headers = "Accept=application/soap+xml")
     @ResponseBody
     public ResponseEntity<String> doInOnlyMep(UriComponentsBuilder uriBuilder,
-            @PathVariable("msgId") String msgId, @RequestParam String json) {
+            @PathVariable("msgId") String msgId, @RequestBody String soap) {
         long start = System.currentTimeMillis();
-        LOGGER.info("handling In-Only MEP: " + msgId + ", json:" + json);
+        LOGGER.info("handling In-Only MEP: " + msgId + ", json:" + soap);
 
         Map<String, Object> vars = new HashMap<String, Object>();
-        ResponseEntity<String> response = handleMep(uriBuilder, msgId, json,
-                vars, 0);
+        // ResponseEntity<String> response = handleMep(uriBuilder, msgId, json,
+        // vars, 0);
+
+        String msg = handleMep(soap);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/xml");
+        ResponseEntity<String> response = new ResponseEntity<String>(msg,
+                headers,
+                HttpStatus.OK);
 
         LOGGER.debug(String.format("doInOnlyMep took: %1$s ms",
                 (System.currentTimeMillis() - start)));
         return response;
     }
 
-    protected ResponseEntity<String> handleMep(
-            final UriComponentsBuilder uriBuilder, String msgId,
-            String jsonBody, final Map<String, Object> vars, int retry) {
+    protected ResponseEntity<String> handleMep(UriComponentsBuilder uriBuilder,
+            String msgId, String jsonBody, Map<String, Object> vars, int retry) {
         if (SecurityContextHolder.getContext().getAuthentication() == null
                 || "anonymousUser".equals(SecurityContextHolder.getContext()
                         .getAuthentication().getName())) {
@@ -151,32 +171,27 @@ public class MessageController {
                 return new ResponseEntity(e.toJson(), HttpStatus.UNAUTHORIZED);
             }
         }
+        String username = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        LOGGER.debug(" ... from " + username);
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
 
         try {
             String bizKey = msgId + " - " + new Date().getTime();
+            Authentication.setAuthenticatedUserId(username);
             String modifiedMsgId = getMessageVarName(msgId);
             vars.put("messageName", modifiedMsgId);
-            System.err.println("Message registry: " + messageRegistry);
             vars.put(modifiedMsgId,
                     messageRegistry.deserialiseMessage(msgId, jsonBody));
             // TODO deprecate query param?
             vars.put("query", jsonBody);
 
-            try {
-                String username = SecurityContextHolder.getContext()
-                        .getAuthentication().getName();
-                LOGGER.debug(" ... from " + username);
-                Authentication.setAuthenticatedUserId(username);
-                vars.put("initiator", username);
-            } catch (Exception e) {
-                LOGGER.warn("No initiator username available, attempting to continue");
-            }
+            vars.put("initiator", username);
             LOGGER.debug(String.format("vars: %1$s", vars));
             ProcessInstance instance = processEngine.getRuntimeService()
                     .startProcessInstanceByMessage(msgId, bizKey, vars);
-            vars.put("piid", instance.getId());
             org.activiti.spring.rest.model.ProcessInstance pi = org.activiti.spring.rest.model.ProcessInstance
                     .findProcessInstance(instance.getId());
             if (pi.getProcessVariables().containsKey("Location")) {
@@ -247,9 +262,7 @@ public class MessageController {
 
     private String getMessageVarName(String msgId) {
         // Fix message name to avoid dot notation scripting errors
-        msgId = msgId.replace('.', '_');
-        LOGGER.debug(String.format("Message name: %1$s", msgId));
-        return msgId;
+        return msgId.replace('.', '_');
     }
 
     private Throwable isCausedBy(Throwable e, String className) {
