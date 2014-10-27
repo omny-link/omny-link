@@ -14,6 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ProcessDefinitionController {
 
 	protected static final Logger LOGGER = LoggerFactory
-			.getLogger(UserRecordController.class);
+            .getLogger(ProcessDefinitionController.class);
 
 }

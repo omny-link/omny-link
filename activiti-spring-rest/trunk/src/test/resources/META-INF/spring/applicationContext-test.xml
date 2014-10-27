@@ -37,6 +37,18 @@
         <context:exclude-filter expression=".*_Roo_.*" type="regex"/>
         <context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
     </context:component-scan>
+    
+    <import resource="classpath:META-INF/spring/applicationContext-activiti.xml"/>
+    <import resource="classpath:META-INF/spring/applicationContext-activiti-spring-rest.xml"/>
+     
+    <!--
+        This will automatically locate any and all property files you have
+        within your classpath, provided they fall under the META-INF/spring
+        directory. The located property files are parsed and their values can
+        then be used within application context files in the form of
+        ${propertyKey}.
+    -->
+    <context:property-placeholder location="classpath*:META-INF/spring/*.properties"/>
 
   <bean id="dataSource"
         class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
