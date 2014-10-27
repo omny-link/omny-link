@@ -173,6 +173,14 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <version>1.0.0.RELEASE</version>
     </dependency>
+     <dependency>
+      <groupId>org.toxos.activiti</groupId>
+      <artifactId>
+        process-assertions
+      </artifactId>
+      <version>0.5.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   
   <build>

@@ -178,14 +178,14 @@ public class Task {
                 .listPage(firstResult, maxResults));
     }
 
-    public static List<Task> findTaskEntries(int firstResult, int maxResults,
-            String sortFieldName, String sortOrder) {
+    public static List<Task> findTaskEntries(String involvesUser, int firstResult,
+            int maxResults, String sortFieldName, String sortOrder) {
         // TODO honour sort order
         return wrap(getProcessEngine().getTaskService().createTaskQuery()
                 .listPage(firstResult, maxResults));
     }
 
-    public static List<Task> findAllTasks(String sortFieldName, String sortOrder) {
+    public static List<Task> findAllTasks(String involvesUser, String sortFieldName, String sortOrder) {
         // TODO honour sort order
         return wrap(getProcessEngine().getTaskService().createTaskQuery()
                 .list());

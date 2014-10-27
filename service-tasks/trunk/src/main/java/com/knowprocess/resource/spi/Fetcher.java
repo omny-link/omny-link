@@ -18,7 +18,6 @@ import javax.json.JsonReader;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.delegate.DelegateExecution;
-import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.delegate.JavaDelegate;
 
 import com.knowprocess.resource.internal.ClasspathResource;
@@ -44,19 +43,14 @@ import com.knowprocess.resource.internal.gdrive.GDriveRepository;
  * @see GDriveRepository
  * @see JsonRepository
  */
-public class Fetcher implements JavaDelegate {
+public class Fetcher extends RestService implements JavaDelegate {
 
 	public static final String MIME_XML = "text/xml";
 	private static final String RESOURCE_KEY = "resource";
 	private static final int MAX_VAR_LENGTH = 4000;
 	public static final String PROTOCOL = "classpath://";
 
-	private Expression resourceUsername;
-	private Expression resourcePassword;
-
-	private Expression globalResource;
-	private Expression outputVar;
-	private RepositoryService repositoryService;
+    private RepositoryService repositoryService;
 
 	public Fetcher() {
 		super();
@@ -69,25 +63,6 @@ public class Fetcher implements JavaDelegate {
 	// public String getGlobalResource() {
 	// return globalResource;
 	// }
-
-	public void setGlobalResource(Expression globalResource) {
-		this.globalResource = globalResource;
-	}
-
-	public void setResourceUsername(Expression resourceUsername) {
-		this.resourceUsername = resourceUsername;
-	}
-
-	public void setResourcePassword(Expression resourcePassword) {
-		this.resourcePassword = resourcePassword;
-	}
-	// public String getOutputVar() {
-	// return outputVar;
-	// }
-
-	public void setOutputVar(Expression outputVar) {
-		this.outputVar = outputVar;
-	}
 
 	public String fetchToString(String resourceUrl) throws IOException {
 		String repoUri = "mem://string";

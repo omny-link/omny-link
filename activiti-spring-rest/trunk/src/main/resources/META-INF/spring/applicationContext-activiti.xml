@@ -75,7 +75,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     <property name="mailServerUsername" value="" />
     <property name="mailServerPassword" value="" />
     -->
-    <property name="mailServerDefaultFrom" value="Tim Stephenson &lt;tim@trakeo.com>" />
+    <property name="mailServerDefaultFrom" value="${mailServerDefaultFrom}" />
   </bean>
 	  
   <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">

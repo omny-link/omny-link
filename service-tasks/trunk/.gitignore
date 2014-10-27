@@ -1,1 +1,7 @@
+.bpmn
+.classpath
+.project
+.settings/
+*.bak
+*~
 /target/
