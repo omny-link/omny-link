@@ -3,16 +3,25 @@
   <property name="dist" value="${basedir}/.."/>
   <property name="m2_repo" value="${user.home}/.m2/repository"/>
   <property name="src" value="${basedir}"/>
-  <property name="version" value="0.6.0"/>
+  <property name="version" value="0.7.0"/>
+  <property name="yuicompressor-download-url" value="http://central.maven.org/maven2/com/yahoo/platform/yui/yuicompressor/2.3.6/yuicompressor-2.3.6.jar"/>
+  <property name="yuicompressor-local-path" value="${m2_repo}/com/yahoo/platform/yui/yuicompressor/2.3.6/yuicompressor-2.3.6.jar"/>
   <property name="zipName" value="syncapt.zip"/>
 
   <target name="clean">
     <delete file="${dist}/${zipName}"/>
   </target>
 
+  <target name="init">
+    <mkdir dir="${yuicompressor-local-path}/.."/>
+    <get dest="${yuicompressor-local-path}/..">
+      <url url="${yuicompressor-download-url}"/>
+    </get>
+  </target>
+
   <target name="compile">
     <echo message="Compressing Javascript files in folder: ${src}/js" />
-    <java jar="${m2_repo}/com/yahoo/platform/yui/yuicompressor/2.3.6/yuicompressor-2.3.6.jar" fork="true">
+    <java jar="${yuicompressor-local-path}" fork="true">
         <!-- input path for JS files -->
         <arg value="${src}/js/syncapt-${version}.js" />
         <!--<arg value="-v" /> --><!-- Turn on verbose -->
@@ -20,7 +29,18 @@
         <!-- output path for JS files -->
         <arg value="${src}/js/syncapt-${version}.min.js" /> 
         <classpath>
-          <pathelement location="${m2_repo}/com/yahoo/platform/yui/yuicompressor/2.3.6/yuicompressor-2.3.6.jar"/>
+          <pathelement location="${yuicompressor-local-path}"/>
+        </classpath>
+    </java>
+    <java jar="${yuicompressor-local-path}" fork="true">
+        <!-- input path for JS files -->
+        <arg value="${src}/js/workflow-${version}.js" />
+        <!--<arg value="-v" /> --><!-- Turn on verbose -->
+        <arg value="-o" />
+        <!-- output path for JS files -->
+        <arg value="${src}/js/workflow-${version}.min.js" /> 
+        <classpath>
+          <pathelement location="${yuicompressor-local-path}"/>
         </classpath>
     </java>
   </target>
