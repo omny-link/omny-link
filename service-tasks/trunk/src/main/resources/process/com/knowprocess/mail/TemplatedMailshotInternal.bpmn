@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://knowprocess.com/mail/TemplatedMailshotInternal" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://www.w3.org/1999/XPath" id="mailshot" name="Mailshot" targetNamespace="http://firmGains.com/marketing" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <process id="TemplatedMailshotInternal" isClosed="false" isExecutable="true" name="Send an email with a rich HTML template" processType="None">
+    <startEvent id="start" isInterrupting="true" name="Receive mail request" parallelMultiple="false">
+      <outgoing>_3</outgoing>
+    </startEvent>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.Fetcher" completionQuantity="1" id="fetchTextTemplate" implementation="##WebService" isForCompensation="false" name="Fetch &#10;template" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername" stringValue="firmgains"/>
+        <activiti:field name="resourcePassword" stringValue="secureFirm14"/>
+        <activiti:field expression="${mailData.get('template')}.txt" name="globalResource"/>
+        <activiti:field name="outputVar" stringValue="mailText"/>
+      </extensionElements>
+      <incoming>_3</incoming>
+      <outgoing>_6</outgoing>
+    </serviceTask>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.Fetcher" completionQuantity="1" id="fetchHtmlTemplate" implementation="##WebService" isForCompensation="false" name="Fetch HTML&#10;Template" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername" stringValue="firmgains"/>
+        <activiti:field name="resourcePassword" stringValue="secureFirm14"/>
+        <activiti:field expression="${mailData.get('template')}.html" name="globalResource"/>
+        <activiti:field name="outputVar" stringValue="mailHtml"/>
+      </extensionElements>
+      <incoming>_6</incoming>
+      <outgoing>_7</outgoing>
+    </serviceTask>
+    <sequenceFlow id="_6" sourceRef="fetchTextTemplate" targetRef="fetchHtmlTemplate"/>
+    <serviceTask activiti:type="mail" completionQuantity="1" id="sendMail" implementation="##WebService" isForCompensation="false" name="Send mail" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="to">
+          <activiti:expression>${mailData.get('contact.email')}</activiti:expression>
+        </activiti:field>
+        <activiti:field name="bcc">
+          <activiti:expression>tim@knowprocess.com</activiti:expression>
+        </activiti:field>
+        <activiti:field name="subject">
+          <activiti:expression><![CDATA[${mailData.get('subject')}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="htmlVar">
+          <activiti:expression>mailHtml</activiti:expression>
+        </activiti:field>
+        <activiti:field name="textVar">
+          <activiti:expression>mailText</activiti:expression>
+        </activiti:field>
+      </extensionElements>
+      <incoming>_12</incoming>
+      <incoming>_13</incoming>
+      <outgoing>_10</outgoing>
+    </serviceTask>
+    <endEvent id="end" name="End Event">
+      <incoming>_10</incoming>
+    </endEvent>
+    <sequenceFlow id="_10" sourceRef="sendMail" targetRef="end"/>
+    <exclusiveGateway default="_12" gatewayDirection="Diverging" id="_2" name="Delay?">
+      <incoming>_7</incoming>
+      <outgoing>_9</outgoing>
+      <outgoing>_12</outgoing>
+    </exclusiveGateway>
+    <intermediateCatchEvent id="_5" name="wait for scheduled time" parallelMultiple="false">
+      <incoming>_9</incoming>
+      <outgoing>_13</outgoing>
+      <timerEventDefinition id="_5_ED_1">
+        <timeDate><![CDATA[${mailData.get('sendAt')}]]></timeDate>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="_7" sourceRef="fetchHtmlTemplate" targetRef="_2"/>
+    <sequenceFlow id="_9" name="Yes" sourceRef="_2" targetRef="_5">
+      <extensionElements>
+        <yaoqiang:label offset-x="0.0" offset-y="-16.0" x="0.0" y="-20.0"/>
+      </extensionElements>
+      <conditionExpression><![CDATA[${!empty mailData.get('sendAt')}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_12" name="No" sourceRef="_2" targetRef="sendMail"/>
+    <sequenceFlow id="_13" sourceRef="_5" targetRef="sendMail"/>
+    <sequenceFlow id="_3" sourceRef="start" targetRef="fetchTextTemplate"/>
+    <textAnnotation id="_11" textFormat="text/plain">
+      <text>MAILSHOT
+
+Mail formatted template to a single contact. 
+Designed for reuse from line of business processes.</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram documentation="background=#FFFFFF;count=1;horizontalcount=1;orientation=0;width=597.6;height=842.4;imageableWidth=587.6;imageableHeight=832.4;imageableX=5.0;imageableY=5.0" id="Yaoqiang_Diagram-_1" name="Untitled Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="TemplatedMailshotInternal">
+      <bpmndi:BPMNShape bpmnElement="start" id="Yaoqiang-start">
+        <dc:Bounds height="32.0" width="32.0" x="70.0" y="268.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="125.0" x="23.5" y="308.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="fetchTextTemplate" id="Yaoqiang-fetchTextTemplate">
+        <dc:Bounds height="55.0" width="85.0" x="153.83333333333331" y="256.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8046875" width="56.0" x="168.33333333333331" y="269.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="fetchHtmlTemplate" id="Yaoqiang-fetchHtmlTemplate">
+        <dc:Bounds height="55.0" width="85.0" x="298.0" y="256.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8046875" width="70.0" x="305.5" y="269.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sendMail" id="Yaoqiang-sendMail">
+        <dc:Bounds height="55.0" width="85.0" x="586.3333333333333" y="256.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="63.0" x="597.3333333333333" y="276.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end" id="Yaoqiang-end">
+        <dc:Bounds height="32.0" width="32.0" x="756.9999999999999" y="268.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="62.0" x="741.9999999999999" y="308.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
+        <dc:Bounds height="55.0" width="290.0" x="35.0" y="35.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.8046875" width="310.0" x="35.0" y="34.09765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2" isMarkerVisible="true">
+        <dc:Bounds height="42.0" width="42.0" x="463.66666666666663" y="263.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="43.0" x="463.16666666666663" y="307.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_5" id="Yaoqiang-_5">
+        <dc:Bounds height="32.0" width="32.0" x="537.0" y="373.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="140.0" x="483.0" y="413.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9" sourceElement="_2" targetElement="_5">
+        <di:waypoint x="482.0" y="302.53846153846155"/>
+        <di:waypoint x="482.0" y="388.0"/>
+        <di:waypoint x="537.2422475245011" y="388.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8046875" width="333.0" x="295.5" y="339.97138934127275"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_13" id="Yaoqiang-_13" sourceElement="_5" targetElement="sendMail">
+        <di:waypoint x="569.49775625443" y="388.99999999999994"/>
+        <di:waypoint x="622.0" y="343.0"/>
+        <di:waypoint x="622.0" y="311.57692307692304"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="619.0" y="367.4064812192359"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_7" id="Yaoqiang-_7" sourceElement="fetchHtmlTemplate" targetElement="_2">
+        <di:waypoint x="383.3461538461538" y="284.0"/>
+        <di:waypoint x="463.46153846153857" y="284.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="420.75" y="274.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12" sourceElement="_2" targetElement="sendMail">
+        <di:waypoint x="506.30769230769226" y="284.0"/>
+        <di:waypoint x="586.4230769230769" y="284.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="21.0" x="535.4807692307693" y="274.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_6" id="Yaoqiang-_6" sourceElement="fetchTextTemplate" targetElement="fetchHtmlTemplate">
+        <di:waypoint x="238.73076923076923" y="284.0"/>
+        <di:waypoint x="298.7307692307692" y="284.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="265.61538461538464" y="274.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_10" id="Yaoqiang-_10" sourceElement="sendMail" targetElement="end">
+        <di:waypoint x="671.0384615384615" y="284.0"/>
+        <di:waypoint x="757.1927620256198" y="284.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="711.1165172769282" y="274.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3" sourceElement="start" targetElement="fetchTextTemplate">
+        <di:waypoint x="101.80723797438009" y="284.0"/>
+        <di:waypoint x="154.11538461538464" y="284.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="125.11425195384106" y="274.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
