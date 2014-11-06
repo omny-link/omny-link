@@ -11,7 +11,7 @@
       <extensionElements>
         <activiti:field name="resourceUsername" stringValue="firmgains"/>
         <activiti:field name="resourcePassword" stringValue="secureFirm14"/>
-        <activiti:field name="globalResource" stringValue="http://firmgains.com/auto-emails/new-registration.txt"/>
+        <activiti:field name="globalResource" expression="${mailData.get('template')}.txt"/>
         <activiti:field name="outputVar" stringValue="mailText"/>
       </extensionElements>
       <incoming>_19</incoming>
@@ -21,7 +21,7 @@
       <extensionElements>
         <activiti:field name="resourceUsername" stringValue="firmgains"/>
         <activiti:field name="resourcePassword" stringValue="secureFirm14"/>
-        <activiti:field name="globalResource" stringValue="http://firmgains.com/auto-emails/new-registration.html"/>
+        <activiti:field name="globalResource" expression="${mailData.get('template')}.html"/>
         <activiti:field name="outputVar" stringValue="mailHtml"/>
       </extensionElements>
       <incoming>_6</incoming>
