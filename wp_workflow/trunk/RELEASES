@@ -1,3 +1,8 @@
+0.7.0
+-----
+- Add post publication event
+- Add subscription via ajax including setting user meta fields as well as creating account
+
 0.6.0
 -----
 - Add support for radio inputs annotated with data-p-bind
