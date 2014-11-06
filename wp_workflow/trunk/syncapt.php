@@ -12,7 +12,7 @@
   define("P_ID", 'wp-workflow');
   define("P_VERSION", "0.7.0");
   define("P_NAME", 'Syncapt');
-  define("P_DEBUG", true);
+  define("P_DEBUG", false);
   define("P_MSG_NAMESPACE", P_ID.'-message-namespace');
 
   require_once("includes/ajax_support.php");
