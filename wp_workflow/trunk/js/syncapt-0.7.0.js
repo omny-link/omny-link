@@ -18,7 +18,7 @@
 /*
  * Copyright 2013-14 Tim Stephenson. All rights reserved.
  */
-EASING_DURATION = 500;
+EASING_DURATION = 1000;
 TAB = 9;
 ENTER = 13;
 REQUIRED = '<span class="mandatory">*</span>';
@@ -170,12 +170,15 @@ function App() {
           var cmd = $(d).data('p-bind')+'="'+$(d).val()+'";';
           switch (true) {
           case ($(d).data('p-type')=='number'): 
-            $(d).data('p-bind')+'="'+$(d).autoNumeric('get')+'";';
+            console.log('have number');
+            cmd = $(d).data('p-bind')+'="'+$(d).autoNumeric('get')+'";';
             break;
           case (ev.target.type=='radio'):
             console.log('have radio');
-            $(d).data('p-bind')+'= $(\'[data-p-bind="'+$(d).data('p-bind')+'"]:checked\').val();';
+            cmd = $(d).data('p-bind')+'= $(\'[data-p-bind="'+$(d).data('p-bind')+'"]:checked\').val();';
             break;
+          default: 
+            cmd = $(d).data('p-bind')+'="'+$(d).val()+'";';
           }
           if ($(d).val().length==0) cmd = $(d).data('p-bind')+'=null;';
           console.log('updating data model for '+d.name+' using '+cmd);
@@ -366,7 +369,7 @@ function App() {
       success: function(response, textStatus, jqxhr) {
         console.log('successfully start instance by msg: '+jqxhr.getResponseHeader('Location'));
         console.log('  headers: '+JSON.stringify(jqxhr.getAllResponseHeaders()));
-        console.log('  response: '+JSON.stringify(response));
+        console.log('  response: '+response);
         $p.hideActivityIndicator();
       },
       error: function(jqXHR, textStatus, errorThrown) {
