@@ -120,8 +120,7 @@ public class TestMailServer extends ExternalResource {
         assertTrue(
                 String.format(
                         "Message does not contain expected content: %1$s, received: %2$s",
-                        txtMessage, 
-                        getMessage(mimeMessage).contains(txtMessage)), 
+                        txtMessage, getMessage(mimeMessage)),
                 getMessage(mimeMessage).contains(txtMessage));
 
 		for (String t : to) {
