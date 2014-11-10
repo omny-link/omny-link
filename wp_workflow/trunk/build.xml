@@ -1,12 +1,14 @@
-<project name="local-offer">
+<project name="syncapt">
+
+  <property file="build.properties"/>
 
   <property name="dist" value="${basedir}/.."/>
   <property name="m2_repo" value="${user.home}/.m2/repository"/>
   <property name="src" value="${basedir}"/>
-  <property name="version" value="0.7.0"/>
+  <property name="version" value="${build.major}.${build.minor}.${build.patch}"/>
   <property name="yuicompressor-download-url" value="http://central.maven.org/maven2/com/yahoo/platform/yui/yuicompressor/2.3.6/yuicompressor-2.3.6.jar"/>
   <property name="yuicompressor-local-path" value="${m2_repo}/com/yahoo/platform/yui/yuicompressor/2.3.6/yuicompressor-2.3.6.jar"/>
-  <property name="zipName" value="syncapt.zip"/>
+  <property name="zipName" value="${ant.project.name}.zip"/>
 
   <target name="clean">
     <delete file="${dist}/${zipName}"/>
@@ -19,15 +21,64 @@
     </get>
   </target>
 
+  <target name="bump">
+    <copy file="js/${ant.project.name}-${build.lastReleased}.js" 
+          tofile="js/${ant.project.name}-${version}.js"/>
+    <exec executable="git">
+      <arg value="add"/>
+      <arg value="js/${ant.project.name}-${version}.js"/>
+    </exec>
+
+    <copy file="js/workflow-${build.lastReleased}.js" 
+          tofile="js/workflow-${version}.js"/>
+    <exec executable="git">
+      <arg value="add"/>
+      <arg value="js/workflow-${version}.js"/>
+    </exec>
+
+    <copy file="css/admin-${build.lastReleased}.css" 
+          tofile="css/admin-${version}.css"/>
+    <exec executable="git">
+      <arg value="add"/>
+      <arg value="css/admin-${version}.css"/>
+    </exec>
+
+    <copy file="css/frontend-${build.lastReleased}.css" 
+          tofile="css/frontend-${version}.css"/>
+    <exec executable="git">
+      <arg value="add"/>
+      <arg value="css/frontend-${version}.css"/>
+    </exec>
+
+    <replaceregexp file="${basedir}/${ant.project.name}.php" 
+                   match="Version\:(.*)"
+                   replace="Version: ${version}"/>
+    <replaceregexp file="${basedir}/${ant.project.name}.php" 
+                   match="define\('P_VERSION', '(.*)'\);"
+                   replace="define('P_VERSION', '${version}');"/>
+  </target>
+
+
+  <target name="bumpMinor">
+    <propertyfile
+        file="managed.properties"
+        comment="My properties">
+  <entry  key="build.date" type="date" value="now"/>
+  <entry  key="build.major" type="int" default="0" operation="+"/>
+  <entry  key="build.minor" type="int" default="1" operation="+"/>
+  <entry  key="formated.date" type="date" value="now" pattern="YYYYMMDD-HHmm"/>
+</propertyfile>
+  </target>
+
   <target name="compile">
     <echo message="Compressing Javascript files in folder: ${src}/js" />
     <java jar="${yuicompressor-local-path}" fork="true">
         <!-- input path for JS files -->
-        <arg value="${src}/js/syncapt-${version}.js" />
+        <arg value="${src}/js/${ant.project.name}-${version}.js" />
         <!--<arg value="-v" /> --><!-- Turn on verbose -->
         <arg value="-o" />
         <!-- output path for JS files -->
-        <arg value="${src}/js/syncapt-${version}.min.js" /> 
+        <arg value="${src}/js/${ant.project.name}-${version}.min.js" /> 
         <classpath>
           <pathelement location="${yuicompressor-local-path}"/>
         </classpath>
