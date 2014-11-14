@@ -1,0 +1,20 @@
+<script type="text/javascript">
+  function sendMail() {
+    $('.p-messages').empty().append('Sending...').show();
+    $p.sendMessage('inOnly','%message_namespace%.newsletter.json',JSON.stringify($p.mail));
+  }
+</script>
+<form id="mailForm" class="" role="form">
+
+  <div class="p-messages" style="display:none;color:#0B527E"> </div>
+
+  <div id="mailDetails">
+    <p>All fields marked with * are mandatory.</p>
+    <input class="form-control decorate" data-p-bind="$p.mail.title" name="Subject Line" type="text" id="subject" placeholder="Subject Line*" required title="Please enter the subject line for the email"/><br/>
+    <input class="form-control decorate" data-p-bind="$p.mail.sendAt" name="Send At" type="text" id="sendAt" placeholder="yyyy-MM-dd HH:mm" title="Please enter the time to send the email at, or empty for immediately"/><br/>
+    <textarea class="form-control decorate" cols="60" data-p-bind="$p.mail.body" id="body" name="Email Body*" placeholder="Type content here*" rows="15" title="Please enter your email message"/></textarea><br />
+  </div>
+  <div>
+    <input data-p-action="sendMail();" type="button" value="Send mail" id="send" class="btn btn-fwd">
+  </div>
+</form>
