@@ -1,0 +1,17 @@
+<script type="text/javascript">
+  function sendSms() {
+    $('.p-messages').empty().append('Sending...').show();
+    $p.sendMessage('inOnly','%message_namespace%.sms.json',JSON.stringify($p.sms));
+  }
+</script>
+<form id="textForm" class="" role="form">
+  <div class="p-messages" style="display:none;color:#0B527E"> </div>
+  <div id="textDetails">
+    <p>All fields marked with * are mandatory.</p>
+    <input class="form-control decorate" data-p-bind="$p.sms.sendAt" name="Send At" type="text" id="sendAt" placeholder="yyyy-MM-dd HH:mm" title="Please enter the time to send the text at, or empty for immediately"/><br/>
+    <textarea class="form-control decorate" cols="60" data-p-bind="$p.sms.body" name="Text Body*" placeholder="Type content here*" rows="3" title="Please enter your message"/></textarea><br />
+  </div>
+  <div>
+    <input data-p-action="sendSms();" type="button" value="Send Text" id="send" class="btn btn-fwd">
+  </div>
+</form>
