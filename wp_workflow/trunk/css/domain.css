@@ -1,0 +1,71 @@
+body {
+  font-size: 16px;
+  font-family: 'Helvetica Neue','Verdana','Arial',sans-serif;
+  height: 100%;
+}
+fieldset {
+  padding: 20px;
+}
+input {
+  line-height: 2em;
+}
+label {
+  display: block;
+}
+
+.btn {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+}
+.draggableHelper {
+  background: yellow !important;
+  border: 1px solid brown !important;
+}
+
+.entity {
+  list-style: none;
+  margin-left: 20px;
+  width: 300px;
+}
+
+.field {
+  list-style: none;
+  margin-left: 20px;
+  width: 260px;
+}
+
+.field-hint {
+  color: #666;
+  font-style: italic;
+  padding-left: 20px;
+}
+.btn,
+.draggable,
+.draggableHelper,
+.form-group {
+  border: #666 solid 1px;
+  background-color: #ccc;
+  margin: 10px;
+  padding: 10px;
+}
+
+#formEditor {
+  height:100%;
+  position: relative;
+  width:100%;
+}
+#formCanvas{
+  position: relative;
+}
+#formCanvas,
+#domainPalette {
+  height:50%;
+  min-height: 100px;
+  width:45%;
+}
+#domainPalette {
+  position: absolute;
+  top: 0px;
+  left: 50%;
+}

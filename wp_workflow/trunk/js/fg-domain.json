@@ -1,0 +1,20 @@
+[
+  {
+    "id": "contact",
+    "name": "Contact",
+    "fields": [
+      { "id": "firstName", "name": "First Name", "required": true, "type": "string" },
+      { "id": "lastName", "name": "Last Name", "required": true, "type": "string" },
+      { "id": "email", "name": "Email", "required": true, "type": "email" },
+      { "id": "enquiry", "name": "Enquiry", "placeholder": "Type your enquiry here", "type": "text" }
+    ]
+  },
+  {
+    "id": "account",
+    "name": "Account",
+    "fields": [
+      { "id": "name", "name": "Name", "required": true, "type": "string" },
+      { "id": "companyNumber", "description": "Company numbers in the UK are 8 digits", "name": "Company No.", "required": true, "type": "string" }
+    ]
+  }
+]
