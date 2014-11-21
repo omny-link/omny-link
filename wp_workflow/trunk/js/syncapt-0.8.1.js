@@ -149,19 +149,24 @@ function App() {
   this.bindControls = function() {
     $('[data-p-bind].decorate')
       .addClass('form-control')
+      .wrap('<div class="form-group">')
       .before(function(i) {
         return '<label for="'+this.id+'">'+this.name+(this.required ? REQUIRED : '')+'</label>';
-     })
-      .removeClass('decorate')
-      .wrap('<div class="form-group">');
+      })
+      .after(function(i) {
+        return '<span class="field-hint">'+(this.title ? this.title : '')+'</span>';
+      })
+      .removeClass('decorate');
     $('[data-p-display].decorate')
       .addClass('form-control')
       .removeClass('decorate')
       .wrap('<div class="form-group">');
     $('[data-p-bind]').each(function(i,d) {
+      console.log('binding: '+d.id+' using: '+$(d).data('p-bind'));
       // check we do not have moustache template
       if ($(d).data('p-bind').indexOf('{')==-1) {
         console.info('binding control '+d.name+' to '+$(d).data('p-bind'));
+        $p.initObj($(d), 'p-bind');
         if ($(d).data('p-type')=='number') $(d).autoNumeric('init', {mDec:0});
         var val = eval($(d).data('p-bind'));
         $(d).on('blur', function(ev) {
