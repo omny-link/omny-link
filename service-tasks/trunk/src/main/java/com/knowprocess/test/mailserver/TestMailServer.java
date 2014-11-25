@@ -123,10 +123,16 @@ public class TestMailServer extends ExternalResource {
                         txtMessage, getMessage(mimeMessage)),
                 getMessage(mimeMessage).contains(txtMessage));
 
-		for (String t : to) {
-			assertTrue("Message does not contain expected recipient: " + t,
-					mimeMessage.getHeader("To", null).contains(t));
-		}
+        if (to == null) {
+            System.out.println("No assertion on addressees");
+        } else {
+            for (String t : to) {
+                assertTrue(String.format(
+                        "Message does not contain expected recipient, expected: %1$s, received: %2$s",
+                        t, mimeMessage.getHeader("To", null)),
+    					mimeMessage.getHeader("To", null).contains(t));
+    		}
+        }
 
 		if (cc != null) {
 			for (String c : cc) {

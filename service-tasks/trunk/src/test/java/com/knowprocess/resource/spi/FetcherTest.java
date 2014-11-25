@@ -97,6 +97,21 @@ public class FetcherTest {
 		}
 	}
 
+    @Test
+    public void testFetchResourcePart() {
+        String resource = "http://jemsudan.org/meet-the-leadership-jem-chairman-dr-gibril-ibrahim/";
+        try {
+            String result = svc.fetchToString(resource, ".inner-content");
+            System.out.println("Result found: \n" + result);
+            assertNotNull(result);
+            assertTrue(result.contains("inner-content"));
+            assertTrue(!result.contains("<head>"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Unable to fetch resource");
+        }
+    }
+
 	@Test
 	public void testUrlPdfResourceToBlob() {
 		OutputStream pdfout = null;

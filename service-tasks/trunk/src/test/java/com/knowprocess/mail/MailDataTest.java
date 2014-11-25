@@ -2,6 +2,8 @@ package com.knowprocess.mail;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import org.junit.Test;
 
 public class MailDataTest {
@@ -22,5 +24,15 @@ public class MailDataTest {
 		assertEquals("Tim", data.get("addressee.firstName"));
 		assertEquals("tim@knowprocess.com", data.get("addressee.email"));
 	}
+
+    @Test
+    public void testParseJsonArray() {
+        List<MailData> array = MailData
+                .fromJsonArray("[{\"username\":\"447798867607\",\"frequency\":\"Regular\"},{\"username\":\"tim@knowprocess.com\",\"firstName\":\"Tim\",\"frequency\":\"All\"}]");
+
+        assertEquals(2, array.size());
+        assertEquals(array.get(0).get("username"), "447798867607");
+        assertEquals(array.get(1).get("username"), "tim@knowprocess.com");
+    }
 
 }

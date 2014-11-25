@@ -2,11 +2,15 @@ package com.knowprocess.mail;
 
 import java.io.Serializable;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -41,6 +45,16 @@ public class MailData implements Serializable {
 		parse(json);
 		return this;
 	}
+
+    public static List<MailData> fromJsonArray(String json) {
+        JsonReader reader = Json.createReader(new StringReader(json));
+        JsonArray array = reader.readArray();
+        List<MailData> list = new ArrayList<MailData>();
+        for (JsonValue jsonValue : array) {
+            list.add(new MailData().fromJson(jsonValue.toString()));
+        }
+        return list;
+    }
 
 	public MailData fromFlattenedJson(String json) {
 		JsonParser parser = Json.createParser(new StringReader(json));

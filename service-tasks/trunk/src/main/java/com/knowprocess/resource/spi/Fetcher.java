@@ -18,7 +18,10 @@ import javax.json.JsonReader;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.delegate.DelegateExecution;
+import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.delegate.JavaDelegate;
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 
 import com.knowprocess.resource.internal.ClasspathResource;
 import com.knowprocess.resource.internal.DeployedResource;
@@ -52,6 +55,8 @@ public class Fetcher extends RestService implements JavaDelegate {
 
     private RepositoryService repositoryService;
 
+    protected Expression selector;
+
 	public Fetcher() {
 		super();
 	}
@@ -60,20 +65,35 @@ public class Fetcher extends RestService implements JavaDelegate {
 		this.repositoryService = repositoryService2;
 	}
 
-	// public String getGlobalResource() {
-	// return globalResource;
-	// }
+    public void setSelector(Expression selector) {
+        this.selector = selector;
+    }
 
 	public String fetchToString(String resourceUrl) throws IOException {
-		String repoUri = "mem://string";
+        return fetchToString(resourceUrl, null);
+    }
 
-		MemRepository repo = (MemRepository) getRepository(repoUri);
-		fetchToRepo(resourceUrl, getResourceName(resourceUrl), repo);
-		System.out.println("resource:" + repo.getString());
-		return repo.getString();
-	}
+    public String fetchToString(String resourceUrl, String selector)
+            throws IOException {
+        String repoUri = "mem://string";
 
-	public String fetchToString(InputStream is, String resourceName, String mime)
+        MemRepository repo = (MemRepository) getRepository(repoUri);
+        fetchToRepo(resourceUrl, getResourceName(resourceUrl), repo);
+        String result = repo.getString();
+        System.out.println("resource:" + result);
+        if (selector != null) {
+            result = extract(result, selector);
+        }
+        return result;
+    }
+
+    private String extract(String result, String selector) throws IOException {
+        org.jsoup.nodes.Document doc = Jsoup.parse(result);
+        Elements requiredPart = doc.select(selector);
+        return requiredPart.outerHtml();
+    }
+
+    public String fetchToString(InputStream is, String resourceName, String mime)
 			throws IOException {
 		MemRepository repo = (MemRepository) getRepository("mem://string");
 		fetchToRepo(resourceName, mime, is, repo);
@@ -285,7 +305,10 @@ public class Fetcher extends RestService implements JavaDelegate {
 				execution.setVariable("resourceUrl", resource);
 				execution
 						.setVariable("resourceName", getResourceName(resource));
-				String content = fetchToString(resource);
+                String sel = selector == null ? null : (String) selector
+                        .getValue(execution);
+                System.out.println("sel: " + sel);
+                String content = fetchToString(resource, sel);
 				// TODO check and cleanup
 				// if (content.length() > MAX_VAR_LENGTH) {
 				// // we have a problem, cannot store in the standard Activiti
@@ -327,6 +350,7 @@ public class Fetcher extends RestService implements JavaDelegate {
 		} catch (Exception e) {
 			String errorMsg = e.getClass().getName() + ":" + e.getMessage();
 			System.out.println(errorMsg);
+            e.printStackTrace();
 			execution.setVariable("error", errorMsg);
 		}
 	}
