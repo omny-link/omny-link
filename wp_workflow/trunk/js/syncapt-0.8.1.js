@@ -59,7 +59,7 @@ function App() {
     for (idx in parts) {
       if (ref.length >0) ref+='.';
       ref+=(parts[idx]);
-      //console.log('Needs initialising? '+ref);
+      console.log('Needs initialising? '+ref);
       var obj = eval(ref);
       if (obj == undefined && idx<(parts.length-1)) {
         console.log('Initialising '+ref);
@@ -341,12 +341,12 @@ function App() {
       });
     }
   };
-  this.hideActivityIndicator = function(msg) {
-    if (msg === undefined) msg = 'Success!';
+  this.hideActivityIndicator = function(msg, addClass) {
+    if (msg === undefined) msg = '';
     $('.p-messages').empty().append(msg).removeClass('blink');
     document.body.style.cursor='auto';
     // enable to allow messages to fade away
-    if (fadeOutMessages) setTimeout(function() {
+    if (fadeOutMessages && addClass!='error') setTimeout(function() {
       $('.p-messages').fadeOut();
     }, EASING_DURATION*10);
   };
@@ -379,8 +379,13 @@ function App() {
       },
       error: function(jqXHR, textStatus, errorThrown) {
         var msg = 'Error saving: '+textStatus+' '+errorThrown;
+        window.err = jqXHR;
+        switch (jqXHR.status) {
+        case 404:
+          msg = "There is no workflow deployed to handle '"+msgName+"' messages. Please contact your administrator.";
+        }
         console.error(msg);
-        $p.hideActivityIndicator(msg);
+        $p.hideActivityIndicator(msg, 'error');
       },
       complete: function(data, textStatus, jqxhr) {
         //console.log('successfully start instance by msg: '+jqxhr.getResponseHeader('Location'));
@@ -388,9 +393,9 @@ function App() {
       }
     });
   };
-  this.showActivityIndicator = function(msg) {
+  this.showActivityIndicator = function(msg, addClass) {
     document.body.style.cursor='progress';
-    this.showMessage(msg);
+    this.showMessage(msg, addClass);
   };
   this.showMessage = function(msg, additionalClass) {
     if (msg === undefined) msg = 'Working...';
