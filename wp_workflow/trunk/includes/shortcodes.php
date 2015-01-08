@@ -25,9 +25,36 @@
   }
   add_shortcode( 'p_page', 'p_page_shortcode' );
 
+  // shortcode [p_form id="id of form post" title="Form label"]
+  function p_form_shortcode( $atts ) {
+    $a = shortcode_atts( array(
+      'id' => '',
+      'title' => '',
+    ), $atts );
+    $syncapt_options = new SyncaptOptions();
+    ob_start();
+
+    $form = get_post($a['id']);
+    $form_content = $form->post_content;
+    $form_content = apply_filters('the_content', $form_content);
+    $form_content = str_replace(']]>', ']]&gt;', $form_content);
+
+    $temp_content .= '<form class="" id="'.$form->post_name.'">';
+    $temp_content .= '<div class="p-messages"></div>';
+
+    $temp_content .= $form_content;
+
+    $temp_content .= '<button data-p-action="$p.sendMessage(\'inOnly\', \''.$syncapt_options->get_message_namespace().'/'.$form->post_name.'\', $p.'.str_replace('-','_',$form->post_name).')" form="'.$form->post_name.'" type="button">Submit</button>';
+    $temp_content .= '</form>';
+
+    ob_end_clean();
+    return $temp_content;
+  }
+  add_shortcode( 'p_form', 'p_form_shortcode' );
+
   // shortcode [p_tasks]
   function p_tasks_shortcode( $atts ) {
-      $a = shortcode_atts( array(
+    $a = shortcode_atts( array(
         'page' => 'about',
     ), $atts );
     $user_id = get_current_user_id();
