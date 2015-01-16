@@ -1,0 +1,10 @@
+[
+  { 
+    "_class": "link.omny.custmgmt.model.Contact", 
+    "email": "mrsmiggins@thepieshop.co.uk",
+    "firstName": "Amy", 
+    "lastName": "Miggins",
+    "stage": "Enquiry",
+    "title": "Mrs" 
+  }
+]

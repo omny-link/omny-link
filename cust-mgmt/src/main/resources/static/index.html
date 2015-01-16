@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang='en-GB'>
+<head>
+  <meta charset='utf-8'>
+  <title>Customer Management</title>
+  <!-- 
+  <link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Lato:400italic,400' rel='stylesheet' type='text/css'>
+  -->
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/custmgmt-0.1.0.css" rel="stylesheet">
+</head>
+
+<!--
+  1. This is the element we'll render our Ractive to.
+-->
+<body class="container" id="container">
+
+  <!--
+       2. You can load a template in many ways. For convenience, we'll include it in
+       a script tag so that we don't need to mess around with AJAX or multiline strings.
+       Note that we've set the type attribute to 'text/ractive' - though it can be
+       just about anything except 'text/javascript'
+  -->
+  <script id='template' type='text/ractive'>
+    <h1>Omny Link - Customer Management</h1>
+    <p class="bg-danger text-danger">Beta! Please ensure you have backups!</p>
+
+    <form id="contactList">
+      <section id="contactsSect">
+        <h2>
+          <span>Contacts</span>
+          <input type="search" class="form-control search" placeholder="Search" 
+            style="border-radius:15px;width:100px;display:inline;position:relative;bottom:5px;">
+        </h2>
+        <table id="contactsTable" class="table table-striped">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Stage</th>
+              <th>Full Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          {{#each contacts:i}}
+            <tr data-href="{{_links.self.href}}" on-click="select(this)">
+              <td>{{i+1}}</td>
+              <td>{{stage}}</td>
+              <td>{{title}} {{firstName}} {{lastName}}</td>
+              <td>
+                <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('{{_links.self.href}}')"></span>
+                <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="select('{{_links.self.href}}')"></span>
+              </td>
+            </tr>
+          {{/each}}
+          </tbody>
+        </table>
+      </section>
+
+      <section id="currentSect" style="display:none">
+        <h2>Contact: {{current.title}} {{current.firstName}} {{current.lastName}}</h2>
+
+        <ul>
+          <li>Land line: <input id="curLandLine" value="{{current.landLine}}"></li>
+        </ul>
+
+        <h2>
+          <span>Notes</span>
+          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
+        </h2>
+        <table id="notesTable" class="table table-striped"><tbody>
+          <tr style="display:none;">
+            <td colspan="3">
+              <textarea id="note" on-blur="saveNote()" placeholder="Type your note here" required style="width:100%;"></textarea>
+              <br/>
+              <a onclick="$('#notesTable tr:nth-child(1)').slideUp();">Cancel</a>
+            </td>
+          </tr>
+          {{#each current.notes:j}}
+            <tr>
+              <td>{{created}}</td>
+              <td>{{author}}</td>
+              <td>{{content}}</td>
+            </tr>
+          {{/each}}
+        </tbody></table>
+
+        <h2>
+          <span>Documents</span>
+          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')"></span>
+        </h2>
+        <table id="docsTable" class="table table-striped"><tbody>
+          <tr style="display:none;">
+            <td colspan="3">
+              <input id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required style="width:100%;"/>
+              <br/>
+              <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
+            </td>
+          </tr>
+          {{#each current.documents:k}}
+            <tr>
+              <td>{{created}}</td>
+              <td>{{author}}</td>
+              <td>{{url}}</td>
+            </tr>
+          {{/each}}
+        </tbody></table>
+      </section>
+
+    </form>
+  </script>
+
+  <script id='template' type='text/ractive'>
+  </script>  
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="js/bootstrap.min.js"></script>
+  <!--
+       3. You can always get the most recent stable version from the URL below.
+       If you want the newest features, use the 'edge' version instead:
+
+           http://cdn.ractivejs.org/edge/ractive.min.js
+
+       If you need IE8 support, change 'ractive' to 'ractive-legacy'.
+  -->
+  <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
+  <script src="js/custmgmt-0.1.0.js"></script>
+</body>
+</html>
