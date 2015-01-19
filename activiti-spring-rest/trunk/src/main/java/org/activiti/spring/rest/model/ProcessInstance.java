@@ -17,6 +17,8 @@ import org.springframework.roo.addon.serializable.RooSerializable;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.stereotype.Component;
 
+import flexjson.JSONSerializer;
+
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord
@@ -165,4 +167,10 @@ public class ProcessInstance extends Execution {
     // return list2;
     // }
 
+
+	public String toJson() {
+        return new JSONSerializer()
+.exclude("*.class").exclude("processEngine")
+				.serialize(this);
+    }
 }

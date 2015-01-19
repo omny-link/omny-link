@@ -122,6 +122,16 @@ public class ProcessDefinition {
 		return pd;
 	}
 
+	public static String findProcessDefinitionAsBpmn(String id) {
+		// TODO
+		return null;
+	}
+
+	public static byte[] findProcessDefinitionDiagram(String id) {
+		// TODO
+		return null;
+	}
+
 	public static List<ProcessDefinition> findProcessDefinitionEntries(
 			int firstResult, int maxResults) {
 		return wrap(processEngine.getRepositoryService()

@@ -51,14 +51,14 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     <property name="deploymentResources" value="classpath*:/process/com/knowprocess/*/.*.bpmn" />
     -->
 
-    <!-- Embedded dev server --> 
+    <!-- Embedded dev server 
     <property name="mailServerHost" value="${mailServerHost}" />
     <property name="mailServerPort" value="${mailServerPort}" />
     <property name="mailServerUseTLS" value="${mailServerUseTLS}" />
     <property name="mailServerUseSSL" value="${mailServerUseSSL}" />    
     <property name="mailServerUsername" value="${mailServerUsername}" />
     <property name="mailServerPassword" value="${mailServerPassword}" />
-    
+    --> 
     <!-- SendGrid server 
     <property name="mailServerHost" value="smtp.sendgrid.net" />
     <property name="mailServerPort" value="587" />

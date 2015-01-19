@@ -12,11 +12,7 @@ import org.activiti.spring.rest.model.ProcessInstance;
 
 privileged aspect ProcessInstance_Roo_Json {
     
-    public String ProcessInstance.toJson() {
-        return new JSONSerializer()
-        .exclude("*.class").serialize(this);
-    }
-    
+        
     public String ProcessInstance.toJson(String[] fields) {
         return new JSONSerializer()
         .include(fields).exclude("*.class").serialize(this);

@@ -3,16 +3,19 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.activiti</groupId>
     <name>activiti-spring-rest</name>
+    <artifactId>activiti-spring-rest</artifactId>
+    <version>5.17.0</version>
+    <description>Embeds the Activiti engine in a Spring MVC environment and uses that to expose REST services. </description>
     
     <properties>
-        <aspectj.version>1.7.4</aspectj.version>
-        <java.version>1.7</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <roo.version>1.2.5.RELEASE</roo.version>
-        <slf4j.version>1.7.5</slf4j.version>
-        <spring.version>3.2.7.RELEASE</spring.version>
-        <spring-security.version>3.1.0.RELEASE</spring-security.version>
-        <activiti.version>5.14.1</activiti.version>
+      <aspectj.version>1.7.4</aspectj.version>
+      <java.version>1.7</java.version>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <roo.version>1.2.5.RELEASE</roo.version>
+      <slf4j.version>1.7.5</slf4j.version>
+      <spring.version>3.2.7.RELEASE</spring.version>
+      <spring-security.version>3.1.0.RELEASE</spring-security.version>
+      <activiti.version>5.17.0</activiti.version>
     </properties>
     
     <distributionManagement>
@@ -86,11 +89,11 @@
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${slf4j.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -617,7 +620,4 @@
         	</plugins>
         </pluginManagement>
     </build>
-    <artifactId>activiti-spring-rest</artifactId>
-    <version>5.14.1</version>
-    <description>Embeds the Activiti engine in a Spring MVC environment and uses that to expose REST services. </description>
 </project>
