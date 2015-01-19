@@ -1,5 +1,7 @@
 package org.activiti.spring.rest.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.activiti.engine.ActivitiObjectNotFoundException;
@@ -14,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@RooWebJson(jsonObject = UserRecord.class)
 @Controller
 @RequestMapping("/users")
 public class UserRecordController {
@@ -35,8 +35,27 @@ public class UserRecordController {
     @Autowired(required = true)
     ProcessEngine processEngine;
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
+	public ResponseEntity<String> showAllJson(HttpServletRequest request) {
+		LOGGER.info(String.format("%1$s %2$s", RequestMethod.GET, PATH));
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+
+		try {
+			List<UserRecord> users = UserRecord.findAllUserRecords();
+			return new ResponseEntity<String>(UserRecord.toJsonArray(users),
+					headers, HttpStatus.OK);
+		} catch (Exception e) {
+			LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
+			e.printStackTrace(System.err);
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
     public ResponseEntity<String> showJson(@PathVariable("id") String id,
             HttpServletRequest request) {
         LOGGER.info(String
@@ -63,7 +82,11 @@ public class UserRecordController {
                     String.format("Unable to find user with id: %1$s"), id);
             return new ResponseEntity<String>(e2.toJson(), headers,
                     HttpStatus.NOT_FOUND);
-        }
+		} catch (Exception e) {
+			LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
+			e.printStackTrace(System.err);
+			throw new RuntimeException(e.getMessage(), e);
+		}
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")

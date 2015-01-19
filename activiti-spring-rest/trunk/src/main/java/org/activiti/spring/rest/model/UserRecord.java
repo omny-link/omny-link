@@ -261,4 +261,10 @@ public class UserRecord implements Principal, User, UserDetails {
         return true;
     }
 
+	// @Override
+	public boolean isPictureSet() {
+		// TODO
+		return false;
+	}
+
 }

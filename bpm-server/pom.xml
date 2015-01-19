@@ -6,7 +6,7 @@
   <name>BPM Server</name>
   <groupId>com.knowprocess.bpm</groupId>
 	<artifactId>bpm-server</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
   <inceptionYear>2012</inceptionYear>
 	<packaging>jar</packaging>
 

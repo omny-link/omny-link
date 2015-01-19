@@ -13,4 +13,16 @@
       </New>
     </Arg>
   </New>
+  <New id="UnloqDB" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>jdbc/UnloqDB</Arg>
+    <Arg>
+      <New class="org.apache.commons.dbcp.BasicDataSource">
+        <Set name="defaultAutoCommit">false</Set>
+        <Set name="url">jdbc:mysql://localhost:3306/unloqdb</Set>
+        <Set name="driverClassName">com.mysql.jdbc.Driver</Set>
+        <Set name="username">unloq</Set>
+        <Set name="password">unloq</Set>
+      </New>
+    </Arg>
+  </New>
 </Configure>
