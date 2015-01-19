@@ -25,11 +25,13 @@
 
         <intercept-url pattern="/activitys/**" access="isAuthenticated()" />
         <intercept-url pattern="/contacts/**" access="isAuthenticated()" />
+    <http-basic />
+        
         <!-- 
-            <http-basic user-service-ref="existingSessionService"/>
                 <form-login login-processing-url="/resources/j_spring_security_check" 
             login-page="/login" authentication-failure-url="/login?login_error=t" />
-         -->
+        
+         
         <openid-login authentication-failure-url="/login?error=true" 
             default-target-url="/" login-page="/login" user-service-ref="externalUserDetailsService">
           <attribute-exchange>
@@ -39,6 +41,7 @@
 		        <openid-attribute name="name" type="http://schema.openid.net/namePerson/friendly" required="true"/>
 		      </attribute-exchange>
         </openid-login>
+        -->
     </http>
     <!-- Configure Authentication mechanism -->
     <beans:bean id="corsFilter" class="org.activiti.spring.rest.cors.CorsFilter">
@@ -58,14 +61,14 @@
     <authentication-manager alias="authenticationManager">
         <authentication-provider ref="preauthAuthProvider"/>
 
-        <!-- 
+        <!-- -->
         <authentication-provider>
             <password-encoder hash="sha-256" />
             <user-service>
                 <user name="admin" password="8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918" authorities="ROLE_ADMIN" />
                 <user name="user" password="04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb" authorities="ROLE_USER" />
             </user-service>
-        </authentication-provider>-->
+        </authentication-provider>
         
         <authentication-provider user-service-ref="externalUserDetailsService"></authentication-provider>
     </authentication-manager>
