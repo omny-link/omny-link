@@ -106,8 +106,8 @@ public class Contact implements Serializable {
     @JsonProperty
     private String stage;
 
-    // @JsonProperty
-    // private String contact;
+	@JsonProperty
+	private String contact;
 
     /**
      * Intended to capture the source of the lead from Analytics.

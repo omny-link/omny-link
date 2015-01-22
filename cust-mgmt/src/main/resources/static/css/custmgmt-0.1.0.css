@@ -53,17 +53,30 @@ h1, h2, h3, h4, h5, h6 {
 
 /* END FONTS */
 
+/* 
+ * COLOURS 
+ *   orange: ff6c06;
+ *   blue:   0e9acd;
+ *   grey:   949699;
+ */
 
 /* START BOOTSTRAP OVERRIDES */
 
 body {
-  color: #0060ad;
+  color: #949699;
   font-family: Roboto/*CalibriRegular*/;
   font-size: 16px;
   line-height: 2.5em;
 }
+h1 { 
+	color: #0e9acd;
+}
+input { 
+	padding-left: 5px;
+}
 section h2 {
-  border-bottom: solid 1px #0060ad;
+  color: #0e9acd;
+  border-bottom: solid 1px #ff6c06;
 }
 th { 
 	font-weight: bold;
@@ -78,4 +91,22 @@ th {
 
 .clickable:hover {
 	cursor: pointer; 
+}
+
+ul.form { 
+	display: block;
+	list-style: none;
+}
+.form li { 
+	margin: 5px 0 5px;
+}
+.form label, .form input {
+  display:inline-block;
+}
+
+.form label {
+	padding-right: 10px;
+  text-align: right;
+  vertical-align: top;
+  width:150px;
 }
