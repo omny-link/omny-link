@@ -34,7 +34,8 @@
           <span>Contacts</span>
           <input type="search" class="form-control search" placeholder="Search" 
             style="border-radius:15px;width:100px;display:inline;position:relative;bottom:5px;">
-        </h2>
+          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
+       </h2>
         <table id="contactsTable" class="table table-striped">
           <thead>
             <tr>
@@ -61,53 +62,78 @@
       </section>
 
       <section id="currentSect" style="display:none">
-        <h2>Contact: {{current.title}} {{current.firstName}} {{current.lastName}}</h2>
-
-        <ul>
-          <li>Land line: <input id="curLandLine" value="{{current.landLine}}"></li>
-        </ul>
-
         <h2>
-          <span>Notes</span>
-          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
+          <span>{{current.title}} {{current.firstName}} {{current.lastName}}</span>
+          <span style="float:right;font-style:italic">Assigned: {{current.contact}}</span>
         </h2>
-        <table id="notesTable" class="table table-striped"><tbody>
-          <tr style="display:none;">
-            <td colspan="3">
-              <textarea id="note" on-blur="saveNote()" placeholder="Type your note here" required style="width:100%;"></textarea>
-              <br/>
-              <a onclick="$('#notesTable tr:nth-child(1)').slideUp();">Cancel</a>
-            </td>
-          </tr>
-          {{#each current.notes:j}}
-            <tr>
-              <td>{{created}}</td>
-              <td>{{author}}</td>
-              <td>{{content}}</td>
-            </tr>
-          {{/each}}
-        </tbody></table>
 
-        <h2>
-          <span>Documents</span>
-          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')"></span>
-        </h2>
-        <table id="docsTable" class="table table-striped"><tbody>
-          <tr style="display:none;">
-            <td colspan="3">
-              <input id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required style="width:100%;"/>
-              <br/>
-              <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
-            </td>
-          </tr>
-          {{#each current.documents:k}}
-            <tr>
-              <td>{{created}}</td>
-              <td>{{author}}</td>
-              <td>{{url}}</td>
+        <div class="col-md-6">
+          <ul class="form edit-form">
+            <li><label>Email:</label><input id="curEmail" value="{{current.email}}"></li>
+            <li><label>Land line:</label><input id="curLandLine" value="{{current.landLine}}"></li>
+            <li><label>Mobile:</label><input id="curMobile" value="{{current.mobile}}"></li>
+            <li><label>Address:</label><textarea id="curAddress">{{current.address1}}
+{{current.address2}}
+{{countyOrCity}}
+{{postCode}}
+</textarea></li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <ul class="form edit-form">
+            <li><label>Enquiry Type:</label><input id="curEnquiryType" value="{{current.enquiryType}}"></li>
+            <li><label>Budget:</label><input id="curBudget" value="{{current.budget}}"></li>
+            <li><label>Stage:</label><input id="curStage" value="{{current.stage}}"></li>
+            <li><label>Source:</label><input id="curSource" value="{{current.source}}"></li>
+            <li><label>Medium:</label><input id="curMedium" value="{{current.medium}}"></li>
+          </ul>
+        </div>
+
+        <div class="col-md-12">
+          <h2>
+            <span>Notes</span>
+            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
+          </h2>
+          <table id="notesTable" class="table table-striped"><tbody>
+            <tr style="display:none;">
+              <td colspan="3">
+                <textarea id="note" on-blur="saveNote()" placeholder="Type your note here" required style="width:100%;"></textarea>
+                <br/>
+                <a onclick="$('#notesTable tr:nth-child(1)').slideUp();">Cancel</a>
+              </td>
             </tr>
-          {{/each}}
-        </tbody></table>
+            {{#each current.notes:j}}
+              <tr>
+                <td>{{created}}</td>
+                <td>{{author}}</td>
+                <td>{{content}}</td>
+              </tr>
+            {{/each}}
+          </tbody></table>
+        </div>
+      
+        <div class="col-md-12">
+          <h2>
+            <span>Documents</span>
+            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')"></span>
+          </h2>
+          <table id="docsTable" class="table table-striped"><tbody>
+            <tr style="display:none;">
+              <td colspan="3">
+                <input id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required style="width:100%;"/>
+                <br/>
+                <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
+              </td>
+            </tr>
+            {{#each current.documents:k}}
+              <tr>
+                <td>{{created}}</td>
+                <td>{{author}}</td>
+                <td>{{url}}</td>
+              </tr>
+            {{/each}}
+          </tbody></table>
+        </div>
       </section>
 
     </form>
