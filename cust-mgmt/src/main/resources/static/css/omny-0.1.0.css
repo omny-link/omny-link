@@ -71,8 +71,11 @@ body {
 h1 { 
 	color: #0e9acd;
 }
-input { 
-	padding-left: 5px;
+h2 { 
+	font-size: 24px;
+}
+input,select,textarea { 
+	margin: 0 5px 0 5px;
 }
 section h2 {
   color: #0e9acd;
@@ -84,6 +87,33 @@ th {
 .bg-danger { 
   padding: 0 10px 0 10px;
 }
+.btn-default { 
+  background-color:#ff6c06;
+  color: #666666; 	
+}
+.navbar-brand { 
+	padding: 0;
+}
+.glyphicon { 
+	font-size: 20px;
+}
+#messages { 
+	padding-top: 20px;
+}
+.navbar-brand { 
+  position: relative;
+  top: -38px;  
+}
+.navbar-brand img {
+  height: 80px;	
+}
+.search {
+	border-radius:15px;
+	width:100px;
+	display:inline;
+	position:relative;
+	bottom:5px;	
+}
 .text-danger { 
   font-style: italic;
 }
@@ -93,7 +123,7 @@ th {
 	cursor: pointer; 
 }
 
-ul.form { 
+.form { 
 	display: block;
 	list-style: none;
 }
@@ -109,4 +139,7 @@ ul.form {
   text-align: right;
   vertical-align: top;
   width:150px;
+}
+.form.create-form {
+  padding-bottom: 2px;	
 }
