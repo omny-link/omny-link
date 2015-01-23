@@ -4,7 +4,12 @@ var TRANSITION_DURATION = 500;
 var ractive = new Ractive({
   // The `el` option can be a node, an ID, or a CSS selector.
   el: 'container',
-
+  
+  // If two-way data binding is enabled, whether to only update data based on 
+  // text inputs on change and blur events, rather than any event (such as key
+  // events) that may result in new data.
+  lazy: true,
+  
   // We could pass in a string, but for the sake of convenience
   // we're passing the ID of the <script> tag above.
   template: '#template',
@@ -17,10 +22,45 @@ var ractive = new Ractive({
     server: 'http://api.knowprocess.com',
     contacts: []
   },
+  add: function () {
+    console.log('add...');
+    $('h2.edit-form').hide();
+    $('.create-form').show();
+    var contact = { author:localStorage['username'], url: undefined };
+    ractive.select( contact );
+  },
   addDoc: function (contact) {
     console.log('addDoc '+contact+' ...');
-    ractive.set('current.doc', {author:"tstephen", contact: contact, url: undefined});
+    ractive.set('current.doc', { author:localStorage['username'], contact: contact, url: undefined});
     $('#docsTable tr:nth-child(1)').slideDown();
+  },
+  edit: function (contact) {
+    console.log('edit'+contact+'...');
+    $('h2.edit-form').show();
+    $('.create-form').hide();
+    ractive.select( contact );
+  },
+  save: function () {
+    console.log('save '+ractive.data.current+' ...');
+    var id = ractive.data.current._links === undefined ? undefined : ractive.data.current._links.self.href;
+    if (document.getElementById('currentForm').checkValidity()) { 
+      $.ajax({
+        url: id === undefined ? '/contacts' : id,
+        type: id === undefined ? 'POST' : 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(ractive.data.current),
+        success: completeHandler = function(data, textStatus, jqXHR) {
+          console.log('data: '+ data);
+          var location = jqXHR.getResponseHeader('Location');
+          if (location != undefined) ractive.set('current._links.self.href',location);
+        },
+        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
+            alert("Bother: "+textStatus+':'+errorThrown);
+        }
+      });
+    } else {
+      console.warn('Cannot save yet as contact is invalid');
+    }
   },
   saveDoc: function () {
     console.log('saveDoc '+ractive.data.current.doc.contact+' ...');
@@ -45,11 +85,11 @@ var ractive = new Ractive({
   },
   addNote: function (contact) {
     console.log('addNote '+contact+' ...');
-    ractive.set('current.note', {author:"tstephen", contact: contact, content: undefined});
+    ractive.set('current.note', { author:localStorage['username'], contact: contact, content: undefined});
     $('#notesTable tr:nth-child(1)').slideDown();
   },
   saveNote: function () {
-    console.log('saveNote '+ractive.data.current.note.contact+' ...');
+    console.log('saveNote '+ractive.data.current.note+' ...');
     var n = ractive.data.current.note;
     n.content = $('#note').val();
     if (n.content.trim().length > 0) { 
@@ -90,95 +130,62 @@ var ractive = new Ractive({
   },
   oninit: function() {
 	  this.fetch();
+
+	  // init auto complete values
+    $.get('/data/enquiry-types.json', function(data){
+      $("#curEnquiryType").typeahead({ source:data });
+	  },'json');
+    $.get('/data/media.json', function(data){
+      $("#curMedium").typeahead({ source:data });
+    },'json');
+    $.get('/data/sources.json', function(data){
+      $("#curSource").typeahead({ source:data });
+    },'json');
+    $.get('/data/stages.json', function(data){
+      $("#curStage").typeahead({ source:data });
+    },'json');
   },
-  select: function(contact) { 
-	ractive.set('current',contact);
-    $.getJSON(contact._links.self.href+'/notes',  function( data ) {
-    	if (data._embedded != undefined) {
-	      console.log('found notes '+data);
+  select: function(contact) {
+    console.log('select: '+JSON.stringify(contact));
+    ractive.set('suspendSaveObserver',false);
+	  ractive.set('current',contact);
+	  if (contact._links != undefined) {
+      $.getJSON(contact._links.self.href+'/notes',  function( data ) {
+      	if (data._embedded != undefined) {
+	        console.log('found notes '+data);
           ractive.merge('current.notes', data._embedded.notes);
-	      // sort most recent first
-	      ractive.data.current.notes.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-    	}
-  	});
-    $.getJSON(contact._links.self.href+'/documents',  function( data ) {
-      if (data._embedded != undefined) {
-    	console.log('found docs '+data);
-        ractive.merge('current.documents', data._embedded.documents);
-        // sort most recent first
-        ractive.data.current.documents.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-      }
-  	});
-	$('#currentSect').slideDown();
-  },
-  upload: function() {
-	var form = document.forms['contactList'];
-    if (form.checkValidity()) {
-      var msg = JSON.stringify(ractive.data.contacts);
-//      console.log('Sending message: '+msg);
-      // $('html, body').css("cursor", "wait");
-
-//      $(':file').change(function(){
-//    	    var file = this.files[0];
-//    	    name = file.name;
-//    	    size = file.size;
-//    	    type = file.type;
-//
-//    	    if(file.name.length < 1) {
-//    	    }
-//    	    else if(file.size > 100000) {
-//    	        alert("File is to big");
-//    	    }
-//    	    else if(file.type != 'image/png' && file.type != 'image/jpg' && !file.type != 'image/gif' && file.type != 'image/jpeg' ) {
-//    	        alert("File doesnt match png, jpg or gif");
-//    	    }
-//    	    else {
-//    	        $(':submit').click(function(){
-    	            var formData = new FormData();
-    	            formData.append('file', $(':file')[0].files[0])
-    	            console.log('form data: '+formData);
-    	            $.ajax({
-    	                url: '/contacts/upload',  //server script to process data
-    	                type: 'POST',
-    	                // Form data
-    	                data: formData,
-    	                //Options to tell JQuery not to process data or worry about content-type
-    	                cache: false,
-    	                contentType: false,
-    	                processData: false,
-    	                xhr: function() {  // custom xhr
-    	                    myXhr = $.ajaxSettings.xhr();
-    	                    if(myXhr.upload){ // if upload property exists
-//    	                        myXhr.upload.addEventListener('progress', progressHandlingFunction, false); // progressbar
-    	                    }
-    	                    return myXhr;
-    	                },
-    	                //Ajax events
-    	                success: completeHandler = function(data) {
-    	                    /*
-    	                    * workaround for chrome browser // delete the fakepath
-    	                    */
-    	                    if(navigator.userAgent.indexOf('Chrom')) {
-    	                        var catchFile = $(":file").val().replace(/fakepath\\/i, '');
-    	                    } else {
-    	                        var catchFile = $(":file").val();
-    	                    }
-    	                    var writeFile = $(":file");
-//    	                    console.debug(writer(catchFile));
-//    	                    $("*setIdOfImageInHiddenInput*").val(data.logo_id);
-                          ractive.fetch();
-    	                },
-    	                error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-    	                    alert("Bother: "+textStatus+':'+errorThrown);
-    	                }
-    	            }, 'json');
-//    	        });
-//    	    }
-//    	});
-
-    } else {
-      console.log('Disclosure incomplete, returning to form');
+	        // sort most recent first
+  	      ractive.data.current.notes.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
+      	}
+  	  });
+      $.getJSON(contact._links.self.href+'/documents',  function( data ) {
+        if (data._embedded != undefined) {
+        	console.log('found docs '+data);
+          ractive.merge('current.documents', data._embedded.documents);
+          // sort most recent first
+          ractive.data.current.documents.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
+        }
+    	});
     }
-    return false;
+	  ractive.set('suspendSaveObserver',true);
+	  $('#currentSect').slideDown();
   }
 });
+
+// Save on model change
+// done this way rather than with on-* attributes because autocomplete 
+// controls done that way save the oldValue 
+ractive.observe('current.*', function(newValue, oldValue, keypath) {
+  ignored=['current.documents','current.doc','current.notes','current.note'];
+  // console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
+  if (ractive.data.suspendSaveObserver && significantDifference(newValue,oldValue) && ignored.indexOf(keypath)==-1) {
+    ractive.save();
+  }
+});
+
+function significantDifference(newValue,oldValue) {
+  if (newValue=='') { console.log('new value is empty');newValue = null;}
+  if (oldValue=='') { console.log('oldvalue is empty');oldValue = null;}
+  console.log('sig diff? '+newValue != oldValue);
+  return newValue != oldValue;
+}
