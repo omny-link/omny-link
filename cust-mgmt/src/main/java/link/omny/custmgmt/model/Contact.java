@@ -1,6 +1,7 @@
 package link.omny.custmgmt.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,8 +12,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
@@ -20,6 +21,7 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,11 +31,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
+// @DiscriminatorValue("contact")
+// @Table(name = "contact")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+// TODO for some reason using these instead of jacksonBuilder in Application
+// class results in StackOverflow
+// @JsonSerialize(using = JsonContactSerializer.class)
+// @JsonDeserialize(using = JsonContactDeserializer.class)
 public class Contact implements Serializable {
 
     private static final long serialVersionUID = -6080589981067789428L;
@@ -41,11 +50,11 @@ public class Contact implements Serializable {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(Contact.class);
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonProperty
-    private Long id;
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@JsonProperty
+	private Long id;
 
     /**
      */
@@ -101,13 +110,13 @@ public class Contact implements Serializable {
     private String enquiryType;
 
     @JsonProperty
-    private float budget;
+	private double budget;
 
     @JsonProperty
     private String stage;
 
 	@JsonProperty
-	private String contact;
+	private String owner;
 
     /**
      * Intended to capture the source of the lead from Analytics.
@@ -135,20 +144,58 @@ public class Contact implements Serializable {
     @JsonProperty
     private Date lastUpdated;
 
-    /**
+	/**
      */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private AccountInfo accountInfo;
+	@NotNull
+	@JsonProperty
+	@Column(nullable = false)
+	private String tenantId;
 
-    /**
-     */
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
-    private List<CustomField> customFields;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "contact")
+	// @JsonTypeInfo
+	// @JsonTypeResolver(value = null)
+	// @JsonIgnore
+	@JsonSerialize(using = JsonCustomFieldSerializer.class)
+	private List<CustomContactField> customFields;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
+	public List<CustomContactField> getCustomFields() {
+		if (customFields == null) {
+			customFields = new ArrayList<CustomContactField>();
+		}
+		if (customFields.size() > 0) {
+			// extension = new Extension(customFields);
+		}
+		return customFields;
+	}
+
+	public void setCustomFields(List<CustomContactField> fields) {
+		this.customFields = fields;
+		// extension = new Extension(fields);
+	}
+
+
+	public Object getField(@NotNull String fieldName) {
+		for (CustomField field : getCustomFields()) {
+			if (fieldName.equals(field.getName())) {
+				return field.getValue();
+			}
+		}
+		return null;
+	}
+
+	public void addCustomField(CustomContactField customField) {
+		getCustomFields().add(customField);
+		// extension.customFields.add(customField);
+	}
+
+	@JsonProperty
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private Account account;
+
+	@OneToMany(cascade = CascadeType.ALL)
     private List<Note> notes;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
+	@OneToMany(cascade = CascadeType.ALL)
     private List<Document> documents;
 
     @PrePersist

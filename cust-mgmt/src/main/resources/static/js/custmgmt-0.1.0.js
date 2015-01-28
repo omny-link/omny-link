@@ -20,6 +20,14 @@ var ractive = new Ractive({
   // Here, we're passing in some initial data
   data: {
     server: 'http://api.knowprocess.com',
+    tenant: { 
+      name: 'firmgains', 
+      contactFields: [], 
+      accountFields: [ 
+        { label: 'Share of Business', key: 'shareOfBusiness' },
+        { label: 'Already contacted', key: 'alreadyContacted'} 
+      ] 
+    },
     contacts: []
   },
   add: function () {

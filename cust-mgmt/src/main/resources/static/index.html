@@ -59,7 +59,7 @@
               <td>{{i+1}}</td>
               <td>{{stage}}</td>
               <td>{{title}} {{firstName}} {{lastName}}</td>
-              <td>{{contact}}</td>
+              <td>{{owner}}</td>
               <td>
                 <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('{{_links.self.href}}')"></span>
                 <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="select('{{_links.self.href}}')"></span>
@@ -72,37 +72,55 @@
 
       <section id="currentSect" style="display:none">
         <form id="currentForm">
-        <div class="form create-form">
-          <input class="col-xs-1" id="curTitle" placeholder="Title" required value="{{current.title}}"/>
-          <input class="col-xs-2" id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/>
-          <input class="col-xs-2" id="curLastName" placeholder="Last Name" required value="{{current.lastName}}"/>
-          <input class="col-xs-2 typeahead pull-right" id="curOwner" placeholder="Owner" required value="{{current.contact}}"/>
-        </div>
-        <h2 class="form create-form">&nbsp;</h2>
-        <h2 class="form edit-form">
-          <span>{{current.title}} {{current.firstName}} {{current.lastName}}</span>
-          <span style="float:right;font-style:italic">Owner: {{current.contact}}</span>
-        </h2>
+          <div class="form create-form">
+            <input class="col-xs-1" id="curTitle" placeholder="Title" required value="{{current.title}}"/>
+            <input class="col-xs-2" id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/>
+            <input class="col-xs-2" id="curLastName" placeholder="Last Name" required value="{{current.lastName}}"/>
+            <input class="col-xs-2 typeahead pull-right" id="curOwner" placeholder="Owner" required value="{{current.owner}}"/>
+          </div>
 
-        <div id="currentBody" class="col-md-6">
-          <ul class="form edit-form">
-            <li><label>Email:</label><input id="curEmail" required value="{{current.email}}"></li>
-            <li class=""><label>Land line:</label><input id="curLandLine" value="{{current.landLine}}"></li>
-            <li><label>Address:</label><input id="curAddress1" value="{{current.address1}}"/>
-            <li><label></label><input id="curAddress2" value="{{current.address2}}"/>
-            <li><label></label><input id="curCountyOrCity" value="{{current.countyOrCity}}"/></li>
-            <li><label>Post Code:</label><input id="curPostCode" value="{{current.postCode}}"></li>
-          </ul>
-        </div>
-        <div class="col-md-6">
-          <ul class="form edit-form">
-            <li><label>Enquiry Type:</label><input id="curEnquiryType" value="{{current.enquiryType}}"></li>
-            <li><label>Budget:</label><input id="curBudget" value="{{current.budget}}"></li>
-            <li><label>Stage:</label><input class="typeahead" id="curStage" value="{{current.stage}}"></li>
-            <li><label>Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
-            <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
-          </ul>
-        </div>
+          <h2 class="form create-form">&nbsp;</h2>
+          <h2 class="form edit-form">
+            <span>{{current.title}} {{current.firstName}} {{current.lastName}}</span>
+            <span class="pull-right" style="font-style:italic">Owner: {{current.owner}}</span>
+          </h2>
+
+          <div id="currentBody" class="col-md-6">
+            <ul class="form edit-form">
+              <li><label>Email:</label><input id="curEmail" required value="{{current.email}}"></li>
+              <li class=""><label>Land line:</label><input id="curLandLine" value="{{current.landLine}}"></li>
+              <li><label>Address:</label><input id="curAddress1" value="{{current.address1}}"/>
+              <li><label></label><input id="curAddress2" value="{{current.address2}}"/>
+              <li><label></label><input id="curCountyOrCity" value="{{current.countyOrCity}}"/></li>
+              <li><label>Post Code:</label><input id="curPostCode" value="{{current.postCode}}"></li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="form edit-form">
+              <li><label>Enquiry Type:</label><input id="curEnquiryType" value="{{current.enquiryType}}"></li>
+              <li><label>Budget:</label><input id="curBudget" value="{{current.budget}}"></li>
+              <li><label>Stage:</label><input class="typeahead" id="curStage" value="{{current.stage}}"></li>
+              <li><label>Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
+              <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
+            </ul>
+          </div>
+
+          {{#if tenant.contactFields}}
+          <div class="col-md-12" id="currentExtended">
+            <h2 class="form">
+              <span>More...</span>
+            </h2>
+
+            <div class="col-md-6">
+              <ul class="form edit-form">
+                {{#each tenant.contactFields:j}}
+                  <li><label>{{label}}:</label><input id="curUnknown" value="{{current.customFields[key]}}"></li>
+                {{/each}}
+              </ul>
+            </div>
+          </div>
+          {{/if}}
+
         </form>
 
         <div class="col-md-12">
