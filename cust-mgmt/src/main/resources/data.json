@@ -2,9 +2,13 @@
   { 
     "_class": "link.omny.custmgmt.model.Contact", 
     "email": "mrsmiggins@thepieshop.co.uk",
+    "enquiryType": "Treehouse",
     "firstName": "Amy", 
     "lastName": "Miggins",
+    "medium": "CPC",
+    "source": "Google",
     "stage": "Enquiry",
-    "title": "Mrs" 
-  }
+    "tenantId": "gardenatics",
+    "title": "Mrs"
+  }  
 ]

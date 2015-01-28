@@ -12,10 +12,15 @@
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
+  <organization>
+    <name>Omny Link</name>
+    <url>www.omny.link</url>
+  </organization>
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.0.RELEASE</version>
+		<version>1.2.1.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -62,7 +67,7 @@
       <version>1.14.8</version>
       <scope>provided</scope>
     </dependency>
-  </dependencies>
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -72,9 +77,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<organization>
-	  <name>Omny Link</name>
-	  <url>www.omny.link</url>
-	</organization>
 </project>

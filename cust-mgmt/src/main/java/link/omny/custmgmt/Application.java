@@ -1,6 +1,10 @@
 package link.omny.custmgmt;
 
 import link.omny.custmgmt.internal.JsonPopulatorFactoryBean;
+import link.omny.custmgmt.json.JsonContactDeserializer;
+import link.omny.custmgmt.json.JsonExtensionSerializer;
+import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.Extension;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -10,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration
 @ComponentScan
@@ -18,14 +23,26 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 // @ImportResource("classpath:META-INF/spring/applicationContext-data.xml")
 public class Application {
 
-    @Bean
-    public JsonPopulatorFactoryBean repositoryPopulator() {
-        JsonPopulatorFactoryBean factory = new JsonPopulatorFactoryBean();
-        // Set a custom ObjectMapper if Jackson customization is needed
-        // factory.setObjectMapper(…);
-        factory.setResources(new Resource[] { new ClassPathResource("data.json") });
-        return factory;
-    }
+	@Bean
+	public JsonPopulatorFactoryBean repositoryPopulator() {
+		JsonPopulatorFactoryBean factory = new JsonPopulatorFactoryBean();
+		// Set a custom ObjectMapper if Jackson customization is needed
+		// factory.setObjectMapper(…);
+		factory.setResources(new Resource[] { new ClassPathResource("data.json") });
+		return factory;
+	}
+
+	@Bean
+	public Jackson2ObjectMapperBuilder jacksonBuilder() {
+		Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
+		// builder.indentOutput(true).dateFormat(
+		// new SimpleDateFormat("yyyy-MM-dd"));
+		builder.serializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY);
+		builder.deserializerByType(Contact.class, new JsonContactDeserializer());
+		builder.serializerByType(Extension.class, new JsonExtensionSerializer());
+		
+		return builder;
+	}
 
     public static void main(String[] args) {
         // ConfigurableApplicationContext context =

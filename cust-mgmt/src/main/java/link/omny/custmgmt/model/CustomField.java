@@ -2,15 +2,11 @@ package link.omny.custmgmt.model;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -22,12 +18,12 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Entity
+@MappedSuperclass
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomField implements Serializable {
-    private static final long serialVersionUID = 7496048564725313117L;
+	private static final long serialVersionUID = 7496048564725313117L;
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(CustomField.class);
 
@@ -46,19 +42,11 @@ public class CustomField implements Serializable {
 
     /**
      */
-    @NotNull
-    @JsonProperty
-    @Column(nullable = false)
-    private String type;
-
-    /**
-     */
     @JsonProperty
     private String value;
 
-    @ManyToOne(targetEntity = Contact.class, fetch = FetchType.EAGER, cascade = {
-            CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "contact_id")
-    private Contact contact;
-
+	public CustomField(String key, String value) {
+		this.name = key;
+		this.value = value;
+	}
 }
