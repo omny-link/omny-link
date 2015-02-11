@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang='en-GB'>
+<head>
+  <meta charset='utf-8'>
+  <title>User Management</title>
+  <!-- 
+  <link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Lato:400italic,400' rel='stylesheet' type='text/css'>
+  -->
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/omny-0.1.0.css" rel="stylesheet">
+</head>
+
+<!--
+  1. This is the element we'll render our Ractive to.
+-->
+<body class="container" id="container">
+
+  <!--
+       2. You can load a template in many ways. For convenience, we'll include it in
+       a script tag so that we don't need to mess around with AJAX or multiline strings.
+       User that we've set the type attribute to 'text/ractive' - though it can be
+       just about anything except 'text/javascript'
+  -->
+  <script id='template' type='text/ractive'>
+    <h1>Omny Link - User Management</h1>
+    <p class="bg-danger text-danger">Beta! Please ensure you have backups!</p>
+
+    <form id="userList">
+      <section id="userSect">
+        <h2>
+          <span>Users</span>
+          <input type="search" class="form-control search" placeholder="Search" 
+            style="border-radius:15px;width:100px;display:inline;position:relative;bottom:5px;">
+          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addUser()"></span>
+        </h2>
+        <table id="usersTable" class="table table-striped">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Username</th>
+              <th>Full Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          {{#each users:i}}
+            <tr data-href="{{_links.self.href}}">
+              <td on-click="edit(this)">{{i+1}}</td>
+              <td on-click="edit(this)">{{id}}</td>
+              <td on-click="edit(this)">{{firstName}} {{lastName}}</td>
+              <td>
+                <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('/users/{{id}}')"></span>
+                <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
+              </td>
+            </tr>
+          {{/each}}
+          </tbody>
+        </table>
+      </section>
+
+      <section id="currentSect" style="display:none">
+        <h2>User: {{current.firstName}} {{current.lastName}} ({{current.id}})</h2>
+
+        <ul class="form edit-form">
+          <li class="create-field"><label>Username:</label><input id="curUsername" value="{{current.id}}"></li>
+          <li><label>First Name:</label><input id="curFirstName" value="{{current.firstName}}"></li>
+          <li><label>Last Name:</label><input id="curLastName" value="{{current.lastName}}"></li>
+          <li class="create-field"><label>Password:</label><input id="curPassword" value="{{current.password}}"></li>
+          <li class="create-field"><label>Confirm Password:</label><input id="curPassword2" value="{{current.confirmPassword}}"></li>
+          <li>
+            <label>Groups:</label>
+            <span id="curGroups">
+              {{#each currentGroups:j}}<span>{{name}}, </span>{{/each}}
+              <input id="curNewGroup" class="hidden" on-blur="addUserToGroup()" value="{{current.newGroup}}">
+              <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addGroup()"></span>
+            </span>
+          </li>
+        </ul>
+        <button class="btn btn-default" on-click="saveUser()">Save</button>
+
+      </section>
+
+    </form>
+  </script>
+
+  <script id='template' type='text/ractive'>
+  </script>  
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="js/bootstrap.min.js"></script>
+  <!--
+       3. You can always get the most recent stable version from the URL below.
+       If you want the newest features, use the 'edge' version instead:
+
+           http://cdn.ractivejs.org/edge/ractive.min.js
+
+       If you need IE8 support, change 'ractive' to 'ractive-legacy'.
+  -->
+  <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
+  <script src="js/usermgmt-0.1.0.js"></script>
+</body>
+</html>
