@@ -1,0 +1,89 @@
+/* START BOOTSTRAP OVERRIDES */
+
+body {
+ color: #5E5D89;  
+}
+
+nav, footer {
+  background-color: #5E5D89;
+}
+
+.form-search {
+  margin-bottom: 0;
+  padding-top: 4px !important;  
+}
+
+.navbar .brand {
+  text-shadow: none;
+}
+
+.navbar .nav > li > a {
+  color: #E07C88;
+  text-decoration: none;
+  text-shadow: none;
+}
+
+.navbar .nav > li > a:focus,
+.navbar .nav > li > a:hover {
+  color: #E0BF92;
+}
+
+.navbar .nav > .active > a,
+.navbar .nav > .active > a:hover,
+.navbar .nav > .active > a:focus {
+  color: #E0BF92;
+  background-color: #E07C88;
+}
+
+
+/* END BOOTSTRAP OVERRIDES */
+
+.a-business-key:after {
+  content: ":"	
+}
+
+.a-debug {
+  display: none;	
+}
+
+.a-list {
+  list-style: none; 
+}
+
+.well, .a-list > li {
+  background-color: #E0BF92;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #C3B8A4;
+}
+
+.a-list > li {
+  margin-bottom:4px;
+  padding: 4px;
+}
+
+.a-primary-label {
+  font-size: larger;
+  font-weight: bold;
+}
+
+.a-primary-data {
+  font-size: larger;
+}
+
+.a-primary-data:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+
+.a-secondary-label {
+  font-size: smaller; 
+  color: #666666;
+  font-weight: bold;
+}
+.a-secondary-data {
+  font-size: smaller; 
+  color: #666666;
+}

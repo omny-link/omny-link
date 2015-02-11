@@ -1,0 +1,125 @@
+/* FONTS */ 
+
+@font-face {
+  font-family: 'barmenoregular';
+  src: url('fonts/barmeno_regular-webfont.eot');
+  src: url('fonts/barmeno_regular-webfont.eot?#iefix') format('embedded-opentype'),
+       url('fonts/barmeno_regular-webfont.woff') format('woff'),
+       url('fonts/barmeno_regular-webfont.ttf') format('truetype'),
+       url('fonts/barmeno_regular-webfont.svg#barmenoregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+    font-family: 'CalibriRegular';
+    src: url('fonts/calibri-webfont.eot');
+    src: url('fonts/calibri-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/calibri-webfont.woff') format('woff'),
+         url('fonts/calibri-webfont.ttf') format('truetype'),
+         url('fonts/calibri-webfont.svg#CalibriRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'CalibriBold';
+    src: url('fonts/calibrib-webfont.eot');
+    src: url('fonts/calibrib-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/calibrib-webfont.woff') format('woff'),
+         url('fonts/calibrib-webfont.ttf') format('truetype'),
+         url('fonts/calibrib-webfont.svg#CalibriBold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'CalibriItalic';
+    src: url('fonts/calibrii-webfont.eot');
+    src: url('fonts/calibrii-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/calibrii-webfont.woff') format('woff'),
+         url('fonts/calibrii-webfont.ttf') format('truetype'),
+         url('fonts/calibrii-webfont.svg#CalibriItalic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+h1, h2, h3, h4, h5, h6 {
+ font-family: 'barmenoregular';
+}
+
+/* END FONTS */
+
+/* 
+ * COLOURS 
+ *   orange: ff6c06;
+ *   blue:   0e9acd;
+ *   grey:   949699;
+ */
+
+/* START BOOTSTRAP OVERRIDES */
+
+body {
+  color: #949699;
+  font-family: Roboto/*CalibriRegular*/;
+  font-size: 16px;
+  line-height: 2.5em;
+}
+h1 { 
+	color: #0e9acd;
+}
+h2 { 
+	font-size: 24px;
+}
+input,select,textarea { 
+	margin: 0 5px 0 5px;
+}
+section h2 {
+  color: #0e9acd;
+  border-bottom: solid 1px #ff6c06;
+}
+th { 
+	font-weight: bold;
+}
+.bg-danger { 
+  padding: 0 10px 0 10px;
+}
+.btn-default { 
+  background-color:#ff6c06;
+  color: #666666; 	
+}
+.navbar-brand { 
+	padding: 0;
+}
+.navbar-brand img { 
+	height: 50px;
+}
+.text-danger { 
+  font-style: italic;
+}
+/* END BOOTSTRAP OVERRIDES */
+
+.clickable:hover {
+	cursor: pointer; 
+}
+
+.form { 
+	display: block;
+	list-style: none;
+}
+.form label, .form input {
+  display:inline-block;
+}
+
+.form label {
+	padding-right: 10px;
+  text-align: right;
+  vertical-align: top;
+  width:150px;
+}
+.form.create-form {
+  padding-bottom: 2px;	
+}
