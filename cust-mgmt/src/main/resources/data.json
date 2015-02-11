@@ -10,5 +10,15 @@
     "stage": "Enquiry",
     "tenantId": "gardenatics",
     "title": "Mrs"
+  },
+  { 
+    "_class": "link.omny.custmgmt.model.Contact", 
+    "email": "fred@bedrock.com",
+    "firstName": "Fred", 
+    "lastName": "Flintstone",
+    "medium": "CPC",
+    "source": "Google",
+    "stage": "Enquiry",
+    "tenantId": "firmgains"
   }  
 ]

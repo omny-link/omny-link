@@ -2,10 +2,8 @@ package link.omny.custmgmt.model;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,6 +17,7 @@ import lombok.NoArgsConstructor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -45,8 +44,8 @@ public class Note {
     @JsonProperty
     private String content;
 
-    @ManyToOne(targetEntity = Contact.class, fetch = FetchType.EAGER, cascade = {
-            CascadeType.PERSIST, CascadeType.MERGE })
+    @RestResource(rel = "noteContact")
+    @ManyToOne(targetEntity = Contact.class)
     @JoinColumn(name = "contact_id")
     private Contact contact;
 

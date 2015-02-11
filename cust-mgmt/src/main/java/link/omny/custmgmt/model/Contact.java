@@ -21,16 +21,20 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
@@ -50,11 +54,11 @@ public class Contact implements Serializable {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(Contact.class);
 
-	@Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonProperty
-	private Long id;
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonProperty
+    private Long id;
 
     /**
      */
@@ -84,15 +88,15 @@ public class Contact implements Serializable {
 
     /**
      */
-    @Pattern(regexp = "[0-9, ]{0,13}")
+    @Pattern(regexp = "\\+?[0-9, ]{0,13}")
     @JsonProperty
-    private String landLine;
+    private String phone1;
 
     /**
      */
-    @Pattern(regexp = "[0-9, ]{0,13}")
+    @Pattern(regexp = "\\+?[0-9, ]{0,13}")
     @JsonProperty
-    private String mobile;
+    private String phone2;
 
     @JsonProperty
     private String address1;
@@ -110,13 +114,13 @@ public class Contact implements Serializable {
     private String enquiryType;
 
     @JsonProperty
-	private double budget;
+    private double budget;
 
     @JsonProperty
     private String stage;
 
-	@JsonProperty
-	private String owner;
+    @JsonProperty
+    private String owner;
 
     /**
      * Intended to capture the source of the lead from Analytics.
@@ -144,58 +148,60 @@ public class Contact implements Serializable {
     @JsonProperty
     private Date lastUpdated;
 
-	/**
+    /**
      */
-	@NotNull
-	@JsonProperty
-	@Column(nullable = false)
-	private String tenantId;
+    @NotNull
+    @JsonProperty
+    @Column(nullable = false)
+    private String tenantId;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "contact")
-	// @JsonTypeInfo
-	// @JsonTypeResolver(value = null)
-	// @JsonIgnore
-	@JsonSerialize(using = JsonCustomFieldSerializer.class)
-	private List<CustomContactField> customFields;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // , mappedBy = "contact")
+    // @JsonTypeInfo
+    // @JsonTypeResolver(value = null)
+    // @JsonIgnore
+    @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
+    @JsonSerialize(using = JsonCustomFieldSerializer.class)
+    private List<CustomContactField> customFields;
 
-	public List<CustomContactField> getCustomFields() {
-		if (customFields == null) {
-			customFields = new ArrayList<CustomContactField>();
-		}
-		if (customFields.size() > 0) {
-			// extension = new Extension(customFields);
-		}
-		return customFields;
-	}
+    public List<CustomContactField> getCustomFields() {
+        if (customFields == null) {
+            customFields = new ArrayList<CustomContactField>();
+        }
+        if (customFields.size() > 0) {
+            // extension = new Extension(customFields);
+        }
+        return customFields;
+    }
 
-	public void setCustomFields(List<CustomContactField> fields) {
-		this.customFields = fields;
-		// extension = new Extension(fields);
-	}
+    public void setCustomFields(List<CustomContactField> fields) {
+        this.customFields = fields;
+        // extension = new Extension(fields);
+    }
 
+    public Object getField(@NotNull String fieldName) {
+        for (CustomField field : getCustomFields()) {
+            if (fieldName.equals(field.getName())) {
+                return field.getValue();
+            }
+        }
+        return null;
+    }
 
-	public Object getField(@NotNull String fieldName) {
-		for (CustomField field : getCustomFields()) {
-			if (fieldName.equals(field.getName())) {
-				return field.getValue();
-			}
-		}
-		return null;
-	}
+    public void addCustomField(CustomContactField customField) {
+        getCustomFields().add(customField);
+        // extension.customFields.add(customField);
+    }
 
-	public void addCustomField(CustomContactField customField) {
-		getCustomFields().add(customField);
-		// extension.customFields.add(customField);
-	}
+    @JsonProperty
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private Account account;
 
-	@JsonProperty
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private Account account;
-
-	@OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     private List<Note> notes;
 
-	@OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     private List<Document> documents;
 
     @PrePersist
