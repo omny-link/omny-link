@@ -10,8 +10,8 @@
   -->
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.1.0.css" rel="stylesheet">
-  <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
+  <link href="css/firm-gains-0.1.0.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="images/icon/firm-gains-icon-16x16.png" />
 </head>
 
 <!--
@@ -28,7 +28,7 @@
   <script id='template' type='text/ractive'>
     <h1>
       <a class="nav navbar-brand" href="http://omny.link">
-        <img src="/images/omny-logo.png" alt="logo"/>
+        <img src="/images/firm-gains-logo.png" alt="logo"/>
       </a>
       <span>Customer Management</span>
     </h1>
@@ -113,10 +113,10 @@
               <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
             </ul>
           </div>
-
-
+</form>
+<form id="currentAccountForm">
           <div id="currentAccount" style="clear: both">
-
+            
             <h2 class="form">Account</h2>
 
             <div class="col-md-6">
@@ -163,60 +163,99 @@
 
         </form>
 
-<div id="notesSect" style="clear: both">
-          <h2>
-            <span>Notes</span>
-            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
-          </h2>
-          <table id="notesTable" class="table table-striped"><tbody>
-            <tr style="display:none;">
-              <td colspan="3">
-                <textarea id="note" on-blur="saveNote()" placeholder="Type your note here" required style="width:100%;"></textarea>
-                <br/>
-                <a onclick="$('#notesTable tr:nth-child(1)').slideUp();">Cancel</a>
-              </td>
-            </tr>
-            {{#each current.notes:j}}
-              <tr>
-                <td>{{created}}</td>
-                <td>{{author}}</td>
-                <td>{{content}}</td>
-              </tr>
-            {{/each}}
-          </tbody></table>
-        </div>
-      
-        <div id="documentSect" style="clear: both">
-          <h2>
-            <span>Documents</span>
-            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')"></span>
-          </h2>
-          <table id="docsTable" class="table table-striped"><tbody>
-            <tr style="display:none;">
-              <td colspan="3">
-                <input id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required style="width:100%;"/>
-                <br/>
-                <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
-              </td>
-            </tr>
-            {{#each current.documents:k}}
-              <tr>
-                <td>{{created}}</td>
-                <td>{{author}}</td>
-                <td>{{url}}</td>
-              </tr>
-            {{/each}}
-          </tbody></table>
-        </div>
-
-
       </section>
 
     <!-- PARTIALS FOLLOW AS CANNOT CURRENTLY USE SEPERATE ELEMENT TODO --> 
 
-    <!-- {{>omnyAccountExtension}} -->
+    <!-- {{>firmgainsAccountExtension}} -->
+      <div class="col-md-12" id="currentAccountExtended">
+        <h2 class="form"><span>More...</span></h2> 
+        <div class="col-md-6">
+          <ul class="form edit-form">
+            <li><label>Account Type:</label><input id="curAccountType" value="{{current.account.customFields['accountType']}}"/></li>
+<!--            
+<li><label>Stage in Sale:</label><input id="curStageInSale" value="{{current.account.customFields['stageInSale']}}"/></li>
+            --><li><label>Region:</label><input id="curRegion" value="{{current.account.customFields['region']}}"/></li>
+          </ul>
+        </div> 
+        <div class="col-md-6">
+          <ul class="form edit-form">
+            <li><label>Sector:</label><input id="curSector" value="{{current.account.customFields['sector']}}"/></li>
+            <li><label>Sub-Sector:</label><input id="curSubSector" value="{{current.account.customFields['subSector']}}"/></li>
+          </ul>
+        </div>
+      </div>
 
-    <!-- {{/omnyAccountExtension}} -->
+      <div id="currentAccountProperty" style="clear: both" class="col-md-12">
+        <ul class="form edit-form">
+<fieldset>
+          <legend>Furthermore...</legend>
+        
+          <li><label>Reason for Selling:</label><textarea cols="80" id="curReasonForSale" value="{{current.account.customFields['reasonForSale']}}"></textarea></li>
+          <li><label>Potential Purchasers:</label><textarea cols="80" id="curPotentialPurchasers" value="{{current.account.customFields['potentialPurchasers']}}"></textarea></li>
+          <li><label>Property Info:</label><textarea cols="80" id="curPropertyInfo" value="{{current.account.customFields['propertyInfo']}}"></textarea></li>
+</fieldset>
+        </ul>
+      </div>
+
+
+      <div class="col-md-12" id="currentAccountFinancials">
+        <h2 class="form"><span>Financials</span></h2> 
+        <div class="col-md-6">
+          <ul class="form edit-form">
+            <li><label>EBITDA:</label><input id="curUnknown" value="{{current.account.customFields['ebitda']}}"/></li>
+            <li><label>Surplus:</label><input id="curSurplus" value="{{current.account.customFields['surplus']}}"/></li>
+            <li><label>Depreciation:</label><input id="curDepreciation" value="{{current.account.customFields['depreciationAmortisation']}}"/></li>
+          </ul>
+        </div> 
+        <div class="col-md-6">
+          <ul class="form edit-form">
+            <li><label>Operating Profit:</label><input id="curOperatingProfit" value="{{current.account.customFields['operatingProfit']}}"/></li>
+            <li><label>Adjustments:</label><input id="curAdjustments" value="{{current.account.customFields['adjustments']}}"/></li>
+            <li><label>Borrowing:</label><input id="curBorrowing" value="{{current.account.customFields['borrowing']}}"/></li>
+          </ul>
+        </div> 
+        <div class="col-md-12">
+          <fieldset>
+            <legend>Current Year</legend>
+            <label>Financial Year:</label><input id="curUnknown" value="{{current.account.customFields['currentFinancialYear']}}"/>
+            <label>Turnover:</label><input id="curUnknown" value="{{current.account.customFields['currentTurnover']}}"/>
+            <label>Profit:</label><input id="curUnknown" value="{{current.account.customFields['currentProfit']}}"/>
+          </fieldset>
+          <fieldset>
+            <legend>Last Year</legend>
+            <label>Financial Year:</label><input id="curLastFinancialYear" value="{{current.account.customFields['lastFinancialYear']}}"/>
+            <label>Turnover:</label><input id="curLastTurnover" value="{{current.account.customFields['lastTurnover']}}"/>
+            <label>Profit:</label><input id="curLastProfit" value="{{current.account.customFields['lastProfit']}}"/>
+          </fieldset>
+          <fieldset>
+            <legend>Previous Year</legend>
+            <label>Financial Year:</label><input id="curPreviousFinancialYear" value="{{current.account.customFields['previousFinancialYear']}}"/>
+            <label>Turnover:</label><input id="curPreviousTurnover" value="{{current.account.customFields['previousTurnover']}}"/>
+            <label>Profit:</label><input id="curPreviousProfit" value="{{current.account.customFields['previousProfit']}}"/>
+          </fieldset>
+
+        </div>
+      </div>
+
+      <div class="col-md-12" id="currentAccountExtended">
+        <h2 class="form"><span>Valuation</span></h2> 
+        <div class="col-md-6">
+          <ul class="form edit-form">
+            <li><label>Low Quote:</label><input id="curLowQuote" value="{{current.account.customFields['lowQuote']}}"/></li>
+            <li><label>Medium Quote:</label><input id="curMediumQuote" value="{{current.account.customFields['mediumQuote']}}"/></li>
+            <li><label>High Quote:</label><input id="curHighQuote" value="{{current.account.customFields['highQuote']}}"/></li>
+          </ul>
+        </div> 
+        <div class="col-md-6">
+          <ul class="form edit-form">
+            <li><label>Asking Price:</label><input id="curAskingPrice" value="{{current.account.customFields['askingPrice']}}"></li>
+            <li><label>Preferred Timing:</label><input id="curPreferredTiming" value="{{current.account.customFields['preferredTiming']}}"/></li>
+          </ul>
+        </div> 
+
+      </div>
+    <!-- {{/firmgainsAccountExtension}} -->
 
     <!-- {{>column}} -->
       <div class="col-md-6">
@@ -249,9 +288,9 @@
   <script>
     $(document).ready(function() {
       ractive.set('tenant', { 
-        name: 'omny', 
+        name: 'firmgains', 
         typeaheadControls: [
-          { selector: '#curEnquiryType', url: '/data/omny/enquiry-types.json'},
+          { selector: '#curEnquiryType', url: '/data/firmgains/enquiry-types.json'},
           { selector: '#curMedium', url: '/data/media.json'},
           { selector: '#curSource', url: '/data/sources.json'},
           { selector: '#curStage', url: '/data/stages.json'}

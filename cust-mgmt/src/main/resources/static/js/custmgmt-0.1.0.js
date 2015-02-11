@@ -20,47 +20,140 @@ var ractive = new Ractive({
   // Here, we're passing in some initial data
   data: {
     server: 'http://api.knowprocess.com',
-    tenant: { 
+/*    tenant: { 
       name: 'firmgains', 
       contactFields: [], 
-      accountFields: [ 
+      contactListFields: [
         { label: 'Share of Business', key: 'shareOfBusiness' },
-        { label: 'Already contacted', key: 'alreadyContacted'} 
+        { label: 'Already contacted', key: 'alreadyContacted'}, 
+      ],
+      accountFields: [ 
+        { label: 'EBITDA', key: 'ebitda'},
+        { label: 'Surplus', key: 'surplus'},
+        { label: 'Depreciation', key: 'depreciationAmortisation'},
+        { label: 'Operating Profit', key: 'operatingProfit'},
+        { label: 'Adjustments', key: 'adjustments'},
+        { label: 'Borrowing', key: 'borrowing'},
+        { label: 'Low Quote', key: 'lowQuote'},
+        { label: 'Medium Quote', key: 'mediumQuote'},
+        { label: 'High Quote', key: 'highQuote'},
+        { label: 'Asking Price', key: 'askingPrice'},
+        { label: 'Property Info', key: 'propertyInfo'},
+        { label: 'Reason for Selling', key: 'reasonForSelling'},
+        { label: 'Potential Purchasers', key: 'potentialPurchasers'},
+        { label: 'Sub-Sector', key: 'subSector'},
+        { label: 'Assets', key: 'assets'},
+        { label: 'Preferred Timing', key: 'preferredTiming'},
+        { label: 'Account Type', key: 'accountType'},
+        { label: 'Sector', key: 'sector'},
+        { label: 'Stage in Sale', key: 'saleStage'},
+        { label: 'Region', key: 'region'},
+        { label: 'Current Financial Year', key: 'currentFinancialYear'},
+        { label: 'Current Turnover', key: 'currentTurnover'},
+        { label: 'Current Profit', key: 'currentProfit'},
+        { label: 'Last Financial Year', key: 'lastFinancialYear'},
+        { label: 'Last Turnover', key: 'lastTurnover'},
+        { label: 'Last Profit', key: 'lastProfit'},
+        { label: 'Previous Financial Year', key: 'previousFinancialYear'},
+        { label: 'Previous Turnover', key: 'previousTurnover'},
+        { label: 'Previous Profit', key: 'previousProfit'}
       ] 
-    },
+    },*/
     contacts: []
   },
   add: function () {
     console.log('add...');
-    $('h2.edit-form').hide();
-    $('.create-form').show();
-    var contact = { author:localStorage['username'], url: undefined };
+    $('h2.edit-form,h2.edit-field').hide();
+    $('.create-form,create-field').show();
+    var contact = { account: {}, author:localStorage['username'], tenantId: ractive.data.tenant.name, url: undefined };
     ractive.select( contact );
   },
   addDoc: function (contact) {
     console.log('addDoc '+contact+' ...');
+    ractive.data.currentIdx = ractive.data.contacts.length;
     ractive.set('current.doc', { author:localStorage['username'], contact: contact, url: undefined});
     $('#docsTable tr:nth-child(1)').slideDown();
   },
   edit: function (contact) {
     console.log('edit'+contact+'...');
-    $('h2.edit-form').show();
-    $('.create-form').hide();
+    $('h2.edit-form,h2.edit-field').show();
+    $('.create-form,create-field').hide();
+    ractive.data.currentIdx = ractive.data.contacts.indexOf(contact);
     ractive.select( contact );
   },
+  editField: function (selector, path) {
+    console.log('editField '+path+'...');
+    $(selector).css('border-width','1px').css('padding','5px 10px 5px 10px');
+  },
+  addNote: function (contact) {
+    console.log('addNote '+contact+' ...');
+    ractive.set('current.note', { author:localStorage['username'], contact: contact, content: undefined});
+    $('#notesTable tr:nth-child(1)').slideDown();
+  },
+  delete: function (url) {
+    console.log('delete '+url+'...');
+    if (url.indexOf('?')!=-1) url = url.substr(0,url.indexOf('?'));
+    $.ajax({
+        url: url,
+        type: 'DELETE',
+        success: completeHandler = function(data) {
+          ractive.fetch();
+        },
+        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
+            alert("Bother: "+textStatus+':'+errorThrown);
+        }
+    });
+  },
+  fetch: function () {
+    console.log('fetch...');
+//    $.getJSON('/'+ractive.get('tenant.name')+"/contacts",  function( data ) {
+    $.getJSON("/contacts?projection=complete",  function( data ) {
+      if (data._embedded == undefined) {
+        ractive.merge('contacts', data);
+      }else{
+        ractive.merge('contacts', data._embedded.contacts);
+      }
+    });
+  },
+  initAutoComplete: function() {
+    console.log('initAutoComplete');
+    $.each(ractive.get('tenant.typeaheadControls'), function(i,d) {
+      console.log('binding ' +d.url+' to typeahead control: '+d.selector);
+      $.get(d.url, function(data){
+        $(d.selector).typeahead({ source:data });
+      },'json');
+    });
+  },
+  oninit: function() {
+    console.log('oninit');
+//	  this.fetch();
+  },
   save: function () {
-    console.log('save '+ractive.data.current+' ...');
-    var id = ractive.data.current._links === undefined ? undefined : ractive.data.current._links.self.href;
-    if (document.getElementById('currentForm').checkValidity()) { 
+    console.log('save '+JSON.stringify(ractive.data.current)+' ...');
+    var id = ractive.data.current._links === undefined ? undefined : (
+        ractive.data.current._links.self.href.indexOf('?') == -1 ? ractive.data.current._links.self.href : ractive.data.current._links.self.href.substr(0,ractive.data.current._links.self.href.indexOf('?')-1)
+    );
+    
+    if (document.getElementById('currentForm').checkValidity()) {
+      // cannot save contact and account in one (grrhh), this will clone...
+      var tmp = JSON.parse(JSON.stringify(ractive.data.current));
+      console.log('account: '+JSON.stringify(tmp.account));
+      if (tmp.account != undefined && Object.keys(tmp.account).length > 0) {
+        tmp.account = id.substring(0,id.indexOf('/',8))+'/accounts/'+tmp.account.id;  
+      }else{
+        tmp.account = null;
+      } 
       $.ajax({
         url: id === undefined ? '/contacts' : id,
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
-        data: JSON.stringify(ractive.data.current),
+        data: JSON.stringify(tmp),
         success: completeHandler = function(data, textStatus, jqXHR) {
           console.log('data: '+ data);
           var location = jqXHR.getResponseHeader('Location');
           if (location != undefined) ractive.set('current._links.self.href',location);
+          if (jqXHR.status == 201) ractive.data.contacts.push(ractive.data.current);
+          if (jqXHR.status == 204) ractive.splice('contacts',ractive.data.currentIdx,1,ractive.data.current);
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
             alert("Bother: "+textStatus+':'+errorThrown);
@@ -70,8 +163,48 @@ var ractive = new Ractive({
       console.warn('Cannot save yet as contact is invalid');
     }
   },
+  saveAccount: function () {
+    console.log('saveAccount '+JSON.stringify(ractive.data.current.account)+' ...');
+    //if (ractive.data.current.account == undefined) ractive.data.current.account = {};
+    var id = ractive.data.current.account.id;
+    ractive.set('current.account.tenantId',ractive.data.tenant.name);
+    if (document.getElementById('currentAccountForm').checkValidity()) { 
+      $.ajax({
+        url: id === undefined ? '/accounts' : '/accounts/'+id,
+        type: id === undefined ? 'POST' : 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(ractive.data.current.account),
+        success: completeHandler = function(data, textStatus, jqXHR) {
+          console.log('data: '+ data);
+          var location = jqXHR.getResponseHeader('Location');
+          if (location != undefined) ractive.set('current.account.id',location.substring(location.lastIndexOf('/')+1));
+          var contactAccountLink = ractive.data.current._links.self.href+'/account';
+          console.log(' attempt to link account: '+location+' to '+contactAccountLink);
+          if (jqXHR.status == 201) { 
+            $.ajax({
+              url: contactAccountLink,
+              type: 'PUT',
+              contentType: 'text/uri-list',
+              data: location,
+              success: completeHandler = function(data, textStatus, jqXHR) {
+                console.log('linked account: '+location+' to '+contactAccountLink);
+              },
+              error: errorHandler = function(jqXHR, textStatus, errorThrown) {
+                  alert("Bother: "+textStatus+':'+errorThrown);
+              }
+            });
+          }
+        },
+        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
+            alert("Bother: "+textStatus+':'+errorThrown);
+        }
+      });
+    } else {
+        console.warn('Cannot save yet as account is invalid');
+    }
+  },
   saveDoc: function () {
-    console.log('saveDoc '+ractive.data.current.doc.contact+' ...');
+    console.log('saveDoc '+ractive.data.current.doc+' ...');
     var n = ractive.data.current.doc;
     n.url = $('#doc').val();
     if (n.url.trim().length > 0) { 
@@ -90,11 +223,6 @@ var ractive = new Ractive({
         }
       });
     } 
-  },
-  addNote: function (contact) {
-    console.log('addNote '+contact+' ...');
-    ractive.set('current.note', { author:localStorage['username'], contact: contact, content: undefined});
-    $('#notesTable tr:nth-child(1)').slideDown();
   },
   saveNote: function () {
     console.log('saveNote '+ractive.data.current.note+' ...');
@@ -117,48 +245,14 @@ var ractive = new Ractive({
       });
     }
   },
-  delete: function (url) {
-    console.log('delete '+url+'...');
-    $.ajax({
-        url: url,
-        type: 'DELETE',
-        success: completeHandler = function(data) {
-          ractive.fetch();
-        },
-        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-            alert("Bother: "+textStatus+':'+errorThrown);
-        }
-    });
-  },
-  fetch: function () {
-    console.log('fetch...');
-    $.getJSON("/contacts",  function( data ) {
-      ractive.merge('contacts', data._embedded.contacts);
-	});
-  },
-  oninit: function() {
-	  this.fetch();
-
-	  // init auto complete values
-    $.get('/data/enquiry-types.json', function(data){
-      $("#curEnquiryType").typeahead({ source:data });
-	  },'json');
-    $.get('/data/media.json', function(data){
-      $("#curMedium").typeahead({ source:data });
-    },'json');
-    $.get('/data/sources.json', function(data){
-      $("#curSource").typeahead({ source:data });
-    },'json');
-    $.get('/data/stages.json', function(data){
-      $("#curStage").typeahead({ source:data });
-    },'json');
-  },
   select: function(contact) {
     console.log('select: '+JSON.stringify(contact));
     ractive.set('suspendSaveObserver',false);
+    if (contact.account == undefined || contact.account == '') contact.account = new Object();
 	  ractive.set('current',contact);
 	  if (contact._links != undefined) {
-      $.getJSON(contact._links.self.href+'/notes',  function( data ) {
+	    var url = contact._links.self.href.indexOf('?')==-1 ? contact._links.self.href : contact._links.self.href.substr(0,contact._links.self.href.indexOf('?')-1);
+      $.getJSON(url+'/notes',  function( data ) {
       	if (data._embedded != undefined) {
 	        console.log('found notes '+data);
           ractive.merge('current.notes', data._embedded.notes);
@@ -166,7 +260,7 @@ var ractive = new Ractive({
   	      ractive.data.current.notes.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
       	}
   	  });
-      $.getJSON(contact._links.self.href+'/documents',  function( data ) {
+      $.getJSON(url+'/documents',  function( data ) {
         if (data._embedded != undefined) {
         	console.log('found docs '+data);
           ractive.merge('current.documents', data._embedded.documents);
@@ -177,6 +271,15 @@ var ractive = new Ractive({
     }
 	  ractive.set('suspendSaveObserver',true);
 	  $('#currentSect').slideDown();
+  },
+  /**
+   * Inverse of editField.
+   */
+  updateField: function (selector, path) {
+    var tmp = $(selector).text();
+    console.log('updateField '+path+' to '+tmp);
+    ractive.set(path,tmp);
+    $(selector).css('border-width','0px').css('padding','0px');
   }
 });
 
@@ -184,16 +287,29 @@ var ractive = new Ractive({
 // done this way rather than with on-* attributes because autocomplete 
 // controls done that way save the oldValue 
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
-  ignored=['current.documents','current.doc','current.notes','current.note'];
+  ignored=['current.account','current.documents','current.doc','current.notes','current.note'];
   // console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
   if (ractive.data.suspendSaveObserver && significantDifference(newValue,oldValue) && ignored.indexOf(keypath)==-1) {
     ractive.save();
   }
 });
 
+ractive.observe('current.account.*', function(newValue, oldValue, keypath) {
+  alwaysSave=['current.account.customFields'];
+  ignored=[];
+  console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
+  if (alwaysSave.indexOf(keypath)!=-1 || (ractive.data.suspendSaveObserver  && ignored.indexOf(keypath)==-1 && significantDifference(newValue,oldValue))) {
+    ractive.saveAccount();
+  } else { 
+    console.log('Skipped save of '+keypath);
+  }
+});
+
 function significantDifference(newValue,oldValue) {
   if (newValue=='') { console.log('new value is empty');newValue = null;}
   if (oldValue=='') { console.log('oldvalue is empty');oldValue = null;}
-  console.log('sig diff? '+newValue != oldValue);
+  var newVal = JSON.stringify(newValue);
+  var oldVal = JSON.stringify(oldValue);
+  console.log('sig diff between \n  '+newVal+' and \n  '+oldVal+ '\n  '+(newVal!=oldVal));
   return newValue != oldValue;
 }

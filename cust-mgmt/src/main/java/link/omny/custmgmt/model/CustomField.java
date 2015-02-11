@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomField implements Serializable {
-	private static final long serialVersionUID = 7496048564725313117L;
+    private static final long serialVersionUID = 7496048564725313117L;
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(CustomField.class);
 
@@ -45,8 +45,8 @@ public class CustomField implements Serializable {
     @JsonProperty
     private String value;
 
-	public CustomField(String key, String value) {
-		this.name = key;
-		this.value = value;
-	}
+    public CustomField(String key, String value) {
+        this.name = key;
+        this.value = value;
+    }
 }

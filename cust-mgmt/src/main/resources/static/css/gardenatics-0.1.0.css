@@ -55,20 +55,20 @@ h1, h2, h3, h4, h5, h6 {
 /* 
  * COLOURS 
  *   orange: ff6c06;
- *   blue:   0e9acd;
- *   grey:   949699;
+ *   green:  a1cb3a;
+ *   brown:  552e16;
  */
 
 /* START BOOTSTRAP OVERRIDES */
 
 body {
-  color: #949699;
+  color: #552e16;
   font-family: Roboto/*CalibriRegular*/;
   font-size: 16px;
   line-height: 2.5em;
 }
 h1 { 
-	color: #0e9acd;
+	color: #a1cb3a;
 }
 h2 { 
 	font-size: 24px;
@@ -79,27 +79,25 @@ input,select,textarea {
 }
 section h2 {
   border-bottom: solid 1px #ff6c06;
-  color: #0e9acd;
+  color: #a1cb3a;
   padding-bottom: 5px;
   padding-top: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
 }
 section h2 .search {
-/*margin-bottom: 10px;*/
+  /*margin-bottom: 10px;*/
   margin-right: 0;
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
-  border-color: #0e9acd;
+  border-color: #a1cb3a;
 }
 section h2 .glyphicon-search {
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
-  margin-left: 0px;
-  position: relative;
-  left: -7px;
-	font-size: 18px;
-	top: 0;
+border-bottom-left-radius: 0;
+border-top-left-radius: 0;
+font-size: 18px;
+margin-left: 0px;
+position: relative;
+left: -8px;
+top: 0px;
 }
 .table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
   vertical-align: middle;
@@ -130,7 +128,8 @@ th {
   top: -18px;  
 }
 .navbar-brand img {
-  height: 80px;	
+  height: 53px;
+  padding-right: 20px;	
 }
 .search {
 	border-radius:15px;
@@ -146,27 +145,6 @@ th {
 
 .clickable:hover {
 	cursor: pointer; 
-}
-
-.form { 
-	display: block;
-	list-style: none;
-}
-.form li { 
-	margin: 5px 0 5px;
-}
-.form label, .form input {
-  display:inline-block;
-}
-
-.form label {
-	padding-right: 10px;
-  text-align: right;
-  vertical-align: top;
-  width:150px;
-}
-.form.create-form {
-  padding-bottom: 2px;	
 }
 .form { 
 	display: block;
@@ -204,10 +182,10 @@ th {
   top: 620px;
 }
 .powered-by { 
-  float: left;
-  opacity:0.5;
-  transform: rotate(-90deg) translate(220px,-120px);
-  transform-origin: left top 0;
+	float: left;
+	opacity:0.5;
+	transform: rotate(-90deg) translate(220px,-120px);
+	transform-origin: left top 0;
 }
 .powered-by-text { 
 	color:#6f6f71;font-size:36px;font-style:italic;

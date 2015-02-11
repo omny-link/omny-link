@@ -10,8 +10,8 @@
   -->
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.1.0.css" rel="stylesheet">
-  <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
+  <link href="css/gardenatics-0.1.0.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="images/icon/gardenatics-icon-16x16.png" />
 </head>
 
 <!--
@@ -28,7 +28,7 @@
   <script id='template' type='text/ractive'>
     <h1>
       <a class="nav navbar-brand" href="http://omny.link">
-        <img src="/images/omny-logo.png" alt="logo"/>
+        <img src="/images/gardenatics-logo.png" alt="logo"/>
       </a>
       <span>Customer Management</span>
     </h1>
@@ -48,7 +48,7 @@
             <tr>
               <th></th>
               <th>Full Name</th>
-              <th>Business Name</th>
+              <th>Stage</th>
               <th>Owned by</th>
               <th>Actions</th>
             </tr>
@@ -61,7 +61,7 @@
               <tr data-href="{{_links.self.href}}" on-click="edit(this)">
                 <td>{{i+1}}</td>
                 <td>{{firstName}} {{lastName}}</td>
-                <td>{{account.name}}</td>
+                <td>{{stage}}</td>
                 <td>{{owner}}</td>
                 <td>
                   <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('{{_links.self.href}}')"></span>
@@ -114,109 +114,14 @@
             </ul>
           </div>
 
-
-          <div id="currentAccount" style="clear: both">
-
-            <h2 class="form">Account</h2>
-
-            <div class="col-md-6">
-              <ul class="form edit-form">
-                <li><label>Company Name:</label><input id="curAccountName" required value="{{current.account.name}}"></li>
-                <li><label>Company Number:</label><input id="curCompanyNumber" pattern="[0-9]{8}" value="{{current.account.companyNumber}}"></li>
-                <li><label>Website:</label><input id="curBusinessWebsite" value="{{current.account.businessWebsite}}"></li>
-              </ul> 
-            </div>
-            <div class="col-md-6">
-              <ul class="form edit-form">
-                <li><label>Also known as:</label><input id="curAliases" value="{{current.account.aliases}}"></li>
-                <li><label>No. of employees:</label><input id="curNoOfEmployees" value="{{current.account.noOfEmployees}}"/>
-              </ul>
-            </div>
-          </div>
-
-          <div id="currentAccountDesc" style="clear: both" class="col-md-12">
-              <ul class="form edit-form">
-                <li><label>Short description:</label><textarea id="curShortDesc" cols="80" value="{{current.account.shortDesc}}"></textarea></li>
-                <li><label>Description:</label><textarea id="curDescription" cols="80" value="{{current.account.description}}"></textarea></li>
-              </ul>
-          </div>
-
-          <div id="currentAccountExtended" style="clear: both">
-            {{>(tenant.name+'AccountExtension')}}
-
-            <!-- TODO General purpose account extension if no dedicated one available 
-            {{#if tenant.accountFields}}
-              <div class="col-md-12" id="currentAccountExtended">
-                <h2 class="form">
-                  <span>More...</span>
-                </h2>
-
-                <!-- first column - ->  
-                {{>column {object: current.account, fields: tenant.accountFields.slice(0,Math.floor(tenant.accountFields.length/2))} }}
-
-                <!-- second column - ->  
-                {{>column {object: current.account, fields: tenant.accountFields.slice(Math.ceil(tenant.accountFields.length/2),tenant.accountFields.length)} }}
-
-              </div>
-            {{/if}}-->
-          </div>
-
         </form>
-
-<div id="notesSect" style="clear: both">
-          <h2>
-            <span>Notes</span>
-            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
-          </h2>
-          <table id="notesTable" class="table table-striped"><tbody>
-            <tr style="display:none;">
-              <td colspan="3">
-                <textarea id="note" on-blur="saveNote()" placeholder="Type your note here" required style="width:100%;"></textarea>
-                <br/>
-                <a onclick="$('#notesTable tr:nth-child(1)').slideUp();">Cancel</a>
-              </td>
-            </tr>
-            {{#each current.notes:j}}
-              <tr>
-                <td>{{created}}</td>
-                <td>{{author}}</td>
-                <td>{{content}}</td>
-              </tr>
-            {{/each}}
-          </tbody></table>
-        </div>
-      
-        <div id="documentSect" style="clear: both">
-          <h2>
-            <span>Documents</span>
-            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')"></span>
-          </h2>
-          <table id="docsTable" class="table table-striped"><tbody>
-            <tr style="display:none;">
-              <td colspan="3">
-                <input id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required style="width:100%;"/>
-                <br/>
-                <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
-              </td>
-            </tr>
-            {{#each current.documents:k}}
-              <tr>
-                <td>{{created}}</td>
-                <td>{{author}}</td>
-                <td>{{url}}</td>
-              </tr>
-            {{/each}}
-          </tbody></table>
-        </div>
-
 
       </section>
 
     <!-- PARTIALS FOLLOW AS CANNOT CURRENTLY USE SEPERATE ELEMENT TODO --> 
 
-    <!-- {{>omnyAccountExtension}} -->
-
-    <!-- {{/omnyAccountExtension}} -->
+    <!-- {{>gardenaticsAccountExtension}} -->
+    <!-- {{/gardenaticsAccountExtension}} -->
 
     <!-- {{>column}} -->
       <div class="col-md-6">
@@ -229,7 +134,6 @@
     <!-- {{/column}} -->
 
   </script>
-
 
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="js/jquery-1.11.0.min.js"></script>
@@ -249,23 +153,21 @@
   <script>
     $(document).ready(function() {
       ractive.set('tenant', { 
-        name: 'omny', 
+        name: 'gardenatics',
         typeaheadControls: [
-          { selector: '#curEnquiryType', url: '/data/omny/enquiry-types.json'},
+          { selector: '#curEnquiryType', url: '/data/gardenatics/enquiry-types.json'},
           { selector: '#curMedium', url: '/data/media.json'},
           { selector: '#curSource', url: '/data/sources.json'},
           { selector: '#curStage', url: '/data/stages.json'}
         ]
-      });
-      $.ajaxSetup({
-        headers: {'X-Tenant': ractive.data.tenant.name}
       });
       ractive.fetch();
       ractive.initAutoComplete();
     });
   </script>
 
-  <h1 class="powered-by" style="float: left;opacity:0.5;transform: rotate(-90deg) translate(220px,-120px);transform-origin: left top 0;">
+
+  <h1 class="powered-by">
     <span class="powered-by-text">powered by</span>
     <img src="images/omny-greyscale-logo.png" alt="powered by Omny Link"/>   
   </h1>

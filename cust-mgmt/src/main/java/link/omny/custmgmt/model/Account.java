@@ -1,4 +1,5 @@
 package link.omny.custmgmt.model;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +17,15 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 // @DiscriminatorValue("account")
@@ -32,11 +37,11 @@ public class Account implements Serializable {
 
     private static final long serialVersionUID = -1955316248920138892L;
 
-	@Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonProperty
-	private Long id;
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonProperty
+    private Long id;
 
     /**
      */
@@ -73,40 +78,43 @@ public class Account implements Serializable {
 
     /**
      */
-	@Min(1L)
-	private Integer noOfEmployees;
+    @Min(1L)
+    private Integer noOfEmployees;
 
-	/**
+    /**
      */
-	@NotNull
-	@JsonProperty
-	@Column(nullable = false)
-	private String tenantId;
+    @NotNull
+    @JsonProperty
+    @Column(nullable = false)
+    private String tenantId;
 
-	@OneToMany(mappedBy = "account")
-	private List<Contact> contact;
+    @OneToMany(mappedBy = "account", targetEntity = Contact.class)
+    private List<Contact> contact;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "account")
-	private List<CustomAccountField> customFields;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // , mappedBy = "account", targetEntity = CustomAccountField.class)
+    @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
+    @JsonSerialize(using = JsonCustomFieldSerializer.class)
+    private List<CustomAccountField> customFields;
 
-	public List<CustomAccountField> getCustomFields() {
-		if (customFields == null) {
-			customFields = new ArrayList<CustomAccountField>();
-		}
-		return customFields;
-	}
+    public List<CustomAccountField> getCustomFields() {
+        if (customFields == null) {
+            customFields = new ArrayList<CustomAccountField>();
+        }
+        return customFields;
+    }
 
-	public Object getField(@NotNull String fieldName) {
-		for (CustomField field : getCustomFields()) {
-			if (fieldName.equals(field.getName())) {
-				return field.getValue();
-			}
-		}
-		return null;
-	}
+    public Object getField(@NotNull String fieldName) {
+        for (CustomField field : getCustomFields()) {
+            if (fieldName.equals(field.getName())) {
+                return field.getValue();
+            }
+        }
+        return null;
+    }
 
-	public void addCustomField(CustomAccountField customField) {
-		getCustomFields().add(customField);
-	}
+    public void addCustomField(CustomAccountField customField) {
+        getCustomFields().add(customField);
+    }
 
 }
