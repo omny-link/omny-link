@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<!--html manifest="bpms.appcache"-->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>trakeo labs</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/icons/style.css">
+  <link rel="stylesheet" href="/css/theme/default.css">
+  <link rel="stylesheet" href="/css/omny-0.1.0.css">
+  <link rel="icon" type="image/png" href="img/icon-32x32.png" />
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <nav class="navbar navbar-fixed-top">
+        <a class="nav navbar-brand" href="#">
+          <img src="/images/omny-logo.png" alt="logo"/>
+        </a>
+        <ul id="nav" class="nav navbar-nav">
+          {{#nav}}
+            <li data-section="{{entity}}Sect">
+              <a data-i18n="{{entity}}.label" href="#" onclick="app.transition(this);app.{{entity}}List();">{{>i18n.navTitle}}</a>
+            </li>
+          {{/nav}}
+<!--          <li class="active" data-section="taskSect">
+            <a data-i18n="task.label" href="#" onclick="app.transition(this);app.taskList();">Tasks</a>
+          </li>
+          <li>
+	          <form class="form-search" style="padding-left:10px;">
+		          <input type="text" class="form-control input-sm search-query" placeholder="Search">
+		          <!- -button type="submit" class="btn">Search</button- ->
+		        </form>
+          </li>-->
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <a data-i18n="task.label" href="#helpModal" data-toggle="modal" data-target="#helpModal" onclick="app.help();">?</a>
+          </li>
+          <li>
+            <a data-i18n="task.label" href="#" onclick="app.logout();return false"/>-></a>
+          </li>
+        </ul>        
+        <span class="nav pull-right" data-section="profileSect">
+          <span class="kp-profile" data-i18n="profile.label" onclick="app.profile();app.transition(this);"></span>
+        </span>  
+        
+      </nav>
+      
+      <!-- Help modal -->
+      <div id="helpModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+			        <h3 class="modal-title" id="helpModalLabel">Help</h3>
+			      </div>
+			      <div class="modal-body a-section" id="helpSect">
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+    </header>
+
+    <div style="margin-top:50px;">
+      <div class="a-messages" id="messages" style="display: none;">&nbsp;</div>
+
+      <section class="a-section hidden" id="aboutSect">
+        <h2>About</h2>
+        <ul id="appProps" class="a-list">
+            <li><label>Version:</label>${project.version}
+            <li><label>Copyright:</label>${project.inceptionYear} ${project.organization.name}
+        </ul>
+      </section>
+
+      <section class="a-section hidden" id="privacySect">
+        <h2>Privacy</h2>
+        <p>Your information remains yours and we promise to be nice and to
+          protect it to the best of our abilities. </p>
+      </div>
+
+      <section class="a-section hidden" id="sopSect">
+        <h2 data-i18n="sop.title">Standard Operating Procedures</h2>
+        <div >
+          <ul id="sops" class="a-list">
+            {{#sops}}
+              <li>
+                <button class="btn pull-right" onclick="app.newInstance('{{id}}');">Start</button>
+                <span class="a-primary-label control-label">Name:</span> 
+                <span class="a-primary-data">{{name}};</span>
+                <span class="a-primary-label control-label">Description:</span> 
+                <span class="a-primary-data">{{description}};</span> 
+            {{/sops}}
+            {{^sops}}None.{{/sops}}
+          </ul>
+        </div>
+      </section>
+
+      <section class="a-section hidden">
+        <div class="form-group" id="resourceControl">
+          <!-- <label class="control-label" for="templateUrl">Resource url</label>-->
+          <label class="control-label" for="resourceFile">Resource file</label>
+          <div class="controls">
+            <input type="file" name="resourceFile" id="resourceFile" size="45" />
+          </div>
+          <!-- <span class="help-inline">Associated help text!</span> -->
+        </div>
+      </section>
+
+      <section class="a-section hidden" id="uploadSect">
+        <div class="row">
+          <div class="col-md-12">
+            <h2 style="margin-left: auto;margin-right:auto;">Upload BPMN</h2>
+            <form action="http://localhost:8080/deployments"
+                class="well form-inline" enctype="multipart/form-data"
+                id="deployProcessTemplate" method="post">
+              <fieldset>
+                <div class="pull-right">
+                  <button class="btn" onclick="app.addDeploymentResource();return false;">Add Resource</button>
+                  <button class="btn btn-primary" onclick="app.definitionUpload('deployProcessTemplate');return false;" type="button">Upload</button>
+                </div>
+                <div class="form-group">
+                  <!-- <label class="control-label" for="templateUrl">Resource url</label>-->
+                  <label class="control-label" for="deploymentName">Deployment Name</label>
+                  <div class="controls">
+                    <input name="deploymentName" id="deploymentName" size="45" value="my process application"/>
+                  </div>
+                  <!-- <span class="help-inline">Associated help text!</span> -->
+                </div>
+                <div class="form-group">
+                  <!-- <label class="control-label" for="templateUrl">Resource url</label>-->
+                  <label class="control-label" for="resourceFile">BPMN file</label>
+                  <div class="controls">
+                    <input type="file" name="resourceFile" id="resourceFile" size="45" />
+                  </div>
+                  <!-- <span class="help-inline">Associated help text!</span> -->
+                </div>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="a-section hidden" id="dashboardSect">
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-4">
+            <h2>Cases</h2>
+            <div id="casesTemplate" class="hidden">
+              <li><input type="text" class="form-control input-sm search-query" placeholder="Filter cases"></li>
+              {{#cases}}
+                <li data-id="{{id}}">
+                  <!--
+                  <button class="btn pull-right" onclick="app.newInstance('{{id}}');">Start</button>
+                  -->
+                  <span class="a-primary-label control-label">{{description}}:</span>
+                  <span class="a-secondary-label control-label">Code:</span>
+                  <span class="a-secondary-data">{{name}}</span>
+              {{/cases}}
+              {{^cases}}None.{{/cases}}
+            </div>
+            <ul id="cases" class="a-list"></ul>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-4">
+            <h2>TS-9876: Wheelchair carbon footprint reduction</h2>
+            <!-- uses same #taskTemplate as taskSect -->
+            <ul id="caseTasks" class="a-list"></ul>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-4">
+            <h2>Activity</h2>
+            <div id="eventsTemplate" class="hidden">
+              {{#events}}
+                <li data-id="{{id}}">
+                  <span class="a-primary-label control-label">{{type}}:</span>
+                  <span class="a-primary-data">{{name}}</span>
+                  <span class="a-primary-data">{{description}}</span>
+                  <span class="a-secondary-data">{{key}}</span>
+                </li>
+              {{/events}}
+              {{^events}}None.{{/events}}
+            </div>
+            <ul id="events" class="a-list"></ul>
+
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-4 hidden">
+            <h2>Instance: xyz</h2>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-4 hidden">
+            <h2>Task: xyz</h2>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="a-section hidden" id="definitionSect">
+        <h2>Process Definitions</h2>
+        <div id="definitionsTemplate" class="hidden">
+          {{#definitions}}
+            <li data-id="{{id}}">
+              <button class="btn pull-right" onclick="app.deleteDefinition('{{id}}','{{deploymentId}}');">Delete</button>
+              <!--
+              <button class="btn pull-right" onclick="app.newInstance('{{id}}');">Start</button>
+              -->
+              <a class="btn pull-right" href="#startInstanceModal" data-toggle="modal" data-instance="{{id}}" data-name="Start" data=target="#startInstanceModal">Start</a>
+              <span class="a-primary-label control-label">Name:</span>
+              <span class="a-primary-data">{{name}}</span>
+              <span class="a-primary-label control-label">Description:</span>
+              <span class="a-primary-data">{{description}}</span>
+              <span class="a-secondary-label a-debug control-label">Id:</span>
+              <span class="a-secondary-data a-debug">{{id}}</span>
+              <span class="a-secondary-label control-label">Key:</span>
+              <span class="a-secondary-data">{{key}}</span>
+              <span class="a-secondary-label control-label">Version:</span>
+              <span class="a-secondary-data">{{version}}</span>
+              <span class="a-secondary-label control-label">Category:</span>
+              <!-- TODO add contenteditable once fix activiti 405 error -->
+              <span class="a-secondary-data a-definition-category" data-id="{{id}}">{{category}}</span>
+              <span class="a-secondary-label control-label">Deployment Id:</span>
+              <span class="a-secondary-data">{{deploymentId}}</span>
+              <span class="a-secondary-label a-debug control-label">URL:</span>
+              <span class="a-secondary-data a-debug">{{url}}</span>
+              <span class="a-secondary-label a-debug control-label">Diagram URL:</span>
+              <span class="a-secondary-data a-debug">
+                <img src="{{diagramResource}}"/>
+              </span>
+              <img alt="" src="{{contentUrl}}"/>
+              <!-- category":"http://sourceforge.net/bpmn/definitions/_1377442050295",
+              "graphicalNotationDefined":true,"suspended":false,"startFormDefined":false}
+               -->
+          {{/definitions}}
+          {{^definitions}}None.{{/definitions}}
+        </div>
+        <ul id="definitions" class="a-list"></ul>
+
+        <!-- Start Instance Modal -->
+        <div id="startInstanceModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="startInstanceModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+  			    <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="startInstanceModalLabel">New Instance</h3>
+              </div>
+              <div class="modal-body">
+                <div id="startFormTemplate" class="hidden">
+                  <div class="form-group">
+                    <label class="a-secondary-label control-label">Business Key:</label> 
+                    <div class="controls {{type}}">
+                      <input class="input-xlarge" id="businessKey" name="businessKey" required/>
+                    </div>
+                  </div>
+                  {{#formProperties}}
+                    <div class="form-group">
+                      <label class="a-secondary-label control-label">{{id}}:</label> 
+                      <div class="controls {{type}}">
+                        {{#control}}
+                          <input class="input-xlarge" id="{{id}}" name="{{id}}" value="{{value}}" {{requiredattr}}/>
+                        {{/control}}
+                      </div>
+                    </div>
+                  {{/formProperties}}
+                </div>
+                <div class="form-inline">
+                  <form id="instance" class="form-inline">
+                  </form>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                <button class="btn btn-primary" data-dismiss="modal">Start</button>
+              </div>
+  			    </div><!-- /.modal-content -->
+			    </div><!-- /.modal-dialog -->
+			  </div><!-- /.modal -->
+      </section>
+
+      <section class="a-section hidden" id="instanceSect">
+        <h2>Process Instances</h2>
+        <div id="instancesTemplate" class="hidden">
+          {{#instances}}
+            <li data-id="{{id}}">
+              <button class="btn pull-right" onclick="app.deleteInstance('{{id}}');">Delete</button>
+              <span class="a-primary-label control-label">Business Key:</span>
+              <span class="a-primary-data">
+                <a class="a-instance-link" data-target="#instanceModal"
+                  data-toggle="modal" data-task="{{id}}" data-name="{{businessKey}}"
+                  onclick="app.instanceAudit('{{id}}')">{{businessKey}}</a>
+              </span>
+              <span class="a-secondary-label a-debug control-label">Id:</span>
+              <span class="a-secondary-data a-debug">{{id}}</span>
+              <span class="a-secondary-label control-label">Process Definition:</span>
+              <span class="a-secondary-data">{{processDefinitionId}}</span>
+              <span class="a-secondary-label a-debug control-label">Suspended:</span>
+              <span class="a-secondary-data a-debug">{{suspended}}</span>
+              <span class="a-secondary-label a-debug control-label">URL:</span>
+              <span class="a-secondary-data a-debug">{{url}}</span>
+              {{#variables}}
+                <br/><span class="a-secondary-label control-label">TODO:</span> {{variable}}
+              {{/variables}}
+          {{/instances}}
+          {{^instances}}None.{{/instances}}
+        </div>
+        <ul id="instances" class="a-list"></ul>
+
+        <!-- Instance Modal -->
+        <div id="instanceModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="instanceModalLabel" aria-hidden="true">
+          <div class="hidden" id="instanceTitleTemplate">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="instanceModalLabel">
+              <span class="a-business-key">Instance {{processInstanceId}}</span>
+              <span>{{name}}</span>
+            </h3>
+          </div>
+          <div class="modal-header" id="instanceTitle"></div>
+          <div class="modal-body">
+            <div id="instanceTemplate" class="hidden">
+                <span class="a-primary-label control-label">Name:</span> 
+                <span class="a-primary-data">{{name}}</span>
+                <span class="a-secondary-label control-label">Id:</span> 
+                <span class="a-secondary-data">{{id}}</span>
+                {{#variables}}
+                  <br/><span class="a-secondary-label control-label">TODO:</span> {{variable}}
+                {{/variables}}
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button class="btn btn-primary" data-dismiss="modal">Submit</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="a-section hidden" id="taskSect">
+        <h2>Tasks</h2>
+        <div id="tasksTemplate" class="hidden">
+          {{#tasks}}
+            <li>
+              <span class="a-primary-label a-business-key control-label" data-instance="{{processInstanceId}}">Name</span> 
+              <span class="a-primary-data">
+                <a class="a-task-link" data-target="#taskModal" data-toggle="modal" data-task="{{id}}" data-name="{{name}}">{{name}}</a>
+                <!-- <a href=""><span class="glyphicon glyphicon-new-window"></span></a>-->
+              </span>
+              <span class="a-secondary-label control-label">Assignee:</span> 
+              <span class="a-secondary-data">{{assignee}};</span>
+              <span class="a-secondary-label a-debug control-label">Id:</span> 
+              <span class="a-secondary-data a-debug">{{id}}</span>
+              <span class="a-secondary-label control-label">Created:</span> 
+              <span class="a-secondary-data">{{createString}}</span>
+              <span class="a-secondary-label control-label">Due:</span> 
+              <span class="a-secondary-data">{{dueString}}</span>
+              <span class="a-secondary-label a-debug control-label">Task Definition Key:</span> 
+              <span class="a-secondary-data a-debug">{{taskDefinitionKey}}</span>
+              <span class="a-secondary-label a-debug control-label">Process Definition:</span> 
+              <span class="a-secondary-data a-debug">{{processDefinitionId}}</span>
+              <span class="a-secondary-label a-debug control-label">Process Instance:</span> 
+              <span class="a-secondary-data a-debug">{{processInstanceId}}</span> 
+              <span class="a-secondary-label a-debug control-label">Suspended:</span> 
+              <span class="a-secondary-data a-debug">{{suspended}}</span>
+              <span class="a-secondary-label a-debug control-label">URL:</span> 
+              <span class="a-secondary-data a-debug">{{url}}</span> 
+              {{#variables}}
+                <br/><span class="a-secondary-label control-label">TODO:</span> {{variable}}
+              {{/variables}}
+            </li>
+          {{/tasks}}
+          {{^tasks}}None.{{/tasks}}
+        </div>
+        <ul id="tasks" class="a-list"></ul>
+
+        <!-- Task Modal -->
+        <div id="taskModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="taskModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+  			    <div class="modal-content">
+              <div class="modal-header">
+                <div class="hidden" id="taskTitleTemplate">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                  <h3 id="taskModalLabel">
+                    <span class="a-business-key">Task {{taskId}}</span>
+                    <span>{{name}}</span>
+                  </h3>
+                </div>
+                <div class="modal-header" id="taskTitle"></div>
+                <div class="modal-body">
+                  <div id="taskTemplate" class="hidden">
+                      <span class="a-primary-label control-label">Name:</span> 
+                      <span class="a-primary-data">{{name}}</span>
+                      <span class="a-secondary-label control-label">Assignee:</span> 
+                      <span class="a-secondary-data">{{assignee}};</span>
+                      <span class="a-secondary-label control-label">Id:</span> 
+                      <span class="a-secondary-data">{{id}}</span>
+                      <span class="a-secondary-label control-label">Created:</span> 
+                      <span class="a-secondary-data">{{createString}}</span>
+                      <span class="a-secondary-label control-label">Due:</span> 
+                      <span class="a-secondary-data">{{dueDate}}</span>
+                      <span class="a-secondary-label control-label">Task Definition Key:</span> 
+                      <span class="a-secondary-data">{{taskDefinitionKey}}</span>
+                      <span class="a-secondary-label control-label">Process Definition:</span> 
+                      <span class="a-secondary-data">{{processDefinitionId}}</span>
+                      <span class="a-secondary-label control-label">Process Instance:</span> 
+                      <span class="a-secondary-data">{{processInstanceId}}</span> 
+                      <span class="a-secondary-label control-label">Suspended:</span> 
+                      <span class="a-secondary-data">{{suspended}}</span>
+                      <span class="a-secondary-label control-label">URL:</span> 
+                      <span class="a-secondary-data">{{url}}</span> 
+                      {{#variables}}
+                        <br/><span class="a-secondary-label control-label">TODO:</span> {{variable}}
+                      {{/variables}}
+                  </div>
+                  <div id="formDataTemplate" class="hidden">
+                    {{#formProperties}}
+                      <div class="form-group">
+                        <label class="a-secondary-label control-label">{{id}}:</label>
+                        <div class="controls {{type}}">
+                          {{#control}}
+                            <input class="input-xlarge" id="{{id}}" name="{{id}}" value="{{value}}" {{requiredattr}}/>
+                          {{/control}}
+                        </div>
+                      </div>
+                    {{/formProperties}}
+                  </div>
+                  <div class="form-inline">
+                    <form id="task" class="form-inline">
+                    </form>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                  <button class="btn btn-primary" data-dismiss="modal">Submit</button>
+                </div>
+              </div>
+			      </div><!-- /.modal-content -->
+			    </div><!-- /.modal-dialog -->
+			  </div><!-- /.modal -->
+      </section>
+
+      <section class="a-section hidden" id="profileSect">
+        <h2 style="margin-left: auto;margin-right:auto;">User Profile</h2>
+
+        <div id="profileTemplate" class="hidden">
+          <div class="row">
+            <div class="col-md-6">
+              <fieldset>
+                <legend>Account</legend>
+                <div class="form-group">
+                  <label class="control-label" for="username">Username</label>
+                  <div class="controls">
+                    <input name="username" id="username" size="45" readonly value="{{id}}"/>
+                  </div>
+                  <span class="help-inline">Username (typically your email address).</span>
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="firstName">Name</label>
+                  <div class="controls">
+                    <input class="input-medium" name="firstName" id="firstName" size="45"  value="{{firstName}}"/>
+                    <input name="lastName" id="lastName" size="45" value="{{lastName}}"/>
+                  </div>
+                  <span class="help-inline">First or given name.</span>
+                  <span class="help-inline">Surname or family name.</span>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>Groups</legend>
+                <div class="form-group">
+                  <div class="help-block">
+                    {{#groups}}
+                      <!-- 
+                        <input name="groups" id="groups" size="45" value="{{name}}"/>
+                      -->
+                      {{name}},
+                    {{/groups}}
+                    {{^groups}}None.{{/groups}}
+                  </div>
+                  <span class="help-inline"></span>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="col-md-6">
+              <fieldset>
+                <legend>Social</legend>
+                <div class="form-group">
+                  <label class="control-label" for="linkedIn">LinkedIn</label>
+                  <span class="help-inline">Already connected.</span>
+                  {{#info.linkedIn_connect}}
+                      <span class="help-inline">Click to connect:</span> 
+                      <img id="linkedInBtn" onclick="$('#linkedInForm').submit();"
+                           src="https://developer.linkedin.com/sites/default/files/LinkedIn_Logo60px.png">
+                  {{/info.linkedIn_connect}}
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="twitter">Twitter</label>
+                  <div class="controls">
+                    <input name="twitter" id="twitter" size="45" value="{{info.twitter}}"/>
+                  </div>
+                  <span class="help-inline">Twitter handle.</span>
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="kindle">Kindle address</label>
+                  <div class="controls">
+                    <input name="kindle" id="kindle" size="45" placeholder="amazon-username@kindle.com" type="email" value="{{info.kindle}}"/>
+                  </div>
+                  <span class="help-inline">The address to send documents to your Kindle.</span>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>Sugar CRM</legend>
+                <div class="form-group">
+                  <label class="control-label" for="sugarUsername">Username</label>
+                  <div class="controls">
+                    <input name="sugarUsername" id="sugarUsername" size="45" value="{{info.sugarUsername}}"/>
+                  </div>
+                  <span class="help-inline">Username to access Sugar CRM.</span>
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="sugarPassword">Password</label>
+                  <div class="controls">
+                    <input name="sugarPassword" id="sugarPassword" size="45" value="{{info.sugarPassword}}"/>
+                  </div>
+                  <span class="help-inline">Password to access Sugar CRM.</span>
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="sugarUrl">URL</label>
+                  <div class="controls">
+                    <input name="sugarUrl" id="sugarUrl" placeholder="http://localhost/sugarcrm/" size="45" value="{{info.sugarUrl}}"/>
+                  </div>
+                  <span class="help-inline">URL to access Sugar CRM.</span>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+
+          <div class="row">
+			<div class="col-md-12">
+			 <div class="pull-right">
+			   <button class="btn btn-primary" onclick="app.profileUpdate($('#profile').serializeArray()); return false;" type="submit">Update</button>
+			    </div>
+			  </div>
+			</div>  
+          </div>
+       
+	      <div>
+            <form class="hidden" method="post" id="linkedInForm">
+              <input name="email">
+            </form>
+	        <form class="well form-inline" id="profile" method="post" name='profile'>
+	        </form>
+	      </div>
+      </section>
+
+      <section class="a-section hidden" id="messageSect">
+        <div class="row">
+          <div class="col-md-12">
+            <h2 style="margin-left: auto;margin-right:auto;">Send message</h2>
+            <form class="well form-horizontal" id="messageForm">
+              <fieldset>
+                <div class="pull-right">
+                  <!-- $(this).attr('disabled','disabled') -->
+                  <button class="btn btn-primary" onclick="app.ctrl.sendMessage($('#messageForm input:checked').val(),$('#msgName').val(),$('#msg').val(),'messageForm');return false;" type="button">Send</button>
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="mep">Message Exchange</label>
+                  <div class="controls">
+	                  <label class="radio">
+                        <input type="radio" name="mep" value="inOut" checked>
+                        In-Out
+                      </label>
+                      <label class="radio">
+                        <input type="radio" name="mep" value="inOnly">
+                        In-Only
+                      </label>
+	                </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="msgName">Message Name</label>
+                  <div class="controls">
+                    <input class="input-large" name="msgName" id="msgName" autocomplete="autocomplete"/>
+                  </div>
+                </div>
+<!--
+                <div class="form-group">
+                  <label class="control-label" for="tenantId">Tenant</label>
+                  <div class="controls">
+                    <input class="input-large" name="tenantId" id="tenantId" autocomplete="autocomplete"/>
+                  </div>
+                </div>
+-->
+                <div class="form-group">
+                  <label class="control-label" for="msg">Message (JSON)</label>
+                  <div class="controls">
+                    <textarea name="msg" id="msg" rows="8" style="width:95%"></textarea>
+                  </div>
+                </div>
+                <div class="a-response form-group hidden">
+                  <label class="control-label" for="msg">Response</label>
+                  <div class="controls" id="responseLocation"></div>
+                </div>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <footer class="navbar navbar-fixed-bottom">
+      <div class="col-md-8">
+        <span data-section="aboutSect">
+          <a data-i18n="about.label" href="#about" id="about" onclick="app.transition('#about')">About</a>
+        </span>
+        | 
+        <span data-section="privacySect">
+          <a data-i18n="privacy.label" href="#privacy" id="privacy" onclick="app.transition('#privacy')">Privacy policy</a>
+        </span>
+      </div>
+      <div class="col-md-4 pull-right">
+        <input class="form-control input-sm" id="serverUrl" placeholder="http://localhost:8080" onblur="app.connect($('#serverUrl').val());"/>
+      </div>
+    </footer>
+  </div>
+
+  <script type="text/javascript" src="js/jquery-1.9.1.js"><!-- required --></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"><!-- required -->  </script>
+  <script type="text/javascript" src="js/md5-min.js"><!-- required!! --></script>
+  <script type="text/javascript" src="js/moustache.js"><!-- required --></script>
+  <script type="text/javascript" src="js/i18n.js"><!-- required --></script>
+  <script type="text/javascript" src="js/syncapt-0.4.0.js"><!-- required --></script>
+  <script type="text/javascript" src="js/admin-0.1.0.js"><!-- required --></script>
+</body>
+</html>
