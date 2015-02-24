@@ -70,8 +70,9 @@ app.init();
  * Encapsulates access to data whether from server or local.
  */
 function App(controller) {
+  // By default assume BPM server is co-located. If not, can revise by changing this. 
+  this.server= "";
   //this.server = "https://www.knowprocess.com";
-  this.server= "http://localhost:9090";
 //  this.server= "http://api.trakeo.com";
 //  this.server="http://localhost:8080/bpm-server-1.1.0.BUILD-SNAPSHOT";
 //  this.server= "http://api.syncapt.com";

@@ -28,7 +28,7 @@ public class TaskController {
             @RequestParam(value = "sortFieldName", required = false) String sortFieldName,
             @RequestParam(value = "sortOrder", required = false) String sortOrder,
             Model uiModel) {
-        LOGGER.info("listForUser");
+        LOGGER.info(String.format("listForUser %1$s", username));
 
         String requestor = "tim@omny.link";
         // = SecurityContextHolder.getContext()

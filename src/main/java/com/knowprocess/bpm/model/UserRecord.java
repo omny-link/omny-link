@@ -2,7 +2,9 @@ package com.knowprocess.bpm.model;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -22,20 +24,23 @@ import org.activiti.engine.identity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Data
 @Component
-public class UserRecord implements Principal, User/* , UserDetails */{
+public class UserRecord implements Principal, User, UserDetails {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(UserRecord.class);
 
-    private static final String[] JSON_FIELDS = { "assignee", "createTime",
-            "id", "name", "owner", "parentUserId", "priority",
-            "processDefinitionId", "suspended", "identityDefinitionKey",
-            "groups", "info" };
+    // private static final String[] JSON_FIELDS = { "assignee", "createTime",
+    // "id", "name", "owner", "parentUserId", "priority",
+    // "processDefinitionId", "suspended", "identityDefinitionKey",
+    // "groups", "info" };
 
     private static ProcessEngine processEngine;
 
@@ -75,8 +80,7 @@ public class UserRecord implements Principal, User/* , UserDetails */{
 
     private String confirmPassword;
 
-    // private Collection<GrantedAuthority> authorities = new
-    // LinkedList<GrantedAuthority>();
+    private Collection<GrantedAuthority> authorities;
 
     public UserRecord() {
         super();
@@ -89,6 +93,7 @@ public class UserRecord implements Principal, User/* , UserDetails */{
         setFirstName(u.getFirstName());
         setLastName(u.getLastName());
         setEmail(u.getEmail());
+        setPassword(u.getPassword());
     }
 
     public UserRecord(String username) {
@@ -134,7 +139,7 @@ public class UserRecord implements Principal, User/* , UserDetails */{
 
             List<String> userInfoKeys = svc.getUserInfoKeys(username);
             LOGGER.debug(String.format("Found %1$d userInfo records",
-                    list.size()));
+                    userInfoKeys.size()));
             for (String key : userInfoKeys) {
                 wrappedUser.getInfo().add(
                         new UserInfo(wrappedUser, key, svc.getUserInfo(
@@ -217,12 +222,19 @@ public class UserRecord implements Principal, User/* , UserDetails */{
         this.password = pwd;
     }
 
-    // @Override
-    // public Collection<? extends GrantedAuthority> getAuthorities() {
-    // return authorities;
-    // }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (authorities == null) {
+            authorities = new LinkedList<GrantedAuthority>();
+            for (UserGroup group : getGroups()) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_"
+                        + group.getId()));
+            }
+        }
+        return authorities;
+    }
 
-    // @Override
+    @Override
     public String getUsername() {
         return getId();
     }
@@ -235,27 +247,27 @@ public class UserRecord implements Principal, User/* , UserDetails */{
         return String.format("%1$s %2$s", getFirstName(), getLastName());
     }
 
-    // @Override
+    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    // @Override
+    @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    // @Override
+    @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    // @Override
+    @Override
     public boolean isEnabled() {
         return true;
     }
 
-    // @Override
+    @Override
     public boolean isPictureSet() {
         // TODO Auto-generated method stub
         return false;

@@ -62,10 +62,11 @@ public class MessageController {
         MessageController.processEngine = pe;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{msgId}", headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "/{tenant}/{msgId}", headers = "Accept=application/json")
     @ResponseBody
     public final ResponseEntity<String> doInOutMep(
             UriComponentsBuilder uriBuilder,
+            @PathVariable("tenant") String tenantId,
             @PathVariable("msgId") String msgId,
             @RequestParam(required = false, value = "query") String json) {
         // TODO need to look into why but the PathVariable is truncated at the
@@ -76,8 +77,8 @@ public class MessageController {
         Map<String, Object> vars = new HashMap<String, Object>();
         HttpHeaders headers = null;
         try {
-            ResponseEntity<String> response = handleMep(uriBuilder, msgId,
-                    json, vars, 0);
+            ResponseEntity<String> response = handleMep(uriBuilder, tenantId,
+                    msgId, json, vars, 0);
             if (response.getStatusCode() != HttpStatus.CREATED) {
                 return response;
             }
@@ -118,16 +119,17 @@ public class MessageController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{msgId}", headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.POST, value = "/{tenant}/{msgId}", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> doInOnlyMep(UriComponentsBuilder uriBuilder,
+            @PathVariable("tenant") String tenantId,
             @PathVariable("msgId") String msgId, @RequestParam String json) {
         long start = System.currentTimeMillis();
         LOGGER.info("handling In-Only MEP: " + msgId + ", json:" + json);
 
         Map<String, Object> vars = new HashMap<String, Object>();
-        ResponseEntity<String> response = handleMep(uriBuilder, msgId, json,
-                vars, 0);
+        ResponseEntity<String> response = handleMep(uriBuilder, tenantId, msgId,
+                json, vars, 0);
 
         LOGGER.debug(String.format("doInOnlyMep took: %1$s ms",
                 (System.currentTimeMillis() - start)));
@@ -135,8 +137,8 @@ public class MessageController {
     }
 
     protected ResponseEntity<String> handleMep(
-            final UriComponentsBuilder uriBuilder, String msgId,
-            String jsonBody, final Map<String, Object> vars, int retry) {
+            final UriComponentsBuilder uriBuilder, String tenantId,
+            String msgId, String jsonBody, final Map<String, Object> vars, int retry) {
         // if (SecurityContextHolder.getContext().getAuthentication() == null
         // || "anonymousUser".equals(SecurityContextHolder.getContext()
         // .getAuthentication().getName())) {
@@ -174,7 +176,8 @@ public class MessageController {
             }
             LOGGER.debug(String.format("vars: %1$s", vars));
             ProcessInstance instance = processEngine.getRuntimeService()
-                    .startProcessInstanceByMessage(msgId, bizKey, vars);
+                    .startProcessInstanceByMessageAndTenantId(msgId, bizKey,
+                            vars, tenantId);
             vars.put("piid", instance.getId());
             com.knowprocess.bpm.model.ProcessInstance pi = com.knowprocess.bpm.model.ProcessInstance
                     .findProcessInstance(instance.getId());
@@ -198,7 +201,7 @@ public class MessageController {
             if (e.getCause() instanceof com.mysql.jdbc.exceptions.jdbc4.CommunicationsException
                     && retry < 3) {
                 LOGGER.error("Confirmed timeout exception, retrying...");
-                return handleMep(uriBuilder, msgId, jsonBody, vars, ++retry);
+                return handleMep(uriBuilder, tenantId, msgId, jsonBody, vars, ++retry);
             } else {
                 ReportableException e2 = new ReportableException(
                         "Cause is not timeout or retries exceeds limit", e);

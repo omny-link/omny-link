@@ -3,7 +3,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>trakeo labs</title>
+  <title>know process labs</title>
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/icons/style.css">
   <link rel="stylesheet" href="/css/theme/default.css">
@@ -123,6 +123,14 @@
                 <div class="pull-right">
                   <button class="btn" onclick="app.addDeploymentResource();return false;">Add Resource</button>
                   <button class="btn btn-primary" onclick="app.definitionUpload('deployProcessTemplate');return false;" type="button">Upload</button>
+                </div>
+                <div class="form-group">
+                  <!-- <label class="control-label" for="templateUrl">Resource url</label>-->
+                  <label class="control-label" for="tenantId">Tenant</label>
+                  <div class="controls">
+                    <input name="tenantId" id="tenantId" size="45"/>
+                  </div>
+                  <!-- <span class="help-inline">Associated help text!</span> -->
                 </div>
                 <div class="form-group">
                   <!-- <label class="control-label" for="templateUrl">Resource url</label>-->
@@ -487,8 +495,10 @@
                   <span class="help-inline">Already connected.</span>
                   {{#info.linkedIn_connect}}
                       <span class="help-inline">Click to connect:</span> 
+                      <!-- TODO 23 Feb 15 Linkedin have moved this 
                       <img id="linkedInBtn" onclick="$('#linkedInForm').submit();"
                            src="https://developer.linkedin.com/sites/default/files/LinkedIn_Logo60px.png">
+                      -->
                   {{/info.linkedIn_connect}}
                 </div>
                 <div class="form-group">
