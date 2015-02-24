@@ -39,18 +39,30 @@ public class ProcessInstance extends Execution {
 
     public ProcessInstance(org.activiti.engine.runtime.ProcessInstance pi) {
         this();
+        setActivityId(pi.getActivityId());
         setBusinessKey(pi.getBusinessKey());
+        setEnded(pi.isEnded());
+        setId(pi.getId());
+        setParentId(pi.getParentId());
         setProcessDefinitionId(pi.getProcessDefinitionId());
-        setSuspended(pi.isSuspended());
+        setProcessInstanceId(pi.getProcessInstanceId());
         setProcessVariables(pi.getProcessVariables());
+        setSuspended(pi.isSuspended());
     }
 
     public ProcessInstance(HistoricProcessInstance hpi) {
         this();
+        // Note that in the event of multiple end events this will not be
+        // deterministic
+        setActivityId(hpi.getEndActivityId());
         setBusinessKey(hpi.getBusinessKey());
+        setEnded(hpi.getEndTime() != null);
+        setId(hpi.getId());
+        setParentId(hpi.getSuperProcessInstanceId());
         setProcessDefinitionId(hpi.getProcessDefinitionId());
-        setSuspended(false);
+        // don't have an instance id
         setProcessVariables(hpi.getProcessVariables());
+        setSuspended(false);
     }
 
     // Autowiring static fields is obviously dangerous, but should be ok in this
