@@ -42,8 +42,7 @@ public class CorsFilter extends OncePerRequestFilter {
     protected static final String EXPOSE_HEADERS = "Access-Control-Expose-Headers";
 
     /**
-     * Defaults:
-     * allowed.origins=null,https?://localhost.*,https?://.*knowprocess
+     * Defaults: null,https?://localhost.*,https?://.*knowprocess
      * .com.*,chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm
      */
     @Value("${cors.allowedOrigins}")

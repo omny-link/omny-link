@@ -1,7 +1,7 @@
 var TRANSITION_DURATION = 500;
 // 4. We've got an element in the DOM, we've created a template, and we've
 // loaded the library - now it's time to build our Hello World app.
-var ractive = new Ractive({
+var ractive = new AuthenticatedRactive({
   // The `el` option can be a node, an ID, or a CSS selector.
   el: 'container',
 
@@ -53,6 +53,7 @@ var ractive = new Ractive({
   });
   },
   oninit: function() {
+    this.ajaxSetup();
     this.fetch();
   },
   select: function(task) { 

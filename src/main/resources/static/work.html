@@ -42,6 +42,7 @@
               <th>Task</th>
               <th>Created</th>
               <th>Description</th>
+              <th>Assignee</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -49,9 +50,10 @@
           {{#each tasks:i}}
             <tr data-href="{{_links.self.href}}">
               <td on-click="edit(this)">{{i+1}}</td>
-              <td on-click="edit(this)">{{taskDefinitionKey}}</td>
+              <td on-click="edit(this)">{{name}}</td>
               <td on-click="edit(this)">{{createTime}}</td>
               <td on-click="edit(this)">{{description}}</td>
+              <td on-click="edit(this)">{{assignee}}</td>
               <td>
                 <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('/tasks/{{id}}')"></span>
                 <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
@@ -92,6 +94,7 @@
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
   -->
   <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
+  <script src="js/login-0.1.0.js"></script>
   <script src="js/workmgmt-0.1.0.js"></script>
 </body>
 </html>

@@ -58,6 +58,7 @@ public class DeploymentController {
     public final @ResponseBody org.activiti.engine.repository.Deployment uploadMultipleFiles(
             UriComponentsBuilder uriBuilder,
             @RequestParam String deploymentName,
+            @RequestParam String tenantId,
             @RequestParam MultipartFile... resourceFile) {
         org.activiti.engine.repository.Deployment deployment = null;
 
@@ -70,6 +71,9 @@ public class DeploymentController {
                     .createDeployment();
             if (deploymentName != null) {
                 builder.name(deploymentName);
+            }
+            if (tenantId != null) {
+                builder.tenantId(tenantId);
             }
             final Map<String, String> processes = new HashMap<String, String>();
             for (MultipartFile resource : resourceFile) {

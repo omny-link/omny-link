@@ -175,6 +175,7 @@ public class Task {
     public static List<Task> findAllTasks(String involvesUser, String sortFieldName, String sortOrder) {
         // TODO honour sort order
         return wrap(getProcessEngine().getTaskService().createTaskQuery()
+                .taskInvolvedUser(involvesUser)
                 .list());
     }
 
