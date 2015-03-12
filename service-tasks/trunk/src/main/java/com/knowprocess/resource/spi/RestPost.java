@@ -2,44 +2,24 @@ package com.knowprocess.resource.spi;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 import org.activiti.engine.delegate.DelegateExecution;
-import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.delegate.JavaDelegate;
-import org.activiti.engine.impl.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.knowprocess.resource.internal.UrlResource;
 
 // Initially supports Twilio URL Encoded POST but some prelim. support for Form 
 // encoded that requires testing. 
 public class RestPost extends RestService implements JavaDelegate {
-
-    /**
-     * Comma-separated set of fields to POST to the REST resource in the form
-     * key=value. May contain expressions.
-     */
-    protected Expression formFields;
-
-    protected Expression getExpression(DelegateExecution execution,
-            String variable) {
-        return Context.getProcessEngineConfiguration().getExpressionManager()
-                .createExpression(variable);
-    }
-
-    protected String getStringFromField(Expression expression,
-            DelegateExecution execution) {
-        if (expression != null) {
-            Object value = expression.getValue(execution);
-            if (value != null) {
-                return value.toString();
-            }
-        }
-        return null;
-    }
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(RestPost.class);
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
@@ -48,41 +28,46 @@ public class RestPost extends RestService implements JavaDelegate {
                 : resourceUsername.getValue(execution));
         String pwd = (String) (resourcePassword == null ? null
                 : resourcePassword.getValue(execution));
-        System.out.println("POSTing to " + resource + " as " + usr);
+        LOGGER.info("POSTing to " + resource + " as " + usr);
 
-        List<String> ff = Arrays.asList(((String) formFields
-                .getExpressionText()).split(","));
-        Map<String, String> data = new HashMap<String, String>();
         String response = null;
-        for (String field : ff) {
-            System.out.println("Field expression: " + field);
-            String tmp = getStringFromField(getExpression(execution, field),
-                    execution);
-            System.out.println("Field: " + tmp);
-            String name = tmp.substring(0, tmp.indexOf('='));
-            String value = tmp.substring(tmp.indexOf('=') + 1);
-            // TODO This is a bit of a hack
-            if (value.contains("${")) {
-                value = getStringFromField(getExpression(execution, value),
-                        execution);
-                System.out.println("  : " + value);
-            }
-
-            data.put(name, value);
-        }
-
-        UrlResource ur = null;
-        if (usr == null || pwd == null) {
-            ur = new UrlResource();
-        } else {
-            ur = new UrlResource(usr, pwd);
-        }
         InputStream is = null;
         try {
-            is = ur.getResource(resource, "POST",
-                    "application/x-www-form-urlencoded",
-                    "application/json", data);
-            response = new Scanner(is).useDelimiter("\\A").next();
+            Map<String, String> requestHeaders = getRequestHeaders(execution);
+            String contentType = requestHeaders.get("Content-Type");
+            if (contentType == null
+                    || "application/x-www-form-urlencoded".equals(contentType)) {
+                is = getUrlResource(usr, pwd).getResource(
+                        resource,
+                        "POST",
+                        requestHeaders,
+                        getFormFields(execution,
+                                (String) data.getExpressionText()));
+                // TODO response headers
+            } else {
+                Map<String, List<String>> responseHeaders2 = new HashMap<String, List<String>>();
+                is = getUrlResource(usr, pwd).getResource(resource, "POST",
+                        requestHeaders, responseHeaders2,
+                        getStringFromExpression(data, execution));
+                LOGGER.debug("ResponseHeaders: " + responseHeaders2);
+                String[] sought = getResponseHeadersSought(execution);
+                for (String s : sought) {
+                    String hdr = s.substring(s.indexOf('=') + 1);
+                    if (responseHeaders2.containsKey(hdr)) {
+                        execution.setVariable(s.substring(0, s.indexOf('=')),
+                                responseHeaders2.get(hdr).get(0));
+                    }
+                }
+            }
+
+            if (responseVar != null) {
+                response = new Scanner(is).useDelimiter("\\A").next();
+                LOGGER.debug("response: " + response);
+                execution
+                        .setVariable(responseVar.getExpressionText(), response);
+
+            }
+            // setVarsFromResponseHeaders();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -92,7 +77,49 @@ public class RestPost extends RestService implements JavaDelegate {
                 ;
             }
         }
+    }
 
-        execution.setVariable(outputVar.getExpressionText(), response);
+    private String[] getResponseHeadersSought(DelegateExecution execution) {
+        if (responseHeaders == null) {
+            return new String[0];
+        } else {
+            return ((String) responseHeaders.getValue(execution)).split(",");
+        }
+    }
+
+    private Map<String, String> getRequestHeaders(DelegateExecution execution) {
+        if (headers == null) {
+            return Collections.emptyMap();
+        } else {
+            return getRequestHeaders((String) headers.getValue(execution));
+        }
+    }
+
+    private Map<String, String> getFormFields(DelegateExecution execution,
+            String formFieldExpression) {
+        List<String> ff = Arrays.asList(formFieldExpression.split(","));
+        Map<String, String> data = new HashMap<String, String>();
+        for (String field : ff) {
+            System.out.println("Field expression: " + field);
+            String tmp = getStringFromExpression(getExpression(field),
+                    execution);
+            System.out.println("Field: " + tmp);
+            String name = tmp.substring(0, tmp.indexOf('='));
+            String value = tmp.substring(tmp.indexOf('=') + 1);
+            value = evalExpr(execution, value);
+
+            data.put(name, value);
+        }
+        return data;
+    }
+
+    private UrlResource getUrlResource(String usr, String pwd) {
+        UrlResource ur = null;
+        if (usr == null || pwd == null) {
+            ur = new UrlResource();
+        } else {
+            ur = new UrlResource(usr, pwd);
+        }
+        return ur;
     }
 }

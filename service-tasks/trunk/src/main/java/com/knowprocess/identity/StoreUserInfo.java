@@ -28,15 +28,20 @@ public class StoreUserInfo implements JavaDelegate {
 	}
 
 	public void execute(DelegateExecution execution) {
-		String json = (String) execution.getVariable(VAR_USER_INFO);
-		JsonReader reader = Json.createReader(new StringReader(json));
-		JsonObject obj = reader.readObject();
+        JsonObject obj = null;
+        Object json = execution.getVariable(VAR_USER_INFO);
+        if (json instanceof String) {
+		JsonReader reader = Json.createReader(new StringReader((String) json));
+            obj = reader.readObject();
 		System.out.println("obj" + obj);
 		System.out.println("parsed: " + this);
+        } else if (json instanceof JsonObject) {
+            obj = (JsonObject) json;
+        }
 
-		setIdentityService(execution.getEngineServices().getIdentityService());
-		storeUserInfo(obj.getString("username"), obj.getString("key"),
-				obj.getString("value"));
+        setIdentityService(execution.getEngineServices().getIdentityService());
+        storeUserInfo(obj.getString("username"), obj.getString("key"),
+                obj.getString("value"));
 	}
 
 }

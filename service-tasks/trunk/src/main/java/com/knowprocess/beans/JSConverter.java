@@ -20,7 +20,7 @@ import org.springframework.core.convert.converter.GenericConverter;
 public class JSConverter implements GenericConverter,
         Converter<Object, Object> {
     protected static final Logger LOGGER = LoggerFactory
-            .getLogger(ModelBasedConversionService.class);
+            .getLogger(JSConverter.class);
     private String script;
     private ScriptEngine engine;
     private Class<?> targetType;
