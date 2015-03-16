@@ -128,6 +128,7 @@
       <artifactId>service-tasks</artifactId>
       <!-- NOTE: this does not work on Jenkins (fine locally)
       <version>[0.0.1,1.0.0)</version>
+      0.1.1-SNAPSHOT
       -->
       <version>2.0-SNAPSHOT</version>
       <exclusions>
@@ -141,21 +142,17 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-library</artifactId>
-      <version>2.10.4</version>
-    </dependency>
     <!-- Activiti compiles against SLF4J but this is the implementation of choice -->
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>runtime</scope>
-    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <!-- Required for native JSON support -->
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.json</artifactId>
+      <version>1.0.2</version>
     </dependency>
   </dependencies>
 	
@@ -164,7 +161,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
         <configuration>
             <source>${java.version}</source>
             <target>${java.version}</target>
@@ -175,9 +171,9 @@
     		<groupId>org.springframework.boot</groupId>
     		<artifactId>spring-boot-maven-plugin</artifactId>
     	</plugin>
+      <!-- 
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>                  
-        <version>2.18</version>
         <configuration>
             <includes>
                 <include>**/features/**/When*.java</include>                  
@@ -215,7 +211,30 @@
                 </goals>
             </execution>
         </executions>
-    </plugin>
+      </plugin>
+       -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/${project.artifactId}-${project.version}.jar.original</file>
+                  <type>jar</type>
+                  <classifier>library</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 		</plugins>
 	</build>
   <dependencyManagement>

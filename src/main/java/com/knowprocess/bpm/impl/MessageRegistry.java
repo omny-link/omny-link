@@ -43,34 +43,63 @@ public class MessageRegistry {
     }
 
     public Object deserialiseMessage(String msgType, String jsonBody) {
-        msgType = getTypeForMessage(msgType.trim());
         Object msgBean = null;
         try {
-            Class<?> msgClass = getClass().getClassLoader().loadClass(msgType);
-            msgBean = msgClass.newInstance();
-            Method method;
-            if (msgType.equals("com.knowprocess.mail.MailData")) {
-                // TODO abusing the MailData class should be replaced with
-                // native javax.json support
-                method = msgClass.getMethod("fromJson", String.class);
-            } else if (jsonBody.trim().startsWith("[")) {
-                method = msgClass.getMethod(
-                        "fromJsonArrayTo" + msgClass.getSimpleName() + "s",
-                        String.class);
-            } else {
-                method = msgClass.getMethod(
-                        "fromJsonTo" + msgClass.getSimpleName(), String.class);
-            }
+            Class<?> msgClass = getClass(msgType);
+            Method method = getDeserializeMethod(msgType, msgClass, jsonBody);
             msgBean = method.invoke(msgBean, jsonBody);
         } catch (Exception e) {
-            String msg = String
-                    .format("Unable to deserialise message %1$s, will pass raw message to process instead.",
-                            msgType);
-            LOGGER.warn(msg);
-            LOGGER.debug(msg, e);
+            handleException(msgType, e);
             msgBean = jsonBody;
         }
 
         return msgBean;
+    }
+
+    private Method getDeserializeMethod(String msgType, Class<?> msgClass,
+            String jsonBody) throws NoSuchMethodException {
+        Method method;
+        if (msgType.equals("com.knowprocess.mail.MailData")) {
+            // TODO abusing the MailData class should be replaced with
+            // native javax.json support
+            method = msgClass.getMethod("fromJson", String.class);
+        } else if (jsonBody.trim().startsWith("[")) {
+            method = msgClass.getMethod(
+                    "fromJsonArrayTo" + msgClass.getSimpleName() + "s",
+                    String.class);
+        } else {
+            method = msgClass.getMethod(
+                    "fromJsonTo" + msgClass.getSimpleName(), String.class);
+        }
+        return method;
+    }
+
+    private Class<?> getClass(String msgType) throws ClassNotFoundException {
+        msgType = getTypeForMessage(msgType.trim());
+        return getClass().getClassLoader().loadClass(msgType);
+    }
+
+    public boolean canDeserialise(String msgType, String jsonBody) {
+        // TODO cache reflection results
+        try {
+            Class<?> clazz = getClass(msgType);
+            return getDeserializeMethod(msgType, clazz, jsonBody) != null;
+        } catch (ClassNotFoundException e) {
+            handleException(msgType, e);
+            return false;
+        } catch (NoSuchMethodException e) {
+            handleException(msgType, e);
+            return false;
+        }
+    }
+
+    private void handleException(String msgType, Exception e) {
+        String msg = String
+                .format("Unable to deserialise message %1$s, will pass raw message to process instead.",
+                        msgType);
+        LOGGER.warn(msg);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(msg, e);
+        }
     }
 }

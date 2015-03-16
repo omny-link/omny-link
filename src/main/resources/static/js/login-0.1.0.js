@@ -19,7 +19,7 @@ var AuthenticatedRactive = Ractive.extend({
     });
   },
   getCookie: function(name) {
-    console.log('getCookie: '+name)
+    //console.log('getCookie: '+name)
     var value = "; " + document.cookie;
     var parts = value.split("; " + name + "=");
     if (parts.length == 2) return parts.pop().split(";").shift();
@@ -44,7 +44,7 @@ var AuthenticatedRactive = Ractive.extend({
 
 
 function getCookie(name) {
-  console.log('getCookie: '+name)
+  //console.log('getCookie: '+name)
   var value = "; " + document.cookie;
   var parts = value.split("; " + name + "=");
   if (parts.length == 2) return parts.pop().split(";").shift();
