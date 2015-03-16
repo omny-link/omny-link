@@ -3,7 +3,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>know process labs</title>
+  <title>Omny Link</title>
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/icons/style.css">
   <link rel="stylesheet" href="/css/theme/default.css">
@@ -136,7 +136,7 @@
                   <!-- <label class="control-label" for="templateUrl">Resource url</label>-->
                   <label class="control-label" for="deploymentName">Deployment Name</label>
                   <div class="controls">
-                    <input name="deploymentName" id="deploymentName" size="45" value="my process application"/>
+                    <input name="deploymentName" id="deploymentName" size="45" placeholder="my process application"/>
                   </div>
                   <!-- <span class="help-inline">Associated help text!</span> -->
                 </div>
@@ -203,17 +203,22 @@
         </div>
       </section>
 
-
       <section class="a-section hidden" id="definitionSect">
-        <h2>Process Definitions</h2>
+        <h2>Process Definitions ({{definitions.length}})</h2>
         <div id="definitionsTemplate" class="hidden">
           {{#definitions}}
             <li data-id="{{id}}">
-              <button class="btn pull-right" onclick="app.deleteDefinition('{{id}}','{{deploymentId}}');">Delete</button>
+              <button class="btn pull-right" onclick="app.deleteDefinition('{{id}}','{{deploymentId}}');">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+              </button>
+              <a class="btn pull-right" href="/process-definitions/{{id}}.bpmn" target="_newtab">
+                <span class="glyphicon glyphicon-export" aria-hidden="true"></span>View BPMN</a>
+              <a class="btn pull-right" href="/process-definitions/{{id}}.png" target="_newtab">
+                <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>View image</a>
               <!--
               <button class="btn pull-right" onclick="app.newInstance('{{id}}');">Start</button>
               -->
-              <a class="btn pull-right" href="#startInstanceModal" data-toggle="modal" data-instance="{{id}}" data-name="Start" data=target="#startInstanceModal">Start</a>
+              <a class="btn pull-right hidden" href="#startInstanceModal" data-toggle="modal" data-instance="{{id}}" data-name="Start" data=target="#startInstanceModal">Start</a>
               <span class="a-primary-label control-label">Name:</span>
               <span class="a-primary-data">{{name}}</span>
               <span class="a-primary-label control-label">Description:</span>

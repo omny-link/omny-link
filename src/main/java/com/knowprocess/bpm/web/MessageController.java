@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.knowprocess.bpm.api.ReportableException;
+import com.knowprocess.bpm.impl.JsonManager;
 import com.knowprocess.bpm.impl.MessageRegistry;
 
 /**
@@ -47,8 +48,11 @@ public class MessageController {
     protected static ProcessEngine processEngine;
 
     @Autowired
-    public MessageRegistry messageRegistry;
+    protected MessageRegistry messageRegistry;
 
+    @Autowired
+    protected JsonManager jsonManager;
+    
     /**
      * Whether messages may be sent anonymously. Default: false.
      */
@@ -155,12 +159,17 @@ public class MessageController {
         headers.add("Content-Type", "application/json");
 
         try {
+            vars.put("tenantId", tenantId);
             String bizKey = msgId + " - " + new Date().getTime();
             String modifiedMsgId = getMessageVarName(msgId);
             vars.put("messageName", modifiedMsgId);
             System.err.println("Message registry: " + messageRegistry);
-            vars.put(modifiedMsgId,
-                    messageRegistry.deserialiseMessage(msgId, jsonBody));
+            if (messageRegistry.canDeserialise(modifiedMsgId, jsonBody)) {
+                vars.put(modifiedMsgId,
+                        messageRegistry.deserialiseMessage(msgId, jsonBody));
+            } else {
+                vars.put(modifiedMsgId, jsonManager.toObject(jsonBody));
+            }
             // TODO deprecate query param?
             vars.put("query", jsonBody);
 

@@ -8,6 +8,7 @@ $.fn.moustache = function(data) {
 EASING_DURATION = 500;
 TAB = 9;
 ENTER = 13;
+CSRF_COOKIE = 'XSRF-TOKEN';
 
 function MarkupParser() {
   this.parse = function(s) {
@@ -205,7 +206,7 @@ function App(controller) {
         console.log('successfully updated category');
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        console.log('error:'+textStatus);
+        app.handleError(jqXHR, textStatus, errorThrown)
       }
     });
   };
@@ -255,6 +256,93 @@ function App(controller) {
 
     }
   };
+  this.definition = function(id) {
+    if (app.ctrl.offline) {
+      $.each(JSON.parse(localStorage['GET_repository_definitions']), function(i,d) {
+        if (d.id == id) {
+//          app.
+        }
+      });
+      // TODO 
+      console.error('Not available offline');
+      //app.ctrl.loadInstanceList(JSON.parse(localStorage['GET_repository_definitions']));
+    } else {
+      return $.ajax({
+        type: 'GET',
+        url: app.server+'/process-definitions/'+id,
+        contentType: 'application/json',
+        dataType: 'text',
+        success: function(response) {
+          console.log('success fetching definition of '+id);
+//          localStorage['GET_repository_definitions']=response;
+          app.definition = (JSON.parse(response));
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          app.handleError(jqXHR, textStatus, errorThrown)
+        }
+      });
+    }
+  };
+  this.definitionAsBpmn = function(id) {
+    if (app.ctrl.offline) {
+      app.definition = undefined;
+      $.each(JSON.parse(localStorage['GET_repository_definitions']), function(i,d) {
+        if (d.id == id) {
+          app.definition = d; 
+        }
+      });
+      if (app.definition == undefined) {
+        console.error('Definition of '+id+' is not available offline');
+        app.showError('Definition of '+id+' is not available offline');
+      }
+    } else {
+      return $.ajax({
+        type: 'GET',
+        url: app.server+'/process-definitions/'+id,
+        dataType: 'xml',
+        success: function(response) {
+          console.log('success fetching definition of '+id+': '+response);
+//          localStorage['GET_repository_definitions']=response;
+          app.response = response;
+          var ser = new XMLSerializer();
+          app.definitionBpmn = ser.serializeToString(response);
+          var newTab = window.open('data:application/xml;'+encodeURI(app.definitionBpmn),'_newtab');
+          //newTab.document.write(app.definitionBpmn);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          app.handleError(jqXHR, textStatus, errorThrown)
+        }
+      });
+    }
+  };
+  this.definitionImage = function(id) {
+    if (app.ctrl.offline) {
+      $.each(JSON.parse(localStorage['GET_repository_definitions']), function(i,d) {
+        if (d.id == id) {
+//          app.
+        }
+      });
+      // TODO 
+      console.error('Not available offline');
+      //app.ctrl.loadInstanceList(JSON.parse(localStorage['GET_repository_definitions']));
+    } else {
+      return $.ajax({
+        type: 'GET',
+        url: app.server+'/process-definitions/'+id,
+        accepts: 'image/png',
+        success: function(response) {
+          console.log('success fetching definition of '+id);
+//          localStorage['GET_repository_definitions']=response;
+          app.definitionImage = response;
+          var newTab = window.open(id+'.png','_newtab');
+          newTab.document.write(app.definitionImage);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          app.handleError(jqXHR, textStatus, errorThrown)
+        }
+      });
+    }
+  };
   this.definitionList = function() {
     if (app.ctrl.offline) {
       app.ctrl.loadInstanceList(JSON.parse(localStorage['GET_repository_definitions']));
@@ -270,8 +358,7 @@ function App(controller) {
           app.ctrl.renderDefinitionsList(JSON.parse(response));
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          console.log('error:'+textStatus+':'+errorThrown);
-          console.log('  headers: '+JSON.stringify(jqXHR.getAllResponseHeaders()));
+          app.handleError(jqXHR, textStatus, errorThrown)
         }
       });
     }
@@ -294,8 +381,8 @@ function App(controller) {
           app.hideActivityIndicator('successfully uploaded definition');
         },
         error: function(jqXHR, textStatus, errorThrown) {
-        console.log(textStatus+':'+errorThrown+','+jqXHR.responseText);
-        var resp = JSON.parse(jqXHR.responseText.replace(/\n/g,''));
+          console.log(textStatus+':'+errorThrown+','+jqXHR.responseText);
+          var resp = JSON.parse(jqXHR.responseText.replace(/\n/g,''));
           app.hideActivityIndicator('Failed to upload definition, error is: '+resp.error);
         }
       });
@@ -303,8 +390,6 @@ function App(controller) {
   this.deleteDefinition = function(definitionId,deploymentId) {
     console.log('delete: '+ deploymentId);
     return $.ajax({
-        username: 'jules',
-        password: 'test',
         type: 'DELETE',
         url: app.server+'/deployments/'+deploymentId,
         contentType: 'application/json',
@@ -314,7 +399,7 @@ function App(controller) {
           $('[data-id="'+definitionId+'"]').hide(EASING_DURATION);
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          console.log('error:'+textStatus);
+          app.handleError(jqXHR, textStatus, errorThrown)
         }
     });
   };
@@ -330,10 +415,17 @@ function App(controller) {
           $('[data-id="'+instanceId+'"]').hide(EASING_DURATION);
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          console.log('error:'+textStatus);
+          app.handleError(jqXHR, textStatus, errorThrown)
         }
     });
   };
+  this.handleError = function(jqXHR, textStatus, errorThrown) {
+    console.log(textStatus+':'+errorThrown+','+jqXHR.responseText);
+    console.log('  headers: '+JSON.stringify(jqXHR.getAllResponseHeaders()));
+    var response = JSON.parse(jqXHR.responseText);
+    if (response.path == '/login') window.location.href = '/login';
+    app.hideActivityIndicatorWithError(jqXHR);
+  },
   this.help = function() {
     return $.ajax({
       type: 'GET',
@@ -342,9 +434,9 @@ function App(controller) {
         $('#helpSect').empty().append(response.replace(/h2/g,'h4').replace(/h3/g,'h5'));
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        console.log('error:'+textStatus);
+        app.handleError(jqXHR, textStatus, errorThrown)
       }
-  });
+    });
   };
   this.identity = function() {
     console.log('TODO find identity of current user');
@@ -393,7 +485,7 @@ function App(controller) {
           });
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          console.log(textStatus+':'+errorThrown);
+          app.handleError(jqXHR, textStatus, errorThrown)
         }
     });
   };
@@ -430,7 +522,7 @@ function App(controller) {
             app.ctrl.loadInstanceList(json);
           },
           error: function(jqXHR, textStatus, errorThrown) {
-            console.log('error:'+textStatus);
+            app.handleError(jqXHR, textStatus, errorThrown)
           }
       });
     }
@@ -460,8 +552,7 @@ function App(controller) {
           app.hideActivityIndicator();
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          console.log('error:'+textStatus);
-          app.hideActivityIndicator();
+          app.handleError(jqXHR, textStatus, errorThrown)
         }
     });
   };
@@ -505,7 +596,7 @@ function App(controller) {
           app.hideActivityIndicator('Instance started successfully');
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          console.log('error:'+textStatus);
+          app.handleError(jqXHR, textStatus, errorThrown)
         }
     });
   };
@@ -529,7 +620,7 @@ function App(controller) {
         app.hideActivityIndicator('Instance started successfully');
       },
       error: function(jqXHR, textStatus, errorThrown) {
-      app.hideActivityIndicatorWithError(jqXHR);
+        app.handleError(jqXHR, textStatus, errorThrown)
       }
     });
   };
@@ -559,7 +650,7 @@ function App(controller) {
           });*/
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          console.log(textStatus+':'+errorThrown);
+          app.handleError(jqXHR, textStatus, errorThrown)
         }
     });
   };
@@ -592,8 +683,7 @@ function App(controller) {
 //          app.taskList();
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          console.log(textStatus+':'+errorThrown);
-          app.hideActivityIndicator(textStatus+':'+errorThrown);
+          app.handleError(jqXHR, textStatus, errorThrown)
         }
     });
   };
@@ -620,7 +710,7 @@ function App(controller) {
           app.ctrl.loadTask(id, name, businessKey, [response]);
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          console.log(textStatus+':'+errorThrown);
+          app.handleError(jqXHR, textStatus, errorThrown)
         }
       });
     }
@@ -641,8 +731,7 @@ function App(controller) {
           app.ctrl.loadTaskList(JSON.parse(response));
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          console.log('ERROR '+ jqXHR.statusCode());
-          console.log('error:'+textStatus+':'+errorThrown);
+          app.handleError(jqXHR, textStatus, errorThrown)
         }
       });
     }
@@ -668,7 +757,7 @@ function App(controller) {
           app.taskList();
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          console.log(textStatus+':'+errorThrown);
+          app.handleError(jqXHR, textStatus, errorThrown)
         }
     });
   };
@@ -688,7 +777,7 @@ function App(controller) {
         app.hideActivityIndicator('successfully uploaded definition');
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        console.log(textStatus+':'+errorThrown);
+        app.handleError(jqXHR, textStatus, errorThrown)
       }
     });
   };
@@ -937,4 +1026,17 @@ if (!String.prototype.endsWith) {
       String.prototype.endsWith = endsWith;
     }
   }());
+}
+
+$.ajaxSetup({
+  username: localStorage['username'],
+  password: localStorage['password'],
+  headers: { 'X-CSRF-TOKEN': this.getCookie(CSRF_COOKIE) }
+});
+
+function getCookie(name) {
+  console.log('getCookie: '+name)
+  var value = "; " + document.cookie;
+  var parts = value.split("; " + name + "=");
+  if (parts.length == 2) return parts.pop().split(";").shift();
 }
