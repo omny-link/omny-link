@@ -26,6 +26,13 @@
        just about anything except 'text/javascript'
   -->
   <script id='template' type='text/ractive'>
+    <div class="profile pull-right">
+      <form name="logoutForm" action="/logout" method="POST">
+        <span>Logged in as: {{username}}</span>
+        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
+        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
+      </form>
+    </div>
     <h1>
       <a class="nav navbar-brand" href="http://omny.link">
         <img src="/images/omny-logo.png" alt="logo"/>
@@ -40,6 +47,7 @@
         <h2>
           <span>Contacts</span>
           <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.add()"></span>
+          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" onclick="ractive.fetch()"></span>
           <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
           <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
        </h2>
@@ -57,11 +65,14 @@
           {{#each contacts:i}}
             {{# searchTerm!=undefined && (
                   this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase())===0 
-                  || this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase())===0) }}
+                  || this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase())===0
+                  || this.email.toLowerCase().indexOf(searchTerm.toLowerCase())===0
+                  || this.account.name.toLowerCase().indexOf(searchTerm.toLowerCase())===0
+                ) }}
               <tr data-href="{{_links.self.href}}" on-click="edit(this)">
                 <td>{{i+1}}</td>
                 <td>{{firstName}} {{lastName}}</td>
-                <td>{{account.name}}</td>
+                <td>{{account == undefined ? accountName : account.name}}</td>
                 <td>{{owner}}</td>
                 <td>
                   <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('{{_links.self.href}}')"></span>
@@ -107,29 +118,28 @@
           <div class="col-md-6">
             <ul class="form edit-form">
               <li><label>Enquiry Type:</label><input id="curEnquiryType" value="{{current.enquiryType}}"></li>
-              <li><label>Budget:</label><input id="curBudget" value="{{current.budget}}"></li>
               <li><label>Stage:</label><input class="typeahead" id="curStage" value="{{current.stage}}"></li>
               <li><label>Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
               <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
             </ul>
           </div>
-
-
+        </form>
+        <form id="currentAccountForm">
           <div id="currentAccount" style="clear: both">
 
             <h2 class="form">Account</h2>
 
             <div class="col-md-6">
               <ul class="form edit-form">
-                <li><label>Company Name:</label><input id="curAccountName" required value="{{current.account.name}}"></li>
+                <li><label class="required">Company Name:</label><input id="curAccountName" required value="{{current.account.name}}"></li>
                 <li><label>Company Number:</label><input id="curCompanyNumber" pattern="[0-9]{8}" value="{{current.account.companyNumber}}"></li>
-                <li><label>Website:</label><input id="curBusinessWebsite" value="{{current.account.businessWebsite}}"></li>
+                <li><label>Website:</label><input id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"></li>
               </ul> 
             </div>
             <div class="col-md-6">
               <ul class="form edit-form">
                 <li><label>Also known as:</label><input id="curAliases" value="{{current.account.aliases}}"></li>
-                <li><label>No. of employees:</label><input id="curNoOfEmployees" value="{{current.account.noOfEmployees}}"/>
+                <li><label>No. of employees:</label><input id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/></li>
               </ul>
             </div>
           </div>
@@ -162,8 +172,9 @@
           </div>
 
         </form>
-
-<div id="notesSect" style="clear: both">
+        
+        <form id="noteForm">
+         <div id="notesSect" style="clear: both">
           <h2>
             <span>Notes</span>
             <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
@@ -178,15 +189,17 @@
             </tr>
             {{#each current.notes:j}}
               <tr>
-                <td>{{created}}</td>
-                <td>{{author}}</td>
-                <td>{{content}}</td>
+                <td class="field-age">{{age(created)}}</td>
+                <td class="field-author">{{author}}</td>
+                <td class="field-text">{{content}}</td>
               </tr>
             {{/each}}
           </tbody></table>
-        </div>
-      
-        <div id="documentSect" style="clear: both">
+         </div>
+        </form>
+
+        <form id="documentForm">
+         <div id="documentSect" style="clear: both">
           <h2>
             <span>Documents</span>
             <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')"></span>
@@ -207,8 +220,8 @@
               </tr>
             {{/each}}
           </tbody></table>
-        </div>
-
+         </div>
+        </form>
 
       </section>
 
@@ -245,11 +258,12 @@
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
   -->
   <script src="js/ractive.min.js"></script>
+  <script src="js/login-0.1.0.js"></script>
   <script src="js/custmgmt-0.1.0.js"></script>
   <script>
     $(document).ready(function() {
       ractive.set('tenant', { 
-        name: 'omny', 
+        id: 'omny', 
         typeaheadControls: [
           { selector: '#curEnquiryType', url: '/data/omny/enquiry-types.json'},
           { selector: '#curMedium', url: '/data/media.json'},

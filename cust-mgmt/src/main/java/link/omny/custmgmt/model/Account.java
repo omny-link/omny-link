@@ -89,6 +89,8 @@ public class Account implements Serializable {
     private String tenantId;
 
     @OneToMany(mappedBy = "account", targetEntity = Contact.class)
+    // TODO See Contact.account for details of limitation
+    // @JsonBackReference
     private List<Contact> contact;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -115,6 +117,12 @@ public class Account implements Serializable {
 
     public void addCustomField(CustomAccountField customField) {
         getCustomFields().add(customField);
+    }
+
+    public void setField(String key, Object value) {
+        getCustomFields().add(
+                new CustomAccountField(key, value == null ? null : value
+                        .toString()));
     }
 
 }

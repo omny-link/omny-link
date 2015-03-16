@@ -1,4 +1,6 @@
 [
-  {  "name": "Enquiry Type A"  },
-  {  "name": "Enquiry Type B"  }
+  {  "name": "Information Memorandum"  },
+  {  "name": "Negotiation"  },
+  {  "name": "Sale"  },
+  {  "name": "Valuation"  }
 ]

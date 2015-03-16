@@ -26,6 +26,10 @@
        just about anything except 'text/javascript'
   -->
   <script id='template' type='text/ractive'>
+    <div class="profile pull-right">
+      <span>Logged in as: {{username}}</span>
+      <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+    </div>
     <h1>
       <a class="nav navbar-brand" href="http://omny.link">
         <img src="/images/gardenatics-logo.png" alt="logo"/>
@@ -149,11 +153,12 @@
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
   -->
   <script src="js/ractive.min.js"></script>
+  <script src="js/login-0.1.0.js"></script>
   <script src="js/custmgmt-0.1.0.js"></script>
   <script>
     $(document).ready(function() {
       ractive.set('tenant', { 
-        name: 'gardenatics',
+        id: 'gardenatics',
         typeaheadControls: [
           { selector: '#curEnquiryType', url: '/data/gardenatics/enquiry-types.json'},
           { selector: '#curMedium', url: '/data/media.json'},

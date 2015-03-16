@@ -19,7 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @author tstephen
  */
 @Component
-@Order(value = 100)
+@Order(value = 10000)
 public class TenantFilter extends OncePerRequestFilter {
 
     protected static final String CUSTOM_HEADER = "X-Tenant";
