@@ -21,7 +21,6 @@ import com.knowprocess.resource.spi.Resource;
 
 public class UrlResource implements Resource {
     public static final String HEADER_CONTENT_TYPE = "Content-Type";
-    private static final String LINE_FEED = "\r\n";
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(UrlResource.class);
@@ -47,36 +46,6 @@ public class UrlResource implements Resource {
         this();
         this.username = username.trim();
         this.password = password.trim();
-    }
-
-    /**
-     * Adds a form field to the request
-     * 
-     * @param name
-     *            field name
-     * @param value
-     *            field value
-     * @return
-     */
-    private String getFormField(String name, String value) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("--" + boundary).append(LINE_FEED);
-        sb.append("Content-Disposition: form-data; name=\"" + name + "\"")
-                .append(LINE_FEED);
-        // sb.append("Content-Type: text/plain; charset=" + charset).append(
-        // LINE_FEED);
-        sb.append(LINE_FEED);
-        sb.append(value).append(LINE_FEED);
-        return sb.toString();
-    }
-
-
-    private String toBytes(Map<String, String> data) {
-        StringBuilder sb = new StringBuilder(); 
-        for (Map.Entry<String, String> d : data.entrySet()) {
-            sb.append(getFormField(d.getKey(), d.getValue()));
-        }
-        return sb.toString();
     }
 
     private String urlEncode(Map<String, String> data)
@@ -121,26 +90,30 @@ public class UrlResource implements Resource {
         URL url;
         HttpURLConnection connection = null;
         InputStream is = null;
+        Scanner scanner = null; 
         try {
             // Create connection
             url = new URL(sUrl);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(method);
-            String contentType = headers.get("Content-Type");
+            String contentType = headers.get(HEADER_CONTENT_TYPE);
             if ("multipart/form-data".equals(contentType)) {
                 contentType += ("; boundary=" + boundary);
-                headers.put("Content-Type", contentType);
+                headers.put(HEADER_CONTENT_TYPE, contentType);
             }
 
-            for (Entry<String, String> h : headers.entrySet()) {
-                connection.setRequestProperty(h.getKey(), h.getValue());
+            if (!headers.containsKey("User-Agent")) {
+                headers.put("User-Agent", "KnowProcess Agent");
             }
-
-            connection.setRequestProperty("User-Agent", "KnowProcess Agent");
 
             if (username != null) {
-                connection.setRequestProperty("Authorization",
+                headers.put("Authorization",
                         getBasicAuthorizationHeader(username, password));
+            }
+
+            logHeaders(headers);
+            for (Entry<String, String> h : headers.entrySet()) {
+                connection.setRequestProperty(h.getKey(), h.getValue());
             }
 
             connection.setUseCaches(false);
@@ -150,7 +123,7 @@ public class UrlResource implements Resource {
             // Send request
             if (data != null && data.length() > 0) {
                 String contentLength = Integer.toString(data.length());
-                LOGGER.debug("Content-Length: " + contentLength);
+                LOGGER.debug("  Content-Length: " + contentLength);
                 connection.setRequestProperty("Content-Length", contentLength);
                 // connection.setRequestProperty("Content-Language", "en-US");
                 LOGGER.debug("=================== Data ======================");
@@ -167,32 +140,51 @@ public class UrlResource implements Resource {
             Map<String, List<String>> headerFields = connection
                     .getHeaderFields();
             LOGGER.info(String.format("Response code: %1$d", code));
-            if (LOGGER.isDebugEnabled()) {
-                for (Entry<String, List<String>> header : headerFields
-                        .entrySet()) {
-                    LOGGER.debug(String.format("  %1$s:%2$s", header.getKey(),
-                            header.getValue()));
-                }
-            }
+            logHeaderArrays(headerFields);
+
             responseHeaders.putAll(headerFields);
             if (code >= HttpURLConnection.HTTP_BAD_REQUEST) {
                 is = connection.getInputStream();
-                String response = new Scanner(is).useDelimiter("\\A").next();
+                scanner = new Scanner(is);
+                String response = scanner.useDelimiter("\\A").next();
                 LOGGER.error("Response: " + response);
-                throw new IOException(String.valueOf(code));
+                throw new IOException(String.valueOf(code) + " " + response);
             }
             is = connection.getInputStream();
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
-            // TODO log and potentially rethrow
-            e.printStackTrace();
+            LOGGER.error(e.getClass().getName() + ": " + e.getMessage(), e);
         } finally {
             // if (connection != null) {
             // connection.disconnect();
             // }
+            try {
+                scanner.close();
+            } catch (Exception e) {
+                ;
+            }
         }
         return is;
+    }
+
+    private void logHeaders(Map<String, String> headerFields) {
+        if (LOGGER.isDebugEnabled()) {
+            for (Entry<String, String> header : headerFields.entrySet()) {
+                LOGGER.debug(String.format("  %1$s:%2$s", header.getKey(),
+                        header.getValue()));
+            }
+        }
+    }
+
+    private void logHeaderArrays(Map<String, List<String>> headerFields) {
+        if (LOGGER.isDebugEnabled()) {
+            for (Entry<String, List<String>> header : headerFields
+                    .entrySet()) {
+                LOGGER.debug(String.format("  %1$s:%2$s", header.getKey(),
+                        header.getValue()));
+            }
+        }
     }
 
     public static String getBasicAuthorizationHeader(String username,
@@ -200,7 +192,6 @@ public class UrlResource implements Resource {
         String userpass = username.trim() + ":" + password.trim();
         String basicAuth = "Basic "
                 + new String(new Base64().encode(userpass.getBytes())).trim();
-        System.out.println(String.format("Authorization: '%1$s'", basicAuth));
         return basicAuth;
     }
 

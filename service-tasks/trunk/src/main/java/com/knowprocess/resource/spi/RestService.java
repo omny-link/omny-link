@@ -14,10 +14,14 @@ import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.impl.context.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.knowprocess.resource.internal.UrlResource;
 
 public abstract class RestService implements JavaDelegate {
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(RestService.class);
 
     protected Expression resourceUsername;
     protected Expression resourcePassword;
@@ -110,14 +114,13 @@ public abstract class RestService implements JavaDelegate {
             // String bytes = URLEncoder.encode(
             // (String) data.getValue(execution), "UTF-8");
             String bytes = data.toString();
-            System.out.println("Content-Length: "
+            LOGGER.debug("  Content-Length: "
                     + Integer.toString(bytes.length()));
             connection.setRequestProperty("Content-Length",
                     "" + Integer.toString(bytes.length()));
             // connection.setRequestProperty("Content-Language", "en-US");
-            System.out
-                    .println("==================== Data =======================");
-            System.out.println(bytes);
+            LOGGER.debug("==================== Data =======================");
+            LOGGER.debug(bytes);
     
             DataOutputStream wr = new DataOutputStream(
                     connection.getOutputStream());
@@ -139,6 +142,10 @@ public abstract class RestService implements JavaDelegate {
 
         Map<String, String> headerMap = getRequestHeaders(headers);
         for (Entry<String, String> h : headerMap.entrySet()) {
+            if (LOGGER.isDebugEnabled()) { 
+                LOGGER.debug(String.format("  %1$s: %2$s", h.getKey(),
+                        h.getValue()));
+            }
             connection.setRequestProperty(h.getKey(), h.getValue());
         }
     }

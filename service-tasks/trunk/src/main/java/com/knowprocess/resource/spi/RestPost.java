@@ -28,7 +28,7 @@ public class RestPost extends RestService implements JavaDelegate {
                 : resourceUsername.getValue(execution));
         String pwd = (String) (resourcePassword == null ? null
                 : resourcePassword.getValue(execution));
-        LOGGER.info("POSTing to " + resource + " as " + usr);
+        LOGGER.info(String.format("POSTing to %1$s as %2$s", resource, usr));
 
         String response = null;
         InputStream is = null;
@@ -49,23 +49,31 @@ public class RestPost extends RestService implements JavaDelegate {
                 is = getUrlResource(usr, pwd).getResource(resource, "POST",
                         requestHeaders, responseHeaders2,
                         getStringFromExpression(data, execution));
-                LOGGER.debug("ResponseHeaders: " + responseHeaders2);
+                LOGGER.debug(String.format("ResponseHeaders: %1$s",
+                        responseHeaders2));
                 String[] sought = getResponseHeadersSought(execution);
                 for (String s : sought) {
                     String hdr = s.substring(s.indexOf('=') + 1);
+                    LOGGER.debug("Seeking header: " + hdr);
                     if (responseHeaders2.containsKey(hdr)) {
+                        LOGGER.debug(String.format(
+                                "  ... setting: %1$s to %2$s",
+                                s.substring(0, s.indexOf('=')),
+                                responseHeaders2.get(hdr).get(0)));
                         execution.setVariable(s.substring(0, s.indexOf('=')),
                                 responseHeaders2.get(hdr).get(0));
                     }
                 }
             }
 
-            if (responseVar != null) {
+            if (responseVar == null) {
+                LOGGER.debug("No response variable requested");
+            } else {
                 response = new Scanner(is).useDelimiter("\\A").next();
-                LOGGER.debug("response: " + response);
                 execution
                         .setVariable(responseVar.getExpressionText(), response);
-
+                LOGGER.debug(String.format("Setting %1$s to %2$s",
+                        responseVar.getExpressionText(), response));
             }
             // setVarsFromResponseHeaders();
         } catch (Exception e) {
@@ -100,10 +108,10 @@ public class RestPost extends RestService implements JavaDelegate {
         List<String> ff = Arrays.asList(formFieldExpression.split(","));
         Map<String, String> data = new HashMap<String, String>();
         for (String field : ff) {
-            System.out.println("Field expression: " + field);
+            LOGGER.debug(String.format("Field expression: %1$s", field));
             String tmp = getStringFromExpression(getExpression(field),
                     execution);
-            System.out.println("Field: " + tmp);
+            LOGGER.debug(String.format("Field: %1$s", tmp));
             String name = tmp.substring(0, tmp.indexOf('='));
             String value = tmp.substring(tmp.indexOf('=') + 1);
             value = evalExpr(execution, value);

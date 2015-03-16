@@ -45,10 +45,11 @@ public class RestPut extends RestService implements JavaDelegate {
             sendData(connection, data.getValue(execution));
 
             int code = connection.getResponseCode();
-            LOGGER.debug("response code = " + code);
             if (code >= HttpURLConnection.HTTP_BAD_REQUEST) {
                 LOGGER.error("Response code: " + code);
                 throw new IOException(String.valueOf(code));
+            } else {
+                LOGGER.debug("Response code = " + code);
             }
             // is = connection.getInputStream();
         } catch (IOException e) {
