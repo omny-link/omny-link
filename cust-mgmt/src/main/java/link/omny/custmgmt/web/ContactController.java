@@ -1,12 +1,22 @@
 package link.omny.custmgmt.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.Note;
+import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.repositories.NoteRepository;
+import lombok.Data;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * REST web service for uploading and accessing a file of JSON Contacts (over
- * and above the CRUD offererd by spring data).
+ * and above the CRUD offered by spring data).
  * 
  * /models/upload?file={file} Add a model POST file: A file posted in a
  * multi-part request
@@ -25,26 +35,31 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Tim Stephenson
  */
 @Controller
-@RequestMapping(value = "/alt-contacts")
+@RequestMapping(value = "/{tenantId}/contacts")
 public class ContactController {
 
-    private static final Logger LOGGER = Logger
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(ContactController.class);
 
     @Autowired
     private ContactRepository repo;
 
+    @Autowired
+    private AccountRepository accountRepo;
+
+    @Autowired
+    private NoteRepository noteRepo;
+
     /**
      * Adds a model to the repository.
-     * 
-     * Url: /models/upload?file={file} [POST]
      * 
      * @param file
      *            A file posted in a multi-part request
      * @return The meta data of the added model
      */
-    @RequestMapping(value = "/contacts/upload", method = RequestMethod.POST)
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public @ResponseBody List<Contact> handleFileUpload(
+            @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file) {
 
         try {
@@ -65,12 +80,10 @@ public class ContactController {
     /**
      * Return just the contacts for a specific tenant.
      * 
-     * Url: /{tenantId}/contacts [GET]
-     * 
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/{tenantId}/contacts", method = RequestMethod.GET)
-    public @ResponseBody List<Contact> listForTenant(
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public @ResponseBody List<ShortContact> listForTenant(
             @PathVariable("tenantId") String tenantId) {
 
         LOGGER.info(String.format("List contacts for tenant %1$s", tenantId));
@@ -78,6 +91,109 @@ public class ContactController {
         List<Contact> list = repo.findAllForTenant(tenantId);
         LOGGER.info(String.format("Found %1$s contacts", list.size()));
 
-        return list;
+        return wrap(list);
     }
+
+    /**
+     * Return just the matching contacts (probably will be one in almost every
+     * case).
+     * 
+     * @return contacts for that tenant.
+     */
+    @RequestMapping(value = "/searchByAccountNameLastNameFirstName", 
+            method = RequestMethod.GET, 
+            params = { "accountName", "lastName", "firstName" })
+    public @ResponseBody List<ShortContact> listForAccountNameLastNameFirstName(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam("lastName") String lastName,
+            @RequestParam("firstName") String firstName,
+            @RequestParam("accountName") String accountName) {
+
+        LOGGER.debug(String.format(
+                "List contacts for account and name %1$s, %2$s %3$s",
+                accountName, lastName, firstName));
+
+        List<Contact> list = repo.findByFirstNameLastNameAndAccountName(
+                firstName, lastName, accountName);
+        LOGGER.info(String.format("Found %1$s contacts", list.size()));
+
+        return wrap(list);
+    }
+
+    /**
+     * Return just the matching contacts (probably will be one in almost every
+     * case).
+     * 
+     * @return contacts for that tenant.
+     */
+    @RequestMapping(value = "/{lastName}/{firstName}/{accountName}", method = RequestMethod.GET)
+    public @ResponseBody List<ShortContact> getForAccountNameLastNameFirstName(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountName") String accountName,
+            @PathVariable("lastName") String lastName,
+            @PathVariable("firstName") String firstName) {
+
+        return listForAccountNameLastNameFirstName(tenantId, lastName,
+                firstName, accountName);
+    }
+
+    /**
+     * Return just the matching contacts (probably will be one in almost every
+     * case).
+     * 
+     * @return contacts for that tenant.
+     */
+    @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.POST)
+    public @ResponseBody Note addNote(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("contactId") Long contactId,
+            @RequestParam("author") String author,
+            @RequestParam("content") String content) {
+
+        Note note = new Note(author, content);
+        noteRepo.save(note);
+        return note;
+    }
+
+    private List<ShortContact> wrap(List<Contact> list) {
+        List<ShortContact> resources = new ArrayList<ShortContact>(list.size());
+        for (Contact contact : list) {
+            resources.add(wrap(contact));
+        }
+        return resources;
+    }
+
+    private ShortContact wrap(Contact contact) {
+        ShortContact resource = new ShortContact();
+        resource.setFirstName(contact.getFirstName());
+        resource.setLastName(contact.getLastName());
+        resource.setEmail(contact.getEmail());
+        resource.setOwner(contact.getOwner());
+        resource.setStage(contact.getStage());
+        Link detail = linkTo(ContactRepository.class, contact.getId())
+                .withSelfRel();
+        resource.add(detail);
+        if (contact.getAccount() != null) {
+            resource.setAccountName(contact.getAccount().getName());
+            resource.add(linkTo(AccountRepository.class,
+                    contact.getAccount().getId()).withRel("account"));
+        }
+        return resource;
+    }
+    
+    
+    private Link linkTo(Class<? extends CrudRepository> clazz, Long id) {
+        return new Link(clazz.getAnnotation(RepositoryRestResource.class)
+                .path() + "/" + id);
+    }
+
+    @Data
+    public static class ShortContact extends ResourceSupport {
+        private String firstName;
+        private String lastName;
+        private String email;
+        private String accountName;
+        private String owner;
+        private String stage;
+      }
 }

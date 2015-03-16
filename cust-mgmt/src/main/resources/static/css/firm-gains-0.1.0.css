@@ -72,6 +72,7 @@ body {
 }
 h1 { 
 	color: #75bfe2;
+	margin-bottom: 50px;
 }
 h2 { 
 	font-size: 24px;
@@ -79,6 +80,36 @@ h2 {
 input,select,textarea { 
 	margin: 0 5px 0 5px;
 	padding: 0 10px 0 10px;
+}
+input.field-error:invalid,
+select.field-error:invalid,
+textarea.field-error:invalid {
+  border: solid 3px #f33;
+}
+
+input:focus:invalid,
+select:focus:invalid,
+textarea:focus:invalid {
+  border: solid 3px #f33 ;
+}
+
+input ~ .field-hint,
+select ~ .field-hint,
+textarea ~ .field-hint {
+  visibility: hidden ;
+  line-height: 0em;
+}
+
+input:focus:invalid ~ .field-hint,
+select:focus:invalid ~ .field-hint,
+textarea:focus:invalid ~ .field-hint {
+  color: #f33 ;
+  visibility: visible ;
+  line-height: 1.5em;
+}
+label.required::after {
+  color: red;
+  content: '*';
 }
 section h2 {
   background-color: #0379a1;
@@ -119,6 +150,14 @@ th {
   background-color:#87a956;
   color: #666666; 	
 }
+.field-age { 
+	width:15%
+}
+.field-author { 
+  width:15%
+}
+.field-text { 
+}
 .glyphicon { 
 	font-size: 20px;
   border: solid 1px;
@@ -128,6 +167,12 @@ th {
 }
 #messages { 
 	padding-top: 20px;
+	position: fixed;
+	top: 45px;
+	margin-left: 25%;
+	margin-right: 25%;
+	width: 50%;
+	z-index: 10;
 }
 .navbar-brand { 
 	padding: 0;
@@ -196,4 +241,10 @@ th {
 }
 .powered-by-text { 
 	color:#6f6f71;font-size:36px;font-style:italic;
+}
+.profile {
+	background-color: #aedef6;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
+	padding: 0 20px;	
 }

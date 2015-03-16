@@ -3,19 +3,21 @@
 <head>
   <meta charset='utf-8'>
   <title>Customer Management</title>
+  <!-- 
+  <link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Lato:400italic,400' rel='stylesheet' type='text/css'>
+  -->
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/firm-gains-0.1.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/firm-gains-icon-16x16.png" />
 </head>
-<body>
-  <div class="clearfix" id="messages">
-     <p class=" bg-danger text-danger">Beta! Please ensure you have backups!</p>
-  </div>
+
 <!--
   1. This is the element we'll render our Ractive to.
 -->
-<div class="container" id="container"></div>
+<body class="container" id="container">
 
   <!--
        2. You can load a template in many ways. For convenience, we'll include it in
@@ -34,6 +36,9 @@
       </a>
       <span>Customer Management</span>
     </h1>
+    <div class="clearfix" id="messages">
+       <p class=" bg-danger text-danger">Beta! Please ensure you have backups!</p>
+    </div>
     
       <section id="contactsSect">
         <h2>
@@ -61,13 +66,13 @@
                   || this.email.toLowerCase().indexOf(searchTerm.toLowerCase())===0
                   || this.account.name.toLowerCase().indexOf(searchTerm.toLowerCase())===0
                 ) }}
-              <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
+              <tr data-href="{{_links.self.href}}" on-click="edit(this)">
                 <td>{{i+1}}</td>
                 <td>{{firstName}} {{lastName}}</td>
-                <td>{{account == undefined ? accountName : account.name}}</td>
+                <td>{{account.name}}</td>
                 <td>{{owner}}</td>
                 <td>
-                  <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)"></span>
+                  <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('{{_links.self.href}}')"></span>
                   <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 </td>
               </tr>
@@ -102,20 +107,14 @@
             <ul class="form edit-form">
               <li><label>Owner:</label><input id="curOwner" value="{{current.owner}}"/></li>
               <li><label>Stage:</label><input class="typeahead" id="curStage" value="{{current.stage}}"></li>
-              <li><label>Enquiry Type:</label><input class="typeahead" id="curEnquiryType" value="{{current.enquiryType}}"></li>
-              <li><label>Partner:</label><input id="curAccountType" value="{{current.account.customFields['accountType']}}"/></li>
-              <li><label>Partners Contacted:</label><input id="curPartnersContacted" value="{{current.account.customFields['partnersContacted']}}"/></li>              
               <li><label>Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
               <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
-              <li><label>Campaign:</label><input id="curCampaign" value="{{current.campaign}}"></li>
-              <li><label>Keyword:</label><input id="curKeyword" value="{{current.keyword}}"></li>
             </ul>
           </div>
         </form>
-
         <form id="currentAccountForm">
           <div id="currentAccount" style="clear: both">
-
+            
             <h2 class="form">Account</h2>
 
             <div class="col-md-6">
@@ -128,8 +127,7 @@
             <div class="col-md-6">
               <ul class="form edit-form">
                 <li><label>Also known as:</label><input id="curAliases" value="{{current.account.aliases}}"></li>
-                <li><label>No. of employees:</label><input id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/></li>
-                <li><label>Established:</label><input id="curIncorporationYear" pattern="[0-9]{4}" placeholder="yyyy" value="{{current.account.incorporationYear}}"/></li>
+                <li><label>No. of employees:</label><input id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/>
               </ul>
             </div>
           </div>
@@ -142,7 +140,7 @@
           </div>
 
           <div id="currentAccountExtended" style="clear: both">
-            {{>(tenant.id+'AccountExtension')}}
+            {{>(tenant.name+'AccountExtension')}}
 
             <!-- TODO General purpose account extension if no dedicated one available 
             {{#if tenant.accountFields}}
@@ -151,68 +149,16 @@
                   <span>Business Info</span>
                 </h2>
 
-                <!- - first column - ->  
+                <!-- first column - ->  
                 {{>column {object: current.account, fields: tenant.accountFields.slice(0,Math.floor(tenant.accountFields.length/2))} }}
 
-                <!- - second column - ->  
+                <!-- second column - ->  
                 {{>column {object: current.account, fields: tenant.accountFields.slice(Math.ceil(tenant.accountFields.length/2),tenant.accountFields.length)} }}
 
               </div>
             {{/if}}-->
           </div>
 
-        </form>
-	  
-	  <div style="clear: both"></div>
-
-        <form id="noteForm">
-         <div id="notesSect" style="clear: both">
-          <h2>
-            <span>Notes</span>
-            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
-          </h2>
-          <table id="notesTable" class="table table-striped"><tbody>
-            <tr style="display:none;">
-              <td colspan="3">
-                <textarea id="note" on-blur="saveNote()" placeholder="Type your note here" required style="width:100%;"></textarea>
-                <br/>
-                <a onclick="$('#notesTable tr:nth-child(1)').slideUp();">Cancel</a>
-              </td>
-            </tr>
-            {{#each current.notes:j}}
-              <tr>
-                <td class="field-age">{{age(created)}}</td>
-                <td class="field-author">{{author}}</td>
-                <td class="field-text">{{content}}</td>
-              </tr>
-            {{/each}}
-          </tbody></table>
-         </div>
-        </form>
-
-        <form id="documentForm">
-         <div id="documentSect" style="clear: both">
-          <h2>
-            <span>Documents</span>
-            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')"></span>
-          </h2>
-          <table id="docsTable" class="table table-striped"><tbody>
-            <tr style="display:none;">
-              <td colspan="3">
-                <input id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required style="width:100%;"/>
-                <br/>
-                <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
-              </td>
-            </tr>
-            {{#each current.documents:k}}
-              <tr>
-                <td>{{created}}</td>
-                <td>{{author}}</td>
-                <td>{{url}}</td>
-              </tr>
-            {{/each}}
-          </tbody></table>
-         </div>
         </form>
 
       </section>
@@ -227,12 +173,10 @@
             <li><label>Low Quote:</label><input id="curLowQuote" value="{{current.account.customFields['lowQuote']}}"/></li>
             <li><label>Medium Quote:</label><input id="curMediumQuote" value="{{current.account.customFields['mediumQuote']}}"/></li>
             <li><label>High Quote:</label><input id="curHighQuote" value="{{current.account.customFields['highQuote']}}"/></li>
-            <!--li><button on-click="">Calc</button></li>-->
           </ul>
         </div> 
         <div class="col-md-6">
           <ul class="form edit-form">
-            <li><label>Share of Business:</label><input id="curShareOfBusiness" value="{{current.account.customFields['shareOfBusiness']}}"></li>
             <li><label>Asking Price:</label><input id="curAskingPrice" value="{{current.account.customFields['askingPrice']}}"></li>
             <li><label>Preferred Timing:</label><input id="curPreferredTiming" value="{{current.account.customFields['preferredTiming']}}"/></li>
           </ul>
@@ -240,9 +184,10 @@
       </div>
 
       <div class="col-md-12" id="currentAccountExtended">
-        <h2 class="form"><span>Business Information</span></h2> 
+        <h2 class="form"><span>More...</span></h2> 
         <div class="col-md-6">
           <ul class="form edit-form">
+            <li><label>Account Type:</label><input id="curAccountType" value="{{current.account.customFields['accountType']}}"/></li>
 <!--            
 <li><label>Stage in Sale:</label><input id="curStageInSale" value="{{current.account.customFields['stageInSale']}}"/></li>
             --><li><label>Region:</label><input id="curRegion" value="{{current.account.customFields['region']}}"/></li>
@@ -261,13 +206,13 @@
 <fieldset>
           <legend>Furthermore...</legend>
         
-          <li><label>Already Contacted:</label><textarea cols="80" id="curAlreadyContacted" value="{{current.account.customFields['alreadyContacted']}}"></textarea></li>
           <li><label>Reason for Selling:</label><textarea cols="80" id="curReasonForSale" value="{{current.account.customFields['reasonForSale']}}"></textarea></li>
           <li><label>Potential Purchasers:</label><textarea cols="80" id="curPotentialPurchasers" value="{{current.account.customFields['potentialPurchasers']}}"></textarea></li>
           <li><label>Property Info:</label><textarea cols="80" id="curPropertyInfo" value="{{current.account.customFields['propertyInfo']}}"></textarea></li>
 </fieldset>
         </ul>
       </div>
+
 
       <div class="col-md-12" id="currentAccountFinancials">
         <h2 class="form"><span>Financials</span></h2> 
@@ -276,7 +221,6 @@
             <li><label>EBITDA:</label><input id="curUnknown" value="{{current.account.customFields['ebitda']}}"/></li>
             <li><label>Surplus:</label><input id="curSurplus" value="{{current.account.customFields['surplus']}}"/></li>
             <li><label>Depreciation:</label><input id="curDepreciation" value="{{current.account.customFields['depreciationAmortisation']}}"/></li>
-            <li><label>Assets:</label><input id="curAssets" value="{{current.account.customFields['assets']}}"/></li>
           </ul>
         </div> 
         <div class="col-md-6">
@@ -289,9 +233,9 @@
         <div class="col-md-12">
           <fieldset>
             <legend>Current Year</legend>
-            <label>Financial Year:</label><input id="curCurrentFinancialYear" value="{{current.account.customFields['currentFinancialYear']}}"/>
-            <label>Turnover:</label><input id="curCurrentTurnover" value="{{current.account.customFields['currentTurnover']}}"/>
-            <label>Profit:</label><input id="curCurrentProfit" value="{{current.account.customFields['currentProfit']}}"/>
+            <label>Financial Year:</label><input id="curUnknown" value="{{current.account.customFields['currentFinancialYear']}}"/>
+            <label>Turnover:</label><input id="curUnknown" value="{{current.account.customFields['currentTurnover']}}"/>
+            <label>Profit:</label><input id="curUnknown" value="{{current.account.customFields['currentProfit']}}"/>
           </fieldset>
           <fieldset>
             <legend>Last Year</legend>
@@ -339,64 +283,23 @@
   -->
   <script src="js/ractive.min.js"></script>
   <script src="js/login-0.1.0.js"></script>
-  <script src="js/i18n.js"></script>
   <script src="js/custmgmt-0.1.0.js"></script>
   <script>
     $(document).ready(function() {
-      ractive.data.saveObserver = false;
-
       ractive.set('tenant', { 
-        id: 'firmgains', 
-        accountFields: [ 
-          { label: 'EBITDA', key: 'ebitda'},
-          { label: 'Surplus', key: 'surplus'},
-          { label: 'Depreciation', key: 'depreciationAmortisation'},
-          { label: 'Operating Profit', key: 'operatingProfit'},
-          { label: 'Adjustments', key: 'adjustments'},
-          { label: 'Borrowing', key: 'borrowing'},
-          { label: 'Low Quote', key: 'lowQuote'},
-          { label: 'Medium Quote', key: 'mediumQuote'},
-          { label: 'High Quote', key: 'highQuote'},
-          { label: 'Asking Price', key: 'askingPrice'},
-          { label: 'Share of Business', key: 'shareOfBusiness'},
-          { label: 'Property Info', key: 'propertyInfo'},
-          { label: 'Reason for Selling', key: 'reasonForSelling'},
-          { label: 'Potential Purchasers', key: 'potentialPurchasers'},
-          { label: 'Already Contacted', key: 'alreadyContacted'},
-          { label: 'Sub-Sector', key: 'subSector'},
-          { label: 'Assets', key: 'assets'},
-          { label: 'Preferred Timing', key: 'preferredTiming'},
-          { label: 'Account Type', key: 'accountType'},
-          { label: 'Sector', key: 'sector'},
-          { label: 'Stage in Sale', key: 'saleStage'},
-          { label: 'Region', key: 'region'},
-          { label: 'Current Financial Year', key: 'currentFinancialYear'},
-          { label: 'Current Turnover', key: 'currentTurnover'},
-          { label: 'Current Profit', key: 'currentProfit'},
-          { label: 'Last Financial Year', key: 'lastFinancialYear'},
-          { label: 'Last Turnover', key: 'lastTurnover'},
-          { label: 'Last Profit', key: 'lastProfit'},
-          { label: 'Previous Financial Year', key: 'previousFinancialYear'},
-          { label: 'Previous Turnover', key: 'previousTurnover'},
-          { label: 'Previous Profit', key: 'previousProfit'}
-        ],        
+        name: 'firmgains', 
         typeaheadControls: [
           { selector: '#curEnquiryType', url: '/data/firmgains/enquiry-types.json'},
           { selector: '#curMedium', url: '/data/media.json'},
           { selector: '#curSource', url: '/data/sources.json'},
-          { selector: '#curStage', url: '/data/firmgains/stages.json'},
-          { selector: '#curAccountType', url: '/data/firmgains/account-types.json'},
-          { selector: '#curRegion', url: '/data/firmgains/regions.json'},
-          { selector: '#curSector', url: '/data/firmgains/sectors.json'},
-          { selector: '#curPreferredTiming', url: '/data/firmgains/timings.json'}
+          { selector: '#curStage', url: '/data/stages.json'}
         ]
       });
       $.ajaxSetup({
-        headers: {'X-Tenant': ractive.data.tenant.id}
+        headers: {'X-Tenant': ractive.data.tenant.name}
       });
       ractive.fetch();
       ractive.initAutoComplete();
-      ractive.data.saveObserver = true;
     });
   </script>
 

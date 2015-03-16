@@ -33,8 +33,6 @@ public interface ContactAndAccountProjection {
 
     String getEnquiryType();
 
-    double getBudget();
-
     String getStage();
 
     String getOwner();

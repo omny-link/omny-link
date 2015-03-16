@@ -114,9 +114,6 @@ public class Contact implements Serializable {
     private String enquiryType;
 
     @JsonProperty
-    private double budget;
-
-    @JsonProperty
     private String stage;
 
     @JsonProperty
@@ -168,9 +165,9 @@ public class Contact implements Serializable {
         if (customFields == null) {
             customFields = new ArrayList<CustomContactField>();
         }
-        if (customFields.size() > 0) {
+        // if (customFields.size() > 0) {
             // extension = new Extension(customFields);
-        }
+        // }
         return customFields;
     }
 
@@ -194,8 +191,21 @@ public class Contact implements Serializable {
     }
 
     @JsonProperty
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true)
+    @ManyToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.EAGER)
     @NotFound(action = NotFoundAction.IGNORE)
+    // TODO this fixes the inifite recursion but instead we get
+    // [2015-03-04 15:09:15.977] boot - 15472 ERROR [http-nio-8082-exec-7] ---
+    // AbstractRepositoryRestController: Can not handle managed/back reference
+    // 'defaultReference': type: value deserializer of type
+    // org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$UriStringDeserializer
+    // does not support them
+    // java.lang.IllegalArgumentException: Can not handle managed/back reference
+    // 'defaultReference': type: value deserializer of type
+    // org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$UriStringDeserializer
+    // does not support them
+    // at
+    // com.fasterxml.jackson.databind.JsonDeserializer.findBackReference(JsonDeserializer.java:310)
+    // @JsonManagedReference
     private Account account;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
@@ -216,6 +226,12 @@ public class Contact implements Serializable {
                     "Overwriting update date %1$s with 'now'.", lastUpdated));
         }
         lastUpdated = new Date();
+    }
+
+    public void setField(String key, Object value) {
+        getCustomFields().add(
+                new CustomContactField(key, value == null ? null : value
+                        .toString()));
     }
 
 }

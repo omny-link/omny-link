@@ -9,6 +9,9 @@ import java.util.Map.Entry;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomContactField;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
@@ -18,15 +21,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonContactDeserializer extends JsonDeserializer<Contact> {
 
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(JsonContactDeserializer.class);
+
     private static final List<String> FIELDS = Arrays.asList(new String[] {
             "firstName", "lastName", "title", "email", "landLine", "mobile",
             "address1", "address2", "countyOrCity", "postCode", "enquiryType",
-            "budget", "stage", "owner", "source", "medium", "firstContact",
+            "stage", "owner", "source", "medium", "firstContact",
             "lastUpdated", "tenantId" });
 
     @Override
     public Contact deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
+        LOGGER.debug("Deserializing: " + jp.toString());
+
         ObjectCodec oc = jp.getCodec();
         JsonNode node = oc.readTree(jp);
 
@@ -53,8 +61,6 @@ public class JsonContactDeserializer extends JsonDeserializer<Contact> {
                 "postCode").asText());
         contact.setEnquiryType(node.get("enquiryType") == null ? null : node
                 .get("enquiryType").asText());
-        // contact.setBudget(node.get("budget") == null ? null : node
-        // .get("budget").asDouble());
         contact.setStage(node.get("stage") == null ? null : node.get("stage")
                 .asText());
         contact.setOwner(node.get("owner") == null ? null : node.get("owner")
@@ -76,6 +82,7 @@ public class JsonContactDeserializer extends JsonDeserializer<Contact> {
                         entry.getValue().asText()));
             }
         }
+        LOGGER.debug("Found: " + contact);
         return contact;
     }
 

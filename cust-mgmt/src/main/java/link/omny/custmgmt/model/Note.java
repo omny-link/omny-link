@@ -53,4 +53,10 @@ public class Note {
     void preInsert() {
         created = new Date();
     }
+
+    public Note(String author, String content) {
+        super();
+        setAuthor(author);
+        setContent(content);
+    }
 }

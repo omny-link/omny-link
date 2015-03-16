@@ -73,9 +73,19 @@ h1 {
 h2 { 
 	font-size: 24px;
 }
+img.entity-context {
+  width: 90%;	
+}
 input,select,textarea { 
 	margin: 0 5px 0 5px;
 	padding: 0 10px 0 10px;
+}
+label.required::after {
+  color: red;
+  content: '*';
+}
+section .active {
+	display: inline;
 }
 section h2 {
   border-bottom: solid 1px #ff6c06;
@@ -211,4 +221,7 @@ th {
 }
 .powered-by-text { 
 	color:#6f6f71;font-size:36px;font-style:italic;
+}
+.profile { 
+	font-style: italic;
 }
