@@ -41,6 +41,8 @@ public class CorsFilter extends OncePerRequestFilter {
 
     protected static final String EXPOSE_HEADERS = "Access-Control-Expose-Headers";
 
+    protected static final String ALLOW_CREDENTIALS_HEADER = "Access-Control-Allow-Credentials";
+
     /**
      * Defaults: null,https?://localhost.*,https?://.*knowprocess
      * .com.*,chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm
@@ -108,13 +110,10 @@ public class CorsFilter extends OncePerRequestFilter {
                             ALLOW_HEADERS,
                             "Accept, Accept-Encoding, Accept-Language, Access-Control-Request-Headers, Access-Control-Request-Method, Authorization, Cache-Control, Connection, Content-Type, Host, Location, Origin, Referer, User-Agent");
                     addOnlyOneHeader(response, EXPOSE_HEADERS, "Location");
+                    addOnlyOneHeader(response, ALLOW_CREDENTIALS_HEADER, "true");
                 } else {
                     addOnlyOneHeader(response, EXPOSE_HEADERS, "Location");
-                }
-                if (LOGGER.isDebugEnabled()) { 
-                    LOGGER.debug(String.format(
-                            "contains CORS headers: expose-headers? %1$s",
-                            response.containsHeader(EXPOSE_HEADERS)));
+                    addOnlyOneHeader(response, ALLOW_CREDENTIALS_HEADER, "true");
                 }
 
                 // TODO check spec, seems the request method is not sent at
@@ -149,6 +148,9 @@ public class CorsFilter extends OncePerRequestFilter {
                 return true;
             }
         }
+        LOGGER.error(String.format(
+                "Rejecting %1$s as there are no matches in %2$s", origin,
+                allowedOrigins));
         return false;
     }
 

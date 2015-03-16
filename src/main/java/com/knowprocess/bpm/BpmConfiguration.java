@@ -18,25 +18,18 @@ import org.activiti.spring.boot.DataSourceProcessEngineAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.knowprocess.bpm.impl.JsonManager;
-
 @Configuration
 @AutoConfigureBefore(DataSourceProcessEngineAutoConfiguration.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
-@ComponentScan
-@EnableAutoConfiguration
-public class Application extends AbstractProcessEngineAutoConfiguration {
+public class BpmConfiguration extends AbstractProcessEngineAutoConfiguration {
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
@@ -44,28 +37,30 @@ public class Application extends AbstractProcessEngineAutoConfiguration {
     @Autowired
     private MultiTenantActivitiProperties overrideProperties;
 
-    @Bean
-    public JsonManager jsonManager() { 
-        return new JsonManager();
-    }
+    // TODO use separate datasource for activiti?
+    // @Bean
+    // public DataSource activitiDataSource() {
+    // return DataSourceBuilder.create().url("jdbc:h2:mem:customer:H2")
+    // .driverClassName("org.h2.Driver").username("sa").password("")
+    // .build();
+    // }
 
     @Bean
     public SpringProcessEngineConfiguration springProcessEngineConfiguration(
-            DataSource activitiDataSource,
+            DataSource dataSource,
             PlatformTransactionManager transactionManager,
             SpringAsyncExecutor springAsyncExecutor) throws IOException {
 
         // setActivitiProperties(overrideProperties);
 
         SpringProcessEngineConfiguration config = this
-                .baseSpringProcessEngineConfiguration(activitiDataSource,
+                .baseSpringProcessEngineConfiguration(dataSource,
                         transactionManager, springAsyncExecutor);
         config.setJpaEntityManagerFactory(entityManagerFactory);
         config.setTransactionManager(transactionManager);
         config.setJpaHandleTransaction(false);
         config.setJpaCloseEntityManager(false);
 
-        config.setDataSource(activitiDataSource);
         config.setMailServers(overrideProperties.getServers());
 
         return config;
@@ -99,10 +94,6 @@ public class Application extends AbstractProcessEngineAutoConfiguration {
             }
         };
 
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.knowprocess.bpm.web;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.activiti.engine.ActivitiObjectNotFoundException;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.knowprocess.bpm.api.ReportableException;
 import com.knowprocess.bpm.model.ProcessDefinition;
 
 @RequestMapping("/process-definitions")
@@ -41,30 +41,43 @@ public class ProcessDefinitionController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody ProcessDefinition showJson(
             @PathVariable("id") String id) {
-        LOGGER.info(String.format("%1$s %2$s", RequestMethod.GET, id));
-        LOGGER.info("Find definition with id: " + id);
+        LOGGER.info(String.format("%1$s definition with %2$s",
+                RequestMethod.GET, id));
 
-        try {
-            ProcessDefinition pd = ProcessDefinition.findProcessDefinition(id);
-            // TODO unclear if the following check is redundant in all or only
-            // some cases
-            if (pd == null) {
-                throw new ActivitiObjectNotFoundException(User.class);
-            }
-            return pd;
-        } catch (ActivitiObjectNotFoundException e) {
-            ReportableException e2 = new ReportableException(
-                    String.format("Unable to find definition with id: %1$s"),
-                    id);
-            LOGGER.warn(e2.getMessage(), e2);
-            throw new RuntimeException(e2.getMessage(), e2);
-            // return new ResponseEntity<String>(e2.toJson(), headers,
-            // HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
-            LOGGER.warn(e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
+        ProcessDefinition pd = ProcessDefinition.findProcessDefinition(id);
+        // TODO unclear if the following check is redundant in all or only
+        // some cases
+        if (pd == null) {
+            throw new ActivitiObjectNotFoundException(User.class);
         }
+        return pd;
+    }
+
+    @RequestMapping(value = "/{id}.bpmn", method = RequestMethod.GET, /*
+                                                                       * headers
+                                                                       * =
+                                                                       * "Accept=application/xml"
+                                                                       * ,
+                                                                       */produces = "application/xml")
+    public @ResponseBody String showBpmn(@PathVariable("id") String id) {
+        LOGGER.info(String.format("%1$s BPMN with id %2$s", RequestMethod.GET,
+                id));
+
+        return ProcessDefinition.findProcessDefinitionAsBpmn(id);
+    }
+
+    @RequestMapping(value = "/{id}.png", method = RequestMethod.GET, /*
+                                                                      * headers
+                                                                      * =
+                                                                      * "Accept=image/png"
+                                                                      * ,
+                                                                      */produces = "image/png")
+    public @ResponseBody byte[] showBpmnDiagram(@PathVariable("id") String id)
+            throws IOException {
+        LOGGER.info(String.format("%1$s BPMN with id %2$s", RequestMethod.GET,
+                id));
+
+        return ProcessDefinition.findProcessDefinitionDiagram(id);
     }
 
 }

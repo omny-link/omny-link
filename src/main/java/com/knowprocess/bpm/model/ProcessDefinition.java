@@ -1,21 +1,29 @@
 package com.knowprocess.bpm.model;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.persistence.Id;
 
 import lombok.Data;
 
+import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.form.StartFormData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Data
 @Component
 public class ProcessDefinition {
-
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(ProcessDefinition.class);
 	// private static final String[] JSON_FIELDS = { "name", "category",
 	// "description", "version", "resourceName", "deploymentId",
 	// "diagramResourceName", "key" };
@@ -110,15 +118,49 @@ public class ProcessDefinition {
 		return pd;
 	}
 
-	public static String findProcessDefinitionAsBpmn(String id) {
-		// TODO
-		return null;
-	}
+    public static String findProcessDefinitionAsBpmn(String id) {
+        InputStream is = null;
+        try {
+            is = processEngine.getRepositoryService().getProcessModel(id);
+            return new Scanner(is).useDelimiter("\\A").next();
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+                ;
+            }
+        }
+    }
 
-	public static byte[] findProcessDefinitionDiagram(String id) {
-		// TODO
-		return null;
-	}
+    public static byte[] findProcessDefinitionDiagram(String id)
+            throws IOException {
+        InputStream is = null;
+        try {
+            is = processEngine.getRepositoryService().getProcessDiagram(id);
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+            int nRead;
+            byte[] data = new byte[16384];
+
+            while ((nRead = is.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+
+            buffer.flush();
+
+            return buffer.toByteArray();
+        } catch (IOException e) {
+            String msg = String.format("Unable to read diagram for %1$s", id);
+            LOGGER.error(msg, e);
+            throw new ActivitiObjectNotFoundException(msg);
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+                ;
+            }
+        }
+    }
 
 	public static List<ProcessDefinition> findProcessDefinitionEntries(
 			int firstResult, int maxResults) {
