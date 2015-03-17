@@ -9,7 +9,7 @@
 
   <groupId>link.omny.custmgmt</groupId>
   <artifactId>custmgmt</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <organization>
@@ -44,6 +44,18 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>tomcat-jdbc</artifactId>
+          <groupId>org.apache.tomcat</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <!-- drop -java6 suffix for Java 8 compiled version -->
+      <artifactId>HikariCP-java6</artifactId>
+      <version>2.3.2</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
