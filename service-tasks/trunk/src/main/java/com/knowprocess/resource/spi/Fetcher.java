@@ -3,7 +3,6 @@ package com.knowprocess.resource.spi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -184,7 +183,7 @@ public class Fetcher extends RestService implements JavaDelegate {
             return "image/png";
         } else {
             try {
-                URL url = new URL(resourceUrl);
+                URL url = UrlResource.getUrl(resourceUrl);
                 if (url.getFile().length() == 0 || url.getFile().equals("/")) {
                     // this is presumably going to be an html homepage
                     // until proven otherwise!
@@ -193,8 +192,7 @@ public class Fetcher extends RestService implements JavaDelegate {
                             + resourceUrl + ". Could be unsafe");
                 }
                 return "text/html";
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
+            } catch (Exception e) {
                 LOGGER.error(e.getMessage());
                 // catch all, treat as binary
                 return "application/octet-stream";

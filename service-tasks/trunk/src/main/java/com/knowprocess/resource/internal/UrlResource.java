@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,7 +96,7 @@ public class UrlResource implements Resource {
         Scanner scanner = null; 
         try {
             // Create connection
-            url = new URL(sUrl);
+            url = getUrl(sUrl);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(method);
             String contentType = headers.get(HEADER_CONTENT_TYPE);
@@ -166,6 +169,18 @@ public class UrlResource implements Resource {
             }
         }
         return is;
+    }
+
+    public static URL getUrl(final String sUrl) throws MalformedURLException,
+            URISyntaxException {
+        URL u = new URL(sUrl);
+        return new URI(
+                u.getProtocol(), 
+                u.getAuthority(), 
+                u.getPath(),
+                u.getQuery(), 
+                u.getRef()).
+                toURL();
     }
 
     private void logHeaders(Map<String, String> headerFields) {

@@ -9,6 +9,8 @@ import org.activiti.engine.delegate.JavaDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.knowprocess.resource.internal.UrlResource;
+
 public class RestDelete extends RestService implements JavaDelegate {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(RestDelete.class);
@@ -34,7 +36,7 @@ public class RestDelete extends RestService implements JavaDelegate {
         // InputStream is = null;
         try {
             // Create connection
-            url = new URL(resource);
+            url = UrlResource.getUrl(resource);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("DELETE");
 

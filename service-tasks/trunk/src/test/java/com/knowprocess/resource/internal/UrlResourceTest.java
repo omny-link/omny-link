@@ -1,5 +1,6 @@
 package com.knowprocess.resource.internal;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -7,6 +8,9 @@ import static org.junit.Assert.fail;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -32,6 +36,34 @@ public class UrlResourceTest {
 
     @Before
     public void setUp() throws Exception {
+    }
+
+    @Test
+    public void testUrlEncode() {
+        String sUrl = "http://api.knowprocess.com:8082/firmgains/contacts/Builder/Bob/Builder Inc";
+        try {
+            URL url = UrlResource.getUrl(sUrl);
+            assertEquals(
+                    "http://api.knowprocess.com:8082/firmgains/contacts/Builder/Bob/Builder%20Inc",
+                    url.toExternalForm());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
+    public void testRelativeUrlEncode() {
+        String sUrl = "/firmgains/contacts/Builder/Bob/Builder Inc";
+        try {
+            URL url = UrlResource.getUrl(sUrl);
+            fail("Cannot fetch relative URLs");
+        } catch (MalformedURLException e) {
+            ; // expected
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     @Test
