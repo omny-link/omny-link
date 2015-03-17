@@ -163,7 +163,6 @@ public class MessageController {
             String bizKey = msgId + " - " + new Date().getTime();
             String modifiedMsgId = getMessageVarName(msgId);
             vars.put("messageName", modifiedMsgId);
-            System.err.println("Message registry: " + messageRegistry);
             if (messageRegistry.canDeserialise(modifiedMsgId, jsonBody)) {
                 vars.put(modifiedMsgId,
                         messageRegistry.deserialiseMessage(msgId, jsonBody));
