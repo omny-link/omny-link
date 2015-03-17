@@ -1,7 +1,8 @@
 [
-  {  "name": "Enquiry"  },
-  {  "name": "Placed"  },
-  {  "name": "Complete"  },
-  {  "name": "On hold"  },
-  {  "name": "Cold"  }
+  {  "id": "Cold"  },
+  {  "id": "Complete"  },
+  {  "id": "Enquiry"  },
+  {  "id": "Lead"  },
+  {  "id": "OnHold", "name": "On hold"   },
+  {  "id": "Placed"  }
 ]
