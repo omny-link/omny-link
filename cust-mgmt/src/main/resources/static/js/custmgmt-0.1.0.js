@@ -82,7 +82,7 @@ var ractive = new AuthenticatedRactive({
           ractive.fetch();
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-            ractive.showError("Bother! Something has gone wrong: "+textStatus+':'+errorThrown);
+            ractive.handleError(jqXHR,textStatus,errorThrown);
         }
     });
   },
@@ -98,6 +98,16 @@ var ractive = new AuthenticatedRactive({
         ractive.data.saveObserver = true;
       }
     });
+  },
+  handleError: function(jqXHR, textStatus, errorThrown) {
+    switch (jqXHR.status) { 
+    case 403: 
+      ractive.showError("Session expired, please login again");
+      window.location.href='/login';
+      break; 
+    default: 
+      ractive.showError("Bother! Something has gone wrong: "+textStatus+':'+errorThrown);        
+    }
   },
   initAutoComplete: function() {
     console.log('initAutoComplete');
@@ -162,16 +172,16 @@ var ractive = new AuthenticatedRactive({
           if (location != undefined) ractive.set('current._links.self.href',location);
           if (jqXHR.status == 201) ractive.data.contacts.push(ractive.data.current);
           if (jqXHR.status == 204) ractive.splice('contacts',ractive.data.currentIdx,1,ractive.data.current);
-          ractive.showMessage('All saved');
+          ractive.showMessage('Contact saved');
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-          ractive.showError("Bother! Something has gone wrong: "+textStatus+':'+errorThrown);
+          ractive.handleError(jqXHR,textStatus,errorThrown);
         }
       });
     } else {
       console.warn('Cannot save yet as contact is invalid');
       $('#currentForm :invalid').addClass('field-error');
-      $('#currentForm :invalid')[0].focus();
+//      $('#currentForm :invalid')[0].focus();
 //      ractive.showFormError(undefined, 'Cannot save yet as contact is invalid');
     }
   },
@@ -205,16 +215,18 @@ var ractive = new AuthenticatedRactive({
               data: location,
               success: completeHandler = function(data, textStatus, jqXHR) {
                 console.log('linked account: '+location+' to '+contactAccountLink);
-                ractive.showMessage('All saved');
+                ractive.showMessage('Account saved');
               },
               error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-                  ractive.showError("Bother! Something has gone wrong: "+textStatus+':'+errorThrown);
+                  ractive.handleError(jqXHR,textStatus,errorThrown);
               }
             });
           }
+          if (jqXHR.status == 201) ractive.data.contacts.push(ractive.data.current);
+          if (jqXHR.status == 204) ractive.splice('contacts',ractive.data.currentIdx,1,ractive.data.current);
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-            ractive.showError("Bother! Something has gone wrong: "+textStatus+':'+errorThrown);
+            ractive.handleError(jqXHR,textStatus,errorThrown);
         }
       });
     } else {
@@ -240,7 +252,7 @@ var ractive = new AuthenticatedRactive({
           ractive.select(ractive.data.current);
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-            ractive.showError("Bother! Something has gone wrong: "+textStatus+':'+errorThrown);
+            ractive.handleError(jqXHR,textStatus,errorThrown);
         }
       });
     } 
@@ -261,7 +273,7 @@ var ractive = new AuthenticatedRactive({
           ractive.select(ractive.data.current);
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-            ractive.showError("Bother! Something has gone wrong: "+textStatus+':'+errorThrown);
+            ractive.handleError(jqXHR,textStatus,errorThrown);
         }
       });
     }
@@ -285,7 +297,6 @@ var ractive = new AuthenticatedRactive({
 	    $.getJSON(url+'?projection=complete',  function( data ) {
         console.log('found contact '+data);
         ractive.set('current', data);
-        ractive.set('saveObserver',true);
       });
       $.getJSON(url+'/notes',  function( data ) {
       	if (data._embedded != undefined) {
@@ -302,7 +313,8 @@ var ractive = new AuthenticatedRactive({
           // sort most recent first
           ractive.data.current.documents.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
         }
-    	});
+        ractive.set('saveObserver',true);
+      });
     } else { 
       console.log('Skipping load as no _links.'+JSON.stringify(contact));
       ractive.set('current', contact);
@@ -340,6 +352,28 @@ var ractive = new AuthenticatedRactive({
     console.log('updateField '+path+' to '+tmp);
     ractive.set(path,tmp);
     $(selector).css('border-width','0px').css('padding','0px');
+  },
+  upload: function (formId) {
+    console.log('upload:'+formId);
+    ractive.showMessage('Uploading data...');
+  
+    var formElement = document.getElementById(formId);
+    var formData = new FormData(formElement);
+    return $.ajax({
+        type: 'POST',
+        url: '/'+ractive.data.tenantId+'/contacts',
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+  //        console.log('successfully uploaded data');
+          ractive.showMessage('Successfully uploaded data');
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          ractive.handleError(jqXHR, textStatus, errorThrown);
+        }
+      });
   }
 });
 
@@ -347,30 +381,18 @@ var ractive = new AuthenticatedRactive({
 // done this way rather than with on-* attributes because autocomplete 
 // controls done that way save the oldValue 
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
-  ignored=['current.account','current.documents','current.doc','current.notes','current.note'];
-  console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
-  if (ractive.data.saveObserver && significantDifference(newValue,oldValue) && ignored.indexOf(keypath)==-1) {
-    ractive.save();
+  ignored=['current.documents','current.doc','current.notes','current.note'];
+  if (ractive.data.saveObserver && ignored.indexOf(keypath)==-1) {
+    if (keypath=='current.account') ractive.saveAccount();
+    else ractive.save();
   } else { 
     console.warn  ('Skipped contact save of '+keypath);
-//    console.log('  suspend save: '+ractive.data.saveObserver);
+    //console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
+    //console.log('  saveObserver: '+ractive.data.saveObserver);
   }
 });
 
-ractive.observe('current.account.*', function(newValue, oldValue, keypath) {
-  alwaysSave=['current.account.customFields'];
-  ignored=[];
-  console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
-  if (alwaysSave.indexOf(keypath)!=-1 || (ractive.data.saveObserver && ignored.indexOf(keypath)==-1 && significantDifference(newValue,oldValue))) {
-    ractive.saveAccount();
-  } else { 
-    console.warn('Skipped save of '+keypath);
-//    console.log('  suspend save: '+alwaysSave.indexOf(keypath));
-//    console.log('  suspend save: '+ractive.data.saveObserver);
-//    console.log('  suspend save: '+significantDifference(newValue,oldValue));
-  }
-});
-
+// Cannot work due to http://docs.ractivejs.org/0.5/observers#a-gotcha-to-be-aware-of
 function significantDifference(newValue,oldValue) {
 //  if (newValue=='') { console.log('new value is empty');newValue = null;}
 //  if (oldValue=='') { console.log('oldvalue is empty');oldValue = null;}
