@@ -1,14 +1,13 @@
 [
-  {  "id": "Broker"  },
+  {  "id": "Broker", "name": "Broker"  },
   {  "id": "BusinessFinders", "name": "Business Finders"  },
   {  "id": "CorporateFinance", "name": "Corporate Finance"  },
+  {  "id": "Customer", "name": "Customer"  },
   {  "id": "FinanceBrokers", "name": "Finance Brokers"  },
   {  "id": "MidMarket", "name": "Mid-Market"  },
-  {  "id": "Other"  },
-  {  "id": "Partner"  },
+  {  "id": "Other", "name": "Other"  },
+  {  "id": "Partner", "name": "Partner"  },
   {  "id": "PrivateEquity", "name": "Private Equity"  },
   {  "id": "PropertyAgent", "name": "Property Agent"  },
-  {  "id": "Registered"  },
   {  "id": "TransferAgent", "name": "Transfer Agent"  },
-  {  "id": "Valuation"  }
 ]

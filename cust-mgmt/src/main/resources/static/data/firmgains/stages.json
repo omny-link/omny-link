@@ -1,8 +1,8 @@
 [
-  {  "id": "Cold"  },
-  {  "id": "Complete"  },
-  {  "id": "Enquiry"  },
-  {  "id": "Lead"  },
-  {  "id": "OnHold", "name": "On hold"   },
-  {  "id": "Placed"  }
+  {  "id": "Cold", "name": "Cold"  },
+  {  "id": "Complete", "name": "Complete"  },
+  {  "id": "Enquiry", "name": "Enquiry"  },
+  {  "id": "Lead", "name": "Lead"  },
+  {  "id": "OnHold", "name": "On hold"  },
+  {  "id": "Placed", "name": "Placed"  }
 ]

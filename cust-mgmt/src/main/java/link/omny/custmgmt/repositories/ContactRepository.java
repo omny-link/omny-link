@@ -13,7 +13,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(excerptProjection = ContactExcept.class, path = "/contacts")
 public interface ContactRepository extends CrudRepository<Contact, Long> {
 
-    @Query("select c from Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId")
+    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
     List<Contact> findAllForTenant(@Param("tenantId") String tenantId);
 
     List<Contact> findByLastName(@Param("lastName") String lastName);
