@@ -111,13 +111,22 @@ public class Contact implements Serializable {
     private String postCode;
 
     @JsonProperty
-    private String enquiryType;
-
-    @JsonProperty
     private String stage;
 
     @JsonProperty
+    private String enquiryType;
+
+    @JsonProperty
+    private String accountType;
+
+    @JsonProperty
     private String owner;
+
+    @JsonProperty
+    private boolean doNotCall;
+
+    @JsonProperty
+    private boolean doNotEmail;
 
     /**
      * Intended to capture the source of the lead from Analytics.
@@ -130,6 +139,18 @@ public class Contact implements Serializable {
      */
     @JsonProperty
     private String medium;
+
+    /**
+     * Intended to capture the campaign of the lead from Analytics.
+     */
+    @JsonProperty
+    private String campaign;
+
+    /**
+     * Intended to capture the keyword of the lead from Analytics.
+     */
+    @JsonProperty
+    private String keyword;
 
     /**
      */

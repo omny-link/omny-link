@@ -41,6 +41,14 @@ public interface ContactAndAccountProjection {
 
     String getMedium();
 
+    String getCampaign();
+
+    String getKeyword();
+
+    boolean getDoNotCall();
+
+    boolean getDoNotEmail();
+
     Date getFirstContact();
 
     Date getLastUpdated();

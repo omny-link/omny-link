@@ -23,6 +23,10 @@ public interface ContactExcept {
 
     String getOwner();
 
+    boolean getDoNotCall();
+
+    boolean getDoNotEmail();
+
     Date getFirstContact();
 
     Date getLastUpdated();

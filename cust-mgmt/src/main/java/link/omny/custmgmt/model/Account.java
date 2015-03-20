@@ -2,6 +2,7 @@ package link.omny.custmgmt.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -12,6 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -22,6 +25,8 @@ import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -78,7 +83,7 @@ public class Account implements Serializable {
 
     /**
      */
-    @Min(1L)
+    @Min(0L)
     private Integer noOfEmployees;
 
     /**
@@ -87,6 +92,20 @@ public class Account implements Serializable {
     @JsonProperty
     @Column(nullable = false)
     private String tenantId;
+
+    /**
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(style = "M-")
+    @JsonProperty
+    private Date firstContact;
+
+    /**
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(style = "M-")
+    @JsonProperty
+    private Date lastUpdated;
 
     @OneToMany(mappedBy = "account", targetEntity = Contact.class)
     // TODO See Contact.account for details of limitation

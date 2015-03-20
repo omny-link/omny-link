@@ -1,6 +1,6 @@
 [
-  {  "id": "Information_Memorandum", "name": "Information Memorandum"  },
-  {  "id": "Negotiation"  },
-  {  "id": "Sale"  },
-  {  "id": "Valuation"  }
+  {  "id": "Advice", "name": "Advice"  },
+  {  "id": "Contact", "name": "Contact"  },
+  {  "id": "Registration", "name": "Registration"  },
+  {  "id": "Valuation", "name": "Valuation"  }
 ]

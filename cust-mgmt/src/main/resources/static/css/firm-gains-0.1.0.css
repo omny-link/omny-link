@@ -129,19 +129,70 @@ section h2 .search {
   border-color: #75bfe2;
 }
 section h2 .glyphicon-search {
-border-bottom-left-radius: 0;
-border-top-left-radius: 0;
-font-size: 18px;
-margin-left: 0px;
-position: relative;
-left: -8px;
-top: 0px;
+	border-bottom-left-radius: 0;
+	border-top-left-radius: 0;
+	font-size: 20px;
+	margin-left: 0px;
+	position: relative;
+	left: -7px;
+	top: 1px;
+}
+section h2 .entity {
+  /*margin-bottom: 10px;*/
+  background-color: #aedef6;
+  margin-right: 0;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  border-color: #75bfe2;
+  padding-right: 0;
+  margin-right: 0;
+  width: 110px;
+}
+section h2 .file {
+  /*margin-bottom: 10px;*/
+  background-color: #aedef6;
+  margin-right: 0;
+  border-radius: 0;
+  border-color: #75bfe2;
+  margin-left: 0;
+  width: 110px;
+}
+section h2 .glyphicon-import {
+	border-bottom-left-radius: 0;
+	border-top-left-radius: 0;
+	font-size: 18px;
+	margin-left: 0px;
+	position: relative;
+	left: -2px;
+	top: -3px;
 }
 .table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
   vertical-align: middle;
 }
 th { 
 	font-weight: bold;
+}
+.admin { 
+	display: none;
+}
+.ajax-loader {
+	position: absolute;
+  left: 45%;
+	top: 300px;
+  z-index: 200;	
+}
+.beta {
+  border: solid 1px #ff6c06;
+  color: #ff6c06;
+  font-family: barmenoregular, sans-serif;
+  font-style: italic;
+  line-height: 1.4em;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 70px;
+  width: 60px;	
 }
 .bg-danger { 
   padding: 0 10px 0 10px;
@@ -228,16 +279,13 @@ th {
 .powered-by { 
 	float: left;
   opacity: 0.5;
-  transform: rotate(-90deg) translate(220px,-120px);
-  transform-origin: left top 0;
   position: absolute;
-  top: 620px;
-}
-.powered-by { 
-  float: left;
-  opacity:0.5;
-  transform: rotate(-90deg) translate(220px,-120px);
+  top: 450px;
+  transform: rotate(-90deg);
   transform-origin: left top 0;
+}
+.powered-by h1 {
+  margin:0px;
 }
 .powered-by-text { 
 	color:#6f6f71;font-size:36px;font-style:italic;
@@ -247,4 +295,11 @@ th {
 	border-bottom-left-radius: 15px;
 	border-bottom-right-radius: 15px;
 	padding: 0 20px;	
+}
+form.upload {
+	display: block;
+  padding-top: 5px;
+}
+form.upload .glyphicon {
+  font-size: 20px;
 }

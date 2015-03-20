@@ -1,5 +1,6 @@
 package link.omny.custmgmt.web;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * REST web service for uploading and accessing a file of JSON Contacts (over
@@ -50,31 +54,40 @@ public class ContactController {
     @Autowired
     private NoteRepository noteRepo;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     /**
-     * Adds a model to the repository.
+     * Imports JSON representation of contacts.
+     * 
+     * <p>
+     * This is a handy link: http://shancarter.github.io/mr-data-converter/
      * 
      * @param file
      *            A file posted in a multi-part request
      * @return The meta data of the added model
+     * @throws IOException
+     *             If cannot parse the JSON.
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public @ResponseBody List<Contact> handleFileUpload(
+    public @ResponseBody Iterable<Contact> handleFileUpload(
             @PathVariable("tenantId") String tenantId,
-            @RequestParam(value = "file", required = true) MultipartFile file) {
+            @RequestParam(value = "file", required = true) MultipartFile file)
+            throws IOException {
+        LOGGER.info(String.format("Uploading contacts for: %1$s", tenantId));
+        String content = new String(file.getBytes());
 
-        try {
-            String content = new String(file.getBytes());
-
-            // TODO deserialise JsoN resource
-            // repo.save();
-            return null;
-        } catch (RuntimeException e) {
-            LOGGER.error("Error while uploading.", e);
-            throw e;
-        } catch (Exception e) {
-            LOGGER.error("Error while uploading.", e);
-            throw new RuntimeException(e);
+        List<Contact> list = objectMapper.readValue(content,
+                new TypeReference<List<Contact>>() {
+                });
+        LOGGER.info(String.format("  found %1$d contacts", list.size()));
+        for (Contact contact : list) {
+            contact.setTenantId(tenantId);
         }
+
+        Iterable<Contact> result = repo.save(list);
+        LOGGER.info("  saved.");
+        return result;
     }
 
     /**
@@ -170,6 +183,8 @@ public class ContactController {
         resource.setEmail(contact.getEmail());
         resource.setOwner(contact.getOwner());
         resource.setStage(contact.getStage());
+        resource.setEnquiryType(contact.getEnquiryType());
+        resource.setAccountType(contact.getAccountType());
         Link detail = linkTo(ContactRepository.class, contact.getId())
                 .withSelfRel();
         resource.add(detail);
@@ -195,5 +210,7 @@ public class ContactController {
         private String accountName;
         private String owner;
         private String stage;
+        private String enquiryType;
+        private String accountType;
       }
 }
