@@ -27,7 +27,7 @@ var ractive = new AuthenticatedRactive({
     $('#curNewGroup').slideUp();
 
     $.ajax({
-        url: '/users/'+ractive.data.current.id+'/groups/'+newGroup,
+        url: '/users/'+ractive.get('current.id')+'/groups/'+newGroup,
         type: 'POST',
         contentType: 'application/json',
         success: completeHandler = function(data) {
@@ -44,16 +44,16 @@ var ractive = new AuthenticatedRactive({
     ractive.set('currentAction', 'CREATE');
     ractive.set('current', { });
     $('.create-field').show();
-    ractive.select(ractive.data.current);
+    ractive.select(ractive.get('current'));
   },
   saveUser: function () {
-    console.log('saveUser '+ractive.data.current+' ...');
+    console.log('saveUser '+ractive.get('current')+' ...');
     $('#currentSect').slideUp();
     $.ajax({
-      url: '/users/'+(ractive.data.currentAction == 'CREATE' ? '' : ractive.data.current.id),
-      type: ractive.data.currentAction == 'CREATE' ? 'POST' : 'PUT',
+      url: '/users/'+(ractive.get('currentAction') == 'CREATE' ? '' : ractive.get('current.id')),
+      type: ractive.get('currentAction') == 'CREATE' ? 'POST' : 'PUT',
       contentType: 'application/json',
-      data: JSON.stringify(ractive.data.current),
+      data: JSON.stringify(ractive.get('current')),
       success: completeHandler = function(data) {
         console.log('data: '+ data);
         ractive.fetch();
@@ -90,7 +90,7 @@ var ractive = new AuthenticatedRactive({
   },
   fetchUserGroups: function () {
     console.log('fetchUserGroups...');
-    $.getJSON("/users/"+ractive.data.current.id+'/groups',  function( data ) {
+    $.getJSON("/users/"+ractive.get('current.id')+'/groups',  function( data ) {
       ractive.merge('currentGroups', data);
   });
   },

@@ -13,6 +13,8 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.identity.User;
 import org.activiti.spring.SpringAsyncExecutor;
 import org.activiti.spring.SpringProcessEngineConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.activiti.spring.boot.AbstractProcessEngineAutoConfiguration;
 import org.activiti.spring.boot.DataSourceProcessEngineAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +28,19 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.knowprocess.bpm.api.ActivitiUserDetailsService;
+import com.knowprocess.bpm.impl.CorsFilter;
 import com.knowprocess.bpm.impl.JsonManager;
 
 @Configuration
@@ -36,7 +48,7 @@ import com.knowprocess.bpm.impl.JsonManager;
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 @ComponentScan
 @EnableAutoConfiguration
-public class Application extends AbstractProcessEngineAutoConfiguration {
+public class Application extends WebMvcConfigurerAdapter {
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
@@ -45,11 +57,11 @@ public class Application extends AbstractProcessEngineAutoConfiguration {
     private MultiTenantActivitiProperties overrideProperties;
 
     @Bean
-    public JsonManager jsonManager() { 
+    public JsonManager jsonManager() {
         return new JsonManager();
     }
 
-    @Bean
+    /*@Bean
     public SpringProcessEngineConfiguration springProcessEngineConfiguration(
             DataSource activitiDataSource,
             PlatformTransactionManager transactionManager,
@@ -69,13 +81,83 @@ public class Application extends AbstractProcessEngineAutoConfiguration {
         config.setMailServers(overrideProperties.getServers());
 
         return config;
-    }
+    }*/
 
     @Bean
     protected PropertiesFactoryBean messageAliases() {
         PropertiesFactoryBean fact = new PropertiesFactoryBean();
         fact.setLocation(new ClassPathResource("messageAliases.properties"));
         return fact;
+    }
+
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+      registry.addViewController("/login").setViewName("login");
+      registry.addViewController("/loginError").setViewName("loginError");
+    }
+
+    @Bean
+    public ApplicationSecurity applicationSecurity() {
+      return new ApplicationSecurity();
+    }
+
+    @Bean
+    public ActivitiUserDetailsService activitiUserDetailsService() {
+      return new ActivitiUserDetailsService();
+    }
+
+    @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+    protected static class ApplicationSecurity extends
+    WebSecurityConfigurerAdapter {
+
+      @Autowired
+      private DataSource dataSource;
+
+      @Autowired
+      private SecurityProperties security;
+
+      @Autowired
+      private ActivitiUserDetailsService activitiUserDetailsService;
+
+      @Autowired
+      private CorsFilter corsFilter;
+
+      @Override
+      protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+        .antMatchers("/css/**", "/data/**", "/fonts/**",
+        "/images/**", "/js/**")
+        .permitAll()
+        .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
+        .antMatchers("/*.html").hasRole("USER")
+        .antMatchers("/admin.html", "/audit-trails/**",
+        "/deployments/**", "/process-definitions/**",
+        "/process-instances/**", "/tasks/**", "/users/**").hasRole("ADMIN")
+        .anyRequest().authenticated()
+        .and().formLogin()
+        .loginPage("/login").failureUrl("/loginError")
+        .defaultSuccessUrl("/").permitAll()
+        .and().csrf().disable().httpBasic();
+        //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        //             http.requestMatcher
+        // org.apache.catalina.filters.CorsFilter corsFilter = new
+        // org.apache.catalina.filters.CorsFilter();
+        // corsFilter.
+        http.addFilterBefore(corsFilter, BasicAuthenticationFilter.class);
+      }
+
+      @Override
+      public void configure(AuthenticationManagerBuilder auth)
+      throws Exception {
+        auth.userDetailsService(activitiUserDetailsService);
+        // auth.jdbcAuthentication().dataSource(dataSource)
+        // .withDefaultSchema().withUser("user").password("password")
+        // .roles("USER").and().withUser("admin").password("password")
+        // .roles("USER", "ADMIN");
+        // auth.inMemoryAuthentication().withUser("user").password("user")
+        // .roles("USER");
+      }
     }
 
     @Bean
