@@ -186,15 +186,11 @@ public class Contact implements Serializable {
         if (customFields == null) {
             customFields = new ArrayList<CustomContactField>();
         }
-        // if (customFields.size() > 0) {
-            // extension = new Extension(customFields);
-        // }
         return customFields;
     }
 
     public void setCustomFields(List<CustomContactField> fields) {
         this.customFields = fields;
-        // extension = new Extension(fields);
     }
 
     public Object getField(@NotNull String fieldName) {
@@ -208,7 +204,12 @@ public class Contact implements Serializable {
 
     public void addCustomField(CustomContactField customField) {
         getCustomFields().add(customField);
-        // extension.customFields.add(customField);
+    }
+
+    public void setField(String key, Object value) {
+        getCustomFields().add(
+                new CustomContactField(key, value == null ? null : value
+                        .toString()));
     }
 
     @JsonProperty
@@ -247,12 +248,6 @@ public class Contact implements Serializable {
                     "Overwriting update date %1$s with 'now'.", lastUpdated));
         }
         lastUpdated = new Date();
-    }
-
-    public void setField(String key, Object value) {
-        getCustomFields().add(
-                new CustomContactField(key, value == null ? null : value
-                        .toString()));
     }
 
 }

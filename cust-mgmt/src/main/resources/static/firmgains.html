@@ -6,7 +6,7 @@
   <!-- link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   -->
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/firm-gains-0.1.0.css" rel="stylesheet">
+  <link href="css/firm-gains-0.3.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/firm-gains-icon-32x32.png" />
 </head>
 <body>
@@ -36,7 +36,7 @@
     
       <section id="contactsSect">
         <h2>
-          <span id="contactsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults(this)"></span>
+          <span id="contactsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()"></span>
           <span>Contacts</span>
           <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()"></span>
           <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></span>
@@ -60,6 +60,8 @@
               <th>Stage</th>
               <th>Enquiry Type</th>
               <th>Owned by</th>
+              <th>First Contact</th>
+              <th>Last Updated</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -78,6 +80,8 @@
                 <td>{{stage}}</td>
                 <td>{{enquiryType}}</td>
                 <td>{{owner}}</td>
+                <td>{{formatDate(firstContact)}}</td>
+                <td>{{formatDate(lastUpdated)}}</td>
                 <td>
                   <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)"></span>
                   <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
@@ -117,7 +121,7 @@
               <li><label>Enquiry Type:</label><input class="typeahead" id="curEnquiryType" value="{{current.enquiryType}}"></li>
               <li><label>Account Type:</label><input class="typeahead" id="curAccountType" value="{{current.accountType}}"></li>
               <li><label>Partners Contacted:</label><input id="curPartnersContacted" value="{{current.account.customFields['partnersContacted']}}"/></li>              
-              <li><label>Page Submitted:</label><input id="curPageSubmitted" readonly value="{{current.customFields.pageSubmitted}}"></li>
+              <li><label>Page Submitted:</label><input id="curPageSubmitted" value="{{customField(current, 'pageSubmitted')}}"></li>
               <li><label>Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
               <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
               <li><label>Campaign:</label><input id="curCampaign" value="{{current.campaign}}"></li>
@@ -364,7 +368,7 @@
   <script src="js/ractive.min.js"></script>
   <script src="js/login-0.1.0.js"></script>
   <script src="js/i18n.js"></script>
-  <script src="js/custmgmt-0.1.0.js"></script>
+  <script src="js/cust-mgmt-0.3.0.js"></script>
   <script>
     $(document).ready(function() {
       ractive.set('saveObserver', false);
