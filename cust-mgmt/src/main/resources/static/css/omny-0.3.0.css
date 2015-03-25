@@ -120,19 +120,13 @@ th {
 .bg-danger { 
   padding: 0 10px 0 10px;
 }
+.btn {
+  min-width: 80px;
+}
 .btn-default { 
   background-color:#ff6c06;
-  color: #666666; 	
-}
-.glyphicon { 
-	font-size: 20px;
-  border: solid 1px;
-  padding: 6px;
-  margin: 3px;
-  border-radius: 15px;
-}
-#messages { 
-	padding-top: 20px;
+  color: #ccc;
+  font-weight: bold;
 }
 .navbar-brand { 
 	padding: 0;

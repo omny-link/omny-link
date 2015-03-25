@@ -2,6 +2,7 @@ package link.omny.custmgmt.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import link.omny.custmgmt.model.Contact;
@@ -185,6 +186,8 @@ public class ContactController {
         resource.setStage(contact.getStage());
         resource.setEnquiryType(contact.getEnquiryType());
         resource.setAccountType(contact.getAccountType());
+        resource.setFirstContact(contact.getFirstContact());
+        resource.setLastUpdated(contact.getLastUpdated());
         Link detail = linkTo(ContactRepository.class, contact.getId())
                 .withSelfRel();
         resource.add(detail);
@@ -212,5 +215,7 @@ public class ContactController {
         private String stage;
         private String enquiryType;
         private String accountType;
+        private Date firstContact;
+        private Date lastUpdated;
       }
 }
