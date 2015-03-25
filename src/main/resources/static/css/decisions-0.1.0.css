@@ -1,0 +1,33 @@
+[contenteditable]:hover {
+  cursor: pointer;
+}
+input {
+  border: none;
+  cursor: pointer;
+  width: 100px;
+}
+.expr-name input {
+	width: 200px;
+}
+input:focus {
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+th.conclusion,
+th.condition {
+  border-left: 1px solid #ccc;
+}
+
+.condition {
+  /*color: #0e9acd;*/
+}
+.conclusion {
+  /*color: #0e9acd;*/
+}
+.decision-name {
+  border: 1px solid #cccccc;
+  border-top: 1px solid #cccccc !important;
+}
+.expr-name {
+  border-right: 1px solid #ccc;
+}
