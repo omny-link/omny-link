@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang='en-GB'>
+<head>
+  <meta charset='utf-8'>
+  <title>Customer Management</title>
+
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/omny-0.1.0.css" rel="stylesheet">
+  <link href="css/decisions-0.1.0.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
+</head>
+
+<!--
+  1. This is the element we'll render our Ractive to.
+-->
+<body class="container" id="container">
+
+  <!--
+       2. You can load a template in many ways. For convenience, we'll include it in
+       a script tag so that we don't need to mess around with AJAX or multiline strings.
+       Note that we've set the type attribute to 'text/ractive' - though it can be
+       just about anything except 'text/javascript'
+  -->
+  <script id='template' type='text/ractive'>
+    <div class="profile pull-right">
+      <form name="logoutForm" conclusion="/logout" method="POST">
+        <span>Logged in as: {{username}}</span>
+        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
+        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
+      </form>
+    </div>
+    <h1>
+      <a class="nav navbar-brand" href="http://omny.link">
+        <img src="/images/omny-logo.png" alt="logo"/>
+      </a>
+      <span>Decisions model</span>
+    </h1>
+    <div class="clearfix" id="messages">
+       <!--<p class=" bg-danger text-danger">Beta! Please ensure you have backups!</p>-->
+    </div>
+
+    <section id="entitySect" class=" entity" style="">
+      <h2>
+        <span>Entities available</span>
+      </h2>
+
+      <ul>
+        {{#each entities:i}}
+          <li><a href="domain.html?entityIdx=1">{{name.toUpperCase()}}</a></li>
+        {{/each}}
+      </ul>
+    </section>
+
+    <section id="dtSect" class="entity-fields">
+      <h2>
+        <span>Decision Table</span>
+      </h2>
+      <table id="decisionTable" class="decision-table table table-striped">
+        <thead>
+          <tr>
+            <th class="decision-name" colspan="2">{{decision.name}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each decision.conditions:i}}
+            <tr class="condition" data-condition="{{name}}">
+              <th class="condition">
+                <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+              </th>
+              <th class="expr-name">
+                <input class="edit" value="{{name}}"/>
+              </th>
+              {{#each expressions:j}}
+                <td class="expr">
+                  <input value="{{.}}"/>
+                </td>
+              {{/each}}
+            {{#if (i==0)}}
+              <td class="expr" rowspan="5">
+                <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addConditionExpr()"> Add</span>
+              </td>
+            {{/if}}
+            </tr>
+          {{/each}}
+          <tr class="condition">
+            <th colspan="2">
+              <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addCondition()"> Add</span>
+            </th>
+            {{#each decision.conditions[0].expressions}}
+              <td>&nbsp;</td>
+            {{/each}}
+          </tr>
+          {{#each decision.conclusions:i}}
+            <tr class="conclusion" data-conclusion="{{name}}" on-click="edit(this)">
+              <th class="conclusion">
+                <span class="glyphicon glyphicon-flash" aria-hidden="true"></span>
+              </th>
+              <th class="expr-name">
+                <input class="edit" value="{{name}}"/>
+              </th>
+            {{#each expressions:j}}
+                <td>{{.}}</td>
+              {{/each}}
+            </tr>
+          {{/each}}
+          <tr class="conclusion">
+            <th colspan="2">
+              <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addconclusion()">Add</span>
+            </th>
+            {{#each decision.conclusions[0].expressions}}
+              <td contenteditable>&nbsp;</td>
+            {{/each}}
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pull-right">
+        <button class="btn" type="button">Validate</button>
+        <button class="btn btn-default" type="button">Save</button>
+      </div>
+    </section>
+
+  </script>
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="js/jquery-1.11.0.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/bootstrap3-typeahead.js"></script>
+  <!--
+       3. You can always get the most recent stable version from the URL below.
+       If you want the newest features, use the 'edge' version instead:
+
+           http://cdn.ractivejs.org/edge/ractive.min.js
+
+       If you need IE8 support, change 'ractive' to 'ractive-legacy'.
+  -->
+  <script src="js/ractive.min.js"></script>
+  <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
+  <script src="js/login-0.1.0.js"></script>
+  <script src="js/decisions-0.1.0.js"></script>
+  <script>
+    $(document).ready(function() {
+      ractive.set('entityIdx', 0);
+      ractive.set('entities', [
+          {
+            name: "account",
+            description: "A Contact is associated with up to one Account, zero to many Notes and zero to many Documents. An Account typically has one contact though may have more.",
+            imageUrl: "images/domain/contact-context.png",
+            fields: [
+			        { name: "firstName", label: "First Name", hint:"Your first or given name", required: true, type: "text" },
+			        { name: "lastName", label: "Last Name", hint:"Your last or family name", required: true, type: "text" },
+		        ]
+          }
+        ]
+      );
+      /*
+      ractive.set('decision', {
+        name:"Applicant Risk Rating",
+        conditions: [
+          {
+            name: "Applicant Age",
+            expressions: [
+              "<25","<25","[25..60]",">60",">60"
+            ]
+          },{
+            name: "Medical History",
+            expressions: [
+              "good","bad","-","good","bad"
+            ]
+          }
+        ],
+        conclusions: [
+          {
+            name: "Low",
+            expressions: [
+              "X","-","-","-","-"
+            ]
+          },{
+            name: "Medium",
+            expressions: [
+              "-","X","X","X","-"
+            ]
+          },{
+            name: "High",
+            expressions: [
+              "-","-","-","-","X"
+            ]
+          }
+        ]
+      });*/
+      var params = getSearchParameters();
+      console.log('Params: '+JSON.stringify(params));
+      ractive.set('tenant', { 
+        id: (params['tenant'] == undefined ? 'firmgains' : params['tenant']),
+        decisionName: (params['decision'] == undefined ? 'valuation' : params['decision']), });
+      //$('.entity.active').fadeIn();
+      ractive.fetch();
+    });
+  </script>
+
+</body>
+</html>
