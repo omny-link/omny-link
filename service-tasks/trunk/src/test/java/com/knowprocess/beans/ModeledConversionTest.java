@@ -69,7 +69,8 @@ public class ModeledConversionTest {
                 "Cannot support expected conversion from SugarLead to LeadActivity",
                 conversionService.canConvert(SugarLead.class,
                 LeadActivity.class));
-        SugarLead sLead = new SugarLead("User read article XYZ");
+        SugarLead sLead = new SugarLead();
+        sLead.setDescription("User read article XYZ");
         assertNotNull(sLead.getDescription());
         LeadActivity lead = conversionService
                 .convert(sLead, LeadActivity.class);

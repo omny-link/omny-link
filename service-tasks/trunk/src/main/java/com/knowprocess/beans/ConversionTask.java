@@ -8,7 +8,6 @@ public class ConversionTask {
 
     public ConversionTask() {
         conversionService = new GenericConversionService();
-        conversionService.addConverter(new LinkedInPersonToSugarLead());
     }
 
     @SuppressWarnings("unchecked")
