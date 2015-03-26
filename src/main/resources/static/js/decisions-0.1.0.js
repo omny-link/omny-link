@@ -33,7 +33,14 @@ var ractive = new AuthenticatedRactive({
     console.log('addCondition...');
     var newCondition = { name: 'name', expressions: new Array(parseInt(ractive.get('decision.conditions')[0].expressions.length)) };
     console.log('  '+JSON.stringify(newCondition));
-    // var idx = ractive.get('decision.conditions').push(newCondition);
+    var idx = ractive.get('decision.conditions').push(newCondition);
+    // $('.condition:nth-child('+idx+') th span').click();
+  },
+  addConclusion: function() {
+    console.log('addConclusion...');
+    var newConclusion = { name: 'name', expressions: new Array(parseInt(ractive.get('decision.conditions')[0].expressions.length)) };
+    console.log('  '+JSON.stringify(newConclusion));
+    var idx = ractive.get('decision.conclusions').push(newConclusion);
     // $('.condition:nth-child('+idx+') th span').click();
   },
   addConditionExpr: function() {
@@ -44,14 +51,10 @@ var ractive = new AuthenticatedRactive({
     $.each(ractive.get('decision.conclusions'), function(i,d) {
       d.expressions.push('-');
     })
+    
   },
   edit: function(type,i,j,obj) {
     console.log('edit '+type+' at position '+i+','+j+': '+obj.name+'...');
-  },
-  toggleEdit: function(type,i,j,obj) {
-    console.log('toggleEdit '+type+' at position '+i+','+j+': '+obj.name+'...');
-    $($('.'+type+' input')[i]).toggle();
-    $($('.'+type+' .edit')[i]).removeClass('hide').toggle();
   },
   delete: function (obj) {
     console.log('delete '+obj+'...');
@@ -194,11 +197,16 @@ var ractive = new AuthenticatedRactive({
       $('#messages p').fadeOut();
     }, EASING_DURATION*10);
   },
-  toggleResults: function(ctrl) {
-    console.log('toggleResults: '+ctrl);
-    $('#contactsTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
-    $('#contactsTable').slideToggle();
-  },
+//  toggleEdit: function(type,i,j,obj) {
+//    console.log('toggleEdit '+type+' at position '+i+','+j+': '+obj.name+'...');
+//    $($('.'+type+' input')[i]).toggle();
+//    $($('.'+type+' .edit')[i]).removeClass('hide').toggle();
+//  },
+//  toggleResults: function(ctrl) {
+//    console.log('toggleResults: '+ctrl);
+//    $('#contactsTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
+//    $('#contactsTable').slideToggle();
+//  },
   /**
    * Inverse of editField.
    */

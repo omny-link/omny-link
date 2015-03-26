@@ -26,7 +26,7 @@ var AuthenticatedRactive = Ractive.extend({
   },
   getProfile: function() {
     console.log('getProfile: '+ractive.get('username'));
-    if (ractive && ractive.data['username']) $.getJSON('/users/'+ractive.get('username'), function(profile) {
+    if (ractive && ractive.get('username')) $.getJSON('/users/'+ractive.get('username'), function(profile) {
       ractive.set('profile',profile);
       if (ractive.hasRole('ADMIN')) $('.admin').show();
     });
