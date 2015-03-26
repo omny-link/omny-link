@@ -196,7 +196,7 @@
     $(document).ready(function() {
       var params = getSearchParameters();
       ractive.set('entityIdx', params['entityIdx'] == undefined ? 0 : params['entityIdx']);
-      ractive.set('tenant', { id: params['tenant'] == undefined ? '' : params['tenant'] });
+      ractive.set('tenant', { id: params['tenant'] == 'omny' ? '' : params['tenant'] });
       ractive.set('entities', [
           {
             name: "contact",

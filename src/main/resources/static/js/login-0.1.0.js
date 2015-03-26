@@ -25,15 +25,17 @@ var AuthenticatedRactive = Ractive.extend({
     if (parts.length == 2) return parts.pop().split(";").shift();
   },
   getProfile: function() {
-    console.log('getProfile: '+ractive.get('username'));
-    if (ractive && ractive.get('username')) $.getJSON('/users/'+ractive.get('username'), function(profile) {
+    console.log('getProfile: '+this.get('username'));
+    var ractive = this;
+    if (this && this.get('username')) $.getJSON('/users/'+ractive.get('username'), function(profile) {
       ractive.set('profile',profile);
       if (ractive.hasRole('ADMIN')) $('.admin').show();
     });
     else console.debug('Not logged in, skipping profile');
   },
   hasRole: function(role) {
-    if (ractive && ractive.get('profile'))
+    var ractive = this;
+    if (this && this.get('profile'))
       return ractive.get('profile').groups.filter(function(g) {return g.id==role})!=undefined;
     return false;
   },
