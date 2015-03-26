@@ -72,18 +72,16 @@
                 <input class="edit" value="{{name}}"/>
               </th>
               {{#each expressions:j}}
-                <td class="expr">
-                  <input value="{{.}}"/>
-                </td>
+                <td class="expr"><input value="{{.}}"/></td>
               {{/each}}
             {{#if (i==0)}}
-              <td class="expr" rowspan="5">
+              <td class="expr" rowspan="{{decision.conditions[0].expressions.length+decision.conclusions[0].expressions.length+2}}">
                 <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addConditionExpr()"> Add</span>
               </td>
             {{/if}}
             </tr>
           {{/each}}
-          <tr class="condition">
+          <tr class="newCondition">
             <th colspan="2">
               <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addCondition()"> Add</span>
             </th>
@@ -92,21 +90,21 @@
             {{/each}}
           </tr>
           {{#each decision.conclusions:i}}
-            <tr class="conclusion" data-conclusion="{{name}}" on-click="edit(this)">
+            <tr class="conclusion" data-conclusion="{{name}}">
               <th class="conclusion">
                 <span class="glyphicon glyphicon-flash" aria-hidden="true"></span>
               </th>
               <th class="expr-name">
                 <input class="edit" value="{{name}}"/>
               </th>
-            {{#each expressions:j}}
-                <td>{{.}}</td>
+              {{#each expressions:j}}
+                <td class="expr"><input value="{{.}}"/></td>
               {{/each}}
             </tr>
           {{/each}}
-          <tr class="conclusion">
+          <tr class="newConclusion">
             <th colspan="2">
-              <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addconclusion()">Add</span>
+              <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addConclusion()">Add</span>
             </th>
             {{#each decision.conclusions[0].expressions}}
               <td contenteditable>&nbsp;</td>
