@@ -23,6 +23,7 @@ var ractive = new AuthenticatedRactive({
     csrfToken: getCookie(CSRF_COOKIE),
     server: 'http://api.knowprocess.com',
     content: 'test',
+    entities: [],
     //saveObserver:false,
     username: localStorage['username'],
     age: function(timeString) {
@@ -51,33 +52,42 @@ var ractive = new AuthenticatedRactive({
     $.each(ractive.get('decision.conclusions'), function(i,d) {
       d.expressions.push('-');
     })
-    
   },
-  edit: function(type,i,j,obj) {
-    console.log('edit '+type+' at position '+i+','+j+': '+obj.name+'...');
-  },
-  delete: function (obj) {
-    console.log('delete '+obj+'...');
-    var url = obj.links != undefined
-        ? obj.links.filter(function(d) { console.log('this:'+d);if (d['rel']=='self') return d;})[0].href
-        : obj._links.self.href;
-    $.ajax({
-        url: url,
-        type: 'DELETE',
-        success: completeHandler = function(data) {
-          // ractive.fetch();
-        },
-        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-            ractive.handleError(jqXHR,textStatus,errorThrown);
-        }
-    });
-  },
+//  edit: function(type,i,j,obj) {
+//    console.log('edit '+type+' at position '+i+','+j+': '+obj.name+'...');
+//  },
+//  delete: function (obj) {
+//    console.log('delete '+obj+'...');
+//    var url = obj.links != undefined
+//        ? obj.links.filter(function(d) { console.log('this:'+d);if (d['rel']=='self') return d;})[0].href
+//        : obj._links.self.href;
+//    $.ajax({
+//        url: url,
+//        type: 'DELETE',
+//        success: completeHandler = function(data) {
+//          // ractive.fetch();
+//        },
+//        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
+//            ractive.handleError(jqXHR,textStatus,errorThrown);
+//        }
+//    });
+//  },
   fetch: function () {
     console.log('fetch...');
     ractive.set('saveObserver', false);
     $.getJSON('/'+ractive.get('tenant.id')+'/decision/'+ractive.get('tenant.decisionName'),  function( data ) {
       console.log('loaded decision...');
       ractive.set('decision', data);
+      ractive.set('saveObserver',true);
+      $('.entity.active').fadeIn();
+    });
+  },
+  fetchDomain: function () {
+    console.log('fetch...');
+    ractive.set('saveObserver', false);
+    $.getJSON('/'+ractive.get('tenant.id')+'/domain/?projection=complete',  function( data ) {
+      console.log('loaded entities...');
+      ractive.merge('entities', data.entities);
       ractive.set('saveObserver',true);
       $('.entity.active').fadeIn();
     });

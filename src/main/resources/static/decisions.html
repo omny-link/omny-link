@@ -140,60 +140,13 @@
   <script src="js/decisions-0.1.0.js"></script>
   <script>
     $(document).ready(function() {
-      ractive.set('entityIdx', 0);
-      ractive.set('entities', [
-          {
-            name: "account",
-            description: "A Contact is associated with up to one Account, zero to many Notes and zero to many Documents. An Account typically has one contact though may have more.",
-            imageUrl: "images/domain/contact-context.png",
-            fields: [
-			        { name: "firstName", label: "First Name", hint:"Your first or given name", required: true, type: "text" },
-			        { name: "lastName", label: "Last Name", hint:"Your last or family name", required: true, type: "text" },
-		        ]
-          }
-        ]
-      );
-      /*
-      ractive.set('decision', {
-        name:"Applicant Risk Rating",
-        conditions: [
-          {
-            name: "Applicant Age",
-            expressions: [
-              "<25","<25","[25..60]",">60",">60"
-            ]
-          },{
-            name: "Medical History",
-            expressions: [
-              "good","bad","-","good","bad"
-            ]
-          }
-        ],
-        conclusions: [
-          {
-            name: "Low",
-            expressions: [
-              "X","-","-","-","-"
-            ]
-          },{
-            name: "Medium",
-            expressions: [
-              "-","X","X","X","-"
-            ]
-          },{
-            name: "High",
-            expressions: [
-              "-","-","-","-","X"
-            ]
-          }
-        ]
-      });*/
       var params = getSearchParameters();
       console.log('Params: '+JSON.stringify(params));
       ractive.set('tenant', { 
         id: (params['tenant'] == undefined ? 'firmgains' : params['tenant']),
-        decisionName: (params['decision'] == undefined ? 'valuation' : params['decision']), });
+        decisionName: (params['decision'] == undefined ? 'new' : params['decision']), });
       //$('.entity.active').fadeIn();
+      ractive.fetchDomain();
       ractive.fetch();
     });
   </script>
