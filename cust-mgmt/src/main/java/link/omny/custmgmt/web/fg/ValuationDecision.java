@@ -24,9 +24,23 @@ public class ValuationDecision {
         }
 
         Double netDebt = nullToZero(surplus) - nullToZero(borrowing);
-        results.put("lowQuote", (3 * ebitda) + netDebt);
-        results.put("mediumQuote", (5 * ebitda) + netDebt);
-        results.put("highQuote", (7 * ebitda) + netDebt);
+        if (ebitda.doubleValue() < 50000) {
+            results.put("lowQuote", (1.45 * ebitda) + netDebt);
+            results.put("mediumQuote", (2 * ebitda) + netDebt);
+            results.put("highQuote", (2.65 * ebitda) + netDebt);
+        } else if (ebitda.doubleValue() >= 50000 && ebitda.doubleValue() <300000) {
+            results.put("lowQuote", (1.95 * ebitda) + netDebt);
+            results.put("mediumQuote", (2.9 * ebitda) + netDebt);
+            results.put("highQuote", (3.85 * ebitda) + netDebt);
+        } else if (ebitda.doubleValue() >= 300000&& ebitda.doubleValue() < 1000000) {
+            results.put("lowQuote", (2.5 * ebitda) + netDebt);
+            results.put("mediumQuote", (3.75 * ebitda) + netDebt);
+            results.put("highQuote", (5.5 * ebitda) + netDebt);
+        } else {
+            results.put("lowQuote", (3.1 * ebitda) + netDebt);
+            results.put("mediumQuote", (4.95 * ebitda) + netDebt);
+            results.put("highQuote", (6.85 * ebitda) + netDebt);
+        }
         return results;
     }
 
