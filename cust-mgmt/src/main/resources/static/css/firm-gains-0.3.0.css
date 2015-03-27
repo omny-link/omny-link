@@ -297,7 +297,6 @@ th {
 	padding: 0 20px;	
 }
 form.upload {
-	display: block;
   padding-top: 5px;
 }
 form.upload .glyphicon {
