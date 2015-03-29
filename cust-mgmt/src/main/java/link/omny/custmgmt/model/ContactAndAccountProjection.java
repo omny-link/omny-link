@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.data.rest.core.config.Projection;
 
-@Projection(name = "complete", types = { Account.class, Contact.class,
-        Document.class, Note.class })
+@Projection(name = "complete", types = { Account.class, Activity.class,
+        Contact.class, Document.class, Note.class })
 public interface ContactAndAccountProjection {
 
     Long getId();
@@ -62,4 +62,6 @@ public interface ContactAndAccountProjection {
     List<Note> getNotes();
 
     List<Document> getDocuments();
+
+    List<Document> getActivities();
 }

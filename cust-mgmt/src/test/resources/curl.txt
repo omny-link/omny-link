@@ -1,0 +1,5 @@
+curl -X POST -v -H "Content-Type:application/json" -u tstephen:tstephen -d '{"type":"register","occurred":"2015-01-05T19:00:00"}' http://localhost:8082/activities/
+curl -X POST -v -H "Content-Type:application/json" -u tstephen:tstephen -d '{"type":"login","occurred":"2015-01-05T19:05:00"}' http://localhost:8082/activities/
+curl -X POST -v -H "Content-Type:application/json" -u tstephen:tstephen -d '{"type":"email","content":"welcome","occurred":"2015-01-05T19:10:00"}' http://localhost:8082/activities/
+
+curl -X PUT -v -H "Content-Type:text/uri-list" -u tstephen:tstephen -d 'http://localhost:8082/activities/1' http://localhost:8082/contacts/1

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -33,14 +34,20 @@ import com.knowprocess.bpm.impl.CorsFilter;
 import com.knowprocess.bpm.impl.JsonManager;
 
 @Configuration
-@ComponentScan(basePackages = { "link.omny.custmgmt", "com.knowprocess.bpm" })
+@ComponentScan(basePackages = { "link.omny.custmgmt", "com.knowprocess.bpm",
+        "com.knowprocess.decisions" })
 @EnableAutoConfiguration
-@EnableJpaRepositories("link.omny.custmgmt.repositories")
+@EntityScan({ "link.omny.custmgmt.model", "com.knowprocess.bpm",
+        "com.knowprocess.decisions" })
+@EnableJpaRepositories({ "link.omny.custmgmt.repositories",
+        "com.knowprocess.bpm.decisions.repositories",
+        "com.knowprocess.decisions.repositories" })
 // @ImportResource("classpath:META-INF/spring/applicationContext-data.xml")
 public class Application extends WebMvcConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(Application.class);
+
 
     @Value("${omny.populator.skip}")
     protected boolean skipPopulator;
