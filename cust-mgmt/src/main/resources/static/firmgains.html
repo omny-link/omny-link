@@ -24,8 +24,11 @@
   -->
   <script id='template' type='text/ractive'>
     <div class="profile pull-right">
-      <span>Logged in as: {{username}}</span>
-      <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+      <form name="logoutForm" action="/logout" method="POST">
+        <span>Logged in as: {{username}}</span>
+        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
+        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
+      </form>
     </div>
     <h1>
       <a class="nav navbar-brand" href="http://omny.link">
@@ -48,6 +51,7 @@
             <select class="form-control entity pull-right" name="entity">
               <option value="contacts">Contacts</option>
               <option value="accounts">Accounts</option>
+              <option value="activities">Activities</option>
             </select>
           </form>
         </h2>
@@ -180,7 +184,27 @@
 
         </form>
 	  
-	  <div style="clear: both"></div>
+        <div style="clear: both"></div>
+
+        <form id="activityForm">
+         <div id="activitySect" style="clear: both">
+          <h2>
+            <span>Activities</span>
+            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
+          </h2>
+          <table id="activitiesTable" class="table table-striped"><tbody>
+            {{#each current.activities:j}}
+              <tr>
+                <td class="field-occurred">{{age(occurred)}} ({{formatDate(occurred)}})</td>
+                <td class="field-type">{{type}}</td>
+                <td class="field-text">{{content}}</td>
+              </tr>
+            {{/each}}
+          </tbody></table>
+         </div>
+        </form>
+
+    	  <div style="clear: both"></div>
 
         <form id="noteForm">
          <div id="notesSect" style="clear: both">

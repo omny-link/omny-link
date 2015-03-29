@@ -234,10 +234,20 @@ public class Contact implements Serializable {
     private List<Note> notes;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
+    private List<Activity> activity;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     private List<Document> documents;
 
+    public List<Activity> getActivities() {
+        if (activity == null) {
+            activity = new ArrayList<Activity>();
+        }
+        return activity;
+    }
+
     @PrePersist
-    void preInsert() {
+    public void preInsert() {
         firstContact = new Date();
     }
 
@@ -250,4 +260,81 @@ public class Contact implements Serializable {
         lastUpdated = new Date();
     }
 
+    public long timeSinceLogin() {
+        Activity lastLogin = getLastActivityOfType("login");
+        return lastLogin == null ? -1 : new Date().getTime()
+                - lastLogin.getOccurred().getTime();
+    }
+
+    public long timeSinceFirstLogin() {
+        Activity firstLogin = getFirstActivityOfType("login");
+        return firstLogin == null ? -1 : new Date().getTime()
+                - firstLogin.getOccurred().getTime();
+    }
+
+    public long timeSinceRegistered() {
+        Activity firstLogin = getFirstActivityOfType("register");
+        return firstLogin == null ? -1 : new Date().getTime()
+                - firstLogin.getOccurred().getTime();
+    }
+
+    public long timeSinceEmail() {
+        Activity firstLogin = getFirstActivityOfType("email");
+        return firstLogin == null ? -1 : new Date().getTime()
+                - firstLogin.getOccurred().getTime();
+    }
+
+    public long timeSinceValuation() {
+        Activity firstLogin = getFirstActivityOfType("valuation");
+        return firstLogin == null ? -1 : new Date().getTime()
+                - firstLogin.getOccurred().getTime();
+    }
+
+    public boolean haveSentEmail(String emailName) {
+        for (Activity act : getActivities()) {
+            if ("email".equals(act.getType())
+                    && emailName.equals(act.getContent())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean notYetSentEmail(String emailName) {
+        return !haveSentEmail(emailName);
+    }
+
+    protected List<Activity> getActivitiesOfType(String type) {
+        List<Activity> activities = new ArrayList<Activity>();
+        for (Activity act : getActivities()) {
+            if (type.equals(act.getType())) {
+                activities.add(act);
+            }
+        }
+        return activities;
+    }
+
+    protected Activity getLastActivityOfType(String type) {
+        Activity lastLogin = null;
+        for (Activity act : getActivities()) {
+            if (type.equals(act.getType())
+                    && (lastLogin == null || lastLogin.getOccurred().after(
+                            act.getOccurred()))) {
+                lastLogin = act;
+            }
+        }
+        return lastLogin;
+    }
+
+    protected Activity getFirstActivityOfType(String type) {
+        Activity firstLogin = null;
+        for (Activity act : getActivities()) {
+            if (type.equals(act.getType())
+                    && (firstLogin == null || firstLogin.getOccurred().before(
+                            act.getOccurred()))) {
+                firstLogin = act;
+            }
+        }
+        return firstLogin;
+    }
 }
