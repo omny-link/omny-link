@@ -1,4 +1,4 @@
-package com.knowprocess.domain.model;
+package com.knowprocess.bpm.domain.model;
 
 public class CustomEntityField extends EntityField {
 

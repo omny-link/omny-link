@@ -1,4 +1,4 @@
-package com.knowprocess.domain.model;
+package com.knowprocess.bpm.domain.model;
 
 import java.util.Date;
 import java.util.List;

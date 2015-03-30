@@ -1,6 +1,5 @@
 package com.knowprocess.bpm;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
@@ -11,11 +10,6 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.identity.User;
-import org.activiti.spring.SpringAsyncExecutor;
-import org.activiti.spring.SpringProcessEngineConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.activiti.spring.boot.AbstractProcessEngineAutoConfiguration;
 import org.activiti.spring.boot.DataSourceProcessEngineAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
@@ -25,17 +19,19 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -46,8 +42,11 @@ import com.knowprocess.bpm.impl.JsonManager;
 @Configuration
 @AutoConfigureBefore(DataSourceProcessEngineAutoConfiguration.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
-@ComponentScan
+@ComponentScan(basePackages = { "com.knowprocess.bpm",
+        "com.knowprocess.decisions" })
 @EnableAutoConfiguration
+@EnableJpaRepositories({ "com.knowprocess.decisions.repositories",
+        "com.knowprocess.bpm.decisions.repositories" })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Autowired
@@ -59,6 +58,11 @@ public class Application extends WebMvcConfigurerAdapter {
     @Bean
     public JsonManager jsonManager() {
         return new JsonManager();
+    }
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
     }
 
     /*@Bean
