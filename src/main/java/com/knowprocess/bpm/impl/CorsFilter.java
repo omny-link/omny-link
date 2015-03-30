@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -47,7 +46,7 @@ public class CorsFilter extends OncePerRequestFilter {
      * Defaults: null,https?://localhost.*,https?://.*knowprocess
      * .com.*,chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm
      */
-    @Value("${cors.allowedOrigins}")
+    // @Value("${cors.allowedOrigins}")
     protected String corsAllowedOrigins = "null,https?://localhost.*,https?://.*knowprocess.com.*,chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm";
 
     protected Set<String> allowedOrigins;

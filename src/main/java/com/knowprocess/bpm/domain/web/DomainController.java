@@ -1,4 +1,4 @@
-package com.knowprocess.bpm.web;
+package com.knowprocess.bpm.domain.web;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.knowprocess.domain.model.CustomEntityField;
-import com.knowprocess.domain.model.DomainEntity;
-import com.knowprocess.domain.model.DomainModel;
-import com.knowprocess.domain.model.EntityField;
+import com.knowprocess.bpm.domain.model.CustomEntityField;
+import com.knowprocess.bpm.domain.model.DomainEntity;
+import com.knowprocess.bpm.domain.model.DomainModel;
+import com.knowprocess.bpm.domain.model.EntityField;
 
 @Controller
 @RequestMapping(value = "/{tenantId}/domain")
@@ -35,6 +35,8 @@ public class DomainController {
         model.setDescription("A general purpose and extensible customer model for the web");
 
         List<DomainEntity> entities = new ArrayList<DomainEntity>();
+
+        // Contact
         DomainEntity entity = new DomainEntity();
         entity.setName("Contact");
         entity.setDescription("A Contact is associated with up to one Account, zero to many Notes and zero to many Documents. An Account typically has one contact though may have more.");
@@ -91,6 +93,14 @@ public class DomainController {
         fields.add(new EntityField("keyword", "Keyword",
                 "Additional information from the pay-per-click system", false,
                 "text"));
+        fields.add(new EntityField("timeSinceEmail", "Time since email",
+                "Time since our last email to contact (milliseconds)", false,
+                "number"));
+        fields.add(new EntityField("timeSinceLogin", "Time since login",
+                "Time since last login (milliseconds)", false, "number"));
+        fields.add(new EntityField("timeSinceRegistered",
+                "Time since registered",
+                "Time since last registered (milliseconds)", false, "number"));
         fields.add(new EntityField("tenantId", "Tenant",
                 "Name of the the Omny account", true, "text"));
         fields.add(new EntityField("firstContact", "First Contact",
@@ -108,20 +118,49 @@ public class DomainController {
         fields = new ArrayList<EntityField>();
         fields.add(new EntityField("name", "Name",
                 "Name of the company or organisation", true, "text"));
-        fields.add(new EntityField("companyNumber", "Company Number", "The number for this company issued by the registrar of companies in your country.", false, "number"));
-        fields.add(new EntityField("aliases","Also known as", "Other names for the company such as names you trade as", false, "text"));
+        fields.add(new EntityField(
+                "companyNumber",
+                "Company Number",
+                "The number for this company issued by the registrar of companies in your country.",
+                false, "number"));
+        fields.add(new EntityField("aliases", "Also known as",
+                "Other names for the company such as names you trade as",
+                false, "text"));
         fields.add(new EntityField("businessWebsite", "Business Website",
                 "The primary website for the business", false, "url"));
-        fields.add(new EntityField("shortDesc", "Short Description", "Brief description of the business", false, "text"));
-        fields.add(new EntityField("description", "Description", "A fuller description", false, "text"));
-        fields.add(new EntityField("incorporationYear", "Established In", "The year the business was incorporated",false, "number"));
-        fields.add(new EntityField("noOfEmployees", "No. of Employees", "The number of full time staff you employee", false, "number"));
+        fields.add(new EntityField("shortDesc", "Short Description",
+                "Brief description of the business", false, "text"));
+        fields.add(new EntityField("description", "Description",
+                "A fuller description", false, "text"));
+        fields.add(new EntityField("incorporationYear", "Established In",
+                "The year the business was incorporated", false, "number"));
+        fields.add(new EntityField("noOfEmployees", "No. of Employees",
+                "The number of full time staff you employee", false, "number"));
         fields.add(new EntityField("tenantId", "Tenant",
                 "Name of the the Omny account", true, "text"));
         fields.add(new EntityField("firstContact", "First Contact",
                 "Date of first contact with this business", true, "date"));
         fields.add(new EntityField("lastUpdated", "Last Updated",
                 "Date of last update to this account", true, "date"));
+        entity.setFields(fields);
+        entities.add(entity);
+
+        // Activity
+        entity = new DomainEntity();
+        entity.setName("Activity");
+        entity.setDescription("An Activity is associated with exactly one Contact.");
+        entity.setImageUrl("images/domain/activity-context.png");
+        fields = new ArrayList<EntityField>();
+        fields.add(new EntityField(
+                "type", "Type",
+                "Type of activity, for example: register, login, download etc.",
+                false, "text"));
+        fields.add(new EntityField(
+                "content", "Content",
+                "Additional content dependent on the type, for example for a download this will hold what was downloaded",
+                true, "text"));
+        fields.add(new EntityField("occurred", "Occurred",
+                "Date and time this activity occurred", true, "date"));
         entity.setFields(fields);
         entities.add(entity);
 
@@ -157,6 +196,34 @@ public class DomainController {
         entity.setFields(fields);
         entities.add(entity);
 
+        // Users
+        entity = new DomainEntity();
+        entity.setName("User");
+        entity.setDescription("A User of the system who may belong to one or more groups and who may be allocated work.");
+        entity.setImageUrl("images/domain/user-context.png");
+        fields = new ArrayList<EntityField>();
+        fields.add(new EntityField("firstName", "First Name",
+                "Your first or given name", true, "text"));
+        fields.add(new EntityField("lastName", "Last Name",
+                "Your last or family name", true, "text"));
+        fields.add(new EntityField("email", "Email Address",
+                "Your business email address", true, "text"));
+        entity.setFields(fields);
+        entities.add(entity);
+
+        // Email actions
+        entity = new DomainEntity();
+        entity.setName("Email");
+        entity.setDescription("An email is an action (conclusion) available to the decision table authors.");
+        entity.setImageUrl("images/domain/email-context.png");
+        fields = new ArrayList<EntityField>();
+        fields.add(new EntityField("subjectLine", "Subject Line",
+                "Subject line for the email", true, "text"));
+        fields.add(new EntityField("templateName", "Template Name",
+                "Name of email template to use", true, "text"));
+        entity.setFields(fields);
+        entities.add(entity);
+
         model.setEntities(entities);
         return model;
     }
@@ -186,20 +253,17 @@ public class DomainController {
         fields.add(new CustomEntityField("operatingProfit", "Operating Profit",
                 "Gross profits", false, "number"));
         fields.add(new CustomEntityField("adjustments", "Adjustments", "",
-                false,
-                "number"));
+                false, "number"));
         fields.add(new CustomEntityField("borrowing", "Borrowing", "", false,
                 "number"));
         fields.add(new CustomEntityField("lowQuote", "Low quote", "", false,
                 "number"));
         fields.add(new CustomEntityField("mediumQuote", "Medium quote", "",
-                false,
-                "number"));
+                false, "number"));
         fields.add(new CustomEntityField("highQuote", "High quote", "", false,
                 "number"));
         fields.add(new CustomEntityField("askingPrice", "Asking price", "",
-                false,
-                "number"));
+                false, "number"));
         // fields.add(new CustomEntityField());
         // fields.add(new CustomEntityField());
         // fields.add(new CustomEntityField());
