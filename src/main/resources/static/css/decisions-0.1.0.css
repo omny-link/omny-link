@@ -1,13 +1,18 @@
 [contenteditable]:hover {
   cursor: pointer;
 }
-input {
+.decision-name input,
+.expr-name input {
   border: none;
   cursor: pointer;
-  width: 100px;
+  text-overflow: ellipsis;
+	width: 150px;
 }
-.expr-name input {
-	width: 200px;
+.expr input {
+  border: none;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  width: 75px;
 }
 input:focus {
   border: 1px solid #ccc;

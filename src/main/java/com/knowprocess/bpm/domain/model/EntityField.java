@@ -1,4 +1,4 @@
-package com.knowprocess.domain.model;
+package com.knowprocess.bpm.domain.model;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;

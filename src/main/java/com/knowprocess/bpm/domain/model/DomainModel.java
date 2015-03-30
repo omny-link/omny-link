@@ -1,5 +1,6 @@
-package com.knowprocess.decision.model;
+package com.knowprocess.bpm.domain.model;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -9,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
@@ -16,6 +19,7 @@ import lombok.NoArgsConstructor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,10 +27,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Data
 @Component
 @NoArgsConstructor
-public class DecisionModel {
-
+public class DomainModel {
     protected static final Logger LOGGER = LoggerFactory
-            .getLogger(DecisionModel.class);
+            .getLogger(DomainEntity.class);
 
     @Id
     @Column(name = "id")
@@ -38,10 +41,34 @@ public class DecisionModel {
     @JsonProperty
     protected String name;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<DecisionExpression> conditions;
+    @JsonProperty
+    protected String description;
+
+    @JsonProperty
+    protected String imageUrl;
+
+    /**
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(style = "M-")
+    @JsonProperty
+    private Date firstCreated;
+
+    /**
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(style = "M-")
+    @JsonProperty
+    private Date lastUpdated;
+
+    /**
+     */
+    @NotNull
+    @JsonProperty
+    @Column(nullable = false)
+    private String tenantId;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<DecisionExpression> conclusions;
+    private List<DomainEntity> entities;
 
 }

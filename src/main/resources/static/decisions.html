@@ -42,14 +42,11 @@
 
     <section id="entitySect" class=" entity" style="">
       <h2>
-        <span>Entities available</span>
-      </h2>
-
-      <ul>
+        <span>Domain links</span>
         {{#each entities:i}}
-          <li><a href="domain.html?entityIdx=1">{{name.toUpperCase()}}</a></li>
+          <a href="domain.html?entityIdx=1">{{name.toUpperCase()}}; </a>
         {{/each}}
-      </ul>
+      </h2>
     </section>
 
     <section id="dtSect" class="entity-fields">
@@ -59,20 +56,22 @@
       <table id="decisionTable" class="decision-table table table-striped">
         <thead>
           <tr>
-            <th class="decision-name" colspan="2">{{decision.name}}</th>
+            <th class="decision-name" colspan="2">
+              <input title="{{decision.name}}" value="{{decision.name}}"/>
+            </th>
           </tr>
         </thead>
         <tbody>
           {{#each decision.conditions:i}}
             <tr class="condition" data-condition="{{name}}">
-              <th class="condition">
+              <th class="">
                 <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
               </th>
               <th class="expr-name">
-                <input class="edit" value="{{name}}"/>
+                <input autocomplete="false" class="edit typeahead" title="{{name}}" value="{{name}}"/>
               </th>
               {{#each expressions:j}}
-                <td class="expr"><input value="{{.}}"/></td>
+                <td class="expr"><input title="{{.}}" value="{{.}}"/></td>
               {{/each}}
             {{#if (i==0)}}
               <td class="expr" rowspan="{{decision.conditions[0].expressions.length+decision.conclusions[0].expressions.length+2}}">
@@ -91,14 +90,14 @@
           </tr>
           {{#each decision.conclusions:i}}
             <tr class="conclusion" data-conclusion="{{name}}">
-              <th class="conclusion">
+              <th class="">
                 <span class="glyphicon glyphicon-flash" aria-hidden="true"></span>
               </th>
               <th class="expr-name">
-                <input class="edit" value="{{name}}"/>
+                <input autocomplete="false" class="edit typeahead" title="{{name}}" value="{{name}}"/>
               </th>
               {{#each expressions:j}}
-                <td class="expr"><input value="{{.}}"/></td>
+                <td class="expr"><input title="{{.}}" value="{{.}}"/></td>
               {{/each}}
             </tr>
           {{/each}}
@@ -114,8 +113,8 @@
       </table>
 
       <div class="pull-right">
-        <button class="btn" type="button">Validate</button>
-        <button class="btn btn-default" type="button">Save</button>
+        <!--<button class="btn" type="button">Validate</button>-->
+        <button class="btn btn-default" on-click="save(decision)" type="button">Save</button>
       </div>
     </section>
 
@@ -135,7 +134,7 @@
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
   -->
   <script src="js/ractive.min.js"></script>
-  <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
+  <!-- <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>-->
   <script src="js/login-0.1.0.js"></script>
   <script src="js/decisions-0.1.0.js"></script>
   <script>
@@ -144,10 +143,10 @@
       console.log('Params: '+JSON.stringify(params));
       ractive.set('tenant', { 
         id: (params['tenant'] == undefined ? 'firmgains' : params['tenant']),
-        decisionName: (params['decision'] == undefined ? 'new' : params['decision']), });
+        decisionName: (params['decision'] == undefined ? 'new' : params['decision'])
+      });
       //$('.entity.active').fadeIn();
       ractive.fetchDomain();
-      ractive.fetch();
     });
   </script>
 
