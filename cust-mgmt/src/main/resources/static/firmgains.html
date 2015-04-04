@@ -450,6 +450,8 @@
       });
       ractive.fetch();
       ractive.initAutoComplete();
+      var s = getSearchParameters()['s']);
+      if (s!=undefined) ractive.set('searchTerm',s);
       ractive.set('saveObserver', true);
     });
   </script>
