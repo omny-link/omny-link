@@ -18,6 +18,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -61,17 +62,24 @@ public class Contact implements Serializable {
     private Long id;
 
     /**
+     * Convenience for forms that want to have just one field for first name and
+     * last name. This will be transposed into firstName and lastName by
+     * splitting at the first space which evidence suggests usually works (2
+     * failures in 122 sample from gardenatics).
      */
-    @NotNull
+    @Transient
+    private String fullName;
+
+    // @NotNull
     @JsonProperty
-    @Column(nullable = false)
+    // @Column(nullable = false)
     private String firstName;
 
     /**
      */
-    @NotNull
+    // @NotNull
     @JsonProperty
-    @Column(nullable = false)
+    // @Column(nullable = false)
     private String lastName;
 
     /**
@@ -81,9 +89,9 @@ public class Contact implements Serializable {
 
     /**
      */
-    @NotNull
+    // @NotNull
     @JsonProperty
-    @Column(nullable = false)
+    // @Column(nullable = false)
     private String email;
 
     /**
@@ -103,6 +111,9 @@ public class Contact implements Serializable {
 
     @JsonProperty
     private String address2;
+
+    @JsonProperty
+    private String town;
 
     @JsonProperty
     private String countyOrCity;
@@ -244,6 +255,26 @@ public class Contact implements Serializable {
             activity = new ArrayList<Activity>();
         }
         return activity;
+    }
+
+    public void setFullName(String name) {
+        String fName;
+        try {
+            fName = name.substring(0, name.indexOf(' '));
+            setLastName(name.substring(name.indexOf(' ') + 1));
+        } catch (StringIndexOutOfBoundsException e) {
+            fName = name;
+        }
+        switch (fName) {
+        case "Dr":
+        case "Mr":
+        case "Mrs":
+        case "Miss":
+            setTitle(fName);
+            break;
+        default:
+            setFirstName(fName);
+        }
     }
 
     @PrePersist

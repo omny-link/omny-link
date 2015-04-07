@@ -3,8 +3,7 @@
 <head>
   <meta charset='utf-8'>
   <title>Customer Management</title>
-  <!-- link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
-  -->
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/firm-gains-0.3.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/firm-gains-icon-32x32.png" />
@@ -114,6 +113,7 @@
               <li><label>Alternate Phone:</label><input id="curPhone2" pattern="\+?[0-9, ]{8,13}" type="tel" value="{{current.phone2}}"></li>
               <li><label>Address:</label><input id="curAddress1" value="{{current.address1}}"/></li>
               <li><label></label><input id="curAddress2" value="{{current.address2}}"/></li>
+              <li><label></label><input id="curTown" value="{{current.town}}"/></li>
               <li><label></label><input id="curCountyOrCity" value="{{current.countyOrCity}}"/></li>
               <li><label>Post Code:</label><input id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}"></li>
             </ul>
@@ -190,7 +190,6 @@
          <div id="activitySect" style="clear: both">
           <h2>
             <span>Activities</span>
-            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
           </h2>
           <table id="activitiesTable" class="table table-striped"><tbody>
             {{#each current.activities:j}}
@@ -204,7 +203,7 @@
          </div>
         </form>
 
-    	  <div style="clear: both"></div>
+    	<div style="clear: both"></div>
 
         <form id="noteForm">
          <div id="notesSect" style="clear: both">
@@ -222,7 +221,7 @@
             </tr>
             {{#each current.notes:j}}
               <tr>
-                <td class="field-age">{{age(created)}}</td>
+                <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
                 <td class="field-author">{{author}}</td>
                 <td class="field-text">{{content}}</td>
               </tr>
@@ -247,7 +246,7 @@
             </tr>
             {{#each current.documents:k}}
               <tr>
-                <td>{{created}}</td>
+                <td>{{created}} ({{formatDate(created)}})</td>
                 <td>{{author}}</td>
                 <td>{{url}}</td>
               </tr>
@@ -265,16 +264,16 @@
         <h2 class="form"><span>Valuation</span></h2> 
         <div class="col-md-6">
           <ul class="form edit-form">
-            <li><label>Low Quote:</label><input id="curLowQuote" data-a-sign="£ " type="number" value="{{current.account.customFields['lowQuote']}}"/></li>
-            <li><label>Medium Quote:</label><input id="curMediumQuote" data-a-sign="£ " type="number" value="{{current.account.customFields['mediumQuote']}}"/></li>
-            <li><label>High Quote:</label><input id="curHighQuote" data-a-sign="£ " type="number" value="{{current.account.customFields['highQuote']}}"/></li>
+            <li><label>Low Quote:</label><input class="autoNumeric" id="curLowQuote" data-a-sign="£ " value="{{current.account.customFields['lowQuote']}}"/></li>
+            <li><label>Medium Quote:</label><input class="autoNumeric" id="curMediumQuote" data-a-sign="£ "value="{{current.account.customFields['mediumQuote']}}"/></li>
+            <li><label>High Quote:</label><input class="autoNumeric" id="curHighQuote" data-a-sign="£ "value="{{current.account.customFields['highQuote']}}"/></li>
             <!--li><button on-click="">Calc</button></li>-->
           </ul>
         </div> 
         <div class="col-md-6">
           <ul class="form edit-form">
             <li><label>Share of Business (%):</label><input id="curShareOfBusiness" type="number" value="{{current.account.customFields['shareOfBusiness']}}"></li>
-            <li><label>Asking Price:</label><input id="curAskingPrice" data-a-sign="£ " type="number" value="{{current.account.customFields['askingPrice']}}"></li>
+            <li><label>Asking Price:</label><input class="autoNumeric" id="curAskingPrice" data-a-sign="£ "value="{{current.account.customFields['askingPrice']}}"></li>
             <li><label>Preferred Timing:</label><input id="curPreferredTiming" value="{{current.account.customFields['preferredTiming']}}"/></li>
           </ul>
         </div>
@@ -314,37 +313,37 @@
         <h2 class="form"><span>Financials</span></h2> 
         <div class="col-md-6">
           <ul class="form edit-form">
-            <li><label>EBITDA:</label><input id="curEbitda" data-a-sign="£ " type="number" value="{{current.account.customFields['ebitda']}}"/></li>
-            <li><label>Surplus:</label><input id="curSurplus" data-a-sign="£ " type="number" value="{{current.account.customFields['surplus']}}"/></li>
-            <li><label>Depreciation:</label><input id="curDepreciation" data-a-sign="£ " type="number" value="{{current.account.customFields['depreciationAmortisation']}}"/></li>
-            <li><label>Assets:</label><input id="curAssets" data-a-sign="£ " type="number" value="{{current.account.customFields['assets']}}"/></li>
+            <li><label>EBITDA:</label><input class="autoNumeric" id="curEbitda" data-a-sign="£ "value="{{current.account.customFields['ebitda']}}"/></li>
+            <li><label>Surplus:</label><input class="autoNumeric" id="curSurplus" data-a-sign="£ "value="{{current.account.customFields['surplus']}}"/></li>
+            <li><label>Depreciation:</label><input class="autoNumeric" id="curDepreciation" data-a-sign="£ "value="{{current.account.customFields['depreciationAmortisation']}}"/></li>
+            <li><label>Assets:</label><input class="autoNumeric" id="curAssets" data-a-sign="£ "value="{{current.account.customFields['assets']}}"/></li>
           </ul>
         </div> 
         <div class="col-md-6">
           <ul class="form edit-form">
-            <li><label>Operating Profit:</label><input id="curOperatingProfit" data-a-sign="£ " type="number" value="{{current.account.customFields['operatingProfit']}}"/></li>
-            <li><label>Adjustments:</label><input id="curAdjustments" data-a-sign="£ " type="number" value="{{current.account.customFields['adjustments']}}"/></li>
-            <li><label>Borrowing:</label><input id="curBorrowing" data-a-sign="£ " type="number" value="{{current.account.customFields['borrowing']}}"/></li>
+            <li><label>Operating Profit:</label><input class="autoNumeric" id="curOperatingProfit" data-a-sign="£ "value="{{current.account.customFields['operatingProfit']}}"/></li>
+            <li><label>Adjustments:</label><input class="autoNumeric" id="curAdjustments" data-a-sign="£ "value="{{current.account.customFields['adjustments']}}"/></li>
+            <li><label>Borrowing:</label><input class="autoNumeric" id="curBorrowing" data-a-sign="£ "value="{{current.account.customFields['borrowing']}}"/></li>
           </ul>
         </div> 
         <div class="col-md-12">
           <fieldset>
             <legend>Current Year</legend>
             <label>Financial Year:</label><input id="curCurrentFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" type="number" value="{{current.account.customFields['currentFinancialYear']}}"/>
-            <label>Turnover:</label><input id="curCurrentTurnover" data-a-sign="£ " type="number" value="{{current.account.customFields['currentTurnover']}}"/>
-            <label>Profit:</label><input id="curCurrentProfit" data-a-sign="£ " type="number" value="{{current.account.customFields['currentProfit']}}"/>
+            <label>Turnover:</label><input class="autoNumeric" id="curCurrentTurnover" data-a-sign="£ "value="{{current.account.customFields['currentTurnover']}}"/>
+            <label>Profit:</label><input class="autoNumeric" id="curCurrentProfit" data-a-sign="£ "value="{{current.account.customFields['currentProfit']}}"/>
           </fieldset>
           <fieldset>
             <legend>Last Year</legend>
             <label>Financial Year:</label><input id="curLastFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" type="number" value="{{current.account.customFields['lastFinancialYear']}}"/>
-            <label>Turnover:</label><input id="curLastTurnover" data-a-sign="£ " type="number" value="{{current.account.customFields['lastTurnover']}}"/>
-            <label>Profit:</label><input id="curLastProfit" data-a-sign="£ " type="number" value="{{current.account.customFields['lastProfit']}}"/>
+            <label>Turnover:</label><input class="autoNumeric" id="curLastTurnover" data-a-sign="£ "value="{{current.account.customFields['lastTurnover']}}"/>
+            <label>Profit:</label><input class="autoNumeric" id="curLastProfit" data-a-sign="£ "value="{{current.account.customFields['lastProfit']}}"/>
           </fieldset>
           <fieldset>
             <legend>Previous Year</legend>
             <label>Financial Year:</label><input id="curPreviousFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" type="number" value="{{current.account.customFields['previousFinancialYear']}}"/>
-            <label>Turnover:</label><input id="curPreviousTurnover" data-a-sign="£ " type="number" value="{{current.account.customFields['previousTurnover']}}"/>
-            <label>Profit:</label><input id="curPreviousProfit" data-a-sign="£ " type="number" value="{{current.account.customFields['previousProfit']}}"/>
+            <label>Turnover:</label><input class="autoNumeric" id="curPreviousTurnover" data-a-sign="£ "value="{{current.account.customFields['previousTurnover']}}"/>
+            <label>Profit:</label><input class="autoNumeric" id="curPreviousProfit" data-a-sign="£ "value="{{current.account.customFields['previousProfit']}}"/>
           </fieldset>
 
         </div>
@@ -390,6 +389,7 @@
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
   -->
   <script src="js/ractive.min.js"></script>
+  <script src="js/autoNumeric.min.js"></script>
   <script src="js/login-0.1.0.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/cust-mgmt-0.3.0.js"></script>
@@ -450,7 +450,8 @@
       });
       ractive.fetch();
       ractive.initAutoComplete();
-      var s = getSearchParameters()['s']);
+      ractive.initAutoNumeric();
+      var s = getSearchParameters()['s'];
       if (s!=undefined) ractive.set('searchTerm',s);
       ractive.set('saveObserver', true);
     });
