@@ -3,21 +3,20 @@
 <head>
   <meta charset='utf-8'>
   <title>Customer Management</title>
-  <!-- 
   <link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Lato:400italic,400' rel='stylesheet' type='text/css'>
-  -->
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/gardenatics-0.3.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/gardenatics-icon-16x16.png" />
 </head>
-
+<body>
+  <div class="clearfix" id="messages"></div>
 <!--
   1. This is the element we'll render our Ractive to.
 -->
-<body class="container" id="container">
+<div class="container" id="container"></div>
 
   <!--
        2. You can load a template in many ways. For convenience, we'll include it in
@@ -27,8 +26,11 @@
   -->
   <script id='template' type='text/ractive'>
     <div class="profile pull-right">
-      <span>Logged in as: {{username}}</span>
-      <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+      <form name="logoutForm" action="/logout" method="POST">
+        <span>Logged in as: {{username}}</span>
+        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
+        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
+      </form>
     </div>
     <h1>
       <a class="nav navbar-brand" href="http://omny.link">
@@ -36,17 +38,25 @@
       </a>
       <span>Customer Management</span>
     </h1>
-    <div class="clearfix" id="messages">
-       <p class=" bg-danger text-danger">Beta! Please ensure you have backups!</p>
-    </div>
     
       <section id="contactsSect">
         <h2>
+          <span id="contactsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()"></span>
           <span>Contacts</span>
-          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.add()"></span>
+          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()"></span>
+          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></span>
           <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
           <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-       </h2>
+          <form id="upload" class="admin pull-right upload">
+            <span class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')"></span>
+            <input type="file" class="form-control file pull-right" name="file" placeholder="Select file">
+            <select class="form-control entity pull-right" name="entity">
+              <option value="contacts">Contacts</option>
+              <option value="accounts">Accounts</option>
+              <option value="activities">Activities</option>
+            </select>
+          </form>
+        </h2>
         <table id="contactsTable" class="table table-striped">
           <thead>
             <tr>
@@ -54,6 +64,8 @@
               <th>Full Name</th>
               <th>Stage</th>
               <th>Owned by</th>
+              <th>First Contact</th>
+              <th>Last Updated</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -61,15 +73,19 @@
           {{#each contacts:i}}
             {{# searchTerm!=undefined && (
                   this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase())===0 
-                  || this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase())===0) }}
-              <tr data-href="{{_links.self.href}}" on-click="edit(this)">
+                  || this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase())===0
+                  || this.email.toLowerCase().indexOf(searchTerm.toLowerCase())===0
+                ) }}
+              <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
                 <td>{{i+1}}</td>
                 <td>{{firstName}} {{lastName}}</td>
                 <td>{{stage}}</td>
                 <td>{{owner}}</td>
+                <td>{{formatDate(firstContact)}}</td>
+                <td>{{formatDate(lastUpdated)}}</td>
                 <td>
-                  <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('{{_links.self.href}}')"></span>
-                  <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                  <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)"></span>
+                  <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
                 </td>
               </tr>
             {{/}}
@@ -80,44 +96,109 @@
 
       <section id="currentSect" style="display:none">
         <form id="currentForm">
-          <div class="form create-form">
-            <input class="col-xs-1" id="curTitle" placeholder="Title" value="{{current.title}}"/>
-            <input class="col-xs-2" id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/>
-            <input class="col-xs-2" id="curLastName" placeholder="Last Name" required value="{{current.lastName}}"/>
-            <input class="col-xs-2 typeahead pull-right" id="curOwner" placeholder="Owner" value="{{current.owner}}"/>
-          </div>
-
-          <h2 class="form create-form">&nbsp;</h2>
+          <h2 class="form create-form">Contact</h2>
           <h2 class="form edit-form">
-            <span contenteditable id="curTitle2" on-focus="editField('#curTitle2','current.title')" on-blur="updateField('#curTitle2','current.title')">{{current.title}}</span>
-            <span contenteditable id="curFirstName2" on-focus="editField('#curFirstName2','current.firstName')" on-blur="updateField('#curFirstName2','current.firstName')">{{current.firstName}}</span>
-            <span contenteditable id="curLastName2" on-focus="editField('#curLastName2','current.lastName')" on-blur="updateField('#curLastName2','current.lastName')">{{current.lastName}}</span>
-            <span class="pull-right" style="font-style:italic">
-              <span>Owner: </span><span contenteditable id="curOwner2" on-focus="editField('#curOwner2','current.owner')" on-blur="updateField('#curOwner2','current.owner')">{{current.owner == '' ? 'Click to assign' : current.owner}}</span>
-            </span>
+            <span>Contact</span>
           </h2>
 
           <div id="currentBody" class="col-md-6">
             <ul class="form edit-form">
-              <li><label>Email:</label><input id="curEmail" required value="{{current.email}}"></li>
-              <li><label>Preferred Phone:</label><input id="curPhone1" value="{{current.phone1}}"></li>
-              <li><label>Alternate Phone:</label><input id="curPhone2" value="{{current.phone2}}"></li>
+              <li><label>Title:</label><input id="curTitle" placeholder="Title" value="{{current.title}}"/></li>
+              <li><label class="required">First Name:</label><input id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/></li>
+              <li><label class="required">Last Name:</label><input id="curLastName" placeholder="Last Name" required value="{{current.lastName}}"/></li>
+              <li><label class="required">Email:</label><input id="curEmail" required type="email" value="{{current.email}}"></li>
+              <li><label>Preferred Phone:</label><input id="curPhone1" pattern="\+?[0-9, ]{8,13}" type="tel" value="{{current.phone1}}"></li>
+              <li><label>Alternate Phone:</label><input id="curPhone2" pattern="\+?[0-9, ]{8,13}" type="tel" value="{{current.phone2}}"></li>
               <li><label>Address:</label><input id="curAddress1" value="{{current.address1}}"/></li>
               <li><label></label><input id="curAddress2" value="{{current.address2}}"/></li>
+              <li><label></label><input id="curTown" value="{{current.town}}"/></li>
               <li><label></label><input id="curCountyOrCity" value="{{current.countyOrCity}}"/></li>
-              <li><label>Post Code:</label><input id="curPostCode" value="{{current.postCode}}"></li>
+              <li><label>Post Code:</label><input id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}"></li>
             </ul>
           </div>
           <div class="col-md-6">
             <ul class="form edit-form">
-              <li><label>Enquiry Type:</label><input id="curEnquiryType" value="{{current.enquiryType}}"></li>
-              <li><label>Budget:</label><input id="curBudget" value="{{current.budget}}"></li>
+              <li><label>Owner:</label><input class="typeahead" id="curOwner" value="{{current.owner}}"/></li>
               <li><label>Stage:</label><input class="typeahead" id="curStage" value="{{current.stage}}"></li>
+              <li><label>Enquiry Type:</label><input id="curEnquiryType" value="{{current.enquiryType}}"></li>
+              <li><label>Budget:</label><input class="autoNumeric" data-a-sign="£ " id="curBudget" value="{{current.customFields['budget']}}"></li>
+              <li><label>Page Submitted:</label><input id="curPageSubmitted" value="{{customField(current, 'pageSubmitted')}}"></li>
               <li><label>Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
               <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
+              <li><label>Campaign:</label><input id="curCampaign" value="{{current.campaign}}"></li>
+              <li><label>Keyword:</label><input id="curKeyword" value="{{current.keyword}}"></li>
             </ul>
           </div>
 
+        </form>
+
+        <div style="clear: both"></div>
+
+        <form id="activityForm">
+         <div id="activitySect" style="clear: both">
+          <h2 title="Activities are added automatically by the workflows">
+            <span>Activities</span>
+          </h2>
+          <table id="activitiesTable" class="table table-striped"><tbody>
+            {{#each current.activities:j}}
+              <tr>
+                <td class="field-occurred">{{age(occurred)}} ({{formatDate(occurred)}})</td>
+                <td class="field-type">{{type}}</td>
+                <td class="field-text">{{content}}</td>
+              </tr>
+            {{/each}}
+          </tbody></table>
+         </div>
+        </form>
+
+        <form id="noteForm">
+         <div id="notesSect" style="clear: both">
+          <h2>
+            <span>Notes</span>
+            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
+          </h2>
+          <table id="notesTable" class="table table-striped"><tbody>
+            <tr style="display:none;">
+              <td colspan="3">
+                <textarea id="note" on-blur="saveNote()" placeholder="Type your note here" required style="width:100%;"></textarea>
+                <br/>
+                <a onclick="$('#notesTable tr:nth-child(1)').slideUp();">Cancel</a>
+              </td>
+            </tr>
+            {{#each current.notes:j}}
+              <tr>
+                <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
+                <td class="field-author">{{author}}</td>
+                <td class="field-text">{{content}}</td>
+              </tr>
+            {{/each}}
+          </tbody></table>
+         </div>
+        </form>
+
+        <form id="documentForm">
+         <div id="documentSect" style="clear: both">
+          <h2>
+            <span>Documents</span>
+            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')"></span>
+          </h2>
+          <table id="docsTable" class="table table-striped"><tbody>
+            <tr style="display:none;">
+              <td colspan="3">
+                <input id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required style="width:100%;"/>
+                <br/>
+                <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
+              </td>
+            </tr>
+            {{#each current.documents:k}}
+              <tr>
+                <td>{{created}} ({{formatDate(created)}})</td>
+                <td>{{author}}</td>
+                <td>{{url}}</td>
+              </tr>
+            {{/each}}
+          </tbody></table>
+         </div>
         </form>
 
       </section>
@@ -139,6 +220,18 @@
 
   </script>
 
+  <div id="ajax-loader">
+    <img class="ajax-loader" src="images/gardenatics-ajax-loader.gif" alt="Loading..."/>   
+  </div>
+
+  <div class="powered-by">
+	  <h1>
+	    <span class="powered-by-text">powered by</span>
+	    <img src="images/omny-greyscale-logo.png" alt="powered by Omny Link"/>
+	  </h1>
+	  <p class="beta bg-warning pull-right">Beta!</p>
+  </div>
+  
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="js/jquery-1.11.0.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -153,8 +246,10 @@
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
   -->
   <script src="js/ractive.min.js"></script>
+  <script src="js/autoNumeric.min.js"></script>
   <script src="js/login-0.1.0.js"></script>
-  <script src="js/custmgmt-0.3.0.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/cust-mgmt-0.3.0.js"></script>
   <script>
     $(document).ready(function() {
       ractive.set('tenant', { 
@@ -162,20 +257,22 @@
         typeaheadControls: [
           { selector: '#curEnquiryType', url: '/data/gardenatics/enquiry-types.json'},
           { selector: '#curMedium', url: '/data/media.json'},
+          { selector: '#curOwner', url: '/data/gardenatics/owners.json'},
           { selector: '#curSource', url: '/data/sources.json'},
           { selector: '#curStage', url: '/data/stages.json'}
         ]
       });
+      $.ajaxSetup({
+        headers: {'X-Tenant': ractive.get('tenant.id')}
+      });
       ractive.fetch();
       ractive.initAutoComplete();
+      ractive.initAutoNumeric();
+      var s = getSearchParameters()['s'];
+      if (s!=undefined) ractive.set('searchTerm',s);
+      ractive.set('saveObserver', true);
     });
   </script>
-
-
-  <h1 class="powered-by">
-    <span class="powered-by-text">powered by</span>
-    <img src="images/omny-greyscale-logo.png" alt="powered by Omny Link"/>   
-  </h1>
 
 </body>
 </html>

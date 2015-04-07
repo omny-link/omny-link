@@ -162,6 +162,9 @@ var ractive = new AuthenticatedRactive({
       },'json');
     });
   },
+  initAutoNumeric: function() { 
+    $('.autoNumeric').autoNumeric('init', {});
+  },
   nextEntity: function() { 
     console.log('nextEntity');
     $('.entity.active').fadeOut().removeClass('active');
@@ -234,7 +237,7 @@ var ractive = new AuthenticatedRactive({
     ractive.set('saveObserver',false);
     ractive.set('current.account.tenantId',ractive.get('tenant.id'));
     ractive.set('saveObserver',true);
-    if (document.getElementById('currentAccountForm').checkValidity()) { 
+    if (document.getElementById('currentAccountForm')!=undefined && document.getElementById('currentAccountForm').checkValidity()) { 
       $.ajax({
         url: id === undefined ? '/accounts' : '/accounts/'+id,
         type: id === undefined ? 'POST' : 'PUT',

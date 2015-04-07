@@ -1,5 +1,8 @@
 [
-  {  "name": "Climbing Frame"  },
-  {  "name": "Tree House"  },
-  {  "name": "Both"  }
+  {  "id": "ClimbingFrame", "name": "Climbing Frame"  },
+  {  "id": "ClimbingFrameCommercial", "name": "Climbing Frame (Commercial)"  },
+  {  "id": "Custom", "name": "Custom"  },
+  {  "id": "Either", "name": "Either"  },
+  {  "id": "Modular", "name": "Modular"  },
+  {  "id": "Tree House", "name": "Tree House"  }
 ]
