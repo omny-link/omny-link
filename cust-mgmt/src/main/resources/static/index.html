@@ -10,14 +10,15 @@
   -->
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.3.0.css" rel="stylesheet">
+  <link href="css/omny-0.4.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
-
+<body>
+  <div class="clearfix" id="messages"></div>
 <!--
   1. This is the element we'll render our Ractive to.
 -->
-<body class="container" id="container">
+<div class="container" id="container"></div>
 
   <!--
        2. You can load a template in many ways. For convenience, we'll include it in
@@ -39,25 +40,36 @@
       </a>
       <span>Customer Management</span>
     </h1>
-    <div class="clearfix" id="messages">
-       <p class=" bg-danger text-danger">Beta! Please ensure you have backups!</p>
-    </div>
     
       <section id="contactsSect">
         <h2>
+          <span id="contactsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()"></span>
           <span>Contacts</span>
-          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.add()"></span>
-          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" onclick="ractive.fetch()"></span>
+          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()"></span>
+          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></span>
           <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
           <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-       </h2>
+          <form id="upload" class="admin pull-right upload">
+            <span class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')"></span>
+            <input type="file" class="form-control file pull-right" name="file" placeholder="Select file">
+            <select class="form-control entity pull-right" name="entity">
+              <option value="contacts">Contacts</option>
+              <option value="accounts">Accounts</option>
+              <option value="activities">Activities</option>
+              <option value="notes">Notes</option>
+            </select>
+          </form>
+        </h2>
         <table id="contactsTable" class="table table-striped">
           <thead>
             <tr>
               <th></th>
               <th>Full Name</th>
               <th>Business Name</th>
+              <th>Stage</th>
               <th>Owned by</th>
+              <th>First Contact</th>
+              <th>Last Updated</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -69,14 +81,17 @@
                   || this.email.toLowerCase().indexOf(searchTerm.toLowerCase())===0
                   || this.account.name.toLowerCase().indexOf(searchTerm.toLowerCase())===0
                 ) }}
-              <tr data-href="{{_links.self.href}}" on-click="edit(this)">
+              <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
                 <td>{{i+1}}</td>
                 <td>{{firstName}} {{lastName}}</td>
                 <td>{{account == undefined ? accountName : account.name}}</td>
+                <td>{{stage}}</td>
                 <td>{{owner}}</td>
+                <td>{{formatDate(firstContact)}}</td>
+                <td>{{formatDate(lastUpdated)}}</td>
                 <td>
-                  <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('{{_links.self.href}}')"></span>
-                  <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                  <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)"></span>
+                  <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
                 </td>
               </tr>
             {{/}}
@@ -104,23 +119,29 @@
             </span>
           </h2>
 
-          <div id="currentBody" class="col-md-6">
+          <div class="currentBody col-md-6">
             <ul class="form edit-form">
               <li><label>Email:</label><input id="curEmail" required value="{{current.email}}"></li>
               <li><label>Preferred Phone:</label><input id="curPhone1" value="{{current.phone1}}"></li>
               <li><label>Alternate Phone:</label><input id="curPhone2" value="{{current.phone2}}"></li>
               <li><label>Address:</label><input id="curAddress1" value="{{current.address1}}"/></li>
               <li><label></label><input id="curAddress2" value="{{current.address2}}"/></li>
+              <li><label></label><input id="curTown" value="{{current.town}}"/></li>
               <li><label></label><input id="curCountyOrCity" value="{{current.countyOrCity}}"/></li>
-              <li><label>Post Code:</label><input id="curPostCode" value="{{current.postCode}}"></li>
+              <li><label>Post Code:</label><input id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}"></li>
             </ul>
           </div>
-          <div class="col-md-6">
+          <div class="currentBody col-md-6">
             <ul class="form edit-form">
               <li><label>Enquiry Type:</label><input id="curEnquiryType" value="{{current.enquiryType}}"></li>
               <li><label>Stage:</label><input class="typeahead" id="curStage" value="{{current.stage}}"></li>
               <li><label>Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
               <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
+              <li><label>Page Submitted:</label><input id="curPageSubmitted" value="{{customField(current, 'pageSubmitted')}}"></li>
+              <li><label>Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
+              <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
+              <li><label>Campaign:</label><input id="curCampaign" value="{{current.campaign}}"></li>
+              <li><label>Keyword:</label><input id="curKeyword" value="{{current.keyword}}"></li>
             </ul>
           </div>
         </form>
@@ -129,14 +150,14 @@
 
             <h2 class="form">Account</h2>
 
-            <div class="col-md-6">
+            <div class="currentBody col-md-6">
               <ul class="form edit-form">
                 <li><label class="required">Company Name:</label><input id="curAccountName" required value="{{current.account.name}}"></li>
                 <li><label>Company Number:</label><input id="curCompanyNumber" pattern="[0-9]{8}" value="{{current.account.companyNumber}}"></li>
                 <li><label>Website:</label><input id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"></li>
               </ul> 
             </div>
-            <div class="col-md-6">
+            <div class="currentBody col-md-6">
               <ul class="form edit-form">
                 <li><label>Also known as:</label><input id="curAliases" value="{{current.account.aliases}}"></li>
                 <li><label>No. of employees:</label><input id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/></li>
@@ -173,6 +194,25 @@
 
         </form>
         
+        <div style="clear: both"></div>
+
+        <form id="activityForm">
+         <div id="activitySect" style="clear: both">
+          <h2 title="Activities are added automatically by the workflows">
+            <span>Activities</span>
+          </h2>
+          <table id="activitiesTable" class="table table-striped"><tbody>
+            {{#each current.activities:j}}
+              <tr>
+                <td class="field-occurred">{{age(occurred)}} ({{formatDate(occurred)}})</td>
+                <td class="field-type">{{type}}</td>
+                <td class="field-text">{{content}}</td>
+              </tr>
+            {{/each}}
+          </tbody></table>
+         </div>
+        </form>
+        
         <form id="noteForm">
          <div id="notesSect" style="clear: both">
           <h2>
@@ -189,7 +229,7 @@
             </tr>
             {{#each current.notes:j}}
               <tr>
-                <td class="field-age">{{age(created)}}</td>
+                <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
                 <td class="field-author">{{author}}</td>
                 <td class="field-text">{{content}}</td>
               </tr>
@@ -214,7 +254,7 @@
             </tr>
             {{#each current.documents:k}}
               <tr>
-                <td>{{created}}</td>
+                <td>{{created}} ({{formatDate(created)}})</td>
                 <td>{{author}}</td>
                 <td>{{url}}</td>
               </tr>
@@ -232,7 +272,7 @@
     <!-- {{/omnyAccountExtension}} -->
 
     <!-- {{>column}} -->
-      <div class="col-md-6">
+      <div class="currentBody col-md-6">
         <ul class="form edit-form">
           {{#each fields:j}}
             <li><label>{{label}}:</label><input id="curUnknown" value="{{object.customFields[key]}}"></li>
@@ -243,7 +283,18 @@
 
   </script>
 
+  <div id="ajax-loader">
+    <img class="ajax-loader" src="images/omny-ajax-loader.gif" alt="Loading..."/>   
+  </div>
 
+  <div class="powered-by">
+	  <h1>
+	    <span class="powered-by-text">powered by</span>
+	    <img src="images/omny-greyscale-inline-logo.png" alt="powered by Omny Link"/>
+	  </h1>
+  </div>
+  <p class="beta bg-warning pull-right">Beta!</p>
+  
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="js/jquery-1.11.0.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -258,8 +309,9 @@
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
   -->
   <script src="js/ractive.min.js"></script>
+  <script src="js/autoNumeric.min.js"></script>
   <script src="js/login-0.1.0.js"></script>
-  <script src="js/custmgmt-0.3.0.js"></script>
+  <script src="js/cust-mgmt-0.4.0.js"></script>
   <script>
     $(document).ready(function() {
       ractive.set('tenant', { 
@@ -272,17 +324,16 @@
         ]
       });
       $.ajaxSetup({
-        headers: {'X-Tenant': ractive.data.tenant.name}
+        headers: {'X-Tenant': ractive.get('tenant.id')}
       });
       ractive.fetch();
       ractive.initAutoComplete();
+      ractive.initAutoNumeric();
+      var s = getSearchParameters()['s'];
+      if (s!=undefined) ractive.set('searchTerm',s);
+      ractive.set('saveObserver', true);
     });
   </script>
-
-  <h1 class="powered-by" style="float: left;opacity:0.5;transform: rotate(-90deg) translate(220px,-120px);transform-origin: left top 0;">
-    <span class="powered-by-text">powered by</span>
-    <img src="images/omny-greyscale-logo.png" alt="powered by Omny Link"/>   
-  </h1>
 
 </body>
 </html>
