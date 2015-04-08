@@ -125,11 +125,11 @@ section h2 .search {
 section h2 .glyphicon-search {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
-  font-size: 18px;
+  font-size: 20px;
   margin-left: 0px;
   position: relative;
   left: -8px;
-  top: 0px;
+  top: 1px;
 }
 section h2 .entity {
   /*margin-bottom: 10px;*/
@@ -179,13 +179,13 @@ th {
   color: #ff6c06;
   font-family: barmenoregular, sans-serif;
   font-style: italic;
-  line-height: 1.4em;
+  line-height: 1.1em;
   padding: 0;
   position: absolute;
-  right: 0;
+  left: 10px;
   text-align: center;
-  top: 70px;
-  width: 60px;  
+  top: 10px;
+  width: 40px;  
 }
 .bg-danger { 
   padding: 0 10px 0 10px;
@@ -265,9 +265,10 @@ th {
 }
 .powered-by { 
 	float: left;
+  left: -1px;
   opacity: 0.5;
   position: absolute;
-  top: 450px;
+  top: 290px;
   transform: rotate(-90deg);
   transform-origin: left top 0;
 }
@@ -275,5 +276,7 @@ th {
   margin:0px;
 }
 .powered-by-text { 
-	color:#6f6f71;font-size:36px;font-style:italic;
+	color:#6f6f71;
+	font-size:14px;
+	font-style:italic;
 }

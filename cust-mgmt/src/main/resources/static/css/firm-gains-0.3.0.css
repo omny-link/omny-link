@@ -186,14 +186,14 @@ th {
   color: #ff6c06;
   font-family: barmenoregular, sans-serif;
   font-style: italic;
-  line-height: 1.4em;
+  line-height: 1.1em;
   padding: 0;
   position: absolute;
-  right: 0;
+  left: 10px;
   text-align: center;
-  top: 70px;
-  width: 60px;	
-}
+  top: 10px;
+  width: 40px;  
+}  
 .bg-danger { 
   padding: 0 10px 0 10px;
 }
@@ -277,10 +277,11 @@ th {
   border-width: 1px;
 }
 .powered-by { 
-	float: left;
+  float: left;
+  left: -1px;
   opacity: 0.5;
   position: absolute;
-  top: 450px;
+  top: 290px;
   transform: rotate(-90deg);
   transform-origin: left top 0;
 }
@@ -288,7 +289,9 @@ th {
   margin:0px;
 }
 .powered-by-text { 
-	color:#6f6f71;font-size:36px;font-style:italic;
+  color:#6f6f71;
+  font-size:14px;
+  font-style:italic;
 }
 .profile {
 	background-color: #aedef6;
