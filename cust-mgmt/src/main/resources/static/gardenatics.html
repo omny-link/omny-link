@@ -54,6 +54,7 @@
               <option value="contacts">Contacts</option>
               <option value="accounts">Accounts</option>
               <option value="activities">Activities</option>
+              <!--<option value="notes">Notes</option>-->
             </select>
           </form>
         </h2>
@@ -106,7 +107,7 @@
               <li><label>Title:</label><input id="curTitle" placeholder="Title" value="{{current.title}}"/></li>
               <li><label class="required">First Name:</label><input id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/></li>
               <li><label class="required">Last Name:</label><input id="curLastName" placeholder="Last Name" required value="{{current.lastName}}"/></li>
-              <li><label class="required">Email:</label><input id="curEmail" required type="email" value="{{current.email}}"></li>
+              <li><label>Email:</label><input id="curEmail" type="email" value="{{current.email}}"></li>
               <li><label>Preferred Phone:</label><input id="curPhone1" pattern="\+?[0-9, ]{8,13}" type="tel" value="{{current.phone1}}"></li>
               <li><label>Alternate Phone:</label><input id="curPhone2" pattern="\+?[0-9, ]{8,13}" type="tel" value="{{current.phone2}}"></li>
               <li><label>Address:</label><input id="curAddress1" value="{{current.address1}}"/></li>
@@ -227,10 +228,10 @@
   <div class="powered-by">
 	  <h1>
 	    <span class="powered-by-text">powered by</span>
-	    <img src="images/omny-greyscale-logo.png" alt="powered by Omny Link"/>
+	    <img src="images/omny-greyscale-inline-logo.png" alt="powered by Omny Link"/>
 	  </h1>
-	  <p class="beta bg-warning pull-right">Beta!</p>
   </div>
+  <p class="beta bg-warning pull-right">Beta!</p>
   
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="js/jquery-1.11.0.min.js"></script>
