@@ -53,7 +53,7 @@ var ractive = new AuthenticatedRactive({
       }
     },
     formatDate: function(timeString) {
-      return new Date(timeString).toLocaleDateString();
+      return new Date(timeString).toLocaleDateString(navigator.languages);
     }
   },
   add: function () {
