@@ -7,6 +7,7 @@ Features
     - Web user interface 
       - Add / View / Update / Delete Contacts
       - Add / View / Update / Delete Accounts
+      - View Activities related to a Contact or Account
       - Add / View Notes to Contact 
       - Add / View Documents to Contact 
     
@@ -21,7 +22,13 @@ Roadmap
 Releases
 --------
 
-0.2.0 - 20 Jan 15
+0.3.0 - 6 Apr 15
+
+  - Gardenatics UI and data migration 
+  - Allow URL param to open customer page with pre-filtered list
+  - Added Activities to customer mgmt system
+
+0.2.0 - 20 Mar 15
 
   - Order contacts by last updated
   - Some extra fields including doNotCall/Email and some specific to customer
