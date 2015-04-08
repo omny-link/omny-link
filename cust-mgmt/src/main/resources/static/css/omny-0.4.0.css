@@ -55,23 +55,26 @@ h1, h2, h3, h4, h5, h6 {
 /* 
  * COLOURS 
  *   orange: ff6c06;
- *   green:  a1cb3a;
- *   brown:  552e16;
+ *   blue:   0e9acd;
+ *   grey:   949699;
  */
 
 /* START BOOTSTRAP OVERRIDES */
 
 body {
-  color: #552e16;
+  color: #949699;
   font-family: Roboto/*CalibriRegular*/;
   font-size: 16px;
   line-height: 2.5em;
 }
 h1 { 
-	color: #a1cb3a;
+	color: #0e9acd;
 }
 h2 { 
 	font-size: 24px;
+}
+img.entity-context {
+  width: 90%;	
 }
 input,select,textarea { 
 	margin: 0 5px 0 5px;
@@ -107,20 +110,23 @@ label.required::after {
   color: red;
   content: '*';
 }
+section .active {
+	display: inline;
+}
 section h2 {
   border-bottom: solid 1px #ff6c06;
-  color: #a1cb3a;
+  color: #0e9acd;
   padding-bottom: 5px;
   padding-top: 10px;
   padding-left: 20px;
   padding-right: 20px;
 }
 section h2 .search {
-  /*margin-bottom: 10px;*/
+/*margin-bottom: 10px;*/
   margin-right: 0;
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
-  border-color: #a1cb3a;
+  border-color: #0e9acd;
 }
 section h2 .glyphicon-search {
   border-bottom-left-radius: 0;
@@ -135,8 +141,8 @@ section h2 .entity {
   /*margin-bottom: 10px;*/
   margin-right: 0;
   border-bottom-right-radius: 0px !important;
-  border-top-right-radius: 0px;
-  border-color: #a1cb3a;
+  border-top-right-radius: 0px !important;
+  border-color: #0e9acd;
   padding-right: 0;
   margin-right: 0;
   width: 110px;
@@ -144,21 +150,20 @@ section h2 .entity {
 section h2 .file {
   /*margin-bottom: 10px;*/
   margin-right: 0;
-  border-radius: 0;
-  border-color: #a1cb3a;
+  border-radius: 0 !important;
+  border-color: #0e9acd;
   margin-left: 0;
   width: 110px;
 }
 section h2 .glyphicon-import {
 	border-bottom-left-radius: 0;
 	border-top-left-radius: 0;
-	font-size: 18px;
+	font-size: 20px;
 	margin-left: 0px;
 	position: relative;
 	left: -2px;
 	top: -3px;
 }
-
 .table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
   vertical-align: middle;
 }
@@ -190,9 +195,13 @@ th {
 .bg-danger { 
   padding: 0 10px 0 10px;
 }
+.btn {
+  min-width: 80px;
+}
 .btn-default { 
   background-color:#ff6c06;
-  color: #666666; 	
+  color: #ccc;
+  font-weight: bold;
 }
 .field-age { 
 	width:15%
@@ -218,8 +227,7 @@ th {
   top: -18px;  
 }
 .navbar-brand img {
-  height: 53px;
-  padding-right: 20px;	
+  height: 80px;	
 }
 .search {
 	border-radius:15px;
@@ -236,9 +244,14 @@ th {
 .clickable:hover {
 	cursor: pointer; 
 }
+.currentBody { 
+	margin-top: 10px;
+}
 .form { 
 	display: block;
 	list-style: none;
+  padding-top: 20px;
+  margin-bottom: -30px;
 }
 .form li { 
 	margin: 5px 0 5px;
@@ -264,7 +277,7 @@ th {
   border-width: 1px;
 }
 .powered-by { 
-	float: left;
+  float: left;
   left: -1px;
   opacity: 0.5;
   position: absolute;
@@ -279,4 +292,7 @@ th {
 	color:#6f6f71;
 	font-size:14px;
 	font-style:italic;
+}
+.profile { 
+	font-style: italic;
 }
