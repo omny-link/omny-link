@@ -114,6 +114,12 @@
             <span contenteditable id="curTitle2" on-focus="editField('#curTitle2','current.title')" on-blur="updateField('#curTitle2','current.title')">{{current.title}}</span>
             <span contenteditable id="curFirstName2" on-focus="editField('#curFirstName2','current.firstName')" on-blur="updateField('#curFirstName2','current.firstName')">{{current.firstName}}</span>
             <span contenteditable id="curLastName2" on-focus="editField('#curLastName2','current.lastName')" on-blur="updateField('#curLastName2','current.lastName')">{{current.lastName}}</span>
+            {{#if (current.phone1 != undefined || current.phone2 != undefined) && (current.phone1 != '' || current.phone2 != '')}}
+              <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1 == undefined || current.phone1 == '' ? current.phone2 : current.phone1 }}"></a>
+            {{/if}}
+            {{#if current.email != undefined && current.email != ''}}
+              <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}"></a>
+            {{/if}}
             <span class="pull-right" style="font-style:italic">
               <span>Owner: </span><span contenteditable id="curOwner2" on-focus="editField('#curOwner2','current.owner')" on-blur="updateField('#curOwner2','current.owner')">{{current.owner == '' ? 'Click to assign' : current.owner}}</span>
             </span>

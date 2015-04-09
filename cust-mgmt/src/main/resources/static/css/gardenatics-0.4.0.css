@@ -209,6 +209,10 @@ th {
   margin: 3px;
   border-radius: 15px;
 }
+a.glyphicon {
+	text-decoration: none;
+  color: #a1cb3a;
+}
 #messages { 
 	padding-top: 20px;
 }
