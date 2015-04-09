@@ -101,6 +101,12 @@
           <h2 class="form create-form">Contact</h2>
           <h2 class="form edit-form">
             <span>Contact</span>
+            {{#if (current.phone1 != undefined || current.phone2 != undefined) && (current.phone1 != '' || current.phone2 != '')}}
+              <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1 == undefined || current.phone1 == '' ? current.phone2 : current.phone1 }}"></a>
+            {{/if}}
+            {{#if current.email != undefined && current.email != ''}}
+              <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}"></a>
+            {{/if}}
           </h2>
 
           <div id="currentBody" class="col-md-6">
