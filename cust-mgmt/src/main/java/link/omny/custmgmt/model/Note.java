@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
@@ -47,16 +48,28 @@ public class Note {
     @RestResource(rel = "noteContact")
     @ManyToOne(targetEntity = Contact.class)
     @JoinColumn(name = "contact_id")
+    @JsonBackReference
     private Contact contact;
+
+    /**
+     * Permits auto-filled columns such as created date to be suspended.
+     */
+    private static boolean bulkImport;
 
     @PrePersist
     void preInsert() {
-        created = new Date();
+        if (!bulkImport) {
+            created = new Date();
+        }
     }
 
     public Note(String author, String content) {
         super();
         setAuthor(author);
         setContent(content);
+    }
+
+    public static void setBulkImport(boolean b) {
+        bulkImport = b;
     }
 }
