@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -242,6 +243,7 @@ public class Contact implements Serializable {
     private Account account;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
+    @JsonManagedReference
     private List<Note> notes;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
