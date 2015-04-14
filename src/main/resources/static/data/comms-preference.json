@@ -1,0 +1,5 @@
+[
+  {  "id": "SMS", "name": "SMS"  },
+  {  "id": "Email", "name": "Email"  },
+  {  "id": "Both", "name": "Both"  }
+]

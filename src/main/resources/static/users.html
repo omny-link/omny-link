@@ -10,7 +10,8 @@
   -->
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.1.0.css" rel="stylesheet">
+  <link href="css/omny-0.4.0.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 
 <!--
@@ -25,8 +26,14 @@
        just about anything except 'text/javascript'
   -->
   <script id='template' type='text/ractive'>
-    <h1>Omny Link - User Management</h1>
-    <p class="bg-danger text-danger">Beta! Please ensure you have backups!</p>
+    <div class="profile pull-right">
+      <form name="logoutForm" action="/logout" method="POST">
+        <span>Logged in as: {{username}}</span>
+        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
+        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
+      </form>
+    </div>
+    <h1>User Management</h1>
 
     <form id="userList">
       <section id="userSect">
@@ -34,7 +41,8 @@
           <span>Users</span>
           <input type="search" class="form-control search" placeholder="Search" 
             style="border-radius:15px;width:100px;display:inline;position:relative;bottom:5px;">
-          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addUser()"></span>
+          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addUser()"></span>
+          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></span>
         </h2>
         <table id="usersTable" class="table table-striped">
           <thead>
@@ -62,37 +70,60 @@
       </section>
 
       <section id="currentSect" style="display:none">
+        <form id="userForm">
+          <div class="clearfix" id="messages"><p></p></div>
         <h2>User: {{current.firstName}} {{current.lastName}} ({{current.id}})</h2>
-
+       
         <ul class="form edit-form">
-          <li class="create-field"><label>Username:</label><input id="curUsername" value="{{current.id}}"></li>
-          <li><label>First Name:</label><input id="curFirstName" value="{{current.firstName}}"></li>
-          <li><label>Last Name:</label><input id="curLastName" value="{{current.lastName}}"></li>
-          <li class="create-field"><label>Password:</label><input id="curPassword" value="{{current.password}}"></li>
-          <li class="create-field"><label>Confirm Password:</label><input id="curPassword2" value="{{current.confirmPassword}}"></li>
+          <li class="create-field">
+            <label class="required col-md-3">Username:</label><input id="curUsername" on-blur="save()" required value="{{current.id}}">
+          </li>
           <li>
-            <label>Groups:</label>
+            <label class="required col-md-3">First Name:</label><input class="no-update-field" id="curFirstName" on-blur="save()" required value="{{current.firstName}}">
+            <span><i>No update allowed</i></span>
+          </li>
+          <li>
+            <label class="required col-md-3">Last Name:</label><input class="no-update-field" id="curLastName" on-blur="save()" required value="{{current.lastName}}">
+            <span><i>No update allowed</i></span>
+          </li>
+          <li>
+            <label class="required col-md-3">Email:</label><input class="no-update-field" id="curEmail" on-blur="save()" required type="email" value="{{current.email}}">
+            <span><i>No update allowed</i></span>
+          </li>
+          <li>
+            <label class="required col-md-3">Mobile Phone:</label><input class="no-update-field" id="curPhone" pattern="\+?[0-9, ]{8,13}" required type="tel" value="{{current.phone}}">
+            <span><i>No update allowed</i></span>
+          </li>
+          <li>
+            <label class="required col-md-3">Preferred Contact:</label><input class="no-update-field typeahead" id="curCommsPreference" required value="{{current.commsPreference}}">
+            <span><i>No update allowed</i></span>
+          </li>
+          <li class="create-field">
+            <label class="required col-md-3">Password:</label><input id="curPassword" on-blur="save()" required value="{{current.password}}">
+          </li>
+          <li class="create-field">
+            <label class="required col-md-3">Confirm Password:</label><input id="curPassword2" on-blur="save()" required value="{{current.confirmPassword}}">
+          </li>
+          <li>
+            <label class="col-md-3">Groups:</label>
             <span id="curGroups">
-              {{#each currentGroups:j}}<span>{{name}}, </span>{{/each}}
+              {{#each current.groups:j}}<span>{{name}}, </span>{{/each}}
               <input id="curNewGroup" class="hidden" on-blur="addUserToGroup()" value="{{current.newGroup}}">
               <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addGroup()"></span>
             </span>
           </li>
         </ul>
-        <button class="btn btn-default" on-click="saveUser()">Save</button>
-
+        </form>
       </section>
 
     </form>
   </script>
 
-  <script id='template' type='text/ractive'>
-  </script>  
-
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
   <script src="js/bootstrap.min.js"></script>
+  <script src="js/bootstrap3-typeahead.min.js"></script>
   <!--
        3. You can always get the most recent stable version from the URL below.
        If you want the newest features, use the 'edge' version instead:
@@ -104,5 +135,20 @@
   <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
   <script src="js/login-0.1.0.js"></script>
   <script src="js/usermgmt-0.1.0.js"></script>
+  
+  <script>
+    $(document).ready(function() {
+      ractive.set('saveObserver', false);
+      ractive.set('tenant', { 
+        id: 'omny',
+        typeaheadControls: [
+          { selector: '#curCommsPreference', url: '/data/comms-preference.json'}
+        ]
+      });
+      ractive.fetch();
+      ractive.initControls();
+      ractive.set('saveObserver', true);
+    });
+  </script>
 </body>
 </html>

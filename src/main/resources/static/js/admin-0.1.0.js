@@ -489,8 +489,27 @@ function App(controller) {
         }
     });
   };
-  this.instanceAudit = function(instanceId) {
-    console.log("TODO Request audit trail for "+ instanceId);
+  this.instanceAudit = function(id, name, businessKey) {
+    console.log("loading audit trail for "+id+': '+name);
+    if (app.ctrl.offline) {
+      // TODO this is not implemented!
+//      app.ctrl.loadInstance(id, JSON.parse(localStorage['GET_runtime_instance']));
+    } else {
+      return $.ajax({
+        type: 'GET',
+        url: app.server+'/process-instances/'+escape(id),
+        /*url: app.server+'/form/form-data?taskId='+id,*/
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function(response) {
+          console.log('success fetching instance:'+JSON.stringify(response));
+          app.ctrl.loadInstance(id, [response]);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          app.handleError(jqXHR, textStatus, errorThrown)
+        }
+      });
+    }
   };
   this.instanceBusinessKey = function(instanceId) {
     var instances = bpms.adapt(JSON.parse(localStorage['GET_runtime_instances']));
@@ -600,17 +619,18 @@ function App(controller) {
         }
     });
   };
-  this.newMessage = function(mep, msgName, msg) {
+  this.newMessage = function(mep, msgName, msg, bizDesc, tenantId) {
     console.log('starting '+msgName+'="'+msg+'" as mep: '+mep);
     app.showActivityIndicator('Starting instance...');
     var type = (mep == 'inOut' ? 'GET' : 'POST');
     // this strips non-significant white space
     msg = (msg.length==0 ? '' : JSON.stringify(JSON.parse(msg)));
     var d = (mep == 'inOut' ? {query:msg} : {json:msg});
+    d.businessDescription = bizDesc;
     console.log('msg: '+ msg);
     return $.ajax({
       type: type,
-      url: app.server+'/msg/'+msgName,
+      url: app.server+'/msg/'+tenantId+'/'+msgName,
       /*contentType: 'application/json', uncomment to send as single JSON blob instead of form params*/
       data: d,
       dataType: 'text',
@@ -854,6 +874,20 @@ function Controller() {
       $(selector).empty().append('<a>');
       $(selector+' > a').append('<img class="img-rounded" style="margin-top:5px;" title="Logged in as '+uname+'. Image from Gravatar.com" src="http://www.gravatar.com/avatar/'+hex_md5(uname)+'?s='+size+'&d=mm"/>')
   };
+  this.loadInstance = function(id, instanceObj) {
+    console.log('load instance id:'+id);
+    // TODO unlike tasks we do not attempt to make this work offline 
+    app.activeInstance = Array.isArray(instanceObj) ? instanceObj[0] : instanceObj;
+    console.log('instance: '+JSON.stringify(app.activeInstance));
+    $.each(app.activeInstance.auditTrail, function(i,d) {
+      d.startedAt = function() { return new Date(this.startTime).toLocaleString() };
+      d.startedAge = function() { return i18n.getAgeString(new Date(this.startTime)) };
+      d.endedAt = function() { return this.endTime == null ? undefined : new Date(this.endTime).toLocaleString() };
+      d.endedAge = function() { return this.endTime == null ? undefined : i18n.getAgeString(new Date(this.endTime)) };
+    });
+    $('#instanceModalTitle').html($('#instanceModalTitleTemplate').html()).moustache(app.activeInstance);
+    $('#instanceModalBody').html($('#instanceModalBodyTemplate').html()).moustache(app.activeInstance);
+  };
   this.loadInstanceList = function(instanceObjs) {
     app.instances = bpms.adapt(instanceObjs);
     console.log('instances found: '+app.instances.length);
@@ -897,9 +931,9 @@ function Controller() {
       app.task($(this).data('task'), $(this).data('name'), $(this).data('business-key'));
     });
   };
-  this.sendMessage = function(mep, msgName, msg, formId) {
+  this.sendMessage = function(mep, msgName, msg, bizDesc, formId, tenantId) {
     $('#'+formId+' .a-response').addClass('hidden');
-    jqXHR = app.newMessage(mep, msgName, msg);
+    jqXHR = app.newMessage(mep, msgName, msg, bizDesc, tenantId);
     jqXHR.success(function(response, textStatus, request) {
       $('#'+formId+' .a-response').removeClass('hidden');
       var location = request.getResponseHeader('Location');

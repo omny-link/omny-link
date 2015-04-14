@@ -12,10 +12,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
+import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
@@ -49,21 +49,16 @@ public class UserRecord implements Principal, User, UserDetails {
     @Id
     private String id;
 
-    /**
-     */
     private String firstName;
 
-    /**
-     */
     private String lastName;
 
-    /**
-     */
-    @NotNull
     private String email;
 
-    /**
-     */
+    private String phone;
+
+    private String commsPreference;
+
     private String userPicture;
 
     /**
@@ -128,24 +123,7 @@ public class UserRecord implements Principal, User, UserDetails {
                         User.class);
             }
 
-            UserRecord wrappedUser = new UserRecord(user);
-            String username = wrappedUser.getId();
-            List<Group> list = svc.createGroupQuery().groupMember(username)
-                    .list();
-            LOGGER.debug(String.format("Found %1$d groups", list.size()));
-            for (Group group : list) {
-                wrappedUser.getGroups().add(new UserGroup(group));
-            }
-
-            List<String> userInfoKeys = svc.getUserInfoKeys(username);
-            LOGGER.debug(String.format("Found %1$d userInfo records",
-                    userInfoKeys.size()));
-            for (String key : userInfoKeys) {
-                wrappedUser.getInfo().add(
-                        new UserInfo(wrappedUser, key, svc.getUserInfo(
-                                username, key)));
-            }
-            return wrappedUser;
+            return augment(new UserRecord(user));
         } catch (ActivitiObjectNotFoundException e) {
             LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
             throw e;
@@ -154,6 +132,60 @@ public class UserRecord implements Principal, User, UserDetails {
             e.printStackTrace(System.err);
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+
+    public static UserRecord findUserRecordByNames(String first,
+            String last) {
+        LOGGER.info(String
+                .format("findUserRecordByNames with first name: %1$s and last name: %2$s",
+                        first, last));
+        try {
+            IdentityService svc = processEngine.getIdentityService();
+            List<User> users = svc.createUserQuery().userFirstNameLike(first).userLastNameLike(last).list();
+            if (users.size() == 0) {
+                throw new ActivitiObjectNotFoundException(String.format("User with first name: %1$s and last name %2$s", first, last),
+                        User.class);
+            } else if (users.size() == -1) {
+                throw new ActivitiIllegalArgumentException(String.format("First Name %1$s and Last Name %2$s are insufficient to identify the user, please use id", first, last));
+            }
+
+            return augment(new UserRecord(users.get(0)));
+        } catch (ActivitiObjectNotFoundException e) {
+            LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
+            e.printStackTrace(System.err);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    protected static UserRecord augment(UserRecord wrappedUser) {
+        IdentityService svc = processEngine.getIdentityService();
+        String username = wrappedUser.getId();
+        List<Group> list = svc.createGroupQuery().groupMember(username).list();
+        LOGGER.debug(String.format("Found %1$d groups", list.size()));
+        for (Group group : list) {
+            wrappedUser.getGroups().add(new UserGroup(group));
+        }
+
+        List<String> userInfoKeys = svc.getUserInfoKeys(username);
+        LOGGER.debug(String.format("Found %1$d userInfo records",
+                userInfoKeys.size()));
+        for (String key : userInfoKeys) {
+            if (UserInfoKeys.PHONE.toString().equals(key)) {
+                wrappedUser.setPhone(svc.getUserInfo(username,
+                        UserInfoKeys.PHONE.toString()));
+            } else if (UserInfoKeys.COMMS_PREFERENCE.toString().equals(key)) {
+                wrappedUser.setCommsPreference(svc.getUserInfo(username,
+                        UserInfoKeys.COMMS_PREFERENCE.toString()));
+            } else {
+                wrappedUser.getInfo().add(
+                        new UserInfo(wrappedUser, key, svc.getUserInfo(
+                                username, key)));
+            }
+        }
+        return wrappedUser;
     }
 
     public static List<UserRecord> findUserRecordEntries(int firstResult,

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.knowprocess.bpm.api.ReportableException;
 import com.knowprocess.bpm.model.UserGroup;
 import com.knowprocess.bpm.model.UserInfo;
+import com.knowprocess.bpm.model.UserInfoKeys;
 import com.knowprocess.bpm.model.UserRecord;
 
 @Controller
@@ -42,17 +43,9 @@ public class UserRecordController {
 		// HttpHeaders headers = new HttpHeaders();
 		// headers.add("Content-Type", "application/json; charset=utf-8");
 
-		try {
-			List<UserRecord> users = UserRecord.findAllUserRecords();
-			LOGGER.info("Users: " + users.size());
-			return users;
-//			return new ResponseEntity<String>(UserRecord.toJsonArray(users),
-//					headers, HttpStatus.OK);
-		} catch (Exception e) {
-			LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
-			e.printStackTrace(System.err);
-			throw new RuntimeException(e.getMessage(), e);
-		}
+        List<UserRecord> users = UserRecord.findAllUserRecords();
+        LOGGER.info("Users: " + users.size());
+        return users;
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -67,27 +60,22 @@ public class UserRecordController {
 		LOGGER.info("Find user with id: " + id);
 		// HttpHeaders headers = new HttpHeaders();
 		// headers.add("Content-Type", "application/json; charset=utf-8");
-
-        try {
-            UserRecord userRecord = UserRecord.findUserRecord(id);
-            // TODO unclear if the following check is redundant in all or only
-            // some cases
-            if (userRecord == null) {
-                throw new ActivitiObjectNotFoundException(User.class);
-            }
-			return userRecord;
-        } catch (ActivitiObjectNotFoundException e) {
-            ReportableException e2 = new ReportableException(
-                    String.format("Unable to find user with id: %1$s"), id);
-			e.printStackTrace(System.err);
-			throw new RuntimeException(e2.getMessage(), e2);
-			// return new ResponseEntity<String>(e2.toJson(), headers,
-			// HttpStatus.NOT_FOUND);
-		} catch (Exception e) {
-			LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
-			e.printStackTrace(System.err);
-			throw new RuntimeException(e.getMessage(), e);
-		}
+        UserRecord userRecord;
+        if (id.indexOf(' ') == -1) {
+            userRecord = UserRecord.findUserRecord(id);
+        } else {
+            System.out
+                    .println("TODO This is probably firstName / lastName not id");
+            userRecord = UserRecord.findUserRecordByNames(
+                    id.substring(0, id.indexOf(' ')),
+                    id.substring(id.indexOf(' ') + 1));
+        }
+        // TODO unclear if the following check is redundant in all or only
+        // some cases
+        if (userRecord == null) {
+            throw new ActivitiObjectNotFoundException(User.class);
+        }
+        return userRecord;
     }
 
 	@RequestMapping(value = "/", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -142,7 +130,7 @@ public class UserRecordController {
             // updated.')
             LOGGER.warn("Error saving user, hope this means it's already there. NOTE that this will lose any updates to the user itself");
         }
-       LOGGER.debug("... done");
+        LOGGER.debug("... done");
         for (UserInfo info : userRecord.getInfo()) {
             String userInfo = idSvc.getUserInfo(id, info.getKey());
             System.out.println("Found user info: " + userInfo + " for key: "
@@ -157,11 +145,19 @@ public class UserRecordController {
                 LOGGER.warn(String
                         .format("Skipping unchanged user info record %2$s=%3$s for %1$s...",
                                 id, info.getKey(), info.getValue()));
-
             }
         }
-
-		return new UserRecord(user);
+        if (userRecord.getPhone() != null
+                && userRecord.getPhone().trim().length() > 0) {
+            idSvc.setUserInfo(id, UserInfoKeys.PHONE.toString(),
+                    userRecord.getPhone());
+        }
+        if (userRecord.getCommsPreference() != null
+                && userRecord.getCommsPreference().trim().length() > 0) {
+            idSvc.setUserInfo(id, UserInfoKeys.COMMS_PREFERENCE.toString(),
+                    userRecord.getCommsPreference());
+        }
+        return new UserRecord(user);
     }
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
@@ -196,10 +192,12 @@ public class UserRecordController {
 				group));
 
 		IdentityService idSvc = processEngine.getIdentityService();
-		if (idSvc.createGroupQuery().groupId(group).count() == 0) {
+        if (idSvc.createGroupQuery().groupId(group.toLowerCase()).count() == 0) {
 			LOGGER.info(String.format("Creating new group %1$s ", group));
-			idSvc.saveGroup(idSvc.newGroup(group));
+            Group grp = idSvc.newGroup(group.toLowerCase());
+            grp.setName(group);
+            idSvc.saveGroup(grp);
 		}
-		idSvc.createMembership(id, group);
+        idSvc.createMembership(id, group.toLowerCase());
 	}
 }

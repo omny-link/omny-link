@@ -1,4 +1,5 @@
-var TRANSITION_DURATION = 500;
+var EASING_DURATION = 500;
+var fadeOutMessages = true;
 // 4. We've got an element in the DOM, we've created a template, and we've
 // loaded the library - now it's time to build our Hello World app.
 var ractive = new AuthenticatedRactive({
@@ -15,6 +16,7 @@ var ractive = new AuthenticatedRactive({
   // Here, we're passing in some initial data
   data: {
     //server: 'http://api.knowprocess.com',
+    username: localStorage['username'],
     users: []
   },
   addGroup: function () {
@@ -32,7 +34,7 @@ var ractive = new AuthenticatedRactive({
         contentType: 'application/json',
         success: completeHandler = function(data) {
           console.log('data: '+ data);
-          ractive.fetchUserGroups();
+          ractive.get('current.groups').merge({id:newGroup.toLowerCase(),name:newGroup});
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
             alert("Bother: "+textStatus+':'+errorThrown);
@@ -44,24 +46,8 @@ var ractive = new AuthenticatedRactive({
     ractive.set('currentAction', 'CREATE');
     ractive.set('current', { });
     $('.create-field').show();
+    $('.no-update-field').removeProp('readonly');
     ractive.select(ractive.get('current'));
-  },
-  saveUser: function () {
-    console.log('saveUser '+ractive.get('current')+' ...');
-    $('#currentSect').slideUp();
-    $.ajax({
-      url: '/users/'+(ractive.get('currentAction') == 'CREATE' ? '' : ractive.get('current.id')),
-      type: ractive.get('currentAction') == 'CREATE' ? 'POST' : 'PUT',
-      contentType: 'application/json',
-      data: JSON.stringify(ractive.get('current')),
-      success: completeHandler = function(data) {
-        console.log('data: '+ data);
-        ractive.fetch();
-      },
-      error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-          alert("Bother: "+textStatus+':'+errorThrown);
-      }
-  });
   },
   delete: function (url) {
     console.log('delete '+url+'...');
@@ -77,30 +63,96 @@ var ractive = new AuthenticatedRactive({
     });
   },
   edit: function(user) { 
-  console.log('editUser '+user+' ...');
-  $('.create-field').hide();
-  ractive.set('current',user);
-  ractive.select(user);
+    console.log('editUser '+user+' ...');
+    $('.create-field').hide();
+    $('.no-update-field').prop('readonly','readonly');
+    ractive.set('current',user);
+    ractive.select(user);
   },
   fetch: function () {
     console.log('fetch...');
     $.getJSON("/users/",  function( data ) {
       ractive.merge('users', data);
-  });
+    });
   },
   fetchUserGroups: function () {
     console.log('fetchUserGroups...');
     $.getJSON("/users/"+ractive.get('current.id')+'/groups',  function( data ) {
       ractive.merge('currentGroups', data);
-  });
+    });
+  },
+  initAutoComplete: function() {
+    console.log('initAutoComplete');
+    var typeaheads = ractive.get('tenant.typeaheadControls'); 
+    if (typeaheads==undefined) return; 
+    $.each(typeaheads, function(i,d) {
+      console.log('binding ' +d.url+' to typeahead control: '+d.selector);
+      $.get(d.url, function(data){
+        $(d.selector).typeahead({ minLength:0,source:data });
+        $(d.selector).on("click", function (ev) {
+          newEv = $.Event("keydown");
+          newEv.keyCode = newEv.which = 40;
+          $(ev.target).trigger(newEv);
+          return true;
+       });
+      },'json');
+    });
+  },
+  initControls: function() { 
+    console.log('initControls');
+    ractive.initAutoComplete();
   },
   oninit: function() {
     this.ajaxSetup();
-    this.fetch();
+  },
+  save: function () {
+    console.log('save '+ractive.get('current')+' ...');
+    if (!document.getElementById('userForm').checkValidity()) { 
+      ractive.showFormError('userForm','Please correct the highlighted fields');
+      return ;
+    }
+    
+    $.ajax({
+      url: '/users/'+(ractive.get('currentAction') == 'CREATE' ? '' : ractive.get('current.id')),
+      type: ractive.get('currentAction') == 'CREATE' ? 'POST' : 'PUT',
+      contentType: 'application/json',
+      data: JSON.stringify(ractive.get('current')),
+      success: completeHandler = function(data) {
+        console.log('data: '+ data);
+        ractive.showMessage('User has been saved successfully');
+        ractive.fetch();
+        setTimeout(function() { $('#currentSect').slideUp(); }, EASING_DURATION*4);
+      },
+      error: errorHandler = function(jqXHR, textStatus, errorThrown) {
+        ractive.showError("Bother: "+textStatus+':'+errorThrown);
+      }
+    });
   },
   select: function(user) { 
-    ractive.merge('current',user);
-    ractive.fetchUserGroups();
+    ractive.set('saveObserver',false);
+    $.getJSON('/users/'+user.id, function( data ) {
+      console.log('found user '+JSON.stringify(data));
+      ractive.set('current', data);
+      ractive.set('saveObserver',true);
+    });
     $('#currentSect').slideDown();
+  },
+  showError: function(msg) {
+    this.showMessage(msg, 'bg-danger text-danger');
+  },
+  showFormError: function(formId, msg) {
+    this.showError(msg);
+    var selector = formId==undefined || formId=='' ? ':invalid' : '#'+formId+' :invalid';
+    $(selector).addClass('field-error');
+    $(selector)[0].focus();
+  },
+  showMessage: function(msg, additionalClass) {
+    if (additionalClass == undefined) additionalClass = 'bg-info text-info';
+    if (msg === undefined) msg = 'Working...';
+    $('#messages p').empty().append(msg).removeClass().addClass(additionalClass).show();
+//    document.getElementById('messages').scrollIntoView();
+    if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
+      $('#messages p').fadeOut();
+    }, EASING_DURATION*10);
   },
 });
