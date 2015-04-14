@@ -152,8 +152,7 @@ public class ContactController {
     }
 
     /**
-     * Return just the matching contacts (probably will be one in almost every
-     * case).
+     * Add a note to the specified contact.
      * 
      * @return contacts for that tenant.
      */
@@ -167,6 +166,26 @@ public class ContactController {
         Note note = new Note(author, content);
         noteRepo.save(note);
         return note;
+    }
+
+    /**
+     * Change the sale stage the contact is at.
+     * 
+     * @return contacts for that tenant.
+     */
+    @RequestMapping(value = "/{contactId}", method = RequestMethod.PUT)
+    public @ResponseBody Contact setStage(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("contactId") Long contactId,
+            @RequestParam("stage") String stage) {
+        LOGGER.info(String.format("Setting contact %1$s to stage %2$s",
+                contactId, stage));
+
+        Contact contact = repo.findOne(contactId);
+        contact.setStage(stage);
+        repo.save(contact);
+
+        return contact;
     }
 
     private List<ShortContact> wrap(List<Contact> list) {

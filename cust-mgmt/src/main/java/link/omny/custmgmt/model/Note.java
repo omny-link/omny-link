@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
@@ -48,7 +47,7 @@ public class Note {
     @RestResource(rel = "noteContact")
     @ManyToOne(targetEntity = Contact.class)
     @JoinColumn(name = "contact_id")
-    @JsonBackReference
+    // @JsonBackReference
     private Contact contact;
 
     /**

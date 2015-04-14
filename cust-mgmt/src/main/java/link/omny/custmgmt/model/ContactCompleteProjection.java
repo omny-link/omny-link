@@ -3,11 +3,18 @@ package link.omny.custmgmt.model;
 import java.util.Date;
 import java.util.List;
 
+import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
+
 import org.springframework.data.rest.core.config.Projection;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 @Projection(name = "complete", types = { Account.class, Activity.class,
-        Contact.class, Document.class, Note.class })
-public interface ContactAndAccountProjection {
+        Contact.class, CustomAccountField.class, CustomContactField.class,
+        Document.class, Note.class })
+public interface ContactCompleteProjection {
 
     Long getId();
 
@@ -57,6 +64,8 @@ public interface ContactAndAccountProjection {
 
     Account getAccount();
 
+    @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
+    @JsonSerialize(using = JsonCustomFieldSerializer.class)
     List<CustomContactField> getCustomFields();
 
     List<Note> getNotes();
