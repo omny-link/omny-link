@@ -126,11 +126,11 @@ public class Application extends WebMvcConfigurerAdapter {
                             "/images/**", "/js/**")
                     .permitAll()
                     .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-                    .antMatchers("/*.html")
+                    .antMatchers("/*.html", "/process-instances/**",
+                            "/tasks/**", "/users/**")
                     .hasRole("user")
-                    .antMatchers("/admin.html", "/audit-trails/**",
-                            "/deployments/**", "/process-definitions/**",
-                            "/process-instances/**", "/tasks/**", "/users/**")
+                    .antMatchers("/admin.html", "/deployments/**",
+                            "/process-definitions/**")
                     .hasRole("admin")
                     .anyRequest().authenticated()  
                     .and().formLogin()
