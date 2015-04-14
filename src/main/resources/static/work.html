@@ -10,13 +10,15 @@
   -->
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.1.0.css" rel="stylesheet">
+  <link href="css/omny-0.4.0.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 
 <!--
   1. This is the element we'll render our Ractive to.
 -->
 <body class="container" id="container">
+  <div class="clearfix" id="messages"></div>
 
   <!--
        2. You can load a template in many ways. For convenience, we'll include it in
@@ -25,8 +27,14 @@
        just about anything except 'text/javascript'
   -->
   <script id='template' type='text/ractive'>
-    <h1>Omny Link - Work Management</h1>
-    <p class="bg-danger text-danger">Beta! Please ensure you have backups!</p>
+    <div class="profile pull-right">
+      <form name="logoutForm" action="/logout" method="POST">
+        <span>Logged in as: {{username}}</span>
+        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
+        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
+      </form>
+    </div>
+    <h1>Work Management</h1>
 
     <form id="taskList">
       <section id="taskSect">
@@ -34,6 +42,7 @@
           <span>Tasks</span>
           <input type="search" class="form-control search" placeholder="Search" 
             style="border-radius:15px;width:100px;display:inline;position:relative;bottom:5px;">
+          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></span>
         </h2>
         <table id="tasksTable" class="table table-striped">
           <thead>
@@ -41,8 +50,9 @@
               <th></th>
               <th>Task</th>
               <th>Created</th>
+              <th>Due</th>
               <th>Description</th>
-              <th>Assignee</th>
+              <th>Assigned</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -51,11 +61,12 @@
             <tr data-href="{{_links.self.href}}">
               <td on-click="edit(this)">{{i+1}}</td>
               <td on-click="edit(this)">{{name}}</td>
-              <td on-click="edit(this)">{{createTime}}</td>
+              <td on-click="edit(this)">{{formatDate(createTime)}}</td>
+              <td on-click="edit(this)">{{formatDate(dueDate)}}</td>
+              <td on-click="edit(this)">{{businessKey}}</td>
               <td on-click="edit(this)">{{description}}</td>
-              <td on-click="edit(this)">{{assignee}}</td>
+              <td on-click="edit(this)">{{assignee==null ? 'No' : 'Yes'}}</td>
               <td>
-                <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('/tasks/{{id}}')"></span>
                 <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
               </td>
             </tr>
@@ -65,21 +76,81 @@
       </section>
 
       <section id="currentSect" style="display:none">
-        <h2>Task: {{current.taskDefinitionKey}} ({{current.id}})</h2>
+        <h2>{{current.businessKey}}: {{current.name}} ({{current.id}})</h2>
 
-        <ul class="form edit-form">
-          <li><label>Description:</label><input id="curDescription" value="{{current.description}}"></li>
-          <li><label>Created:</label><input id="curCreated" value="{{current.createTime}}"></li>
-        </ul>
-        <button class="btn" on-click="saveTask()">Save</button>
+        <form id="currentForm">
+          {{#current.description}}
+            <div class="col-md-12">
+              <ul class="form edit-form">
+                <li><label class="col-md-3">Description:</label><textarea id="curDescription" rows="2" on-blur="save()" value="{{current.description}}"></textarea></li>
+              </ul>
+            </div>          
+          {{/}}
+          <div class="col-md-6">
+            <ul class="form edit-form">
+              <li><label class="col-md-3">Due:</label><input class="nodatepicker" id="curDueDate" on-blur="save()" placeholder="dd/mm/yyyy" value="{{formatDate(current.dueDate)}}"></li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="form edit-form">
+              <li><label class="col-md-3">Started By:</label><input id="curInitiator" readonly value="{{current.processVariables['initiator']=='anonymousUser' ? 'Web Site' : current.processVariables['initiator']}}"></li>
+              <li><label class="col-md-3">Created:</label><input id="curCreated" readonly value="{{formatDate(current.createTime)}}"></li>
+            </ul>
+          </div>
+        
+          {{#current.formProperties.length>0}}
+            <section style="clear:both">
+              <h2>Data</h2>
+              <ul class="form edit-form" style="">          
+                {{#current.formProperties:i}}
+                  <li>
+                    {{# value.substring(0,4)=='http'}}
+                      <!-- TODO need to get this from tenant config -->
+                      <a href="{{value}}" target="_newtab">{{name == undefined ? id : name}}</a>
+                    {{else}}
+                      {{value}}
+                    {{/if}}
+                  </li>
+                {{/current.formProperties}}
+              </ul>            
+
+              <section style="display:none">
+                <h3>Local Variables</h3>
+                <ul class="form edit-form" style="">          
+                  {{#current.taskLocalVarNames:i}}
+                    <li>{{i}} {{.}} {{current.taskLocalVariables[.]}}</li>
+                  {{/current.taskLocalVarNames}}
+                </ul>
+
+                <h3>Process Variables</h3>
+                <ul class="form edit-form" style="">          
+                  {{#current.processVarNames:i}}
+                    <li>{{i}} {{.}} {{current.processVariables[.]}}</li>
+                  {{/current.processVarNames}}
+                </ul>
+              </section>
+            </section>
+          {{/}}
+        </form>
+
+        <button class="btn bg-success pull-right text-success" on-click="submitTask()">Complete Task</button>
 
       </section>
 
     </form>
   </script>
 
-  <script id='template' type='text/ractive'>
-  </script>  
+  <div id="ajax-loader">
+    <img class="ajax-loader" src="images/omny-ajax-loader.gif" alt="Loading..."/>   
+  </div>
+
+  <div class="powered-by">
+    <h1>
+      <span class="powered-by-text">powered by</span>
+      <img src="images/omny-greyscale-inline-logo.png" alt="powered by Omny Link"/>
+    </h1>
+  </div>
+  <p class="beta bg-warning pull-right">Beta!</p>
 
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins)
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -87,7 +158,8 @@
   <script src="js/jquery-1.11.0.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
   <script src="js/bootstrap.min.js"></script>
-  <script src="js/bootstrap3-typeahead.js"></script>
+  <script src="js/bootstrap3-typeahead.min.js"></script>
+  <script src="js/bootstrap-datepicker.min.js"></script>
   <!--
        3. You can always get the most recent stable version from the URL below.
        If you want the newest features, use the 'edge' version instead:
@@ -98,7 +170,21 @@
   <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
   -->
   <script src="js/ractive.min.js"></script>
+  <script src="js/autoNumeric.min.js"></script>
   <script src="js/login-0.1.0.js"></script>
   <script src="js/workmgmt-0.1.0.js"></script>
+  <script>
+    $(document).ready(function() {
+      ractive.set('saveObserver',false);
+      var params = getSearchParameters();
+      console.log('Params: '+JSON.stringify(params));
+      ractive.set('tenant', { 
+        id: (params['tenant'] == undefined ? 'gardenatics' : params['tenant']),
+      });
+      ractive.fetch();
+      ractive.initControls();
+      ractive.set('saveObserver',true);
+    });
+  </script>
 </body>
 </html>

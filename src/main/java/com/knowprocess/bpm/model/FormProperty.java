@@ -15,6 +15,8 @@ public class FormProperty {
      */
     private String name;
 
+    private String value;
+
     /**
      */
     private String type;
@@ -52,6 +54,7 @@ public class FormProperty {
 		setReadable(p.isReadable());
 		setWriteable(p.isWritable());
 		setRequired(p.isRequired());
+        setValue(p.getValue());
 	}
 
 	// public static String toJsonArray(Collection<FormProperty> collection) {

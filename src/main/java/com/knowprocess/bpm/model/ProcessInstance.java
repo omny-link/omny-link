@@ -8,6 +8,7 @@ import lombok.Data;
 
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ public class ProcessInstance extends Execution {
     private Boolean suspended;
 
     private Map<String, Object> processVariables;
+
+    private ArrayList<HistoricDetail> auditTrail;
 
     public ProcessInstance() {
         super();
@@ -158,6 +161,23 @@ public class ProcessInstance extends Execution {
         }
         return list2;
     }
+
+    public void addToAuditTrail(List<HistoricActivityInstance> list) {
+        System.out.println("addToAuditTrail: " + list.size());
+        auditTrail = new ArrayList<HistoricDetail>();
+        for (HistoricActivityInstance detail : list) {
+            auditTrail.add(new HistoricDetail(detail));
+        }
+    }
+
+    // public void setAuditTrail(
+    // List<org.activiti.engine.history.HistoricDetail> list) {
+    // System.out.println("setAuditTrail: " + list.size());
+    // auditTrail = new ArrayList<HistoricDetail>();
+    // for (org.activiti.engine.history.HistoricDetail detail : list) {
+    // auditTrail.add(new HistoricDetail(detail));
+    // }
+    // }
 
     // private static List<? extends ProcessInstance> wrap(
     // final List<HistoricProcessInstance> list) {
