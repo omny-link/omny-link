@@ -1,1 +1,6 @@
 curl -X GET -H "Accept:application/xml" http://localhost:8082/process-definitions/CreateContactAndAccount:1:22552/model
+
+curl -X POST -u tstephen:tstephen -d 'json={ "description":"do something","performer":"gardenatics","checker": "tstephen" }' http://localhost:9090/gardenatics/msg/omny.todo.json
+
+
+curl -X GET -u tstephen:tstephen -H "Accept:application/json" http://localhost:9090/task/2511

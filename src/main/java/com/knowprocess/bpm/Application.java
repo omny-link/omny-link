@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +46,7 @@ import com.knowprocess.bpm.impl.JsonManager;
 @ComponentScan(basePackages = { "com.knowprocess.bpm",
         "com.knowprocess.decisions" })
 @EnableAutoConfiguration
+@EntityScan({ "com.knowprocess.bpm", "com.knowprocess.decisions" })
 @EnableJpaRepositories({ "com.knowprocess.decisions.repositories",
         "com.knowprocess.bpm.decisions.repositories" })
 public class Application extends WebMvcConfigurerAdapter {
@@ -134,10 +136,11 @@ public class Application extends WebMvcConfigurerAdapter {
         "/images/**", "/js/**")
         .permitAll()
         .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-        .antMatchers("/*.html").hasRole("USER")
+        .antMatchers("/*.html").hasRole("user")
         .antMatchers("/admin.html", "/audit-trails/**",
-        "/deployments/**", "/process-definitions/**",
-        "/process-instances/**", "/tasks/**", "/users/**").hasRole("ADMIN")
+                "/deployments/**", "/process-definitions/**",
+                "/process-instances/**", "/tasks/**", "/users/**")
+                .hasRole("admin")
         .anyRequest().authenticated()
         .and().formLogin()
         .loginPage("/login").failureUrl("/loginError")

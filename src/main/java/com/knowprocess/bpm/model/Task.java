@@ -3,6 +3,7 @@ package com.knowprocess.bpm.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Id;
 import javax.persistence.Temporal;
@@ -12,15 +13,18 @@ import lombok.Data;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.form.TaskFormData;
+import org.activiti.engine.task.DelegationState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @Component
-public class Task {
+public class Task implements org.activiti.engine.task.Task {
     protected static final Logger LOGGER = LoggerFactory.getLogger(Task.class);
 
 	// private static final String[] JSON_FIELDS = { "assignee", "createTime",
@@ -73,7 +77,7 @@ public class Task {
 
     /**
      */
-    private Integer priority;
+    private int priority;
 
     /**
      */
@@ -91,7 +95,22 @@ public class Task {
 
     private String deploymentId;
 
+    private String executionId;
+
+    private String processInstanceId;
+
+    private String businessKey;
+
+    // AKA Case?
+    private String category;
+
+    private String tenantId;
+
     private List<FormProperty> formProperties;
+
+    private Map<String, Object> processVariables;
+
+    private Map<String, Object> taskLocalVariables;
 
     public Task() {
         super();
@@ -102,16 +121,26 @@ public class Task {
         this();
         setId(t.getId());
         setAssignee(t.getAssignee());
+        setCategory(t.getCategory());
         setCreateTime(t.getCreateTime());
-        // setDelegateState("TODO");
+        // setDelegateState(t.getDelegationState());
         setDescription(t.getDescription());
+        setDueDate(t.getDueDate());
         setName(t.getName());
         setOwner(t.getOwner());
         setParentTaskId(t.getParentTaskId());
         setProcessDefinitionId(t.getProcessDefinitionId());
         setPriority(Integer.valueOf(t.getPriority()));
-        setTaskDefinitionKey(t.getTaskDefinitionKey());
+        setProcessInstanceId(t.getProcessInstanceId());
+        setProcessVariables(t.getProcessVariables());
         setSuspended(t.isSuspended());
+        setTaskDefinitionKey(t.getTaskDefinitionKey());
+        setTaskLocalVariables(t.getTaskLocalVariables());
+        setBusinessKey(processEngine.getRuntimeService()
+                .createProcessInstanceQuery()
+                .processInstanceId(t.getProcessInstanceId()).singleResult()
+                .getBusinessKey());
+        setTenantId(t.getTenantId());
     }
 
     // Autowiring static fields is obviously dangerous, but should be ok in this
@@ -137,6 +166,7 @@ public class Task {
     public static List<Task> findAllTasks() {
         try {
             return wrap(getProcessEngine().getTaskService().createTaskQuery()
+                    .includeTaskLocalVariables().includeProcessVariables()
                     .list());
         } catch (Exception e) {
             e.printStackTrace();
@@ -147,15 +177,30 @@ public class Task {
     public static Task findTask(String id) {
         Task task = wrap(
                 getProcessEngine().getTaskService().createTaskQuery()
-                        .taskId(String.valueOf(id)).list()).get(0);
+                        .taskId(String.valueOf(id)).includeTaskLocalVariables()
+                        .includeProcessVariables()
+                        .list()).get(0);
         TaskFormData formData = getProcessEngine().getFormService()
-                .getTaskFormData(
-                id);
+                .getTaskFormData(id);
         task.setDeploymentId(formData.getDeploymentId());
         task.setFormKey(formData.getFormKey());
         for (org.activiti.engine.form.FormProperty prop : formData
                 .getFormProperties()) {
-            task.getFormProperties().add(new FormProperty(prop));
+            // TODO would work if we had credentials. consider using autowired
+            // RestGet and moving this to TaskController
+            // if (prop.getValue().startsWith("http://")) {
+            // // Try to freshen the resource
+            // try {
+            // FormProperty fp = new FormProperty(prop);
+            // fp.setValue(new RestGet().fetchToString(prop.getValue()));
+            // task.getFormProperties().add(fp);
+            // } catch (Exception e) {
+            // LOGGER.error(e.getMessage());
+            // task.getFormProperties().add(new FormProperty(prop));
+            // }
+            // } else {
+                task.getFormProperties().add(new FormProperty(prop));
+            // }
         }
         return task;
     }
@@ -172,11 +217,21 @@ public class Task {
                 .listPage(firstResult, maxResults));
     }
 
+    public static List<Task> findAllTasks(String tenantId, String involvesUser,
+            String sortFieldName, String sortOrder) {
+        // TODO honour sort order
+        return wrap(getProcessEngine().getTaskService().createTaskQuery()
+                .taskTenantId(tenantId).taskCandidateOrAssigned(involvesUser)
+                .list());
+    }
+
+    /**
+     * @deprecated Use the version that takes a tenant id.
+     */
     public static List<Task> findAllTasks(String involvesUser, String sortFieldName, String sortOrder) {
         // TODO honour sort order
         return wrap(getProcessEngine().getTaskService().createTaskQuery()
-                .taskInvolvedUser(involvesUser)
-                .list());
+                .taskCandidateOrAssigned(involvesUser).list());
     }
 
     private static List<Task> wrap(
@@ -186,6 +241,30 @@ public class Task {
             list2.add(new Task(instance));
         }
         return list2;
+    }
+
+    @Override
+    public boolean isSuspended() {
+        return suspended;
+    }
+
+    @Override
+    @JsonIgnore
+    public void delegate(String arg0) {
+        LOGGER.error("Delegation not implemented");
+    }
+
+    @Override
+    @JsonIgnore
+    public DelegationState getDelegationState() {
+        LOGGER.error("Delegation not implemented");
+        throw null;
+    }
+
+    @Override
+    @JsonIgnore
+    public void setDelegationState(DelegationState arg0) {
+        LOGGER.error("Delegation not implemented");
     }
 
 	// public String toJson() {

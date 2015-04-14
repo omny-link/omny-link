@@ -15,7 +15,8 @@ var AuthenticatedRactive = Ractive.extend({
     $.ajaxSetup({
       username: localStorage['username'],
       password: localStorage['password'],
-      headers: { 'X-CSRF-TOKEN': this.getCookie(CSRF_COOKIE) }
+      headers: { 'X-CSRF-TOKEN': this.getCookie(CSRF_COOKIE) },
+      error: this.handleError
     });
   },
   getCookie: function(name) {
@@ -32,6 +33,19 @@ var AuthenticatedRactive = Ractive.extend({
       if (ractive.hasRole('ADMIN')) $('.admin').show();
     });
     else console.debug('Not logged in, skipping profile');
+  },
+  handleError: function(jqXHR, textStatus, errorThrown) {
+    switch (jqXHR.status) { 
+    case 401:
+    case 403: 
+      this.showError("Session expired, please login again");
+      window.location.href='/login';
+      break; 
+    default: 
+      var msg = "Bother! Something has gone wrong: "+textStatus+':'+errorThrown;
+      console.error('msg:'+msg);
+      this.showError(msg);        
+    }
   },
   hasRole: function(role) {
     var ractive = this;
@@ -57,7 +71,7 @@ var AuthenticatedRactive = Ractive.extend({
   }
 });
 
-
+// TODO remove the redundancy of having this in AuthenticatedRactive and here
 function getCookie(name) {
   //console.log('getCookie: '+name)
   var value = "; " + document.cookie;

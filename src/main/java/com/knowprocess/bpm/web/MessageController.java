@@ -1,6 +1,8 @@
 package com.knowprocess.bpm.web;
 
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,6 +62,9 @@ public class MessageController {
     // @Value("${message.allowAnonymous}")
     private String allowAnonymous = "true";
 
+    private static final DateFormat isoFormatter = new SimpleDateFormat(
+            "yyyy-MM-dd HH:mm");
+
     @Autowired
     public void setProcessEngine(ProcessEngine pe) {
         LOGGER.debug("Injected process engine into " + getClass().getName());
@@ -72,6 +77,7 @@ public class MessageController {
             UriComponentsBuilder uriBuilder,
             @PathVariable("tenant") String tenantId,
             @PathVariable("msgId") String msgId,
+            @RequestParam(required = false, value = "businessDescription") String bizDesc,
             @RequestParam(required = false, value = "query") String json) {
         // TODO need to look into why but the PathVariable is truncated at the
         // last . so 'kp.foo' arrives as 'kp'. To work around this clients
@@ -82,7 +88,7 @@ public class MessageController {
         HttpHeaders headers = null;
         try {
             ResponseEntity<String> response = handleMep(uriBuilder, tenantId,
-                    msgId, json, vars, 0);
+                    msgId, bizDesc, json, vars, 0);
             if (response.getStatusCode() != HttpStatus.CREATED) {
                 return response;
             }
@@ -127,13 +133,15 @@ public class MessageController {
     @ResponseBody
     public ResponseEntity<String> doInOnlyMep(UriComponentsBuilder uriBuilder,
             @PathVariable("tenant") String tenantId,
-            @PathVariable("msgId") String msgId, @RequestParam String json) {
+            @PathVariable("msgId") String msgId,
+            @RequestParam(required = false, value = "businessDescription") String bizDesc,
+            @RequestParam String json) {
         long start = System.currentTimeMillis();
         LOGGER.info("handling In-Only MEP: " + msgId + ", json:" + json);
 
         Map<String, Object> vars = new HashMap<String, Object>();
         ResponseEntity<String> response = handleMep(uriBuilder, tenantId, msgId,
-                json, vars, 0);
+                bizDesc, json, vars, 0);
 
         LOGGER.debug(String.format("doInOnlyMep took: %1$s ms",
                 (System.currentTimeMillis() - start)));
@@ -142,7 +150,8 @@ public class MessageController {
 
     protected ResponseEntity<String> handleMep(
             final UriComponentsBuilder uriBuilder, String tenantId,
-            String msgId, String jsonBody, final Map<String, Object> vars, int retry) {
+            String msgId, String bizDesc, String jsonBody,
+            final Map<String, Object> vars, int retry) {
         // if (SecurityContextHolder.getContext().getAuthentication() == null
         // || "anonymousUser".equals(SecurityContextHolder.getContext()
         // .getAuthentication().getName())) {
@@ -160,7 +169,9 @@ public class MessageController {
 
         try {
             vars.put("tenantId", tenantId);
-            String bizKey = msgId + " - " + new Date().getTime();
+            String bizKey = bizDesc == null 
+                    ? msgId + " - " + isoFormatter.format(new Date())
+                    : bizDesc;
             String modifiedMsgId = getMessageVarName(msgId);
             vars.put("messageName", modifiedMsgId);
             if (messageRegistry.canDeserialise(modifiedMsgId, jsonBody)) {
@@ -209,7 +220,8 @@ public class MessageController {
             if (e.getCause() instanceof com.mysql.jdbc.exceptions.jdbc4.CommunicationsException
                     && retry < 3) {
                 LOGGER.error("Confirmed timeout exception, retrying...");
-                return handleMep(uriBuilder, tenantId, msgId, jsonBody, vars, ++retry);
+                return handleMep(uriBuilder, tenantId, msgId, bizDesc,
+                        jsonBody, vars, ++retry);
             } else {
                 ReportableException e2 = new ReportableException(
                         "Cause is not timeout or retries exceeds limit", e);

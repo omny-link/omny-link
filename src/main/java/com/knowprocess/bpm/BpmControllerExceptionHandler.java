@@ -11,6 +11,6 @@ public class BpmControllerExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(ActivitiObjectNotFoundException.class)
     public void handleNotFound() {
-            // Nothing to do
-        }
+        // Nothing to do
     }
+}
