@@ -13,6 +13,8 @@ Features
     
     - REST API feature matches Web UI 
 
+    - Bulk import of Contacts, Accounts, Activities and Notes
+
 Roadmap
 ------- 
 
@@ -22,13 +24,13 @@ Roadmap
 Releases
 --------
 
-0.4.0 - 
+0.4.0 - 13 Apr 15
 
     - #3 Powered by Omny logo getting in front of the open/close arrow button
     and making it unclickable
     - #4 Make email optional in gardenatics UI
-    - Increment version to 0.4 and updated README
     - #5 Dates displaying in US format
+    - #6 UI and data tweaks from review 9 Apr 15
 
 0.3.0 - 6 Apr 15
 

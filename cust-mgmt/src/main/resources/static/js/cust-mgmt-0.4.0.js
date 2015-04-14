@@ -44,7 +44,7 @@ var ractive = new AuthenticatedRactive({
       } else if (!Array.isArray(obj['customFields'])) {
         return obj.customFields[name];
       } else {
-        console.error('customField 30');
+        //console.error('customField 30');
         var val;
         $.each(obj['customFields'], function(i,d) {
           if (d.name == name) val = d.value;
@@ -117,11 +117,32 @@ var ractive = new AuthenticatedRactive({
         ractive.merge('contacts', data['_embedded'].contacts);
         ractive.set('saveObserver', true);
       }
+      if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
     })
     .fail(function( jqXHR, textStatus, errorThrown) {
       console.log( "error" );
       ractive.handleError(jqXHR,textStatus,errorThrown);
     });
+  },
+  find: function(contactId) { 
+    console.log('find: '+contactId);
+    var c; 
+    $.each(ractive.get('contacts'), function(i,d) { 
+      if (contactId.endsWith(ractive.getId(d))) { 
+        c = d;
+      }
+    });
+    return c;
+  },
+  getId: function(contact) { 
+    console.log('getId: '+contact);
+    var uri; 
+    $.each(contact.links, function(i,d) { 
+      if (d.rel == 'self') { 
+        uri = d.href;
+      }
+    });
+    return uri;
   },
   getProfile: function() {
     console.log('getProfile: '+ractive.get('username'));
@@ -130,17 +151,6 @@ var ractive = new AuthenticatedRactive({
         if (ractive.hasRole('ADMIN')) $('.admin').show();
       });
     else console.debug('Not logged in, skipping profile');
-  },
-  handleError: function(jqXHR, textStatus, errorThrown) {
-    switch (jqXHR.status) { 
-    case 401:
-    case 403: 
-      ractive.showError("Session expired, please login again");
-      window.location.href='/login';
-      break; 
-    default: 
-      ractive.showError("Bother! Something has gone wrong: "+textStatus+':'+errorThrown);        
-    }
   },
   hasRole: function(role) {
     if (ractive && ractive.get('profile')) 
@@ -165,6 +175,19 @@ var ractive = new AuthenticatedRactive({
   initAutoNumeric: function() { 
     $('.autoNumeric').autoNumeric('init', {});
   },
+  initControls: function() { 
+    console.log('initControls');
+    ractive.initAutoComplete();
+    ractive.initAutoNumeric();
+    ractive.initDatepicker();
+  },
+  initDatepicker: function() { 
+    $('.datepicker').datepicker({
+      format: "dd/mm/yyyy",
+      autoclose: true,
+      todayHighlight: true
+    });
+  },
   nextEntity: function() { 
     console.log('nextEntity');
     $('.entity.active').fadeOut().removeClass('active');
@@ -188,13 +211,12 @@ var ractive = new AuthenticatedRactive({
     $('#entity'+ractive.get('entityIdx')+'Sect').fadeIn().addClass('active');
   },
   save: function () {
-    console.log('save '+JSON.stringify(ractive.get('current'))+' ...');
+    console.log('save ...');
     ractive.set('saveObserver',false);
     var id = ractive.get('current')._links === undefined ? undefined : (
         ractive.get('current')._links.self.href.indexOf('?') == -1 ? ractive.get('current')._links.self.href : ractive.get('current')._links.self.href.substr(0,ractive.get('current')._links.self.href.indexOf('?')-1)
     );
     ractive.set('saveObserver',true);
-    
     if (document.getElementById('currentForm').checkValidity()) {
       // cannot save contact and account in one (grrhh), this will clone...
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
@@ -205,15 +227,16 @@ var ractive = new AuthenticatedRactive({
         tmp.account = id.substring(0,id.indexOf('/',8))+'/accounts/'+tmp.account.id;  
       } else {
         tmp.account = null;
-      } 
+      }       
       tmp.tenantId = ractive.get('tenant.id');
+      console.log('ready to save contact'+JSON.stringify(tmp)+' ...');
       $.ajax({
         url: id === undefined ? '/contacts' : id,
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
         success: completeHandler = function(data, textStatus, jqXHR) {
-          console.log('data: '+ data);
+          //console.log('data: '+ data);
           var location = jqXHR.getResponseHeader('Location');
           if (location != undefined) ractive.set('current._links.self.href',location);
           if (jqXHR.status == 201) ractive.get('contacts').push(ractive.get('current'));
@@ -436,6 +459,7 @@ var ractive = new AuthenticatedRactive({
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
   ignored=['current.documents','current.doc','current.notes','current.note'];
   if (ractive.get('saveObserver') && ignored.indexOf(keypath)==-1) {
+    console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
     if (keypath=='current.account') ractive.saveAccount();
     else ractive.save();
   } else { 

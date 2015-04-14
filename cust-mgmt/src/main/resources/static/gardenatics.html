@@ -75,8 +75,8 @@
             {{# searchTerm!=undefined && (
                   this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase())===0 
                   || this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase())===0
-                  || this.email.toLowerCase().indexOf(searchTerm.toLowerCase())===0
-                ) }}
+                  || this.email.toLowerCase().indexOf(searchTerm.toLowerCase())===0)
+                }}
               <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
                 <td>{{i+1}}</td>
                 <td>{{firstName}} {{lastName}}</td>
@@ -124,18 +124,37 @@
           </div>
           <div class="col-md-6">
             <ul class="form edit-form">
-              <li><label>Owner:</label><input class="typeahead" id="curOwner" value="{{current.owner}}"/></li>
-              <li><label>Stage:</label><input class="typeahead" id="curStage" value="{{current.stage}}"></li>
-              <li><label>Enquiry Type:</label><input id="curEnquiryType" value="{{current.enquiryType}}"></li>
+              <li><label>Owner:</label><input class="typeahead" id="curOwner" placeholder="Start typing to filter options" value="{{current.owner}}"/></li>
+              <li><label>Stage:</label><input class="typeahead" id="curStage" placeholder="Start typing to filter options" value="{{current.stage}}"></li>
+              <li><label>Enquiry Type:</label><input class="typeahead" id="curEnquiryType" placeholder="Start typing to filter options" value="{{current.enquiryType}}"></li>
               <li><label>Budget:</label><input class="autoNumeric" data-a-sign="£ " id="curBudget" value="{{current.customFields['budget']}}"></li>
-              <li><label>Page Submitted:</label><input id="curPageSubmitted" value="{{customField(current, 'pageSubmitted')}}"></li>
-              <li><label>Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
-              <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
-              <li><label>Campaign:</label><input id="curCampaign" value="{{current.campaign}}"></li>
-              <li><label>Keyword:</label><input id="curKeyword" value="{{current.keyword}}"></li>
+              <li><label>Page Submitted:</label><input id="curPageSubmitted" readonly value="{{customField(current, 'pageSubmitted')}}"></li>
+              <li><label>Source:</label><input class="typeahead" id="curSource" placeholder="Start typing to filter options" value="{{current.source}}"></li>
+              <li><label>Medium:</label><input class="typeahead" id="curMedium" placeholder="Start typing to filter options" value="{{current.medium}}"></li>
+              <li><label>Campaign:</label><input id="curCampaign" readonly value="{{current.campaign}}"></li>
+              <li><label>Keyword:</label><input id="curKeyword" readonly value="{{current.keyword}}"></li>
             </ul>
           </div>
 
+          <div id="currentContactExtended" style="clear: both">
+            {{>(tenant.id+'ContactExtension')}}
+
+            <!-- TODO General purpose contact extension if no dedicated one available 
+            {{#if tenant.contactFields}}
+              <div class="col-md-12">
+                <h2 class="form">
+                  <span>Further Info</span>
+                </h2>
+
+                <!- - first column - ->  
+                {{>column {object: current, fields: tenant.contactFields.slice(0,Math.ceil(tenant.contactFields.length/2))} }}
+
+                <!- - second column - ->  
+                {{>column {object: current, fields: tenant.contactFields.slice(Math.ceil(tenant.contactFields.length/2),tenant.contactFields.length)} }}
+
+              </div>
+            {{/if}}-->
+          </div>
         </form>
 
         <div style="clear: both"></div>
@@ -211,14 +230,31 @@
 
     <!-- PARTIALS FOLLOW AS CANNOT CURRENTLY USE SEPERATE ELEMENT TODO --> 
 
-    <!-- {{>gardenaticsAccountExtension}} -->
-    <!-- {{/gardenaticsAccountExtension}} -->
+    <!-- {{>gardenaticsContactExtension}} -->
+      <div class="col-md-12">
+        <h2 class="form">
+          <span>Partner Info</span>
+        </h2>
+        <div class="col-md-6">
+          <ul class="form edit-form">
+            <li><label>Partner:</label>
+            <input id="curPartner" on-blur="console.error(''+this.value);ractive.save()" value="{{current.customFields['partner']}}"></li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <ul class="form edit-form">
+            <li><label>Appointment Date:</label>
+            <input class="datepickerdis" id="curAppointmentDate" on-blur="console.error(''+this.value);ractive.save()" placeholder="dd/mm//yyyy" value="{{current.customFields['appointmentDate']}}"></li>
+          </ul>
+        </div>
+      </div>
+    <!-- {{/gardenaticsContactExtension}} -->
 
     <!-- {{>column}} -->
       <div class="col-md-6">
         <ul class="form edit-form">
           {{#each fields:j}}
-            <li><label>{{label}}:</label><input id="curUnknown" value="{{object.customFields[key]}}"></li>
+            <li><label>{{label}}:</label><input id="cur{{key.toLeadingCaps()}}" value="{{object.customFields[key]}}"></li>
           {{/each}}
         </ul>
       </div>
@@ -242,7 +278,8 @@
   <script src="js/jquery-1.11.0.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
   <script src="js/bootstrap.min.js"></script>
-  <script src="js/bootstrap3-typeahead.js"></script>
+  <script src="js/bootstrap3-typeahead.min.js"></script>
+  <script src="js/bootstrap-datepicker.min.js"></script>
   <!--
        3. You can always get the most recent stable version from the URL below.
        If you want the newest features, use the 'edge' version instead:
@@ -253,6 +290,7 @@
   -->
   <script src="js/ractive.min.js"></script>
   <script src="js/autoNumeric.min.js"></script>
+  <script src="js/string-functions-0.1.0.js"></script>
   <script src="js/login-0.1.0.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/cust-mgmt-0.4.0.js"></script>
@@ -260,10 +298,15 @@
     $(document).ready(function() {
       ractive.set('tenant', { 
         id: 'gardenatics',
+        contactFields: [ 
+          { label: 'Partner', key: 'partner'},
+          { label: 'Appointment Date', key: 'appointmentDate'}
+        ],
         typeaheadControls: [
           { selector: '#curEnquiryType', url: '/data/gardenatics/enquiry-types.json'},
           { selector: '#curMedium', url: '/data/media.json'},
           { selector: '#curOwner', url: '/data/gardenatics/owners.json'},
+          { selector: '#curPartner', url: '/data/gardenatics/partners.json'},
           { selector: '#curSource', url: '/data/sources.json'},
           { selector: '#curStage', url: '/data/stages.json'}
         ]
@@ -272,10 +315,18 @@
         headers: {'X-Tenant': ractive.get('tenant.id')}
       });
       ractive.fetch();
-      ractive.initAutoComplete();
-      ractive.initAutoNumeric();
+      ractive.initControls();
       var s = getSearchParameters()['s'];
       if (s!=undefined) ractive.set('searchTerm',s);
+      var id = getSearchParameters()['id'];
+      if (id!=undefined) {
+        ractive.set('searchId',id);
+        if (ractive.fetchCallbacks==undefined) ractive.fetchCallbacks = $.Callbacks();
+        ractive.fetchCallbacks.add(function() {
+          ractive.edit(ractive.find(ractive.get('searchId')));
+        })
+      }
+      
       ractive.set('saveObserver', true);
     });
   </script>

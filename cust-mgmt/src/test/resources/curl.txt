@@ -3,3 +3,7 @@ curl -X POST -v -H "Content-Type:application/json" -u tstephen:tstephen -d '{"ty
 curl -X POST -v -H "Content-Type:application/json" -u tstephen:tstephen -d '{"type":"email","content":"welcome","occurred":"2015-01-05T19:10:00"}' http://localhost:8082/activities/
 
 curl -X PUT -v -H "Content-Type:text/uri-list" -u tstephen:tstephen -d 'http://localhost:8082/activities/1' http://localhost:8082/contacts/1
+
+ curl -X POST -H 'Content-Type:application/json' -u gardenatics:gardenatics -d '{"firstName":"Tim","lastName":"Stephenson","email":"tim@omny.link","customFields":{"budget":"5000","appointmentDate":"2015-04-15","partner":"Fred"},"tenantId":"gardenatics"}' http://localhost:8082/contacts/
+ 
+ curl -X GET -H 'Content-Type:application/json' -u gardenatics:gardenatics http://localhost:8082/contacts/
