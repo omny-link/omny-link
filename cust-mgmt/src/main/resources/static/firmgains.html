@@ -126,16 +126,16 @@
           </div>
           <div class="col-md-6">
             <ul class="form edit-form">
-              <li><label>Owner:</label><input class="typeahead" id="curOwner" value="{{current.owner}}"/></li>
-              <li><label>Stage:</label><input class="typeahead" id="curStage" value="{{current.stage}}"></li>
-              <li><label>Enquiry Type:</label><input class="typeahead" id="curEnquiryType" value="{{current.enquiryType}}"></li>
-              <li><label>Account Type:</label><input class="typeahead" id="curAccountType" value="{{current.accountType}}"></li>
+              <li><label>Owner:</label><input class="typeahead" id="curOwner" placeholder="Start typing to filter options" value="{{current.owner}}"/></li>
+              <li><label>Stage:</label><input class="typeahead" id="curStage" placeholder="Start typing to filter options" value="{{current.stage}}"></li>
+              <li><label>Enquiry Type:</label><input class="typeahead" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}"></li>
+              <li><label>Account Type:</label><input class="typeahead" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}"></li>
               <li><label>Partners Contacted:</label><input id="curPartnersContacted" value="{{current.account.customFields['partnersContacted']}}"/></li>              
-              <li><label>Page Submitted:</label><input id="curPageSubmitted" value="{{customField(current, 'pageSubmitted')}}"></li>
-              <li><label>Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
-              <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
-              <li><label>Campaign:</label><input id="curCampaign" value="{{current.campaign}}"></li>
-              <li><label>Keyword:</label><input id="curKeyword" value="{{current.keyword}}"></li>
+              <li><label>Page Submitted:</label><input id="curPageSubmitted" readonly value="{{customField(current, 'pageSubmitted')}}"></li>
+              <li><label>Source:</label><input class="typeahead" placeholder="Start typing to filter options" id="curSource" value="{{current.source}}"></li>
+              <li><label>Medium:</label><input class="typeahead" placeholder="Start typing to filter options" id="curMedium" value="{{current.medium}}"></li>
+              <li><label>Campaign:</label><input id="curCampaign" readonly value="{{current.campaign}}"></li>
+              <li><label>Keyword:</label><input id="curKeyword" readonly value="{{current.keyword}}"></li>
             </ul>
           </div>
         </form>
@@ -271,8 +271,8 @@
         <div class="col-md-6">
           <ul class="form edit-form">
             <li><label>Low Quote:</label><input class="autoNumeric" id="curLowQuote" data-a-sign="£ " value="{{current.account.customFields['lowQuote']}}"/></li>
-            <li><label>Medium Quote:</label><input class="autoNumeric" id="curMediumQuote" data-a-sign="£ "value="{{current.account.customFields['mediumQuote']}}"/></li>
-            <li><label>High Quote:</label><input class="autoNumeric" id="curHighQuote" data-a-sign="£ "value="{{current.account.customFields['highQuote']}}"/></li>
+            <li><label>Medium Quote:</label><input class="autoNumeric" id="curMediumQuote" data-a-sign="£ " value="{{current.account.customFields['mediumQuote']}}"/></li>
+            <li><label>High Quote:</label><input class="autoNumeric" id="curHighQuote" data-a-sign="£ " value="{{current.account.customFields['highQuote']}}"/></li>
             <!--li><button on-click="">Calc</button></li>-->
           </ul>
         </div> 
