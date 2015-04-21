@@ -5,6 +5,7 @@ import java.util.List;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.ContactExcept;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +16,10 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
 
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
     List<Contact> findAllForTenant(@Param("tenantId") String tenantId);
+
+    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
+    List<Contact> findPageForTenant(@Param("tenantId") String tenantId,
+            Pageable pageable);
 
     List<Contact> findByLastName(@Param("lastName") String lastName);
 
