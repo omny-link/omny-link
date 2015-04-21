@@ -15,6 +15,8 @@ import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.hateoas.Link;
@@ -98,11 +100,18 @@ public class ContactController {
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public @ResponseBody List<ShortContact> listForTenant(
-            @PathVariable("tenantId") String tenantId) {
-
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
         LOGGER.info(String.format("List contacts for tenant %1$s", tenantId));
 
-        List<Contact> list = repo.findAllForTenant(tenantId);
+        List<Contact> list;
+        if (limit == null) {
+            list = repo.findAllForTenant(tenantId);
+        } else {
+            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            list = repo.findPageForTenant(tenantId, pageable);
+        }
         LOGGER.info(String.format("Found %1$s contacts", list.size()));
 
         return wrap(list);
@@ -210,6 +219,7 @@ public class ContactController {
         Link detail = linkTo(ContactRepository.class, contact.getId())
                 .withSelfRel();
         resource.add(detail);
+        resource.setSelfRef(detail.getHref());
         if (contact.getAccount() != null) {
             resource.setAccountName(contact.getAccount().getName());
             resource.add(linkTo(AccountRepository.class,
@@ -226,6 +236,7 @@ public class ContactController {
 
     @Data
     public static class ShortContact extends ResourceSupport {
+        private String selfRef;
         private String firstName;
         private String lastName;
         private String email;
