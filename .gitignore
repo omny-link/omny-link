@@ -2,6 +2,7 @@
 .idea/
 .project
 .settings/
+.springBeans
 *.iml
 *.log
 /target/
