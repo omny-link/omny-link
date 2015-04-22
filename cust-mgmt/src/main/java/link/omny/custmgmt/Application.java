@@ -24,6 +24,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -40,6 +42,7 @@ import com.knowprocess.bpm.impl.JsonManager;
 @EntityScan({ "link.omny.custmgmt.model", "com.knowprocess.bpm",
         "com.knowprocess.decisions" })
 @EnableJpaRepositories({ "link.omny.custmgmt.repositories",
+/* "com.knowprocess.bpm.repositories", */
         "com.knowprocess.bpm.decisions.repositories",
         "com.knowprocess.decisions.repositories" })
 // @ImportResource("classpath:META-INF/spring/applicationContext-data.xml")
@@ -134,8 +137,8 @@ public class Application extends WebMvcConfigurerAdapter {
                     .hasRole("admin")
                     .anyRequest().authenticated()  
                     .and().formLogin()
-                        .loginPage("/login").failureUrl("/loginError")
-                        .defaultSuccessUrl("/").permitAll()
+                    .loginPage("/login").failureUrl("/loginError")
+                    .successHandler(getSuccessHandler()).permitAll()
                     .and().csrf().disable().httpBasic();
                     //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 //             http.requestMatcher
@@ -143,6 +146,13 @@ public class Application extends WebMvcConfigurerAdapter {
             // org.apache.catalina.filters.CorsFilter();
             // corsFilter.
             http.addFilterBefore(corsFilter, BasicAuthenticationFilter.class);
+        }
+
+        private AuthenticationSuccessHandler getSuccessHandler() {
+            SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler(
+                    "/");
+            successHandler.setTargetUrlParameter("redirect");
+            return successHandler;
         }
 
         @Override

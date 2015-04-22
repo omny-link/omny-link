@@ -1,0 +1,52 @@
+/* FONTS */ 
+
+h1, h2, h3, h4, h5, h6 {
+ font-family: 'barmenoregular';
+}
+
+/* END FONTS */
+
+/* 
+ * COLOURS 
+ *   pink:    D33E62;
+ *   blue:    00ADDC;
+ *   charcoal:333;
+ */
+
+/* START BOOTSTRAP OVERRIDES */
+
+body {
+  color: #333;
+  font-family: Roboto/*CalibriRegular*/;
+}
+h1 { 
+	color: #333;
+}
+section h2 {
+	border-bottom: solid 1px #D33E62;
+  color: #333;
+}
+section h2 .search {
+  border-color: #00ADDC;
+}
+section h2 .entity {
+  border-color: #00ADDC;
+}
+section h2 .file {
+  border-radius: 0;
+  border-color: #00ADDC;
+}
+.btn-default { 
+  color: #666666; 	
+}
+.glyphicon {
+  color: #00ADDC;
+}
+.navbar-brand img {
+  height: 53px;
+  padding-right: 20px;	
+/* END BOOTSTRAP OVERRIDES */
+
+.form label, .form input {
+  top: -25px
+}

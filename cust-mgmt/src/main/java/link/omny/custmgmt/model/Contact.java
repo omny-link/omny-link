@@ -14,7 +14,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -164,8 +163,14 @@ public class Contact implements Serializable {
     private String keyword;
 
     /**
+     * The time the contact is created.
+     * 
+     * Generally this field is managed by the application but this is not
+     * rigidly enforced as exceptions such as data migration do exist.
      */
     @Temporal(TemporalType.TIMESTAMP)
+    // Since this is SQL 92 it should be portable
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @DateTimeFormat(style = "M-")
     @JsonProperty
     private Date firstContact;
@@ -276,11 +281,6 @@ public class Contact implements Serializable {
         default:
             setFirstName(fName);
         }
-    }
-
-    @PrePersist
-    public void preInsert() {
-        firstContact = new Date();
     }
 
     @PreUpdate

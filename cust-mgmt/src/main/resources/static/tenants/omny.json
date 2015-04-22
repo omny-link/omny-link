@@ -1,0 +1,14 @@
+{ 
+  "id": "omny", 
+  "showAccount":true,
+  "partials": [
+    { "name": "omnyContactExtension", "url": "/partials/contactExtension.html"},
+    { "name": "omnyAccountExtension", "url": "/partials/accountExtension.html"}
+  ],
+  "typeaheadControls": [
+    { "selector": "#curEnquiryType", "url": "/data/omny/enquiry-types.json"},
+    { "selector": "#curMedium", "url": "/data/media.json"},
+    { "selector": "#curSource", "url": "/data/sources.json"},
+    { "selector": "#curStage", "url": "/data/stages.json"}
+  ]
+}

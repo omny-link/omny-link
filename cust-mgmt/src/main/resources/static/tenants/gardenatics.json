@@ -1,0 +1,20 @@
+{ 
+  "id": "gardenatics",
+  "showAccount":false,
+  "contactFields": [ 
+    { "label": "Partner", "key": "partner"},
+    { "label": "Appointment Date", "key": "appointmentDate"},
+    { "label": "Installation Date", "key": "installationDate"}
+  ],
+  "partials": [
+    { "name": "gardenaticsContactExtension", "url": "/partials/gardenaticsContactExtension.html"}
+  ],
+  "typeaheadControls": [
+    { "selector": "#curEnquiryType", "url": "/data/gardenatics/enquiry-types.json"},
+    { "selector": "#curMedium", "url": "/data/media.json"},
+    { "selector": "#curOwner", "url": "/data/gardenatics/owners.json"},
+    { "selector": "#curPartner", "url": "/data/gardenatics/partners.json"},
+    { "selector": "#curSource", "url": "/data/sources.json"},
+    { "selector": "#curStage", "url": "/data/stages.json"}
+  ]
+}

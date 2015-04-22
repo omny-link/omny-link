@@ -1,0 +1,15 @@
+{ 
+  "id": "n-somerset", 
+  "showAccount":true,
+  "partials": [
+    { "name": "simpleTodoFormExtension", "url": "/partials/simpleTodoFormExtension.html"},
+    { "name": "n-somersetContactExtension", "url": "/partials/contactExtension.html"},
+    { "name": "n-somersetAccountExtension", "url": "/partials/accountExtension.html"}
+  ],
+  "typeaheadControls": [
+    { "selector": "#curEnquiryType", "url": "/data/n-somerset/enquiry-types.json"},
+    { "selector": "#curMedium", "url": "/data/media.json"},
+    { "selector": "#curSource", "url": "/data/sources.json"},
+    { "selector": "#curStage", "url": "/data/n-somerset/stages.json"}
+  ]
+}
