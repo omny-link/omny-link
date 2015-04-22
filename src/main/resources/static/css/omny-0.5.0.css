@@ -11,41 +11,6 @@
   font-style: normal;
 }
 
-@font-face {
-    font-family: 'CalibriRegular';
-    src: url('fonts/calibri-webfont.eot');
-    src: url('fonts/calibri-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/calibri-webfont.woff') format('woff'),
-         url('fonts/calibri-webfont.ttf') format('truetype'),
-         url('fonts/calibri-webfont.svg#CalibriRegular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'CalibriBold';
-    src: url('fonts/calibrib-webfont.eot');
-    src: url('fonts/calibrib-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/calibrib-webfont.woff') format('woff'),
-         url('fonts/calibrib-webfont.ttf') format('truetype'),
-         url('fonts/calibrib-webfont.svg#CalibriBold') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
-    font-family: 'CalibriItalic';
-    src: url('fonts/calibrii-webfont.eot');
-    src: url('fonts/calibrii-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/calibrii-webfont.woff') format('woff'),
-         url('fonts/calibrii-webfont.ttf') format('truetype'),
-         url('fonts/calibrii-webfont.svg#CalibriItalic') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
 h1, h2, h3, h4, h5, h6 {
  font-family: 'barmenoregular';
 }
@@ -106,6 +71,11 @@ textarea:focus:invalid ~ .field-hint {
   visibility: visible ;
   line-height: 1.5em;
 }
+input:readonly,
+select:readonly,
+textarea:readonly {
+  background-color: #cbcbcb;
+}
 label.required::after {
   color: red;
   content: '*';
@@ -124,8 +94,8 @@ section h2 {
 section h2 .search {
 /*margin-bottom: 10px;*/
   margin-right: 0;
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
+  border-bottom-right-radius: 0px;
+  border-top-right-radius: 0px;
   border-color: #0e9acd;
 }
 section h2 .glyphicon-search {
@@ -134,8 +104,8 @@ section h2 .glyphicon-search {
   font-size: 20px;
   margin-left: 0px;
   position: relative;
-  left: -8px;
-  top: 1px;
+  left: -7px;
+  top: 0px;
 }
 section h2 .entity {
   /*margin-bottom: 10px;*/
@@ -161,7 +131,7 @@ section h2 .glyphicon-import {
 	font-size: 20px;
 	margin-left: 0px;
 	position: relative;
-	left: -2px;
+	left: -1px;
 	top: -3px;
 }
 .table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
@@ -203,6 +173,13 @@ th {
   color: #ccc;
   font-weight: bold;
 }
+.col-actions {
+  min-width: 101px !important;
+}
+.col-truncate {
+	width: 200px;
+  text-overflow: ellipsis;
+}
 .field-age { 
 	width:15%
 }
@@ -221,9 +198,6 @@ th {
 a.glyphicon {
   text-decoration: none;
   color: #0e9acd;
-}
-#messages { 
-	padding-top: 20px;
 }
 .navbar-brand { 
 	padding: 0;
@@ -254,8 +228,11 @@ a.glyphicon {
 .form { 
 	display: block;
 	list-style: none;
-  padding-top: 20px;
-  margin-bottom: -30px;
+  /*padding-top: 20px;
+  margin-bottom: -30px;*/
+}
+form#upload {
+	min-width: 263px;
 }
 .form li { 
 	margin: 5px 0 5px;
@@ -298,4 +275,12 @@ a.glyphicon {
 }
 .profile { 
 	font-style: italic;
+}
+#messages { 
+  position: fixed;
+  top: 45px;
+  margin-left: 25%;
+  margin-right: 25%;
+  width: 50%;
+  z-index: 10;
 }

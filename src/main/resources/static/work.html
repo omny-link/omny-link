@@ -3,14 +3,9 @@
 <head>
   <meta charset='utf-8'>
   <title>Work Management</title>
-  <!-- 
-  <link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Lato:400italic,400' rel='stylesheet' type='text/css'>
-  -->
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.4.0.css" rel="stylesheet">
+  <link href="css/omny-0.5.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 
@@ -34,7 +29,12 @@
         <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
       </form>
     </div>
-    <h1>Work Management</h1>
+    <h1>
+      <a class="nav navbar-brand" href="http://omny.link">
+        <img src="/images/omny-logo.png" alt="logo"/>
+      </a>
+      <span>Work Management</span>
+    </h1>
 
     <form id="taskList">
       <section id="taskSect">
@@ -48,10 +48,11 @@
           <thead>
             <tr>
               <th></th>
-              <th>Task</th>
+              <th class="col-truncate">Task</th>
               <th>Created</th>
               <th>Due</th>
-              <th>Description</th>
+              <th>From / Regarding</th>
+              <th class="col-truncate" style="width: 400px;">Description</th>
               <th>Assigned</th>
               <th>Actions</th>
             </tr>
@@ -80,21 +81,17 @@
 
         <form id="currentForm">
           {{#current.description}}
-            <div class="col-md-12">
-              <ul class="form edit-form">
-                <li><label class="col-md-3">Description:</label><textarea id="curDescription" rows="2" on-blur="save()" value="{{current.description}}"></textarea></li>
-              </ul>
-            </div>          
+            <p class="col-md-12">{{current.description}}</p>          
           {{/}}
           <div class="col-md-6">
             <ul class="form edit-form">
-              <li><label class="col-md-3">Due:</label><input class="nodatepicker" id="curDueDate" on-blur="save()" placeholder="dd/mm/yyyy" value="{{formatDate(current.dueDate)}}"></li>
+              <li><label class="col-md-5">Due:</label><input class="nodatepicker" id="curDueDate" on-blur="save()" placeholder="dd/mm/yyyy" value="{{formatDate(current.dueDate)}}"></li>
             </ul>
           </div>
           <div class="col-md-6">
             <ul class="form edit-form">
-              <li><label class="col-md-3">Started By:</label><input id="curInitiator" readonly value="{{current.processVariables['initiator']=='anonymousUser' ? 'Web Site' : current.processVariables['initiator']}}"></li>
-              <li><label class="col-md-3">Created:</label><input id="curCreated" readonly value="{{formatDate(current.createTime)}}"></li>
+              <li><label class="col-md-5">Started By:</label><input id="curInitiator" readonly value="{{current.processVariables['initiator']=='anonymousUser' ? 'Web Site' : current.processVariables['initiator']}}"></li>
+              <li><label class="col-md-5">Created:</label><input id="curCreated" readonly value="{{formatDate(current.createTime)}}"></li>
             </ul>
           </div>
         
@@ -108,7 +105,14 @@
                       <!-- TODO need to get this from tenant config -->
                       <a href="{{value}}" target="_newtab">{{name == undefined ? id : name}}</a>
                     {{else}}
-                      {{value}}
+                      {{# value.substring(0,1)=='{'}}
+                        <fieldset><legend class="col-md-3">{{name}}</legend>
+                        {{> (current.formKey+'FormExtension') { id: ..id, name: ..name, obj: JSON.parse(..value), keys: keys(JSON.parse(..value)) } }}
+</fieldset>
+                      {{else}}
+                        <label class="col-md-3">{{name}}</label>
+                        <input id="curCreated" {{writeable ? '' : 'readonly'}} value="{{value}}">
+                      {{/if}}
                     {{/if}}
                   </li>
                 {{/current.formProperties}}
@@ -140,18 +144,6 @@
     </form>
   </script>
 
-  <div id="ajax-loader">
-    <img class="ajax-loader" src="images/omny-ajax-loader.gif" alt="Loading..."/>   
-  </div>
-
-  <div class="powered-by">
-    <h1>
-      <span class="powered-by-text">powered by</span>
-      <img src="images/omny-greyscale-inline-logo.png" alt="powered by Omny Link"/>
-    </h1>
-  </div>
-  <p class="beta bg-warning pull-right">Beta!</p>
-
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins)
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
   -->
@@ -167,24 +159,12 @@
            http://cdn.ractivejs.org/edge/ractive.min.js
 
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
-  <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
-  -->
   <script src="js/ractive.min.js"></script>
+  -->
+  <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
   <script src="js/autoNumeric.min.js"></script>
-  <script src="js/login-0.1.0.js"></script>
-  <script src="js/workmgmt-0.1.0.js"></script>
-  <script>
-    $(document).ready(function() {
-      ractive.set('saveObserver',false);
-      var params = getSearchParameters();
-      console.log('Params: '+JSON.stringify(params));
-      ractive.set('tenant', { 
-        id: (params['tenant'] == undefined ? 'gardenatics' : params['tenant']),
-      });
-      ractive.fetch();
-      ractive.initControls();
-      ractive.set('saveObserver',true);
-    });
-  </script>
+  <script src="js/login-0.5.0.js"></script>
+  <script src="js/workmgmt-0.5.0.js"></script>
+  <script src="js/omny-0.5.0.js"></script>
 </body>
 </html>
