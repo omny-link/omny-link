@@ -10,7 +10,7 @@
   -->
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.4.0.css" rel="stylesheet">
+  <link href="css/omny-0.5.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 <body>
@@ -65,12 +65,13 @@
             <tr>
               <th></th>
               <th>Full Name</th>
-              <th>Business Name</th>
+              {{#tenant.showAccount}}<th>Business Name</th>{{/}}
               <th>Stage</th>
+              <th>Enquiry Type</th>
               <th>Owned by</th>
               <th>First Contact</th>
               <th>Last Updated</th>
-              <th>Actions</th>
+              <th class="col-actions">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -84,14 +85,17 @@
               <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
                 <td>{{i+1}}</td>
                 <td>{{firstName}} {{lastName}}</td>
-                <td>{{account == undefined ? accountName : account.name}}</td>
+                {{#tenant.showAccount}}
+                  <td>{{account == undefined ? accountName : account.name}}</td>
+                {{/}}
                 <td>{{stage}}</td>
+                <td>{{enquiryType}}</td>
                 <td>{{owner}}</td>
                 <td>{{formatDate(firstContact)}}</td>
                 <td>{{formatDate(lastUpdated)}}</td>
-                <td>
+                <td class="col-actions">
                   <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)"></span>
-                  <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
+                  <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();"></span>
                 </td>
               </tr>
             {{/}}
@@ -106,7 +110,6 @@
             <input class="col-xs-1" id="curTitle" placeholder="Title" value="{{current.title}}"/>
             <input class="col-xs-2" id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/>
             <input class="col-xs-2" id="curLastName" placeholder="Last Name" required value="{{current.lastName}}"/>
-            <input class="col-xs-2 typeahead pull-right" id="curOwner" placeholder="Owner" value="{{current.owner}}"/>
           </div>
 
           <h2 class="form create-form">&nbsp;</h2>
@@ -116,41 +119,68 @@
             <span contenteditable id="curLastName2" on-focus="editField('#curLastName2','current.lastName')" on-blur="updateField('#curLastName2','current.lastName')">{{current.lastName}}</span>
             {{#if (current.phone1 != undefined || current.phone2 != undefined) && (current.phone1 != '' || current.phone2 != '')}}
               <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1 == undefined || current.phone1 == '' ? current.phone2 : current.phone1 }}"></a>
+              {{#if (current.phone1 != undefined && current.phone1 != '')}}
+                <span>{{current.phone1}}</span>
+              {{/if}}
+              {{#if (current.phone2 != undefined && current.phone2 != '')}}
+                <span> {{current.phone2}}</span>
+              {{/if}}
             {{/if}}
             {{#if current.email != undefined && current.email != ''}}
               <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}"></a>
             {{/if}}
+            <a class="clickable glyphicon glyphicon-list-alt" href="#notes"></a>
             <span class="pull-right" style="font-style:italic">
-              <span>Owner: </span><span contenteditable id="curOwner2" on-focus="editField('#curOwner2','current.owner')" on-blur="updateField('#curOwner2','current.owner')">{{current.owner == '' ? 'Click to assign' : current.owner}}</span>
             </span>
           </h2>
 
           <div class="currentBody col-md-6">
             <ul class="form edit-form">
-              <li><label>Email:</label><input id="curEmail" required value="{{current.email}}"></li>
-              <li><label>Preferred Phone:</label><input id="curPhone1" value="{{current.phone1}}"></li>
-              <li><label>Alternate Phone:</label><input id="curPhone2" value="{{current.phone2}}"></li>
-              <li><label>Address:</label><input id="curAddress1" value="{{current.address1}}"/></li>
-              <li><label></label><input id="curAddress2" value="{{current.address2}}"/></li>
-              <li><label></label><input id="curTown" value="{{current.town}}"/></li>
-              <li><label></label><input id="curCountyOrCity" value="{{current.countyOrCity}}"/></li>
-              <li><label>Post Code:</label><input id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}"></li>
+              <li><label class="col-md-5">Email:</label><input id="curEmail" required value="{{current.email}}"></li>
+              <li><label class="col-md-5">Preferred Phone:</label><input id="curPhone1" value="{{current.phone1}}"></li>
+              <li><label class="col-md-5">Alternate Phone:</label><input id="curPhone2" value="{{current.phone2}}"></li>
+              <li><label class="col-md-5">Address:</label><input id="curAddress1" value="{{current.address1}}"/></li>
+              <li><label class="col-md-5"></label><input id="curAddress2" value="{{current.address2}}"/></li>
+              <li><label class="col-md-5"></label><input id="curTown" value="{{current.town}}"/></li>
+              <li><label class="col-md-5"></label><input id="curCountyOrCity" value="{{current.countyOrCity}}"/></li>
+              <li><label class="col-md-5">Post Code:</label><input id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}"></li>
             </ul>
           </div>
           <div class="currentBody col-md-6">
             <ul class="form edit-form">
-              <li><label>Enquiry Type:</label><input id="curEnquiryType" value="{{current.enquiryType}}"></li>
-              <li><label>Stage:</label><input class="typeahead" id="curStage" value="{{current.stage}}"></li>
-              <li><label>Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
-              <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
-              <li><label>Page Submitted:</label><input id="curPageSubmitted" value="{{customField(current, 'pageSubmitted')}}"></li>
-              <li><label>Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
-              <li><label>Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
-              <li><label>Campaign:</label><input id="curCampaign" value="{{current.campaign}}"></li>
-              <li><label>Keyword:</label><input id="curKeyword" value="{{current.keyword}}"></li>
+              <li><label class="col-md-5">Owner: </label><input id="curOwner" value="{{current.owner}}"></li>
+              <li><label class="col-md-5">Enquiry Type:</label><input id="curEnquiryType" value="{{current.enquiryType}}"></li>
+              <li><label class="col-md-5">Stage:</label><input class="typeahead" id="curStage" value="{{current.stage}}"></li>
+              <li><label class="col-md-5">Page Submitted:</label><input id="curPageSubmitted" value="{{customField(current, 'pageSubmitted')}}"></li>
+              <li><label class="col-md-5">Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
+              <li><label class="col-md-5">Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
+              <li><label class="col-md-5">Campaign:</label><input id="curCampaign" value="{{current.campaign}}"></li>
+              <li><label class="col-md-5">Keyword:</label><input id="curKeyword" value="{{current.keyword}}"></li>
             </ul>
           </div>
+
+          <div id="currentContactExtended" style="clear: both">
+            {{>(tenant.id+'ContactExtension')}}
+
+            <!-- TODO General purpose contact extension if no dedicated one available 
+            {{#if tenant.contactFields}}
+              <div class="col-md-12">
+                <h2 class="form">
+                  <span>Further Info</span>
+                </h2>
+
+                <!- - first column - ->  
+                {{>column {object: current, fields: tenant.contactFields.slice(0,Math.ceil(tenant.contactFields.length/2))} }}
+
+                <!- - second column - ->  
+                {{>column {object: current, fields: tenant.contactFields.slice(Math.ceil(tenant.contactFields.length/2),tenant.contactFields.length)} }}
+
+              </div>
+            {{/if}}-->
+          </div>
         </form>
+
+        {{#tenant.showAccount}}
         <form id="currentAccountForm">
           <div id="currentAccount" style="clear: both">
 
@@ -158,28 +188,28 @@
 
             <div class="currentBody col-md-6">
               <ul class="form edit-form">
-                <li><label class="required">Company Name:</label><input id="curAccountName" required value="{{current.account.name}}"></li>
-                <li><label>Company Number:</label><input id="curCompanyNumber" pattern="[0-9]{8}" value="{{current.account.companyNumber}}"></li>
-                <li><label>Website:</label><input id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"></li>
+                <li><label class="col-md-5 required">Company Name:</label><input id="curAccountName" required value="{{current.account.name}}"></li>
+                <li><label class="col-md-5">Company Number:</label><input id="curCompanyNumber" pattern="[0-9]{8}" value="{{current.account.companyNumber}}"></li>
+                <li><label class="col-md-5">Website:</label><input id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"></li>
               </ul> 
             </div>
             <div class="currentBody col-md-6">
               <ul class="form edit-form">
-                <li><label>Also known as:</label><input id="curAliases" value="{{current.account.aliases}}"></li>
-                <li><label>No. of employees:</label><input id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/></li>
+                <li><label class="col-md-5">Also known as:</label><input id="curAliases" value="{{current.account.aliases}}"></li>
+                <li><label class="col-md-5">No. of employees:</label><input id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/></li>
               </ul>
             </div>
           </div>
 
           <div id="currentAccountDesc" style="clear: both" class="col-md-12">
               <ul class="form edit-form">
-                <li><label>Short description:</label><textarea id="curShortDesc" cols="80" value="{{current.account.shortDesc}}"></textarea></li>
-                <li><label>Description:</label><textarea id="curDescription" cols="80" value="{{current.account.description}}"></textarea></li>
+                <li><label class="col-md-2">Short description:</label><textarea id="curShortDesc" cols="80" value="{{current.account.shortDesc}}"></textarea></li>
+                <li><label class="col-md-2">Description:</label><textarea id="curDescription" cols="80" value="{{current.account.description}}"></textarea></li>
               </ul>
           </div>
 
           <div id="currentAccountExtended" style="clear: both">
-            {{>(tenant.name+'AccountExtension')}}
+            {{>(tenant.id+'AccountExtension')}}
 
             <!-- TODO General purpose account extension if no dedicated one available 
             {{#if tenant.accountFields}}
@@ -199,7 +229,9 @@
           </div>
 
         </form>
+        {{/}}
         
+        {{#current.activities}}
         <div style="clear: both"></div>
 
         <form id="activityForm">
@@ -218,10 +250,13 @@
           </tbody></table>
          </div>
         </form>
+        {{/}}
         
+    	<div style="clear: both"></div>
+
         <form id="noteForm">
          <div id="notesSect" style="clear: both">
-          <h2>
+          <h2 id="notes">
             <span>Notes</span>
             <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
           </h2>
@@ -271,36 +306,17 @@
 
       </section>
 
-    <!-- PARTIALS FOLLOW AS CANNOT CURRENTLY USE SEPERATE ELEMENT TODO --> 
-
-    <!-- {{>omnyAccountExtension}} -->
-
-    <!-- {{/omnyAccountExtension}} -->
-
     <!-- {{>column}} -->
       <div class="currentBody col-md-6">
         <ul class="form edit-form">
           {{#each fields:j}}
-            <li><label>{{label}}:</label><input id="curUnknown" value="{{object.customFields[key]}}"></li>
+            <li><label class="col-md-5">{{label}}:</label><input id="curUnknown" value="{{object.customFields[key]}}"></li>
           {{/each}}
         </ul>
       </div>
     <!-- {{/column}} -->
-
   </script>
 
-  <div id="ajax-loader">
-    <img class="ajax-loader" src="images/omny-ajax-loader.gif" alt="Loading..."/>   
-  </div>
-
-  <div class="powered-by">
-	  <h1>
-	    <span class="powered-by-text">powered by</span>
-	    <img src="images/omny-greyscale-inline-logo.png" alt="powered by Omny Link"/>
-	  </h1>
-  </div>
-  <p class="beta bg-warning pull-right">Beta!</p>
-  
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="js/jquery-1.11.0.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -313,33 +329,13 @@
            http://cdn.ractivejs.org/edge/ractive.min.js
 
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
-  -->
   <script src="js/ractive.min.js"></script>
+  -->
+  <script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
   <script src="js/autoNumeric.min.js"></script>
-  <script src="js/login-0.1.0.js"></script>
-  <script src="js/cust-mgmt-0.4.0.js"></script>
-  <script>
-    $(document).ready(function() {
-      ractive.set('tenant', { 
-        id: 'omny', 
-        typeaheadControls: [
-          { selector: '#curEnquiryType', url: '/data/omny/enquiry-types.json'},
-          { selector: '#curMedium', url: '/data/media.json'},
-          { selector: '#curSource', url: '/data/sources.json'},
-          { selector: '#curStage', url: '/data/stages.json'}
-        ]
-      });
-      $.ajaxSetup({
-        headers: {'X-Tenant': ractive.get('tenant.id')}
-      });
-      ractive.fetch();
-      ractive.initAutoComplete();
-      ractive.initAutoNumeric();
-      var s = getSearchParameters()['s'];
-      if (s!=undefined) ractive.set('searchTerm',s);
-      ractive.set('saveObserver', true);
-    });
-  </script>
-
+  <script src="js/login-0.5.0.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/cust-mgmt-0.5.0.js"></script>
+  <script src="js/omny-0.5.0.js"></script>
 </body>
 </html>

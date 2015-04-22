@@ -1,3 +1,13 @@
+  -- Finding duplicates
+select first_name, last_name, count(1) from contact group by first_name, last_name having count(first_name) >1;
+  
+  -- duplicate contacts without notes 
+select first_name, last_name, count(1) from contact group by first_name, last_name having count(first_name) >1;
+
+  
+
+-- migration 
+
 select value from custom_contact_field where name ='accountName';
 
   select a.id, a.name, ccf.name

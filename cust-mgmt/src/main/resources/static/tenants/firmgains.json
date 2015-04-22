@@ -1,0 +1,53 @@
+{ 
+  "id": "firmgains", 
+  "showAccount":true,
+  "accountFields": [ 
+    { "label": "EBITDA", "key": "ebitda"},
+    { "label": "Surplus", "key": "surplus"},
+    { "label": "Depreciation", "key": "depreciationAmortisation"},
+    { "label": "Operating Profit", "key": "operatingProfit"},
+    { "label": "Adjustments", "key": "adjustments"},
+    { "label": "Borrowing", "key": "borrowing"},
+    { "label": "Low Quote", "key": "lowQuote"},
+    { "label": "Medium Quote", "key": "mediumQuote"},
+    { "label": "High Quote", "key": "highQuote"},
+    { "label": "Asking Price", "key": "askingPrice"},
+    { "label": "Share of Business", "key": "shareOfBusiness"},
+    { "label": "Property Info", "key": "propertyInfo"},
+    { "label": "Reason for Selling", "key": "reasonForSelling"},
+    { "label": "Potential Purchasers", "key": "potentialPurchasers"},
+    { "label": "Already Contacted", "key": "alreadyContacted"},
+    { "label": "Sub-Sector", "key": "subSector"},
+    { "label": "Assets", "key": "assets"},
+    { "label": "Preferred Timing", "key": "preferredTiming"},
+    { "label": "Page Submitted", "key": "pageSubmitted"},          
+    { "label": "Account Type", "key": "accountType"},
+    { "label": "Sector", "key": "sector"},
+    { "label": "Stage in Sale", "key": "saleStage"},
+    { "label": "Region", "key": "region"},
+    { "label": "Current Financial Year", "key": "currentFinancialYear"},
+    { "label": "Current Turnover", "key": "currentTurnover"},
+    { "label": "Current Profit", "key": "currentProfit"},
+    { "label": "Last Financial Year", "key": "lastFinancialYear"},
+    { "label": "Last Turnover", "key": "lastTurnover"},
+    { "label": "Last Profit", "key": "lastProfit"},
+    { "label": "Previous Financial Year", "key": "previousFinancialYear"},
+    { "label": "Previous Turnover", "key": "previousTurnover"},
+    { "label": "Previous Profit", "key": "previousProfit"}
+  ],        
+  "partials": [
+    { "name": "firmgainsAccountExtension", "url": "/partials/firmgainsAccountExtension.html"}
+  ],
+  "typeaheadControls": [
+    { "selector": "#curMedium", "url": "/data/media.json"},
+    { "selector": "#curSource", "url": "/data/sources.json"},
+    { "selector": "#curAccountType", "url": "/data/firmgains/account-types.json"},
+    { "selector": "#curEnquiryType", "url": "/data/firmgains/enquiry-types.json"},
+    { "selector": "#curOwner", "url": "/data/firmgains/owners.json"},
+    { "selector": "#curPartnersContacted", "url": "/data/firmgains/partners.json"},
+    { "selector": "#curRegion", "url": "/data/firmgains/regions.json"},
+    { "selector": "#curSector", "url": "/data/firmgains/sectors.json"},
+    { "selector": "#curStage", "url": "/data/firmgains/stages.json"},
+    { "selector": "#curPreferredTiming", "url": "/data/firmgains/timings.json"}
+  ]
+}
