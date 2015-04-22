@@ -3,14 +3,9 @@
 <head>
   <meta charset='utf-8'>
   <title>User Management</title>
-  <!-- 
-  <link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Lato:400italic,400' rel='stylesheet' type='text/css'>
-  -->
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.4.0.css" rel="stylesheet">
+  <link href="css/omny-0.5.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 
@@ -33,7 +28,12 @@
         <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
       </form>
     </div>
-    <h1>User Management</h1>
+    <h1>
+      <a class="nav navbar-brand" href="http://omny.link">
+        <img src="/images/omny-logo.png" alt="logo"/>
+      </a>
+      <span>User Management</span>
+    </h1>
 
     <form id="userList">
       <section id="userSect">
@@ -98,6 +98,10 @@
             <label class="required col-md-3">Preferred Contact:</label><input class="no-update-field typeahead" id="curCommsPreference" required value="{{current.commsPreference}}">
             <span><i>No update allowed</i></span>
           </li>
+          <li>
+            <label class="required col-md-3">Tenant:</label><input class="no-update-field" id="curTenant" required type="text" value="{{current.tenant}}">
+            <span><i>No update allowed</i></span>
+          </li>
           <li class="create-field">
             <label class="required col-md-3">Password:</label><input id="curPassword" on-blur="save()" required value="{{current.password}}">
           </li>
@@ -133,22 +137,8 @@
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
   -->
   <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
-  <script src="js/login-0.1.0.js"></script>
-  <script src="js/usermgmt-0.1.0.js"></script>
-  
-  <script>
-    $(document).ready(function() {
-      ractive.set('saveObserver', false);
-      ractive.set('tenant', { 
-        id: 'omny',
-        typeaheadControls: [
-          { selector: '#curCommsPreference', url: '/data/comms-preference.json'}
-        ]
-      });
-      ractive.fetch();
-      ractive.initControls();
-      ractive.set('saveObserver', true);
-    });
-  </script>
+  <script src="js/login-0.5.0.js"></script>
+  <script src="js/usermgmt-0.5.0.js"></script>
+  <script src="js/omny-0.5.0.js"></script>
 </body>
 </html>

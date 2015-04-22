@@ -2,7 +2,7 @@ package com.knowprocess.bpm.model;
 
 public enum UserInfoKeys {
 
-    PHONE, COMMS_PREFERENCE;
+    COMMS_PREFERENCE, PHONE, TENANT;
 
     public String toString() {
         return name().toLowerCase();
