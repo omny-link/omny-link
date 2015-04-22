@@ -59,6 +59,8 @@ public class UserRecord implements Principal, User, UserDetails {
 
     private String commsPreference;
 
+    private String tenant;
+
     private String userPicture;
 
     /**
@@ -179,6 +181,9 @@ public class UserRecord implements Principal, User, UserDetails {
             } else if (UserInfoKeys.COMMS_PREFERENCE.toString().equals(key)) {
                 wrappedUser.setCommsPreference(svc.getUserInfo(username,
                         UserInfoKeys.COMMS_PREFERENCE.toString()));
+            } else if (UserInfoKeys.TENANT.toString().equals(key)) {
+                wrappedUser.setTenant(svc.getUserInfo(username,
+                        UserInfoKeys.TENANT.toString()));
             } else {
                 wrappedUser.getInfo().add(
                         new UserInfo(wrappedUser, key, svc.getUserInfo(

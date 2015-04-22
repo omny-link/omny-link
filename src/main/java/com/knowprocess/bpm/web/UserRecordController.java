@@ -157,6 +157,11 @@ public class UserRecordController {
             idSvc.setUserInfo(id, UserInfoKeys.COMMS_PREFERENCE.toString(),
                     userRecord.getCommsPreference());
         }
+        if (userRecord.getTenant() != null
+                && userRecord.getTenant().trim().length() > 0) {
+            idSvc.setUserInfo(id, UserInfoKeys.TENANT.toString(),
+                    userRecord.getTenant());
+        }
         return new UserRecord(user);
     }
 

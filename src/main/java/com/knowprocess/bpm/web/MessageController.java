@@ -11,6 +11,7 @@ import javax.script.ScriptException;
 import javax.validation.ConstraintViolationException;
 
 import org.activiti.engine.ActivitiException;
+import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -117,10 +118,7 @@ public class MessageController {
             LOGGER.debug("msg: " + msg);
             return new ResponseEntity(msg, headers, HttpStatus.OK);
         } catch (ActivitiException e) {
-            ReportableException e2 = new ReportableException(e.getClass()
-                    .getName() + ":" + e.getMessage(), e);
-            return new ResponseEntity(e2.toJson(), headers,
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            throw e;
         } catch (Exception e) {
             ReportableException e2 = new ReportableException(e.getClass()
                     .getName() + ":" + e.getMessage(), e);
@@ -167,11 +165,10 @@ public class MessageController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
 
+        String bizKey = bizDesc == null ? msgId + " - "
+                + isoFormatter.format(new Date()) : bizDesc;
         try {
             vars.put("tenantId", tenantId);
-            String bizKey = bizDesc == null 
-                    ? msgId + " - " + isoFormatter.format(new Date())
-                    : bizDesc;
             String modifiedMsgId = getMessageVarName(msgId);
             vars.put("messageName", modifiedMsgId);
             if (messageRegistry.canDeserialise(modifiedMsgId, jsonBody)) {
@@ -208,11 +205,7 @@ public class MessageController {
                 }
                 headers.add("Location", path);
             } else {
-                RequestMapping a = ProcessInstanceController.class
-                        .getAnnotation(RequestMapping.class);
-                headers.add("Location",
-                        uriBuilder.path(a.value()[0] + "/" + instance.getId())
-                                .build().toUriString());
+                addLocationHeader(uriBuilder, headers, instance);
             }
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
         } catch (CannotCreateTransactionException e) {
@@ -231,6 +224,23 @@ public class MessageController {
                 LOGGER.error(e.getMessage(), e);
                 return new ResponseEntity<String>(e2.toJson(), headers,
                         HttpStatus.SERVICE_UNAVAILABLE);
+            }
+        } catch (ActivitiObjectNotFoundException e) {
+            if (e.getMessage().contains("no subscription to message with name")) {
+                LOGGER.debug("Detected a missing process exception: "
+                        + e.getMessage());
+                ProcessInstance instance = processEngine.getRuntimeService()
+                        .startProcessInstanceByKeyAndTenantId("SimpleTodo",
+                                bizKey, vars, tenantId);
+                addLocationHeader(uriBuilder, headers, instance);
+                LOGGER.debug(String.format(
+                        "Created an instance of %1$s to handle it, id: %2$s",
+                        "SimpleTodo", instance.getId()));
+                return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+            } else {
+                LOGGER.error("The ObjectNotFound below is NOT a missing process exception");
+                LOGGER.error(e.getMessage(), e);
+                throw e;
             }
         } catch (ActivitiException e) {
             LOGGER.error(e.getMessage(), e);
@@ -256,15 +266,18 @@ public class MessageController {
                 return new ResponseEntity<String>(e2.toJson(), headers,
                         HttpStatus.SERVICE_UNAVAILABLE);
             }
-        } catch (RuntimeException e) {
-            LOGGER.error(e.getMessage(), e);
-            ReportableException e2 = new ReportableException(e.getClass()
-                    .getName() + ":" + e.getMessage(), e);
-            return new ResponseEntity<String>(e2.toJson(), headers,
-                    HttpStatus.BAD_REQUEST);
         } finally {
             Authentication.setAuthenticatedUserId(null);
         }
+    }
+
+    private void addLocationHeader(final UriComponentsBuilder uriBuilder,
+            HttpHeaders headers, ProcessInstance instance) {
+        RequestMapping a = ProcessInstanceController.class
+                .getAnnotation(RequestMapping.class);
+        headers.add("Location",
+                uriBuilder.path(a.value()[0] + "/" + instance.getId()).build()
+                        .toUriString());
     }
 
     private String getMessageVarName(String msgId) {
