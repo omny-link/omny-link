@@ -26,14 +26,15 @@ public class DecisionModelController {
     private DecisionModelRepository repo;
 
     /**
-     * Return just the contacts for a specific tenant.
+     * Return just the decision models for a specific tenant.
      * 
-     * @return contacts for that tenant.
+     * @param tenantId
+     *            .
+     * @return decision models for tenantId.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public @ResponseBody Iterable<DecisionModel> listForTenant(
             @PathVariable("tenantId") String tenantId) {
-
         LOGGER.info(String.format("List decision models for tenant %1$s",
                 tenantId));
 
@@ -45,10 +46,22 @@ public class DecisionModelController {
         return list;
     }
 
-    @RequestMapping(value = "/{decisionName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{decisionName}", method = RequestMethod.GET, produces = { "application/json" })
     public @ResponseBody DecisionModel getModelForTenant(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("decisionName") String decisionName) {
+        LOGGER.info(String.format(
+                "Seeking decision model %1$s for tenant %2$s", decisionName,
+                tenantId));
+
+        DecisionModel model = repo.findByName(tenantId, decisionName);
+        LOGGER.debug(String.format("... result: %1$s", model));
+
+        if (model != null) {
+            LOGGER.info("... found in repository");
+            return model;
+        }
+
         switch (tenantId) {
         case "firmgains":
             switch (decisionName) {
@@ -59,10 +72,17 @@ public class DecisionModelController {
             default:
                 return getNewDecisionModel();
             }
-        case "examples":
+        case "omny":
             switch (decisionName) {
             case "riskRating":
                 return getRiskRatingModel();
+            default:
+                return getNewDecisionModel();
+            }
+        case "trakeo":
+            switch (decisionName) {
+            case "sustainabilityRanking":
+                return getSustainabilityRankingModel();
             default:
                 return getNewDecisionModel();
             }
@@ -235,4 +255,25 @@ public class DecisionModelController {
         return model;
     }
 
+    private DecisionModel getSustainabilityRankingModel() {
+        DecisionModel model = new DecisionModel();
+        model.setName("Sustainability Ranking");
+
+        List<DecisionExpression> conditions = new ArrayList<DecisionExpression>();
+        conditions.add(new DecisionExpression("Applicant Age", new String[] {
+                "<25", "<25", "[25..60]", ">60", ">60" }));
+        conditions.add(new DecisionExpression("Medical History", new String[] {
+                "good", "bad", "-", "good", "bad" }));
+        model.setConditions(conditions);
+
+        List<DecisionExpression> conclusions = new ArrayList<DecisionExpression>();
+        conclusions.add(new DecisionExpression("Low", new String[] { "X", "-",
+                "-", "-", "-" }));
+        conclusions.add(new DecisionExpression("Medium", new String[] { "-",
+                "X", "X", "X", "-" }));
+        conclusions.add(new DecisionExpression("High", new String[] { "-", "-",
+                "-", "-", "X" }));
+        model.setConclusions(conclusions);
+        return model;
+    }
 }

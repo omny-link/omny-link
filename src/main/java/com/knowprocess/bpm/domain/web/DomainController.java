@@ -3,6 +3,9 @@ package com.knowprocess.bpm.domain.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,18 +16,42 @@ import com.knowprocess.bpm.domain.model.CustomEntityField;
 import com.knowprocess.bpm.domain.model.DomainEntity;
 import com.knowprocess.bpm.domain.model.DomainModel;
 import com.knowprocess.bpm.domain.model.EntityField;
+import com.knowprocess.bpm.domain.repositories.DomainModelRepository;
 
 @Controller
 @RequestMapping(value = "/{tenantId}/domain")
 public class DomainController {
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(DomainController.class);
+
+    @Autowired
+    private DomainModelRepository repo;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public @ResponseBody DomainModel getModelForTenant(
             @PathVariable("tenantId") String tenantId) {
+        LOGGER.info(String.format("Seeking domain model for tenant %1$s",
+                tenantId));
+
+        DomainModel model = repo.findByName(tenantId);
+        LOGGER.debug(String.format("... result: %1$s", model));
+
+        if (model != null) {
+            LOGGER.info("... found in repository");
+            return model;
+        } else {
+            LOGGER.info("... not found, reliant on defaults");
+        }
+
         switch (tenantId) {
         case "firmgains":
+            LOGGER.info("... returning firmgains");
             return getFirmGainsDomain();
+        case "trakeo":
+            LOGGER.info("... returning trakeo");
+            return getTrakeoDomain();
         default:
+            LOGGER.info("... returning vanilla default");
             return getDefaultDomain();
         }
     }
@@ -264,13 +291,102 @@ public class DomainController {
                 "number"));
         fields.add(new CustomEntityField("askingPrice", "Asking price", "",
                 false, "number"));
-        // fields.add(new CustomEntityField());
-        // fields.add(new CustomEntityField());
-        // fields.add(new CustomEntityField());
-        // fields.add(new CustomEntityField());
-        // fields.add(new CustomEntityField());
 
         return model;
     }
 
+    private DomainModel getTrakeoDomain() {
+        DomainModel model = getDefaultDomain();
+
+        // Sustainability
+        DomainEntity entity = new DomainEntity();
+        entity.setName("Scorecard");
+        entity.setDescription("A Scorecard holds various KPIs used to produce a balanced scorecard of an Account's sustainability. Each Account has exactly one Scorecard");
+        entity.setImageUrl("images/domain/user-context.png");
+        List<EntityField> fields = new ArrayList<EntityField>();
+
+        fields.add(new EntityField("disclosureDate", "Disclosure Date",
+                "Date of last disclosure", false, "date"));
+        fields.add(new EntityField("score", "Score",
+                "Sustainability Score", false, "number"));
+        fields.add(new EntityField("eClasses", "EClasses",
+                "EClasses supplied", false, "text"));
+        fields.add(new EntityField(
+                "co2Intensity",
+                "CO2 Intensity",
+                "The ratio of carbon footprint to mometory value of goods supplied",
+                false, "number"));
+        fields.add(new EntityField("certifications", "Certifications",
+                "Relevant certifications held", false, "text"));
+        fields.add(new EntityField("carbonAccounting", "Carbon Accounting",
+                "Degree of Carbon Accounting undertaken",
+                false, "text"));
+        fields.add(new EntityField("supplierMemberOfCdp",
+                "Supplier Member of CDP?",
+                "Is the organisation a Supplier Member of CDP?", false,
+                "boolean"));
+        fields.add(new EntityField("signatoryToCdp", "Signatory To CDP?",
+                "Is the organisation a signatory to CDP?", false, "boolean"));
+        fields.add(new EntityField("sustainabilityPolicy",
+                "Sustainability Policy in place?",
+                "Is there a written Sustainability Policy for the organisation?",
+                false, "boolean"));
+        fields.add(new EntityField("useSpotContracts",
+                "Use of spot contracts?",
+                "Does the organisation make use of spot contracts?", false,
+                "boolean"));
+        fields.add(new EntityField("useSubcontractors",
+                "Use of subcontractors?",
+                "Does the organisation make use of sub-contractors?", false,
+                "boolean"));
+        fields.add(new EntityField("tradeBodiesSubscribedTo",
+                "Trade Bodies Subscribed To",
+                "Please list any trade bodies subscribed to", false, "text"));
+        fields.add(new EntityField("namedPersonResponsibleForEthics",
+                "Named Person Responsible for Ethics?",
+                "Is there a named person responsible for ethics?", false,
+                "boolean"));
+        fields.add(new EntityField("staffEthicalDevelopment",
+                "Staff Ethical Development Policy?",
+                "Is there a staff ethical development policy in place?", false,
+                "boolean"));
+        fields.add(new EntityField("upstreamCodeOfConductAudit",
+                "Upstream Code of Conduct Audited?",
+                "Is there a code of conduct for upstream suppliers and is it audited?",
+                false, "boolean"));
+        fields.add(new EntityField("operatingCountries", "Operating Countries",
+                "List of countries the organisation has operations in", false,
+                "text"));
+        fields.add(new EntityField(
+                "localBusiness",
+                "'Local' Operations",
+                "The amount of business operations carried out locally to the Hub partner",
+                false, "text"));
+        fields.add(new EntityField(
+                "primaryMaterial",
+                "Primary Material",
+                "The primary input material (or materials if more than one product supplied)",
+                false, "text"));
+        fields.add(new EntityField("secondaryMaterial", "Secondary Material",
+                "Other signifiant input materials", false, "text"));
+        fields.add(new EntityField(
+                "watchListMaterials",
+                "Watch List Materials",
+                "Does the organisation use any amount of the Watch List materials? If so, specify",
+                false, "text"));
+        fields.add(new EntityField(
+                "convictions",
+                "Convictions under Environmental Legislation",
+                "Does the organisation have any actual convictions or pending actions under environmental legislation? If so, specify",
+                false, "text"));
+        fields.add(new EntityField(
+                "airQuality",
+                "Air Quality Awareness",
+                "What level of awareness exists of air quality impacts of the organisation",
+                false, "text"));
+        entity.setFields(fields);
+        model.getEntities().add(2, entity);
+
+        return model;
+    }
 }

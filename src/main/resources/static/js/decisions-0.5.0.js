@@ -79,7 +79,7 @@ var ractive = new AuthenticatedRactive({
   fetch: function () {
     console.log('fetch...');
     ractive.set('saveObserver', false);
-    $.getJSON('/'+ractive.get('tenant.id')+'/decision-models/'+ractive.get('tenant.decisionName'),  function( data ) {
+    $.getJSON('/'+ractive.get('tenant.id')+'/decision-models/'+ractive.get('decisionName'),  function( data ) {
       console.log('loaded decision...');
       ractive.set('decision', data);
       ractive.set('saveObserver',true);
