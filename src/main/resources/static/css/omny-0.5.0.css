@@ -168,11 +168,6 @@ th {
 .btn {
   min-width: 80px;
 }
-.btn-default { 
-  background-color:#ff6c06;
-  color: #ccc;
-  font-weight: bold;
-}
 .col-actions {
   min-width: 101px !important;
 }

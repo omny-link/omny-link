@@ -48,7 +48,8 @@ import com.knowprocess.bpm.impl.JsonManager;
 @EnableAutoConfiguration
 @EntityScan({ "com.knowprocess.bpm", "com.knowprocess.decisions" })
 @EnableJpaRepositories({ "com.knowprocess.decisions.repositories",
-        "com.knowprocess.bpm.decisions.repositories" })
+        "com.knowprocess.bpm.decisions.repositories",
+        "com.knowprocess.bpm.domain.repositories" })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Autowired

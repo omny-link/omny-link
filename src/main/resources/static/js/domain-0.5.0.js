@@ -67,33 +67,6 @@ var ractive = new AuthenticatedRactive({
       $('.entity.active').fadeIn();
     });
   },
-  handleError: function(jqXHR, textStatus, errorThrown) {
-    switch (jqXHR.status) {
-    case 401:
-    case 403:
-      ractive.showError("Session expired, please login again");
-      window.location.href='/login';
-      break;
-    default:
-      ractive.showError("Bother! Something has gone wrong: "+textStatus+':'+errorThrown);
-    }
-  },
-
-  initAutoComplete: function() {
-    console.log('initAutoComplete');
-    $.each(ractive.get('tenant.typeaheadControls'), function(i,d) {
-      console.log('binding ' +d.url+' to typeahead control: '+d.selector);
-      $.get(d.url, function(data){
-        $(d.selector).typeahead({ minLength:0,source:data });
-        $(d.selector).on("click", function (ev) {
-          newEv = $.Event("keydown");
-          newEv.keyCode = newEv.which = 40;
-          $(ev.target).trigger(newEv);
-          return true;
-       });
-      },'json');
-    });
-  },
   nextEntity: function() {
     console.log('nextEntity');
     $('.entity.active').fadeOut().removeClass('active');
@@ -116,81 +89,35 @@ var ractive = new AuthenticatedRactive({
     ractive.set('entityIdx', ractive.get('entityIdx')-1);
     $('#entity'+ractive.get('entityIdx')+'Sect').fadeIn().addClass('active');
   },
-  save: function() { 
-    setTimeout(1000, function() {
-      showMessage('All entities saved');
-    })
-  },
-  /*
   save: function () {
-    console.log('save '+JSON.stringify(ractive.get('current'))+' ...');
-    ractive.set('saveObserver',false);
-    var id = ractive.get('current')._links === undefined ? undefined : (
-        ractive.get('current')._links.self.href.indexOf('?') == -1 ? ractive.get('current')._links.self.href : ractive.get('current')._links.self.href.substr(0,ractive.get('current')._links.self.href.indexOf('?')-1)
-    );
-    ractive.set('saveObserver',true);
+    console.log('save '+JSON.stringify(domain)+' ...');
 
-    if (document.getElementById('currentForm').checkValidity()) {
-      // cannot save contact and account in one (grrhh), this will clone...
-      var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
-      console.log('account: '+JSON.stringify(tmp.account));
-      tmp.notes = undefined;
-      tmp.documents = undefined;
-      if (id != undefined && tmp.account != undefined && Object.keys(tmp.account).length > 0 && tmp.account.id != undefined) {
-        tmp.account = id.substring(0,id.indexOf('/',8))+'/accounts/'+tmp.account.id;
-      } else {
-        tmp.account = null;
-      }
-      tmp.tenantId = ractive.get('tenant.id');
-      $.ajax({
-        url: id === undefined ? '/contacts' : id,
-        type: id === undefined ? 'POST' : 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify(tmp),
-        success: completeHandler = function(data, textStatus, jqXHR) {
-          console.log('data: '+ data);
-          var location = jqXHR.getResponseHeader('Location');
-          if (location != undefined) ractive.set('current._links.self.href',location);
-          if (jqXHR.status == 201) ractive.get('contacts').push(ractive.get('current'));
-          if (jqXHR.status == 204) ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
-          ractive.showMessage('Contact saved');
-        },
-        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-          ractive.handleError(jqXHR,textStatus,errorThrown);
+//      var id = domain.id;
+    var id = domain._links === undefined ? undefined : (
+        domain._links.self.href.indexOf('?') == -1 ? domain._links.self.href : domain._links.self.href.substr(0,domain._links.self.href.indexOf('?')-1)
+    );
+    console.log('saving as id: '+id);
+    domain.tenantId = ractive.get('tenant.id');
+    $.ajax({
+      url: id == undefined ? '/domain-models/' : id,
+      type: id == undefined ? 'POST' : 'PUT',
+      contentType: 'application/json',
+      data: JSON.stringify(domain),
+      success: completeHandler = function(data, textStatus, jqXHR) {
+        console.log('data: '+ data);
+        var location = jqXHR.getResponseHeader('Location');
+        if (location != undefined) { 
+          ractive.set('domain._links.self.href',location);
+//            ractive.set('domain.id',location.substring());
         }
-      });
-    } else {
-      console.warn('Cannot save yet as contact is invalid');
-      $('#currentForm :invalid').addClass('field-error');
-      ractive.showMessage('Cannot save yet as contact is incomplete');
-    }
-  },*/
-  showActivityIndicator: function(msg, addClass) {
-    document.body.style.cursor='progress';
-    this.showMessage(msg, addClass);
-  },
-  showError: function(msg) {
-    this.showMessage(msg, 'bg-danger text-danger');
-  },
-  showFormError: function(formId, msg) {
-    this.showError(msg);
-    var selector = formId==undefined || formId=='' ? ':invalid' : '#'+formId+' :invalid';
-    $(selector).addClass('field-error');
-    $(selector)[0].focus();
-  },
-  showMessage: function(msg, additionalClass) {
-    if (additionalClass == undefined) additionalClass = 'bg-info text-info';
-    if (msg === undefined) msg = 'Working...';
-    $('#messages p').empty().append(msg).removeClass().addClass(additionalClass).show();
-//    document.getElementById('messages').scrollIntoView();
-    if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
-      $('#messages p').fadeOut();
-    }, EASING_DURATION*10);
-  },
-  toggleResults: function(ctrl) {
-    console.log('toggleResults: '+ctrl);
-    $('#contactsTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
-    $('#contactsTable').slideToggle();
+//          if (jqXHR.status == 201) ractive.get('deciosn').push(ractive.get('current'));
+//          if (jqXHR.status == 204) ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
+        ractive.showMessage('Saved');
+      },
+      error: errorHandler = function(jqXHR, textStatus, errorThrown) {
+        ractive.handleError(jqXHR,textStatus,errorThrown);
+      }
+    });
   },
   /**
    * Inverse of editField.
@@ -200,29 +127,6 @@ var ractive = new AuthenticatedRactive({
     console.log('updateField '+path+' to '+tmp);
     ractive.set(path,tmp);
     $(selector).css('border-width','0px').css('padding','0px');
-  },
-  upload: function (formId) {
-    console.log('upload:'+formId);
-    ractive.showMessage('Uploading ...');
-
-    var formElement = document.getElementById(formId);
-    var formData = new FormData(formElement);
-    var entity = $('#'+formId+' .entity').val();
-    return $.ajax({
-        type: 'POST',
-        url: '/'+ractive.get('tenant.id')+'/'+entity+'/upload',
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function(response) {
-  //        console.log('successfully uploaded data');
-          ractive.showMessage('Successfully uploaded data');
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-          ractive.handleError(jqXHR, textStatus, errorThrown);
-        }
-      });
   }
 });
 
