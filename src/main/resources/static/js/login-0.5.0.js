@@ -40,11 +40,11 @@ var AuthenticatedRactive = Ractive.extend({
       $( document ).ajaxStop(function() {
         $( "#ajax-loader" ).hide();
       });
-      // powered by 
-      $('body').append('<div class="powered-by"><h1><span class="powered-by-text">powered by</span><img src="images/omny-greyscale-inline-logo.png" alt="powered by Omny Link"/></h1></div><p class="beta bg-warning pull-right">Beta!</p>');
+      if (ractive.get('tenant').showPoweredBy!=false) {
+        // powered by 
+        $('body').append('<div class="powered-by"><h1><span class="powered-by-text">powered by</span><img src="images/omny-greyscale-inline-logo.png" alt="powered by Omny Link"/></h1></div><p class="beta bg-warning pull-right">Beta!</p>');
+      }
       // tenant partial templates
-      console.debug('tenant has partials? '+tenant.partials);
-      console.debug('tenant has partials? '+ractive.get('tenant').partials);
       $.each(ractive.get('tenant').partials, function(i,d) {
         $.get(d.url, function(response){
           //console.log('response: '+response)
