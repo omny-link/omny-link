@@ -1,0 +1,56 @@
+/* FONTS */ 
+
+h1, h2, h3, h4, h5, h6 {
+ font-family: 'barmenoregular';
+}
+
+/* END FONTS */
+
+/* 
+ * COLOURS 
+ *   .primary-blue    #0060ad; rgb(0,96,173)
+ *   .secondary-blue  #00b4ed; rgb (0,180,237) 
+ *   .primary-ochre   #ec9300;
+ *   .secondary-ochre #f8bc00;
+ *   .tertiary-ochre  #fadd88;
+ *   .primary-brown   #817865;    
+ */
+
+/* START BOOTSTRAP OVERRIDES */
+
+body {
+  color: #0060ad;
+  font-family: Roboto/*CalibriRegular*/;
+}
+h1 { 
+	color: #0060ad;
+}
+section h2 {
+	border-bottom: solid 1px #817865;
+  color: #0060ad;
+}
+section h2 .search {
+  border-color: #ec9300;
+}
+section h2 .entity {
+  border-color: #ec9300;
+}
+section h2 .file {
+  border-radius: 0;
+  border-color: #ec9300;
+}
+.btn-default { 
+  color: #666666;
+}
+a.glyphicon,
+.glyphicon {
+  color: #ec9300;
+}
+.navbar-brand img {
+  height: 53px;
+  padding-right: 20px;	
+/* END BOOTSTRAP OVERRIDES */
+
+.form label, .form input {
+  top: -25px
+}
