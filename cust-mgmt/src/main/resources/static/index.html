@@ -28,7 +28,7 @@
     <div class="profile pull-right">
       <form name="logoutForm" action="/logout" method="POST">
         <span>Logged in as: {{username}}</span>
-        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
+        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()" title="Logout"></span>
         <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
       </form>
     </div>
@@ -41,14 +41,14 @@
     
       <section id="contactsSect">
         <h2>
-          <span id="contactsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()"></span>
+          <span id="contactsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the contact table"></span>
           <span>Contacts</span>
-          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()"></span>
-          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></span>
+          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new contact"></span>
+          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></span>
           <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+          <span class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></span>
           <form id="upload" class="admin pull-right upload">
-            <span class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')"></span>
+            <span class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')" title="Import data from file"></span>
             <input type="file" class="form-control file pull-right" name="file" placeholder="Select file">
             <select class="form-control entity pull-right" name="entity">
               <option value="contacts">Contacts</option>
@@ -92,8 +92,8 @@
                 <td>{{formatDate(firstContact)}}</td>
                 <td>{{formatDate(lastUpdated)}}</td>
                 <td class="col-actions">
-                  <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)"></span>
-                  <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();"></span>
+                  <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></span>
+                  <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this contact"></span>
                 </td>
               </tr>
             {{/}}
@@ -116,7 +116,7 @@
             <span contenteditable id="curFirstName2" on-focus="editField('#curFirstName2','current.firstName')" on-blur="updateField('#curFirstName2','current.firstName')">{{current.firstName}}</span>
             <span contenteditable id="curLastName2" on-focus="editField('#curLastName2','current.lastName')" on-blur="updateField('#curLastName2','current.lastName')">{{current.lastName}}</span>
             {{#if (current.phone1 != undefined || current.phone2 != undefined) && (current.phone1 != '' || current.phone2 != '')}}
-              <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1 == undefined || current.phone1 == '' ? current.phone2 : current.phone1 }}"></a>
+              <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1 == undefined || current.phone1 == '' ? current.phone2 : current.phone1 }}" title="Click to call"></a>
               {{#if (current.phone1 != undefined && current.phone1 != '')}}
                 <span>{{current.phone1}}</span>
               {{/if}}
@@ -125,9 +125,9 @@
               {{/if}}
             {{/if}}
             {{#if current.email != undefined && current.email != ''}}
-              <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}"></a>
+              <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
             {{/if}}
-            <a class="clickable glyphicon glyphicon-list-alt" href="#notes"></a>
+            <a class="clickable glyphicon glyphicon-list-alt" href="#notes" title="Jump to Notes"></a>
             <span class="pull-right" style="font-style:italic">
             </span>
           </h2>
@@ -159,22 +159,6 @@
 
           <div id="currentContactExtended" style="clear: both">
             {{>(tenant.id+'ContactExtension')}}
-
-            <!-- TODO General purpose contact extension if no dedicated one available 
-            {{#if tenant.contactFields}}
-              <div class="col-md-12">
-                <h2 class="form">
-                  <span>Further Info</span>
-                </h2>
-
-                <!- - first column - ->  
-                {{>column {object: current, fields: tenant.contactFields.slice(0,Math.ceil(tenant.contactFields.length/2))} }}
-
-                <!- - second column - ->  
-                {{>column {object: current, fields: tenant.contactFields.slice(Math.ceil(tenant.contactFields.length/2),tenant.contactFields.length)} }}
-
-              </div>
-            {{/if}}-->
           </div>
         </form>
 
@@ -256,7 +240,7 @@
          <div id="notesSect" style="clear: both">
           <h2 id="notes">
             <span>Notes</span>
-            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')"></span>
+            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')" title="Add a new note"></span>
           </h2>
           <table id="notesTable" class="table table-striped"><tbody>
             <tr style="display:none;">
@@ -281,7 +265,7 @@
          <div id="documentSect" style="clear: both">
           <h2>
             <span>Documents</span>
-            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')"></span>
+            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')" title="Add a new Document"></span>
           </h2>
           <table id="docsTable" class="table table-striped"><tbody>
             <tr style="display:none;">

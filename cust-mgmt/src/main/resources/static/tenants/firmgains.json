@@ -34,8 +34,12 @@
     { "label": "Previous Financial Year", "key": "previousFinancialYear"},
     { "label": "Previous Turnover", "key": "previousTurnover"},
     { "label": "Previous Profit", "key": "previousProfit"}
-  ],        
+  ],
+  "contactFields": [ 
+    { "label": "Partners Contacted", "key": "partnersContacted"}
+  ],    
   "partials": [
+    { "name": "firmgainsContactExtension", "url": "/partials/firmgainsContactExtension.html"},
     { "name": "firmgainsAccountExtension", "url": "/partials/firmgainsAccountExtension.html"}
   ],
   "typeaheadControls": [

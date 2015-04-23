@@ -1,0 +1,15 @@
+<div class="col-md-12">
+  <h2 class="form">
+    <span>Further Contact Info</span>
+  </h2>
+  <div class="col-md-6">
+    <ul class="form edit-form">
+      <li><label class="col-md-5">Currently with Partner:</label>
+      <input class="typeahead" id="curPartnersContacted" on-blur="console.error(''+this.value);ractive.save()" value="{{current.customFields['partnersContacted']}}"></li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <ul class="form edit-form">
+    </ul>
+  </div>
+</div>
