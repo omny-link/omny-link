@@ -42,7 +42,7 @@ import com.knowprocess.bpm.impl.JsonManager;
 @EntityScan({ "link.omny.custmgmt.model", "com.knowprocess.bpm",
         "com.knowprocess.decisions" })
 @EnableJpaRepositories({ "link.omny.custmgmt.repositories",
-/* "com.knowprocess.bpm.repositories", */
+        "com.knowprocess.bpm.domain.repositories",
         "com.knowprocess.bpm.decisions.repositories",
         "com.knowprocess.decisions.repositories" })
 // @ImportResource("classpath:META-INF/spring/applicationContext-data.xml")
@@ -92,6 +92,8 @@ public class Application extends WebMvcConfigurerAdapter {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
+        // Allegedly sets welcome page though does not appear to be working
+        registry.addViewController("/").setViewName("index");
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/loginError").setViewName("loginError");
     }

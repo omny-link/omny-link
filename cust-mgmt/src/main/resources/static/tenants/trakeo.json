@@ -1,6 +1,7 @@
 { 
   "id": "trakeo", 
   "showAccount":true,
+  "showPoweredBy":false,
   "partials": [
     { "name": "trakeoContactExtension", "url": "/partials/contactExtension.html"},
     { "name": "trakeoAccountExtension", "url": "/partials/accountExtension.html"}
