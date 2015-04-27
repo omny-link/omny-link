@@ -9,6 +9,7 @@ import link.omny.custmgmt.model.CustomContactField;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
+import link.omny.custmgmt.web.fg.FollowUpDecision;
 import link.omny.custmgmt.web.fg.ValuationDecision;
 import lombok.Data;
 
@@ -27,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.knowprocess.mail.MailData;
+
 /**
  * Temporary stand-in for DMN based implementation
  * 
@@ -36,7 +39,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "/{tenantId}/decisions")
 public class DecisionsController {
 
-    private static final Logger LOGGER = LoggerFactory
+    protected static final Logger LOGGER = LoggerFactory
             .getLogger(DecisionsController.class);
 
     @Autowired
@@ -52,29 +55,31 @@ public class DecisionsController {
     private ConversionService mvcConversionService;
 
     @Autowired
-    private ValuationDecision decision;
+    private ValuationDecision valuationDecision;
+
+    @Autowired
+    private FollowUpDecision followUpDecision;
 
     /**
-     * @return updated account with valuation.
+     * @return contact updated with valuation.
      */
-    @RequestMapping(value = "/{decisionName}", method = RequestMethod.POST)
-    public @ResponseBody ContactValuation runDecision(
+    @RequestMapping(value = "/valuation", method = RequestMethod.POST)
+    public @ResponseBody ContactValuation runValuationDecision(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("decisionName") String decisionName,
             @RequestBody Contact contact) {
 
-        LOGGER.info(String.format("Running %1$s for tenant %2$s", decisionName,
-                tenantId));
+        LOGGER.info(String
+                .format("Running valuation for tenant %2$s", tenantId));
         // May be redundant but better safe than sorry
         contact.setTenantId(tenantId);
 
-        // if (LOGGER.isDebugEnabled()) {
-        LOGGER.info(String.format(
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format(
                     "Received valuation request containing: %1$s",
                     contact.getCustomFields()));
-        // }
+        }
 
-        Map<String, Double> results = decision.calc(
+        Map<String, Double> results = valuationDecision.calc(
                 mvcConversionService.convert(
                         contact.getField("operatingProfit"), Double.class),
                 mvcConversionService.convert(
@@ -94,6 +99,30 @@ public class DecisionsController {
         }
 
         return wrap(contact);
+    }
+
+    /**
+     * @return details of mail to send.
+     */
+    @RequestMapping(value = "/email", method = RequestMethod.POST, produces = { "application/json" })
+    public @ResponseBody String runEmailDecision(
+            @PathVariable("tenantId") String tenantId,
+            @RequestBody Contact contact) {
+
+        LOGGER.info(String.format("Running email follow-up for tenant %1$s",
+                tenantId));
+        // May be redundant but better safe than sorry
+        contact.setTenantId(tenantId);
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("Received contact: %1$s",
+                    contact.getFullName()));
+        }
+
+        MailData mailData = followUpDecision.execute(contact);
+        
+        LOGGER.debug(String.format("Mail data: %1$s", mailData));
+        return mailData.toJson();
     }
 
     private ContactValuation wrap(Contact contact) {

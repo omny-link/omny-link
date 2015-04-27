@@ -42,7 +42,7 @@
   <section id="container"></section>
 
   <section id="main">
-    <h1>CRM | Workflow | Decisions</h1>
+    <h1>Decisions | Leads | Workflow</h1>
     <img src="images/omny-logo.png"/>
     <p>For more information see <a href="//omny.link">http://omny.link</a></p>
   </section>

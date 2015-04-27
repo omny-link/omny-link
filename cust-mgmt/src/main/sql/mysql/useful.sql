@@ -1,10 +1,31 @@
-  -- Finding duplicates
-select first_name, last_name, count(1) from contact group by first_name, last_name having count(first_name) >1;
-  
-  -- duplicate contacts without notes 
-select first_name, last_name, count(1) from contact group by first_name, last_name having count(first_name) >1;
+-- Finding duplicates
+select id, concat(first_name, last_name) as 'name' from contact group by name having count(name) >1;
 
-  
+-- Non dupliactes 
+select id, concat(first_name, last_name) as 'name' from contact group by name having count(name) =1;
+
+ create table tmp_preserve (`id` bigint(20) NOT NULL, name varchar(255));
+insert into tmp_preserve 
+select max(id), concat(first_name, last_name) as 'name' from contact group by name having count(name) >1;
+
+insert into tmp_preserve 
+select id, concat(first_name, last_name) as 'name' from contact group by name having count(name) =1;
+ 
+-- clean up 
+ update contact set stage = 'Enquiry' where stage is null;
+
+ insert into activity (content, last_updated, occurred, type, contact_id) 
+select 'Valuation, see notes for details', last_updated, first_contact, 'Valuation', id
+from contact where enquiry_type like 'Valuation';
+
+insert into activity (content, last_updated, occurred, type, contact_id) 
+select 'Registered account', last_updated, first_contact, 'Registration', id
+from contact where enquiry_type like 'Registration';
+
+ 
+-- logical delete all but most recent duplicate 
+update contact set stage = 'deleted' 
+where  tenant_id = 'firmgains' and id not in (select id from tmp_preserve) ; 
 
 -- migration 
 

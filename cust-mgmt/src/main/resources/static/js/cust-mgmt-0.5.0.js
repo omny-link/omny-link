@@ -54,6 +54,15 @@ var ractive = new AuthenticatedRactive({
     },
     formatDate: function(timeString) {
       return new Date(timeString).toLocaleDateString(navigator.languages);
+    },
+    formatJson: function(json) { 
+      console.log('formatJson: '+json);
+      var obj = JSON.parse(json);
+      var html = '';
+      $.each(Object.keys(obj), function(i,d) {
+        html += (typeof obj[d] == 'object' ? '' : '<b>'+d+'</b>: '+obj[d]+'<br/>');
+      });
+      return html;
     }
   },
   add: function () {
@@ -83,6 +92,29 @@ var ractive = new AuthenticatedRactive({
     console.log('editField '+path+'...');
     $(selector).css('border-width','1px').css('padding','5px 10px 5px 10px');
   },
+  /*followUp: function(contactId) { 
+    console.log('followUp: '+JSON.stringify(contactId));
+    $.ajax({
+      type: 'GET',
+      url: '/msg/firmgains/firmgains.followUp.json?query={"contactId":"'+contactId+'","tenantId":"'+ractive.get('tenant.id')+'"}&businessDescription=FollowUp',
+      crossDomain: true,
+      success: function( data ) {
+        console.log('data: '+data);
+      }
+    });
+  },*/
+  /*formatJson: function(json) { 
+    console.log('formatJson: '+json);
+    var obj = JSON.parse(json);
+    var html = '';
+    $.each(Object.keys(obj), function(i,d) {
+      html += (typeof obj[d] == 'object' ? '' : d+': '+obj[d]+'<br/>');
+    });
+    //console.log('HTML: '+html);
+    //ractive.set('current.html',html);
+    return html;
+//    $(selector).append(html);
+  },*/
   addNote: function (contact) {
     console.log('addNote '+contact+' ...');
     ractive.set('current.note', { author:ractive.get('username'), contact: contact, content: undefined});
