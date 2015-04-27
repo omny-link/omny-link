@@ -173,13 +173,13 @@
             <div class="currentBody col-md-6">
               <ul class="form edit-form">
                 <li><label class="col-md-5 required">Company Name:</label><input id="curAccountName" required value="{{current.account.name}}"></li>
-                <li><label class="col-md-5">Company Number:</label><input id="curCompanyNumber" pattern="[0-9]{8}" value="{{current.account.companyNumber}}"></li>
                 <li><label class="col-md-5">Website:</label><input id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"></li>
+                <!--<li><label class="col-md-5">Also known as:</label><input id="curAliases" value="{{current.account.aliases}}"></li>-->
               </ul> 
             </div>
             <div class="currentBody col-md-6">
               <ul class="form edit-form">
-                <li><label class="col-md-5">Also known as:</label><input id="curAliases" value="{{current.account.aliases}}"></li>
+                <li><label class="col-md-5">Company Number:</label><input id="curCompanyNumber" pattern="[0-9]{8}" value="{{current.account.companyNumber}}"></li>
                 <li><label class="col-md-5">No. of employees:</label><input id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/></li>
               </ul>
             </div>

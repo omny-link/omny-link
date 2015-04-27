@@ -36,7 +36,8 @@
     { "label": "Previous Profit", "key": "previousProfit"}
   ],
   "contactFields": [ 
-    { "label": "Partners Contacted", "key": "partnersContacted"}
+    { "label": "Current Partner", "key": "partnersContacted"},
+    { "label": "Placed with Partner", "key": "placedWithParter"}
   ],    
   "partials": [
     { "name": "firmgainsContactExtension", "url": "/partials/firmgainsContactExtension.html"},

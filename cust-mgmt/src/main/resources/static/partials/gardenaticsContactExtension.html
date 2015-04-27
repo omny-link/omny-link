@@ -2,6 +2,13 @@
   <h2 class="form">
     <span>Prospect and Partner Info</span>
   </h2>
+  <div class="col-md-12">
+    {{#current.customFields['preMigration']}}
+      <p class="bg-warning text-warning">This contact pre-dates the Omny Link system and has been migrated.</p>
+    {{else}}
+      <p class="bg-info text-info">This contact was created using the Omny Link system.</p>
+    {{/}}
+  </div>
   <div class="col-md-6">
     <ul class="form edit-form">
       <li><label class="col-md-5">Budget:</label>
