@@ -52,7 +52,7 @@ public class Application extends WebMvcConfigurerAdapter {
             .getLogger(Application.class);
 
 
-    @Value("${omny.populator.skip}")
+    @Value("${omny.populator.skip:true}")
     protected boolean skipPopulator;
 
     @Bean
@@ -95,7 +95,7 @@ public class Application extends WebMvcConfigurerAdapter {
         // Allegedly sets welcome page though does not appear to be working
         registry.addViewController("/").setViewName("index");
         registry.addViewController("/login").setViewName("login");
-        registry.addViewController("/loginError").setViewName("loginError");
+        // registry.addViewController("/loginError").setViewName("loginError");
     }
 
     @Bean
@@ -139,7 +139,7 @@ public class Application extends WebMvcConfigurerAdapter {
                     .hasRole("admin")
                     .anyRequest().authenticated()  
                     .and().formLogin()
-                    .loginPage("/login").failureUrl("/loginError")
+                    .loginPage("/login").failureUrl("/login?error")
                     .successHandler(getSuccessHandler()).permitAll()
                     .and().csrf().disable().httpBasic();
                     //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
