@@ -14,10 +14,10 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(excerptProjection = ContactExcept.class, path = "/contacts")
 public interface ContactRepository extends CrudRepository<Contact, Long> {
 
-    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
+    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND stage != 'deleted' ORDER BY c.lastUpdated DESC")
     List<Contact> findAllForTenant(@Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
+    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND stage != 'deleted' ORDER BY c.lastUpdated DESC")
     List<Contact> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
