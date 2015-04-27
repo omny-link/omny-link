@@ -2,9 +2,11 @@
   "id": "gardenatics",
   "showAccount":false,
   "contactFields": [ 
+    { "label": "Budget", "key": "budget"},
     { "label": "Partner", "key": "partner"},
     { "label": "Appointment Date", "key": "appointmentDate"},
-    { "label": "Installation Date", "key": "installationDate"}
+    { "label": "Installation Date", "key": "installationDate"},
+    { "label": "Pre-Migration", "key": "preMigration", "type":"boolean"}
   ],
   "partials": [
     { "name": "gardenaticsContactExtension", "url": "/partials/gardenaticsContactExtension.html"}
