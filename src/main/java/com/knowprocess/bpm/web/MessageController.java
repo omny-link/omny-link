@@ -227,16 +227,12 @@ public class MessageController {
             }
         } catch (ActivitiObjectNotFoundException e) {
             if (e.getMessage().contains("no subscription to message with name")) {
-                LOGGER.debug("Detected a missing process exception: "
-                        + e.getMessage());
-                ProcessInstance instance = processEngine.getRuntimeService()
-                        .startProcessInstanceByKeyAndTenantId("SimpleTodo",
-                                bizKey, vars, tenantId);
-                addLocationHeader(uriBuilder, headers, instance);
-                LOGGER.debug(String.format(
-                        "Created an instance of %1$s to handle it, id: %2$s",
-                        "SimpleTodo", instance.getId()));
-                return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+                return startCatchAllProcess(uriBuilder, tenantId, vars,
+                        headers, bizKey, e);
+            } else if (e.getMessage()
+                    .contains("no processes deployed with key")) {
+                return startCatchAllProcess(uriBuilder, tenantId, vars,
+                        headers, bizKey, e);
             } else {
                 LOGGER.error("The ObjectNotFound below is NOT a missing process exception");
                 LOGGER.error(e.getMessage(), e);
@@ -269,6 +265,21 @@ public class MessageController {
         } finally {
             Authentication.setAuthenticatedUserId(null);
         }
+    }
+
+    private ResponseEntity<String> startCatchAllProcess(
+            final UriComponentsBuilder uriBuilder, String tenantId,
+            final Map<String, Object> vars, HttpHeaders headers, String bizKey,
+            ActivitiObjectNotFoundException e) {
+        LOGGER.debug("Detected a missing process exception: " + e.getMessage());
+        ProcessInstance instance = processEngine.getRuntimeService()
+                .startProcessInstanceByKeyAndTenantId("SimpleTodo", bizKey,
+                        vars, tenantId);
+        addLocationHeader(uriBuilder, headers, instance);
+        LOGGER.debug(String.format(
+                "Created an instance of %1$s to handle it, id: %2$s",
+                "SimpleTodo", instance.getId()));
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
     private void addLocationHeader(final UriComponentsBuilder uriBuilder,
