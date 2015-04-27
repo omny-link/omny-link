@@ -215,26 +215,27 @@
         </form>
         {{/}}
         
-        {{#current.activities}}
+      {{#if current['activities'] != undefined}}
         <div style="clear: both"></div>
 
         <form id="activityForm">
          <div id="activitySect" style="clear: both">
           <h2 title="Activities are added automatically by the workflows">
             <span>Activities</span>
+            <!--<span class="glyphicon glyphicon-flash" aria-hidden="true" on-click="followUp(this.get('current'))"></span>-->
           </h2>
           <table id="activitiesTable" class="table table-striped"><tbody>
             {{#each current.activities:j}}
               <tr>
                 <td class="field-occurred">{{age(occurred)}} ({{formatDate(occurred)}})</td>
                 <td class="field-type">{{type}}</td>
-                <td class="field-text">{{content}}</td>
+                <td class="field-text" id="activity{{j}}">{{{formatJson(content)}}}</td>
               </tr>
             {{/each}}
           </tbody></table>
          </div>
         </form>
-        {{/}}
+      {{/if}}
         
     	<div style="clear: both"></div>
 

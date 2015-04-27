@@ -283,6 +283,10 @@ public class Contact implements Serializable {
         }
     }
 
+    public String getFullName() {
+        return String.format("%1$s %2$s", firstName, lastName);
+    }
+
     @PreUpdate
     public void preUpdate() {
         if (LOGGER.isWarnEnabled() && lastUpdated != null) {
@@ -305,15 +309,15 @@ public class Contact implements Serializable {
     }
 
     public long timeSinceRegistered() {
-        Activity firstLogin = getFirstActivityOfType("register");
-        return firstLogin == null ? -1 : new Date().getTime()
-                - firstLogin.getOccurred().getTime();
+        Activity registered = getFirstActivityOfType("register");
+        return registered == null ? -1 : new Date().getTime()
+                - registered.getOccurred().getTime();
     }
 
     public long timeSinceEmail() {
-        Activity firstLogin = getFirstActivityOfType("email");
-        return firstLogin == null ? -1 : new Date().getTime()
-                - firstLogin.getOccurred().getTime();
+        Activity lastEmail = getFirstActivityOfType("email");
+        return lastEmail == null ? -1 : new Date().getTime()
+                - lastEmail.getOccurred().getTime();
     }
 
     public long timeSinceValuation() {
@@ -336,7 +340,7 @@ public class Contact implements Serializable {
         return !haveSentEmail(emailName);
     }
 
-    protected List<Activity> getActivitiesOfType(String type) {
+    public List<Activity> getActivitiesOfType(String type) {
         List<Activity> activities = new ArrayList<Activity>();
         for (Activity act : getActivities()) {
             if (type.equals(act.getType())) {
@@ -346,7 +350,7 @@ public class Contact implements Serializable {
         return activities;
     }
 
-    protected Activity getLastActivityOfType(String type) {
+    public Activity getLastActivityOfType(String type) {
         Activity lastLogin = null;
         for (Activity act : getActivities()) {
             if (type.equals(act.getType())
@@ -358,7 +362,7 @@ public class Contact implements Serializable {
         return lastLogin;
     }
 
-    protected Activity getFirstActivityOfType(String type) {
+    public Activity getFirstActivityOfType(String type) {
         Activity firstLogin = null;
         for (Activity act : getActivities()) {
             if (type.equals(act.getType())

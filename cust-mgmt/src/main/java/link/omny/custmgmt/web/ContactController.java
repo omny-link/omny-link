@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.Note;
 import link.omny.custmgmt.repositories.AccountRepository;
+import link.omny.custmgmt.repositories.ActivityRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
@@ -49,13 +51,16 @@ public class ContactController {
             .getLogger(ContactController.class);
 
     @Autowired
-    private ContactRepository repo;
+    private ContactRepository contactRepo;
 
     @Autowired
     private AccountRepository accountRepo;
 
     @Autowired
     private NoteRepository noteRepo;
+
+    @Autowired
+    private ActivityRepository activityRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -88,7 +93,7 @@ public class ContactController {
             contact.setTenantId(tenantId);
         }
 
-        Iterable<Contact> result = repo.save(list);
+        Iterable<Contact> result = contactRepo.save(list);
         LOGGER.info("  saved.");
         return result;
     }
@@ -107,10 +112,10 @@ public class ContactController {
 
         List<Contact> list;
         if (limit == null) {
-            list = repo.findAllForTenant(tenantId);
+            list = contactRepo.findAllForTenant(tenantId);
         } else {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
-            list = repo.findPageForTenant(tenantId, pageable);
+            list = contactRepo.findPageForTenant(tenantId, pageable);
         }
         LOGGER.info(String.format("Found %1$s contacts", list.size()));
 
@@ -136,7 +141,7 @@ public class ContactController {
                 "List contacts for account and name %1$s, %2$s %3$s",
                 accountName, lastName, firstName));
 
-        List<Contact> list = repo.findByFirstNameLastNameAndAccountName(
+        List<Contact> list = contactRepo.findByFirstNameLastNameAndAccountName(
                 firstName, lastName, accountName);
         LOGGER.info(String.format("Found %1$s contacts", list.size()));
 
@@ -173,6 +178,7 @@ public class ContactController {
             @RequestParam("content") String content) {
 
         Note note = new Note(author, content);
+        note.setContact(contactRepo.findOne(contactId));
         noteRepo.save(note);
         return note;
     }
@@ -190,11 +196,29 @@ public class ContactController {
         LOGGER.info(String.format("Setting contact %1$s to stage %2$s",
                 contactId, stage));
 
-        Contact contact = repo.findOne(contactId);
+        Contact contact = contactRepo.findOne(contactId);
         contact.setStage(stage);
-        repo.save(contact);
+        contactRepo.save(contact);
 
         return contact;
+    }
+
+    /**
+     * Add an activity to the specified contact.
+     * 
+     * @return contacts for that tenant.
+     */
+    @RequestMapping(value = "/{contactId}/activities", method = RequestMethod.POST)
+    public @ResponseBody Activity addActivity(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("contactId") Long contactId,
+            @RequestParam("type") String type,
+            @RequestParam("content") String content) {
+
+        Activity activity = new Activity(type, new Date(), content);
+        activity.setContact(contactRepo.findOne(contactId));
+        activityRepo.save(activity);
+        return activity;
     }
 
     private List<ShortContact> wrap(List<Contact> list) {
