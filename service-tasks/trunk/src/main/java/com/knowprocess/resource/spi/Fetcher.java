@@ -49,7 +49,7 @@ import com.knowprocess.resource.internal.gdrive.GDriveRepository;
  */
 public class Fetcher extends RestService implements JavaDelegate {
     protected static final Logger LOGGER = LoggerFactory
-            .getLogger(RestPut.class);
+            .getLogger(Fetcher.class);
 
     public static final String MIME_XML = "text/xml";
     private static final String RESOURCE_KEY = "resource";

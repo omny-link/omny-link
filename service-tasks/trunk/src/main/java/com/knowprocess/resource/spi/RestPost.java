@@ -77,7 +77,8 @@ public class RestPost extends RestService implements JavaDelegate {
             }
             // setVarsFromResponseHeaders();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(String.format("Exception in %1$s", getClass()
+                    .getName()), e);
         } finally {
             try {
                 is.close();

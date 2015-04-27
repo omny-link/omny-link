@@ -34,6 +34,13 @@ public class MailData implements Serializable {
         properties = new Properties();
     }
 
+    public MailData(String template, String subject, String email) {
+        this();
+        properties.setProperty("template", template);
+        properties.setProperty("subject", subject);
+        properties.setProperty("contact.email", email);
+    }
+
     /**
      * Synonym for <code>fromJson</code> to conform to Spring Roo naming
      * conventions.
@@ -46,12 +53,12 @@ public class MailData implements Serializable {
         return fromJson(json);
     }
 
-    // TODO should be static
-    public MailData fromJson(String json) {
+    public static MailData fromJson(String json) {
         LOGGER.debug(String.format("fromJson(%1$s)", json));
-        this.json = json;
-        parse(json);
-        return this;
+        MailData md = new MailData();
+        md.json = json;
+        md.parse(json);
+        return md;
     }
 
     public static List<MailData> fromJsonArray(String json) {
@@ -125,9 +132,25 @@ public class MailData implements Serializable {
         return (String) val;
     }
 
+    public String toJson() {
+        String s = String
+                .format("{\"template\":\"%1$s\",\"subject\":\"%2$s\", \"contact\":{\"email\":\"%3$s\",\"firstName\":\"%4$s\"}}",
+                get("template"), get("subject"),
+                get("contact.email"), get("contact.firstName"));
+        return s;
+    }
+
     @Override
     public String toString() {
-        return "MailData: " + (obj == null ? "null." : obj.toString());
+        if (obj == null) {
+            String s = String
+                    .format("Mail Data:\n  template: %1$s,\n  subject:%2$s,\n  contact email:\n  %3$s,\n  first name: %4$s",
+                            get("template"), get("subject"),
+                            get("contact.email"), get("contact.firstName"));
+            return s;
+        } else {
+            return obj.toString();
+        }
     }
 
 }
