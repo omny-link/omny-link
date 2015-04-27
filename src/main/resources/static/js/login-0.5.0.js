@@ -40,7 +40,7 @@ var AuthenticatedRactive = Ractive.extend({
       $( document ).ajaxStop(function() {
         $( "#ajax-loader" ).hide();
       });
-      if (ractive.get('tenant').showPoweredBy!=false) {
+      if (ractive.get('tenant.showPoweredBy')!=false) {
         // powered by 
         $('body').append('<div class="powered-by"><h1><span class="powered-by-text">powered by</span><img src="images/omny-greyscale-inline-logo.png" alt="powered by Omny Link"/></h1></div><p class="beta bg-warning pull-right">Beta!</p>');
       }
@@ -66,7 +66,7 @@ var AuthenticatedRactive = Ractive.extend({
     if (this && this.get('username')) $.getJSON('/users/'+ractive.get('username'), function(profile) {
       ractive.set('profile',profile);
       if (ractive.hasRole('super_admin')) $('.admin').show();
-      ractive.loadTenantConfig(profile.tenant);
+      ractive.loadTenantConfig(ractive.get('profile.tenant'));
     });
     else this.showError('You are not logged in, some or all functionality will be unavailable.');
   },
@@ -85,8 +85,10 @@ var AuthenticatedRactive = Ractive.extend({
   },
   hasRole: function(role) {
     var ractive = this;
-    if (this && this.get('profile'))
-      return ractive.get('profile').groups.filter(function(g) {return g.id==role})!=undefined;
+    if (this && this.get('profile')) {
+      var hasRole = ractive.get('profile').groups.filter(function(g) {return g.id==role})
+      return hasRole!=undefined && hasRole.length>0;
+    }
     return false;
   },
   initAutoComplete: function() {
@@ -130,6 +132,7 @@ var AuthenticatedRactive = Ractive.extend({
   loadTenantConfig: function(tenant) {
     console.log('loadTenantConfig:'+tenant);
     $.getJSON('/tenants/'+tenant+'.json', function(response) {
+      console.log('... response: '+response);
       ractive.set('tenant', response);
       $.ajaxSetup({
         headers: {'X-Tenant': ractive.get('tenant.id')}
