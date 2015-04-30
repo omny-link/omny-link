@@ -206,7 +206,8 @@ public class UrlResource implements Resource {
             String password) {
         String userpass = username.trim() + ":" + password.trim();
         String basicAuth = "Basic "
-                + new String(new Base64().encode(userpass.getBytes())).trim();
+                + new String(new Base64().encode(userpass.getBytes())).trim()
+                        .replace("\n", "").replace("\r", "");
         return basicAuth;
     }
 

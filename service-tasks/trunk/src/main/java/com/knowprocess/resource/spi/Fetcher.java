@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonReader;
+import javax.json.JsonStructure;
 
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.RepositoryService;
@@ -340,11 +340,9 @@ public class Fetcher extends RestService implements JavaDelegate {
                     LOGGER.debug("Detected JSON");
                     JsonReader reader = Json.createReader(new StringReader(
                             content));
-                    JsonArray jsonObj = reader.readArray();
+                    JsonStructure jsonObj = reader.read();
                     LOGGER.debug("obj" + jsonObj.toString());
-                    // TODO need to patch Activiti to recognise JSON
-                    // execution.setVariable(resourceKey, jsonObj.toString());
-                    execution.setVariable(resourceKey, content.getBytes());
+                    execution.setVariable(resourceKey, jsonObj);
                 } else {
                     LOGGER.debug("Detected " + getMime(resource));
                     execution.setVariable(resourceKey, content);
