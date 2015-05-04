@@ -200,6 +200,9 @@ public class ContactController {
         contact.setStage(stage);
         contactRepo.save(contact);
 
+        addActivity(tenantId, contactId, "transition-to-stage",
+                String.format("Waiting for %1$s", stage));
+
         return contact;
     }
 
