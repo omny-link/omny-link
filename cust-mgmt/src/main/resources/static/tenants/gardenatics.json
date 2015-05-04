@@ -5,6 +5,7 @@
     { "label": "Budget", "key": "budget"},
     { "label": "Partner", "key": "partner"},
     { "label": "Appointment Date", "key": "appointmentDate"},
+    { "label": "Appointment Time", "key": "appointmentTime"},
     { "label": "Installation Date", "key": "installationDate"},
     { "label": "Pre-Migration", "key": "preMigration", "type":"boolean"}
   ],
