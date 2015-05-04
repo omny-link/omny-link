@@ -69,7 +69,7 @@ public class DecisionsController {
             @RequestBody Contact contact) {
 
         LOGGER.info(String
-                .format("Running valuation for tenant %2$s", tenantId));
+                .format("Running valuation for tenant %1$s", tenantId));
         // May be redundant but better safe than sorry
         contact.setTenantId(tenantId);
 
@@ -122,7 +122,7 @@ public class DecisionsController {
         MailData mailData = followUpDecision.execute(contact);
         
         LOGGER.debug(String.format("Mail data: %1$s", mailData));
-        return mailData.toJson();
+        return mailData == null ? null : mailData.toJson();
     }
 
     private ContactValuation wrap(Contact contact) {
