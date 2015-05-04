@@ -51,7 +51,7 @@
               <th>Created</th>
               <th>Due</th>
               <th>From / Regarding</th>
-              <th class="col-truncate" style="width: 400px;">Description</th>
+              <!--th class="col-truncate" style="width: 400px;">Description</th-->
               <th>Assigned</th>
               <th>Actions</th>
             </tr>
@@ -64,7 +64,7 @@
               <td on-click="edit(this)">{{formatDate(createTime)}}</td>
               <td on-click="edit(this)">{{formatDate(dueDate)}}</td>
               <td on-click="edit(this)">{{businessKey}}</td>
-              <td on-click="edit(this)">{{description}}</td>
+              <!--td on-click="edit(this)">{{description}}</td-->
               <td on-click="edit(this)">{{assignee==null ? 'No' : 'Yes'}}</td>
               <td>
                 <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
@@ -136,7 +136,7 @@
           {{/}}
         </form>
 
-        <button class="btn bg-success pull-right text-success" on-click="submitTask()">Complete Task</button>
+        <button class="btn bg-success pull-right text-success" on-click="submitTask()" type="button">Complete Task</button>
 
       </section>
 

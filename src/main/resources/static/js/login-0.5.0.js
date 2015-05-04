@@ -78,9 +78,9 @@ var AuthenticatedRactive = Ractive.extend({
       window.location.href='/login';
       break; 
     default: 
-      var msg = "Bother! Something has gone wrong: "+textStatus+':'+errorThrown;
+      var msg = "Bother! Something has gone wrong (code "+jqXHR.status+"): "+textStatus+':'+errorThrown;
       console.error('msg:'+msg);
-      this.showError(msg);        
+      ractive.showError(msg);
     }
   },
   hasRole: function(role) {

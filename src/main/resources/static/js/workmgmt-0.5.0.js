@@ -180,8 +180,8 @@ var ractive = new AuthenticatedRactive({
   submitTask: function() {
     console.log('submitTask '+JSON.stringify(ractive.get('current'))+' ...');
     ractive.set('saveObserver',false);
+    $('#currentSect').hide();
     var id = ractive.get('current').id
-    
     if (document.getElementById('currentForm').checkValidity()) {
       var t = ractive.get('current');
       t.tenantId = ractive.get('tenant.id');
