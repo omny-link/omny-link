@@ -23,7 +23,7 @@ var ractive = new AuthenticatedRactive({
   // Here, we're passing in some initial data
   data: {
     csrfToken: getCookie(CSRF_COOKIE),
-    server: 'http://localhost:8082',
+    //server: 'http://api.knowprocess.com:8082',
 /*    tenant: { 
       name: 'firmgains', 
       contactFields: [], 
@@ -57,12 +57,17 @@ var ractive = new AuthenticatedRactive({
     },
     formatJson: function(json) { 
       console.log('formatJson: '+json);
-      var obj = JSON.parse(json);
-      var html = '';
-      $.each(Object.keys(obj), function(i,d) {
-        html += (typeof obj[d] == 'object' ? '' : '<b>'+d+'</b>: '+obj[d]+'<br/>');
-      });
-      return html;
+      try {
+        var obj = JSON.parse(json);
+        var html = '';
+        $.each(Object.keys(obj), function(i,d) {
+          html += (typeof obj[d] == 'object' ? '' : '<b>'+d+'</b>: '+obj[d]+'<br/>');
+        });
+        return html;
+      } catch (e) {
+        // So it wasn't JSON
+        return json;
+      }
     }
   },
   add: function () {
@@ -143,7 +148,7 @@ var ractive = new AuthenticatedRactive({
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
-      url: ractive.get('server')+'/'+ractive.get('tenant.id')+'/contacts/?projection=complete',
+      url: '/'+ractive.get('tenant.id')+'/contacts/?projection=complete',
       crossDomain: true,
       success: function( data ) {
         if (data['_embedded'] == undefined) {
@@ -341,6 +346,8 @@ var ractive = new AuthenticatedRactive({
 	    $.getJSON(url+'?projection=complete',  function( data ) {
         console.log('found contact '+data);
         ractive.set('current', data);
+        // sort most recent first
+        ractive.get('current.activities').sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
       });
       $.getJSON(url+'/notes',  function( data ) {
       	if (data['_embedded'] != undefined) {
