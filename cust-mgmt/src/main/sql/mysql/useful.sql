@@ -1,7 +1,17 @@
+-- Find notes that hold a valuation 
+select contact_id from note where contact_id in (select id from contact where tenant_id = 'firmgains') and content like '%Valuation performed%';
+
+-- add activity for notes 
+ insert into activity (content, occurred, type, contact_id) 
+select 'Valuation performed, see notes for details', created, 'valuation', contact_id
+from note where contact_id in (select id from contact where tenant_id = 'firmgains') and content like '%Valuation performed%';
+
+-- set enquiry type = valuation where it was missed
+update  contact c, note n set enquiry_type = 'Valuation' where enquiry_type is null and tenant_id = 'firmgains' and n.contact_id = c.id; 
 -- Finding duplicates
 select id, concat(first_name, last_name) as 'name' from contact group by name having count(name) >1;
 
--- Non dupliactes 
+-- Non duplicates 
 select id, concat(first_name, last_name) as 'name' from contact group by name having count(name) =1;
 
  create table tmp_preserve (`id` bigint(20) NOT NULL, name varchar(255));

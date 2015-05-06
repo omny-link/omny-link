@@ -329,7 +329,7 @@ public class Contact implements Serializable {
     public boolean haveSentEmail(String emailName) {
         for (Activity act : getActivities()) {
             if ("email".equals(act.getType())
-                    && emailName.equals(act.getContent())) {
+                    && act.getContent().contains(emailName)) {
                 return true;
             }
         }

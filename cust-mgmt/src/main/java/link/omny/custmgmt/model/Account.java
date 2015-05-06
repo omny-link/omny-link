@@ -138,10 +138,20 @@ public class Account implements Serializable {
         getCustomFields().add(customField);
     }
 
-    public void setField(String key, Object value) {
-        getCustomFields().add(
+    public void setField(String key, String value) {
+        boolean found = false;
+        for (CustomAccountField field : getCustomFields()) {
+            if (field.getName().equals(key)) {
+                field.setValue(value);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            getCustomFields().add(
                 new CustomAccountField(key, value == null ? null : value
                         .toString()));
+        }
     }
 
 }

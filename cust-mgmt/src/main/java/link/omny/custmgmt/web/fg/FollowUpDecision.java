@@ -23,7 +23,8 @@ public class FollowUpDecision {
     static final String ACTIVITY_VALUATION = "valuation";
     static final String ACTIVITY_BIZ_PLAN = "business-plan";
     static final String REGISTRATION = "registration";
-    private static final String ACTIVITY_REGISTRATION = "registration";
+    static final String ACTIVITY_REGISTRATION = "registration";
+    static final String ACTIVITY_EMAIL = "email";
 
     public MailData execute(Contact contact) {
         if (contact.getStage() != null
