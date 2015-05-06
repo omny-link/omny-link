@@ -41,6 +41,7 @@ public class FollowUpDecisionTest {
                 new Activity(FollowUpDecision.FIELD_MID_VALUATION, new Date()));
 
         MailData mailData = decision.execute(contact);
+
         assertTrue(mailData == null);
     }
 
@@ -53,6 +54,12 @@ public class FollowUpDecisionTest {
 
         assertMailData(decision.execute(contact), "valuation-detail",
                 "About Your Business Valuation: Reasonable or Risible?");
+
+        // run again immediately should not generate another mail
+        contact.getActivities().add(
+                new Activity(FollowUpDecision.ACTIVITY_EMAIL, new Date(),
+                        "Template: valuation-detail\nSubject: About Your Business Valuation: Reasonable or Risible?"));
+        assertTrue(decision.execute(contact) == null);
     }
 
     @Test
