@@ -47,7 +47,8 @@ public class CorsFilter extends OncePerRequestFilter {
      * Defaults: null,https?://localhost.*,https?://.*knowprocess
      * .com.*,chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm
      */
-    @Value("${cors.allowedOrigins:null,https?://localhost.*,https?://.*knowprocess.com.*,chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm")
+    // @Value("${cors.allowedOrigins:null,https?://localhost.*,https?://.*knowprocess.com.*,chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm")
+    @Value("${cors.allowedOrigins}")
     protected String corsAllowedOrigins;
 
     protected Set<String> allowedOrigins;

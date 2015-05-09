@@ -1,10 +1,13 @@
 package com.knowprocess.bpm.web;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
 import org.activiti.engine.impl.persistence.entity.ResourceEntity;
@@ -22,10 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.knowprocess.bpm.api.ReportableException;
+import com.knowprocess.bpm.api.UnsupportedBpmnException;
 import com.knowprocess.bpm.model.Deployment;
 
 @Controller
-@RequestMapping("/deployments")
+@RequestMapping("/{tenantId}/deployments")
 public class DeploymentController {
 
     protected static final Logger LOGGER = LoggerFactory
@@ -40,97 +44,100 @@ public class DeploymentController {
     ProcessEngine processEngine;
 
     @RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
-    public @ResponseBody List<Deployment> showAllJson() {
-        LOGGER.info("showAllJson");
+    public @ResponseBody List<Deployment> showAllJson(
+            @PathVariable("tenantId") String tenantId) {
+        LOGGER.info(String.format("showAllJson", tenantId));
 
-        try {
-            List<Deployment> list = Deployment.findAllDeployments();
-            LOGGER.info("Deployments: " + list.size());
-            return list;
-        } catch (Exception e) {
-            LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
-            e.printStackTrace(System.err);
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        List<Deployment> list = Deployment.findAllDeployments(tenantId);
+        LOGGER.info("Deployments: " + list.size());
+        return list;
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody Deployment showJson(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id) {
+        LOGGER.info(String.format("showJson %1$s for tenant %2$s", id, tenantId));
+
+        Deployment deployment = Deployment.findDeployment(id);
+        return deployment;
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = "multipart/form-data", headers = "Accept=application/json")
     public final @ResponseBody org.activiti.engine.repository.Deployment uploadMultipleFiles(
             UriComponentsBuilder uriBuilder,
-            @RequestParam String deploymentName,
             @RequestParam String tenantId,
-            @RequestParam MultipartFile... resourceFile) {
+            @RequestParam(required = false) String deploymentName,
+            @RequestParam MultipartFile... resourceFile)
+            throws UnsupportedEncodingException, IOException,
+            UnsupportedBpmnException {
         org.activiti.engine.repository.Deployment deployment = null;
 
-        try {
-            LOGGER.debug(String.format("deploymentName: %1$s", deploymentName));
-            LOGGER.debug(String.format("# of resources: %1$s",
-                    resourceFile.length));
+        LOGGER.debug(String.format("deploymentName: %1$s", deploymentName));
+        LOGGER.debug(String.format("# of resources: %1$s", resourceFile.length));
 
-            DeploymentBuilder builder = processEngine.getRepositoryService()
-                    .createDeployment();
-            if (deploymentName != null) {
-                builder.name(deploymentName);
-            }
-            if (tenantId != null) {
-                builder.tenantId(tenantId);
-            }
-            final Map<String, String> processes = new HashMap<String, String>();
-            for (MultipartFile resource : resourceFile) {
+        DeploymentBuilder builder = processEngine.getRepositoryService()
+                .createDeployment();
+        if (deploymentName != null) {
+            builder.name(deploymentName);
+        }
+        if (tenantId != null) {
+            builder.tenantId(tenantId);
+        }
+        final Map<String, String> processes = new HashMap<String, String>();
+        for (MultipartFile resource : resourceFile) {
 
-                LOGGER.debug(String.format("Deploying file: %1$s",
-                        resource.getOriginalFilename()));
-                if (resource.getOriginalFilename().toLowerCase()
-                        .endsWith(".bpmn")
-                        || resource.getOriginalFilename().toLowerCase()
-                                .endsWith(".bpmn20.xml")) {
-                    LOGGER.debug("... BPMN resource");
-                    String bpmn = new String(resource.getBytes(), "UTF-8");
-                    if (LOGGER.isDebugEnabled() && verbose) {
-                        LOGGER.debug("BPMN: " + bpmn);
-                    }
-                    processes.put(resource.getOriginalFilename(), bpmn);
-                    builder.addString(resource.getOriginalFilename(),
-                            bpmn.trim());
-                } else {
-                    LOGGER.debug("... non-BPMN resource");
-                    builder.addInputStream(resource.getOriginalFilename(),
-                            resource.getInputStream());
+            LOGGER.debug(String.format("Deploying file: %1$s",
+                    resource.getOriginalFilename()));
+            if (resource.getOriginalFilename().toLowerCase().endsWith(".bpmn")
+                    || resource.getOriginalFilename().toLowerCase()
+                            .endsWith(".bpmn20.xml")) {
+                LOGGER.debug("... BPMN resource");
+                String bpmn = new String(resource.getBytes(), "UTF-8");
+                if (LOGGER.isDebugEnabled() && verbose) {
+                    LOGGER.debug("BPMN: " + bpmn);
                 }
-            }
-
-            if (isValid(processes)) {
-                deployment = builder.deploy();
-                LOGGER.info("Completed deployment: " + deployment.getName()
-                        + "(" + deployment.getId() + ")");
-                for (Entry<String, ResourceEntity> entry : ((DeploymentEntity) deployment)
-                        .getResources().entrySet()) {
-                    LOGGER.debug("  ...including: " + entry.getKey());
-                }
-                return deployment;
-                // HttpHeaders headers = new HttpHeaders();
-                // headers.add("Content-Type", "application/json");
-                // RequestMapping a = getClass().getAnnotation(
-                // RequestMapping.class);
-                // headers.add(
-                // "Location",
-                // uriBuilder
-                // .path(a.value()[0] + "/"
-                // + deployment.getId().toString())
-                // .build().toUriString());
-                // return new ResponseEntity(deployment, headers,
-                // HttpStatus.CREATED);
+                processes.put(resource.getOriginalFilename(), bpmn);
+                builder.addString(resource.getOriginalFilename(), bpmn.trim());
             } else {
-                ReportableException e2 = new ReportableException(
-                        "Rejected BPMN as unsupported, see log for details.");
-                throw new RuntimeException(e2.toJson(), e2);
+                LOGGER.debug("... non-BPMN resource");
+                builder.addInputStream(resource.getOriginalFilename(),
+                        resource.getInputStream());
             }
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-            // ReportableException e2 = new ReportableException(e.getClass()
-            // .getName() + ":" + e.getMessage(), e);
-            // return new ResponseEntity(e2.toJson(), HttpStatus.BAD_REQUEST);
+        }
+
+        if (isValid(processes)) {
+            try {
+                deployment = builder.deploy();
+            } catch (ActivitiException e) {
+                UnsupportedBpmnException e2 = new UnsupportedBpmnException(
+                        String.format("Unsupported BPMN, cause: %1$s",
+                                e.getMessage()));
+                throw e2;
+            }
+            LOGGER.info("Completed deployment: " + deployment.getName() + "("
+                    + deployment.getId() + ")");
+            for (Entry<String, ResourceEntity> entry : ((DeploymentEntity) deployment)
+                    .getResources().entrySet()) {
+                LOGGER.debug("  ...including: " + entry.getKey());
+            }
+            return deployment;
+            // HttpHeaders headers = new HttpHeaders();
+            // headers.add("Content-Type", "application/json");
+            // RequestMapping a = getClass().getAnnotation(
+            // RequestMapping.class);
+            // headers.add(
+            // "Location",
+            // uriBuilder
+            // .path(a.value()[0] + "/"
+            // + deployment.getId().toString())
+            // .build().toUriString());
+            // return new ResponseEntity(deployment, headers,
+            // HttpStatus.CREATED);
+        } else {
+            ReportableException e2 = new ReportableException(
+                    "Rejected BPMN as unsupported, see log for details.");
+            throw new RuntimeException(e2.toJson(), e2);
         }
     }
 

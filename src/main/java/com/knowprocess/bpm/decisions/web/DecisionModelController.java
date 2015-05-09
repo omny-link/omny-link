@@ -54,12 +54,14 @@ public class DecisionModelController {
                 "Seeking decision model %1$s for tenant %2$s", decisionName,
                 tenantId));
 
-        DecisionModel model = repo.findByName(tenantId, decisionName);
-        LOGGER.debug(String.format("... result: %1$s", model));
+        if (repo != null) {
+            DecisionModel model = repo.findByName(tenantId, decisionName);
+            LOGGER.debug(String.format("... result from db: %1$s", model));
 
-        if (model != null) {
-            LOGGER.info("... found in repository");
-            return model;
+            if (model != null) {
+                LOGGER.info("... found in repository");
+                return model;
+            }
         }
 
         switch (tenantId) {
@@ -115,6 +117,8 @@ public class DecisionModelController {
         conclusions.add(new DecisionExpression("High", new String[] { "-", "-",
                 "-", "-", "X" }));
         model.setConclusions(conclusions);
+
+        LOGGER.debug("... returning risk rating model");
         return model;
     }
 
@@ -129,6 +133,8 @@ public class DecisionModelController {
         conclusions.add(new DecisionExpression("a new conclusion",
                 new String[] { "-" }));
         model.setConclusions(conclusions);
+
+        LOGGER.debug("... returning new (empty) model");
         return model;
     }
 
@@ -170,6 +176,8 @@ public class DecisionModelController {
                 "We hope your business sale is progressing well",
                 "Where have you got to?" }));
         model.setConclusions(conclusions);
+
+        LOGGER.debug("... returning email follow up model");
         return model;
     }
 
@@ -231,6 +239,8 @@ public class DecisionModelController {
                 "We hope your business sale is progressing well",
                 "Where have you got to?" }));
         model.setConclusions(conclusions);
+
+        LOGGER.debug("... returning firmgains email follow up model");
         return model;
     }
 
@@ -252,12 +262,14 @@ public class DecisionModelController {
         conclusions.add(new DecisionExpression("High Quote Multiple",
                 new String[] { "2.65", "3.85", "5.5", "6.85" }));
         model.setConclusions(conclusions);
+
+        LOGGER.debug("... returning firmgains valuation model");
         return model;
     }
 
     private DecisionModel getSustainabilityRankingModel() {
         DecisionModel model = new DecisionModel();
-        model.setName("Sustainability Ranking");
+        model.setName("Sustainability Scorecard");
 
         List<DecisionExpression> conditions = new ArrayList<DecisionExpression>();
         conditions.add(new DecisionExpression("Applicant Age", new String[] {
@@ -274,6 +286,8 @@ public class DecisionModelController {
         conclusions.add(new DecisionExpression("High", new String[] { "-", "-",
                 "-", "-", "X" }));
         model.setConclusions(conclusions);
+
+        LOGGER.debug("... returning sustainability scorecard model");
         return model;
     }
 }

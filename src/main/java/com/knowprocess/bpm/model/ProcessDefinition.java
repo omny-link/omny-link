@@ -104,6 +104,13 @@ public class ProcessDefinition {
 				.createProcessDefinitionQuery().list());
 	}
 
+    public static List<ProcessDefinition> findAllProcessDefinitions(
+            String tenantId) {
+        return wrap(processEngine.getRepositoryService()
+                .createProcessDefinitionQuery()
+                .processDefinitionTenantId(tenantId).list());
+    }
+
 	public static ProcessDefinition findProcessDefinition(String id) {
 		ProcessDefinition pd = new ProcessDefinition(processEngine
 				.getRepositoryService().createProcessDefinitionQuery()

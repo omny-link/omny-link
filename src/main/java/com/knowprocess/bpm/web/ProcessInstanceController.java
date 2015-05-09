@@ -23,7 +23,7 @@ public class ProcessInstanceController {
             .getLogger(ProcessInstanceController.class);
 
     @Autowired
-    ProcessEngine processEngine;
+    public ProcessEngine processEngine;
 
     @RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<ProcessInstance> listJson() {
@@ -49,7 +49,7 @@ public class ProcessInstanceController {
         result.addToAuditTrail(processEngine.getHistoryService()
                 .createHistoricActivityInstanceQuery()
                 .processInstanceId(instanceId)
-                .orderByHistoricActivityInstanceEndTime().asc().list());
+                .orderByHistoricActivityInstanceEndTime().desc().list());
 
         // result.setAuditTrail(processEngine.getHistoryService()
         // .createHistoricDetailQuery().processInstanceId(instanceId)
