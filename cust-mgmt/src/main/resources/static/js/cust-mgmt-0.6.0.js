@@ -68,6 +68,11 @@ var ractive = new AuthenticatedRactive({
         // So it wasn't JSON
         return json;
       }
+    },
+    hash: function(email) {
+      if (email == undefined) return '';
+      console.log('hash '+email+' = '+ractive.hash(email));
+      return '<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     }
   },
   add: function () {
@@ -166,6 +171,27 @@ var ractive = new AuthenticatedRactive({
 //      });      
     });
   },
+  fetchDocs: function() { 
+    $.getJSON(ractive.getId(ractive.get('current'))+'/documents',  function( data ) {
+      if (data['_embedded'] != undefined) {
+        console.log('found docs '+data);
+        ractive.merge('current.documents', data['_embedded'].documents);
+        // sort most recent first
+        ractive.get('current.documents').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
+      }
+      ractive.set('saveObserver',true);
+    });
+  },
+  fetchNotes: function() { 
+    $.getJSON(ractive.getId(ractive.get('current'))+'/notes',  function( data ) {
+      if (data['_embedded'] != undefined) {
+        console.log('found notes '+data);
+        ractive.merge('current.notes', data['_embedded'].notes);
+        // sort most recent first
+        ractive.get('current.notes').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
+      }
+    });
+  },
   find: function(contactId) { 
     console.log('find: '+contactId);
     var c; 
@@ -179,11 +205,15 @@ var ractive = new AuthenticatedRactive({
   getId: function(contact) { 
     console.log('getId: '+contact);
     var uri; 
-    $.each(contact.links, function(i,d) { 
-      if (d.rel == 'self') { 
-        uri = d.href;
-      }
-    });
+    if (contact['links']!=undefined) {
+      $.each(contact.links, function(i,d) { 
+        if (d.rel == 'self') { 
+          uri = d.href;
+        }
+      });
+    } else if (contact['_links']!=undefined) {
+      uri = contact._links.self.href.indexOf('?')==-1 ? contact._links.self.href : contact._links.self.href.substr(0,contact._links.self.href.indexOf('?')-1);
+    } 
     return uri;
   },
   oninit: function() {
@@ -296,7 +326,7 @@ var ractive = new AuthenticatedRactive({
         data: JSON.stringify(n),
         success: completeHandler = function(data) {
           console.log('data: '+ data);
-          ractive.select(ractive.get('current'));
+          ractive.fetchDocs();
           $('#doc').val(undefined);
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
@@ -318,7 +348,7 @@ var ractive = new AuthenticatedRactive({
         data: JSON.stringify(n),
         success: completeHandler = function(data) {
           console.log('data: '+ data);
-          ractive.select(ractive.get('current'));
+          ractive.fetchNotes();
           $('#note').val(undefined);
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
@@ -349,23 +379,8 @@ var ractive = new AuthenticatedRactive({
         // sort most recent first
         ractive.get('current.activities').sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
       });
-      $.getJSON(url+'/notes',  function( data ) {
-      	if (data['_embedded'] != undefined) {
-	        console.log('found notes '+data);
-          ractive.merge('current.notes', data['_embedded'].notes);
-	        // sort most recent first
-  	      ractive.get('current.notes').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-      	}
-  	  });
-      $.getJSON(url+'/documents',  function( data ) {
-      	if (data['_embedded'] != undefined) {
-        	console.log('found docs '+data);
-          ractive.merge('current.documents', data['_embedded'].documents);
-          // sort most recent first
-          ractive.get('current.documents').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-        }
-        ractive.set('saveObserver',true);
-      });
+      ractive.fetchNotes();
+      ractive.fetchDocs();
     } else { 
       console.log('Skipping load as no _links.'+contact.lastName);
       ractive.set('current', contact);
