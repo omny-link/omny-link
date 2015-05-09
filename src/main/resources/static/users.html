@@ -5,25 +5,14 @@
   <title>User Management</title>
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.5.0.css" rel="stylesheet">
+  <link href="css/omny-0.6.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
-
-<!--
-  1. This is the element we'll render our Ractive to.
--->
 <body class="container" id="container">
-
-  <!--
-       2. You can load a template in many ways. For convenience, we'll include it in
-       a script tag so that we don't need to mess around with AJAX or multiline strings.
-       User that we've set the type attribute to 'text/ractive' - though it can be
-       just about anything except 'text/javascript'
-  -->
   <script id='template' type='text/ractive'>
     <div class="profile pull-right">
       <form name="logoutForm" action="/logout" method="POST">
-        <span>Logged in as: {{username}}</span>
+        <span class="profile-img">Logged in as: {{username}}</span>
         <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
         <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
       </form>
@@ -38,11 +27,12 @@
     <form id="userList">
       <section id="userSect">
         <h2>
+          <span id="usersTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the users table"></span>
           <span>Users</span>
-          <input type="search" class="form-control search" placeholder="Search" 
-            style="border-radius:15px;width:100px;display:inline;position:relative;bottom:5px;">
-          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addUser()"></span>
-          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></span>
+          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new user"></span>
+          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></span>
+          <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+          <span class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching users"></span>
         </h2>
         <table id="usersTable" class="table table-striped">
           <thead>
@@ -55,6 +45,12 @@
           </thead>
           <tbody>
           {{#each users:i}}
+            {{# searchTerm!=undefined && (
+                  (this.firstName!=undefined && this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
+                  || (this.lastName!=undefined && this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                  || (this.email!=undefined && this.email.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                  || (this.id!=undefined && this.id.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                ) }}
             <tr data-href="{{_links.self.href}}">
               <td on-click="edit(this)">{{i+1}}</td>
               <td on-click="edit(this)">{{id}}</td>
@@ -64,6 +60,7 @@
                 <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
               </td>
             </tr>
+            {{/}}
           {{/each}}
           </tbody>
         </table>
@@ -137,8 +134,9 @@
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
   -->
   <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
-  <script src="js/login-0.5.0.js"></script>
-  <script src="js/usermgmt-0.5.0.js"></script>
-  <script src="js/omny-0.5.0.js"></script>
+  <script src="js/md5.min.js"></script>
+  <script src="js/login-0.6.0.js"></script>
+  <script src="js/usermgmt-0.6.0.js"></script>
+  <script src="js/omny-0.6.0.js"></script>
 </body>
 </html>

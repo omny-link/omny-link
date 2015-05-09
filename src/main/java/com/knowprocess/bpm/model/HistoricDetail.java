@@ -35,6 +35,12 @@ public class HistoricDetail {
 
     public java.lang.Long durationInMillis;
 
+    public String processInstanceId;
+
+    public String processDefinitionId;
+
+    public String calledProcessInstanceId;
+
     // public HistoricDetail(org.activiti.engine.history.HistoricDetail detail)
     // {
     // setId(detail.getId());
@@ -56,5 +62,8 @@ public class HistoricDetail {
         setStartTime(detail.getStartTime());
         setEndTime(detail.getEndTime());
         setDurationInMillis(detail.getDurationInMillis());
+        setCalledProcessInstanceId(detail.getCalledProcessInstanceId());
+        setProcessInstanceId(detail.getProcessInstanceId());
+        setProcessDefinitionId(detail.getProcessDefinitionId());
     }
 }

@@ -95,6 +95,11 @@ public class Deployment {
                 .createDeploymentQuery().list());
     }
 
+    public static List<Deployment> findAllDeployments(String tenantId) {
+        return wrap(processEngine.getRepositoryService()
+                .createDeploymentQuery().deploymentTenantId(tenantId).list());
+    }
+
     public static Deployment findDeployment(String id) {
         return wrap(
                 processEngine.getRepositoryService().createDeploymentQuery()

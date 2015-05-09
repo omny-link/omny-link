@@ -5,9 +5,10 @@ import java.util.Iterator;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
-import org.activiti.engine.ActivitiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * An exception suitable to be returned (as JSON or XML) across a REST API.
@@ -18,27 +19,28 @@ import org.slf4j.LoggerFactory;
  * @author tstephen
  * 
  */
-public class ReportableException extends ActivitiException {
+@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Unsupported or invalid BPMN")
+public class UnsupportedBpmnException extends Exception {
 
     private static final long serialVersionUID = 786708592317L;
 
     protected static final Logger LOGGER = LoggerFactory
-            .getLogger(ReportableException.class);
+            .getLogger(UnsupportedBpmnException.class);
 
     private String details;
 
-    public ReportableException(String msg) {
+    public UnsupportedBpmnException(String msg) {
         super(msg);
         LOGGER.error(toLog());
     }
 
-    public ReportableException(String msg, String details) {
+    public UnsupportedBpmnException(String msg, String details) {
         super(msg);
         LOGGER.error(toLog());
         this.details = details;
     }
 
-    public ReportableException(String msg, Exception cause) {
+    public UnsupportedBpmnException(String msg, Exception cause) {
         super(msg, cause);
         LOGGER.error(toLog(), cause);
         if (cause.getStackTrace().length > 0) {
@@ -48,7 +50,7 @@ public class ReportableException extends ActivitiException {
         }
     }
 
-	public ReportableException(ConstraintViolationException e) {
+	public UnsupportedBpmnException(ConstraintViolationException e) {
 		this(e.getMessage());
 
 		StringBuffer sb = new StringBuffer();

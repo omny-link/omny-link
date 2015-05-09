@@ -21,6 +21,7 @@ var ractive = new AuthenticatedRactive({
     age: function(timeString) {
       return i18n.getAgeString(new Date(timeString))
     },
+    events: [],
     formatJson: function(formProp) { 
       console.log('formatJson: '+formProp);
       console.log('formatJson: '+formProp.name+','+formProp.value);
@@ -38,6 +39,11 @@ var ractive = new AuthenticatedRactive({
 //      console.log('formatDate: '+timeString);
       if (timeString==undefined) return '';
       return new Date(timeString).toLocaleDateString(navigator.languages);
+    },
+    formatDateTime: function(timeString) {
+//    console.log('formatDate: '+timeString);
+      if (timeString==undefined) return '';
+    return new Date(timeString).toLocaleDatetimeString(navigator.languages);
     },
     keys: function(obj) {
       return Object.keys(obj);
@@ -68,21 +74,21 @@ var ractive = new AuthenticatedRactive({
     });
   },
   initAutoComplete: function() {
-  console.log('initAutoComplete');
-  var typeaheads = ractive.get('tenant.typeaheadControls'); 
-  if (typeaheads==undefined) return; 
-  $.each(typeaheads, function(i,d) {
-    console.log('binding ' +d.url+' to typeahead control: '+d.selector);
-    $.get(d.url, function(data){
-      $(d.selector).typeahead({ minLength:0,source:data });
-      $(d.selector).on("click", function (ev) {
-        newEv = $.Event("keydown");
-        newEv.keyCode = newEv.which = 40;
-        $(ev.target).trigger(newEv);
-        return true;
-     });
-    },'json');
-  });
+    console.log('initAutoComplete');
+    var typeaheads = ractive.get('tenant.typeaheadControls'); 
+    if (typeaheads==undefined) return; 
+    $.each(typeaheads, function(i,d) {
+      console.log('binding ' +d.url+' to typeahead control: '+d.selector);
+      $.get(d.url, function(data){
+        $(d.selector).typeahead({ minLength:0,source:data });
+        $(d.selector).on("click", function (ev) {
+          newEv = $.Event("keydown");
+          newEv.keyCode = newEv.which = 40;
+          $(ev.target).trigger(newEv);
+          return true;
+       });
+      },'json');
+    });
   },
   initAutoNumeric: function() { 
     $('.autoNumeric').autoNumeric('init', {});
@@ -157,6 +163,7 @@ var ractive = new AuthenticatedRactive({
       ractive.set('saveObserver',true);
     });
 //    ractive.fetchUserNotes();
+    ractive.toggleResults();
     $('#currentSect').slideDown();
   },
   showError: function(msg) {
@@ -208,6 +215,11 @@ var ractive = new AuthenticatedRactive({
       $('#currentForm :invalid').addClass('field-error');
       ractive.showMessage('Cannot save yet as contact is incomplete');
     }
+  },
+  toggleResults: function() {
+    console.log('toggleResults');
+    $('#tasksTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
+    $('#tasksTable').slideToggle();
   }
 });
 
