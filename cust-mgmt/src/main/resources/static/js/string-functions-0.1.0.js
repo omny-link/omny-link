@@ -1,5 +1,9 @@
 String.prototype.toLabel = function() {
-  return this.replace(/_/g, ' ').toLeadingCaps();
+  if (this == undefined) return;
+  // camelCase to camel Case
+  var t =  this.replace(/([a-z])([A-Z])/g, '$1 $2');
+  // c_style to C Style
+  return t.replace(/_/g, ' ').toLeadingCaps();
 };
 
 String.prototype.toLeadingCaps = function() {

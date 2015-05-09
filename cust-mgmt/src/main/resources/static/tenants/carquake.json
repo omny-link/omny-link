@@ -1,0 +1,14 @@
+{ 
+  "id": "carquake", 
+  "showAccount":false,
+  "partials": [
+    { "name": "carquakeContactExtension", "url": "/partials/contactExtension.html"},
+    { "name": "carquakeAccountExtension", "url": "/partials/accountExtension.html"}
+  ],
+  "typeaheadControls": [
+    { "selector": "#curEnquiryType", "url": "/data/enquiry-types.json"},
+    { "selector": "#curMedium", "url": "/data/media.json"},
+    { "selector": "#curSource", "url": "/data/sources.json"},
+    { "selector": "#curStage", "url": "/data/stages.json"}
+  ]
+}

@@ -4,7 +4,7 @@
   <meta charset='utf-8'>
   <title>Customer Management</title>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.5.0.css" rel="stylesheet">
+  <link href="css/omny-0.6.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
   <!-- nice blocky yet tall font 
   <link rel='stylesheet' id='google-fonts-css'  href='//fonts.googleapis.com/css?family=Oswald%3A400%7CNoto+Sans&#038;ver=2.1.2' type='text/css' media='all' />
@@ -30,7 +30,7 @@
   <script id='template' type='text/ractive'>
     <div class="profile pull-right">
       <form name="logoutForm" action="/logout" method="POST">
-        <span>Logged in as: {{username}}</span>
+        <span class="profile-img">Logged in as: {{username}}</span>
         <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()" title="Logout"></span>
         <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
       </form>
@@ -77,10 +77,10 @@
           <tbody>
           {{#each contacts:i}}
             {{# searchTerm!=undefined && (
-                  this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase())===0 
-                  || this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase())===0
-                  || this.email.toLowerCase().indexOf(searchTerm.toLowerCase())===0
-                  || this.account.name.toLowerCase().indexOf(searchTerm.toLowerCase())===0
+                  (this.firstName!=undefined && this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
+                  || (this.lastName!=undefined && this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                  || (this.email!=undefined && this.email.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                  || (this.account!=undefined && this.account.name!=undefined && this.account.name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
                 ) }}
               <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
                 <td>{{i+1}}</td>
@@ -90,7 +90,7 @@
                 {{/}}
                 <td>{{stage}}</td>
                 <td>{{enquiryType}}</td>
-                <td>{{owner}}</td>
+                <td>{{{hash(owner)}}}</td>
                 <td>{{formatDate(firstContact)}}</td>
                 <td>{{formatDate(lastUpdated)}}</td>
                 <td class="col-actions">
@@ -136,7 +136,9 @@
 
           <div class="currentBody col-md-6">
             <ul class="form edit-form">
+              <li><label class="col-md-5">Do Not Email:</label><input id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"></li>
               <li><label class="col-md-5">Email:</label><input id="curEmail" required value="{{current.email}}"></li>
+              <li><label class="col-md-5">Do Not Call:</label><input id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}"></li>
               <li><label class="col-md-5">Preferred Phone:</label><input id="curPhone1" value="{{current.phone1}}"></li>
               <li><label class="col-md-5">Alternate Phone:</label><input id="curPhone2" value="{{current.phone2}}"></li>
               <li><label class="col-md-5">Address:</label><input id="curAddress1" value="{{current.address1}}"/></li>
@@ -256,7 +258,7 @@
             {{#each current.notes:j}}
               <tr>
                 <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
-                <td class="field-author">{{author}}</td>
+                <td class="field-author">{{{hash(author)}}}</td>
                 <td class="field-text">{{content}}</td>
               </tr>
             {{/each}}
@@ -281,7 +283,7 @@
             {{#each current.documents:k}}
               <tr>
                 <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
-                <td class="field-author">{{author}}</td>
+                <td class="field-author">{{{hash(author)}}}</td>
                 <td class="field-url"><a href="{{url}}">Click to open</a></td>
               </tr>
             {{/each}}
@@ -314,13 +316,14 @@
            http://cdn.ractivejs.org/edge/ractive.min.js
 
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
-  <script src="js/ractive.min.js"></script>
-  -->
   <script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
+  -->
+  <script src="js/ractive.min.js"></script>
   <script src="js/autoNumeric.min.js"></script>
-  <script src="js/login-0.5.0.js"></script>
+  <script src="js/md5.min.js"></script>
+  <script src="js/login-0.6.0.js"></script>
   <script src="js/i18n.js"></script>
-  <script src="js/cust-mgmt-0.5.0.js"></script>
-  <script src="js/omny-0.5.0.js"></script>
+  <script src="js/cust-mgmt-0.6.0.js"></script>
+  <script src="js/omny-0.6.0.js"></script>
 </body>
 </html>
