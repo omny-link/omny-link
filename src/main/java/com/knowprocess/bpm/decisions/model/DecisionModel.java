@@ -47,6 +47,9 @@ public class DecisionModel implements Serializable {
     @JsonProperty
     protected String name;
 
+    @JsonProperty
+    protected String hitPolicy;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<DecisionExpression> conditions;
 

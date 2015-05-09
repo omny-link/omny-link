@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProcessInstance extends Execution {
 
-    private static ProcessEngine processEngine;
+    protected static ProcessEngine processEngine;
 
     /**
      */
@@ -92,9 +92,8 @@ public class ProcessInstance extends Execution {
         List<ProcessInstance> instances = new ArrayList<ProcessInstance>();
         instances.addAll(wrap(processEngine.getRuntimeService()
                 .createProcessInstanceQuery().list()));
-        // instances.addAll(wrap(processEngine.getHistoryService()
-        // .createHistoricProcessInstanceQuery().list()
-        // .toArray(new HistoricProcessInstance[])));
+        instances.addAll(wrap(processEngine.getHistoryService()
+                .createHistoricProcessInstanceQuery().list()));
         return instances;
     }
 
@@ -153,11 +152,16 @@ public class ProcessInstance extends Execution {
                 .createProcessInstanceQuery().list());
     }
 
-    private static List<ProcessInstance> wrap(
-            final List<org.activiti.engine.runtime.ProcessInstance> list) {
+    private static List<ProcessInstance> wrap(final List<?> list) {
         ArrayList<ProcessInstance> list2 = new ArrayList<ProcessInstance>();
-        for (org.activiti.engine.runtime.ProcessInstance instance : list) {
-            list2.add(new ProcessInstance(instance));
+        for (Object instance : list) {
+            if (instance instanceof org.activiti.engine.runtime.ProcessInstance) {
+                list2.add(new ProcessInstance(
+                        (org.activiti.engine.runtime.ProcessInstance) instance));
+            } else {
+                list2.add(new ProcessInstance(
+                        (HistoricProcessInstance) instance));
+            }
         }
         return list2;
     }

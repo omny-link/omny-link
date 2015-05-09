@@ -6,26 +6,16 @@
 
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.5.0.css" rel="stylesheet">
-  <link href="css/decisions-0.5.0.css" rel="stylesheet">
+  <link href="css/omny-0.6.0.css" rel="stylesheet">
+  <link href="css/decisions-0.6.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 
-<!--
-  1. This is the element we'll render our Ractive to.
--->
 <body class="container" id="container">
-
-  <!--
-       2. You can load a template in many ways. For convenience, we'll include it in
-       a script tag so that we don't need to mess around with AJAX or multiline strings.
-       Note that we've set the type attribute to 'text/ractive' - though it can be
-       just about anything except 'text/javascript'
-  -->
   <script id='template' type='text/ractive'>
     <div class="profile pull-right">
       <form name="logoutForm" conclusion="/logout" method="POST">
-        <span>Logged in as: {{username}}</span>
+        <span class="profile-img">Logged in as: {{username}}</span>
         <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
         <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
       </form>
@@ -76,7 +66,7 @@
               <td class="expr" rowspan="{{decision.conditions[0].expressions.length+decision.conclusions[0].expressions.length+2}}">
                 <div class="input-group">
                   <div class="input-group-btn">
-                    <button type="button" class="btn btn-default" data-toggle="dropdown" aria-expanded="false" on-click="addConditionExpr()"><span class="glyphicon-plus"></span> Add</button>
+                    <button type="button" class="btn" data-toggle="dropdown" aria-expanded="false" on-click="addConditionExpr()"><span class="glyphicon-plus"></span> Add</button>
                   </div><!-- /btn-group -->
                 </div><!-- /input-group -->
               </td>
@@ -87,7 +77,7 @@
             <th colspan="2">
               <div class="input-group">
                 <div class="input-group-btn">
-                  <button type="button" class="btn btn-default" data-toggle="dropdown" aria-expanded="false" on-click="addCondition()"><span class="glyphicon-plus"></span> Add</button>
+                  <button type="button" class="btn" data-toggle="dropdown" aria-expanded="false" on-click="addCondition()"><span class="glyphicon-plus"></span> Add</button>
                 </div><!-- /btn-group -->
               </div><!-- /input-group -->
             </th>
@@ -112,7 +102,7 @@
             <th colspan="2">
               <div class="input-group">
                 <div class="input-group-btn">
-                  <button type="button" class="btn btn-default" data-toggle="dropdown" aria-expanded="false" on-click="addConclusion()"><span class="glyphicon-plus"></span> Add</button>
+                  <button type="button" class="btn" data-toggle="dropdown" aria-expanded="false" on-click="addConclusion()"><span class="glyphicon-plus"></span> Add</button>
                 </div><!-- /btn-group -->
               </div><!-- /input-group -->
             </th>
@@ -146,9 +136,10 @@
   -->
   <script src="js/ractive.min.js"></script>
   <!-- <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>-->
-  <script src="js/login-0.5.0.js"></script>
-  <script src="js/decisions-0.5.0.js"></script>
-  <script src="js/omny-0.5.0.js"></script>
+  <script src="js/md5.min.js"></script>
+  <script src="js/login-0.6.0.js"></script>
+  <script src="js/decisions-0.6.0.js"></script>
+  <script src="js/omny-0.6.0.js"></script>
   <script>
     $(document).ready(function() {
       var params = getSearchParameters();

@@ -5,7 +5,7 @@
   <title>Work Management</title>
   <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.5.0.css" rel="stylesheet">
+  <link href="css/omny-0.6.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 
@@ -24,7 +24,7 @@
   <script id='template' type='text/ractive'>
     <div class="profile pull-right">
       <form name="logoutForm" action="/logout" method="POST">
-        <span>Logged in as: {{username}}</span>
+        <span class="profile-img">Logged in as: {{username}}</span>
         <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
         <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
       </form>
@@ -38,10 +38,12 @@
     <form id="taskList">
       <section id="taskSect">
         <h2>
+          <span id="tasksTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the task table"></span>
           <span>Tasks</span>
-          <input type="search" class="form-control search" placeholder="Search" 
-            style="border-radius:15px;width:100px;display:inline;position:relative;bottom:5px;">
-          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></span>
+          <!--<span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new task"></span>-->
+          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></span>
+          <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+          <span class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></span>
         </h2>
         <table id="tasksTable" class="table table-striped">
           <thead>
@@ -58,6 +60,10 @@
           </thead>
           <tbody>
           {{#each tasks:i}}
+            {{# searchTerm!=undefined && (
+                  (this.name!=undefined && this.name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
+                  || (this.businessKey!=undefined && this.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                ) }}
             <tr data-href="{{_links.self.href}}">
               <td on-click="edit(this)">{{i+1}}</td>
               <td on-click="edit(this)">{{name}}</td>
@@ -70,6 +76,7 @@
                 <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
               </td>
             </tr>
+            {{/}}
           {{/each}}
           </tbody>
         </table>
@@ -96,7 +103,7 @@
         
           {{#current.formProperties.length>0}}
             <section style="clear:both">
-              <h2>Data</h2>
+              <h3>Data</h3>
               <ul class="form edit-form" style="">          
                 {{#current.formProperties:i}}
                   <li>
@@ -162,8 +169,9 @@
   -->
   <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
   <script src="js/autoNumeric.min.js"></script>
-  <script src="js/login-0.5.0.js"></script>
-  <script src="js/workmgmt-0.5.0.js"></script>
-  <script src="js/omny-0.5.0.js"></script>
+  <script src="js/md5.min.js"></script>
+  <script src="js/login-0.6.0.js"></script>
+  <script src="js/workmgmt-0.6.0.js"></script>
+  <script src="js/omny-0.6.0.js"></script>
 </body>
 </html>

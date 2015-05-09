@@ -15,31 +15,27 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.knowprocess.bpm.model.ProcessDefinition;
 
-@RequestMapping("/process-definitions")
+@RequestMapping("/{tenantId}/process-definitions")
 @Controller
 public class ProcessDefinitionController {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(ProcessDefinitionController.class);
 
-    @RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
-    public @ResponseBody List<ProcessDefinition> showAllJson() {
-        LOGGER.info("showAllJson");
+    @RequestMapping(value = "", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody List<ProcessDefinition> showAllJson(
+            @PathVariable("tenantId") String tenantId) {
+        LOGGER.info(String.format("showAllJson for %1$s", tenantId));
 
-        try {
-            List<ProcessDefinition> list = ProcessDefinition
-                    .findAllProcessDefinitions();
-            LOGGER.info("Definitions: " + list.size());
-            return list;
-        } catch (Exception e) {
-            LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
-            e.printStackTrace(System.err);
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        List<ProcessDefinition> list = ProcessDefinition
+                .findAllProcessDefinitions(tenantId);
+        LOGGER.info("Definitions: " + list.size());
+        return list;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody ProcessDefinition showJson(
+            @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id) {
         LOGGER.info(String.format("%1$s definition with %2$s",
                 RequestMethod.GET, id));
@@ -59,7 +55,9 @@ public class ProcessDefinitionController {
                                                                        * "Accept=application/xml"
                                                                        * ,
                                                                        */produces = "application/xml")
-    public @ResponseBody String showBpmn(@PathVariable("id") String id) {
+    public @ResponseBody String showBpmn(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id) {
         LOGGER.info(String.format("%1$s BPMN with id %2$s", RequestMethod.GET,
                 id));
 
@@ -72,7 +70,9 @@ public class ProcessDefinitionController {
                                                                       * "Accept=image/png"
                                                                       * ,
                                                                       */produces = "image/png")
-    public @ResponseBody byte[] showBpmnDiagram(@PathVariable("id") String id)
+    public @ResponseBody byte[] showBpmnDiagram(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id)
             throws IOException {
         LOGGER.info(String.format("%1$s BPMN with id %2$s", RequestMethod.GET,
                 id));

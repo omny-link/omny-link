@@ -135,26 +135,14 @@ var ractive = new AuthenticatedRactive({
       ractive.set('current', data);
       ractive.set('saveObserver',true);
     });
+    ractive.toggleResults();
     $('#currentSect').slideDown();
   },
-  showError: function(msg) {
-    this.showMessage(msg, 'bg-danger text-danger');
-  },
-  showFormError: function(formId, msg) {
-    this.showError(msg);
-    var selector = formId==undefined || formId=='' ? ':invalid' : '#'+formId+' :invalid';
-    $(selector).addClass('field-error');
-    $(selector)[0].focus();
-  },
-  showMessage: function(msg, additionalClass) {
-    if (additionalClass == undefined) additionalClass = 'bg-info text-info';
-    if (msg === undefined) msg = 'Working...';
-    $('#messages p').empty().append(msg).removeClass().addClass(additionalClass).show();
-//    document.getElementById('messages').scrollIntoView();
-    if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
-      $('#messages p').fadeOut();
-    }, EASING_DURATION*10);
-  },
+  toggleResults: function() {
+    console.log('toggleResults');
+    $('#usersTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
+    $('#usersTable').slideToggle();
+  }
 });
 
 

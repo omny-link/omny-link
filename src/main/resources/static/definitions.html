@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang='en-GB'>
+<head>
+  <meta charset='utf-8'>
+  <title>Process Definitions</title>
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/omny-0.6.0.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
+</head>
+
+<body class="container" id="container">
+  <div class="clearfix" id="messages"></div>
+
+  <script id='template' type='text/ractive'>
+    <div class="profile pull-right">
+      <form name="logoutForm" action="/logout" method="POST">
+        <span class="profile-img">Logged in as: {{username}}</span>
+        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
+        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
+      </form>
+    </div>
+    <h1>
+      <a class="nav navbar-brand" href="http://omny.link">
+      </a>
+      <span>Process Definitions</span>
+    </h1>
+
+    <form id="eventList">
+      <section id="eventSect">
+        <h2>
+          <span id="definitionsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the event table"></span>
+          <span>Definitions</span>
+          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Upload new BPMN"></span>
+          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></span>
+          <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+          <span class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></span>
+        </h2>
+        <div id="upload" style="display:none">
+          <form action="/{{tenant.id}}/deployments" class="well form-inline" enctype="multipart/form-data" id="uploadForm" method="post">
+              <fieldset>
+                <div class="form-group">
+                  <label for="deploymentName">Deployment Name</label>
+                  <input id="resourceFile" multiple="multiple" name="resourceFile" style="display: none" type="file">
+                  <input name="tenantId" id="tenantId" type="hidden" value="{{tenant.id}}">
+                  <input name="deploymentName" id="deploymentName" placeholder="my process application">
+                  <button class="btn btn-primary" on-click="addDeploymentResource()" type="button">Select Files</button>
+                </div>
+                <div class="pull-right">
+                  <button class="btn" on-click="cancelAdd()" type="button">Cancel</button>
+                  <button class="btn" on-click="upload('uploadForm')" type="button">Upload</button>
+                </div>
+              </fieldset>
+            </form>
+        </div>
+        <table id="definitionsTable" class="table table-striped">
+          <thead>
+            <tr>
+              <th></th>
+              <!--<th>Id</th>-->
+              <th>Name</th>
+              <th class="col-md-5">Description</th>
+<!--              <th>Started</th>
+              <th>Ended</th>-->
+              <th>Version</th>
+              <th class="col-md-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          {{#each definitions:i}}
+            {{# searchTerm!=undefined && (
+                  (name!=undefined && name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                  || (description!=undefined && description.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                ) }}
+            <tr data-href="{{_links.self.href}}">
+              <td on-click="select(this)">{{i+1}}</td>
+              <!--<td on-click="select(this)">{{id}}</td>-->
+              <td on-click="select(this)">{{name}}</td>
+              <td class="col-md-5" on-click="select(this)">{{description}}</td>
+<!--              <td on-click="select(this)">{{formatDateTime(startTime)}}</td>
+              <td on-click="select(this)">{{formatDateTime(endTime)}}</td>
+-->
+              <td on-click="select(this)">{{version}}</td>
+              <td on-click="select(this)">
+                <a class="btn" href="/{{tenant.id}}/process-definitions/{{id}}.bpmn" target="_newtab">
+                  <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>View BPMN</a>
+                <a class="btn" href="/{{tenant.id}}/process-definitions/{{id}}.png" target="_newtab">
+                  <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>View image</a>
+                <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)"></span>
+              </td>
+            </tr>
+            {{/}}
+          {{/each}}
+          </tbody>
+        </table>
+      </section>
+
+      <section id="currentSect" style="display:none">
+        <h2>
+          <span>{{current.name}}</span>
+          <a class="btn btn-h2 pull-right" href="/{{tenant.id}}/process-definitions/{{current.id}}.bpmn" target="_newtab">
+            <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>View BPMN</a>
+        </h2>
+          <p>{{current.description}}</p>
+          <p>
+            <span class="a-primary-label control-label">{{current.deployment.name}}: </span>
+            <span class="a-primary-data control-label">{{activityType.toLabel()}}</span>
+            <span class="a-secondary-label control-label">Id: </span> {{current.id}};
+            <span class="a-secondary-label control-label">Deployment Id: </span> {{current.deploymentId}};
+            <span class="a-secondary-label control-label">Deployed: </span> {{formatDateTime(current.deployment.deploymentTime)}};
+            {{#if current.deployment.category}}
+              <span class="a-secondary-label control-label">Category: </span> {{current.deployment.category}};
+            {{/if current.deployment.category}} 
+          </p>
+          <img src="/{{tenant.id}}/process-definitions/{{current.id}}.png"/>
+      </section>
+
+    </form>
+  </script>
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins)
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  -->
+  <script src="js/jquery-1.11.0.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/bootstrap3-typeahead.min.js"></script>
+  <script src="js/bootstrap-datepicker.min.js"></script>
+  <!--
+       If you need IE8 support, change 'ractive' to 'ractive-legacy'.
+  <script src="js/ractive.min.js"></script>
+  -->
+  <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
+  <script src="js/autoNumeric.min.js"></script>
+  <script src="js/md5.min.js"></script>
+  <script src="js/string-functions-0.1.0.js"></script>
+  <script src="js/login-0.6.0.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/definitions-0.6.0.js"></script>
+  <script src="js/omny-0.6.0.js"></script>
+</body>
+</html>

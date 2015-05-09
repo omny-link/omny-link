@@ -30,7 +30,7 @@ var AuthenticatedRactive = Ractive.extend({
     if (tenant != undefined) {
       $('link[rel="icon"]').attr('href',$('link[rel="icon"]').attr('href').replace('omny',tenant));
       //$('link[rel="stylesheet"]').attr('href',$('link[rel="stylesheet"]').attr('href').replace('omny',tenant));
-      $('head').append('<link href="css/'+tenant+'-0.5.0.css" rel="stylesheet">');
+      $('head').append('<link href="css/'+tenant+'-0.6.0.css" rel="stylesheet">');
       $('.navbar-brand').empty().append('<img src="/images/'+tenant+'-logo.png" alt="logo"/>');
       // ajax loader 
       $('body').append('<div id="ajax-loader"><img class="ajax-loader" src="images/'+tenant+'-ajax-loader.gif" alt="Loading..."/></div>');
@@ -40,10 +40,12 @@ var AuthenticatedRactive = Ractive.extend({
       $( document ).ajaxStop(function() {
         $( "#ajax-loader" ).hide();
       });
+      // powered by 
       if (ractive.get('tenant.showPoweredBy')!=false) {
-        // powered by 
         $('body').append('<div class="powered-by"><h1><span class="powered-by-text">powered by</span><img src="images/omny-greyscale-inline-logo.png" alt="powered by Omny Link"/></h1></div><p class="beta bg-warning pull-right">Beta!</p>');
       }
+      // 'Omny Bar' 
+      $('body').append('<div class="omny-bar"><ul><li><a href="work.html"><span class="glyphicon glyphicon-inbox" title="Work"></span></a></li><li><a href="index.html"><span class="glyphicon omny-icon-address-book" title="Customers"></span></a></li><li class=""><a href="domain.html"><span class="glyphicon omny-icon-domain-model" title="Domain"></span></a></li><li class=""><a href="decisions.html"><span class="glyphicon glyphicon-list-alt" title="Decisions"></span></a></li><li class="admin-bar"><a href="users.html"><span class="glyphicon omny-icon-users" title="Users"></span></a></li><li class="admin-bar"><a href="events.html"><span class="glyphicon glyphicon-th-list" title="Event Stream"></span></a></li><li class="admin-bar"><a href="definitions.html"><span class="glyphicon omny-icon-process-model" title="Process Definitions"></span></a></li><li class="admin-bar"><a onclick="ractive.switchToTenant(\'gardenatics\')"><img src="/images/icon/gardenatics-icon-32x32.png"/></a></li><li class="admin-bar"><a onclick="ractive.switchToTenant(\'firmgains\')"><img src="/images/icon/firm-gains-icon-32x32.png"/></a></li><li class="admin-bar"><a onclick="ractive.switchToTenant(\'omny\')"><img src="/images/icon/omny-icon-32x32.png"/></a></li><li class="admin-bar"><a onclick="ractive.switchToTenant(\'trakeo\')"><img src="/images/icon/trakeo-icon-32x32.png"/></a></li><li class="admin-bar"><a onclick="ractive.switchToTenant(\'carquake\')"><img src="/images/icon/carquake-icon-32x32.png"/></a></li></ul></div>');
       // tenant partial templates
       $.each(ractive.get('tenant').partials, function(i,d) {
         $.get(d.url, function(response){
@@ -65,6 +67,7 @@ var AuthenticatedRactive = Ractive.extend({
     var ractive = this;
     if (this && this.get('username')) $.getJSON('/users/'+ractive.get('username'), function(profile) {
       ractive.set('profile',profile);
+      $('.profile-img').empty().append('<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34"/>');
       if (ractive.hasRole('super_admin')) $('.admin').show();
       ractive.loadTenantConfig(ractive.get('profile.tenant'));
     });
@@ -82,6 +85,9 @@ var AuthenticatedRactive = Ractive.extend({
       console.error('msg:'+msg);
       ractive.showError(msg);
     }
+  },
+  hash: function(email) {
+    return hex_md5(email.trim().toLowerCase());
   },
   hasRole: function(role) {
     var ractive = this;
@@ -156,6 +162,34 @@ var AuthenticatedRactive = Ractive.extend({
     localStorage['password'] = null;
     document.cookie = this.CSRF_COOKIE+'=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     document.forms['logoutForm'].submit();
+  },
+  showError: function(msg) {
+    this.showMessage(msg, 'bg-danger text-danger');
+  },
+  showFormError: function(formId, msg) {
+    this.showError(msg);
+    var selector = formId==undefined || formId=='' ? ':invalid' : '#'+formId+' :invalid';
+    $(selector).addClass('field-error');
+    $(selector)[0].focus();
+  },
+  showMessage: function(msg, additionalClass) {
+    if (additionalClass == undefined) additionalClass = 'bg-info text-info';
+    if (msg === undefined) msg = 'Working...';
+    $('#messages p').empty().append(msg).removeClass().addClass(additionalClass).show();
+//    document.getElementById('messages').scrollIntoView();
+    if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
+      $('#messages p').fadeOut();
+    }, EASING_DURATION*10);
+  },
+  switchToTenant: function(tenant) {
+    console.log('switchToTenant: '+tenant);
+    $.ajax({
+      method: 'PUT',
+      url: "/admin/tenant/"+ractive.get('username')+'/'+tenant,
+      success: function() {
+        window.location.reload();
+      }
+    })
   }
 });
 

@@ -38,6 +38,12 @@ h1 {
 h2 { 
 	font-size: 24px;
 }
+h3 { 
+  font-size: 24px;
+}
+h4 { 
+  font-size: 20px;
+}
 img.entity-context {
   width: 90%;	
 }
@@ -100,16 +106,18 @@ section h2 .search {
 }
 section h2 .glyphicon-search {
   border-bottom-left-radius: 0;
+  border-bottom-right-radius: 15px;
   border-top-left-radius: 0;
+  border-top-right-radius: 15px;
   font-size: 20px;
   margin-left: 0px;
   position: relative;
   left: -7px;
-  top: 0px;
+  top: 1px;
 }
 section h2 .entity {
   /*margin-bottom: 10px;*/
-  margin-right: 0;
+  margin-right: 1px;
   border-bottom-right-radius: 0px !important;
   border-top-right-radius: 0px !important;
   border-color: #0e9acd;
@@ -140,6 +148,21 @@ section h2 .glyphicon-import {
 th { 
 	font-weight: bold;
 }
+.a-primary-label {
+  font-weight:bold;
+  text-decoration: underline; 
+}
+
+.a-primary-data {
+}
+
+.a-secondary-label {
+  font-weight:bold; 
+}
+
+.a-secondary-data {
+}
+
 .admin { 
   display: none;
 }
@@ -168,6 +191,9 @@ th {
 .btn {
   min-width: 80px;
 }
+.btn-h2 {
+  margin-top: -20px;
+}
 .col-actions {
   min-width: 101px !important;
 }
@@ -179,7 +205,7 @@ th {
 	width:15%
 }
 .field-author { 
-  width:15%
+  width:50px;
 }
 .field-text { 
 }
@@ -188,7 +214,7 @@ th {
   border: solid 1px;
   padding: 6px;
   margin: 3px;
-  border-radius: 15px;
+  border-radius: 5px;
 }
 a.glyphicon {
   text-decoration: none;
@@ -201,6 +227,35 @@ a.glyphicon {
 }
 .navbar-brand img {
   height: 80px;	
+}
+.omny-bar {
+  background-color: #fcf8e3;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-style: double;
+  border-right-style: double;
+  border-top-style: double;
+  color: #ff6c06;
+  left: 0px;
+  position: fixed;
+  top: 40%;  
+  width: 50px;
+}
+.omny-bar li.admin-bar span {
+	color: red;
+}
+.omny-bar li {
+	list-style: none;
+  margin-left: -36px;
+}
+.omny-bar li span {
+  border: 0px;
+  border-bottom: solid 1px #ff6c06;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.omny-bar li:last-child span {
+  border-bottom: 0;
 }
 .search {
 	border-radius:15px;
@@ -271,6 +326,9 @@ form#upload {
 .profile { 
 	font-style: italic;
 }
+.profile-img img { 
+	margin-top: -9px;
+}
 #messages { 
   position: fixed;
   top: 45px;
@@ -279,3 +337,109 @@ form#upload {
   width: 50%;
   z-index: 10;
 }
+
+/* ICONS */ 
+
+@font-face {
+  font-family: 'omny';
+  src:url('fonts/omny.eot?-drx6ig');
+  src:url('fonts/omny.eot?#iefix-drx6ig') format('embedded-opentype'),
+    url('fonts/omny.woff?-drx6ig') format('woff'),
+    url('fonts/omny.ttf?-drx6ig') format('truetype'),
+    url('fonts/omny.svg?-drx6ig#omny') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="omny-icon-"], [class*=" omny-icon-"] {
+  font-family: 'omny';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.omny-icon-process-model:before {
+  content: "\e600";
+}
+
+.omny-icon-domain-model:before {
+  content: "\e601";
+}
+
+.omny-icon-newspaper:before {
+  content: "\e904";
+}
+
+.omny-icon-profile:before {
+  content: "\e923";
+}
+
+.omny-icon-phone:before {
+  content: "\e942";
+}
+
+.omny-icon-phone-hang-up:before {
+  content: "\e943";
+}
+
+.omny-icon-address-book:before {
+  content: "\e944";
+}
+
+.omny-icon-envelop:before {
+  content: "\e945";
+}
+
+.omny-icon-calendar:before {
+  content: "\e953";
+}
+
+.omny-icon-user:before {
+  content: "\e971";
+}
+
+.omny-icon-users:before {
+  content: "\e972";
+}
+
+.omny-icon-user-plus:before {
+  content: "\e973";
+}
+
+.omny-icon-user-minus:before {
+  content: "\e974";
+}
+
+.omny-icon-briefcase:before {
+  content: "\e9ae";
+}
+
+.omny-icon-clipboard:before {
+  content: "\e9b8";
+}
+
+.omny-icon-tree:before {
+  content: "\e9bc";
+}
+
+.omny-icon-make-group:before {
+  content: "\ea58";
+}
+
+/* ICON OVERRIDES */
+
+.omny-icon-domain-model {
+  font-size: 24px;
+}
+.omny-icon-process-model {
+  font-size: 16px;
+}
+
+/* END ICONS */
