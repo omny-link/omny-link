@@ -207,6 +207,7 @@ public class Contact implements Serializable {
 
     public void setCustomFields(List<CustomContactField> fields) {
         this.customFields = fields;
+        setLastUpdated(new Date());
     }
 
     public Object getField(@NotNull String fieldName) {

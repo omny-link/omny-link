@@ -44,6 +44,10 @@ public class Note {
     @JsonProperty
     private String content;
 
+    // This advises to avoid back reference in a composition relationship
+    // http://stackoverflow.com/questions/25311978/posting-a-onetomany-sub-resource-association-in-spring-data-rest/25451662#25451662
+    // However doing so means we are trapped in the POST sub-entity + PUT
+    // association trap, hence doing it this way
     @RestResource(rel = "noteContact")
     @ManyToOne(targetEntity = Contact.class)
     @JoinColumn(name = "contact_id")

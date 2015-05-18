@@ -12,7 +12,7 @@
   <div class="col-md-6">
     <ul class="form edit-form">
       <li><label class="col-md-5">Budget:</label>
-      <input class="autoNumeric" id="curBudget" on-blur="console.error(''+this.value);ractive.save()" value="{{current.customFields['budget']}}"></li>
+      <input class="autoNumeric" data-a-sign="£ " id="curBudget" on-blur="console.error(''+this.value);ractive.save()" value="{{current.customFields['budget']}}"></li>
       <li><label class="col-md-5">Partner:</label>
       <input class="typeahead" id="curPartner" on-blur="console.error(''+this.value);ractive.save()" value="{{current.customFields['partner']}}"></li>
     </ul>
@@ -20,11 +20,11 @@
   <div class="col-md-6">
     <ul class="form edit-form">
       <li><label class="col-md-5">Appointment Date:</label>
-      <input class="datepickerdis" id="curAppointmentDate" on-blur="console.error(''+this.value);ractive.save()" placeholder="dd/mm//yyyy" value="{{current.customFields['appointmentDate']}}"></li>
+      <input class="datepickerdis" id="curAppointmentDate" on-blur="console.error(''+this.value);ractive.save()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm//yyyy" value="{{current.customFields['appointmentDate']}}"></li>
       <li><label class="col-md-5">Appointment Time:</label>
-      <input id="curAppointmentTime" on-blur="ractive.save()" placeholder="hh:mm" value="{{current.customFields['appointmentTime']}}"></li>
+      <input id="curAppointmentTime" on-blur="ractive.save()" pattern="[0-9]{2}:[0-9]{2}" placeholder="hh:mm" value="{{current.customFields['appointmentTime']}}"></li>
       <li><label class="col-md-5">Installation Date:</label>
-      <input class="datepickerdis" id="curInstallationDate" on-blur="console.error(''+this.value);ractive.save()" placeholder="dd/mm//yyyy" value="{{current.customFields['installationDate']}}"></li>
+      <input class="datepickerdis" id="curInstallationDate" on-blur="console.error(''+this.value);ractive.save()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm//yyyy" value="{{current.customFields['installationDate']}}"></li>
     </ul>
   </div>
 </div>

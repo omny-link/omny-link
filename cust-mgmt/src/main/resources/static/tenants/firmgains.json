@@ -37,8 +37,14 @@
   ],
   "contactFields": [ 
     { "label": "Current Partner", "key": "partnersContacted"},
-    { "label": "Placed with Partner", "key": "placedWithParter"}
+    { "label": "Placed with Partner", "key": "placedWithPartner"}
   ],    
+  "omny-bar": [
+    { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
+    { "url": "index.html", "classes": "glyphicon omny-icon-address-book", "title": "Customer Management" },
+    { "url": "decisions.html", "classes": "glyphicon glyphicon-list-alt", "title": "Decisions" },
+    { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" }    
+  ],
   "partials": [
     { "name": "firmgainsContactExtension", "url": "/partials/firmgainsContactExtension.html"},
     { "name": "firmgainsAccountExtension", "url": "/partials/firmgainsAccountExtension.html"}

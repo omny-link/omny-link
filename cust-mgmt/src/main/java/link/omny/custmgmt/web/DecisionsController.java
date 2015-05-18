@@ -15,6 +15,7 @@ import lombok.Data;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.repository.CrudRepository;
@@ -127,12 +128,7 @@ public class DecisionsController {
 
     private ContactValuation wrap(Contact contact) {
         ContactValuation resource = new ContactValuation();
-        resource.setFirstName(contact.getFirstName());
-        resource.setLastName(contact.getLastName());
-        resource.setEmail(contact.getEmail());
-        resource.setOwner(contact.getOwner());
-        resource.setStage(contact.getStage());
-        resource.setTenantId(contact.getTenantId());
+        BeanUtils.copyProperties(contact, resource);
         for (CustomContactField field: contact.getCustomFields()) {
             resource.getAccount().setField(field.getName(), field.getValue());
         }
@@ -160,6 +156,13 @@ public class DecisionsController {
         private String owner;
         private String stage;
         private String tenantId;
+        private boolean doNotCall;
+        private boolean doNotEmail;
+        private String source;
+        private String medium;
+        private String campaign;
+        private String keyword;
+
         private Account account;
 
         // @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)

@@ -9,5 +9,5 @@
   {  "id": "Partner", "name": "Partner"  },
   {  "id": "PrivateEquity", "name": "Private Equity"  },
   {  "id": "PropertyAgent", "name": "Property Agent"  },
-  {  "id": "TransferAgent", "name": "Transfer Agent"  },
+  {  "id": "TransferAgent", "name": "Transfer Agent"  }
 ]

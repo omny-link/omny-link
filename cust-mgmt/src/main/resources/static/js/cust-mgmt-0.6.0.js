@@ -33,6 +33,7 @@ var ractive = new AuthenticatedRactive({
       ],
       */
     contacts: [],
+    filterStage: undefined,
     //saveObserver:false,
     username: localStorage['username'],
     age: function(timeString) {
@@ -50,6 +51,16 @@ var ractive = new AuthenticatedRactive({
           if (d.name == name) val = d.value;
         });
         return val; 
+      }
+    },
+    filter: function(stage) {
+      switch(ractive.get('filterStage')) {
+      case 'Cold':
+        return stage=='Cold';
+      case 'On Hold':
+        return stage=='On Hold';
+      default: 
+        return stage!='Cold';
       }
     },
     formatDate: function(timeString) {
@@ -84,12 +95,13 @@ var ractive = new AuthenticatedRactive({
   },
   addDoc: function (contact) {
     console.log('addDoc '+contact+' ...');
-    ractive.set('currentIdx', ractive.get('contacts.length'));
-    ractive.set('current.doc', { author:ractive.get('username'), contact: contact, url: undefined});
+    ractive.set('current.doc', { author:ractive.get('username'), contact: ractive.stripProjection(contact), url: undefined});
     $('#docsTable tr:nth-child(1)').slideDown();
   },
-  addField: function() { 
-    
+  addNote: function (contact) {
+    console.log('addNote '+contact+' ...');
+    ractive.set('current.note', { author:ractive.get('username'), contact: ractive.stripProjection(contact), content: undefined});
+    $('#notesTable tr:nth-child(1)').slideDown();
   },
   edit: function (contact) {
     console.log('edit'+contact+'...');
@@ -119,17 +131,12 @@ var ractive = new AuthenticatedRactive({
     var html = '';
     $.each(Object.keys(obj), function(i,d) {
       html += (typeof obj[d] == 'object' ? '' : d+': '+obj[d]+'<br/>');
-    });
+    });5
     //console.log('HTML: '+html);
     //ractive.set('current.html',html);
     return html;
 //    $(selector).append(html);
   },*/
-  addNote: function (contact) {
-    console.log('addNote '+contact+' ...');
-    ractive.set('current.note', { author:ractive.get('username'), contact: contact, content: undefined});
-    $('#notesTable tr:nth-child(1)').slideDown();
-  },
   delete: function (obj) {
     console.log('delete '+obj+'...');
     var url = obj.links != undefined
@@ -140,6 +147,7 @@ var ractive = new AuthenticatedRactive({
         type: 'DELETE',
         success: completeHandler = function(data) {
           ractive.fetch();
+          ractive.toggleResults();
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
           console.error('XX: '+errorThrown);
@@ -163,6 +171,7 @@ var ractive = new AuthenticatedRactive({
           ractive.merge('contacts', data['_embedded'].contacts);
           ractive.set('saveObserver', true);
         }
+        if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
       }//,
 //      fail: function( jqXHR, textStatus, errorThrown) {
@@ -191,6 +200,17 @@ var ractive = new AuthenticatedRactive({
         ractive.get('current.notes').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
       }
     });
+  },
+  filter: function(filterStage) {
+    console.log('filter: '+filterStage);
+    if (filterStage==undefined) { 
+      filterStage = ractive.get('tenant.stagesInActive');
+//      .reduce(function(previousValue, currentValue, index, array) {
+//        return previousValue + currentValue;
+//      });
+    }
+    ractive.set('filterStage',filterStage);
+    $('input[type="search"]').blur();
   },
   find: function(contactId) { 
     console.log('find: '+contactId);
@@ -248,10 +268,12 @@ var ractive = new AuthenticatedRactive({
         success: completeHandler = function(data, textStatus, jqXHR) {
           //console.log('data: '+ data);
           var location = jqXHR.getResponseHeader('Location');
+          ractive.set('saveObserver',false);
           if (location != undefined) ractive.set('current._links.self.href',location);
           if (jqXHR.status == 201) ractive.get('contacts').push(ractive.get('current'));
           if (jqXHR.status == 204) ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
           ractive.showMessage('Contact saved');
+          ractive.set('saveObserver',true);
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
           ractive.handleError(jqXHR,textStatus,errorThrown);
@@ -302,6 +324,8 @@ var ractive = new AuthenticatedRactive({
           }
           if (jqXHR.status == 201) ractive.get('contacts').push(ractive.get('current'));
           if (jqXHR.status == 204) ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
+          //ractive.get('contacts')[ractive.get('currentIdx')].lastUpdated=new Date().toISOString();
+          //ractive.sortContacts();
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
             ractive.handleError(jqXHR,textStatus,errorThrown);
@@ -314,16 +338,19 @@ var ractive = new AuthenticatedRactive({
     }
   },
   saveDoc: function () {
-    console.log('saveDoc '+ractive.get('current.doc')+' ...');
+    console.log('saveDoc '+JSON.stringify(ractive.get('current.doc'))+' ...');
     var n = ractive.get('current.doc');
     n.url = $('#doc').val();
+    var url = ractive.getId(ractive.get('current'))+'/documents';
+    url = url.replace('contacts/',ractive.get('tenant.id')+'/contacts/');
     if (n.url.trim().length > 0) { 
       $('#docsTable tr:nth-child(1)').slideUp();
       $.ajax({
-        url: '/documents',
+        /*url: '/documents',
+        contentType: 'application/json',*/
+        url: url,
         type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(n),
+        data: n,
         success: completeHandler = function(data) {
           console.log('data: '+ data);
           ractive.fetchDocs();
@@ -336,22 +363,27 @@ var ractive = new AuthenticatedRactive({
     } 
   },
   saveNote: function () {
-    console.log('saveNote '+ractive.get('current.note')+' ...');
+    console.info('saveNote '+JSON.stringify(ractive.get('current.note'))+' ...');
     var n = ractive.get('current.note');
     n.content = $('#note').val();
+    var url = ractive.getId(ractive.get('current'))+'/notes';
+    url = url.replace('contacts/',ractive.get('tenant.id')+'/contacts/');
+    console.log('  url:'+url);
     if (n.content.trim().length > 0) { 
       $('#notesTable tr:nth-child(1)').slideUp();
       $.ajax({
-        url: '/notes',
+        /*url: '/notes',
+        contentType: 'application/json',*/
+        url: url,
         type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(n),
+        data: n,
         success: completeHandler = function(data) {
-          console.log('data: '+ data);
+          console.log('response: '+ data);
           ractive.fetchNotes();
           $('#note').val(undefined);
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
+//          if ()
             ractive.handleError(jqXHR,textStatus,errorThrown);
         }
       });
@@ -376,11 +408,14 @@ var ractive = new AuthenticatedRactive({
 	    $.getJSON(url+'?projection=complete',  function( data ) {
         console.log('found contact '+data);
         ractive.set('current', data);
+        ractive.initControls();
+        // who knows why this is needed, but it is, at least for first time rendering
+        $('.autoNumeric').autoNumeric('update',{});
+        ractive.fetchNotes();
+        ractive.fetchDocs();
         // sort most recent first
         ractive.get('current.activities').sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
       });
-      ractive.fetchNotes();
-      ractive.fetchDocs();
     } else { 
       console.log('Skipping load as no _links.'+contact.lastName);
       ractive.set('current', contact);
@@ -393,23 +428,35 @@ var ractive = new AuthenticatedRactive({
     document.body.style.cursor='progress';
     this.showMessage(msg, addClass);
   },
-  showError: function(msg) {
-    this.showMessage(msg, 'bg-danger text-danger');
+  sortContacts: function() {
+    ractive.get('contacts').sort(function(a,b) { return new Date(b.lastUpdated)-new Date(a.lastUpdated); });
   },
-  showFormError: function(formId, msg) {
-    this.showError(msg);
-    var selector = formId==undefined || formId=='' ? ':invalid' : '#'+formId+' :invalid';
-    $(selector).addClass('field-error');
-    $(selector)[0].focus();
+  startCustomerAction: function(key, label, contact) {
+    console.log('startCustomerAction: '+key+' for '+JSON.stringify(contact));
+    var instanceToStart = {
+        processDefinitionId: key,
+        businessKey: contact.firstName+' '+contact.lastName,
+        processVariables: { contactId: ractive.getId(contact), initiator: ractive.get('username') }
+      };
+    console.log(JSON.stringify(instanceToStart));
+    $.ajax({
+      url: '/'+ractive.get('tenant.id')+'/process-instances/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(instanceToStart),
+      success: completeHandler = function(data, textStatus, jqXHR) {
+        console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
+        ractive.showMessage('Started workflow "'+label+'" for '+instanceToStart.businessKey);
+      },
+    });
   },
-  showMessage: function(msg, additionalClass) {
-    if (additionalClass == undefined) additionalClass = 'bg-info text-info';
-    if (msg === undefined) msg = 'Working...';
-    $('#messages p').empty().append(msg).removeClass().addClass(additionalClass).show();
-//    document.getElementById('messages').scrollIntoView();
-    if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
-      $('#messages p').fadeOut();
-    }, EASING_DURATION*10);
+  stripProjection: function(link) {
+    var idx = link.indexOf('{projection');
+    if (idx==-1) { 
+      return link;
+    } else {
+      return link.substring(0,idx);
+    }
   },
   toggleResults: function() {
     console.log('toggleResults');

@@ -1,5 +1,6 @@
 [
   {  "id": "ClimbingFrame", "name": "Climbing Frame"  },
   {  "id": "Commercial", "name": "Commercial"  },
-  {  "id": "Premium", "name": "Premium"  }
+  {  "id": "Premium", "name": "Premium"  },
+  {  "id": "Zip Wire", "name": "Zip Wire"  }  
 ]
