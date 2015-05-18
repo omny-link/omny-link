@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NoArgsConstructor
 public class DomainModel {
     protected static final Logger LOGGER = LoggerFactory
-            .getLogger(DomainEntity.class);
+            .getLogger(DomainModel.class);
 
     @Id
     @Column(name = "id")

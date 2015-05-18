@@ -67,6 +67,8 @@ public class ProcessDefinition {
 
 	private String formKey;
 
+    private String tenantId;
+
 	private List<FormProperty> formProperties;
 
 	public ProcessDefinition() {
@@ -85,6 +87,7 @@ public class ProcessDefinition {
 		setVersion(Integer.valueOf(pd.getVersion()));
 		setResourceName(pd.getResourceName());
 		setDiagramResourceName(pd.getDiagramResourceName());
+        setTenantId(pd.getTenantId());
 	}
 
 	// Autowiring static fields is obviously dangerous, but should be ok in this

@@ -44,8 +44,14 @@ var AuthenticatedRactive = Ractive.extend({
       if (ractive.get('tenant.showPoweredBy')!=false) {
         $('body').append('<div class="powered-by"><h1><span class="powered-by-text">powered by</span><img src="images/omny-greyscale-inline-logo.png" alt="powered by Omny Link"/></h1></div><p class="beta bg-warning pull-right">Beta!</p>');
       }
-      // 'Omny Bar' 
-      $('body').append('<div class="omny-bar"><ul><li><a href="work.html"><span class="glyphicon glyphicon-inbox" title="Work"></span></a></li><li><a href="index.html"><span class="glyphicon omny-icon-address-book" title="Customers"></span></a></li><li class=""><a href="domain.html"><span class="glyphicon omny-icon-domain-model" title="Domain"></span></a></li><li class=""><a href="decisions.html"><span class="glyphicon glyphicon-list-alt" title="Decisions"></span></a></li><li class="admin-bar"><a href="users.html"><span class="glyphicon omny-icon-users" title="Users"></span></a></li><li class="admin-bar"><a href="events.html"><span class="glyphicon glyphicon-th-list" title="Event Stream"></span></a></li><li class="admin-bar"><a href="definitions.html"><span class="glyphicon omny-icon-process-model" title="Process Definitions"></span></a></li><li class="admin-bar"><a onclick="ractive.switchToTenant(\'gardenatics\')"><img src="/images/icon/gardenatics-icon-32x32.png"/></a></li><li class="admin-bar"><a onclick="ractive.switchToTenant(\'firmgains\')"><img src="/images/icon/firm-gains-icon-32x32.png"/></a></li><li class="admin-bar"><a onclick="ractive.switchToTenant(\'omny\')"><img src="/images/icon/omny-icon-32x32.png"/></a></li><li class="admin-bar"><a onclick="ractive.switchToTenant(\'trakeo\')"><img src="/images/icon/trakeo-icon-32x32.png"/></a></li><li class="admin-bar"><a onclick="ractive.switchToTenant(\'carquake\')"><img src="/images/icon/carquake-icon-32x32.png"/></a></li></ul></div>');
+      if (ractive.get('tenant.omny-bar')!=undefined) {
+        // 'Omny Bar' 
+        $('body').append('<div class="omny-bar"><ul></ul></div>');
+        $.each(ractive.get('tenant.omny-bar'), function(i,d) {
+          $('.omny-bar ul').append('<li><a href="'+d.url+'"><span class="'+d.classes+'" title="'+d.title+'"></span></a></li>');
+        });
+      }
+      ractive.initContentEditable();// required here for the tennt switcher
       // tenant partial templates
       $.each(ractive.get('tenant').partials, function(i,d) {
         $.get(d.url, function(response){
@@ -68,7 +74,7 @@ var AuthenticatedRactive = Ractive.extend({
     if (this && this.get('username')) $.getJSON('/users/'+ractive.get('username'), function(profile) {
       ractive.set('profile',profile);
       $('.profile-img').empty().append('<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34"/>');
-      if (ractive.hasRole('super_admin')) $('.admin').show();
+      if (ractive.hasRole('super_admin')) $('.super-admin').show();
       ractive.loadTenantConfig(ractive.get('profile.tenant'));
     });
     else this.showError('You are not logged in, some or all functionality will be unavailable.');
@@ -77,11 +83,12 @@ var AuthenticatedRactive = Ractive.extend({
     switch (jqXHR.status) { 
     case 401:
     case 403: 
+    case 405: /* Could also be a bug but in production we'll assume a timeout */ 
       this.showError("Session expired, please login again");
       window.location.href='/login';
       break; 
     default: 
-      var msg = "Bother! Something has gone wrong (code "+jqXHR.status+"): "+textStatus+':'+errorThrown;
+      var msg = "Bother! Something has gone wrong (code "+jqXHR.status+", url: "+jqXHR.url+"): "+textStatus+':'+errorThrown;
       console.error('msg:'+msg);
       ractive.showError(msg);
     }
@@ -119,11 +126,19 @@ var AuthenticatedRactive = Ractive.extend({
       $('.autoNumeric').autoNumeric('init', {});
     }
   },
+  initContentEditable: function() {
+    console.log('initContentEditable');
+    $("[contenteditable]").focus(function() { 
+      console.log('click '+this.id);
+      selectElementContents(this);
+    });
+  },
   initControls: function() { 
     console.log('initControls');
     ractive.initAutoComplete();
     ractive.initAutoNumeric();
     ractive.initDatepicker();
+    ractive.initContentEditable();
   },
   initDatepicker: function() {
     console.log('initDatepicker');
@@ -134,6 +149,16 @@ var AuthenticatedRactive = Ractive.extend({
         todayHighlight: true
       });
     }
+  },
+  loadStandardPartials: function(stdPartials) {
+    $.each(stdPartials, function(i,d) {
+      console.log('loading...: '+d.name)
+      $.get(d.url, function(response){
+        console.log('... loaded: '+d.name)
+        //console.log('response: '+response)
+        if (ractive != undefined) ractive.resetPartial(d.name,response);
+      });
+    });
   },
   loadTenantConfig: function(tenant) {
     console.log('loadTenantConfig:'+tenant);
@@ -173,15 +198,19 @@ var AuthenticatedRactive = Ractive.extend({
     $(selector)[0].focus();
   },
   showMessage: function(msg, additionalClass) {
+    console.log('showMessage: '+msg);
     if (additionalClass == undefined) additionalClass = 'bg-info text-info';
     if (msg === undefined) msg = 'Working...';
-    $('#messages p').empty().append(msg).removeClass().addClass(additionalClass).show();
+    $('#messages').empty().append(msg).removeClass().addClass(additionalClass).show();
 //    document.getElementById('messages').scrollIntoView();
     if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
-      $('#messages p').fadeOut();
+      $('#messages').fadeOut();
     }, EASING_DURATION*10);
   },
   switchToTenant: function(tenant) {
+    if (tenant==undefined || typeof tenant != 'string') {
+      return false;
+    }
     console.log('switchToTenant: '+tenant);
     $.ajax({
       method: 'PUT',
@@ -201,3 +230,10 @@ function getCookie(name) {
   if (parts.length == 2) return parts.pop().split(";").shift();
 }
 
+function selectElementContents(el) {
+  var range = document.createRange();
+  range.selectNodeContents(el);
+  var sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}

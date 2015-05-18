@@ -1,5 +1,5 @@
 /* FONTS */ 
-
+@import url('//fonts.googleapis.com/css?family=Roboto:400italic,400,700');
 @font-face {
   font-family: 'barmenoregular';
   src: url('fonts/barmeno_regular-webfont.eot');
@@ -103,6 +103,7 @@ section h2 .search {
   border-bottom-right-radius: 0px;
   border-top-right-radius: 0px;
   border-color: #0e9acd;
+  width: 45%;
 }
 section h2 .glyphicon-search {
   border-bottom-left-radius: 0;
@@ -116,21 +117,22 @@ section h2 .glyphicon-search {
   top: 1px;
 }
 section h2 .entity {
-  /*margin-bottom: 10px;*/
-  margin-right: 1px;
   border-bottom-right-radius: 0px !important;
   border-top-right-radius: 0px !important;
   border-color: #0e9acd;
   padding-right: 0;
-  margin-right: 0;
+  /*margin-bottom: 10px;*/
+  margin-right: -1px;
+  margin-top: 3px;
   width: 110px;
 }
 section h2 .file {
-  /*margin-bottom: 10px;*/
-  margin-right: 0;
   border-radius: 0 !important;
   border-color: #0e9acd;
+  /*margin-bottom: 10px;*/
   margin-left: 0;
+  margin-right: 0;
+  margin-top: 3px;
   width: 110px;
 }
 section h2 .glyphicon-import {
@@ -140,7 +142,7 @@ section h2 .glyphicon-import {
 	margin-left: 0px;
 	position: relative;
 	left: -1px;
-	top: -3px;
+	top: 0px;
 }
 .table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
   vertical-align: middle;
@@ -163,7 +165,8 @@ th {
 .a-secondary-data {
 }
 
-.admin { 
+.admin,
+.super-admin { 
   display: none;
 }
 .ajax-loader {
@@ -216,7 +219,7 @@ th {
   margin: 3px;
   border-radius: 5px;
 }
-a.glyphicon {
+.glyphicon {
   text-decoration: none;
   color: #0e9acd;
 }
@@ -242,7 +245,7 @@ a.glyphicon {
   width: 50px;
 }
 .omny-bar li.admin-bar span {
-	color: red;
+	/*color: red;*/
 }
 .omny-bar li {
 	list-style: none;
@@ -275,6 +278,13 @@ a.glyphicon {
 .currentBody { 
 	margin-top: 10px;
 }
+.omny-filter.dropdown-menu li:nth-child(1) {
+  margin-top: 10px;
+}
+.omny-dropdown.dropdown-menu li {
+	height: 25px;
+	padding-left: 10px;
+}
 .form { 
 	display: block;
 	list-style: none;
@@ -296,6 +306,9 @@ form#upload {
   text-align: right;
   vertical-align: top;
   /*width: 200px;*/
+}
+.form input {
+	/*width: 60%;*/
 }
 .form input.create-form {
   padding-bottom: 2px;	
@@ -334,6 +347,7 @@ form#upload {
   top: 45px;
   margin-left: 25%;
   margin-right: 25%;
+  padding: 0 10px 0 10px;
   width: 50%;
   z-index: 10;
 }
