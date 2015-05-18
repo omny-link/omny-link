@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -73,15 +74,16 @@ public class Fetcher extends RestService implements JavaDelegate {
     }
 
     public String fetchToString(String resourceUrl) throws IOException {
-        return fetchToString(resourceUrl, null);
+        return fetchToString(resourceUrl, null, null);
     }
 
-    public String fetchToString(String resourceUrl, String selector)
+    public String fetchToString(String resourceUrl,
+            Map<String, String> headers, String selector)
             throws IOException {
         String repoUri = "mem://string";
 
         MemRepository repo = (MemRepository) getRepository(repoUri);
-        fetchToRepo(resourceUrl, getResourceName(resourceUrl), repo);
+        fetchToRepo(resourceUrl, getResourceName(resourceUrl), headers, repo);
         String result = repo.getString();
         LOGGER.debug("resource:" + result);
         if (selector != null) {
@@ -114,10 +116,17 @@ public class Fetcher extends RestService implements JavaDelegate {
 
     public void fetchToRepo(String resourceUrl, String resourceName,
             Repository repo) throws IOException {
+        fetchToRepo(resourceUrl, resourceName, new HashMap<String, String>(),
+                repo);
+    }
+
+    private void fetchToRepo(String resourceUrl, String resourceName,
+            Map<String, String> headers, Repository repo) throws IOException {
         Resource resource = getResource(resourceUrl);
         try {
             fetchToRepo(resourceName, getMime(resourceUrl),
-                    resource.getResource(resourceUrl), repo);
+                    resource.getResource(resourceUrl, "GET", headers,
+                            new HashMap<String, String>()), repo);
         } catch (Throwable e) {
             LOGGER.error(e.getClass().getName() + ":" + e.getMessage(), e);
         }
@@ -309,7 +318,8 @@ public class Fetcher extends RestService implements JavaDelegate {
                 String sel = selector == null ? null : (String) selector
                         .getValue(execution);
                 LOGGER.debug("sel: " + sel);
-                String content = fetchToString(resource, sel);
+                String content = fetchToString(resource,
+                        getRequestHeaders(execution), sel);
                 if (LOGGER.isDebugEnabled() && content != null) {
                     LOGGER.debug("Response starts: "
                             + content.substring(0,

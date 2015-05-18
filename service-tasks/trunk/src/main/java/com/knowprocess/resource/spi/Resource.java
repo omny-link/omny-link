@@ -2,6 +2,7 @@ package com.knowprocess.resource.spi;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  * Interface providing an executable specification.
@@ -35,4 +36,8 @@ public interface Resource {
 	 *             If cannot access resource, includes host not found.
 	 */
 	InputStream getResource(String uri) throws IOException;
+
+    InputStream getResource(String sUrl, String method,
+            Map<String, String> headers, Map<String, String> data)
+            throws IOException;
 }

@@ -9,7 +9,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,7 @@ public class UrlResource implements Resource {
 
     private String password;
     private String username;
-    private static final Map<String, String> EMPTY_MAP = Collections.emptyMap();;
+    private static final Map<String, String> EMPTY_MAP = new HashMap<String, String>();
 
     public UrlResource() {
         super();
@@ -74,7 +73,7 @@ public class UrlResource implements Resource {
     public InputStream getResource(String sUrl, String method,
             String contentType,
             String accept, Map<String, String> data) throws IOException {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = EMPTY_MAP;
         return getResource(sUrl, method, headers, data);
     }
 

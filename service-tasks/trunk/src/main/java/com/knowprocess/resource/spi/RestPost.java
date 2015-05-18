@@ -2,7 +2,6 @@ package com.knowprocess.resource.spi;
 
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,14 +92,6 @@ public class RestPost extends RestService implements JavaDelegate {
             return new String[0];
         } else {
             return ((String) responseHeaders.getValue(execution)).split(",");
-        }
-    }
-
-    private Map<String, String> getRequestHeaders(DelegateExecution execution) {
-        if (headers == null) {
-            return Collections.emptyMap();
-        } else {
-            return getRequestHeaders((String) headers.getValue(execution));
         }
     }
 

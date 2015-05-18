@@ -150,4 +150,12 @@ public abstract class RestService implements JavaDelegate {
         }
     }
 
+    protected Map<String, String> getRequestHeaders(DelegateExecution execution) {
+        if (headers == null) {
+            return new HashMap<String, String>();
+        } else {
+            return getRequestHeaders((String) headers.getValue(execution));
+        }
+    }
+
 }

@@ -2,6 +2,7 @@ package com.knowprocess.resource.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.RepositoryService;
@@ -63,4 +64,13 @@ public class DeployedResource implements Resource {
 			}
 		}
 	}
+
+    @Override
+    public InputStream getResource(String sUrl, String method,
+            Map<String, String> headers, Map<String, String> data)
+            throws IOException {
+        System.err
+                .println("Ignoring method, headers and parameters - those are not yet implemented");
+        return getResource(sUrl);
+    }
 }

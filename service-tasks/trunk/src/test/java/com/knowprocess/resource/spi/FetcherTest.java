@@ -101,7 +101,7 @@ public class FetcherTest {
     public void testFetchResourcePart() {
         String resource = "http://www.jemsudan.org/meet-the-leadership-jem-chairman-dr-gibril-ibrahim/";
         try {
-            String result = svc.fetchToString(resource, ".inner-content");
+            String result = svc.fetchToString(resource, null, ".inner-content");
             System.out.println("Result found: \n" + result);
             assertNotNull(result);
             assertTrue(result.contains("inner-content"));
