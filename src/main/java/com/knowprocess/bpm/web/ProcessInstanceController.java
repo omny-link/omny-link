@@ -1,21 +1,26 @@
 package com.knowprocess.bpm.web;
 
 import java.util.List;
+import java.util.Map.Entry;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.activiti.engine.ProcessEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.knowprocess.bpm.model.ProcessInstance;
 
-@RequestMapping("/process-instances")
+@RequestMapping("/{tenantId}/process-instances")
 @Controller
 public class ProcessInstanceController {
 
@@ -59,16 +64,29 @@ public class ProcessInstanceController {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody ProcessInstance startNewInstance(
+            HttpServletResponse resp,
+            @PathVariable("tenantId") String tenantId,
             @RequestBody ProcessInstance instanceToStart) {
-        LOGGER.info(String.format("Start process of %1$s",
-                instanceToStart.getProcessDefinitionId()));
+        LOGGER.info(String.format("Start process %1$s for tenant %2$s",
+                instanceToStart.getProcessDefinitionId(), tenantId));
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("  vars: ");
+            for (Entry<String, Object> entry : instanceToStart
+                    .getProcessVariables().entrySet()) {
+                LOGGER.debug(entry.getKey() + " " + entry.getValue());
+            }
+        }
 
         ProcessInstance pi = new ProcessInstance(processEngine
-                .getRuntimeService().startProcessInstanceById(
+                .getRuntimeService().startProcessInstanceByKeyAndTenantId(
                         instanceToStart.getProcessDefinitionId(),
                         instanceToStart.getBusinessKey(),
-                        instanceToStart.getProcessVariables()));
+                        instanceToStart.getProcessVariables(), tenantId));
+        resp.setHeader("Location",
+                "/process-instances/" + pi.getProcessInstanceId());
         return pi;
     }
 

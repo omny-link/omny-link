@@ -78,6 +78,22 @@ var ractive = new AuthenticatedRactive({
 //    ractive.fetchUserNotes();
     $('#currentSect').slideDown();
   },
+  startInstance: function(key, bizKey) {
+    console.log('startInstance: '+key+' for '+bizKey);
+    $.ajax({
+      url: '/'+ractive.get('tenant.id')+'/process-instances/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        processDefinitionId: key,
+        businessKey: bizKey
+      }),
+      success: completeHandler = function(data) {
+        console.log('response: '+ data);
+        ractive.showMessage('Started: '+data.getId());
+      },
+    });
+  },
   toggleResults: function() {
     console.log('toggleResults');
     $('#definitionsTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');

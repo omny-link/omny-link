@@ -47,6 +47,9 @@ public class DomainController {
         case "firmgains":
             LOGGER.info("... returning firmgains");
             return getFirmGainsDomain();
+        case "omny":
+            LOGGER.info("... returning omny");
+            return getOmnyDomain();
         case "trakeo":
             LOGGER.info("... returning trakeo");
             return getTrakeoDomain();
@@ -292,6 +295,21 @@ public class DomainController {
         fields.add(new CustomEntityField("askingPrice", "Asking price", "",
                 false, "number"));
 
+        return model;
+    }
+
+    private DomainModel getOmnyDomain() {
+        DomainModel model = getDefaultDomain();
+
+        // Contact
+        List<EntityField> fields = model.getEntities().get(0).getFields();
+        fields.add(new CustomEntityField("age", "Age",
+                "Your age last birthday.", false,
+                "number"));
+        fields.add(new CustomEntityField("health", "Health",
+                "Your general state of health.", false, "text"));
+        fields.add(new CustomEntityField("riskRating", "Risk Rating",
+                "Risk rating calculated for you.", false, "text"));
         return model;
     }
 

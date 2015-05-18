@@ -12,7 +12,15 @@ var ractive = new AuthenticatedRactive({
 
   // partial templates
   partials: { simpleTodoFormExtension: function(x) {
-    return 'HELLO'+x
+    return '<div class="clearfix"></div>'
+           +'<ul style="padding-left:0">'
+           +  '{{# keys}}'
+           +    '<li>'
+           +      '<label class="col-md-3">{{..toLabel()}}</label>'
+           +      '<input id="cur{{.}}" readonly style="width: 60%" value="{{obj[.]}}">'
+           +    '</li>'
+           +  '{{/}}'
+           +'</ul>';
   } },
 
   // Here, we're passing in some initial data
@@ -166,23 +174,21 @@ var ractive = new AuthenticatedRactive({
     ractive.toggleResults();
     $('#currentSect').slideDown();
   },
-  showError: function(msg) {
-    this.showMessage(msg, 'bg-danger text-danger');
-  },
-  showFormError: function(formId, msg) {
-    this.showError(msg);
-    var selector = formId==undefined || formId=='' ? ':invalid' : '#'+formId+' :invalid';
-    $(selector).addClass('field-error');
-    $(selector)[0].focus();
-  },
-  showMessage: function(msg, additionalClass) {
-    if (additionalClass == undefined) additionalClass = 'bg-info text-info';
-    if (msg === undefined) msg = 'Working...';
-    $('#messages p').empty().append(msg).removeClass().addClass(additionalClass).show();
-//    document.getElementById('messages').scrollIntoView();
-    if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
-      $('#messages p').fadeOut();
-    }, EASING_DURATION*10);
+  startSop: function(key, bizKey) {
+    console.log('startSop: '+key+' for '+bizKey);
+    $.ajax({
+      url: '/'+ractive.get('tenant.id')+'/process-instances/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        processDefinitionId: key,
+        businessKey: bizKey
+      }),
+      success: completeHandler = function(data) {
+        console.log('response: '+ data);
+        ractive.showMessage('Started: '+data.getId());
+      },
+    });
   },
   submitTask: function() {
     console.log('submitTask '+JSON.stringify(ractive.get('current'))+' ...');
