@@ -50,6 +50,11 @@ public class Document {
     @JoinColumn(name = "contact_id")
     private Contact contact;
 
+    public Document(String author, String url) {
+        setAuthor(author);
+        setUrl(url);
+    }
+
     @PrePersist
     void preInsert() {
         created = new Date();

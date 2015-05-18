@@ -125,6 +125,11 @@ public class Account implements Serializable {
         return customFields;
     }
 
+    public void setCustomFields(List<CustomAccountField> fields) {
+        this.customFields = fields;
+        setLastUpdated(new Date());
+    }
+
     public Object getField(@NotNull String fieldName) {
         for (CustomField field : getCustomFields()) {
             if (fieldName.equals(field.getName())) {

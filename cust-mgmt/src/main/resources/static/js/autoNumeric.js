@@ -2,7 +2,7 @@
 * autoNumeric.js
 * @author: Bob Knothe
 * @author: Sokolov Yura
-* @version: 1.9.22 - 2014-04-20 GMT 7:00 PM
+* @version: 1.9.30 - 2015-01-13 GMT 3:30 AM
 *
 * Created by Robert J. Knothe on 2010-10-25. Please report any bugs to https://github.com/BobKnothe/autoNumeric
 * Created by Sokolov Yura on 2010-11-07
@@ -105,7 +105,7 @@
     function autoCode($this, settings) {
         runCallbacks($this, settings);
         settings.oEvent = null;
-        settings.tagList = ['B', 'CAPTION', 'CITE', 'CODE', 'DD', 'DEL', 'DIV', 'DFN', 'DT', 'EM', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'INS', 'KDB', 'LABEL', 'LI', 'OUTPUT', 'P', 'Q', 'S', 'SAMPLE', 'SPAN', 'STRONG', 'TD', 'TH', 'U', 'VAR'];
+        settings.tagList = ['b', 'caption', 'cite', 'code', 'dd', 'del', 'div', 'dfn', 'dt', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ins', 'kdb', 'label', 'li', 'output', 'p', 'q', 's', 'sample', 'span', 'strong', 'td', 'th', 'u', 'var'];
         var vmax = settings.vMax.toString().split('.'),
             vmin = (!settings.vMin && settings.vMin !== 0) ? [] : settings.vMin.toString().split('.');
         convertKeyToNumber(settings, 'vMax');
@@ -423,7 +423,9 @@
             ivArray = iv.substring(0, rLength + 1).split(''),
             odd = (iv.charAt(rLength) === '.') ? (iv.charAt(rLength - 1) % 2) : (iv.charAt(rLength) % 2),
             onePass = true;
-        odd = (odd === 0 && (iv.substring(rLength + 2, iv.length) > 0)) ? 1 : 0;
+        if (odd !== 1) {
+            odd = (odd === 0 && (iv.substring(rLength + 2, iv.length) > 0)) ? 1 : 0;
+        }
         if ((tRound > 4 && settings.mRound === 'S') || /** Round half up symmetric */
                 (tRound > 4 && settings.mRound === 'A' && nSign === '') || /** Round half up asymmetric positive values */
                 (tRound > 5 && settings.mRound === 'A' && nSign === '-') || /** Round half up asymmetric negative values */
@@ -621,7 +623,7 @@
         },
         /**
          * process pasting, cursor moving and skipping of not interesting keys
-         * if returns true, futher processing is not performed
+         * if returns true, further processing is not performed
          */
         skipAllways: function (e) {
             var kdCode = this.kdCode,
@@ -731,9 +733,11 @@
                 }
                 this.setValueParts(left + settingsClone.aDec, right);
                 return true;
-            } /** start rule on negative sign */
-
-            if (cCode === '-' || cCode === '+') { /** prevent minus if not allowed */
+            }
+            /**
+             * start rule on negative sign & prevent minus if not allowed
+             */
+            if (cCode === '-' || cCode === '+') {
                 if (!settingsClone.aNeg) {
                     return true;
                 } /** caret is always after minus */
@@ -801,7 +805,7 @@
                     position = newLeft[0].length;
                     /** if we are just before sign which is in prefix position */
                     if (((position === 0 && value.charAt(0) !== settingsClone.aNeg) || (position === 1 && value.charAt(0) === settingsClone.aNeg)) && settingsClone.aSign && settingsClone.pSign === 'p') {
-                        /** place carret after prefix sign */
+                        /** place caret after prefix sign */
                         position = this.settingsClone.aSign.length + (value.charAt(0) === '-' ? 1 : 0);
                     }
                 } else if (settingsClone.aSign && settingsClone.pSign === 's') {
@@ -846,105 +850,7 @@
                     settings = $this.data('autoNumeric'), /** attempt to grab 'autoNumeric' settings, if they don't exist returns "undefined". */
                     tagData = $this.data(); /** attempt to grab HTML5 data, if they don't exist we'll get "undefined".*/
                 if (typeof settings !== 'object') { /** If we couldn't grab settings, create them from defaults and passed options. */
-                    var defaults = {
-                        /** allowed numeric values
-                         * please do not modify
-                         */
-                        aNum: '0123456789',
-                        /** allowed thousand separator characters
-                         * comma = ','
-                         * period "full stop" = '.'
-                         * apostrophe is escaped = '\''
-                         * space = ' '
-                         * none = ''
-                         * NOTE: do not use numeric characters
-                         */
-                        aSep: ',',
-                        /** digital grouping for the thousand separator used in Format
-                         * dGroup: '2', results in 99,99,99,999 common in India for values less than 1 billion and greater than -1 billion
-                         * dGroup: '3', results in 999,999,999 default
-                         * dGroup: '4', results in 9999,9999,9999 used in some Asian countries
-                         */
-                        dGroup: '3',
-                        /** allowed decimal separator characters
-                         * period "full stop" = '.'
-                         * comma = ','
-                         */
-                        aDec: '.',
-                        /** allow to declare alternative decimal separator which is automatically replaced by aDec
-                         * developed for countries the use a comma ',' as the decimal character
-                         * and have keyboards\numeric pads that have a period 'full stop' as the decimal characters (Spain is an example)
-                         */
-                        altDec: null,
-                        /** allowed currency symbol
-                         * Must be in quotes aSign: '$', a space is allowed aSign: '$ '
-                         */
-                        aSign: '',
-                        /** placement of currency sign
-                         * for prefix pSign: 'p',
-                         * for suffix pSign: 's',
-                         */
-                        pSign: 'p',
-                        /** maximum possible value
-                         * value must be enclosed in quotes and use the period for the decimal point
-                         * value must be larger than vMin
-                         */
-                        vMax: '9999999999999.99',
-                        /** minimum possible value
-                         * value must be enclosed in quotes and use the period for the decimal point
-                         * value must be smaller than vMax
-                         */
-                        vMin: '0.00',
-                        /** max number of decimal places = used to override decimal places set by the vMin & vMax values
-                         * value must be enclosed in quotes example mDec: '3',
-                         * This can also set the value via a call back function mDec: 'css:#
-                         */
-                        mDec: null,
-                        /** method used for rounding
-                         * mRound: 'S', Round-Half-Up Symmetric (default)
-                         * mRound: 'A', Round-Half-Up Asymmetric
-                         * mRound: 's', Round-Half-Down Symmetric (lower case s)
-                         * mRound: 'a', Round-Half-Down Asymmetric (lower case a)
-                         * mRound: 'B', Round-Half-Even "Bankers Rounding"
-                         * mRound: 'U', Round Up "Round-Away-From-Zero"
-                         * mRound: 'D', Round Down "Round-Toward-Zero" - same as truncate
-                         * mRound: 'C', Round to Ceiling "Toward Positive Infinity"
-                         * mRound: 'F', Round to Floor "Toward Negative Infinity"
-                         */
-                        mRound: 'S',
-                        /** controls decimal padding
-                         * aPad: true - always Pad decimals with zeros
-                         * aPad: false - does not pad with zeros.
-                         * aPad: `some number` - pad decimals with zero to number different from mDec
-                         * thanks to Jonas Johansson for the suggestion
-                         */
-                        aPad: true,
-                        /** places brackets on negative value -$ 999.99 to (999.99)
-                         * visible only when the field does NOT have focus the left and right symbols should be enclosed in quotes and seperated by a comma
-                         * nBracket: null, nBracket: '(,)', nBracket: '[,]', nBracket: '<,>' or nBracket: '{,}'
-                         */
-                        nBracket: null,
-                        /** Displayed on empty string
-                         * wEmpty: 'empty', - input can be blank
-                         * wEmpty: 'zero', - displays zero
-                         * wEmpty: 'sign', - displays the currency sign
-                         */
-                        wEmpty: 'empty',
-                        /** controls leading zero behavior
-                         * lZero: 'allow', - allows leading zeros to be entered. Zeros will be truncated when entering additional digits. On focusout zeros will be deleted.
-                         * lZero: 'deny', - allows only one leading zero on values less than one
-                         * lZero: 'keep', - allows leading zeros to be entered. on fousout zeros will be retained.
-                         */
-                        lZero: 'allow',
-                        /** determine if the default value will be formatted on page ready.
-                         * true = automatically formats the default value on page ready
-                         * false = will not format the default value
-                         */
-                        aForm: true,
-                        /** future use */
-                        onSomeEvent: function () {}
-                    };
-                    settings = $.extend({}, defaults, tagData, options); /** Merge defaults, tagData and options */
+                    settings = $.extend({}, $.fn.autoNumeric.defaults, tagData, options); /** Merge defaults, tagData and options */
                     if (settings.aDec === settings.aSep) {
                         $.error("autoNumeric will not function properly when the decimal character aDec: '" + settings.aDec + "' and thousand separator aSep: '" + settings.aSep + "' are the same character");
                         return this;
@@ -955,8 +861,8 @@
                 }
                 settings.runOnce = false;
                 var holder = getHolder($this, settings);
-                if ($.inArray($this.prop('tagName'), settings.tagList) === -1 && $this.prop('tagName') !== 'INPUT') {
-                    $.error("The <" + $this.prop('tagName') + "> is not supported by autoNumeric()");
+                if ($.inArray($this.prop('tagName').toLowerCase(), settings.tagList) === -1 && $this.prop('tagName').toLowerCase() !== 'input') {
+                    $.error("The <" + $this.prop('tagName').toLowerCase() + "> is not supported by autoNumeric()");
                     return this;
                 }
                 if (settings.runOnce === false && settings.aForm) {/** routine to format default value on page load */
@@ -970,11 +876,11 @@
                             $this[0].value = settings.aSign;
                             setValue = false;
                         }
-                        if (setValue) {
+                        if (setValue && $this[0].value === $this.prop('defaultValue')) {
                             $this.autoNumeric('set', $this.val());
                         }
                     }
-                    if ($.inArray($this.prop('tagName'), settings.tagList) !== -1 && $this.text() !== '') {
+                    if ($.inArray($this.prop('tagName').toLowerCase(), settings.tagList) !== -1 && $this.text() !== '') {
                         $this.autoNumeric('set', $this.text());
                     }
                 }
@@ -1096,11 +1002,9 @@
                         if (groupedValue === null) {
                             groupedValue = autoGroup(value, settingsClone);
                         }
-                        if (groupedValue !== origValue) {
-                            $this.val(groupedValue);
-                        }
-                        if (groupedValue !== holder.inVal) {
+                        if (groupedValue !== holder.inVal || groupedValue !== origValue) {
                             $this.change();
+                            $this.val(groupedValue);
                             delete holder.inVal;
                         }
                         if (settingsClone.nBracket !== null && $this.autoNumeric('get') < 0) {
@@ -1144,6 +1048,9 @@
         },
         /** returns a formatted strings for "input:text" fields Uses jQuery's .val() method*/
         set: function (valueIn) {
+            if (valueIn === null) {
+                return;
+            }
             return $(this).each(function () {
                 var $this = autoGet($(this)),
                     settings = $this.data('autoNumeric'),
@@ -1154,7 +1061,7 @@
                     return this;
                 }
                 /** routine to handle page re-load from back button */
-                if (testValue !== $this.attr('value') && $this.prop('tagName') === 'INPUT' && settings.runOnce === false) {
+                if (testValue !== $this.attr('value') && $this.prop('tagName').toLowerCase() === 'input' && settings.runOnce === false) {
                     value = (settings.nBracket !== null) ? negativeBracket($this.val(), settings.nBracket, 'pageLoad') : value;
                     value = autoStrip(value, settings);
                 }
@@ -1180,10 +1087,10 @@
                 if ($this.is('input[type=text], input[type=hidden], input[type=tel], input:not([type])')) { /**added hidden type */
                     return $this.val(value);
                 }
-                if ($.inArray($this.prop('tagName'), settings.tagList) !== -1) {
+                if ($.inArray($this.prop('tagName').toLowerCase(), settings.tagList) !== -1) {
                     return $this.text(value);
                 }
-                $.error("The <" + $this.prop('tagName') + "> is not supported by autoNumeric()");
+                $.error("The <" + $this.prop('tagName').toLowerCase() + "> is not supported by autoNumeric()");
                 return false;
             });
         },
@@ -1200,10 +1107,10 @@
             /** determine the element type then use .eq(0) selector to grab the value of the first element in selector */
             if ($this.is('input[type=text], input[type=hidden], input[type=tel], input:not([type])')) { /**added hidden type */
                 getValue = $this.eq(0).val();
-            } else if ($.inArray($this.prop('tagName'), settings.tagList) !== -1) {
+            } else if ($.inArray($this.prop('tagName').toLowerCase(), settings.tagList) !== -1) {
                 getValue = $this.eq(0).text();
             } else {
-                $.error("The <" + $this.prop('tagName') + "> is not supported by autoNumeric()");
+                $.error("The <" + $this.prop('tagName').toLowerCase() + "> is not supported by autoNumeric()");
                 return false;
             }
             if ((getValue === '' && settings.wEmpty === 'empty') || (getValue === settings.aSign && (settings.wEmpty === 'sign' || settings.wEmpty === 'empty'))) {
@@ -1231,13 +1138,15 @@
                 $this = autoGet($(this)),
                 str = $this.serialize(),
                 parts = str.split('&'),
+                formIndex = $('form').index($this),
                 i = 0;
             for (i; i < parts.length; i += 1) {
-                var miniParts = parts[i].split('=');
-                var settings = $('*[name="' + decodeURIComponent(miniParts[0]) + '"]').data('autoNumeric');
+                var miniParts = parts[i].split('='),
+                    $field = $('form:eq(' + formIndex + ') input[name="' + decodeURIComponent(miniParts[0]) + '"]'),
+                    settings = $field.data('autoNumeric');
                 if (typeof settings === 'object') {
-                    if (miniParts[1] !== null && $('*[name="' + decodeURIComponent(miniParts[0]) + '"]').data('autoNumeric') !== undefined) {
-                        miniParts[1] = $('input[name="' + decodeURIComponent(miniParts[0]) + '"]').autoNumeric('get');
+                    if (miniParts[1] !== null) {
+                        miniParts[1] = $field.autoNumeric('get');
                         parts[i] = miniParts.join('=');
                         isAutoNumeric = true;
                     }
@@ -1246,27 +1155,29 @@
             if (isAutoNumeric === true) {
                 return parts.join('&');
             }
-            $.error("You must initialize autoNumeric('init', {options}) prior to calling the 'getString' method");
-            return this;
+            return str;
         },
         /** method to get the unformatted value from multiple fields */
         getArray: function () {
             var isAutoNumeric = false,
                 $this = autoGet($(this)),
-                formFields = $this.serializeArray();
+                formFields = $this.serializeArray(),
+                formIndex = $('form').index($this);
+            /*jslint unparam: true*/
             $.each(formFields, function (i, field) {
-                var settings = $('*[name="' + decodeURIComponent(field.name) + '"]').data('autoNumeric');
+                var $field = $('form:eq(' + formIndex + ') input[name="' + decodeURIComponent(field.name) + '"]'),
+                    settings = $field.data('autoNumeric');
                 if (typeof settings === 'object') {
-                    if (field.value !== '' && $('*[name="' + decodeURIComponent(field.name) + '"]').data('autoNumeric') !== undefined) {
-                        field.value = $('input[name="' + decodeURIComponent(field.name) + '"]').autoNumeric('get').toString();
+                    if (field.value !== '') {
+                        field.value = $field.autoNumeric('get').toString();
                     }
                     isAutoNumeric = true;
                 }
             });
+            /*jslint unparam: false*/
             if (isAutoNumeric === true) {
                 return formFields;
             }
-            $.error("You must initialize autoNumeric('init', {options}) prior to calling the 'getArray' method");
             return this;
         },
         /** returns the settings object for those who need to look under the hood */
@@ -1284,4 +1195,105 @@
         }
         $.error('Method "' + method + '" is not supported by autoNumeric()');
     };
+
+    /* Make defaults public */
+    $.fn.autoNumeric.defaults = {
+        /** allowed numeric values
+         * please do not modify
+         */
+        aNum: '0123456789',
+        /** allowed thousand separator characters
+         * comma = ','
+         * period "full stop" = '.'
+         * apostrophe is escaped = '\''
+         * space = ' '
+         * none = ''
+         * NOTE: do not use numeric characters
+         */
+        aSep: ',',
+        /** digital grouping for the thousand separator used in Format
+         * dGroup: '2', results in 99,99,99,999 common in India for values less than 1 billion and greater than -1 billion
+         * dGroup: '3', results in 999,999,999 default
+         * dGroup: '4', results in 9999,9999,9999 used in some Asian countries
+         */
+        dGroup: '3',
+        /** allowed decimal separator characters
+         * period "full stop" = '.'
+         * comma = ','
+         */
+        aDec: '.',
+        /** allow to declare alternative decimal separator which is automatically replaced by aDec
+         * developed for countries the use a comma ',' as the decimal character
+         * and have keyboards\numeric pads that have a period 'full stop' as the decimal characters (Spain is an example)
+         */
+        altDec: null,
+        /** allowed currency symbol
+         * Must be in quotes aSign: '$', a space is allowed aSign: '$ '
+         */
+        aSign: '',
+        /** placement of currency sign
+         * for prefix pSign: 'p',
+         * for suffix pSign: 's',
+         */
+        pSign: 'p',
+        /** maximum possible value
+         * value must be enclosed in quotes and use the period for the decimal point
+         * value must be larger than vMin
+         */
+        vMax: '9999999999999.99',
+        /** minimum possible value
+         * value must be enclosed in quotes and use the period for the decimal point
+         * value must be smaller than vMax
+         */
+        vMin: '0.00',
+        /** max number of decimal places = used to override decimal places set by the vMin & vMax values
+         * value must be enclosed in quotes example mDec: '3',
+         * This can also set the value via a call back function mDec: 'css:#
+         */
+        mDec: null,
+        /** method used for rounding
+         * mRound: 'S', Round-Half-Up Symmetric (default)
+         * mRound: 'A', Round-Half-Up Asymmetric
+         * mRound: 's', Round-Half-Down Symmetric (lower case s)
+         * mRound: 'a', Round-Half-Down Asymmetric (lower case a)
+         * mRound: 'B', Round-Half-Even "Bankers Rounding"
+         * mRound: 'U', Round Up "Round-Away-From-Zero"
+         * mRound: 'D', Round Down "Round-Toward-Zero" - same as truncate
+         * mRound: 'C', Round to Ceiling "Toward Positive Infinity"
+         * mRound: 'F', Round to Floor "Toward Negative Infinity"
+         */
+        mRound: 'S',
+        /** controls decimal padding
+         * aPad: true - always Pad decimals with zeros
+         * aPad: false - does not pad with zeros.
+         * aPad: `some number` - pad decimals with zero to number different from mDec
+         * thanks to Jonas Johansson for the suggestion
+         */
+        aPad: true,
+        /** places brackets on negative value -$ 999.99 to (999.99)
+         * visible only when the field does NOT have focus the left and right symbols should be enclosed in quotes and seperated by a comma
+         * nBracket: null, nBracket: '(,)', nBracket: '[,]', nBracket: '<,>' or nBracket: '{,}'
+         */
+        nBracket: null,
+        /** Displayed on empty string
+         * wEmpty: 'empty', - input can be blank
+         * wEmpty: 'zero', - displays zero
+         * wEmpty: 'sign', - displays the currency sign
+         */
+        wEmpty: 'empty',
+        /** controls leading zero behavior
+         * lZero: 'allow', - allows leading zeros to be entered. Zeros will be truncated when entering additional digits. On focusout zeros will be deleted.
+         * lZero: 'deny', - allows only one leading zero on values less than one
+         * lZero: 'keep', - allows leading zeros to be entered. on fousout zeros will be retained.
+         */
+        lZero: 'allow',
+        /** determine if the default value will be formatted on page ready.
+         * true = automatically formats the default value on page ready
+         * false = will not format the default value
+         */
+        aForm: true,
+        /** future use */
+        onSomeEvent: function () { }
+    };
+
 }(jQuery));

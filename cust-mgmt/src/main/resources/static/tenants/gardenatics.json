@@ -9,8 +9,21 @@
     { "label": "Installation Date", "key": "installationDate"},
     { "label": "Pre-Migration", "key": "preMigration", "type":"boolean"}
   ],
+  "customerActions": [
+    { "label": "Receive Order", "key": "GardenaticsDelivery" }
+  ],
+  "omny-bar": [
+    { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
+    { "url": "index.html", "classes": "glyphicon omny-icon-address-book", "title": "Customer Management" },
+    { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },
+    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }   
+  ],  
   "partials": [
     { "name": "gardenaticsContactExtension", "url": "/partials/gardenaticsContactExtension.html"}
+  ],
+  "stagesInActive": "Appointment,Complete,Enquiry,Order,Placed,Quote,Thank You Pack",
+  "standardOperatingProcedures": [
+    { "label": "New Enquiry", "key": "preMigration" }
   ],
   "typeaheadControls": [
     { "selector": "#curEnquiryType", "url": "/data/gardenatics/enquiry-types.json"},
@@ -18,6 +31,6 @@
     { "selector": "#curOwner", "url": "/data/gardenatics/owners.json"},
     { "selector": "#curPartner", "url": "/data/gardenatics/partners.json"},
     { "selector": "#curSource", "url": "/data/sources.json"},
-    { "selector": "#curStage", "url": "/data/stages.json"}
+    { "selector": "#curStage", "url": "/data/gardenatics/stages.json"}
   ]
 }

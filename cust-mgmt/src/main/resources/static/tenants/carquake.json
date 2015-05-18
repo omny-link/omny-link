@@ -1,6 +1,11 @@
 { 
   "id": "carquake", 
   "showAccount":false,
+  "omny-bar": [
+    { "url": "users.html", "classes": "glyphicon omny-icon-users", "title": "Users Management" },
+    { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },    
+    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }
+  ],
   "partials": [
     { "name": "carquakeContactExtension", "url": "/partials/contactExtension.html"},
     { "name": "carquakeAccountExtension", "url": "/partials/accountExtension.html"}

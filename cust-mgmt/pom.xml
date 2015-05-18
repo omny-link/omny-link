@@ -105,6 +105,11 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-log4j</artifactId>
     </dependency>
+    <dependency>
+      <groupId>link.omny</groupId>
+      <artifactId>decisions</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>

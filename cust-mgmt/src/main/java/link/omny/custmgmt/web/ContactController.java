@@ -7,10 +7,12 @@ import java.util.List;
 
 import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ActivityRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.repositories.DocumentRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
 
@@ -25,6 +27,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,6 +58,9 @@ public class ContactController {
 
     @Autowired
     private AccountRepository accountRepo;
+
+    @Autowired
+    private DocumentRepository docRepo;
 
     @Autowired
     private NoteRepository noteRepo;
@@ -166,30 +172,72 @@ public class ContactController {
     }
 
     /**
+     * Add a document to the specified contact.
+     */
+    // Jackson cannot deserialise document because of contact reference
+    // @RequestMapping(value = "/{contactId}/documents", method =
+    // RequestMethod.PUT)
+    public @ResponseBody void addDocument(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("contactId") Long contactId, @RequestBody Document doc) {
+        Contact contact = contactRepo.findOne(contactId);
+        doc.setContact(contact);
+        docRepo.save(doc);
+        // necessary to force a save
+        contact.setLastUpdated(new Date());
+        contactRepo.save(contact);
+        // Similarly cannot return object until solve Jackson object cycle
+        // return doc;
+    }
+
+    /**
+     * Add a document to the specified contact.
+     */
+    @RequestMapping(value = "/{contactId}/documents", method = RequestMethod.POST)
+    public @ResponseBody void addDocument(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("contactId") Long contactId,
+            @RequestParam("author") String author,
+            @RequestParam("url") String url) {
+
+        addDocument(tenantId, contactId, new Document(author, url));
+    }
+
+    /**
      * Add a note to the specified contact.
-     * 
-     * @return contacts for that tenant.
+     */
+    // TODO Jackson cannot deserialise document because of contact reference
+//    @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.PUT)
+    public @ResponseBody void addNote(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("contactId") Long contactId, @RequestBody Note note) {
+        Contact contact = contactRepo.findOne(contactId);
+        note.setContact(contact);
+        noteRepo.save(note);
+        // necessary to force a save
+        contact.setLastUpdated(new Date());
+        contactRepo.save(contact);
+        // Similarly cannot return object until solve Jackson object cycle
+        // return note;
+    }
+
+    /**
+     * Add a note to the specified contact.
      */
     @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.POST)
-    public @ResponseBody Note addNote(
+    public @ResponseBody void addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam("author") String author,
             @RequestParam("content") String content) {
-
-        Note note = new Note(author, content);
-        note.setContact(contactRepo.findOne(contactId));
-        noteRepo.save(note);
-        return note;
+        addNote(tenantId, contactId, new Note(author, content));
     }
 
     /**
      * Change the sale stage the contact is at.
-     * 
-     * @return contacts for that tenant.
      */
     @RequestMapping(value = "/{contactId}", method = RequestMethod.PUT)
-    public @ResponseBody Contact setStage(
+    public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam("stage") String stage) {
@@ -203,16 +251,14 @@ public class ContactController {
         addActivity(tenantId, contactId, "transition-to-stage",
                 String.format("Waiting for %1$s", stage));
 
-        return contact;
+        // return contact;
     }
 
     /**
      * Add an activity to the specified contact.
-     * 
-     * @return contacts for that tenant.
      */
     @RequestMapping(value = "/{contactId}/activities", method = RequestMethod.POST)
-    public @ResponseBody Activity addActivity(
+    public @ResponseBody void addActivity(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam("type") String type,
@@ -221,7 +267,6 @@ public class ContactController {
         Activity activity = new Activity(type, new Date(), content);
         activity.setContact(contactRepo.findOne(contactId));
         activityRepo.save(activity);
-        return activity;
     }
 
     private List<ShortContact> wrap(List<Contact> list) {

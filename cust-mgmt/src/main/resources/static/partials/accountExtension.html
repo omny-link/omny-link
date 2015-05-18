@@ -5,9 +5,9 @@
     </h2>
 
     <!-- first column -->  
-  {{>column {object: current.account, fields: tenant.accountFields.slice(0,Math.floor(tenant.accountFields.length/2))} }}
+    {{>column {object: current.account, fields: tenant.accountFields.slice(0,Math.floor(tenant.accountFields.length/2))} }}
 
-  <!-- second column -->  
+    <!-- second column -->  
     {{>column {object: current.account, fields: tenant.accountFields.slice(Math.ceil(tenant.accountFields.length/2),tenant.accountFields.length)} }}
 
   </div>

@@ -10,7 +10,7 @@
   </div> 
   <div class="col-md-6">
     <ul class="form edit-form">
-      <li><label class="col-md-5">Share of Business (%):</label><input id="curShareOfBusiness" type="number" value="{{current.account.customFields['shareOfBusiness']}}"></li>
+      <li><label class="col-md-5">Share of Business (%):</label><input id="curShareOfBusiness" min="0" max="100" type="number" value="{{current.account.customFields['shareOfBusiness']}}"></li>
       <li><label class="col-md-5">Asking Price:</label><input class="autoNumeric" id="curAskingPrice" data-a-sign="£ "value="{{current.account.customFields['askingPrice']}}"></li>
       <li><label class="col-md-5">Preferred Timing:</label><input id="curPreferredTiming" value="{{current.account.customFields['preferredTiming']}}"/></li>
     </ul>

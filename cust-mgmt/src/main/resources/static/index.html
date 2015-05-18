@@ -9,24 +9,10 @@
   <!-- nice blocky yet tall font 
   <link rel='stylesheet' id='google-fonts-css'  href='//fonts.googleapis.com/css?family=Oswald%3A400%7CNoto+Sans&#038;ver=2.1.2' type='text/css' media='all' />
   -->
-  <!-- Google fonts can often be slow to load, this makes it async -->
-  <style>
-		@import url('//fonts.googleapis.com/css?family=Roboto:400italic,400,700');
-	</style>
 </head>
 <body>
   <div class="clearfix" id="messages"></div>
-<!--
-  1. This is the element we'll render our Ractive to.
--->
-<div class="container" id="container"></div>
-
-  <!--
-       2. You can load a template in many ways. For convenience, we'll include it in
-       a script tag so that we don't need to mess around with AJAX or multiline strings.
-       Note that we've set the type attribute to 'text/ractive' - though it can be
-       just about anything except 'text/javascript'
-  -->
+  <div class="container" id="container"></div>
   <script id='template' type='text/ractive'>
     <div class="profile pull-right">
       <form name="logoutForm" action="/logout" method="POST">
@@ -36,8 +22,7 @@
       </form>
     </div>
     <h1>
-      <a class="nav navbar-brand" href="http://omny.link">
-      </a>
+      <a class="nav navbar-brand" href="http://omny.link"></a>
       <span>Customer Management</span>
     </h1>
     
@@ -49,7 +34,18 @@
           <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></span>
           <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
           <span class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></span>
-          <form id="upload" class="admin pull-right upload">
+          <span class="clickable dropdown" aria-hidden="true" title="Show filters">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                <span class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></span>
+              </a>
+              <ul class="omny-dropdown dropdown-menu" role="menu">
+                <li on-click="filter()">Active</li>
+                <li on-click="filter('Cold')">Cold</li>
+                <li on-click="filter('On hold')">On hold</li>
+              </ul>
+          </span>
+
+          <form id="upload" class="super-admin pull-right upload">
             <span class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')" title="Import data from file"></span>
             <input type="file" class="form-control file pull-right" name="file" placeholder="Select file">
             <select class="form-control entity pull-right" name="entity">
@@ -76,28 +72,31 @@
           </thead>
           <tbody>
           {{#each contacts:i}}
-            {{# searchTerm!=undefined && (
+            {{# (searchTerm!=undefined && (
                   (this.firstName!=undefined && this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
                   || (this.lastName!=undefined && this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
                   || (this.email!=undefined && this.email.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
                   || (this.account!=undefined && this.account.name!=undefined && this.account.name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-                ) }}
-              <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
-                <td>{{i+1}}</td>
-                <td>{{firstName}} {{lastName}}</td>
-                {{#tenant.showAccount}}
-                  <td>{{account == undefined ? accountName : account.name}}</td>
-                {{/}}
-                <td>{{stage}}</td>
-                <td>{{enquiryType}}</td>
-                <td>{{{hash(owner)}}}</td>
-                <td>{{formatDate(firstContact)}}</td>
-                <td>{{formatDate(lastUpdated)}}</td>
-                <td class="col-actions">
-                  <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></span>
-                  <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this contact"></span>
-                </td>
-              </tr>
+                ))
+                && 
+                (filterStage==undefined || filterStage.indexOf(this.stage)!=-1)
+            }}
+                <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
+                  <td>{{i+1}}</td>
+                  <td>{{firstName}} {{lastName}}</td>
+                  {{#tenant.showAccount}}
+                    <td>{{account == undefined ? accountName : account.name}}</td>
+                  {{/}}
+                  <td>{{stage}}</td>
+                  <td>{{enquiryType}}</td>
+                  <td>{{{hash(owner)}}}</td>
+                  <td>{{formatDate(firstContact)}}</td>
+                  <td>{{formatDate(lastUpdated)}}</td>
+                  <td class="col-actions">
+                    <span class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></span>
+                    <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this contact"></span>
+                  </td>
+                </tr>
             {{/}}
           {{/each}}
           </tbody>
@@ -130,7 +129,20 @@
               <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
             {{/if}}
             <a class="clickable glyphicon glyphicon-list-alt" href="#notes" title="Jump to Notes"></a>
-            <span class="pull-right" style="font-style:italic">
+            <span class="pull-right">
+              <span class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></span>
+              {{#if tenant.customerActions!=undefined && tenant.customerActions.length>0 }}
+                <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                    <span class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></span>
+                  </a>
+                  <ul class="omny-dropdown dropdown-menu" role="menu">
+                    {{#each tenant.customerActions }}
+                      <li onclick="ractive.startCustomerAction('{{key}}', '{{label}}', ractive.get('current'))">{{label}}</li>
+                    {{/each}}
+                  </ul>
+                </span>
+              {{/if}}
             </span>
           </h2>
 
@@ -153,11 +165,11 @@
               <li><label class="col-md-5">Owner: </label><input id="curOwner" value="{{current.owner}}"></li>
               <li><label class="col-md-5">Enquiry Type:</label><input id="curEnquiryType" value="{{current.enquiryType}}"></li>
               <li><label class="col-md-5">Stage:</label><input class="typeahead" id="curStage" value="{{current.stage}}"></li>
-              <li><label class="col-md-5">Page Submitted:</label><input id="curPageSubmitted" value="{{customField(current, 'pageSubmitted')}}"></li>
-              <li><label class="col-md-5">Source:</label><input class="typeahead" id="curSource" value="{{current.source}}"></li>
-              <li><label class="col-md-5">Medium:</label><input class="typeahead" id="curMedium" value="{{current.medium}}"></li>
-              <li><label class="col-md-5">Campaign:</label><input id="curCampaign" value="{{current.campaign}}"></li>
-              <li><label class="col-md-5">Keyword:</label><input id="curKeyword" value="{{current.keyword}}"></li>
+              <li><label class="col-md-5">Page Submitted:</label><input id="curPageSubmitted" disabled readonly value="{{customField(current, 'pageSubmitted')}}"></li>
+              <li><label class="col-md-5">Source:</label><input class="typeahead" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}"></li>
+              <li><label class="col-md-5">Medium:</label><input class="typeahead" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}"></li>
+              <li><label class="col-md-5">Campaign:</label><input id="curCampaign" {{ current.campaign ? 'disabled readonly' : '' }} value="{{current.campaign}}"></li>
+              <li><label class="col-md-5">Keyword:</label><input id="curKeyword" {{ current.keyword ? 'disabled readonly' : '' }} value="{{current.keyword}}"></li>
             </ul>
           </div>
 
@@ -189,7 +201,6 @@
 
           <div id="currentAccountDesc" style="clear: both" class="col-md-12">
               <ul class="form edit-form">
-                <li><label class="col-md-2">Short description:</label><textarea id="curShortDesc" cols="80" value="{{current.account.shortDesc}}"></textarea></li>
                 <li><label class="col-md-2">Description:</label><textarea id="curDescription" cols="80" value="{{current.account.description}}"></textarea></li>
               </ul>
           </div>
@@ -234,6 +245,9 @@
                 <td class="field-text" id="activity{{j}}">{{{formatJson(content)}}}</td>
               </tr>
             {{/each}}
+            {{^ current.activities }}
+              <tr><td>None</td></tr>
+            {{/ current.activities }}
           </tbody></table>
          </div>
         </form>
@@ -259,9 +273,12 @@
               <tr>
                 <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
                 <td class="field-author">{{{hash(author)}}}</td>
-                <td class="field-text">{{content}}</td>
+                <td class="field-text">{{{content}}}</td>
               </tr>
             {{/each}}
+            {{^ current.notes }}
+              <tr><td>None</td></tr>
+            {{/ current.notes }}
           </tbody></table>
          </div>
         </form>
@@ -287,6 +304,9 @@
                 <td class="field-url"><a href="{{url}}">Click to open</a></td>
               </tr>
             {{/each}}
+            {{^ current.documents }}
+              <tr><td>None</td></tr>
+            {{/ current.documents }}
           </tbody></table>
          </div>
         </form>
@@ -319,7 +339,7 @@
   <script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
   -->
   <script src="js/ractive.min.js"></script>
-  <script src="js/autoNumeric.min.js"></script>
+  <script src="js/autoNumeric.js"></script>
   <script src="js/md5.min.js"></script>
   <script src="js/login-0.6.0.js"></script>
   <script src="js/i18n.js"></script>

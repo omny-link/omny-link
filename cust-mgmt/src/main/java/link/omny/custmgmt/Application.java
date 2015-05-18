@@ -36,7 +36,8 @@ import com.knowprocess.bpm.impl.CorsFilter;
 import com.knowprocess.bpm.impl.JsonManager;
 
 @Configuration
-@ComponentScan(basePackages = { "link.omny.custmgmt", "com.knowprocess.bpm",
+@ComponentScan(basePackages = { "link.omny.custmgmt", "link.omny.decisions",
+        "com.knowprocess.bpm",
         "com.knowprocess.decisions" })
 @EnableAutoConfiguration
 @EntityScan({ "link.omny.custmgmt.model", "com.knowprocess.bpm",
@@ -140,7 +141,7 @@ public class Application extends WebMvcConfigurerAdapter {
                     .anyRequest().authenticated()  
                     .and().formLogin()
                     .loginPage("/login").failureUrl("/login?error")
-                    .successHandler(getSuccessHandler()).permitAll()
+                        .successHandler(getSuccessHandler()).permitAll()
                     .and().csrf().disable().httpBasic();
                     //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 //             http.requestMatcher
