@@ -3,24 +3,13 @@
 <head>
   <meta charset='utf-8'>
   <title>Work Management</title>
-  <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/omny-0.6.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
-
-<!--
-  1. This is the element we'll render our Ractive to.
--->
-<body class="container" id="container">
+<body>
   <div class="clearfix" id="messages"></div>
-
-  <!--
-       2. You can load a template in many ways. For convenience, we'll include it in
-       a script tag so that we don't need to mess around with AJAX or multiline strings.
-       Task that we've set the type attribute to 'text/ractive' - though it can be
-       just about anything except 'text/javascript'
-  -->
+  <div class="container" id="container"></div>
   <script id='template' type='text/ractive'>
     <div class="profile pull-right">
       <form name="logoutForm" action="/logout" method="POST">
@@ -91,13 +80,13 @@
           {{/}}
           <div class="col-md-6">
             <ul class="form edit-form">
-              <li><label class="col-md-5">Due:</label><input class="nodatepicker" id="curDueDate" on-blur="save()" placeholder="dd/mm/yyyy" value="{{formatDate(current.dueDate)}}"></li>
+              <li><label class="col-md-5">Due:</label><input class="nodatepicker" id="curDueDate" on-blur="save()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm/yyyy" value="{{formatDate(current.dueDate)}}"></li>
             </ul>
           </div>
           <div class="col-md-6">
             <ul class="form edit-form">
-              <li><label class="col-md-5">Started By:</label><input id="curInitiator" readonly value="{{current.processVariables['initiator']=='anonymousUser' ? 'Web Site' : current.processVariables['initiator']}}"></li>
-              <li><label class="col-md-5">Created:</label><input id="curCreated" readonly value="{{formatDate(current.createTime)}}"></li>
+              <li><label class="col-md-5">Started By:</label><input id="curInitiator" disabled readonly value="{{current.processVariables['initiator']=='anonymousUser' ? 'Web Site' : current.processVariables['initiator']}}"></li>
+              <li><label class="col-md-5">Created:</label><input id="curCreated" disabled readonly value="{{formatDate(current.createTime)}}"></li>
             </ul>
           </div>
         
@@ -112,9 +101,10 @@
                       <a href="{{value}}" target="_newtab">{{name == undefined ? id : name}}</a>
                     {{else}}
                       {{# value.substring(0,1)=='{'}}
-                        <fieldset><legend class="col-md-3">{{name}}</legend>
-                        {{> (current.formKey+'FormExtension') { id: ..id, name: ..name, obj: JSON.parse(..value), keys: keys(JSON.parse(..value)) } }}
-</fieldset>
+                        <fieldset><legend class="col-md-12">{{name}}</legend>
+                          <!-- TODO need to load this from external file --> 
+                          {{> (current.formKey+'FormExtension') { id: ..id, name: ..name, obj: JSON.parse(..value), keys: keys(JSON.parse(..value)) } }}
+                        </fieldset>
                       {{else}}
                         <label class="col-md-3">{{name}}</label>
                         <input id="curCreated" {{writeable ? '' : 'readonly'}} value="{{value}}">
@@ -170,6 +160,7 @@
   <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
   <script src="js/autoNumeric.min.js"></script>
   <script src="js/md5.min.js"></script>
+  <script src="js/string-functions-0.1.0.js"></script>
   <script src="js/login-0.6.0.js"></script>
   <script src="js/workmgmt-0.6.0.js"></script>
   <script src="js/omny-0.6.0.js"></script>

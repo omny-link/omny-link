@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -50,11 +51,25 @@ public class DecisionModel implements Serializable {
     @JsonProperty
     protected String hitPolicy;
 
+    @JsonProperty
+    protected String domainModelUri;
+
+    @Embedded
+    @JsonProperty
+    private List<String> inputs;
+
+    @Embedded
+    @JsonProperty
+    private List<String> outputs;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<DecisionExpression> conditions;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<DecisionExpression> conclusions;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<DecisionExpression> rules;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "M-")

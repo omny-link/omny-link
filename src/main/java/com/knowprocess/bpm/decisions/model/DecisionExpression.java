@@ -1,5 +1,7 @@
 package com.knowprocess.bpm.decisions.model;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class DecisionExpression {
 
     protected static final Logger LOGGER = LoggerFactory
-            .getLogger(DecisionModel.class);
+            .getLogger(DecisionExpression.class);
 
     @Id
     @Column(name = "id")
@@ -36,10 +38,24 @@ public class DecisionExpression {
     protected String name;
 
     @JsonProperty 
-    protected String[] expressions;  
+    protected String[] expressions;
+
+    @JsonProperty
+    protected String label;
+
+    public DecisionExpression(List<String> expressions) {
+        setExpressions((String[]) expressions.toArray());
+    }
 
     public DecisionExpression(String name, String[] expressions) {
         setName(name);
         setExpressions(expressions);
+    }
+
+    public String getLabel() {
+        if (label == null) {
+            return name;
+        }
+        return label;
     }
 }

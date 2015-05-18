@@ -3,15 +3,13 @@
 <head>
   <meta charset='utf-8'>
   <title>Process Definitions</title>
-  <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/omny-0.6.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
-
-<body class="container" id="container">
+<body>
   <div class="clearfix" id="messages"></div>
-
+  <div class="container" id="container"></div>
   <script id='template' type='text/ractive'>
     <div class="profile pull-right">
       <form name="logoutForm" action="/logout" method="POST">
@@ -57,11 +55,10 @@
           <thead>
             <tr>
               <th></th>
-              <!--<th>Id</th>-->
               <th>Name</th>
               <th class="col-md-5">Description</th>
-<!--              <th>Started</th>
-              <th>Ended</th>-->
+              <th>Tenant</th>
+              <!--th>Ended</th>-->
               <th>Version</th>
               <th class="col-md-4">Actions</th>
             </tr>
@@ -74,18 +71,18 @@
                 ) }}
             <tr data-href="{{_links.self.href}}">
               <td on-click="select(this)">{{i+1}}</td>
-              <!--<td on-click="select(this)">{{id}}</td>-->
-              <td on-click="select(this)">{{name}}</td>
+              <td on-click="select(this)">{{name}} ({{key}})</td>
               <td class="col-md-5" on-click="select(this)">{{description}}</td>
-<!--              <td on-click="select(this)">{{formatDateTime(startTime)}}</td>
-              <td on-click="select(this)">{{formatDateTime(endTime)}}</td>
+              <td on-click="select(this)">{{tenantId}}</td>
+<!--              <td on-click="select(this)">{{formatDateTime(endTime)}}</td>
 -->
               <td on-click="select(this)">{{version}}</td>
               <td on-click="select(this)">
-                <a class="btn" href="/{{tenant.id}}/process-definitions/{{id}}.bpmn" target="_newtab">
-                  <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>View BPMN</a>
-                <a class="btn" href="/{{tenant.id}}/process-definitions/{{id}}.png" target="_newtab">
-                  <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>View image</a>
+                <span class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{key}}', '{{current.firstName}} {{current.lastName}}')"></span>
+                <a href="/{{tenant.id}}/process-definitions/{{id}}.bpmn" target="_newtab">
+                  <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span></a>
+                <a href="/{{tenant.id}}/process-definitions/{{id}}.png" target="_newtab">
+                  <span class="glyphicon glyphicon-picture" aria-hidden="true"></span></a>
                 <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)"></span>
               </td>
             </tr>
@@ -112,7 +109,9 @@
               <span class="a-secondary-label control-label">Category: </span> {{current.deployment.category}};
             {{/if current.deployment.category}} 
           </p>
-          <img src="/{{tenant.id}}/process-definitions/{{current.id}}.png"/>
+          {{#if current.id}}
+            <img src="/{{tenant.id}}/process-definitions/{{current.id}}.png"/>
+          {{/if current.id}}
       </section>
 
     </form>
