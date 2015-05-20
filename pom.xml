@@ -182,11 +182,11 @@
       <artifactId>javax.json</artifactId>
       <version>1.0.2</version>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>link.omny</groupId>
       <artifactId>decisions</artifactId>
       <version>0.0.1-SNAPSHOT</version>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
