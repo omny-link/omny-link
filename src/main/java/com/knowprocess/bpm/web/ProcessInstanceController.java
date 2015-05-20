@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -72,7 +73,8 @@ public class ProcessInstanceController {
         LOGGER.info(String.format("Start process %1$s for tenant %2$s",
                 instanceToStart.getProcessDefinitionId(), tenantId));
 
-        if (LOGGER.isDebugEnabled()) {
+        if (LOGGER.isDebugEnabled()
+                && instanceToStart.getProcessVariables() != null) {
             LOGGER.debug("  vars: ");
             for (Entry<String, Object> entry : instanceToStart
                     .getProcessVariables().entrySet()) {
@@ -90,4 +92,10 @@ public class ProcessInstanceController {
         return pi;
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public @ResponseBody void deleteFromJson(@PathVariable("id") String id,
+            @RequestParam(value = "reason", required = false) String reason) {
+        LOGGER.info(String.format("deleting instance: %1$s", id));
+        processEngine.getRuntimeService().deleteProcessInstance(id, reason);
+    }
 }
