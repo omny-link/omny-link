@@ -34,6 +34,8 @@ public interface ContactCompleteProjection {
 
     String getAddress2();
 
+    String getTown();
+
     String getCountyOrCity();
 
     String getPostCode();
