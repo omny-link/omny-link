@@ -1,6 +1,8 @@
 package com.knowprocess.bpm.model;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +38,10 @@ public class ProcessInstance extends Execution {
 
     private ArrayList<HistoricDetail> auditTrail;
 
+    private Date startTime;
+
+    private Date endTime;
+
     public ProcessInstance() {
         super();
     }
@@ -59,6 +65,8 @@ public class ProcessInstance extends Execution {
         // deterministic
         setActivityId(hpi.getEndActivityId());
         setBusinessKey(hpi.getBusinessKey());
+        setStartTime(hpi.getStartTime());
+        setEndTime(hpi.getEndTime());
         setEnded(hpi.getEndTime() != null);
         setId(hpi.getId());
         setParentId(hpi.getSuperProcessInstanceId());
@@ -80,6 +88,9 @@ public class ProcessInstance extends Execution {
     }
 
     public Map<String, Object> getProcessVariables() {
+        if (processVariables == null) {
+            processVariables = new HashMap<String, Object>();
+        }
         return processVariables;
     }
 
@@ -100,7 +111,7 @@ public class ProcessInstance extends Execution {
     public static ProcessInstance findProcessInstance(String id) {
         List<org.activiti.engine.runtime.ProcessInstance> list = processEngine
                 .getRuntimeService().createProcessInstanceQuery()
-                .processDefinitionId(id).list();
+                .processInstanceId(id).list();
         ProcessInstance instance = null;
         if (list.size() > 0) {
             instance = wrap(list).get(0);
@@ -152,7 +163,7 @@ public class ProcessInstance extends Execution {
                 .createProcessInstanceQuery().list());
     }
 
-    private static List<ProcessInstance> wrap(final List<?> list) {
+    public static List<ProcessInstance> wrap(final List<?> list) {
         ArrayList<ProcessInstance> list2 = new ArrayList<ProcessInstance>();
         for (Object instance : list) {
             if (instance instanceof org.activiti.engine.runtime.ProcessInstance) {
