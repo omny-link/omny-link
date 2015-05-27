@@ -3,6 +3,7 @@ package com.knowprocess.bpm.web;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.activiti.engine.ProcessEngine;
@@ -46,7 +47,7 @@ public class ProcessInstanceController {
     }
 
     @RequestMapping(value = "/{instanceId}", method = RequestMethod.GET, headers = "Accept=application/json")
-    public @ResponseBody ProcessInstance getAuditTrail(
+    public @ResponseBody ProcessInstance getInstanceIncAuditTrail(
             @PathVariable("instanceId") String instanceId) {
         LOGGER.info("getAuditTrail");
         ProcessInstance result = ProcessInstance
@@ -67,12 +68,18 @@ public class ProcessInstanceController {
     @RequestMapping(value = "/", method = RequestMethod.POST, headers = "Accept=application/json")
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody ProcessInstance startNewInstance(
+            HttpServletRequest req,
             HttpServletResponse resp,
             @PathVariable("tenantId") String tenantId,
             @RequestBody ProcessInstance instanceToStart) {
         LOGGER.info(String.format("Start process %1$s for tenant %2$s",
                 instanceToStart.getProcessDefinitionId(), tenantId));
 
+        if (!instanceToStart.getProcessVariables().containsKey("initiator")
+                && req.getUserPrincipal() != null) {
+            instanceToStart.getProcessVariables().put("initiator",
+                    req.getUserPrincipal().getName());
+        }
         if (LOGGER.isDebugEnabled()
                 && instanceToStart.getProcessVariables() != null) {
             LOGGER.debug("  vars: ");
