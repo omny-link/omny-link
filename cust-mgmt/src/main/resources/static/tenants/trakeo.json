@@ -16,9 +16,10 @@
     { "name": "trakeoAccountExtension", "url": "/partials/accountExtension.html"}
   ],
   "typeaheadControls": [
+    { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
     { "selector": "#curEnquiryType", "url": "/data/trakeo/enquiry-types.json"},
     { "selector": "#curMedium", "url": "/data/media.json"},
     { "selector": "#curSource", "url": "/data/sources.json"},
-    { "selector": "#curStage", "url": "/data/stages.json"}
+    { "name": "stages", "selector": "#curStage", "url": "/data/stages.json"}
   ]
 }

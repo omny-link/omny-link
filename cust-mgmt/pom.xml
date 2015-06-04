@@ -9,7 +9,7 @@
 
   <groupId>link.omny.custmgmt</groupId>
   <artifactId>custmgmt</artifactId>
-  <version>0.6.0-SNAPSHOT</version>
+  <version>0.7.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <organization>
@@ -29,6 +29,14 @@
     <start-class>link.omny.custmgmt.Application</start-class>
     <java.version>1.7</java.version>
   </properties>
+
+  <repositories>
+      <repository>
+        <id>jcenter-snapshots</id>
+        <name>jcenter</name>
+        <url>https://jcenter.bintray.com/</url>
+      </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -98,7 +106,7 @@
       <artifactId>work-mgmt</artifactId>
       <version>2.0-SNAPSHOT</version>
       <!-- TODO Debug fails with class not found if this is enabled -->
-      <!-- <classifier>library</classifier> -->
+      <classifier>library</classifier>
     </dependency>
     <!-- Compiles against SLF4J but this is the implementation of choice -->
     <dependency>
@@ -108,7 +116,25 @@
     <dependency>
       <groupId>link.omny</groupId>
       <artifactId>decisions</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.7.0-SNAPSHOT</version>
+      <!--Eclipse debugger does not find this TODO create profile-->
+      <classifier>library</classifier> 
+    </dependency>
+    <!-- Generates REST documentation -->
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger2</artifactId>
+        <version>2.0.0</version>
+    </dependency>
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger-ui</artifactId>
+        <version>2.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.knowprocess.mk</groupId>
+      <artifactId>mk</artifactId>
+      <version>0.2.0</version>
     </dependency>
   </dependencies>
 

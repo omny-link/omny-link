@@ -1,5 +1,0 @@
-DROP DATABASE cust_db;
-CREATE DATABASE cust_db;
--- CREATE USER 'kp'@'localhost' IDENTIFIED BY 'kp';  
-GRANT ALL ON model_db.* TO 'kp'@'localhost'; 
-

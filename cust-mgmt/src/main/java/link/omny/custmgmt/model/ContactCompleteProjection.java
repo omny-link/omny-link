@@ -40,6 +40,8 @@ public interface ContactCompleteProjection {
 
     String getPostCode();
 
+    String getCountry();
+
     String getEnquiryType();
 
     String getStage();

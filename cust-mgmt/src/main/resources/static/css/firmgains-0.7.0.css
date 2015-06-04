@@ -67,35 +67,27 @@ section h2 {
   border-bottom: solid 1px #75bfe2;
   color: #75bfe2;
 }
-section h2 a,section h2 a:visited {
-  color: #87a956;
-}
-section h2 a:hover,section h2 a:focus {
-  color: #afe464;
-}
 section h2 .search {
+  bottom: 3px;
+  width: 40%;
+}
+section h2 .search,
+section h2 .entity,
+section h2 .file {
   background-color: #efefef;
   border-color: #75bfe2;
-  color: #0379a1;
+}
+section h2 .file {
+  border-radius: 0;
 }
 section h2 .glyphicon-search {
 	margin-left: -1px;
-  top: 0px;
-}
-section h2 .entity {
-  background-color: #aedef6;
-  border-color: #75bfe2;
-  width: 110px;
-}
-section h2 .file {
-  background-color: #aedef6;
-  border-color: #75bfe2;
-  width: 110px;
+  top: 2px;
 }
 section h2 .glyphicon-import {
   font-size: 18px;
   left: -2px;
-  top: -3px;
+  top: 5px;
 }
 section h3 {
   background-color: #2990b1;
@@ -103,15 +95,18 @@ section h3 {
   color: #aedef6;
   padding: 5px 20px 5px 20px;
 }
-.btn-default { 
-  background-color:#87a956;
-  color: #666666;   
+a.glyphicon,
+a.glyphicon:visited,
+h2 a.glyphicon,
+h2 a.glyphicon:visited {
+  color: #87a956;
+  text-decoration: none;
 }
-a.glyphicon {
-  color: #75bfe2;
-}
-.glyphicon {
-  border-radius: 15px;
+a.glyphicon:focus,
+a.glyphicon:hover,
+h2 a.glyphicon:focus,
+h2 a.glyphicon:hover {
+  color: #afe464;
 }
 #messages { 
   position: fixed;

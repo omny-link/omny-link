@@ -27,7 +27,7 @@ public class JsonContactDeserializer extends JsonDeserializer<Contact> {
     private static final List<String> FIELDS = Arrays.asList(new String[] {
             "firstName", "lastName", "title", "email", "landLine", "mobile",
             "address1", "address2", "town", "countyOrCity", "postCode",
-            "enquiryType", "stage", "enquiryType", "owner",
+            "country", "enquiryType", "stage", "enquiryType", "owner",
             "source", "medium", "campaign", "keyword",
             "doNotCall", "doNotEmail", "firstContact",
             "lastUpdated", "tenantId" });
@@ -63,6 +63,8 @@ public class JsonContactDeserializer extends JsonDeserializer<Contact> {
                 .get("countyOrCity").asText());
         contact.setPostCode(node.get("postCode") == null ? null : node.get(
                 "postCode").asText());
+        contact.setCountry(node.get("country") == null ? null : node.get(
+                "country").asText());
         contact.setEnquiryType(node.get("enquiryType") == null ? null : node
                 .get("enquiryType").asText());
         contact.setAccountType(node.get("accountType") == null ? null : node

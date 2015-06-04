@@ -95,13 +95,13 @@ public class Contact implements Serializable {
 
     /**
      */
-    @Pattern(regexp = "\\+?[0-9, ]{0,13}")
+    @Pattern(regexp = "\\+?[0-9, ]{0,15}")
     @JsonProperty
     private String phone1;
 
     /**
      */
-    @Pattern(regexp = "\\+?[0-9, ]{0,13}")
+    @Pattern(regexp = "\\+?[0-9, ]{0,15}")
     @JsonProperty
     private String phone2;
 
@@ -119,6 +119,9 @@ public class Contact implements Serializable {
 
     @JsonProperty
     private String postCode;
+
+    @JsonProperty
+    private String country;
 
     @JsonProperty
     private String stage;
@@ -268,7 +271,12 @@ public class Contact implements Serializable {
         String fName;
         try {
             fName = name.substring(0, name.indexOf(' '));
-            setLastName(name.substring(name.indexOf(' ') + 1));
+            String remainder = name.substring(name.indexOf(' ') + 1);
+            if (remainder.contains(" ")) {
+                setFirstName(remainder.substring(0, remainder.indexOf(' ')));
+                remainder = remainder.substring(remainder.indexOf(' ') + 1);
+            }
+            setLastName(remainder);
         } catch (StringIndexOutOfBoundsException e) {
             fName = name;
         }

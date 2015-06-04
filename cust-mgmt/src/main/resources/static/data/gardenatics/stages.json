@@ -3,9 +3,9 @@
   {  "id": "Cold", "name": "Cold"  },
   {  "id": "Complete", "name": "Complete"  },
   {  "id": "Enquiry", "name": "Enquiry"  },
-  {  "id": "OnHold", "name": "On hold"  },
+  {  "id": "On hold", "name": "On hold"  },
   {  "id": "Order", "name": "Order"  },
   {  "id": "Placed", "name": "Placed"  },
   {  "id": "Quote", "name": "Quote"  },
-  {  "id": "ThankYouPack", "name": "Thank You Pack"  }
+  {  "id": "Thank you pack", "name": "Thank you pack"  }
 ]

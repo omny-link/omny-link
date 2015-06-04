@@ -1,3 +1,14 @@
+-- ids to mail 
+select id 
+ from contact 
+ where tenant_id = 'firmgains' and id > 1670 and stage not in( 'deleted','On hold','Cold' ) and do_not_email = false;
+ 
+select concat('sleep 2; curl  -u firmgains:firmgains http://tstephen:5QuiWYYt@api.knowprocess.com:8082/msg/firmgains/firmgains.followUp.json?query=%7B%22contactId%22%3A%22http%3A%2F%2Fapi.knowprocess.com%3A8082%2Fcontacts%2F',id,'%22%2C%22tenantId%22%3A%22firmgains%22%7D&businessDescription=FG+email') 
+ from contact 
+ where tenant_id = 'firmgains' and id > 1670 and stage not in( 'deleted','On hold','Cold' ) and do_not_email = false
+ INTO OUTFILE '/var/tmp/followup.sh'
+ 
+ 
 -- Find notes that hold a valuation 
 select contact_id from note where contact_id in (select id from contact where tenant_id = 'firmgains') and content like '%Valuation performed%';
 

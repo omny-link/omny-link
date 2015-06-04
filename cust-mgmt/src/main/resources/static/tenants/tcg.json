@@ -1,13 +1,13 @@
 { 
-  "id": "carquake", 
-  "showAccount":false,
+  "id": "tcg", 
+  "showAccount":true,
   "omny-bar": [
     { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },    
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }
   ],
   "partials": [
-    { "name": "carquakeContactExtension", "url": "/partials/contactExtension.html"},
-    { "name": "carquakeAccountExtension", "url": "/partials/accountExtension.html"}
+    { "name": "tcgContactExtension", "url": "/partials/omnyContactExtension.html"},
+    { "name": "tcgAccountExtension", "url": "/partials/accountExtension.html"}
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},

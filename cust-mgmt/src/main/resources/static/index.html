@@ -4,7 +4,7 @@
   <meta charset='utf-8'>
   <title>Customer Management</title>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.6.0.css" rel="stylesheet">
+  <link href="css/omny-0.7.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
   <!-- nice blocky yet tall font 
   <link rel='stylesheet' id='google-fonts-css'  href='//fonts.googleapis.com/css?family=Oswald%3A400%7CNoto+Sans&#038;ver=2.1.2' type='text/css' media='all' />
@@ -16,8 +16,9 @@
   <script id='template' type='text/ractive'>
     <div class="profile pull-right">
       <form name="logoutForm" action="/logout" method="POST">
+          <span id="tenantId" class="replaceable super_admin" contenteditable="true" onblur="ractive.switchToTenant($('#tenantId').text())" name="tenantId" value="{{tenant == null ? 'Click to set' : tenant.id}}"></span>
         <span class="profile-img">Logged in as: {{username}}</span>
-        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()" title="Logout"></span>
+        <a class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></a>
         <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
       </form>
     </div>
@@ -28,25 +29,31 @@
     
       <section id="contactsSect">
         <h2>
-          <span id="contactsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the contact table"></span>
+          <a id="contactsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the contact table"></a>
           <span>Contacts</span>
-          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new contact"></span>
-          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></span>
+          <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new contact"></a>
+          <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
           <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-          <span class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></span>
-          <span class="clickable dropdown" aria-hidden="true" title="Show filters">
+          <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
+          <a class="clickable dropdown" aria-hidden="true" title="Show filters">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                <span class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></span>
+                <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
               </a>
               <ul class="omny-dropdown dropdown-menu" role="menu">
-                <li on-click="filter()">Active</li>
-                <li on-click="filter('Cold')">Cold</li>
-                <li on-click="filter('On hold')">On hold</li>
+                <li on-click="filter()">Clear filter</li>
+                <li class="divider"></li>
+                {{#stages}}
+                  <li onclick="ractive.filter('stage','{{id}}')">{{name}}</li>
+                {{/stages}}
+                <li class="divider"></li>
+                {{#accountTypes}}
+                  <li onclick="ractive.filter('accountType','{{id}}')">{{name}}</li>
+                {{/accountTypes}}
               </ul>
-          </span>
+          </a>
 
           <form id="upload" class="super-admin pull-right upload">
-            <span class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')" title="Import data from file"></span>
+            <a class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')" title="Import data from file"></a>
             <input type="file" class="form-control file pull-right" name="file" placeholder="Select file">
             <select class="form-control entity pull-right" name="entity">
               <option value="contacts">Contacts</option>
@@ -76,10 +83,13 @@
                   (this.firstName!=undefined && this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
                   || (this.lastName!=undefined && this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
                   || (this.email!=undefined && this.email.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-                  || (this.account!=undefined && this.account.name!=undefined && this.account.name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                  || (this.town!=undefined && this.town.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                  || (this.countyOrCity!=undefined && this.countyOrCity.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                  || (this.country!=undefined && this.country.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                  || (this.accountName!=undefined && this.accountName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
                 ))
                 && 
-                (filterStage==undefined || filterStage.indexOf(this.stage)!=-1)
+                (matchFilter(this))
             }}
                 <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
                   <td>{{i+1}}</td>
@@ -93,13 +103,18 @@
                   <td>{{formatDate(firstContact)}}</td>
                   <td>{{formatDate(lastUpdated)}}</td>
                   <td class="col-actions">
-                    <span class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></span>
-                    <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this contact"></span>
+                    <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+                    <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this contact"></a>
                   </td>
                 </tr>
             {{/}}
           {{/each}}
           </tbody>
+          <tfoot>
+            {{# searchTerm!=undefined }}
+              <tr><th colspan="9">{{searchMatched == 0 ? 'No' : searchMatched}} matching contact{{searchMatched==1 ? '' : 's'}}</th></tr>
+            {{/}} 
+          </tfoot>
         </table>
       </section>
 
@@ -128,13 +143,13 @@
             {{#if current.email != undefined && current.email != ''}}
               <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
             {{/if}}
-            <a class="clickable glyphicon glyphicon-list-alt" href="#notes" title="Jump to Notes"></a>
+            <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
             <span class="pull-right">
-              <span class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></span>
+              <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
               {{#if tenant.customerActions!=undefined && tenant.customerActions.length>0 }}
                 <span class="clickable dropdown" aria-hidden="true" title="Start Process">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                    <span class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></span>
+                    <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
                   </a>
                   <ul class="omny-dropdown dropdown-menu" role="menu">
                     {{#each tenant.customerActions }}
@@ -148,29 +163,54 @@
 
           <div class="currentBody col-md-6">
             <ul class="form edit-form">
-              <li><label class="col-md-5">Do Not Email:</label><input id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"></li>
-              <li><label class="col-md-5">Email:</label><input id="curEmail" required value="{{current.email}}"></li>
-              <li><label class="col-md-5">Do Not Call:</label><input id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}"></li>
+              <li><label class="col-md-5">Email:</label><input id="curEmail" required type="email" value="{{current.email}}"></li>
+              <li><label class="col-md-offset-5">Do Not Email:</label><input id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"></li>
               <li><label class="col-md-5">Preferred Phone:</label><input id="curPhone1" value="{{current.phone1}}"></li>
               <li><label class="col-md-5">Alternate Phone:</label><input id="curPhone2" value="{{current.phone2}}"></li>
-              <li><label class="col-md-5">Address:</label><input id="curAddress1" value="{{current.address1}}"/></li>
-              <li><label class="col-md-5"></label><input id="curAddress2" value="{{current.address2}}"/></li>
-              <li><label class="col-md-5"></label><input id="curTown" value="{{current.town}}"/></li>
-              <li><label class="col-md-5"></label><input id="curCountyOrCity" value="{{current.countyOrCity}}"/></li>
-              <li><label class="col-md-5">Post Code:</label><input id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}"></li>
+              <li><label class="col-md-offset-5">Do Not Call:</label><input id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}"></li>
+              <li><label class="col-md-5">Owner: </label><input class="typeahead" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}"></li>
+              <li><label class="col-md-5">Stage:</label><input class="typeahead" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}"></li>
+              <li><label class="col-md-5">Enquiry Type:</label><input class="typeahead" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}"></li>
+              <li><label class="col-md-5">Account Type:</label><input class="typeahead" placeholder="Start typing to filter options" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}"></li>
             </ul>
           </div>
           <div class="currentBody col-md-6">
             <ul class="form edit-form">
-              <li><label class="col-md-5">Owner: </label><input id="curOwner" value="{{current.owner}}"></li>
-              <li><label class="col-md-5">Enquiry Type:</label><input id="curEnquiryType" value="{{current.enquiryType}}"></li>
-              <li><label class="col-md-5">Stage:</label><input class="typeahead" id="curStage" value="{{current.stage}}"></li>
-              <li><label class="col-md-5">Page Submitted:</label><input id="curPageSubmitted" disabled readonly value="{{customField(current, 'pageSubmitted')}}"></li>
-              <li><label class="col-md-5">Source:</label><input class="typeahead" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}"></li>
-              <li><label class="col-md-5">Medium:</label><input class="typeahead" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}"></li>
-              <li><label class="col-md-5">Campaign:</label><input id="curCampaign" {{ current.campaign ? 'disabled readonly' : '' }} value="{{current.campaign}}"></li>
-              <li><label class="col-md-5">Keyword:</label><input id="curKeyword" {{ current.keyword ? 'disabled readonly' : '' }} value="{{current.keyword}}"></li>
+              <li><label class="col-md-5">Address:</label><input id="curAddress1" value="{{current.address1}}"/></li>
+              <li><label class="col-md-5"></label><input id="curAddress2" value="{{current.address2}}"/></li>
+              <li><label class="col-md-5"></label><input id="curTown" placeholder="Town or village" value="{{current.town}}"/></li>
+              <li><label class="col-md-5"></label><input id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/></li>
+              <li><label class="col-md-5">Post Code:</label><input id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}"></li>
+              <li><label class="col-md-5">Country:</label><input autocomplete="false" class="typeahead" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
             </ul>
+          </div>
+
+          <h2 style="clear:both">Marketing</h2>
+          <div class="currentBody col-md-6">
+            <ul class="form edit-form">
+              <li><label class="col-md-5">Source:</label><input class="typeahead" placeholder="Start typing to filter options" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}"></li>
+              <li><label class="col-md-5">Medium:</label><input class="typeahead" placeholder="Start typing to filter options" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}"></li>
+            </ul>
+          </div>
+          <div class="currentBody col-md-6">
+            <ul class="form edit-form">
+              <li><label class="col-md-5">Page Submitted:</label><input id="curPageSubmitted" disabled readonly value="{{customField(current, 'pageSubmitted')}}"></li>
+              <li><label class="col-md-5">Campaign:</label><input id="curCampaign" {{ current.campaign ? 'disabled readonly' : '' }} value="{{current.campaign}}"></li>
+            </ul>
+          </div>
+
+          <h2 style="clear:both">Budget</h2>
+          <div class="currentBody col-md-6">
+            <ul class="form edit-form">
+              <li><label class="col-md-5">Budget:</label>
+                <input class="autoNumeric" data-a-sign="£ " id="curBudget" on-blur="ractive.save()" value="{{current.customFields['budget']}}"></li>
+            </ul>
+          </div>
+          <div class="currentBody col-md-6">
+            <ul class="form edit-form">
+              <li><label class="col-md-5">Discussed Budget?:</label>
+                <input id="curDiscussedBudget" on-blur="ractive.save()" type="checkbox" value="{{current.customFields['discussedBudget']}}"></li>
+            </ul>              
           </div>
 
           <div id="currentContactExtended" style="clear: both">
@@ -341,9 +381,9 @@
   <script src="js/ractive.min.js"></script>
   <script src="js/autoNumeric.js"></script>
   <script src="js/md5.min.js"></script>
-  <script src="js/login-0.6.0.js"></script>
+  <script src="js/login-0.7.0.js"></script>
   <script src="js/i18n.js"></script>
-  <script src="js/cust-mgmt-0.6.0.js"></script>
-  <script src="js/omny-0.6.0.js"></script>
+  <script src="js/cust-mgmt-0.7.0.js"></script>
+  <script src="js/omny-0.7.0.js"></script>
 </body>
 </html>

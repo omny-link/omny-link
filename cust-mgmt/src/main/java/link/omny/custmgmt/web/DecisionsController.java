@@ -99,6 +99,11 @@ public class DecisionsController {
             contact.setField(entry.getKey(), entry.getValue());
         }
 
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format(
+                    "Returning contact containing valuation: %1$s",
+                    contact.getCustomFields()));
+        }
         return wrap(contact);
     }
 
@@ -139,6 +144,10 @@ public class DecisionsController {
         resource.getAccount().setName((String) contact.getField("accountName"));
         resource.add(linkTo(AccountRepository.class, contact.getId()).withRel(
                 "account"));
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("Wrapped contact: %1$s", resource));
+        }
         return resource;
     }
     
