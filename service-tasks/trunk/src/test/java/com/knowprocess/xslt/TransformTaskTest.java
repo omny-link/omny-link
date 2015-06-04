@@ -5,8 +5,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.transform.TransformerConfigurationException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +21,8 @@ import com.knowprocess.resource.spi.Fetcher;
 public class TransformTaskTest {
 
 	private static final String ACTIVITI_SUPPORT_BPMN = "classpath:///process/activiti-support.bpmn";
+    private static final String DATA_OBJECT_BPMN = "classpath:///process/miwg2/handle-invoice-with-data-objects.bpmn";
+    private static final String SHORTCUT_POTENTIAL_OWNERS_BPMN = "classpath:///process/miwg2/handle-invoice-no-service-tasks.bpmn";
 	private TransformTask svc;
 
 	@Before
@@ -28,7 +35,7 @@ public class TransformTaskTest {
 		try {
 			String bpmn = new Fetcher().fetchToString(ACTIVITI_SUPPORT_BPMN);
 
-			svc.setXsltResource("/xslt/ActivitiSupportRules.xsl");
+			svc.setXsltResources("/xslt/ActivitiSupportRules.xsl");
 			System.out.println("BPMN: " + bpmn.toString());
 			assertTrue(bpmn.toString().trim().endsWith(">"));
 			String result = svc.transform(bpmn.toString().trim());
@@ -47,7 +54,7 @@ public class TransformTaskTest {
 		try {
 			String bpmn = new Fetcher().fetchToString(ACTIVITI_SUPPORT_BPMN);
 
-			svc.setXsltResource("/xslt/ExecutableTweaker.xsl,/xslt/KpSupportRules.xsl");
+			svc.setXsltResources("/xslt/ExecutableTweaker.xsl,/xslt/KpSupportRules.xsl");
 			System.out.println("BPMN: " + bpmn.toString());
 			assertTrue(bpmn.toString().trim().endsWith(">"));
 			String result = svc.transform(bpmn.toString().trim());
@@ -88,4 +95,55 @@ public class TransformTaskTest {
 		assertEquals(expectedPasses, passed.size());
 	}
 
+    @Test
+    public void testAddFormProperties() throws IOException,
+            TransformerConfigurationException {
+        String bpmn = new Fetcher().fetchToString(DATA_OBJECT_BPMN);
+
+        svc.setXsltResources("/xslt/ExecutableTweaker.xsl");
+        System.out.println("BPMN: " + bpmn.toString());
+        assertTrue(bpmn.toString().trim().endsWith(">"));
+        String result = svc.transform(bpmn.toString().trim());
+        System.out.println("result: " + result);
+        assertNotNull(result);
+        Pattern formPropertyPattern = Pattern.compile("formProperty(.*?)>");
+        Matcher m = formPropertyPattern.matcher(result);
+        List<String> formProperties = new ArrayList<String>();
+        while (m.find()) {
+            String s = m.group(1);
+            formProperties.add(s);
+        }
+        assertEquals(2, formProperties.size());
+        assertTrue(formProperties.get(0).contains("type=\"boolean\""));
+        assertTrue(formProperties.get(1).contains("type=\"string\""));
+    }
+
+    @Test
+    public void testSuppressShortcutsWhenHavePotentialOwner()
+            throws IOException, TransformerConfigurationException {
+        String bpmn = new Fetcher()
+                .fetchToString(SHORTCUT_POTENTIAL_OWNERS_BPMN);
+
+        svc.setXsltResources("/xslt/ExecutableTweaker.xsl");
+        System.out.println("BPMN: " + bpmn.toString());
+        assertTrue(bpmn.toString().trim().endsWith(">"));
+        String result = svc.transform(bpmn.toString().trim());
+        System.out.println("result: " + result);
+        assertNotNull(result);
+        assertTrue(!result.contains("assignee"));
+    }
+
+    @Test
+    public void testConvertUnsupportedServiceTaskToUserTask()
+            throws IOException, TransformerConfigurationException {
+        String bpmn = new Fetcher().fetchToString(DATA_OBJECT_BPMN);
+
+        svc.setXsltResources("/xslt/ExecutableTweaker.xsl");
+        System.out.println("BPMN: " + bpmn.toString());
+        assertTrue(bpmn.toString().trim().endsWith(">"));
+        String result = svc.transform(bpmn.toString().trim());
+        System.out.println("result: " + result);
+        assertNotNull(result);
+        assertTrue(result.contains("assignee=\"${initiator}\""));
+    }
 }

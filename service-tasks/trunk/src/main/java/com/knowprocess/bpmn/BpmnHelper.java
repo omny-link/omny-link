@@ -30,7 +30,7 @@ public class BpmnHelper {
 	public void splitCollaboration(InputStream collab, File outputDir) {
 		try {
 			TransformTask svc = new TransformTask();
-			svc.setXsltResource("/xslt/ExecutableTweaker.xsl");
+			svc.setXsltResources("/xslt/ExecutableTweaker.xsl");
 
 			DocumentBuilderFactory domFactory = DocumentBuilderFactory
 					.newInstance();

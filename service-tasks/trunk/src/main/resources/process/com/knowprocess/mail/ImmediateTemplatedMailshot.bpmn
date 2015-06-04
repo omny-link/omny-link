@@ -23,7 +23,7 @@
     <startEvent id="start" isInterrupting="true" name="Receive mail request" parallelMultiple="false">
       <outgoing>_3</outgoing>
     </startEvent>
-    <serviceTask activiti:async="true" activiti:class="com.knowprocess.resource.spi.Fetcher" completionQuantity="1" id="fetchTextTemplate" implementation="##WebService" isForCompensation="false" name="Fetch &#10;template" startQuantity="1">
+    <serviceTask activiti:async="true" activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="fetchTextTemplate" implementation="##WebService" isForCompensation="false" name="Fetch &#10;template" startQuantity="1">
       <extensionElements>
         <activiti:field expression="${templateBase}/${template}.txt" name="globalResource"/>
         <activiti:field name="outputVar" stringValue="mailText"/>
@@ -31,7 +31,7 @@
       <incoming>_3</incoming>
       <outgoing>_6</outgoing>
     </serviceTask>
-    <serviceTask activiti:class="com.knowprocess.resource.spi.Fetcher" completionQuantity="1" id="fetchHtmlTemplate" implementation="##WebService" isForCompensation="false" name="Fetch HTML&#10;Template" startQuantity="1">
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="fetchHtmlTemplate" implementation="##WebService" isForCompensation="false" name="Fetch HTML&#10;Template" startQuantity="1">
       <extensionElements>
         <activiti:field expression="${templateBase}/${template}.html" name="globalResource"/>
         <activiti:field name="outputVar" stringValue="mailHtml"/>

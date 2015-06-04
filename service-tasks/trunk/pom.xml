@@ -10,7 +10,7 @@
     <google.oauth.version>1.14.1-beta</google.oauth.version>
     <google.drive.version>v2-rev64-1.14.1-beta</google.drive.version>
     <java.version>1.7</java.version>
-    <activiti.version>5.17.1-SNAPSHOT</activiti.version>
+    <activiti.version>5.18.0-SNAPSHOT</activiti.version>
   </properties>
   <repositories>
     <repository>
@@ -33,11 +33,11 @@
       <artifactId>activiti-bpmn-model</artifactId>
       <version>${activiti.version}</version>
     </dependency>
-    <dependency>
+<!--     <dependency>
       <groupId>org.activiti</groupId>
       <artifactId>activiti-spring</artifactId>
       <version>${activiti.version}</version>
-    </dependency>
+    </dependency>-->
 <!--     <dependency>
       <groupId>org.activiti</groupId>
       <artifactId>activiti-spring-rest</artifactId>

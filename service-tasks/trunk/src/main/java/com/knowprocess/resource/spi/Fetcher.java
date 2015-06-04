@@ -53,7 +53,7 @@ public class Fetcher extends RestService implements JavaDelegate {
             .getLogger(Fetcher.class);
 
     public static final String MIME_XML = "text/xml";
-    private static final String RESOURCE_KEY = "resource";
+    protected static final String RESOURCE_KEY = "resource";
     private static final int MAX_VAR_LENGTH = 4000;
     public static final String PROTOCOL = "classpath://";
 
@@ -92,7 +92,7 @@ public class Fetcher extends RestService implements JavaDelegate {
         return result;
     }
 
-    private String extract(String result, String selector) throws IOException {
+    protected String extract(String result, String selector) throws IOException {
         org.jsoup.nodes.Document doc = Jsoup.parse(result);
         Elements requiredPart = doc.select(selector);
         return requiredPart.outerHtml();

@@ -22,11 +22,16 @@ import org.activiti.engine.ActivitiException;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.impl.el.FixedValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TransformTask implements JavaDelegate {
 	private static final int MAX_VAR_LENGTH = 4000;
 	private static final TransformerFactory factory = TransformerFactory
 			.newInstance();
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(TransformTask.class);
+
 	public static final String ERROR_KEY = "ERROR";
 	public static final String IGNORED_KEY = "IGNORED";
 	public static final String PASS_KEY = "PASS";
@@ -40,9 +45,17 @@ public class TransformTask implements JavaDelegate {
 		factory.setURIResolver(new ClasspathResourceResolver());
 	}
 
-	public void setXsltResource(String xsltResource)
+    /**
+     * 
+     * @param xsltResources
+     *            Comma separated list of XSLT classpath resources.
+     * @throws TransformerConfigurationException
+     */
+    public void setXsltResources(String xsltResources)
 			throws TransformerConfigurationException {
-		String[] resources = xsltResource.split(",");
+        LOGGER.info(String.format("Setting up pre-processors %1$s",
+                xsltResources));
+        String[] resources = xsltResources.split(",");
 		transformers = new Transformer[resources.length];
 		for (int i = 0; i < resources.length; i++) {
 			InputStream is = null;
@@ -135,7 +148,7 @@ public class TransformTask implements JavaDelegate {
 			}
 		}
 
-		setXsltResource(xsltField.getExpressionText());
+		setXsltResources(xsltField.getExpressionText());
 		String outputVarName = outputField == null ? "resource" : outputField
 				.getExpressionText();
 		String result = transform(resource, params);

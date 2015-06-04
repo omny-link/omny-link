@@ -95,7 +95,7 @@ public class Validator implements JavaDelegate {
         // TODO issues with imported schemas
 //        List<ValidationError> errors = validate(resource);
         TransformTask transform = new TransformTask();
-        transform.setXsltResource("/xslt/ActivitiSupportRules.xsl");
+        transform.setXsltResources("/xslt/ActivitiSupportRules.xsl");
         List<ValidationError> errors = clean(transform.transform(resource
                 .trim()));
         

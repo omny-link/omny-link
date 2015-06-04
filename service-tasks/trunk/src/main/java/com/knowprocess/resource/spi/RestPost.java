@@ -12,8 +12,6 @@ import org.activiti.engine.delegate.JavaDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.knowprocess.resource.internal.UrlResource;
-
 // Initially supports Twilio URL Encoded POST but some prelim. support for Form 
 // encoded that requires testing. 
 public class RestPost extends RestService implements JavaDelegate {
@@ -22,11 +20,9 @@ public class RestPost extends RestService implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
-        String resource = (String) globalResource.getValue(execution);
-        String usr = (String) (resourceUsername == null ? null
-                : resourceUsername.getValue(execution));
-        String pwd = (String) (resourcePassword == null ? null
-                : resourcePassword.getValue(execution));
+        String usr = getUsername(execution);
+        String resource = evalExpr(execution,
+                lookup(execution, usr, globalResource));
         LOGGER.info(String.format("POSTing to %1$s as %2$s", resource, usr));
 
         String response = null;
@@ -36,7 +32,7 @@ public class RestPost extends RestService implements JavaDelegate {
             String contentType = requestHeaders.get("Content-Type");
             if (contentType == null
                     || "application/x-www-form-urlencoded".equals(contentType)) {
-                is = getUrlResource(usr, pwd).getResource(
+                is = getUrlResource(usr, getPassword(execution, usr)).getResource(
                         resource,
                         "POST",
                         requestHeaders,
@@ -45,7 +41,7 @@ public class RestPost extends RestService implements JavaDelegate {
                 // TODO response headers
             } else {
                 Map<String, List<String>> responseHeaders2 = new HashMap<String, List<String>>();
-                is = getUrlResource(usr, pwd).getResource(resource, "POST",
+                is = getUrlResource(usr, getPassword(execution, usr)).getResource(resource, "POST",
                         requestHeaders, responseHeaders2,
                         getStringFromExpression(data, execution));
                 LOGGER.debug(String.format("ResponseHeaders: %1$s",
@@ -67,6 +63,9 @@ public class RestPost extends RestService implements JavaDelegate {
 
             if (responseVar == null) {
                 LOGGER.debug("No response variable requested");
+            } else if (is == null || is.available() == 0) {
+                LOGGER.warn("POST response contains no body, variable will be set to null");
+                execution.setVariable(responseVar.getExpressionText(), null);
             } else {
                 response = new Scanner(is).useDelimiter("\\A").next();
                 execution
@@ -87,14 +86,6 @@ public class RestPost extends RestService implements JavaDelegate {
         }
     }
 
-    private String[] getResponseHeadersSought(DelegateExecution execution) {
-        if (responseHeaders == null) {
-            return new String[0];
-        } else {
-            return ((String) responseHeaders.getValue(execution)).split(",");
-        }
-    }
-
     private Map<String, String> getFormFields(DelegateExecution execution,
             String formFieldExpression) {
         List<String> ff = Arrays.asList(formFieldExpression.split(","));
@@ -111,15 +102,5 @@ public class RestPost extends RestService implements JavaDelegate {
             data.put(name, value);
         }
         return data;
-    }
-
-    private UrlResource getUrlResource(String usr, String pwd) {
-        UrlResource ur = null;
-        if (usr == null || pwd == null) {
-            ur = new UrlResource();
-        } else {
-            ur = new UrlResource(usr, pwd);
-        }
-        return ur;
     }
 }

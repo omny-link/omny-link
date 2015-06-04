@@ -1,83 +1,86 @@
 package com.knowprocess.resource.spi;
 
-import org.activiti.engine.delegate.JavaDelegate;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
+import org.activiti.engine.delegate.DelegateExecution;
+import org.activiti.engine.delegate.JavaDelegate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RestGet extends Fetcher implements JavaDelegate {
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(RestGet.class);
 
-    // @Override
-    // public void execute(DelegateExecution execution) throws Exception {
-    // String resource = (String) globalResource.getValue(execution);
-    // String usr = (String) (resourceUsername == null ? null
-    // : resourceUsername.getValue(execution));
-    // String pwd = (String) (resourcePassword == null ? null
-    // : resourcePassword.getValue(execution));
-    // System.out.println("PUTing to " + resource + " as " + usr);
-    //
-    // URL url;
-    // HttpURLConnection connection = null;
-    // // InputStream is = null;
-    // try {
-    // // Create connection
-    // url = new URL(resource);
-    // connection = (HttpURLConnection) url.openConnection();
-    // connection.setRequestMethod("PUT");
-    // connection.setRequestProperty("User-Agent", RestService.USER_AGENT);
-    //
-    // Map<String, String> headerMap = getRequestHeaders((String) headers
-    // .getValue(execution));
-    // for (Entry<String, String> h : headerMap.entrySet()) {
-    // connection.setRequestProperty(h.getKey(), h.getValue());
-    // }
-    //
-    // if (usr != null) {
-    // String userpass = usr + ":" + pwd;
-    // String basicAuth = "Basic "
-    // + new String(new Base64().encode(userpass.getBytes()));
-    // System.out.println("Authorization: " + basicAuth);
-    // connection.setRequestProperty("Authorization", basicAuth);
-    // }
-    //
-    // connection.setUseCaches(false);
-    // connection.setDoInput(true);
-    // connection.setDoOutput(true);
-    //
-    // // Send request
-    // if (data != null) {
-    // // String bytes = URLEncoder.encode(
-    // // (String) data.getValue(execution), "UTF-8");
-    // String bytes = (String) data.getValue(execution);
-    // System.out.println("Content-Length: "
-    // + Integer.toString(bytes.length()));
-    // connection.setRequestProperty("Content-Length",
-    // "" + Integer.toString(bytes.length()));
-    // // connection.setRequestProperty("Content-Language", "en-US");
-    // System.out
-    // .println("==================== Data =======================");
-    // System.out.println(bytes);
-    //
-    // DataOutputStream wr = new DataOutputStream(
-    // connection.getOutputStream());
-    // wr.writeBytes(bytes);
-    // wr.flush();
-    // wr.close();
-    // }
-    //
-    // int code = connection.getResponseCode();
-    // if (code >= HttpURLConnection.HTTP_BAD_REQUEST) {
-    // System.out.println("Response code: " + code);
-    // throw new IOException(String.valueOf(code));
-    // }
-    // // is = connection.getInputStream();
-    // } catch (IOException e) {
-    // throw e;
-    // } catch (Exception e) {
-    // // TODO log and potentially rethrow
-    // e.printStackTrace();
-    // } finally {
-    // // if (connection != null) {
-    // // connection.disconnect();
-    // // }
-    // }
-    // }
+    @Override
+    public void execute(DelegateExecution execution) throws Exception {
+        String usr = getUsername(execution);
+        String resource = evalExpr(execution,
+                lookup(execution, usr, globalResource));
+        LOGGER.info(String.format("GET %1$s as %2$s", resource, usr));
+
+        String sel = selector == null ? null : (String) selector
+                .getValue(execution);
+        LOGGER.debug("Selector to use to extract part of result: " + sel);
+
+        Map<String, String> requestHeaders = getRequestHeaders(execution);
+        Map<String, List<String>> responseHeaders2 = new HashMap<String, List<String>>();
+
+        InputStream is = null;
+        try {
+            is = getUrlResource(usr, getPassword(execution, usr)).getResource(
+                    resource, "GET",
+                    requestHeaders, responseHeaders2,
+                    getStringFromExpression(data, execution));
+            LOGGER.debug(String.format("ResponseHeaders: %1$s",
+                    responseHeaders2));
+            String[] sought = getResponseHeadersSought(execution);
+            for (String s : sought) {
+                String hdr = s.substring(s.indexOf('=') + 1);
+                LOGGER.debug("Seeking header: " + hdr);
+                if (responseHeaders2.containsKey(hdr)) {
+                    LOGGER.debug(String.format("  ... setting: %1$s to %2$s", s
+                            .substring(0, s.indexOf('=')), responseHeaders2
+                            .get(hdr).get(0)));
+                    execution.setVariable(s.substring(0, s.indexOf('=')),
+                            responseHeaders2.get(hdr).get(0));
+                }
+            }
+
+            if (responseVar == null) {
+                LOGGER.debug("No response variable requested");
+            } else if (is == null || is.available() == 0) {
+                LOGGER.warn(String
+                        .format("GET response contains no body, variable '%1$s' will be set to null",
+                                responseVar.getExpressionText()));
+                execution.setVariable(responseVar.getExpressionText(), null);
+            } else {
+                String response = new Scanner(is).useDelimiter("\\A").next();
+                LOGGER.debug("resource:" + response);
+                if (sel != null) {
+                    response = extract(response, sel);
+                }
+                if (LOGGER.isDebugEnabled() && response != null) {
+                    LOGGER.debug("Response starts: "
+                            + response.substring(0,
+                                    response.length() < 50 ? response.length()
+                                            : 50));
+                }
+
+                execution
+                        .setVariable(responseVar.getExpressionText(), response);
+                LOGGER.debug(String.format("Setting %1$s to %2$s",
+                        responseVar.getExpressionText(), response));
+            }
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+                ;
+            }
+        }
+    }
 }

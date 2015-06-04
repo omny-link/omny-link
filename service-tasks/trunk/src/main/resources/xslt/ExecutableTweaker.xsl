@@ -10,8 +10,9 @@
   - Set default transition for exclusive gateway
   - Suppress non-executable process
   - Add an activiti initiator (named 'initiator') if one does not exist. 
-  - Convert unsupported service tasks into user tasks.
-  
+  - Convert unsupported service tasks into user tasks and assign to either pool name or initiator if no pools
+  - Add form property extensions for data objects (TODO when there is no form key???)  
+  - Suppress assignee and candidate group shortcuts when potentialOwner is specified (also helps avoid namespace clash with camunda)  
 -->
 <xsl:stylesheet version="1.0" 
   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
@@ -22,10 +23,14 @@
   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:activiti="http://activiti.org/bpmn">
+  xmlns:activiti="http://activiti.org/bpmn"
+  xmlns:camunda="http://activiti.org/bpmn">
   
   <xsl:output method="xml" omit-xml-declaration="no" indent="yes"
      cdata-section-elements="activiti:expression documentation semantic:script script"/>
+
+  <xsl:variable name="lcase" select="'abcdefghijklmnopqrstuvwxyz'" />
+  <xsl:variable name="ucase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
   
   <!-- 
     When the BPMN file contains more than one process there should be a 
@@ -36,7 +41,7 @@
   
   <xsl:template match="bpmndi:BPMNEdge|BPMNEdge">
     <xsl:variable name="bpmnId" select="@bpmnElement"/>
-    <xsl:if test="//process[@name=$processParticipantToExecute]//@id=$bpmnId">
+    <xsl:if test="not($processParticipantToExecute) or /process[@name=$processParticipantToExecute]//@id=$bpmnId">
       <xsl:copy>
         <xsl:apply-templates select="@*"/>
         <xsl:apply-templates/>
@@ -68,6 +73,38 @@
     </xsl:copy>
   </xsl:template>
   
+  <xsl:template match="semantic:dataOutput|dataOutput" mode="formProperty">
+    <xsl:element name="activiti:formProperty">
+      <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
+      <xsl:attribute name="name">
+        <xsl:value-of select="translate(substring(@name,1,1), $lcase, $ucase)" />
+        <xsl:value-of select="substring(@name,2)" />
+      </xsl:attribute>
+      <!-- Some conventions to allow type to be set for simple XSD types -->
+      <xsl:choose>
+        <xsl:when test="@itemSubjectRef='xsdBool'">
+          <xsl:attribute name="type">boolean</xsl:attribute>
+        </xsl:when>
+        <xsl:when test="@itemSubjectRef='xsdDate'">
+          <xsl:attribute name="type">date</xsl:attribute>
+        </xsl:when>
+        <xsl:when test="@itemSubjectRef='xsdDatetime'">
+          <xsl:attribute name="type">datetime</xsl:attribute>
+        </xsl:when>
+        <xsl:when test="@itemSubjectRef='xsdInt'">
+          <xsl:attribute name="type">long</xsl:attribute>
+        </xsl:when>
+        <xsl:when test="@itemSubjectRef='xsdLong'">
+          <xsl:attribute name="type">long</xsl:attribute>
+        </xsl:when>
+        <xsl:when test="@itemSubjectRef='xsdString'">
+          <xsl:attribute name="type">string</xsl:attribute>
+        </xsl:when>
+      </xsl:choose>
+      
+    </xsl:element>
+  </xsl:template>
+
   <xsl:template match="semantic:exclusiveGateway|exclusiveGateway">
     <xsl:variable name="id">
       <xsl:value-of select="@id"/>
@@ -133,7 +170,9 @@
 		<xsl:attribute name="isExecutable">true</xsl:attribute>
 	</xsl:template>
   
-  <!-- Convert resource ref into formal expressions -->
+  <!-- 
+    No longer needed as have implemented support for resourceRef (awaiting merge)
+    Convert resource ref into formal expressions
   <xsl:template match="semantic:resourceRef">
     <xsl:variable name="id">
       <xsl:value-of select="text()"/>
@@ -144,8 +183,9 @@
         <xsl:value-of select="//semantic:resource[@id=$id]/@name"/>
       </xsl:element>
     </xsl:element>
-  </xsl:template>
+  </xsl:template>-->
   
+  <!-- 
   <xsl:template match="semantic:startEvent|startEvent">
     <xsl:copy>
       <xsl:if test="not(@activiti:initiator)">
@@ -156,7 +196,7 @@
       <xsl:apply-templates select="@*"/>
       <xsl:apply-templates/>
     </xsl:copy>
-  </xsl:template>
+  </xsl:template>-->
   
   <!-- 
     Convert all non-user tasks into user tasks.
@@ -203,14 +243,23 @@
   <xsl:template match="semantic:receiveTask|receiveTask|semantic:sendTask|sendTask|semantic:serviceTask|serviceTask">
     <xsl:comment>
       <xsl:value-of select="local-name(.)"/>
-      <xsl:text> converted to user task and assigned to initiator.</xsl:text>
+      <xsl:text> converted to user task.</xsl:text>
     </xsl:comment>
     <xsl:text>&#x0A;</xsl:text>
     <xsl:element name="userTask">
-      <xsl:apply-templates select="//collaboration/participant" mode="resource">
-        <xsl:with-param name="id" select="@id"/>
-        <xsl:with-param name="process" select="parent::node()"/>
-      </xsl:apply-templates>
+      <xsl:choose>
+        <xsl:when test="//collaboration/participant">
+          <xsl:apply-templates select="//collaboration/participant" mode="resource">
+            <xsl:with-param name="id" select="@id"/>
+            <xsl:with-param name="process" select="parent::node()"/>
+          </xsl:apply-templates>
+        </xsl:when>
+        <xsl:when test="not(potentialOwner)">
+          <xsl:attribute name="activiti:assignee">${initiator}</xsl:attribute>
+        </xsl:when>
+        <xsl:otherwise>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:apply-templates select="@*[not(local-name(.)='delegateExpression' or local-name(.)='messageRef')]"/>
       <xsl:apply-templates/>
     </xsl:element>
@@ -242,7 +291,19 @@
     <xsl:copy-of select="."/>
   </xsl:template>
   
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.resource.spi.RestDelete']|serviceTask[@activiti:class='com.knowprocess.resource.spi.RestDelete']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
   <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.resource.spi.Fetcher']|serviceTask[@activiti:class='com.knowprocess.resource.spi.Fetcher']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.resource.spi.RestGet']|serviceTask[@activiti:class='com.knowprocess.resource.spi.RestGet']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.resource.spi.RestPost']|serviceTask[@activiti:class='com.knowprocess.resource.spi.RestPost']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.resource.spi.RestPut']|serviceTask[@activiti:class='com.knowprocess.resource.spi.RestPut']">
     <xsl:copy-of select="."/>
   </xsl:template>
   
@@ -295,6 +356,31 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template> 
+  
+  <!-- 
+    See if there are more extensions we can infer from standards-based elements
+  -->
+  <xsl:template match="semantic:userTask/semantic:extensionElements|userTask/extensionElements">
+    <xsl:copy>
+      <xsl:apply-templates select="@*|*"/>
+      <xsl:apply-templates select="../semantic:ioSpecification/semantic:dataOutput" mode="formProperty"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <!-- 
+    If we have both assignee/candidateGroups and potentialOwner give preference to the standard form.
+  -->
+  <xsl:template match="semantic:userTask/@camunda:assignee|semantic:userTask/@camunda:candidateGroups">
+    <xsl:choose>
+      <xsl:when test="../semantic:potentialOwner|../potentialOwner">
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>
+          <xsl:apply-templates select="@*"/>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
    
 	<!-- standard copy template -->
 	<xsl:template match="@*|node()">
@@ -302,5 +388,21 @@
 			<xsl:apply-templates select="@*"/>
 			<xsl:apply-templates/>
 		</xsl:copy>
-	</xsl:template>	
+	</xsl:template>
+  
+  <!-- ********************** -->
+  <!-- NAMED TEMPLATES FOLLOW -->
+  <!-- ********************** -->
+
+  <!-- TODO No worky -->  
+  <xsl:template name="toLabel">
+    <xsl:param name="text"/>
+    <xsl:comment>HELLO LABEL</xsl:comment>
+    <xsl:variable name="lcase" select="'abcdefghijklmnopqrstuvwxyz'" />
+    <xsl:variable name="ucase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
+    <xsl:value-of select="translate(substring($text,1,1), $lcase, $ucase)" />
+    <xsl:value-of select="substring($text,2)" />
+    <xsl:value-of select="$text" />  
+  </xsl:template>
+  
 </xsl:stylesheet>

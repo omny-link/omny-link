@@ -28,7 +28,7 @@
       <incoming>flow5</incoming>
     </endEvent>
     <sequenceFlow id="flow5" sourceRef="mailtask1" targetRef="endevent2"/>
-    <serviceTask activiti:class="com.knowprocess.resource.spi.Fetcher" completionQuantity="1" id="servicetask1" implementation="##WebService" isForCompensation="false" name="Check resource" startQuantity="1">
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="servicetask1" implementation="##WebService" isForCompensation="false" name="Check resource" startQuantity="1">
       <incoming>flow1</incoming>
       <outgoing>flow6</outgoing>
     </serviceTask>

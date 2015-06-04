@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Nonnull;
+
+import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.delegate.JavaDelegate;
@@ -101,9 +104,9 @@ public abstract class RestService implements JavaDelegate {
 
     protected String evalExpr(DelegateExecution execution, String expr) {
         // TODO This is a bit of a hack
-        if (expr.contains("${")) {
+        if (expr != null && expr.contains("${")) {
             expr = getStringFromExpression(getExpression(expr), execution);
-            System.out.println("  : " + expr);
+            LOGGER.debug("  : " + expr);
         }
         return expr;
     }
@@ -156,6 +159,53 @@ public abstract class RestService implements JavaDelegate {
         } else {
             return getRequestHeaders((String) headers.getValue(execution));
         }
+    }
+
+    protected String lookup(DelegateExecution execution, @Nonnull String usr,
+            @Nonnull Expression expr) {
+        String s = (String) expr.getValue(execution);
+        if (s.startsWith("userInfo('")) {
+            String key = s.substring("userInfo(".length(), s.indexOf(')'));
+            if (key.startsWith("'") || key.startsWith("\"")) {
+                key = key.substring(1, key.length() - 1);
+            }
+            String val = execution.getEngineServices().getIdentityService()
+                    .getUserInfo(usr, key);
+            if (val == null) {
+                throw new ActivitiObjectNotFoundException(String.format(
+                        "No user setting '%1$s' found for '%2$s'", key, usr));
+            }
+            s = val + s.substring(s.indexOf(')') + 1);
+        }
+        return s;
+    }
+
+    protected String[] getResponseHeadersSought(DelegateExecution execution) {
+        if (responseHeaders == null) {
+            return new String[0];
+        } else {
+            return ((String) responseHeaders.getValue(execution)).split(",");
+        }
+    }
+
+    protected UrlResource getUrlResource(String usr, String pwd) {
+        UrlResource ur = null;
+        if (usr == null || pwd == null) {
+            ur = new UrlResource();
+        } else {
+            ur = new UrlResource(usr, pwd);
+        }
+        return ur;
+    }
+
+    protected String getPassword(DelegateExecution execution, String usr) {
+        return resourcePassword == null ? null : lookup(execution, usr,
+                resourcePassword);
+    }
+
+    protected String getUsername(DelegateExecution execution) {
+        return (String) (resourceUsername == null ? null
+                : resourceUsername.getValue(execution));
     }
 
 }
