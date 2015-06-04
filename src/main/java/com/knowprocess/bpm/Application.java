@@ -1,5 +1,8 @@
 package com.knowprocess.bpm;
 
+import static com.google.common.base.Predicates.or;
+import static springfox.documentation.builders.PathSelectors.regex;
+
 import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
@@ -36,6 +39,11 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import com.google.common.base.Predicate;
 import com.knowprocess.bpm.api.ActivitiUserDetailsService;
 import com.knowprocess.bpm.impl.CorsFilter;
 import com.knowprocess.bpm.impl.JsonManager;
@@ -50,6 +58,7 @@ import com.knowprocess.bpm.impl.JsonManager;
 @EnableJpaRepositories({ "com.knowprocess.decisions.repositories",
         "com.knowprocess.bpm.decisions.repositories",
         "com.knowprocess.bpm.domain.repositories" })
+@EnableSwagger2
 public class Application extends WebMvcConfigurerAdapter {
 
     @Autowired
@@ -57,6 +66,32 @@ public class Application extends WebMvcConfigurerAdapter {
 
     @Autowired
     private MultiTenantActivitiProperties overrideProperties;
+
+    @Bean
+    public Docket workApi() {
+        return new Docket(DocumentationType.SWAGGER_2).groupName("public-api")
+                .select()
+                // Ignores controllers annotated with @CustomIgnore
+                // .apis(not(withClassAnnotation(CustomIgnore.class))
+                // //Selection by RequestHandler
+                .paths(publicPaths()) // and by paths
+                .build();
+        // .apiInfo(apiInfo())
+        // .securitySchemes(securitySchemes())
+        // .securityContext(securityContext());
+    }
+
+    /**
+     * 
+     * @return public API.
+     */
+    private Predicate<String> publicPaths() {
+        return or(regex("/.*/deployments.*"), regex("/msg.*"),
+                regex("/.*/process-definitions.*"),
+                regex("/.*/process-instances.*"),
+                regex("/.*/task.*"),
+                regex("/.*/tasks.*"), regex("/users.*"));
+    }
 
     @Bean
     public JsonManager jsonManager() {

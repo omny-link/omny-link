@@ -19,11 +19,19 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<start-class>com.knowprocess.bpm.Application</start-class>
 		<java.version>1.7</java.version>
-    <activiti.version>5.17.1-SNAPSHOT</activiti.version>
+    <activiti.version>5.18.0-SNAPSHOT</activiti.version>
     <serenity.version>1.0.21</serenity.version>
     <serenity.maven.version>1.0.21</serenity.maven.version>
     <webdriver.driver>firefox</webdriver.driver>
 	</properties>
+
+  <repositories>
+      <repository>
+        <id>jcenter-snapshots</id>
+        <name>jcenter</name>
+        <url>https://jcenter.bintray.com/</url>
+      </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -98,6 +106,18 @@
       <scope>provided</scope>
     </dependency>
     <!--  END core dependencies -->
+    <!-- Generates REST documentation -->
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger2</artifactId>
+        <version>2.0.0</version>
+    </dependency>
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger-ui</artifactId>
+        <version>2.0.0</version>
+    </dependency>
+    <!-- END REST documentation -->
     <!--  START testing dependencies -->
     <dependency>
       <groupId>junit</groupId>
@@ -105,7 +125,7 @@
       <scope>test</scope>
     </dependency>
     <!-- END testing dependencies -->
-    <!-- START BDD testing dependencies -->
+    <!-- START BDD testing dependencies 
     <dependency>
       <groupId>net.serenity-bdd</groupId>
       <artifactId>core</artifactId>
@@ -117,7 +137,7 @@
       <artifactId>serenity-junit</artifactId>
       <version>1.0.24</version>
       <scope>test</scope>
-    </dependency>
+    </dependency>-->
     <!-- END BDD testing dependencies -->
     <!-- START Application dependencies -->
     <dependency>
@@ -144,7 +164,7 @@
     </dependency>
     <dependency>
       <groupId>org.activiti</groupId>
-      <artifactId>spring-boot-starter-jpa</artifactId>
+      <artifactId>activiti-spring-boot-starter-jpa</artifactId>
       <version>${activiti.version}</version>
     </dependency>
     <dependency>

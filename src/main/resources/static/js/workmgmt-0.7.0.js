@@ -56,11 +56,18 @@ var ractive = new AuthenticatedRactive({
     keys: function(obj) {
       return Object.keys(obj);
     },
+    stdPartials: [
+      /*{ "name": "navbar", "url": "/partials/simpleTodoFormExtension.html"}*/
+    ],
     tasks: [],
     username: localStorage['username'],
   },
   simpleTodoFormExtension: function(x) { 
     console.log('simpleTodoFormExtension: '+JSON.stringify(x));    
+  },
+  collapseSendMessage: function() {
+    console.log('collapseSendMessage...');
+    $('#sendMessage').slideUp();
   },
   edit: function(task) { 
     console.log('edit '+task+' ...');
@@ -73,6 +80,7 @@ var ractive = new AuthenticatedRactive({
     console.log('fetch...');
     $.getJSON('/'+ractive.get('tenant.id')+'/tasks/'+ractive.get('username')+'/', function( data ) {
       ractive.merge('tasks', data);
+      if (ractive.hasRole('admin')) $('.admin').show();
     });
   },
   fetchUserNotes: function () {
@@ -114,8 +122,14 @@ var ractive = new AuthenticatedRactive({
       todayHighlight: true
     });
   },
+  newMessage: function() {
+    console.log('newMessage...');
+    ractive.set('message', {tenant: ractive.get('tenant.id'),name: ractive.get('tenant.id')+'.messageName'});
+    $('#sendMessage').slideDown();
+  },
   oninit: function() {
     this.ajaxSetup();
+    this.loadStandardPartials(this.get('stdPartials'));
   },
   save: function () {
     console.log('save '+JSON.stringify(ractive.get('current'))+' ...');
@@ -174,6 +188,29 @@ var ractive = new AuthenticatedRactive({
     ractive.toggleResults();
     $('#currentSect').slideDown();
   },
+  sendMessage: function() {
+    console.log('sendMessage: '+ractive.get('message.name'));
+    var type = ((ractive.get('message.pattern') == 'inOut' || ractive.get('message.pattern') == 'outOnly') ? 'GET' : 'POST');
+    var d = (ractive.get('message.pattern') == 'inOut' ? {query:ractive.get('message.body')} : {json:ractive.get('message.body')});
+    console.log('d: '+d);
+    //var d['businessDescription']=ractive.get('message.bizKey');
+    $.ajax({
+      url: '/msg/'+ractive.get('tenant.id')+'/'+ractive.get('message.name')+'/',
+      type: type,
+      data: d,
+      dataType: 'text',
+      success: completeHandler = function() {
+        ractive.showMessage('Message received.');
+        ractive.fetch();
+        ractive.collapseSendMessage();
+      },
+    });
+  },
+  showResults: function() {
+    console.log('showResults');
+    $('#tasksTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
+    $('#tasksTable').slideDown();
+  },
   startSop: function(key, bizKey) {
     console.log('startSop: '+key+' for '+bizKey);
     $.ajax({
@@ -210,10 +247,8 @@ var ractive = new AuthenticatedRactive({
 //          if (jqXHR.status == 201) ractive.get('contacts').push(ractive.get('current'));
           if (jqXHR.status <= 300) ractive.fetch();
           ractive.showMessage('Task submitted');
+          ractive.showResults();
           ractive.set('saveObserver',true);
-        },
-        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-          ractive.handleError(jqXHR,textStatus,errorThrown);
         }
       });
     } else {

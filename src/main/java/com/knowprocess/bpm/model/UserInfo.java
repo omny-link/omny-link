@@ -4,10 +4,12 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.springframework.stereotype.Component;
 
 @Data
+@EqualsAndHashCode(exclude = { "userRecord" })
 @Component
 public class UserInfo {
 

@@ -41,13 +41,18 @@ function I18nController() {
     }
   };
   this.getDurationString = function(millis) {
-      mins = millis / (60 * 1000);
+      secs = millis / 1000;
+      mins = secs / 60;
       hours = mins / 60;
       days = hours / 24;
       weeks = days / 7;
       years = days / 365;
-      if (mins < 1) {
-            return 'less than a minute';
+      if (secs < 1) {
+          return 'less than a second';
+      } else if (secs < 2) {
+          return 'about a second';
+      } else if (mins < 1) {
+          return 'less than a minute';
       } else if (mins < 2) {
           return 'about a minute';
       } else if (mins < 60) {
