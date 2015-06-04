@@ -36,10 +36,10 @@ public class TaskController {
     }
 
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.PUT)
-    public @ResponseBody Task completeTask(
+    public @ResponseBody Task updateTask(
             @PathVariable("taskId") String taskId, @RequestBody Task t,
             @RequestParam(required = false, value = "complete") String complete) {
-        LOGGER.info(String.format("completeTask %1$s", taskId));
+        LOGGER.info(String.format("updateTask %1$s", taskId));
 
         if (complete == null) {
             org.activiti.engine.task.Task dest = processEngine.getTaskService()
@@ -50,9 +50,11 @@ public class TaskController {
 
             processEngine.getTaskService().saveTask(dest);
         } else {
-            // processEngine.getTaskService().complete(taskId,
-            // t.getProcessVariables());
-            processEngine.getTaskService().complete(taskId);
+            LOGGER.debug(String.format(
+                    "Completing task %1$s with variables %2$s", taskId,
+                    t.getProcessVariables()));
+            processEngine.getTaskService().complete(taskId,
+                    t.getProcessVariables());
         }
         return t;
     }

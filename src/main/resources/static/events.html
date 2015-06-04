@@ -13,8 +13,9 @@
   <script id='template' type='text/ractive'>
     <div class="profile pull-right">
       <form name="logoutForm" action="/logout" method="POST">
+          <span id="tenantId" class="replaceable super_admin" contenteditable="true" onblur="ractive.switchToTenant($('#tenantId').text())" name="tenantId" value="{{tenant == null ? 'Click to set' : tenant.id}}"></span>
         <span class="profile-img">Logged in as: {{username}}</span>
-        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
+        <a class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></a>
         <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
       </form>
     </div>
@@ -27,11 +28,11 @@
     <form id="eventList">
       <section id="eventSect">
         <h2>
-          <span id="eventsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the event table"></span>
+          <a id="eventsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the event table"></a>
           <span>Events</span>
-          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></span>
+          <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
           <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-          <span class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching events"></span>
+          <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching events"></a>
         </h2>
         <table id="eventsTable" class="table table-striped">
           <thead>
@@ -63,13 +64,13 @@
               <!--td on-click="select(this)">{{processInstanceId}}</td-->
               <td on-click="select(this)">
                 <a class="btn" href="/process-definitions/{{processDefinitionId}}.bpmn" target="_newtab">
-                  <span class="glyphicon glyphicon-export" aria-hidden="true"></span>View BPMN</a>
+                  <a class="glyphicon glyphicon-export" aria-hidden="true"></a>View BPMN</a>
                 <a class="btn" href="/process-definitions/{{processDefinitionId}}.png" target="_newtab">
-                  <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>View image</a>
+                  <a class="glyphicon glyphicon-picture" aria-hidden="true"></a>View image</a>
               </td>
               <td on-click="select(this)">{{assignee}}</td>
               <!--td>
-                <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="select(this)"></span>
+                <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="select(this)"></a>
               </td-->
             </tr>
             {{/}}
@@ -110,7 +111,7 @@
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
   <script src="js/ractive.min.js"></script>
   -->
-  <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
+  <script src="js/ractive.min.js"></script>
   <script src="js/autoNumeric.min.js"></script>
   <script src="js/md5.min.js"></script>
   <script src="js/string-functions-0.1.0.js"></script>

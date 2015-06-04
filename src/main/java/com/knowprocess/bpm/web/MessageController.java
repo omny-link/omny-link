@@ -257,10 +257,13 @@ public class MessageController {
                 return new ResponseEntity<String>(e2.toJson(), headers,
                         HttpStatus.BAD_REQUEST);
             } else {
-                e2 = new ReportableException(e.getClass().getName() + ":"
-                        + e.getMessage(), e);
-                return new ResponseEntity<String>(e2.toJson(), headers,
-                        HttpStatus.SERVICE_UNAVAILABLE);
+                startExceptionHandlerProcess(uriBuilder, tenantId, vars,
+                        headers, bizKey, e);
+                throw e;
+                // e2 = new ReportableException(e.getClass().getName() + ":"
+                // + e.getMessage(), e);
+                // return new ResponseEntity<String>(e2.toJson(), headers,
+                // HttpStatus.SERVICE_UNAVAILABLE);
             }
         } finally {
             Authentication.setAuthenticatedUserId(null);
@@ -282,12 +285,31 @@ public class MessageController {
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
+    private ResponseEntity<String> startExceptionHandlerProcess(
+            final UriComponentsBuilder uriBuilder, String tenantId,
+            final Map<String, Object> vars, HttpHeaders headers, String bizKey,
+            ActivitiException e) {
+        LOGGER.debug("An unexpected exception occurred: " + e.getMessage());
+        ProcessInstance instance = processEngine.getRuntimeService()
+                .startProcessInstanceByKeyAndTenantId("SimpleTodo", bizKey,
+                        vars, tenantId);
+        addLocationHeader(uriBuilder, headers, instance);
+        LOGGER.debug(String.format(
+                "Created an instance of %1$s to handle it, id: %2$s",
+                "SimpleTodo", instance.getId()));
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+    }
+
     private void addLocationHeader(final UriComponentsBuilder uriBuilder,
             HttpHeaders headers, ProcessInstance instance) {
         RequestMapping a = ProcessInstanceController.class
                 .getAnnotation(RequestMapping.class);
+        String basePath = a.value()[0];
+        if (basePath.contains("{tenantId}")) {
+            basePath = basePath.replace("{tenantId}", instance.getTenantId());
+        }
         headers.add("Location",
-                uriBuilder.path(a.value()[0] + "/" + instance.getId()).build()
+                uriBuilder.path(basePath + "/" + instance.getId()).build()
                         .toUriString());
     }
 

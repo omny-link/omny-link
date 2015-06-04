@@ -15,7 +15,10 @@ var ractive = new AuthenticatedRactive({
 
   // Here, we're passing in some initial data
   data: {
-    //server: 'http://api.knowprocess.com',
+    // TODO not loaded for now because of ordering issues
+//    stdPartials: [
+//      { "name": "profileArea", "url": "/partials/profileArea.html"}
+//    ],
     username: localStorage['username'],
     users: []
   },
@@ -104,6 +107,7 @@ var ractive = new AuthenticatedRactive({
   },
   oninit: function() {
     this.ajaxSetup();
+//    this.loadStandardPartials(this.get('stdPartials'));
   },
   save: function () {
     console.log('save '+ractive.get('current')+' ...');

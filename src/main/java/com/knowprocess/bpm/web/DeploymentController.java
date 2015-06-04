@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.transform.TransformerConfigurationException;
+
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
@@ -24,9 +26,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.knowprocess.bpm.api.ReportableException;
 import com.knowprocess.bpm.api.UnsupportedBpmnException;
 import com.knowprocess.bpm.model.Deployment;
+import com.knowprocess.xslt.TransformTask;
 
 @Controller
 @RequestMapping("/{tenantId}/deployments")
@@ -35,6 +37,8 @@ public class DeploymentController {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(DeploymentController.class);
 
+    private static final String PREPROCESSOR_RESOURCES = "/xslt/ExecutableTweaker.xsl";
+
     /**
      * Set true to make verbose debug level logging.
      */
@@ -42,6 +46,8 @@ public class DeploymentController {
 
     @Autowired(required = true)
     ProcessEngine processEngine;
+
+    private TransformTask preProcessor;
 
     @RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<Deployment> showAllJson(
@@ -93,7 +99,8 @@ public class DeploymentController {
                     || resource.getOriginalFilename().toLowerCase()
                             .endsWith(".bpmn20.xml")) {
                 LOGGER.debug("... BPMN resource");
-                String bpmn = new String(resource.getBytes(), "UTF-8");
+                String bpmn = getPreProcessor().transform(
+                        new String(resource.getBytes(), "UTF-8"));
                 if (LOGGER.isDebugEnabled() && verbose) {
                     LOGGER.debug("BPMN: " + bpmn);
                 }
@@ -122,23 +129,25 @@ public class DeploymentController {
                 LOGGER.debug("  ...including: " + entry.getKey());
             }
             return deployment;
-            // HttpHeaders headers = new HttpHeaders();
-            // headers.add("Content-Type", "application/json");
-            // RequestMapping a = getClass().getAnnotation(
-            // RequestMapping.class);
-            // headers.add(
-            // "Location",
-            // uriBuilder
-            // .path(a.value()[0] + "/"
-            // + deployment.getId().toString())
-            // .build().toUriString());
-            // return new ResponseEntity(deployment, headers,
-            // HttpStatus.CREATED);
         } else {
-            ReportableException e2 = new ReportableException(
+            UnsupportedBpmnException e2 = new UnsupportedBpmnException(
                     "Rejected BPMN as unsupported, see log for details.");
             throw new RuntimeException(e2.toJson(), e2);
         }
+    }
+
+    private TransformTask getPreProcessor() {
+        if (preProcessor == null) {
+            preProcessor = new TransformTask();
+            try {
+                preProcessor.setXsltResources(PREPROCESSOR_RESOURCES);
+            } catch (TransformerConfigurationException e) {
+                LOGGER.error(String.format(
+                        "Unable to location deployment pre-processors: %1$s",
+                        PREPROCESSOR_RESOURCES), e);
+            }
+        }
+        return preProcessor;
     }
 
     private boolean isValid(Map<String, String> processes) {
@@ -155,20 +164,13 @@ public class DeploymentController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public @ResponseBody void deleteFromJson(@PathVariable("id") String id) {
         LOGGER.info(String.format("deleting deployment: %1$s", id));
-        // HttpHeaders headers = new HttpHeaders();
-        // headers.add("Content-Type", "application/json");
-        try {
-            Deployment deployment = Deployment.findDeployment(id);
-            if (deployment == null) {
-                // return new ResponseEntity<String>(headers,
-                // HttpStatus.NOT_FOUND);
-            }
-            deployment.remove();
-            // return deployment;
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
+        Deployment deployment = Deployment.findDeployment(id);
+        // if (deployment == null) {
+            // return new ResponseEntity<String>(headers,
+            // HttpStatus.NOT_FOUND);
+        // }
+        deployment.remove();
+        // return deployment;
     }
 
 }
