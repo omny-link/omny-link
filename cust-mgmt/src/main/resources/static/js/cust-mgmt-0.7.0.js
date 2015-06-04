@@ -33,7 +33,7 @@ var ractive = new AuthenticatedRactive({
       ],
       */
     contacts: [],
-    filterStage: undefined,
+    filter: undefined,
     //saveObserver:false,
     username: localStorage['username'],
     age: function(timeString) {
@@ -51,16 +51,6 @@ var ractive = new AuthenticatedRactive({
           if (d.name == name) val = d.value;
         });
         return val; 
-      }
-    },
-    filter: function(stage) {
-      switch(ractive.get('filterStage')) {
-      case 'Cold':
-        return stage=='Cold';
-      case 'On Hold':
-        return stage=='On Hold';
-      default: 
-        return stage!='Cold';
       }
     },
     formatDate: function(timeString) {
@@ -84,6 +74,10 @@ var ractive = new AuthenticatedRactive({
       if (email == undefined) return '';
       console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
+    },
+    matchFilter: function(obj) {
+      if (ractive.get('filter')==undefined) return true;
+      else return ractive.get('filter').value.toLowerCase()==obj[ractive.get('filter').field].toLowerCase();
     }
   },
   add: function () {
@@ -173,6 +167,7 @@ var ractive = new AuthenticatedRactive({
         }
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
+        ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
       }//,
 //      fail: function( jqXHR, textStatus, errorThrown) {
 //        console.log( "error" );
@@ -201,15 +196,12 @@ var ractive = new AuthenticatedRactive({
       }
     });
   },
-  filter: function(filterStage) {
-    console.log('filter: '+filterStage);
-    if (filterStage==undefined) { 
-      filterStage = ractive.get('tenant.stagesInActive');
-//      .reduce(function(previousValue, currentValue, index, array) {
-//        return previousValue + currentValue;
-//      });
-    }
-    ractive.set('filterStage',filterStage);
+  filter: function(field,value) {
+    console.log('filter: field '+field+' = '+value);
+    if (value==undefined) value = ractive.get('tenant.stagesInActive');
+    if (field==undefined) ractive.set('filter',undefined);
+    else ractive.set('filter',{field: field,value: value});
+    ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
     $('input[type="search"]').blur();
   },
   find: function(contactId) { 
@@ -293,7 +285,7 @@ var ractive = new AuthenticatedRactive({
     ractive.set('saveObserver',false);
     ractive.set('current.account.tenantId',ractive.get('tenant.id'));
     ractive.set('saveObserver',true);
-    if (document.getElementById('currentAccountForm')!=undefined && document.getElementById('currentAccountForm').checkValidity()) { 
+    if ($('#currentAccountForm:visible').length!=0 && document.getElementById('currentAccountForm').checkValidity()) { 
       $.ajax({
         url: id === undefined ? '/accounts' : '/accounts/'+id,
         type: id === undefined ? 'POST' : 'PUT',
@@ -331,7 +323,7 @@ var ractive = new AuthenticatedRactive({
             ractive.handleError(jqXHR,textStatus,errorThrown);
         }
       });
-    } else {
+    } else if ($('#currentAccountForm:visible').length!=0) {
       console.warn('Cannot save yet as account is invalid');
       $('#currentAccountForm :invalid').addClass('field-error');
       ractive.showMessage('Cannot save yet as account is incomplete');
@@ -353,11 +345,9 @@ var ractive = new AuthenticatedRactive({
         data: n,
         success: completeHandler = function(data) {
           console.log('data: '+ data);
+          ractive.showMessage('Document link saved successfully');
           ractive.fetchDocs();
           $('#doc').val(undefined);
-        },
-        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-            ractive.handleError(jqXHR,textStatus,errorThrown);
         }
       });
     } 
@@ -379,12 +369,9 @@ var ractive = new AuthenticatedRactive({
         data: n,
         success: completeHandler = function(data) {
           console.log('response: '+ data);
+          ractive.showMessage('Note saved successfully'); 
           ractive.fetchNotes();
           $('#note').val(undefined);
-        },
-        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-//          if ()
-            ractive.handleError(jqXHR,textStatus,errorThrown);
         }
       });
     }
@@ -427,6 +414,11 @@ var ractive = new AuthenticatedRactive({
   showActivityIndicator: function(msg, addClass) {
     document.body.style.cursor='progress';
     this.showMessage(msg, addClass);
+  },
+  showResults: function() {
+    $('#contactsTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
+    $('#currentSect').slideUp();
+    $('#contactsTable').slideDown({ queue: true });
   },
   sortContacts: function() {
     ractive.get('contacts').sort(function(a,b) { return new Date(b.lastUpdated)-new Date(a.lastUpdated); });
@@ -488,7 +480,7 @@ var ractive = new AuthenticatedRactive({
         processData: false,
         success: function(response) {
   //        console.log('successfully uploaded data');
-          ractive.showMessage('Successfully uploaded data');
+          ractive.showMessage('Successfully uploaded '+response.length+' records');
         },
         error: function(jqXHR, textStatus, errorThrown) {
           ractive.handleError(jqXHR, textStatus, errorThrown);
@@ -496,6 +488,15 @@ var ractive = new AuthenticatedRactive({
       });
   }
 });
+
+ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
+  console.log('searchTerm changed');
+  ractive.showResults();
+  setTimeout(function() {
+    ractive.set('searchMatched',$('#contactsTable tbody tr').length);
+  }, 500);
+});
+
 
 // Save on model change
 // done this way rather than with on-* attributes because autocomplete 

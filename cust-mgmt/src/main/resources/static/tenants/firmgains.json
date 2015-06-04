@@ -38,12 +38,16 @@
   "contactFields": [ 
     { "label": "Current Partner", "key": "partnersContacted"},
     { "label": "Placed with Partner", "key": "placedWithPartner"}
-  ],    
+  ],
+  "customerActions": [
+    { "label": "Run email follow up", "key": "FollowUpOneContact" }
+  ],
   "omny-bar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
     { "url": "index.html", "classes": "glyphicon omny-icon-address-book", "title": "Customer Management" },
     { "url": "decisions.html", "classes": "glyphicon glyphicon-list-alt", "title": "Decisions" },
-    { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" }    
+    { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },
+    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }    
   ],
   "partials": [
     { "name": "firmgainsContactExtension", "url": "/partials/firmgainsContactExtension.html"},
@@ -52,13 +56,13 @@
   "typeaheadControls": [
     { "selector": "#curMedium", "url": "/data/media.json"},
     { "selector": "#curSource", "url": "/data/sources.json"},
-    { "selector": "#curAccountType", "url": "/data/firmgains/account-types.json"},
+    { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/firmgains/account-types.json"},
     { "selector": "#curEnquiryType", "url": "/data/firmgains/enquiry-types.json"},
     { "selector": "#curOwner", "url": "/data/firmgains/owners.json"},
     { "selector": "#curPartnersContacted", "url": "/data/firmgains/partners.json"},
     { "selector": "#curRegion", "url": "/data/firmgains/regions.json"},
     { "selector": "#curSector", "url": "/data/firmgains/sectors.json"},
-    { "selector": "#curStage", "url": "/data/firmgains/stages.json"},
+    { "name": "stages", "selector": "#curStage", "url": "/data/firmgains/stages.json"},
     { "selector": "#curPreferredTiming", "url": "/data/firmgains/timings.json"}
   ]
 }

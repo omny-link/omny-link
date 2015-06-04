@@ -1,5 +1,8 @@
 package link.omny.custmgmt;
 
+import static com.google.common.base.Predicates.or;
+import static springfox.documentation.builders.PathSelectors.regex;
+
 import javax.sql.DataSource;
 
 import link.omny.custmgmt.internal.JsonPopulatorFactoryBean;
@@ -30,31 +33,67 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.common.base.Predicate;
 import com.knowprocess.bpm.api.ActivitiUserDetailsService;
 import com.knowprocess.bpm.impl.CorsFilter;
 import com.knowprocess.bpm.impl.JsonManager;
 
 @Configuration
 @ComponentScan(basePackages = { "link.omny.custmgmt", "link.omny.decisions",
-        "com.knowprocess.bpm",
-        "com.knowprocess.decisions" })
+        "com.knowprocess.bpm", "link.omny.domain" })
 @EnableAutoConfiguration
 @EntityScan({ "link.omny.custmgmt.model", "com.knowprocess.bpm",
-        "com.knowprocess.decisions" })
+        "link.omny.decisions", "link.omny.domain" })
 @EnableJpaRepositories({ "link.omny.custmgmt.repositories",
-        "com.knowprocess.bpm.domain.repositories",
-        "com.knowprocess.bpm.decisions.repositories",
-        "com.knowprocess.decisions.repositories" })
+        "link.omny.domain.repositories", "link.omny.decisions.repositories" })
 // @ImportResource("classpath:META-INF/spring/applicationContext-data.xml")
+@EnableSwagger2
 public class Application extends WebMvcConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(Application.class);
 
-
     @Value("${omny.populator.skip:true}")
     protected boolean skipPopulator;
+
+    @Bean
+    public Docket omnyApi() {
+        return new Docket(DocumentationType.SWAGGER_2).groupName("public-api")
+                .select()
+                // Ignores controllers annotated with @CustomIgnore
+                // .apis(not(withClassAnnotation(CustomIgnore.class))
+                // //Selection by RequestHandler
+                .paths(publicPaths()) // and by paths
+                .build();
+        // .apiInfo(apiInfo())
+        // .securitySchemes(securitySchemes())
+        // .securityContext(securityContext());
+    }
+
+    /**
+     * 
+     * @return public API.
+     */
+    private Predicate<String> publicPaths() {
+        return or(regex("/.*/accounts.*"), 
+                regex("/.*/activities.*"),
+                regex("/.*/contacts.*"), 
+                regex("/.*/notes.*"),
+                // Work Mgmt 
+                regex("/.*/deployments.*"), regex("/msg.*"),
+                regex("/.*/process-definitions.*"),
+                regex("/.*/process-instances.*"),
+                regex("/.*/task.*"),
+                regex("/.*/tasks.*"), regex("/users.*"),
+                // Decisions 
+                regex("/.*/decisions.*"),
+                regex("/.*/decision-ui-models.*"), regex("/.*/domain.*"));
+    }
 
     @Bean
     public JsonManager jsonManager() {

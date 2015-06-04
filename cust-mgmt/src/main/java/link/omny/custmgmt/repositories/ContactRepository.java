@@ -18,8 +18,15 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (stage IS NULL OR stage != 'deleted') ORDER BY c.lastUpdated DESC")
     List<Contact> findAllForTenant(@Param("tenantId") String tenantId);
 
+    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND c.doNotEmail = false AND (stage IS NULL OR stage != 'deleted') ORDER BY c.lastUpdated DESC")
+    List<Contact> findAllEmailableForTenant(@Param("tenantId") String tenantId);
+
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (stage IS NULL OR stage != 'deleted') ORDER BY c.lastUpdated DESC")
     List<Contact> findPageForTenant(@Param("tenantId") String tenantId,
+            Pageable pageable);
+
+    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND c.doNotEmail = false AND (stage IS NULL OR stage != 'deleted') ORDER BY c.lastUpdated DESC")
+    List<Contact> findEmailablePageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
     List<Contact> findByLastName(@Param("lastName") String lastName);

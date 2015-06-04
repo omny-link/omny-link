@@ -18,6 +18,7 @@ import lombok.Data;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,9 +41,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * REST web service for uploading and accessing a file of JSON Contacts (over
  * and above the CRUD offered by spring data).
- * 
- * /models/upload?file={file} Add a model POST file: A file posted in a
- * multi-part request
  * 
  * @author Tim Stephenson
  */
@@ -129,12 +127,37 @@ public class ContactController {
     }
 
     /**
+     * Return just the contacts for a specific tenant.
+     * 
+     * @return contacts for that tenant.
+     */
+    @RequestMapping(value = "/emailable", method = RequestMethod.GET)
+    public @ResponseBody List<ShortContact> listMailableForTenant(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        LOGGER.info(String.format("List emailable contacts for tenant %1$s",
+                tenantId));
+
+        List<Contact> list;
+        if (limit == null) {
+            list = contactRepo.findAllEmailableForTenant(tenantId);
+        } else {
+            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            list = contactRepo.findEmailablePageForTenant(tenantId, pageable);
+        }
+        LOGGER.info(String.format("Found %1$s contacts", list.size()));
+
+        return wrap(list);
+    }
+
+    /**
      * Return just the matching contacts (probably will be one in almost every
      * case).
      * 
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/searchByAccountNameLastNameFirstName", 
+    @RequestMapping(value = "/searchByAccountNameLastNameFirstName",
             method = RequestMethod.GET, 
             params = { "accountName", "lastName", "firstName" })
     public @ResponseBody List<ShortContact> listForAccountNameLastNameFirstName(
@@ -279,15 +302,7 @@ public class ContactController {
 
     private ShortContact wrap(Contact contact) {
         ShortContact resource = new ShortContact();
-        resource.setFirstName(contact.getFirstName());
-        resource.setLastName(contact.getLastName());
-        resource.setEmail(contact.getEmail());
-        resource.setOwner(contact.getOwner());
-        resource.setStage(contact.getStage());
-        resource.setEnquiryType(contact.getEnquiryType());
-        resource.setAccountType(contact.getAccountType());
-        resource.setFirstContact(contact.getFirstContact());
-        resource.setLastUpdated(contact.getLastUpdated());
+        BeanUtils.copyProperties(contact, resource);
         Link detail = linkTo(ContactRepository.class, contact.getId())
                 .withSelfRel();
         resource.add(detail);
@@ -311,6 +326,9 @@ public class ContactController {
         private String selfRef;
         private String firstName;
         private String lastName;
+        private String town;
+        private String countyOrCity;
+        private String country;
         private String email;
         private String accountName;
         private String owner;

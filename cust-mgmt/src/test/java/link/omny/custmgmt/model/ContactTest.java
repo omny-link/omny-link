@@ -14,13 +14,18 @@ public class ContactTest {
         assertEquals("Tim", contact.getFirstName());
         assertEquals("Stephenson", contact.getLastName());
 
-        contact.setFullName("James Sansome - Standerwick");
+        contact.setFullName("James Sansome-Standerwick");
         assertEquals("James", contact.getFirstName());
-        assertEquals("Sansome - Standerwick", contact.getLastName());
+        assertEquals("Sansome-Standerwick", contact.getLastName());
 
         contact.setFullName("Mr Sandhu");
         assertEquals("Mr", contact.getTitle());
         assertEquals("Sandhu", contact.getLastName());
+
+        contact.setFullName("Mr W Bell");
+        assertEquals("Mr", contact.getTitle());
+        assertEquals("W", contact.getFirstName());
+        assertEquals("Bell", contact.getLastName());
 
         contact.setLastName(null);
         contact.setFullName("??");
@@ -31,7 +36,8 @@ public class ContactTest {
         // tolerable edge case
         contact.setFullName("Mr and Mrs Rutherford");
         assertEquals("Mr", contact.getTitle());
-        assertEquals("and Mrs Rutherford", contact.getLastName());
+        assertEquals("and", contact.getFirstName());
+        assertEquals("Mrs Rutherford", contact.getLastName());
     }
 
 }

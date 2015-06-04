@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -16,6 +17,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.mail.MailData;
 
 //@RunWith(SpringJUnit4ClassRunner.class)
@@ -24,6 +28,8 @@ public class FollowUpDecisionTest {
 
     private static final String ADDRESSEE = "tim@knowprocess.com";
     private FollowUpDecision decision;
+
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void setUp() throws Exception {
@@ -181,6 +187,18 @@ public class FollowUpDecisionTest {
         assertMailData(decision.execute(contact), "anniversary",
                 "A Very Happy Anniversary... We Hope!");
     }
+
+    @Test
+    public void testXXXFollowUp() throws JsonParseException,
+            JsonMappingException, IOException {
+        Contact contact = mapper.readValue(
+                getClass().getResourceAsStream(
+                        "/FollowUpDecisionTest.contact1.json"), Contact.class);
+
+        assertMailData(decision.execute(contact), "anniversary",
+                "A Very Happy Anniversary... We Hope!");
+    }
+
     private void assertMailData(MailData mailData, String template,
             String subject) {
         assertNotNull(mailData);

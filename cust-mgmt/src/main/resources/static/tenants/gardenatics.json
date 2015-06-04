@@ -26,11 +26,12 @@
     { "label": "New Enquiry", "key": "preMigration" }
   ],
   "typeaheadControls": [
+    { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
     { "selector": "#curEnquiryType", "url": "/data/gardenatics/enquiry-types.json"},
     { "selector": "#curMedium", "url": "/data/media.json"},
     { "selector": "#curOwner", "url": "/data/gardenatics/owners.json"},
     { "selector": "#curPartner", "url": "/data/gardenatics/partners.json"},
     { "selector": "#curSource", "url": "/data/sources.json"},
-    { "selector": "#curStage", "url": "/data/gardenatics/stages.json"}
+    { "name": "stages", "selector": "#curStage", "url": "/data/gardenatics/stages.json"}
   ]
 }

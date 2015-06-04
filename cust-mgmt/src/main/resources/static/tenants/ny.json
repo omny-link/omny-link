@@ -1,0 +1,26 @@
+{ 
+  "id": "ny", 
+  "showAccount":true,
+  "contactFields": [ 
+    { "label": "Credit Limit", "key": "creditLimit"},
+    { "label": "Current Credit", "key": "currentCredit"}
+  ],
+  "omny-bar": [
+    { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
+    { "url": "index.html", "classes": "glyphicon omny-icon-address-book", "title": "Customer Management" },
+    { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },
+    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }
+  ],
+  "partials": [
+    { "name": "nyContactExtension", "url": "/partials/contactExtension.html"},
+    { "name": "nyAccountExtension", "url": "/partials/accountExtension.html"}
+  ],
+  "typeaheadControls": [
+    { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/ny/account-types.json"},
+    { "selector": "#curCountry", "url": "/data/countries.json"},
+    { "selector": "#curEnquiryType", "url": "/data/ny/enquiry-types.json"},
+    { "selector": "#curMedium", "url": "/data/media.json"},
+    { "selector": "#curSource", "url": "/data/sources.json"},
+    { "name": "stages", "selector": "#curStage", "url": "/data/ny/stages.json"}
+  ]
+}
