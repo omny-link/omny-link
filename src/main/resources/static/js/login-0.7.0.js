@@ -88,7 +88,7 @@ var AuthenticatedRactive = Ractive.extend({
       window.location.href='/login';
       break; 
     default: 
-      var msg = "Bother! Something has gone wrong (code "+jqXHR.status+", url: "+jqXHR.url+"): "+textStatus+':'+errorThrown;
+      var msg = "Bother! Something has gone wrong (code "+jqXHR.status+"): "+textStatus+':'+errorThrown;
       console.error('msg:'+msg);
       ractive.showError(msg);
     }
@@ -104,12 +104,16 @@ var AuthenticatedRactive = Ractive.extend({
     }
     return false;
   },
+  hideMessage: function() {
+    $('#messages').hide();
+  },
   initAutoComplete: function() {
     console.log('initAutoComplete');
     if (ractive.get('tenant.typeaheadControls')!=undefined && ractive.get('tenant.typeaheadControls').length>0) {
       $.each(ractive.get('tenant.typeaheadControls'), function(i,d) {
         console.log('binding ' +d.url+' to typeahead control: '+d.selector);
         $.get(d.url, function(data){
+          if (d.name!=undefined) ractive.set(d.name,data); 
           $(d.selector).typeahead({ minLength:0,source:data });
           $(d.selector).on("click", function (ev) {
             newEv = $.Event("keydown");
@@ -206,6 +210,7 @@ var AuthenticatedRactive = Ractive.extend({
     if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
       $('#messages').fadeOut();
     }, EASING_DURATION*10);
+    else $('#messages').append('<span class="text-danger pull-right glyphicon glyphicon-remove" onclick="ractive.hideMessage()"></span>');
   },
   switchToTenant: function(tenant) {
     if (tenant==undefined || typeof tenant != 'string') {

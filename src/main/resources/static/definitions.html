@@ -13,8 +13,9 @@
   <script id='template' type='text/ractive'>
     <div class="profile pull-right">
       <form name="logoutForm" action="/logout" method="POST">
+          <span id="tenantId" class="replaceable super_admin" contenteditable="true" onblur="ractive.switchToTenant($('#tenantId').text())" name="tenantId" value="{{tenant == null ? 'Click to set' : tenant.id}}"></span>
         <span class="profile-img">Logged in as: {{username}}</span>
-        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
+        <a class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></a>
         <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
       </form>
     </div>
@@ -24,15 +25,15 @@
       <span>Process Definitions</span>
     </h1>
 
-    <form id="eventList">
-      <section id="eventSect">
+    <form id="definitionList">
+      <section id="definitionSect">
         <h2>
-          <span id="definitionsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the event table"></span>
+          <a id="definitionsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the definition table"></a>
           <span>Definitions</span>
-          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Upload new BPMN"></span>
-          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></span>
+          <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
+          <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></a>
           <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-          <span class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></span>
+          <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
         </h2>
         <div id="upload" style="display:none">
           <form action="/{{tenant.id}}/deployments" class="well form-inline" enctype="multipart/form-data" id="uploadForm" method="post">
@@ -58,7 +59,7 @@
               <th>Name</th>
               <th class="col-md-5">Description</th>
               <th>Tenant</th>
-              <!--th>Ended</th>-->
+              <th>Deployment Bundle</th>
               <th>Version</th>
               <th class="col-md-4">Actions</th>
             </tr>
@@ -74,16 +75,15 @@
               <td on-click="select(this)">{{name}} ({{key}})</td>
               <td class="col-md-5" on-click="select(this)">{{description}}</td>
               <td on-click="select(this)">{{tenantId}}</td>
-<!--              <td on-click="select(this)">{{formatDateTime(endTime)}}</td>
--->
+              <td on-click="select(this)">{{deploymentId}}</td>
               <td on-click="select(this)">{{version}}</td>
               <td on-click="select(this)">
-                <span class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{key}}', '{{current.firstName}} {{current.lastName}}')"></span>
+                <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{key}}', '{{name}}', '{{username}}')"></a>
                 <a href="/{{tenant.id}}/process-definitions/{{id}}.bpmn" target="_newtab">
-                  <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span></a>
+                  <a class="glyphicon glyphicon-cloud-download" aria-hidden="true"></a></a>
                 <a href="/{{tenant.id}}/process-definitions/{{id}}.png" target="_newtab">
-                  <span class="glyphicon glyphicon-picture" aria-hidden="true"></span></a>
-                <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)"></span>
+                  <a class="glyphicon glyphicon-picture" aria-hidden="true"></a></a>
+                <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this.deploymentId)"></a>
               </td>
             </tr>
             {{/}}
@@ -95,23 +95,73 @@
       <section id="currentSect" style="display:none">
         <h2>
           <span>{{current.name}}</span>
-          <a class="btn btn-h2 pull-right" href="/{{tenant.id}}/process-definitions/{{current.id}}.bpmn" target="_newtab">
-            <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>View BPMN</a>
+          <div class="pull-right">
+            <a class="clickable glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{current.key}}', '{{current.name}}', '{{username}}')" title="Start new instance"></a>
+            <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" onclick="ractive.fetchInstances()" title="Refresh instance list"></a>
+            <a class="glyphicon glyphicon-cloud-download" href="/{{tenant.id}}/process-definitions/{{current.id}}.bpmn" target="_newtab" title="Download the BPMN representation of the process"></a>
+            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete({{current.deploymentId}})" title="Delete this definition"></a>
+          </div>          
         </h2>
-          <p>{{current.description}}</p>
-          <p>
-            <span class="a-primary-label control-label">{{current.deployment.name}}: </span>
-            <span class="a-primary-data control-label">{{activityType.toLabel()}}</span>
-            <span class="a-secondary-label control-label">Id: </span> {{current.id}};
-            <span class="a-secondary-label control-label">Deployment Id: </span> {{current.deploymentId}};
-            <span class="a-secondary-label control-label">Deployed: </span> {{formatDateTime(current.deployment.deploymentTime)}};
-            {{#if current.deployment.category}}
-              <span class="a-secondary-label control-label">Category: </span> {{current.deployment.category}};
-            {{/if current.deployment.category}} 
-          </p>
-          {{#if current.id}}
-            <img src="/{{tenant.id}}/process-definitions/{{current.id}}.png"/>
-          {{/if current.id}}
+        <p>{{current.description}}</p>
+        <p>
+          <span class="a-primary-label control-label">{{current.deployment.name}}: </span>
+          <span class="a-primary-data control-label">{{activityType.toLabel()}}</span>
+          <span class="a-secondary-label control-label">Id: </span> {{current.id}};
+          <span class="a-secondary-label control-label">Deployment Id: </span> {{current.deploymentId}};
+          <span class="a-secondary-label control-label">Deployed: </span> {{formatDateTime(current.deployment.deploymentTime)}};
+          {{#if current.deployment.category}}
+            <span class="a-secondary-label control-label">Category: </span> {{current.deployment.category}};
+          {{/if current.deployment.category}} 
+        </p>
+        {{#if current.id}}
+          <img src="/{{tenant.id}}/process-definitions/{{current.id}}.png"/>
+        {{/if current.id}}
+        <h3>Instances</h3>
+        {{#each current.instances:i}}
+          <section>
+            <span class="a-primary-label control-label">Name: </span>
+            <span class="a-primary-data">{{current.instances[i].businessKey == undefined ? 'N/A' : current.instances[i].businessKey}}</span>
+            {{#if hasRole('admin') }}
+              <span class="a-secondary-label control-label">Id: </span>
+              <span class="a-secondary-data">{{current.instances[i].id}};</span>
+            {{/if}}
+            <span class="a-secondary-label control-label">Complete?: </span>
+            <span class="a-secondary-data">{{current.instances[i].ended ? 'Yes' : 'No'}};</span>
+            {{# !current.instances[i].ended}}
+              <span class="a-secondary-label control-label">Current task: </span>
+              <span class="a-secondary-data">{{current.instances[i].activityId.toLabel()}};</span>
+            {{/}}
+            <button class="btn" on-click="showAuditTrail(current.instances[i],i)" type="button">View History</button>
+            <section data-instanceId="{{current.instances[i].id}}" style="display:none">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th class="col-truncate">Event</th>
+                    <th>Started</th>
+                    <th>Ended</th>
+                    <th>Duration</th>
+                    <!-- TODO Always empty? <th>Actioned by</th>-->
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each current.instances[i].auditTrail:j}}
+                    <tr data-href="{{_links.self.href}}">
+                      <td>{{j+1}}</td>
+                      <td>{{activityType.toLabel()}}</td>
+                      <td>{{activityName}}</td>
+                      <td>{{formatDateTime(startTime)}}</td>
+                      <td>{{formatDateTime(endTime)}}</td>
+                      <td>{{endTime == undefined ? '' : duration(durationInMillis)}}</td>
+                      <!-- TODO Always empty? td>{{assignee}}</td>-->
+                    </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </section>
+          </section>
+        {{/each}}
       </section>
 
     </form>
@@ -129,7 +179,7 @@
        If you need IE8 support, change 'ractive' to 'ractive-legacy'.
   <script src="js/ractive.min.js"></script>
   -->
-  <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
+  <script src="js/ractive.min.js"></script>
   <script src="js/autoNumeric.min.js"></script>
   <script src="js/md5.min.js"></script>
   <script src="js/string-functions-0.1.0.js"></script>
