@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang='en-GB'>
+<head>
+  <meta charset='utf-8'>
+  <title>Event Stream</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/omny-0.8.0.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
+</head>
+<body>
+  <div class="clearfix" id="messages"></div>
+  <div class="container" id="container"></div>
+  <script id='template' type='text/ractive'>
+    <div class="profile pull-right">
+      <form name="logoutForm" action="/logout" method="POST">
+          <span id="tenantId" class="replaceable super_admin" contenteditable="true" onblur="ractive.switchToTenant($('#tenantId').text())" name="tenantId" value="{{tenant == null ? 'Click to set' : tenant.id}}"></span>
+        <span class="profile-img">Logged in as: {{username}}</span>
+        <a class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></a>
+        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
+      </form>
+    </div>
+    <h1>
+      <a class="nav navbar-brand" href="http://omny.link">
+      </a>
+      <span>Event Stream</span>
+    </h1>
+
+    <form id="eventList">
+      <section id="eventSect">
+        <h2>
+          <a id="eventsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the event table"></a>
+          <span>Events</span>
+          <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+          <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+          <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching events"></a>
+        </h2>
+        <table id="eventsTable" class="table table-striped">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Type</th>
+              <th class="col-truncate">Event</th>
+              <th>Started</th>
+              <th>Ended</th>
+              <th>Duration</th>
+              <!--th>Audit Trail</th-->
+              <th class="col-md-4">Process Template</th>
+              <!--th>Actions</th-->
+            </tr>
+          </thead>
+          <tbody>
+          {{#each events:i}}
+            {{# searchTerm!=undefined && (
+                  (this.activityName!=undefined && this.activityName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
+                  || (this.activityType!=undefined && this.activityType.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                ) }}
+            <tr data-href="{{_links.self.href}}">
+              <td on-click="select(this)">{{i+1}}</td>
+              <td on-click="select(this)">{{activityType.toLabel()}}</td>
+              <td on-click="select(this)">{{activityName}}</td>
+              <td on-click="select(this)">{{formatDateTime(startTime)}}</td>
+              <td on-click="select(this)">{{formatDateTime(endTime)}}</td>
+              <td on-click="select(this)">{{duration(durationInMillis)}}</td>
+              <!--td on-click="select(this)">{{processInstanceId}}</td-->
+              <td on-click="select(this)">
+                <a class="btn" href="/process-definitions/{{processDefinitionId}}.bpmn" target="_newtab">
+                  <a class="glyphicon glyphicon-export" aria-hidden="true"></a>View BPMN</a>
+                <a class="btn" href="/process-definitions/{{processDefinitionId}}.png" target="_newtab">
+                  <a class="glyphicon glyphicon-picture" aria-hidden="true"></a>View image</a>
+              </td>
+              <td on-click="select(this)">{{assignee}}</td>
+              <!--td>
+                <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="select(this)"></a>
+              </td-->
+            </tr>
+            {{/}}
+          {{/each}}
+          </tbody>
+        </table>
+      </section>
+
+      <section id="currentSect" style="display:none">
+        <h2>{{current.activityName}}: {{current.activityType.toLabel()}} ({{current.id}})</h2>
+
+          <h3>Part of the Process {{current.processInstance.businessKey}}: {{current.processInstance.processDefinitionId.toLabel()}}</h3> 
+          <h4>As it happened...</h4>
+          <ol> 
+            {{#current.processInstance.auditTrail}}
+              <li>
+                <span class="a-primary-label control-label">{{activityName}}: </span>
+                <span class="a-primary-data control-label">{{activityType.toLabel()}}</span>
+                <span class="a-secondary-label control-label">Started: </span> {{formatDateTime(startTime)}}; 
+                <span class="a-secondary-label control-label">Finished: </span> {{formatDateTime(endTime)}}
+              </li>
+            {{/current.processInstance.auditTrail}}
+          </ol>
+      </section>
+
+    </form>
+  </script>
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins)
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  -->
+  <script src="js/jquery-1.11.0.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/bootstrap3-typeahead.min.js"></script>
+  <script src="js/bootstrap-datepicker.min.js"></script>
+  <!--
+       If you need IE8 support, change 'ractive' to 'ractive-legacy'.
+  <script src="js/ractive.min.js"></script>
+  -->
+  <script src="js/ractive.min.js"></script>
+  <script src="js/autoNumeric.min.js"></script>
+  <script src="js/md5.min.js"></script>
+  <script src="js/string-functions-0.1.0.js"></script>
+  <script src="js/login-0.8.0.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/events-0.8.0.js"></script>
+  <script src="js/omny-0.8.0.js"></script>
+</body>
+</html>

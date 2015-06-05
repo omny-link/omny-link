@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang='en-GB'>
+<head>
+  <meta charset='utf-8'>
+  <title>Work Management</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/omny-0.8.0.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
+</head>
+<body>
+  <div class="clearfix" id="messages"></div>
+  <div class="container" id="container"></div>
+  <script id='template' type='text/ractive'>
+    <div class="profile pull-right">
+      <form name="logoutForm" action="/logout" method="POST">
+          <span id="tenantId" class="replaceable super_admin" contenteditable="true" onblur="ractive.switchToTenant($('#tenantId').text())" name="tenantId" value="{{tenant == null ? 'Click to set' : tenant.id}}"></span>
+        <span class="profile-img">Logged in as: {{username}}</span>
+        <a class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></a>
+        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
+      </form>
+    </div>
+    <h1>
+      <a class="nav navbar-brand" href="http://omny.link">
+      </a>
+      <span>Work Management</span>
+    </h1>
+
+    <form id="taskList">
+      <section id="taskSect">
+        <h2>
+          <a id="tasksTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the task table"></a>
+          <span>Tasks</span>
+          <a class="clickable glyphicon glyphicon-envelope admin" aria-hidden="true" on-click="newMessage()" title="Send a new message"></a>
+          <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+          <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+          <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
+        </h2>
+        <div id="sendMessage" style="display:none">
+          <form action="/msg/{{tenant.id}}/" class="well form" id="sendMessageForm" method="post">
+              <fieldset>
+                <div class="form-group">
+                  <label class="col-md-3" for="messageName">Message Name</label>
+                  <input name="tenantId" id="tenantId" type="hidden" value="{{message.tenantId}}"/>
+                  <input name="messageName" id="messageName" placeholder="{{tenant.id}}.message" value="{{message.name}}"/>
+                </div>
+                <div class="form-group">
+                  <label class="col-md-3" for="messagePattern">Message Exchange Pattern</label>
+                  <label><input name="{{message.pattern}}" type="radio" checked value="inOut"> In-Out</label>
+                  <label><input name="{{message.pattern}}" type="radio" value="inOnly"> In-Only</label>
+                </div>
+                <div class="form-group">
+                  <label class="col-md-3" for="bizKey">Business Identifier</label>
+                  <input name="bizKey" id="bizKey" placeholder="" value="{{message.bizKey}}"/>
+                </div>
+                <div class="form-group">
+                  <label class="col-md-3" for="messageBody">Message</label>
+                  <textarea class="col-md-8" name="messageBody" id="messageBody" placeholder="Message payload (JSON)" value="{{message.body}}"></textarea>
+                </div>
+                <div class="form-group pull-right">
+                  <button class="btn" on-click="collapseSendMessage()" type="button">Cancel</button>
+                  <button class="btn btn-primary" on-click="sendMessage()" type="button">Send message</button>
+                </div>
+              </fieldset>
+            </form>
+        </div>
+        <table id="tasksTable" class="table table-striped">
+          <thead>
+            <tr>
+              <th></th>
+              <th>From / Regarding</th>
+              <th class="col-truncate">Task</th>
+              <th>Created</th>
+              <th>Due</th>
+              <!--th class="col-truncate" style="width: 400px;">Description</th-->
+              <th>Assigned</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          {{#each tasks:i}}
+            {{# searchTerm!=undefined && (
+                  (this.name!=undefined && this.name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
+                  || (this.businessKey!=undefined && this.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                ) }}
+            <tr data-href="{{_links.self.href}}">
+              <td on-click="edit(this)">{{i+1}}</td>
+              <td on-click="edit(this)">{{businessKey}}</td>
+              <td on-click="edit(this)">{{name == null ? taskDefinitionKey.toLabel() : name}}</td>
+              <td on-click="edit(this)">{{formatDate(createTime)}}</td>
+              <td on-click="edit(this)">{{formatDate(dueDate)}}</td>
+              <!--td on-click="edit(this)">{{description}}</td-->
+              <td on-click="edit(this)">{{assignee==null ? 'No' : 'Yes'}}</td>
+              <td>
+                <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></a>
+              </td>
+            </tr>
+            {{/}}
+          {{/each}}
+          </tbody>
+        </table>
+      </section>
+
+      <section id="currentSect" style="display:none">
+        <h2>
+          <span>{{current.businessKey}}: {{current.name == null ? current.taskDefinitionKey.toLabel() : current.name}}</span> 
+          <span class="admin">({{current.id}})</span>
+        </h2>
+
+        <form id="currentForm">
+          {{#current.description}}
+            <p class="col-md-12">{{current.description}}</p>          
+          {{/}}
+          <div class="col-md-6">
+            <ul class="form edit-form">
+              <li><label class="col-md-5">Due:</label><input class="nodatepicker" id="curDueDate" on-blur="save()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm/yyyy" value="{{formatDate(current.dueDate)}}"></li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="form edit-form">
+              <li><label class="col-md-5">Started By:</label><input id="curInitiator" disabled readonly value="{{current.processVariables['initiator']=='anonymousUser' ? 'Web Site' : current.processVariables['initiator']}}"></li>
+              <li><label class="col-md-5">Created:</label><input id="curCreated" disabled readonly value="{{formatDate(current.createTime)}}"></li>
+            </ul>
+          </div>
+        
+          {{#current.formProperties.length>0}}
+            <section style="clear:both">
+              <h3>Data</h3>
+              <ul class="form edit-form" style="">          
+                {{#current.formProperties:i}}
+                  <li>
+                    {{# value.substring(0,4)=='http'}}
+                      <!-- TODO need to get this from tenant config -->
+                      <a class="col-md-offset-3" href="{{value}}" target="_newtab">{{name == undefined ? id : name}}</a>
+                    {{else}}
+                      {{# type=='enum'}}
+                        <label class="col-md-offset-3">{{name}}</label>
+                        <select id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
+                          <option></option>  
+                        </select>
+                      {{else}}
+                        <label class="col-md-3">{{name}}</label>
+                        <input id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
+                      {{/if}}
+                    {{/if}}
+                  </li>
+                {{/current.formProperties}}
+              </ul>
+
+              <section class="variables" style="display:none">
+                <h3>Local Variables</h3>
+                <ul class="form edit-form" style="">          
+                  {{#current.taskLocalVarNames:i}}
+                    <li>{{i}} {{.}} {{current.taskLocalVariables[.]}}</li>
+                  {{/current.taskLocalVarNames}}
+                </ul>
+
+                <h3>Process Variables</h3>
+                <ul class="form edit-form" style="">          
+                  {{#current.processVarNames:i}}
+                    <li>{{i}} {{.}} {{current.processVariables[.]}}</li>
+                  {{/current.processVarNames}}
+                </ul>
+              </section>
+            </section>
+          {{/}}
+        </form>
+
+        <button class="btn bg-success pull-right text-success" on-click="submitTask()" type="button">Complete Task</button>
+
+      </section>
+
+    </form>
+  </script>
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins)
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  -->
+  <script src="js/jquery-1.11.0.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/bootstrap3-typeahead.min.js"></script>
+  <script src="js/bootstrap-datepicker.min.js"></script>
+  <!--
+       3. You can always get the most recent stable version from the URL below.
+       If you want the newest features, use the 'edge' version instead:
+
+           http://cdn.ractivejs.org/edge/ractive.min.js
+
+       If you need IE8 support, change 'ractive' to 'ractive-legacy'.
+  <script src="js/ractive.min.js"></script>
+  -->
+  <script src="js/ractive.min.js"></script>
+  <script src="js/autoNumeric.min.js"></script>
+  <script src="js/md5.min.js"></script>
+  <script src="js/string-functions-0.1.0.js"></script>
+  <script src="js/login-0.8.0.js"></script>
+  <script src="js/workmgmt-0.8.0.js"></script>
+  <script src="js/omny-0.8.0.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+<div class="clearfix"></div>
+<ul>
+	{{# keys}}
+	  <li>
+	    <label class="col-md-3">{{.}}</label>
+	    <input id="cur{{.}}" readonly value="{{obj[.]}}">
+	  </li>
+	{{/}}
+</ul>
+

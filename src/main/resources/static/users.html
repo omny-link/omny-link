@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang='en-GB'>
+<head>
+  <meta charset='utf-8'>
+  <title>User Management</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/omny-0.8.0.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
+</head>
+<body>
+  <div class="clearfix" id="messages"></div>
+  <div class="container" id="container"></div>
+  <script id='template' type='text/ractive'>
+    <div class="profile pull-right">
+      <form name="logoutForm" action="/logout" method="POST">
+          <span id="tenantId" class="replaceable super_admin" contenteditable="true" onblur="ractive.switchToTenant($('#tenantId').text())" name="tenantId" value="{{tenant == null ? 'Click to set' : tenant.id}}"></span>
+        <span class="profile-img">Logged in as: {{username}}</span>
+        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
+        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
+      </form>
+    </div>
+    <h1>
+      <a class="nav navbar-brand" href="http://omny.link">
+        <img src="/images/omny-logo.png" alt="logo"/>
+      </a>
+      <span>User Management</span>
+    </h1>
+
+    <form id="userList">
+      <section id="userSect">
+        <h2>
+          <span id="usersTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the users table"></span>
+          <span>Users</span>
+          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addUser()" title="Add a new user"></span>
+          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></span>
+          <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+          <span class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching users"></span>
+        </h2>
+        <table id="usersTable" class="table table-striped">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Username</th>
+              <th>Full Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          {{#each users:i}}
+            {{# searchTerm!=undefined && (
+                  (this.firstName!=undefined && this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
+                  || (this.lastName!=undefined && this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                  || (this.email!=undefined && this.email.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                  || (this.id!=undefined && this.id.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+                ) }}
+            <tr data-href="{{_links.self.href}}">
+              <td on-click="edit(this)">{{i+1}}</td>
+              <td on-click="edit(this)">{{id}}</td>
+              <td on-click="edit(this)">{{firstName}} {{lastName}}</td>
+              <td>
+                <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('/users/{{id}}')"></span>
+                <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
+              </td>
+            </tr>
+            {{/}}
+          {{/each}}
+          </tbody>
+        </table>
+      </section>
+
+      <section id="currentSect" style="display:none">
+        <form id="userForm">
+          <div class="clearfix" id="messages"><p></p></div>
+        <h2>User: {{current.firstName}} {{current.lastName}} ({{current.id}})</h2>
+       
+        <ul class="form edit-form">
+          <li class="create-field">
+            <label class="required col-md-3">Username:</label><input id="curUsername" on-blur="save()" required value="{{current.id}}">
+          </li>
+          <li>
+            <label class="required col-md-3">First Name:</label><input class="no-update-field" id="curFirstName" on-blur="save()" required value="{{current.firstName}}">
+            <span><i>No update allowed</i></span>
+          </li>
+          <li>
+            <label class="required col-md-3">Last Name:</label><input class="no-update-field" id="curLastName" on-blur="save()" required value="{{current.lastName}}">
+            <span><i>No update allowed</i></span>
+          </li>
+          <li>
+            <label class="required col-md-3">Email:</label><input class="no-update-field" id="curEmail" on-blur="save()" required type="email" value="{{current.email}}">
+            <span><i>No update allowed</i></span>
+          </li>
+          <li>
+            <label class="required col-md-3">Mobile Phone:</label><input class="no-update-field" id="curPhone" pattern="\+?[0-9, ]{8,13}" required type="tel" value="{{current.phone}}">
+            <span><i>No update allowed</i></span>
+          </li>
+          <li>
+            <label class="required col-md-3">Preferred Contact:</label><input class="no-update-field typeahead" id="curCommsPreference" required value="{{current.commsPreference}}">
+            <span><i>No update allowed</i></span>
+          </li>
+          <li>
+            <label class="required col-md-3">Tenant:</label><input class="no-update-field" id="curTenant" required type="text" value="{{current.tenant}}">
+            <span><i>No update allowed</i></span>
+          </li>
+          <li class="create-field">
+            <label class="required col-md-3">Password:</label><input id="curPassword" on-blur="save()" required value="{{current.password}}">
+          </li>
+          <li class="create-field">
+            <label class="required col-md-3">Confirm Password:</label><input id="curPassword2" on-blur="save()" required value="{{current.confirmPassword}}">
+          </li>
+          <li>
+            <label class="col-md-3">Groups:</label>
+            <span id="curGroups">
+              {{#each current.groups:j}}<span>{{name}}, </span>{{/each}}
+              <input id="curNewGroup" class="hidden" on-blur="addUserToGroup()" value="{{current.newGroup}}">
+              <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addGroup()"></span>
+            </span>
+          </li>
+        </ul>
+        </form>
+      </section>
+
+    </form>
+  </script>
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins)
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+   -->
+  <script src="js/jquery-1.11.0.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/bootstrap3-typeahead.min.js"></script>
+  <!--
+       3. You can always get the most recent stable version from the URL below.
+       If you want the newest features, use the 'edge' version instead:
+
+           http://cdn.ractivejs.org/edge/ractive.min.js
+
+       If you need IE8 support, change 'ractive' to 'ractive-legacy'.
+  <script src="http://cdn.ractivejs.org/latest/ractive.min.js"></script>
+  -->
+  <script src="js/ractive.min.js"></script>
+  <script src="js/md5.min.js"></script>
+  <script src="js/login-0.8.0.js"></script>
+  <script src="js/usermgmt-0.8.0.js"></script>
+  <script src="js/omny-0.8.0.js"></script>
+</body>
+</html>
