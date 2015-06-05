@@ -1,8 +1,0 @@
-# simple message to #gardenatics 
-curl -X POST -H 'Content-Type:application/json' -d '{"text": "TESTING A new enquiry has arrived <http://api.knowprocess.com:8082/work.html|Click to open work queue>."}' https://hooks.slack.com/services/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
-
-# rich attachment to overridden channel
-curl -X POST -H 'Content-Type:application/json' -d '{ "channel":"#general","attachments":[ { "fallback":"New enquiry has arrived: <http://api.knowprocess.com:8082/work.html|Click to open work queue>","pretext":"New enquiry has arrived: <http://api.knowprocess.com:8082/work.html|Click to open work queue>", "color":"#a1cb3a","fields":[{"title":"New enquiry: Fred Flintstone","value":"This is a test.","short":false }]}]}' https://hooks.slack.com/services/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
-
-# rich attachment to individual
-curl -X POST -H 'Content-Type:application/json' -d '{ "channel":"@tim","attachments":[ { "fallback":"New enquiry has arrived: <http://api.knowprocess.com:8082/work.html|Click to open work queue>","pretext":"New enquiry has arrived: <http://api.knowprocess.com:8082/work.html|Click to open work queue>", "color":"#a1cb3a","fields":[{"title":"New enquiry: Fred Flintstone","value":"This is a test.","short":false }]}]}' https://hooks.slack.com/services/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
