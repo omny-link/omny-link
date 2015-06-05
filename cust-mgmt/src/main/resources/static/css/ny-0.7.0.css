@@ -1,7 +1,7 @@
 /* FONTS */ 
 
-@import url(http://fonts.googleapis.com/css?family=Cinzel);
-@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro);
+@import url(//fonts.googleapis.com/css?family=Cinzel);
+@import url(//fonts.googleapis.com/css?family=Source+Sans+Pro);
 
 h1, h2, h3, h4, h5, h6, legend {
  font-family: 'Cinzel', serif;

@@ -1,51 +1,5 @@
 /* FONTS */ 
 
-@font-face {
-  font-family: 'barmenoregular';
-  src: url('fonts/barmeno_regular-webfont.eot');
-  src: url('fonts/barmeno_regular-webfont.eot?#iefix') format('embedded-opentype'),
-       url('fonts/barmeno_regular-webfont.woff') format('woff'),
-       url('fonts/barmeno_regular-webfont.ttf') format('truetype'),
-       url('fonts/barmenlo_regular-webfont.svg#barmenoregular') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-    font-family: 'CalibriRegular';
-    src: url('fonts/calibri-webfont.eot');
-    src: url('fonts/calibri-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/calibri-webfont.woff') format('woff'),
-         url('fonts/calibri-webfont.ttf') format('truetype'),
-         url('fonts/calibri-webfont.svg#CalibriRegular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'CalibriBold';
-    src: url('fonts/calibrib-webfont.eot');
-    src: url('fonts/calibrib-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/calibrib-webfont.woff') format('woff'),
-         url('fonts/calibrib-webfont.ttf') format('truetype'),
-         url('fonts/calibrib-webfont.svg#CalibriBold') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
-    font-family: 'CalibriItalic';
-    src: url('fonts/calibrii-webfont.eot');
-    src: url('fonts/calibrii-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/calibrii-webfont.woff') format('woff'),
-         url('fonts/calibrii-webfont.ttf') format('truetype'),
-         url('fonts/calibrii-webfont.svg#CalibriItalic') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
 h1, h2, h3, h4, h5, h6 {
  font-family: 'barmenoregular';
 }
@@ -63,7 +17,7 @@ h1, h2, h3, h4, h5, h6 {
 
 body {
   color: #552e16;
-  font-family: Roboto/*CalibriRegular*/;
+  font-family: Roboto;
 }
 h1 { 
 	color: #a1cb3a;
