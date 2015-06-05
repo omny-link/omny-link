@@ -68,7 +68,7 @@
             <tr>
               <th></th>
               <th>Full Name</th>
-              {{#tenant.showAccount}}<th>Business Name</th>{{/}}
+              {{#tenant.show.account}}<th>Business Name</th>{{/}}
               <th>Stage</th>
               <th>Enquiry Type</th>
               <th>Owned by</th>
@@ -94,7 +94,7 @@
                 <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
                   <td>{{i+1}}</td>
                   <td>{{firstName}} {{lastName}}</td>
-                  {{#tenant.showAccount}}
+                  {{#tenant.show.account}}
                     <td>{{account == undefined ? accountName : account.name}}</td>
                   {{/}}
                   <td>{{stage}}</td>
@@ -185,40 +185,44 @@
             </ul>
           </div>
 
-          <h2 style="clear:both">Marketing</h2>
-          <div class="currentBody col-md-6">
-            <ul class="form edit-form">
-              <li><label class="col-md-5">Source:</label><input class="typeahead" placeholder="Start typing to filter options" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}"></li>
-              <li><label class="col-md-5">Medium:</label><input class="typeahead" placeholder="Start typing to filter options" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}"></li>
-            </ul>
-          </div>
-          <div class="currentBody col-md-6">
-            <ul class="form edit-form">
-              <li><label class="col-md-5">Page Submitted:</label><input id="curPageSubmitted" disabled readonly value="{{customField(current, 'pageSubmitted')}}"></li>
-              <li><label class="col-md-5">Campaign:</label><input id="curCampaign" {{ current.campaign ? 'disabled readonly' : '' }} value="{{current.campaign}}"></li>
-            </ul>
-          </div>
+          {{#tenant.show.marketing}}
+            <h2 style="clear:both">Marketing</h2>
+            <div class="currentBody col-md-6">
+              <ul class="form edit-form">
+                <li><label class="col-md-5">Source:</label><input class="typeahead" placeholder="Start typing to filter options" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}"></li>
+                <li><label class="col-md-5">Medium:</label><input class="typeahead" placeholder="Start typing to filter options" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}"></li>
+              </ul>
+            </div>
+            <div class="currentBody col-md-6">
+              <ul class="form edit-form">
+                <li><label class="col-md-5">Page Submitted:</label><input id="curPageSubmitted" disabled readonly value="{{customField(current, 'pageSubmitted')}}"></li>
+                <li><label class="col-md-5">Campaign:</label><input id="curCampaign" {{ current.campaign ? 'disabled readonly' : '' }} value="{{current.campaign}}"></li>
+              </ul>
+            </div>
+          {{/tenant.show.marketing}}
 
-          <h2 style="clear:both">Budget</h2>
-          <div class="currentBody col-md-6">
-            <ul class="form edit-form">
-              <li><label class="col-md-5">Budget:</label>
-                <input class="autoNumeric" data-a-sign="£ " id="curBudget" on-blur="ractive.save()" value="{{current.customFields['budget']}}"></li>
-            </ul>
-          </div>
-          <div class="currentBody col-md-6">
-            <ul class="form edit-form">
-              <li><label class="col-md-5">Discussed Budget?:</label>
-                <input id="curDiscussedBudget" on-blur="ractive.save()" type="checkbox" value="{{current.customFields['discussedBudget']}}"></li>
-            </ul>              
-          </div>
+          {{#tenant.show.budget}}
+            <h2 style="clear:both">Budget</h2>
+            <div class="currentBody col-md-6">
+              <ul class="form edit-form">
+                <li><label class="col-md-5">Budget:</label>
+                  <input class="autoNumeric" data-a-sign="£ " id="curBudget" on-blur="ractive.save()" value="{{current.customFields['budget']}}"></li>
+              </ul>
+            </div>
+            <div class="currentBody col-md-6">
+              <ul class="form edit-form">
+                <li><label class="col-md-5">Discussed Budget?:</label>
+                  <input id="curDiscussedBudget" on-blur="ractive.save()" type="checkbox" value="{{current.customFields['discussedBudget']}}"></li>
+              </ul>              
+            </div>
+          {{/tenant.show.account}}
 
           <div id="currentContactExtended" style="clear: both">
             {{>(tenant.id+'ContactExtension')}}
           </div>
         </form>
 
-        {{#tenant.showAccount}}
+        {{#tenant.show.account}}
         <form id="currentAccountForm">
           <div id="currentAccount" style="clear: both">
 

@@ -1,6 +1,6 @@
 { 
   "id": "ny", 
-  "showAccount":true,
+  "show": { "account":false, "budget":false },
   "contactFields": [ 
     { "label": "Credit Limit", "key": "creditLimit"},
     { "label": "Current Credit", "key": "currentCredit"}

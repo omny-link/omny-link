@@ -1,6 +1,6 @@
 { 
   "id": "trakeo", 
-  "showAccount":true,
+  "show": { "account":true },
   "showPoweredBy":false,
   "omny-bar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
@@ -17,6 +17,7 @@
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
+    { "selector": "#curCountry", "url": "/data/countries.json"},
     { "selector": "#curEnquiryType", "url": "/data/trakeo/enquiry-types.json"},
     { "selector": "#curMedium", "url": "/data/media.json"},
     { "selector": "#curSource", "url": "/data/sources.json"},

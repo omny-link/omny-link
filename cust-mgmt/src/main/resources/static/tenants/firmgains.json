@@ -1,6 +1,6 @@
 { 
   "id": "firmgains", 
-  "showAccount":true,
+  "show": { "account":false },
   "accountFields": [ 
     { "label": "EBITDA", "key": "ebitda"},
     { "label": "Surplus", "key": "surplus"},
@@ -57,6 +57,7 @@
     { "selector": "#curMedium", "url": "/data/media.json"},
     { "selector": "#curSource", "url": "/data/sources.json"},
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/firmgains/account-types.json"},
+    { "selector": "#curCountry", "url": "/data/countries.json"},
     { "selector": "#curEnquiryType", "url": "/data/firmgains/enquiry-types.json"},
     { "selector": "#curOwner", "url": "/data/firmgains/owners.json"},
     { "selector": "#curPartnersContacted", "url": "/data/firmgains/partners.json"},
