@@ -1,0 +1,66 @@
+.knowprocess-inverse-tile {
+  color: #004684; /* primary blue */;
+  background-color: #3383BB /* secondary blue */;
+}
+
+.knowprocess-tile {
+  color: #3383BB /* secondary blue */;
+  background-color: #004684; /* primary blue */;
+}
+
+.knowprocess-tile h2 {
+  color: white;
+} 
+.knowprocess-tile h2.has-img {
+  height:70px;
+  background-color:white;
+  padding-top:10px;
+  padding-bottom:10px;
+  border-radius:5px;
+}
+.knowprocess-tile h3 {
+  font-size: 21px;
+} 
+
+.empty-tile {
+  color: black;
+  background-color: #dedede;
+}
+
+.syncapt-tile {
+  color: #0B527E;
+  background-color: #799b2f;
+}
+.syncapt-tile h2 { 
+  height:60px;
+  background-color:white;
+  padding:10px 30px 10px 30px;
+  border-radius:5px;
+} 
+.syncapt-tile h3 {
+  font-size: 22px;
+}
+.syncapt-tile img { 
+  height:40px;
+}
+.syncapt-emphasis {
+  color: #beeb5b;
+  font-style: normal;
+}
+
+.trakeo-tile {
+  color: #0060ad;
+  background-color: #ec9300;
+}
+.trakeo-tile h2 {
+  height:70px;background-color:white;padding:5px;border-radius:5px;
+}
+.trakeo-tile h3 {
+  font-size: 22px;
+}
+
+.trakeo-tile em {
+  color: #fadd88;
+  font-style: normal;
+}
+
