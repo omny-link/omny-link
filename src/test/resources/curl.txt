@@ -1,0 +1,8 @@
+curl -X GET -H "Accept:application/xml" http://localhost:8082/process-definitions/CreateContactAndAccount:1:22552/model
+
+curl -X POST -u tstephen:tstephen -d 'json={ "description":"do something","performer":"gardenatics","checker": "tstephen" }' http://localhost:9090/gardenatics/msg/omny.todo.json
+
+
+curl -X GET -u tstephen:tstephen -H "Accept:application/json" http://localhost:9090/task/2511
+
+curl -X POST -H 'Content-Type:application/json' -u tstephen:tstephen -d '{ "name": "gardenatics", "contactFields": [{ "label": "Partner", "key": "partner"},{ "label": "Appointment Date", "key": "appointmentDate"}],"typeaheadControls": [{ "selector": "#curEnquiryType", "url": "/data/gardenatics/enquiry-types.json"},{ "selector": "#curMedium", "url": "/data/media.json"},{ "selector": "#curOwner", "url": "/data/gardenatics/owners.json"},{ "selector": "#curPartner", "url": "/data/gardenatics/partners.json"},{ "selector": "#curSource", "url": "/data/sources.json"},{ "selector": "#curStage", "url": "/data/stages.json"}]}' http://localhost:8082/tenants

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/omny-0.1.0.css" rel="stylesheet">
+  <link href="css/dash-0.1.0.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
+  <link rel="shortcut icon" type="image/png" href="images/icon/omny-icon-16x16.png">
+  <title>Omny Link | Dashboard</title>
+</head>
+<body>
+
+    <section id="container"></section>
+
+    <script id="dashTemplate" type="text/ractive">
+        <div class="container">
+            <div class="tile-row row">
+                <div class="tile col-xs-6 col-sm-6">
+                  <h1>Tasks</h1>
+                  <ul>
+                  {{#each tasks}}
+                    <li><a class="" href="" target="_newTab">{{taskName}}</a></li>
+                  {{/each}}
+                  </ul>
+                  <a class="btn btn-default" href="work.html" target="_newTab">Open</a>
+                </div>
+                <div class="tile col-xs-6 col-sm-6">
+                  <h1>Customers</h1>
+                  <ul>
+                  {{#each contacts}}
+                    <li><a class="" href="" target="_newTab">{{firstName}} {{lastName}}</a></li>
+                  {{/each}}
+                  </ul>
+                  <a class="btn btn-default" href="firmgains.html" target="_newTab">Open</a>
+                </div>
+            </div>
+            <div class="tile-row row">
+                <div class="tile col-xs-6 col-sm-6">
+                  <h1>Workflow</h1>
+                  <ul>
+                    <li><a class="" href="" target="_newTab">Register</a></li>
+                    <li><a class="" href="" target="_newTab">Valuation</a></li>
+                    <li><a class="" href="" target="_newTab">Follow Up</a></li>
+                  </ul>
+                </div>
+                <div class="tile col-xs-6 col-sm-6">
+                  <h1>Decisions</h1>
+                  <ul>
+                  {{#each decisions}}
+                    <li><a class="" href="decisions.html?tenant=firmgains&decision={{name}}" target="_newTab">{{name}}</a></li>
+                  {{/each}}
+                  </ul>
+                  <ul>
+                  <a class="btn btn-default" href="http://localhost:8082/decisions.html" target="_newTab">New</a></li>
+                </div>
+            </div>
+        </div>
+    </script>
+
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
+  <script src="js/jquery-1.11.0.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="js/ractive.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+  <script src="js/login-0.1.0.js"></script>
+  <script src="js/dash-0.1.0.js"></script>
+</body>
+</html>
