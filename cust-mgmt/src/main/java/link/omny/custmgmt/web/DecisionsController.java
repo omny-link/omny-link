@@ -164,6 +164,8 @@ public class DecisionsController {
         private String email;
         private String owner;
         private String stage;
+        private String accountType;
+        private String enquiryType;
         private String tenantId;
         private boolean doNotCall;
         private boolean doNotEmail;

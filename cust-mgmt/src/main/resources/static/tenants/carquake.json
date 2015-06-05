@@ -2,8 +2,10 @@
   "id": "carquake", 
   "show": { "account":false },
   "omny-bar": [
+    { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
     { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },    
-    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }
+    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" },
+    { "url": "api.html", "classes": "glyphicon glyphicon-wrench", "title": "API Documentation" }
   ],
   "partials": [
     { "name": "carquakeContactExtension", "url": "/partials/contactExtension.html"},
