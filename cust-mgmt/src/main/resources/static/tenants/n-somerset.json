@@ -1,6 +1,6 @@
 { 
   "id": "n-somerset", 
-  "showAccount":true,
+  "show": { "account":true },
   "omny-bar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
     { "url": "index.html", "classes": "glyphicon omny-icon-address-book", "title": "Customer Management" },
@@ -13,6 +13,7 @@
   ],
   "typeaheadControls": [
     { "selector": "#curEnquiryType", "url": "/data/n-somerset/enquiry-types.json"},
+    { "selector": "#curCountry", "url": "/data/countries.json"},
     { "selector": "#curMedium", "url": "/data/media.json"},
     { "selector": "#curSource", "url": "/data/sources.json"},
     { "selector": "#curStage", "url": "/data/n-somerset/stages.json"}
