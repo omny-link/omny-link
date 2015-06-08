@@ -155,7 +155,7 @@ var ractive = new AuthenticatedRactive({
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
-      url: '/'+ractive.get('tenant.id')+'/contacts/?projection=complete',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/contacts/?projection=complete',
       crossDomain: true,
       success: function( data ) {
         if (data['_embedded'] == undefined) {
@@ -287,7 +287,7 @@ var ractive = new AuthenticatedRactive({
     ractive.set('saveObserver',true);
     if ($('#currentAccountForm:visible').length!=0 && document.getElementById('currentAccountForm').checkValidity()) { 
       $.ajax({
-        url: id === undefined ? '/accounts' : '/accounts/'+id,
+        url: ractive.getServer()+(id === undefined ? '/accounts' : '/accounts/'+id),
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(ractive.get('current.account')),
@@ -392,7 +392,7 @@ var ractive = new AuthenticatedRactive({
 	  if (contact._links != undefined) {
 	    var url = contact._links.self.href.indexOf('?')==-1 ? contact._links.self.href : contact._links.self.href.substr(0,contact._links.self.href.indexOf('?')-1);
 	    console.log('loading detail for '+url);
-	    $.getJSON(url+'?projection=complete',  function( data ) {
+	    $.getJSON(ractive.getServer()+url+'?projection=complete',  function( data ) {
         console.log('found contact '+data);
         ractive.set('current', data);
         ractive.initControls();
