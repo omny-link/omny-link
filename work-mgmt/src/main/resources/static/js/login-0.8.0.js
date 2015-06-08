@@ -26,6 +26,7 @@ var AuthenticatedRactive = Ractive.extend({
     });
   },
   applyBranding: function() {
+    if (ractive.get('profile')==undefined) return ;
     var tenant = ractive.get('profile').tenant;
     if (tenant != undefined) {
       $('link[rel="icon"]').attr('href',$('link[rel="icon"]').attr('href').replace('omny',tenant));
@@ -41,7 +42,7 @@ var AuthenticatedRactive = Ractive.extend({
         $( "#ajax-loader" ).hide();
       });
       // powered by 
-      if (ractive.get('tenant.showPoweredBy')!=false) {
+      if (ractive.get('tenant.id')!='omny' && ractive.get('tenant.showPoweredBy')!=false) {
         $('body').append('<div class="powered-by"><h1><span class="powered-by-text">powered by</span><img src="images/omny-greyscale-inline-logo.png" alt="powered by Omny Link"/></h1></div><p class="beta bg-warning pull-right">Beta!</p>');
       }
       if (ractive.get('tenant.omny-bar')!=undefined) {
@@ -76,8 +77,13 @@ var AuthenticatedRactive = Ractive.extend({
       $('.profile-img').empty().append('<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34"/>');
       if (ractive.hasRole('super_admin')) $('.super-admin').show();
       ractive.loadTenantConfig(ractive.get('profile.tenant'));
+    })
+    .error(function(){
+      console.warn('Failed to get profile, will rely on Omny default');
+      ractive.set('profile',{tenant:'omny'});
+      ractive.loadTenantConfig(ractive.get('tenant.id'));
     });
-    else this.showError('You are not logged in, some or all functionality will be unavailable.');
+    else this.showError('You are not logged in, some functionality will be unavailable.');
   },
   handleError: function(jqXHR, textStatus, errorThrown) {
     switch (jqXHR.status) { 
@@ -92,6 +98,9 @@ var AuthenticatedRactive = Ractive.extend({
       console.error('msg:'+msg);
       ractive.showError(msg);
     }
+  },
+  getServer: function() {
+    return ractive.get('server')==undefined ? '' : ractive.get('server');
   },
   hash: function(email) {
     return hex_md5(email.trim().toLowerCase());
@@ -112,7 +121,7 @@ var AuthenticatedRactive = Ractive.extend({
     if (ractive.get('tenant.typeaheadControls')!=undefined && ractive.get('tenant.typeaheadControls').length>0) {
       $.each(ractive.get('tenant.typeaheadControls'), function(i,d) {
         console.log('binding ' +d.url+' to typeahead control: '+d.selector);
-        $.get(d.url, function(data){
+        $.get(ractive.getServer()+d.url, function(data){
           if (d.name!=undefined) ractive.set(d.name,data); 
           $(d.selector).typeahead({ minLength:0,source:data });
           $(d.selector).on("click", function (ev) {
@@ -166,12 +175,9 @@ var AuthenticatedRactive = Ractive.extend({
   },
   loadTenantConfig: function(tenant) {
     console.log('loadTenantConfig:'+tenant);
-    $.getJSON('/tenants/'+tenant+'.json', function(response) {
+    $.getJSON(ractive.getServer()+'/tenants/'+tenant+'.json', function(response) {
       console.log('... response: '+response);
       ractive.set('tenant', response);
-      $.ajaxSetup({
-        headers: {'X-Tenant': ractive.get('tenant.id')}
-      });
       ractive.applyBranding();
       if (ractive.tenantCallbacks!=undefined) ractive.tenantCallbacks.fire(); 
     });
