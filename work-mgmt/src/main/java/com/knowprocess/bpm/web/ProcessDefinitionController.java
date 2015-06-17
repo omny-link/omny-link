@@ -62,9 +62,7 @@ public class ProcessDefinitionController {
         LOGGER.info(String.format("%1$s definition with %2$s",
                 RequestMethod.GET, id));
 
-        return ProcessInstance.wrap(processEngine.getRuntimeService()
-                .createProcessInstanceQuery()
-                .processDefinitionId(id).list());
+        return ProcessInstance.findAllProcessInstancesForDefinition(id);
     }
 
     @RequestMapping(value = "/{id}.bpmn", method = RequestMethod.GET, /*

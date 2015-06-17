@@ -108,6 +108,18 @@ public class ProcessInstance extends Execution {
         return instances;
     }
 
+    public static List<ProcessInstance> findAllProcessInstancesForDefinition(
+            String procDefId) {
+        List<ProcessInstance> instances = new ArrayList<ProcessInstance>();
+        instances.addAll(wrap(processEngine.getRuntimeService()
+                .createProcessInstanceQuery().processDefinitionId(procDefId)
+                .list()));
+        instances.addAll(wrap(processEngine.getHistoryService()
+                .createHistoricProcessInstanceQuery()
+                .processDefinitionId(procDefId).list()));
+        return instances;
+    }
+
     public static ProcessInstance findProcessInstance(String id) {
         List<org.activiti.engine.runtime.ProcessInstance> list = processEngine
                 .getRuntimeService().createProcessInstanceQuery()
