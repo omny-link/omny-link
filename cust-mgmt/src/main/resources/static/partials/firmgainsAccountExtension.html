@@ -1,4 +1,35 @@
 <div class="col-md-12" id="currentAccountExtended">
+  <h2 class="form"><span>Business Information</span></h2> 
+  <div class="col-md-6">
+    <ul class="form edit-form">
+			<!--            
+			<li><label class="col-md-5">Stage in Sale:</label><input id="curStageInSale" value="{{current.account.customFields['stageInSale']}}"/></li>
+			-->
+      <li><label class="col-md-5">Region:</label><input id="curRegion" value="{{current.account.customFields['region']}}"/></li>
+    </ul>
+  </div> 
+  <div class="col-md-6">
+    <ul class="form edit-form">
+      <li><label class="col-md-5">Sector:</label><input id="curSector" value="{{current.account.customFields['sector']}}"/></li>
+      <li><label class="col-md-5">Sub-Sector:</label><input id="curSubSector" value="{{current.account.customFields['subSector']}}"/></li>
+    </ul>
+  </div>
+</div>
+
+<div id="currentAccountProperty" style="clear: both" class="col-md-12">
+  <fieldset>
+    <legend>Furthermore...</legend>
+    <ul class="form edit-form">
+    
+      <li><label class="col-md-2">Already Contacted:</label><textarea cols="80" id="curAlreadyContacted" value="{{current.account.customFields['alreadyContacted']}}"></textarea></li>
+      <li><label class="col-md-2">Reason for Selling:</label><textarea cols="80" id="curReasonForSale" value="{{current.account.customFields['reasonForSale']}}"></textarea></li>
+      <!-- <li><label class="col-md-2">Potential Purchasers:</label><textarea cols="80" id="curPotentialPurchasers" value="{{current.account.customFields['potentialPurchasers']}}"></textarea></li> -->
+      <li><label class="col-md-2">Property Info:</label><textarea cols="80" id="curPropertyInfo" value="{{current.account.customFields['propertyInfo']}}"></textarea></li>
+    </ul>
+  </fieldset>
+</div>
+
+<div class="col-md-12" id="currentAccountValuation">
   <h2 class="form"><span>Valuation</span></h2> 
   <div class="col-md-6">
     <ul class="form edit-form">
@@ -17,73 +48,43 @@
   </div>
 </div>
 
-<div class="col-md-12" id="currentAccountExtended">
-  <h2 class="form"><span>Business Information</span></h2> 
+<div class="col-md-12" id="currentAccountFinancials">
+  <h2 class="form"><span>Financials</span></h2> 
   <div class="col-md-6">
     <ul class="form edit-form">
-<!--            
-<li><label class="col-md-5">Stage in Sale:</label><input id="curStageInSale" value="{{current.account.customFields['stageInSale']}}"/></li>
-            --><li><label class="col-md-5">Region:</label><input id="curRegion" value="{{current.account.customFields['region']}}"/></li>
+      <li><label class="col-md-5">EBITDA:</label><input class="autoNumeric" id="curEbitda" data-a-sign="£ "value="{{current.account.customFields['ebitda']}}"/></li>
+      <li><label class="col-md-5">Surplus:</label><input class="autoNumeric" id="curSurplus" data-a-sign="£ "value="{{current.account.customFields['surplus']}}"/></li>
+      <li><label class="col-md-5">Depreciation:</label><input class="autoNumeric" id="curDepreciation" data-a-sign="£ "value="{{current.account.customFields['depreciationAmortisation']}}"/></li>
+      <li><label class="col-md-5">Assets:</label><input class="autoNumeric" id="curAssets" data-a-sign="£ "value="{{current.account.customFields['assets']}}"/></li>
     </ul>
   </div> 
   <div class="col-md-6">
     <ul class="form edit-form">
-      <li><label class="col-md-5">Sector:</label><input id="curSector" value="{{current.account.customFields['sector']}}"/></li>
-      <li><label class="col-md-5">Sub-Sector:</label><input id="curSubSector" value="{{current.account.customFields['subSector']}}"/></li>
+      <li><label class="col-md-5">Operating Profit:</label><input class="autoNumeric" id="curOperatingProfit" data-a-sign="£ "value="{{current.account.customFields['operatingProfit']}}"/></li>
+      <li><label class="col-md-5">Adjustments:</label><input class="autoNumeric" id="curAdjustments" data-a-sign="£ "value="{{current.account.customFields['adjustments']}}"/></li>
+      <li><label class="col-md-5">Borrowing:</label><input class="autoNumeric" id="curBorrowing" data-a-sign="£ "value="{{current.account.customFields['borrowing']}}"/></li>
     </ul>
+  </div> 
+  <div class="col-md-12">
+    <fieldset>
+      <legend>Current Year</legend>
+      <label class="col-md-offset-1">Financial Year:</label><input id="curCurrentFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" type="number" value="{{current.account.customFields['currentFinancialYear']}}"/>
+      <label>Turnover:</label><input class="autoNumeric" id="curCurrentTurnover" data-a-sign="£ "value="{{current.account.customFields['currentTurnover']}}"/>
+      <label>Profit:</label><input class="autoNumeric" id="curCurrentProfit" data-a-sign="£ "value="{{current.account.customFields['currentProfit']}}"/>
+    </fieldset>
+    <fieldset>
+      <legend>Last Year</legend>
+      <label class="col-md-offset-1">Financial Year:</label><input id="curLastFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" type="number" value="{{current.account.customFields['lastFinancialYear']}}"/>
+      <label>Turnover:</label><input class="autoNumeric" id="curLastTurnover" data-a-sign="£ "value="{{current.account.customFields['lastTurnover']}}"/>
+      <label>Profit:</label><input class="autoNumeric" id="curLastProfit" data-a-sign="£ "value="{{current.account.customFields['lastProfit']}}"/>
+    </fieldset>
+    <fieldset>
+      <legend>Previous Year</legend>
+      <label class="col-md-offset-1">Financial Year:</label><input id="curPreviousFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" type="number" value="{{current.account.customFields['previousFinancialYear']}}"/>
+      <label>Turnover:</label><input class="autoNumeric" id="curPreviousTurnover" data-a-sign="£ "value="{{current.account.customFields['previousTurnover']}}"/>
+      <label>Profit:</label><input class="autoNumeric" id="curPreviousProfit" data-a-sign="£ "value="{{current.account.customFields['previousProfit']}}"/>
+    </fieldset>
+
   </div>
+
 </div>
-
-<div id="currentAccountProperty" style="clear: both" class="col-md-12">
-        <ul class="form edit-form">
-<fieldset>
-          <legend>Furthermore...</legend>
-        
-          <li><label class="col-md-2">Already Contacted:</label><textarea cols="80" id="curAlreadyContacted" value="{{current.account.customFields['alreadyContacted']}}"></textarea></li>
-          <li><label class="col-md-2">Reason for Selling:</label><textarea cols="80" id="curReasonForSale" value="{{current.account.customFields['reasonForSale']}}"></textarea></li>
-          <li><label class="col-md-2">Potential Purchasers:</label><textarea cols="80" id="curPotentialPurchasers" value="{{current.account.customFields['potentialPurchasers']}}"></textarea></li>
-          <li><label class="col-md-2">Property Info:</label><textarea cols="80" id="curPropertyInfo" value="{{current.account.customFields['propertyInfo']}}"></textarea></li>
-</fieldset>
-        </ul>
-      </div>
-
-      <div class="col-md-12" id="currentAccountFinancials">
-        <h2 class="form"><span>Financials</span></h2> 
-        <div class="col-md-6">
-          <ul class="form edit-form">
-            <li><label class="col-md-5">EBITDA:</label><input class="autoNumeric" id="curEbitda" data-a-sign="£ "value="{{current.account.customFields['ebitda']}}"/></li>
-            <li><label class="col-md-5">Surplus:</label><input class="autoNumeric" id="curSurplus" data-a-sign="£ "value="{{current.account.customFields['surplus']}}"/></li>
-            <li><label class="col-md-5">Depreciation:</label><input class="autoNumeric" id="curDepreciation" data-a-sign="£ "value="{{current.account.customFields['depreciationAmortisation']}}"/></li>
-            <li><label class="col-md-5">Assets:</label><input class="autoNumeric" id="curAssets" data-a-sign="£ "value="{{current.account.customFields['assets']}}"/></li>
-          </ul>
-        </div> 
-        <div class="col-md-6">
-          <ul class="form edit-form">
-            <li><label class="col-md-5">Operating Profit:</label><input class="autoNumeric" id="curOperatingProfit" data-a-sign="£ "value="{{current.account.customFields['operatingProfit']}}"/></li>
-            <li><label class="col-md-5">Adjustments:</label><input class="autoNumeric" id="curAdjustments" data-a-sign="£ "value="{{current.account.customFields['adjustments']}}"/></li>
-            <li><label class="col-md-5">Borrowing:</label><input class="autoNumeric" id="curBorrowing" data-a-sign="£ "value="{{current.account.customFields['borrowing']}}"/></li>
-          </ul>
-        </div> 
-        <div class="col-md-12">
-          <fieldset>
-            <legend>Current Year</legend>
-            <label class="col-md-offset-1">Financial Year:</label><input id="curCurrentFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" type="number" value="{{current.account.customFields['currentFinancialYear']}}"/>
-            <label>Turnover:</label><input class="autoNumeric" id="curCurrentTurnover" data-a-sign="£ "value="{{current.account.customFields['currentTurnover']}}"/>
-            <label>Profit:</label><input class="autoNumeric" id="curCurrentProfit" data-a-sign="£ "value="{{current.account.customFields['currentProfit']}}"/>
-          </fieldset>
-          <fieldset>
-            <legend>Last Year</legend>
-            <label class="col-md-offset-1">Financial Year:</label><input id="curLastFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" type="number" value="{{current.account.customFields['lastFinancialYear']}}"/>
-            <label>Turnover:</label><input class="autoNumeric" id="curLastTurnover" data-a-sign="£ "value="{{current.account.customFields['lastTurnover']}}"/>
-            <label>Profit:</label><input class="autoNumeric" id="curLastProfit" data-a-sign="£ "value="{{current.account.customFields['lastProfit']}}"/>
-          </fieldset>
-          <fieldset>
-            <legend>Previous Year</legend>
-            <label class="col-md-offset-1">Financial Year:</label><input id="curPreviousFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" type="number" value="{{current.account.customFields['previousFinancialYear']}}"/>
-            <label>Turnover:</label><input class="autoNumeric" id="curPreviousTurnover" data-a-sign="£ "value="{{current.account.customFields['previousTurnover']}}"/>
-            <label>Profit:</label><input class="autoNumeric" id="curPreviousProfit" data-a-sign="£ "value="{{current.account.customFields['previousProfit']}}"/>
-          </fieldset>
-
-        </div>
-
-      </div>
