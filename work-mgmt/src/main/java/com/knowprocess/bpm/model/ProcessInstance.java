@@ -76,7 +76,16 @@ public class ProcessInstance extends Execution {
         setSuspended(false);
     }
 
-    // Autowiring static fields is obviously dangerous, but should be ok in this
+	public ProcessInstance(org.activiti.engine.runtime.Execution execution) {
+		this();
+		setActivityId(execution.getActivityId());
+		setEnded(execution.isEnded());
+		setId(execution.getId());
+		setParentId(execution.getParentId());
+		setSuspended(execution.isSuspended());
+	}
+
+	// Autowiring static fields is obviously dangerous, but should be ok in this
     // case as PE is thread safe.
     @Autowired(required = true)
     public void setProcessEngine(ProcessEngine pe) {
@@ -111,12 +120,17 @@ public class ProcessInstance extends Execution {
     public static List<ProcessInstance> findAllProcessInstancesForDefinition(
             String procDefId) {
         List<ProcessInstance> instances = new ArrayList<ProcessInstance>();
-        instances.addAll(wrap(processEngine.getRuntimeService()
+		instances.addAll(wrap(processEngine.getRuntimeService()
                 .createProcessInstanceQuery().processDefinitionId(procDefId)
-                .list()));
-        instances.addAll(wrap(processEngine.getHistoryService()
-                .createHistoricProcessInstanceQuery()
-                .processDefinitionId(procDefId).list()));
+				.list()));
+		List<HistoricProcessInstance> historicInstances = processEngine
+				.getHistoryService().createHistoricProcessInstanceQuery()
+				.processDefinitionId(procDefId).list();
+		for (HistoricProcessInstance instance : historicInstances) {
+			if (instance.getEndTime() != null) {
+				instances.add(new ProcessInstance(instance));
+			}
+		}
         return instances;
     }
 
