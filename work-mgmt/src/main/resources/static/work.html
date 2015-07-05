@@ -34,6 +34,16 @@
           <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
           <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
           <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
+          <a class="clickable dropdown" aria-hidden="true" title="Show filters">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
+              </a>
+              <ul class="omny-dropdown dropdown-menu" role="menu">
+                <li on-click="filter()">Clear filter</li>
+                <li class="divider"></li>
+                <li onclick="ractive.filter('deferred')">Hide Deferred Tasks</li>
+              </ul>
+          </a>
         </h2>
         <div id="sendMessage" style="display:none">
           <form action="/msg/{{tenant.id}}/" class="well form" id="sendMessageForm" method="post">
@@ -77,11 +87,13 @@
             </tr>
           </thead>
           <tbody>
-          {{#each tasks:i}}
-            {{# searchTerm!=undefined && (
+<!--
+searchTerm!=undefined && (
                   (this.name!=undefined && this.name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
                   || (this.businessKey!=undefined && this.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-                ) }}
+-->
+          {{#each tasks:i}}
+            {{# matchFilter(this) }}
             <tr data-href="{{_links.self.href}}">
               <td on-click="edit(this)">{{i+1}}</td>
               <td on-click="edit(this)">{{businessKey}}</td>
@@ -108,7 +120,7 @@
 
         <form id="currentForm">
           {{#current.description}}
-            <p class="col-md-12">{{current.description}}</p>          
+            <p class="col-md-12 bg-info text-info">{{current.description}}</p>          
           {{/}}
           <div class="col-md-6">
             <ul class="form edit-form">
@@ -122,26 +134,19 @@
             </ul>
           </div>
         
-          {{#current.formProperties.length>0}}
+          {{#current.formKey!=undefined}}
+            {{> userForm }}
+          {{/}}
+          {{#current.formKey==undefined && current.formProperties.length>0}}
             <section style="clear:both">
               <h3>Data</h3>
               <ul class="form edit-form" style="">          
                 {{#current.formProperties:i}}
                   <li>
-                    {{# value.substring(0,4)=='http'}}
-                      <!-- TODO need to get this from tenant config -->
-                      <a class="col-md-offset-3" href="{{value}}" target="_newtab">{{name == undefined ? id : name}}</a>
-                    {{else}}
-                      {{# type=='enum'}}
-                        <label class="col-md-offset-3">{{name}}</label>
-                        <select id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
-                          <option></option>  
-                        </select>
-                      {{else}}
-                        <label class="col-md-3">{{name}}</label>
-                        <input id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
-                      {{/if}}
-                    {{/if}}
+                    {{# renderAs(.) == 'enum' }} {{> enumCtrl }} {{/}}
+                    {{# renderAs(.) == 'json' }} {{> jsonCtrl }} {{/}}
+                    {{# renderAs(.) == 'link' }} {{> linkCtrl }} {{/}}
+                    {{# renderAs(.) == 'default' }} {{> defaultCtrl }} {{/}}
                   </li>
                 {{/current.formProperties}}
               </ul>
@@ -165,11 +170,35 @@
           {{/}}
         </form>
 
-        <button class="btn bg-success pull-right text-success" on-click="submitTask()" type="button">Complete Task</button>
-
+        <button class="btn btn-warning" on-click="deferTask()" type="button">Remind Me Tomorrow</button>
+        <div class="pull-right">
+          <button class="btn btn-success" on-click="submitCompleteTask()" type="button">Complete Task</button>
+          <button class="btn btn-danger" data-process-instance-id="{{current.processInstanceId}}" on-click="submitColdTask()" type="button">Set to Cold</button>
+        </div>
       </section>
 
     </form>
+  </script>
+
+  <script id="enumTemplate" type="text/html">
+    <label class="col-md-offset-3">{{name}}</label>
+    <select id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
+      <option></option>  
+    </select>
+  </script>
+  <script id="jsonTemplate" type="text/html">
+    <fieldset><legend class="col-md-12">{{name}}</legend>
+      <!-- TODO need to load this from external file --> 
+      {{> (current.formKey+'FormExtension') { id: ..id, name: ..name, obj: JSON.parse(..value), keys: keys(JSON.parse(..value)) } }}
+    </fieldset>
+  </script>
+  <script id="linkTemplate" type="text/html">
+    <!-- TODO need to get this from tenant config -->
+    <a class="col-md-offset-3" href="{{value}}" target="_newtab">{{name == undefined ? id : name}}</a>
+  </script>
+  <script id="defaultTemplate" type="text/html">
+    <label class="col-md-3">{{name}}</label>
+    <input id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
   </script>
 
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins)
@@ -190,7 +219,7 @@
   <script src="js/ractive.min.js"></script>
   -->
   <script src="js/ractive.min.js"></script>
-  <script src="js/autoNumeric.min.js"></script>
+  <script src="js/autoNumeric.js"></script>
   <script src="js/md5.min.js"></script>
   <script src="js/string-functions-0.1.0.js"></script>
   <script src="js/login-0.8.0.js"></script>

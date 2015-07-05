@@ -313,7 +313,7 @@ public class MessageController {
                         .toUriString());
     }
 
-    private String getMessageVarName(String msgId) {
+	protected String getMessageVarName(String msgId) {
         // Fix message name to avoid dot notation scripting errors
         msgId = msgId.replace('.', '_');
         LOGGER.debug(String.format("Message name: %1$s", msgId));

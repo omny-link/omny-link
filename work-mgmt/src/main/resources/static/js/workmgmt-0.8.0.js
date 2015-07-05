@@ -11,8 +11,39 @@ var ractive = new AuthenticatedRactive({
   template: '#template',
 
   // partial templates
-  partials: { simpleTodoFormExtension: function(x) {
-    return '<div class="clearfix"></div>'
+  partials: {
+    defaultCtrl: function() {
+      return $('#defaultTemplate').html();
+    },
+    enumCtrl: function() {
+      return $('#enumTemplate').html();
+    },
+    jsonCtrl: function() {
+      return $('#jsonTemplate').html();
+    },
+    linkCtrl: function() {
+      $.getJSON(ractive.get('current.processVariables.contactId'), function (data) { 
+        ractive.set('current.processVariables.contact',data);
+        $.each(Object.keys(data), function(i,d) {
+          var idx = ractive.findFormProperty(d);
+          if (idx != -1) ractive.set('current.formProperties['+idx+'].value',data[d]);          
+        });
+      });
+      return $('#linkTemplate').html();
+    },
+    userForm: function() {
+      console.log('renderUserForm');
+      $.get(ractive.get('current.formKey'), function (partial) {
+        if (ractive != undefined) ractive.resetPartial('userForm',partial);
+        ractive.initControls();
+        $.getJSON(ractive.get('current.processVariables.contactId'), function (data) {
+          ractive.set('current.processVariables.contact',data);
+        });
+      });
+      return '<div>Loading...</div>';
+    },
+    simpleTodoFormExtension: function(x) {
+      return '<div class="clearfix"></div>'
            +'<ul style="padding-left:0">'
            +  '{{# keys}}'
            +    '<li>'
@@ -21,7 +52,8 @@ var ractive = new AuthenticatedRactive({
            +    '</li>'
            +  '{{/}}'
            +'</ul>';
-  } },
+    } 
+  },
 
   // Here, we're passing in some initial data
   data: {
@@ -30,6 +62,7 @@ var ractive = new AuthenticatedRactive({
       return i18n.getAgeString(new Date(timeString))
     },
     events: [],
+    filter: 'deferred',
     formatJson: function(formProp) { 
       console.log('formatJson: '+formProp);
       console.log('formatJson: '+formProp.name+','+formProp.value);
@@ -56,18 +89,38 @@ var ractive = new AuthenticatedRactive({
     keys: function(obj) {
       return Object.keys(obj);
     },
+    matchFilter: function(obj) {
+      console.log("matchFilter: "+obj+'('+JSON.stringify(obj.taskLocalVariables)+')');
+      if (ractive.get('filter')==undefined) return true; 
+      else if (ractive.get('filter').indexOf('deferred')!=-1 && ractive.isDeferred(obj)) return false;
+      else return true;
+    },
+    renderAs: function(formProp) {
+      console.log('renderAs: '+formProp.name);
+      if (typeof formProp.value == 'string' && formProp.value.substring(0,4)=='http') {
+        return 'link';
+      } else if (typeof formProp.value == 'string' && formProp.value.substring(0,1)=='{') {
+        return 'json';
+      } else if (formProp.type == 'enum') {
+        return 'enum';
+      } else {
+        return 'default';
+      }
+    },
     stdPartials: [
       /*{ "name": "navbar", "url": "/partials/simpleTodoFormExtension.html"}*/
     ],
     tasks: [],
     username: localStorage['username'],
   },
-  simpleTodoFormExtension: function(x) { 
-    console.log('simpleTodoFormExtension: '+JSON.stringify(x));    
-  },
   collapseSendMessage: function() {
     console.log('collapseSendMessage...');
     $('#sendMessage').slideUp();
+  },
+  deferTask: function() {
+    console.log('deferTask...');
+    var until = until == undefined ? 'PT24H' : until;
+    ractive.submitTask('defer='+until);
   },
   edit: function(task) { 
     console.log('edit '+task+' ...');
@@ -75,6 +128,23 @@ var ractive = new AuthenticatedRactive({
     ractive.set('currentIdx',ractive.get('tasks').indexOf(task));
     ractive.set('current',task);
     ractive.select(task);
+  },
+  endInstance: function(piid) {
+    console.log('endInstance...');
+    $.ajax({
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/'+piid,
+        type: 'DELETE',
+        contentType: 'application/json',
+        success: completeHandler = function(data, textStatus, jqXHR) {
+          console.log('data: '+data);
+          if (jqXHR.status == 200) {
+        	  ractive.fetch();
+              ractive.showMessage('Ended successfully');
+          }
+          ractive.showResults();
+          //ractive.set('saveObserver',true);
+        }
+      });
   },
   fetch: function () {
     console.log('fetch...');
@@ -88,6 +158,21 @@ var ractive = new AuthenticatedRactive({
     $.getJSON("/tasks/"+ractive.get('current.id')+'/notes',  function( data ) {
       ractive.merge('currentNotes', data);
     });
+  },
+  filter: function(val) { 
+    ractive.set('filter', val);
+  },
+  findFormProperty: function(name) { 
+    console.log('findFormProperty: '+name);
+    var rtn = -1;
+    $.each(ractive.get('current.formProperties'), function(i,d) {
+      if (d.id==name) { 
+        console.log('found match ');
+        rtn = i;
+        return;
+      }
+    });
+    return rtn;
   },
   initAutoComplete: function() {
     console.log('initAutoComplete');
@@ -122,6 +207,13 @@ var ractive = new AuthenticatedRactive({
       todayHighlight: true
     });
   },
+  isDeferred: function(obj) {
+    if (obj.taskLocalVariables.length==0 || obj.taskLocalVariables['deferUntil']==undefined || obj.taskLocalVariables['deferUntil'] <= new Date().getTime()) { 
+      return false;
+    } else { 
+      return true;
+    }
+  },
   newMessage: function() {
     console.log('newMessage...');
     ractive.set('message', {tenant: ractive.get('tenant.id'),name: ractive.get('tenant.id')+'.messageName'});
@@ -130,6 +222,12 @@ var ractive = new AuthenticatedRactive({
   oninit: function() {
     this.ajaxSetup();
     this.loadStandardPartials(this.get('stdPartials'));
+  },
+  reviseValidation: function() {
+    console.log('reviseValidation');
+    if (ractive.get('current.processVariables.stage')=='Cold') {
+      $(':required').removeAttr('required');
+    }
   },
   save: function () {
     console.log('save '+JSON.stringify(ractive.get('current'))+' ...');
@@ -163,10 +261,54 @@ var ractive = new AuthenticatedRactive({
       ractive.showMessage('Cannot save yet as contact is incomplete');
     }
   },
+  saveContact: function() { 
+    console.log('saveContact '+JSON.stringify(ractive.get('current'))+' ...');
+    ractive.set('saveObserver',false);
+    var id = ractive.get('current').id
+    
+    if (document.getElementById('currentForm').checkValidity()) {
+      var contact = ractive.get('current.processVariables.contact');
+      contact.tenantId = ractive.get('tenant.id');
+      $.ajax({
+        url: ractive.get('current.processVariables.contactId'),
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(contact),
+        success: function(data, textStatus, jqXHR) {
+          console.log('saved contact: '+ jqXHR.status);
+          ractive.showMessage('Contact saved successfully');
+          ractive.set('saveObserver',true);
+        }
+      });
+    } else {
+      console.warn('Cannot save yet as contact is invalid');
+      $('#currentForm :invalid').addClass('field-error');
+      ractive.showMessage('Cannot save yet as contact is incomplete');
+    }
+  },
+  saveNote: function () {
+    console.info('saveNote '+JSON.stringify(ractive.get('current.note'))+' ...');
+    var n = { author:ractive.get('username'), contact: ractive.get('current.processVariables.contactId'), content: $('#note').val()}
+    var url = ractive.get('current.processVariables.contactId')+'/notes';
+    url = url.replace('contacts/',ractive.get('tenant.id')+'/contacts/');
+    console.log('  url:'+url);
+    if (n.content.trim().length > 0) { 
+      $.ajax({
+        url: url,
+        type: 'POST',
+        data: n,
+        success: completeHandler = function(data) {
+          console.log('response: '+ data);
+          ractive.showMessage('Note saved successfully'); 
+          $('#note').val(undefined);
+        }
+      });
+    }
+  },
   select: function(task) { 
     ractive.set('saveObserver',false);
     $.getJSON('/task/'+task.id+'/', function( data ) {
-      console.log('found task '+JSON.stringify(data));
+      //console.log('found task '+JSON.stringify(data));
       data.taskLocalVarNames = Object.keys(data.taskLocalVariables);
       data.processVarNames = Object.keys(data.processVariables);
       data.msg = data.processVariables[data.processVariables['messageName']];
@@ -209,7 +351,8 @@ var ractive = new AuthenticatedRactive({
   showResults: function() {
     console.log('showResults');
     $('#tasksTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
-    $('#tasksTable').slideDown();
+    $('#currentSect').slideUp();
+    $('#tasksTable').slideDown({ queue: true });
   },
   startSop: function(key, bizKey) {
     console.log('startSop: '+key+' for '+bizKey);
@@ -227,30 +370,39 @@ var ractive = new AuthenticatedRactive({
       },
     });
   },
-  submitTask: function() {
+  submitTask: function(action) {
     console.log('submitTask '+JSON.stringify(ractive.get('current'))+' ...');
     ractive.set('saveObserver',false);
+    
+    var id = ractive.get('current').id;
     $('#currentSect').hide();
-    var id = ractive.get('current').id
+    var t = ractive.get('current');
+    t.tenantId = ractive.get('tenant.id');
+    $.ajax({
+      url: '/task/'+id+'?'+action,
+      type: 'PUT',
+      contentType: 'application/json',
+      data: JSON.stringify(t),
+      success: completeHandler = function(data, textStatus, jqXHR) {
+        //console.log('data: '+ data);
+  //          var location = jqXHR.getResponseHeader('Location');
+  //          if (location != undefined) ractive.set('current._links.self.href',location);
+  //          if (jqXHR.status == 201) ractive.get('contacts').push(ractive.get('current'));
+        if (jqXHR.status <= 300) ractive.fetch();
+        ractive.showMessage('Task submitted');
+        ractive.showResults();
+        ractive.set('saveObserver',true);
+      }
+    });
+  },
+  submitColdTask: function() {
+    ractive.set('current.processVariables.stage','Cold');
+    ractive.submitTask('complete');
+  },
+  submitCompleteTask: function() {
+    console.log('submitCompleteTask...');
     if (document.getElementById('currentForm').checkValidity()) {
-      var t = ractive.get('current');
-      t.tenantId = ractive.get('tenant.id');
-      $.ajax({
-        url: '/task/'+id+'?complete',
-        type: 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify(t),
-        success: completeHandler = function(data, textStatus, jqXHR) {
-          //console.log('data: '+ data);
-//          var location = jqXHR.getResponseHeader('Location');
-//          if (location != undefined) ractive.set('current._links.self.href',location);
-//          if (jqXHR.status == 201) ractive.get('contacts').push(ractive.get('current'));
-          if (jqXHR.status <= 300) ractive.fetch();
-          ractive.showMessage('Task submitted');
-          ractive.showResults();
-          ractive.set('saveObserver',true);
-        }
-      });
+      ractive.submitTask('complete');
     } else {
       console.warn('Cannot save yet as contact is invalid');
       $('#currentForm :invalid').addClass('field-error');

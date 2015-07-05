@@ -27,6 +27,8 @@ public class Execution {
      */
     private String processInstanceId;
 
+	private String businessKey;
+
     /**
      */
     private Boolean ended;

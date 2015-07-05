@@ -222,6 +222,7 @@ public class Task implements org.activiti.engine.task.Task {
         // TODO honour sort order
         return wrap(getProcessEngine().getTaskService().createTaskQuery()
                 .taskTenantId(tenantId).taskCandidateOrAssigned(involvesUser)
+				.includeTaskLocalVariables()
                 .list());
     }
 

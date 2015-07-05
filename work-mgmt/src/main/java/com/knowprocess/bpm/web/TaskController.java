@@ -1,6 +1,13 @@
 package com.knowprocess.bpm.web;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 
 import org.activiti.engine.ProcessEngine;
 import org.slf4j.Logger;
@@ -38,10 +45,20 @@ public class TaskController {
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.PUT)
     public @ResponseBody Task updateTask(
             @PathVariable("taskId") String taskId, @RequestBody Task t,
-            @RequestParam(required = false, value = "complete") String complete) {
+            @RequestParam(required = false, value = "complete") String complete, 
+            @RequestParam(required = false, value = "defer") String defer) {
         LOGGER.info(String.format("updateTask %1$s", taskId));
 
-        if (complete == null) {
+        if (complete != null) {
+            LOGGER.debug(String.format(
+                    "Completing task %1$s with variables %2$s", taskId,
+                    t.getProcessVariables()));
+            processEngine.getTaskService().complete(taskId,
+                    t.getProcessVariables());
+        } else if (defer != null) {
+			processEngine.getTaskService().setVariableLocal(taskId,
+					"deferUntil", getRelativeDate(defer));
+        } else {
             org.activiti.engine.task.Task dest = processEngine.getTaskService()
                     .createTaskQuery().taskId(taskId).singleResult();
             // BeanUtils.copyProperties(t, dest, new String[] {
@@ -49,17 +66,26 @@ public class TaskController {
             // "revision" });
 
             processEngine.getTaskService().saveTask(dest);
-        } else {
-            LOGGER.debug(String.format(
-                    "Completing task %1$s with variables %2$s", taskId,
-                    t.getProcessVariables()));
-            processEngine.getTaskService().complete(taskId,
-                    t.getProcessVariables());
         }
         return t;
     }
 
-    @RequestMapping(value = "/{tenantId}/tasks/{username}/")
+	protected Date getRelativeDate(String defer) {
+		try {
+			Calendar cal = new GregorianCalendar();
+			Duration duration = DatatypeFactory.newInstance()
+					.newDuration(defer);
+			cal.setTimeInMillis(cal.getTimeInMillis()
+					+ duration.getTimeInMillis(cal));
+			return cal.getTime();
+		} catch (DatatypeConfigurationException e) {
+			String msg = "Unable to parse duration from " + defer;
+			LOGGER.error(msg, e);
+			throw new IllegalArgumentException(msg);
+		}
+	}
+
+	@RequestMapping(value = "/{tenantId}/tasks/{username}/")
     public @ResponseBody List<Task> listForUser(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("username") String username,
