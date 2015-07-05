@@ -123,7 +123,7 @@ var AuthenticatedRactive = Ractive.extend({
         console.log('binding ' +d.url+' to typeahead control: '+d.selector);
         $.get(ractive.getServer()+d.url, function(data){
           if (d.name!=undefined) ractive.set(d.name,data); 
-          $(d.selector).typeahead({ minLength:0,source:data });
+          $(d.selector).typeahead({ items:'all',minLength:0,source:data });
           $(d.selector).on("click", function (ev) {
             newEv = $.Event("keydown");
             newEv.keyCode = newEv.which = 40;
