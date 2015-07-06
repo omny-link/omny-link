@@ -1,34 +1,3 @@
-<div class="col-md-12" id="currentAccountExtended">
-  <h2 class="form"><span>Business Information</span></h2> 
-  <div class="col-md-6">
-    <ul class="form edit-form">
-			<!--            
-			<li><label class="col-md-5">Stage in Sale:</label><input id="curStageInSale" value="{{current.account.customFields['stageInSale']}}"/></li>
-			-->
-      <li><label class="col-md-5">Region:</label><input id="curRegion" value="{{current.account.customFields['region']}}"/></li>
-    </ul>
-  </div> 
-  <div class="col-md-6">
-    <ul class="form edit-form">
-      <li><label class="col-md-5">Sector:</label><input id="curSector" value="{{current.account.customFields['sector']}}"/></li>
-      <li><label class="col-md-5">Sub-Sector:</label><input id="curSubSector" value="{{current.account.customFields['subSector']}}"/></li>
-    </ul>
-  </div>
-</div>
-
-<div id="currentAccountProperty" style="clear: both" class="col-md-12">
-  <fieldset>
-    <legend>Furthermore...</legend>
-    <ul class="form edit-form">
-    
-      <li><label class="col-md-2">Already Contacted:</label><textarea cols="80" id="curAlreadyContacted" value="{{current.account.customFields['alreadyContacted']}}"></textarea></li>
-      <li><label class="col-md-2">Reason for Selling:</label><textarea cols="80" id="curReasonForSale" value="{{current.account.customFields['reasonForSale']}}"></textarea></li>
-      <!-- <li><label class="col-md-2">Potential Purchasers:</label><textarea cols="80" id="curPotentialPurchasers" value="{{current.account.customFields['potentialPurchasers']}}"></textarea></li> -->
-      <li><label class="col-md-2">Property Info:</label><textarea cols="80" id="curPropertyInfo" value="{{current.account.customFields['propertyInfo']}}"></textarea></li>
-    </ul>
-  </fieldset>
-</div>
-
 <div class="col-md-12" id="currentAccountValuation">
   <h2 class="form"><span>Valuation</span></h2> 
   <div class="col-md-6">
@@ -84,7 +53,36 @@
       <label>Turnover:</label><input class="autoNumeric" id="curPreviousTurnover" data-a-sign="£ "value="{{current.account.customFields['previousTurnover']}}"/>
       <label>Profit:</label><input class="autoNumeric" id="curPreviousProfit" data-a-sign="£ "value="{{current.account.customFields['previousProfit']}}"/>
     </fieldset>
-
   </div>
+</div>
 
+<div class="col-md-12" id="currentAccountExtended">
+  <h2 class="form"><span>Business Information</span></h2> 
+  <div class="col-md-6">
+    <ul class="form edit-form">
+      <!--            
+      <li><label class="col-md-5">Stage in Sale:</label><input id="curStageInSale" value="{{current.account.customFields['stageInSale']}}"/></li>
+      -->
+      <li><label class="col-md-5">Region:</label><input id="curRegion" value="{{current.account.customFields['region']}}"/></li>
+    </ul>
+  </div> 
+  <div class="col-md-6">
+    <ul class="form edit-form">
+      <li><label class="col-md-5">Sector:</label><input id="curSector" value="{{current.account.customFields['sector']}}"/></li>
+      <li><label class="col-md-5">Sub-Sector:</label><input id="curSubSector" value="{{current.account.customFields['subSector']}}"/></li>
+    </ul>
+  </div>
+</div>
+
+<div id="currentAccountProperty" style="clear: both" class="col-md-12">
+  <fieldset>
+    <legend>Furthermore...</legend>
+    <ul class="form edit-form">
+    
+      <li><label class="col-md-2">Already Contacted:</label><textarea cols="80" id="curAlreadyContacted" value="{{current.account.customFields['alreadyContacted']}}"></textarea></li>
+      <li><label class="col-md-2">Reason for Selling:</label><textarea cols="80" id="curReasonForSale" value="{{current.account.customFields['reasonForSale']}}"></textarea></li>
+      <!-- <li><label class="col-md-2">Potential Purchasers:</label><textarea cols="80" id="curPotentialPurchasers" value="{{current.account.customFields['potentialPurchasers']}}"></textarea></li> -->
+      <li><label class="col-md-2">Property Info:</label><textarea cols="80" id="curPropertyInfo" value="{{current.account.customFields['propertyInfo']}}"></textarea></li>
+    </ul>
+  </fieldset>
 </div>
