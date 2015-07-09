@@ -5,7 +5,7 @@
     <startEvent id="_2" isInterrupting="true" name="Start Event" parallelMultiple="false">
       <outgoing>_4</outgoing>
     </startEvent>
-    <userTask activiti:formKey="simpleTodo" completionQuantity="1" id="_3" implementation="##unspecified" isForCompensation="false" name="Deal with contact from the website" startQuantity="1">
+    <userTask activiti:formKey="/partials/simpleTodoFormExtension.html" completionQuantity="1" id="_3" implementation="##unspecified" isForCompensation="false" name="Deal with contact from the website" startQuantity="1">
       <documentation>
         A form has been submitted from the web site that has no workflow associated with it so please review the form details below and decide what action is needed. 
       </documentation>

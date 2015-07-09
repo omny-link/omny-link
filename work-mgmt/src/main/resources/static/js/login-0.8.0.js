@@ -90,7 +90,7 @@ var AuthenticatedRactive = Ractive.extend({
     case 401:
     case 403: 
     case 405: /* Could also be a bug but in production we'll assume a timeout */ 
-      this.showError("Session expired, please login again");
+      ractive.showError("Session expired, please login again");
       window.location.href='/login';
       break; 
     default: 

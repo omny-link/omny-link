@@ -59,6 +59,10 @@ public class Message2Controller {
 				bizDesc, json);
 	}
 
+  /**
+   * Handle a message destined for an intermediate message catch event of an 
+   * existing process.
+   */ 
 	@RequestMapping(method = RequestMethod.POST, value = "/{msgId}/{instanceId}")
 	@ResponseStatus(value = HttpStatus.NO_CONTENT)
 	@ResponseBody
@@ -67,7 +71,7 @@ public class Message2Controller {
 			@PathVariable("instanceId") String instanceId,
 			@RequestBody JsonNode json) {
 		long start = System.currentTimeMillis();
-		LOGGER.info("receiveEvent: " + msgId + ", json:" + json);
+		LOGGER.info("handleMessage: " + msgId + ", json:" + json);
 
 		if (LOGGER.isDebugEnabled()) {
 			List<String> activeActivityIds = processEngine.getRuntimeService()
@@ -80,7 +84,7 @@ public class Message2Controller {
 		processEngine.getRuntimeService().messageEventReceived(msgId,
 				instanceId, vars);
 
-		LOGGER.debug(String.format("receiveEvent took: %1$s ms",
+		LOGGER.debug(String.format("handleMessage took: %1$s ms",
 				(System.currentTimeMillis() - start)));
 	}
 
