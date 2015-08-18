@@ -20,7 +20,7 @@
     { "selector": "#curCountry", "url": "/data/countries.json"},
     { "selector": "#curEnquiryType", "url": "/data/ny/enquiry-types.json"},
     { "selector": "#curMedium", "url": "/data/media.json"},
-    { "selector": "#curSource", "url": "/data/sources.json"},
+    { "selector": "#curSource", "url": "/data/ny/sources.json"},
     { "name": "stages", "selector": "#curStage", "url": "/data/ny/stages.json"}
   ]
 }
