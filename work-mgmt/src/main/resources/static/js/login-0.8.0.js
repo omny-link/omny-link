@@ -93,6 +93,11 @@ var AuthenticatedRactive = Ractive.extend({
       ractive.showError("Session expired, please login again");
       window.location.href='/login';
       break; 
+    case 404: 
+      var msg = "That's odd, we can't find the page '"+jqXHR.responseJSON.path+"'. Please let us know about this message";
+      console.error('msg:'+msg);
+      ractive.showError(msg);
+      break;
     default: 
       var msg = "Bother! Something has gone wrong (code "+jqXHR.status+"): "+textStatus+':'+errorThrown;
       console.error('msg:'+msg);
