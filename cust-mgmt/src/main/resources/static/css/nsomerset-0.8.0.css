@@ -41,11 +41,17 @@ section h2 .file {
   border-radius: 0;
   border-color: #00ADDC;
 }
+section h3 {
+  border-bottom-color: #D33E62;
+}
 .btn-default { 
   color: #666666; 	
 }
 .glyphicon {
   color: #00ADDC;
+}
+a.glyphicon:focus, a.glyphicon:hover, h2 a.glyphicon:focus, h2 a.glyphicon:hover {
+  color: #D33E62;
 }
 .navbar-brand img {
   height: 53px;
@@ -53,9 +59,6 @@ section h2 .file {
 }
 /* END BOOTSTRAP OVERRIDES */
 
-.form label, .form input {
-  top: -25px
-}
 .omny-bar {
 	background-color: #efefef;
 	color: #D33E62 ;

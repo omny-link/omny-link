@@ -19,7 +19,7 @@
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }   
   ],  
   "partials": [
-    { "name": "gardenaticsContactExtension", "url": "/partials/gardenaticsContactExtension.html"}
+    { "name": "gardenaticsContactExtension", "url": "/partials/gardenatics/ContactExtension.html"}
   ],
   "stagesInActive": "Appointment,Complete,Enquiry,Order,Placed,Quote,Thank You Pack",
   "standardOperatingProcedures": [

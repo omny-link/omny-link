@@ -45,7 +45,8 @@
   "omny-bar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
     { "url": "index.html", "classes": "glyphicon omny-icon-address-book", "title": "Customer Management" },
-    { "url": "decisions.html", "classes": "glyphicon glyphicon-list-alt", "title": "Decisions" },
+    { "url": "decisions-ui.html", "classes": "glyphicon glyphicon-list-alt", "title": "Decisions Definer" },
+    { "url": "decisions-dmn.html", "classes": "glyphicon glyphicon-list-alt", "title": "Decisions Repository" },
     { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }    
   ],
