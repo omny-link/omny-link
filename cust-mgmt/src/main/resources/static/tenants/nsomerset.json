@@ -1,21 +1,22 @@
 { 
-  "id": "n-somerset", 
+  "id": "nsomerset", 
   "show": { "account":true },
   "omny-bar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
     { "url": "index.html", "classes": "glyphicon omny-icon-address-book", "title": "Customer Management" },
-    { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" }    
+    { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },
+    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }    
   ],
   "partials": [
     { "name": "simpleTodoFormExtension", "url": "/partials/simpleTodoFormExtension.html"},
-    { "name": "n-somersetContactExtension", "url": "/partials/contactExtension.html"},
-    { "name": "n-somersetAccountExtension", "url": "/partials/accountExtension.html"}
+    { "name": "nsomersetContactExtension", "url": "/partials/contactExtension.html"},
+    { "name": "nsomersetAccountExtension", "url": "/partials/accountExtension.html"}
   ],
   "typeaheadControls": [
-    { "selector": "#curEnquiryType", "url": "/data/n-somerset/enquiry-types.json"},
+    { "selector": "#curEnquiryType", "url": "/data/nsomerset/enquiry-types.json"},
     { "selector": "#curCountry", "url": "/data/countries.json"},
     { "selector": "#curMedium", "url": "/data/media.json"},
     { "selector": "#curSource", "url": "/data/sources.json"},
-    { "selector": "#curStage", "url": "/data/n-somerset/stages.json"}
+    { "selector": "#curStage", "url": "/data/nsomerset/stages.json"}
   ]
 }
