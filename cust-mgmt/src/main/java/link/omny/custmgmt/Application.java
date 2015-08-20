@@ -44,13 +44,15 @@ import com.knowprocess.bpm.impl.CorsFilter;
 import com.knowprocess.bpm.impl.JsonManager;
 
 @Configuration
-@ComponentScan(basePackages = { "link.omny.custmgmt", "link.omny.decisions",
-        "com.knowprocess.bpm", "link.omny.domain" })
+@ComponentScan(basePackages = { "link.omny.custmgmt",
+		"io.onedecision.engine.decisions", "com.knowprocess.bpm",
+		"io.onedecision.engine.domain" })
 @EnableAutoConfiguration
 @EntityScan({ "link.omny.custmgmt.model", "com.knowprocess.bpm",
-        "link.omny.decisions", "link.omny.domain" })
+		"io.onedecision.engine.decisions", "io.onedecision.engine.domain" })
 @EnableJpaRepositories({ "link.omny.custmgmt.repositories",
-        "link.omny.domain.repositories", "link.omny.decisions.repositories" })
+		"io.onedecision.engine.domain.repositories",
+		"io.onedecision.engine.decisions.repositories" })
 // @ImportResource("classpath:META-INF/spring/applicationContext-data.xml")
 @EnableSwagger2
 public class Application extends WebMvcConfigurerAdapter {
@@ -168,7 +170,7 @@ public class Application extends WebMvcConfigurerAdapter {
         protected void configure(HttpSecurity http) throws Exception {
             http.authorizeRequests()
                     .antMatchers("/css/**", "/data/**", "/fonts/**",
-                            "/images/**", "/js/**")
+                            "/images/**", "/js/**", "/mock/**", "/webjars/**")
                     .permitAll()
                     .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                     .antMatchers("/*.html", "/process-instances/**",
