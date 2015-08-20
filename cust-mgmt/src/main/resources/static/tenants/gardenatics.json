@@ -1,6 +1,6 @@
 { 
   "id": "gardenatics",
-  "show": { "account":false, "budget":true },
+  "show": { "account":false, "budget":true, "marketing": true },
   "contactFields": [ 
     { "label": "Budget", "key": "budget"},
     { "label": "Partner", "key": "partner"},
@@ -32,7 +32,7 @@
     { "selector": "#curMedium", "url": "/data/media.json"},
     { "selector": "#curOwner", "url": "/data/gardenatics/owners.json"},
     { "selector": "#curPartner", "url": "/data/gardenatics/partners.json"},
-    { "selector": "#curSource", "url": "/data/sources.json"},
+    { "selector": "#curSource", "url": "/data/gardenatics/sources.json"},
     { "name": "stages", "selector": "#curStage", "url": "/data/gardenatics/stages.json"}
   ]
 }
