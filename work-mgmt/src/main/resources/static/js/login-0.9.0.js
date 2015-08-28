@@ -52,7 +52,7 @@ var AuthenticatedRactive = Ractive.extend({
           $('.omny-bar ul').append('<li><a href="'+d.url+'"><span class="'+d.classes+'" title="'+d.title+'"></span></a></li>');
         });
       }
-      ractive.initContentEditable();// required here for the tennt switcher
+      ractive.initContentEditable();// required here for the tenant switcher
       // tenant partial templates
       $.each(ractive.get('tenant').partials, function(i,d) {
         $.get(d.url, function(response){
@@ -181,10 +181,12 @@ var AuthenticatedRactive = Ractive.extend({
   loadTenantConfig: function(tenant) {
     console.log('loadTenantConfig:'+tenant);
     $.getJSON(ractive.getServer()+'/tenants/'+tenant+'.json', function(response) {
-      console.log('... response: '+response);
+      console.log('... response: '+JSON.stringify(response));
+      ractive.set('saveObserver', false);
       ractive.set('tenant', response);
       ractive.applyBranding();
-      if (ractive.tenantCallbacks!=undefined) ractive.tenantCallbacks.fire(); 
+      ractive.set('saveObserver', true);
+      if (ractive.tenantCallbacks!=undefined) ractive.tenantCallbacks.fire();
     });
   },
   login: function() {
