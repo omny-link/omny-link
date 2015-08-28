@@ -196,6 +196,11 @@
       <artifactId>slf4j-log4j12</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.6</version>
+    </dependency>
     <!-- Required for native JSON support -->
     <dependency>
       <groupId>org.glassfish</groupId>
