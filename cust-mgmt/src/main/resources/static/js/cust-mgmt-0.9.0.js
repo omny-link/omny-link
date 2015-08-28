@@ -160,14 +160,13 @@ var ractive = new AuthenticatedRactive({
       success: function( data ) {
         if (data['_embedded'] == undefined) {
           ractive.merge('contacts', data);
-          ractive.set('saveObserver',true);
-        }else{
+        } else {
           ractive.merge('contacts', data['_embedded'].contacts);
-          ractive.set('saveObserver', true);
         }
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
         ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
+        ractive.set('saveObserver', true);
       }//,
 //      fail: function( jqXHR, textStatus, errorThrown) {
 //        console.log( "error" );
@@ -266,9 +265,6 @@ var ractive = new AuthenticatedRactive({
           if (jqXHR.status == 204) ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
           ractive.showMessage('Contact saved');
           ractive.set('saveObserver',true);
-        },
-        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-          ractive.handleError(jqXHR,textStatus,errorThrown);
         }
       });
     } else {
