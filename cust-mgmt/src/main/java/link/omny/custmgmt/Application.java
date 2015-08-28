@@ -32,6 +32,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.subethamail.wiser.Wiser;
 
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -62,6 +63,9 @@ public class Application extends WebMvcConfigurerAdapter {
 
     @Value("${omny.populator.skip:true}")
     protected boolean skipPopulator;
+
+    @Value("${omny.mock.smtp:true}")
+    protected boolean mockSmtpServer;
 
     @Bean
     public Docket omnyApi() {
@@ -100,6 +104,23 @@ public class Application extends WebMvcConfigurerAdapter {
     @Bean
     public JsonManager jsonManager() {
         return new JsonManager();
+    }
+
+    @Bean
+    public Wiser wiser() {
+        if (mockSmtpServer) {
+            LOGGER.warn("Starting mock SMTP server on port 5025, disable with omny.mock.smtp=false");
+            try {
+                Wiser wiser = new Wiser();
+                wiser.setPort(2525); // Default is 25
+                wiser.start();
+                return wiser;
+            } catch (NoClassDefFoundError e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     @Bean
