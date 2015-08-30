@@ -5,6 +5,9 @@
   <title>Customer Management</title>
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
+  <link href="css/jquery.tagit.css" rel="stylesheet" type="text/css">
+  <link href="css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
+  
   <link href="css/omny-0.9.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
   <!-- nice blocky yet tall font 
@@ -75,6 +78,7 @@
               <th>Owned by</th>
               <th>First Contact</th>
               <th>Last Updated</th>
+              <th>Tags</th>
               <th class="col-actions">Actions</th>
             </tr>
           </thead>
@@ -103,6 +107,7 @@
                   <td>{{{hash(owner)}}}</td>
                   <td>{{formatDate(firstContact)}}</td>
                   <td>{{formatDate(lastUpdated)}}</td>
+                  <td>{{{formatTags(tags)}}}</td>
                   <td class="col-actions">
                     <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
                     <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this contact"></a>
@@ -183,6 +188,10 @@
               <li><label class="col-md-5"></label><input id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/></li>
               <li><label class="col-md-5">Post Code:</label><input id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}"></li>
               <li><label class="col-md-5">Country:</label><input autocomplete="false" class="typeahead" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
+              <li>
+                <label class="col-md-5" style="margin-right:5px">Tags:</label>
+                <input class="tag-ctrl" id="curTags" data-bind="current.tags"/>     
+              </li>
             </ul>
           </div>
 
@@ -372,6 +381,8 @@
   <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
   <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <script src="/webjars/Bootstrap-3-Typeahead/3.1.1/bootstrap3-typeahead.js"></script>
+  <script src="/webjars/jquery-ui/1.11.4/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="js/tag-it.js" type="text/javascript" charset="utf-8"></script>
   <script src="/webjars/ractive/0.7.1/ractive.min.js"></script>
 
   <script src="js/autoNumeric.js"></script>
