@@ -168,6 +168,23 @@ var AuthenticatedRactive = Ractive.extend({
       });
     }
   },
+  initTags: function() {
+    console.info('initTags');
+    $('[data-bind]').each(function(i,d) {
+      $(d).val(ractive.get($(d).data('bind'))).css('display','none');
+    });
+
+    if ($(".tag-ctrl").is(":ui-tagit")) $(".tag-ctrl").tagit('destroy');
+    $(".tag-ctrl").tagit({
+      placeholderText: "Comma separated tags",
+      afterTagAdded: function(event, ui) {
+        ractive.set($(event.target).data('bind'),$(event.target).val());
+      },
+      afterTagRemoved: function(event, ui) {
+        ractive.set($(event.target).data('bind'),$(event.target).val());
+      }
+    });
+  },
   loadStandardPartials: function(stdPartials) {
     $.each(stdPartials, function(i,d) {
       console.log('loading...: '+d.name)
