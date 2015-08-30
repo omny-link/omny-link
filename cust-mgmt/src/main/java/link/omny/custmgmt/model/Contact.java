@@ -31,7 +31,6 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -166,6 +165,12 @@ public class Contact implements Serializable {
     private String keyword;
 
     /**
+     * Comma-separated set of arbitrary tags for the contact
+     */
+    @JsonProperty
+    private String tags;
+
+    /**
      * The time the contact is created.
      * 
      * Generally this field is managed by the application but this is not
@@ -174,14 +179,12 @@ public class Contact implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
-    @DateTimeFormat(style = "M-")
     @JsonProperty
     private Date firstContact;
 
     /**
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(style = "M-")
     @JsonProperty
     private Date lastUpdated;
 

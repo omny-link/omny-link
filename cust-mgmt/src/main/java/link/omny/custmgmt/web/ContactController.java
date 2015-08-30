@@ -335,6 +335,7 @@ public class ContactController {
         private String stage;
         private String enquiryType;
         private String accountType;
+        private String tags;
         private Date firstContact;
         private Date lastUpdated;
       }

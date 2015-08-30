@@ -27,6 +27,8 @@ public interface ContactExcept {
 
     boolean getDoNotEmail();
 
+    String getTags();
+
     Date getFirstContact();
 
     Date getLastUpdated();

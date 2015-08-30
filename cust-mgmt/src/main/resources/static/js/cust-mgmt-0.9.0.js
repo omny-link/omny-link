@@ -70,6 +70,14 @@ var ractive = new AuthenticatedRactive({
         return json;
       }
     },
+    formatTags: function(tags) {
+      var tagArr = tags.split(',');
+      var html = '';
+      $.each(tagArr, function(i,d) {
+        html += '<span class="img-rounded" style="background-color:'+d+'">&nbsp;&nbsp;</span>';
+      });
+      return html;
+    },
     hash: function(email) {
       if (email == undefined) return '';
       console.log('hash '+email+' = '+ractive.hash(email));
@@ -392,6 +400,7 @@ var ractive = new AuthenticatedRactive({
         console.log('found contact '+data);
         ractive.set('current', data);
         ractive.initControls();
+        ractive.initTags();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
         ractive.fetchNotes();

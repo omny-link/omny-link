@@ -60,6 +60,8 @@ public interface ContactCompleteProjection {
 
     boolean getDoNotEmail();
 
+    String getTags();
+
     Date getFirstContact();
 
     Date getLastUpdated();
