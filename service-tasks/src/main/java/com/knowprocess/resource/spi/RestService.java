@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.knowprocess.resource.internal.UrlResource;
+import com.knowprocess.test.mock.MockUrlResource;
 
 public abstract class RestService implements JavaDelegate {
     protected static final Logger LOGGER = LoggerFactory
@@ -41,6 +42,13 @@ public abstract class RestService implements JavaDelegate {
      * key=value. May contain expressions.
      */
     protected Expression data;
+
+    /**
+     * To support unit testing set this to the string response expected from the
+     * URL in the real case.
+     */
+    private Expression mockResponse;
+
     static final String USER_AGENT = "KnowProcess Agent";
 
     public void setGlobalResource(Expression globalResource) {
@@ -70,6 +78,10 @@ public abstract class RestService implements JavaDelegate {
 
     public void setResponseVar(Expression responseVar) {
         this.responseVar = responseVar;
+    }
+
+    public void setMockResponse(Expression mockResponse) {
+        this.mockResponse = mockResponse;
     }
 
     protected Expression getExpression(String variable) {
@@ -180,6 +192,7 @@ public abstract class RestService implements JavaDelegate {
         return s;
     }
 
+
     protected String[] getResponseHeadersSought(DelegateExecution execution) {
         if (responseHeaders == null) {
             return new String[0];
@@ -190,7 +203,9 @@ public abstract class RestService implements JavaDelegate {
 
     protected UrlResource getUrlResource(String usr, String pwd) {
         UrlResource ur = null;
-        if (usr == null || pwd == null) {
+        if (mockResponse != null) {
+            ur = new MockUrlResource(mockResponse.getExpressionText());
+        } else if (usr == null || pwd == null) {
             ur = new UrlResource();
         } else {
             ur = new UrlResource(usr, pwd);
@@ -204,8 +219,20 @@ public abstract class RestService implements JavaDelegate {
     }
 
     protected String getUsername(DelegateExecution execution) {
-        return (String) (resourceUsername == null ? null
-                : resourceUsername.getValue(execution));
+        if (resourceUsername == null) {
+            return null;
+        } else if (resourceUsername.getExpressionText().equals(
+                "userInfo('tenant-bot')")) {
+            return lookupBotName(execution);
+        } else {
+            return (String) resourceUsername.getValue(execution);
+        }
+    }
+
+    private String lookupBotName(DelegateExecution execution) {
+        return execution.getEngineServices().getIdentityService()
+                .createUserQuery().userFirstName(execution.getTenantId())
+                .userLastName("Bot").singleResult().getId();
     }
 
 }
