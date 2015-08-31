@@ -109,7 +109,7 @@ public class Application extends WebMvcConfigurerAdapter {
     @Bean
     public Wiser wiser() {
         if (mockSmtpServer) {
-            LOGGER.warn("Starting mock SMTP server on port 5025, disable with omny.mock.smtp=false");
+            LOGGER.warn("Starting mock SMTP server on port 2525, disable with omny.mock.smtp=false");
             try {
                 Wiser wiser = new Wiser();
                 wiser.setPort(2525); // Default is 25

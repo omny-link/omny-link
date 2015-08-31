@@ -15,7 +15,7 @@
 </div>
 <div class="col-md-6">
   <ul class="form edit-form">
-    <li><label class="col-md-5">Address:</label>
+    <li><label class="col-md-5 required">Address:</label>
       <input id="curAddress1" on-blur="saveContact()" required value="{{current.processVariables.contact.address1}}"></li>
     <li><label class="col-md-5"></label>
       <input id="curAddress2" on-blur="saveContact()" value="{{current.processVariables.contact.address2}}"></li>
@@ -23,7 +23,7 @@
       <input id="curTown" on-blur="saveContact()" value="{{current.processVariables.contact.town}}"></li>
     <li><label class="col-md-5">City or County:</label>
       <input id="curCountyOrCity" on-blur="saveContact()" value="{{current.processVariables.contact.countyOrCity}}"></li>
-    <li><label class="col-md-5">PostCode:</label>
+    <li><label class="col-md-5 required">PostCode:</label>
       <input id="curPostCode" on-blur="saveContact()" required value="{{current.processVariables.contact.postCode}}"></li>
   </ul>
 </div>
