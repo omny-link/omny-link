@@ -8,10 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.impl.test.JobTestHelper;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.toxos.activiti.assertion.ProcessAssert;
 
 import com.knowprocess.test.activiti.ExtendedRule;
 import com.knowprocess.test.mailserver.TestMailServer;
@@ -19,10 +21,12 @@ import com.knowprocess.test.mailserver.TestMailServer;
 public class TemplatedMailshotProcessTest {
 
     private static final String TEST_ADDRESSEE = "fred@bedrock.com";
+    private static final String TEST_FNAME = "Fred";
     public static final String MSG_NAME = "messageName";
     public static final String MSG_MAILSHOT = "com.knowprocess.mail.MailData";
     private static final String TEST_SUBJECT = "Test mail";
-    private static final String TEST_TEMPLATE = "http://wp.knowprocess.com/wp-content/plugins/syncapt/emails/new-registration";
+    private static final String TEST_TEMPLATE_BASE = "http://www.knowprocess.com/firmgains/emails";
+    private static final String TEST_TEMPLATE = "/new-registration";
 
     @Rule
     public ExtendedRule activitiRule = new ExtendedRule("test-activiti.cfg.xml");
@@ -37,6 +41,8 @@ public class TemplatedMailshotProcessTest {
     public void setUp() {
         variableMap = new HashMap<String, Object>();
         String json = "{ \"subject\": \"" + TEST_SUBJECT + "\","
+                + "\"sendAt\": \"\","
+                + "\"templateBase\": \"" + TEST_TEMPLATE_BASE + "\","
                 + "\"template\": \"" + TEST_TEMPLATE + "\","
                 + "\"contact\": { \"email\": \"" + TEST_ADDRESSEE + "\" } }";
         mailData = new MailData().fromJson(json);
@@ -59,7 +65,9 @@ public class TemplatedMailshotProcessTest {
         System.out.println("id " + processInstance.getId() + " "
                 + processInstance.getProcessDefinitionId());
 
-        activitiRule.assertComplete(processInstance);
+        JobTestHelper.waitForJobExecutorToProcessAllJobs(activitiRule, 2000, 1);
+
+        ProcessAssert.assertProcessEnded(processInstance);
         activitiRule.dumpVariables(processInstance.getId());
 
         checkMail();
@@ -68,7 +76,14 @@ public class TemplatedMailshotProcessTest {
     @Test
     @org.activiti.engine.test.Deployment(resources = "process/com/knowprocess/mail/TemplatedMailshotInternal.bpmn")
     public void testImmediateMailshotViaNoneStart() {
-
+        variableMap.put("contactEmail", TEST_ADDRESSEE);
+        variableMap.put("contactFirstName", TEST_FNAME);
+        variableMap.put("contactLastName", null);
+        variableMap.put("sendAt", null);
+        variableMap.put("subject", TEST_SUBJECT);
+        variableMap.put("templateBase", TEST_TEMPLATE_BASE);
+        variableMap.put("template", TEST_TEMPLATE);
+        // This not needed by the process but by the templates
         variableMap.put("mailData", mailData);
 
         RuntimeService runtimeService = activitiRule.getRuntimeService();
@@ -79,7 +94,9 @@ public class TemplatedMailshotProcessTest {
         System.out.println("id " + processInstance.getId() + " "
                 + processInstance.getProcessDefinitionId());
 
-        activitiRule.assertComplete(processInstance);
+        JobTestHelper.executeJobExecutorForTime(activitiRule, 2000, 1);
+
+        ProcessAssert.assertProcessEnded(processInstance);
         activitiRule.dumpVariables(processInstance.getId());
 
         checkMail();

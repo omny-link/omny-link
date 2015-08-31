@@ -61,7 +61,7 @@ public class TransformTaskTest {
 			System.out.println("result: " + result);
 			assertNotNull(result);
 
-			assertResults(result, 2, 8, 22);
+            assertResults(result, 2, 14, 22);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

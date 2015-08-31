@@ -19,6 +19,12 @@ execution.setVariable('mailData',mailData);]]></script>
     <callActivity calledElement="TemplatedMailshotInternal" completionQuantity="1" id="_6" isForCompensation="false" name="Call Activity" startQuantity="1">
       <extensionElements>
         <activiti:in source="mailData" target="mailData" />
+        <activiti:in sourceExpression="${mailData.get('templateBase')}" target="templateBase" />
+        <activiti:in sourceExpression="${mailData.get('template')}" target="template" />
+        <activiti:in sourceExpression="${mailData.get('subject')}" target="subject" />
+        <activiti:in sourceExpression="${mailData.get('contact.email')}" target="contactEmail" />
+        <activiti:in sourceExpression="${mailData.get('contact.firstName')}" target="contactFirstName" />
+        <activiti:in sourceExpression="${mailData.get('sendAt')}" target="sendAt" />
       </extensionElements>
       <incoming>_7</incoming>
       <outgoing>_8</outgoing>

@@ -18,8 +18,13 @@ public class RestGet extends Fetcher implements JavaDelegate {
     @Override
     public void execute(DelegateExecution execution) throws Exception {
         String usr = getUsername(execution);
-        String resource = evalExpr(execution,
+        String resource = null;
+        if (globalResource != null) {
+            resource = evalExpr(execution,
                 lookup(execution, usr, globalResource));
+        } else {
+            resource = (String) execution.getVariable("resource");
+        }
         LOGGER.info(String.format("GET %1$s as %2$s", resource, usr));
 
         String sel = selector == null ? null : (String) selector

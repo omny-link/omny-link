@@ -9,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
 import org.activiti.engine.repository.Deployment;
@@ -101,7 +103,8 @@ public class FetcherTest {
     public void testFetchResourcePart() {
         String resource = "http://www.jemsudan.org/meet-the-leadership-jem-chairman-dr-gibril-ibrahim/";
         try {
-            String result = svc.fetchToString(resource, null, ".inner-content");
+            Map<String, String> headers = new HashMap<String, String>();
+            String result = svc.fetchToString(resource, headers , ".inner-content");
             System.out.println("Result found: \n" + result);
             assertNotNull(result);
             assertTrue(result.contains("inner-content"));

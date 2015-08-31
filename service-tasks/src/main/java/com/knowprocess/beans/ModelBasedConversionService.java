@@ -250,8 +250,7 @@ entity,
     }
 
     private String createToProfileScript(String domain, String srcPkg,
-            String srcType, String trgtPkg, String trgtType,
- Document document,
+            String srcType, String trgtPkg, String trgtType, Document document,
             NodeList attributes, NodeList associatedEntities,
             String srcClassId)
             throws XPathExpressionException {
@@ -259,6 +258,11 @@ entity,
         String startMarker = "«" + domain + ".";
 
         StringBuilder sb = new StringBuilder();
+        // Nashorn compatibility layer
+        String vsn = System.getProperty("java.version");
+        if (!vsn.startsWith("1.6") && !vsn.startsWith("1.7")) {
+            sb.append("load(\"nashorn:mozilla_compat.js\");");
+        }
         sb.append("importPackage(Packages." + srcPkg + ");\n");
         sb.append("importPackage(Packages." + trgtPkg + ");\n");
         sb.append("var o = new ").append(trgtType).append("();\n");
