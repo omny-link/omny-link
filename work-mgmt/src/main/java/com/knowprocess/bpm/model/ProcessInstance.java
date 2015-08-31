@@ -36,7 +36,7 @@ public class ProcessInstance extends Execution {
 
     private Map<String, Object> processVariables;
 
-    private ArrayList<HistoricDetail> auditTrail;
+    private List<HistoricDetail> auditTrail;
 
     private Date startTime;
 
@@ -106,6 +106,13 @@ public class ProcessInstance extends Execution {
     public static long countProcessInstances() {
         return processEngine.getRuntimeService().createProcessInstanceQuery()
                 .count();
+    }
+
+    public List<HistoricDetail> getAuditTrail() {
+        if (auditTrail == null) {
+            auditTrail = new ArrayList<HistoricDetail>();
+        }
+        return auditTrail;
     }
 
     public static List<ProcessInstance> findAllProcessInstances() {
@@ -204,8 +211,7 @@ public class ProcessInstance extends Execution {
     }
 
     public void addToAuditTrail(List<HistoricActivityInstance> list) {
-        System.out.println("addToAuditTrail: " + list.size());
-        auditTrail = new ArrayList<HistoricDetail>();
+        auditTrail = getAuditTrail();
         for (HistoricActivityInstance detail : list) {
             auditTrail.add(new HistoricDetail(detail));
         }

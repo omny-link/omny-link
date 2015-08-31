@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,11 +59,33 @@ public class ProcessInstanceController {
                 .processInstanceId(instanceId)
                 .orderByHistoricActivityInstanceEndTime().desc().list());
 
-        // result.setAuditTrail(processEngine.getHistoryService()
-        // .createHistoricDetailQuery().processInstanceId(instanceId)
-        // .orderByTime().desc().list());
+        addCalledProcessAuditTrail(result, instanceId);
 
         return result;
+    }
+
+    private void addCalledProcessAuditTrail(ProcessInstance result,
+            String instanceId) {
+        LOGGER.info("addCalledProcessAuditTrail: " + instanceId);
+        List<org.activiti.engine.runtime.ProcessInstance> childProcessInstances = processEngine
+                .getRuntimeService().createProcessInstanceQuery()
+                .superProcessInstanceId(instanceId).list();
+
+        for (org.activiti.engine.runtime.ProcessInstance childInstance : childProcessInstances) {
+            List<HistoricActivityInstance> childProcEvents = processEngine
+                    .getHistoryService().createHistoricActivityInstanceQuery()
+                    .processInstanceId(childInstance.getId())
+                    .orderByHistoricActivityInstanceEndTime().desc().list();
+            result.addToAuditTrail(childProcEvents);
+            for (HistoricActivityInstance historicActivityInstance : childProcEvents) {
+                if (historicActivityInstance.getActivityType().equals(
+                        "callActivity")) {
+                    addCalledProcessAuditTrail(result,
+                            historicActivityInstance
+                            .getCalledProcessInstanceId());
+                }
+            }
+        }
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST, headers = "Accept=application/json")
