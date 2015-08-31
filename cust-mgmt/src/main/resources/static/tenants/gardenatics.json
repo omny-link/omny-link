@@ -1,6 +1,6 @@
 { 
   "id": "gardenatics",
-  "show": { "account":false, "budget":true, "marketing": true },
+  "show": { "account":false, "budget":true, "marketing":true },
   "contactFields": [ 
     { "label": "Budget", "key": "budget"},
     { "label": "Partner", "key": "partner"},
