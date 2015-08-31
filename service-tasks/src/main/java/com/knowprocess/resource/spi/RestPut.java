@@ -3,6 +3,7 @@ package com.knowprocess.resource.spi;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Scanner;
 
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
@@ -17,12 +18,8 @@ public class RestPut extends RestService implements JavaDelegate {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(RestPut.class);
 
-    @Override
-    public void execute(DelegateExecution execution) throws Exception {
-        String usr = getUsername(execution);
-        String resource = evalExpr(execution,
-                lookup(execution, usr, globalResource));
-        String pwd = getPassword(execution, usr);
+    public void execute(String usr, String pwd, String resource,
+            String headerStr, Object payload) throws Exception {
         LOGGER.info(String.format("PUTing to %1$s as %2$s", resource, usr));
 
         URL url;
@@ -32,19 +29,28 @@ public class RestPut extends RestService implements JavaDelegate {
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("PUT");
 
-            setHeaders(connection, (String) headers.getValue(execution));
+            setHeaders(connection, headerStr);
             setAuthorization(usr, pwd, connection);
 
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
-            sendData(connection, data.getValue(execution));
+            sendData(connection, payload);
 
             int code = connection.getResponseCode();
             if (code >= HttpURLConnection.HTTP_BAD_REQUEST) {
-                LOGGER.error("Response code: " + code);
-                throw new IOException(String.valueOf(code));
+                Scanner scanner = null;
+                try {
+                    scanner = new Scanner(connection.getErrorStream());
+                    String error = scanner.useDelimiter("\\A").next();
+                    String msg = "Response code: " + code + ", details: "
+                            + error;
+                    LOGGER.error(msg);
+                    throw new IOException(msg);
+                } finally {
+                    scanner.close();
+                }
             } else {
                 LOGGER.debug("Response code: " + code);
             }
@@ -55,5 +61,18 @@ public class RestPut extends RestService implements JavaDelegate {
             LOGGER.error(msg, e);
             throw new IOException(msg, e);
         }
+    }
+
+    @Override
+    public void execute(DelegateExecution execution) throws Exception {
+        String usr = getUsername(execution);
+        String resource = evalExpr(execution,
+                lookup(execution, usr, globalResource));
+        String pwd = getPassword(execution, usr);
+
+        String headerStr = (String) headers.getValue(execution);
+        Object payload = data.getValue(execution);
+
+        execute(usr, pwd, resource, headerStr, payload);
     }
 }
