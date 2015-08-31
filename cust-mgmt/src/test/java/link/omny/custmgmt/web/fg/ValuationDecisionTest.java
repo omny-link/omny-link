@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 
-import link.omny.custmgmt.web.fg.ValuationDecision;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -22,9 +20,9 @@ public class ValuationDecisionTest {
     public void testCalcByFinancials() {
         Map<String, Double> results = valuationDecision.calc(100000d, 20000d,
                 3000d, null, 400d, 50d);
-        assertEquals(new Double(369350), results.get("lowQuote"));
-        assertEquals(new Double(615350), results.get("mediumQuote"));
-        assertEquals(new Double(861350), results.get("highQuote"));
+        assertEquals(new Double(240200), results.get("lowQuote"));
+        assertEquals(new Double(357050), results.get("mediumQuote"));
+        assertEquals(new Double(473900), results.get("highQuote"));
         assertEquals(new Double(123000), results.get("ebitda"));
     }
 
@@ -32,8 +30,8 @@ public class ValuationDecisionTest {
     public void testCalcByEbitda() {
         Map<String, Double> results = valuationDecision.calc(null, null, null,
                 123000d, 400d, 50d);
-        assertEquals(new Double(369350), results.get("lowQuote"));
-        assertEquals(new Double(615350), results.get("mediumQuote"));
-        assertEquals(new Double(861350), results.get("highQuote"));
+        assertEquals(new Double(240200), results.get("lowQuote"));
+        assertEquals(new Double(357050), results.get("mediumQuote"));
+        assertEquals(new Double(473900), results.get("highQuote"));
     }
 }
