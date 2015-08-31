@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -44,7 +45,7 @@ public class FollowUpDecisionTest {
     public void testFollowUpBrandNewValuation() {
         Contact contact = getContact();
         contact.getActivities().add(
-                new Activity(FollowUpDecision.FIELD_MID_VALUATION, new Date()));
+                new Activity(FollowUpDecision.ACTIVITY_VALUATION, new Date()));
 
         MailData mailData = decision.execute(contact);
 
@@ -55,7 +56,7 @@ public class FollowUpDecisionTest {
     public void testFollowUpRecentValuation() {
         Contact contact = getContact();
         contact.getActivities().add(
-                new Activity(FollowUpDecision.FIELD_MID_VALUATION,
+                new Activity(FollowUpDecision.ACTIVITY_VALUATION,
                         getYesterday()));
 
         assertMailData(decision.execute(contact), "valuation-detail",
@@ -87,7 +88,7 @@ public class FollowUpDecisionTest {
     public void testMidValuationFollowUp() {
         Contact contact = getContact();
         contact.getActivities().add(
-                new Activity(FollowUpDecision.FIELD_MID_VALUATION,
+                new Activity(FollowUpDecision.ACTIVITY_VALUATION,
                         get8DaysAgo()));
         contact.getActivities().add(
                 new Activity("email", get8DaysAgo(), "valuation-detail"));
@@ -189,14 +190,17 @@ public class FollowUpDecisionTest {
     }
 
     @Test
-    public void testXXXFollowUp() throws JsonParseException,
+    public void testMidValuationFollowUpFromJson() throws JsonParseException,
             JsonMappingException, IOException {
+        InputStream testData = getClass().getResourceAsStream(
+                "/data/FollowUpDecisionTest.contact1.json");
+        assertNotNull("Cannot find expected test data", testData);
         Contact contact = mapper.readValue(
-                getClass().getResourceAsStream(
-                        "/FollowUpDecisionTest.contact1.json"), Contact.class);
+                testData,
+                Contact.class);
 
-        assertMailData(decision.execute(contact), "anniversary",
-                "A Very Happy Anniversary... We Hope!");
+        assertMailData(decision.execute(contact), "mid-valuation-email",
+                "We’ve taken a close look at your Firm Gains valuation");
     }
 
     private void assertMailData(MailData mailData, String template,

@@ -16,7 +16,7 @@ import com.knowprocess.mail.MailData;
 @Component
 public class FollowUpDecision {
 
-    static final String FIELD_MID_VALUATION = "valuation";
+    static final String FIELD_MID_VALUATION = "mediumQuote";
     private static final int _7_DAYS_AS_MILLIS = 1000 * 60 * 60 * 24 * 7;
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(FollowUpDecision.class);

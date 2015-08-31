@@ -340,7 +340,7 @@ public class Contact implements Serializable {
 
     public boolean haveSentEmail(String emailName) {
         for (Activity act : getActivities()) {
-            if ("email".equals(act.getType())
+            if ("email".equalsIgnoreCase(act.getType())
                     && act.getContent().contains(emailName)) {
                 return true;
             }
@@ -355,7 +355,7 @@ public class Contact implements Serializable {
     public List<Activity> getActivitiesOfType(String type) {
         List<Activity> activities = new ArrayList<Activity>();
         for (Activity act : getActivities()) {
-            if (type.equals(act.getType())) {
+            if (type.equalsIgnoreCase(act.getType())) {
                 activities.add(act);
             }
         }
@@ -363,21 +363,21 @@ public class Contact implements Serializable {
     }
 
     public Activity getLastActivityOfType(String type) {
-        Activity lastLogin = null;
+        Activity lastAct = null;
         for (Activity act : getActivities()) {
-            if (type.equals(act.getType())
-                    && (lastLogin == null || lastLogin.getOccurred().after(
+            if (type.equalsIgnoreCase(act.getType())
+                    && (lastAct == null || lastAct.getOccurred().after(
                             act.getOccurred()))) {
-                lastLogin = act;
+                lastAct = act;
             }
         }
-        return lastLogin;
+        return lastAct;
     }
 
     public Activity getFirstActivityOfType(String type) {
         Activity firstLogin = null;
         for (Activity act : getActivities()) {
-            if (type.equals(act.getType())
+            if (type.equalsIgnoreCase(act.getType())
                     && (firstLogin == null || firstLogin.getOccurred().before(
                             act.getOccurred()))) {
                 firstLogin = act;
