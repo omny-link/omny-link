@@ -1,8 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <title>Omny Link</title>
-  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href='//fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
+  <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
   <link href="css/omny-0.9.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
     <style>
@@ -13,7 +15,6 @@
     }
     section#main {
       margin: auto;
-      padding-top: 10%;
     }
     section#login {
       padding-top: 0;
@@ -34,6 +35,17 @@
     .btn { 
       height: 40px;
     }
+    
+    @media (max-width: 480px) {
+      section#main {
+        padding-top: 45%;
+      }
+    }
+    @media (min-width: 481px) {
+      section#main {
+        padding-top: 10%;
+      }
+    }
   </style>
 <head>
 <body>
@@ -41,7 +53,7 @@
   <section id="container"></section>
 
   <section id="main">
-    <h1>Decisions | Leads | Workflow</h1>
+    <h1>CRM | Workflow | Decisions</h1>
     <img src="images/omny-logo.png"/>
     <p>For more information see <a href="//omny.link">http://omny.link</a></p>
   </section>
