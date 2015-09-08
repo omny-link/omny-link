@@ -2,9 +2,14 @@
   "id": "omny", 
   "show": { "account":true, "budget":true },
   "contactFields": [ 
-    { "label": "Age", "key": "age"},
-    { "label": "Health", "key": "health"},
-    { "label": "Risk Rating", "key": "riskRating"}
+    { "label": "Job Title", "key": "jobTitle"},
+    { "label": "Next Steps", "key": "nextSteps"},
+    { "label": "Been Demo'ed", "key": "isDemoed"}
+  ],
+  "accountFields": [ 
+    { "label": "Sector", "key": "sector"},
+    { "label": "Lead Office", "key": "leadOffice"},
+    { "label": "Current Site Capability", "key": "currentSiteCapability"}
   ],
   "omny-bar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
@@ -24,8 +29,10 @@
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
     { "selector": "#curCountry", "url": "/data/countries.json"},
+    { "selector": "#curCurrentSiteCapability", "url": "/data/omny/current-site-capabilities.json"},
     { "selector": "#curEnquiryType", "url": "/data/omny/enquiry-types.json"},
     { "selector": "#curMedium", "url": "/data/media.json"},
+    { "selector": "#curSector", "url": "/data/omny/sectors.json"},
     { "selector": "#curSource", "url": "/data/sources.json"},
     { "name": "stages", "selector": "#curStage", "url": "/data/stages.json"}
   ]

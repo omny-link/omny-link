@@ -1,0 +1,12 @@
+[
+  {"id":"Agency", "name":"Agency"},
+  {"id":"Automotive", "name":"Automotive"},
+  {"id":"Business Parks", "name":"Business Parks"},
+  {"id":"Finance", "name":"Finance"},
+  {"id":"Healthcare", "name":"Healthcare"},
+  {"id":"Insurance", "name":"Insurance"},
+  {"id":"Local", "name":"Local"},
+  {"id":"Local Authorities", "name":"Local Authorities"},
+  {"id":"Yachts", "name":"Yachts etc."},
+  {"id":"Other", "name":"Other"}
+]
