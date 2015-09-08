@@ -1,5 +1,5 @@
+<h3 class="form"><span>Valuation</span></h3> 
 <div class="col-md-12" id="currentAccountValuation">
-  <h2 class="form"><span>Valuation</span></h2> 
   <div class="col-md-6">
     <ul class="form edit-form">
       <li><label class="col-md-5">Low Quote:</label><input class="autoNumeric" id="curLowQuote" data-a-sign="£ " value="{{current.account.customFields['lowQuote']}}"/></li>
@@ -10,15 +10,15 @@
   </div> 
   <div class="col-md-6">
     <ul class="form edit-form">
-      <li><label class="col-md-5">Share of Business (%):</label><input id="curShareOfBusiness" min="0" max="100" type="number" value="{{current.account.customFields['shareOfBusiness']}}"></li>
+      <li><label class="col-md-5">Share of Business:</label><input id="curShareOfBusiness" min="0" max="100" placeholder="%" type="number" value="{{current.account.customFields['shareOfBusiness']}}"></li>
       <li><label class="col-md-5">Asking Price:</label><input class="autoNumeric" id="curAskingPrice" data-a-sign="£ "value="{{current.account.customFields['askingPrice']}}"></li>
       <li><label class="col-md-5">Preferred Timing:</label><input id="curPreferredTiming" value="{{current.account.customFields['preferredTiming']}}"/></li>
     </ul>
   </div>
 </div>
 
+<h3 class="form" style="clear:both"><span>Financials</span></h3> 
 <div class="col-md-12" id="currentAccountFinancials">
-  <h2 class="form"><span>Financials</span></h2> 
   <div class="col-md-6">
     <ul class="form edit-form">
       <li><label class="col-md-5">EBITDA:</label><input class="autoNumeric" id="curEbitda" data-a-sign="£ "value="{{current.account.customFields['ebitda']}}"/></li>
@@ -60,16 +60,13 @@
   <h2 class="form"><span>Business Information</span></h2> 
   <div class="col-md-6">
     <ul class="form edit-form">
-      <!--            
-      <li><label class="col-md-5">Stage in Sale:</label><input id="curStageInSale" value="{{current.account.customFields['stageInSale']}}"/></li>
-      -->
-      <li><label class="col-md-5">Region:</label><input id="curRegion" value="{{current.account.customFields['region']}}"/></li>
+      <li><label class="">Region:</label><input id="curRegion" value="{{current.account.customFields['region']}}"/></li>
     </ul>
   </div> 
   <div class="col-md-6">
     <ul class="form edit-form">
-      <li><label class="col-md-5">Sector:</label><input id="curSector" value="{{current.account.customFields['sector']}}"/></li>
-      <li><label class="col-md-5">Sub-Sector:</label><input id="curSubSector" value="{{current.account.customFields['subSector']}}"/></li>
+      <li><label class="">Sector:</label><input id="curSector" value="{{current.account.customFields['sector']}}"/></li>
+      <li><label class="">Sub-Sector:</label><input id="curSubSector" value="{{current.account.customFields['subSector']}}"/></li>
     </ul>
   </div>
 </div>
@@ -79,10 +76,9 @@
     <legend>Furthermore...</legend>
     <ul class="form edit-form">
     
-      <li><label class="col-md-2">Already Contacted:</label><textarea cols="80" id="curAlreadyContacted" value="{{current.account.customFields['alreadyContacted']}}"></textarea></li>
-      <li><label class="col-md-2">Reason for Selling:</label><textarea cols="80" id="curReasonForSale" value="{{current.account.customFields['reasonForSale']}}"></textarea></li>
-      <!-- <li><label class="col-md-2">Potential Purchasers:</label><textarea cols="80" id="curPotentialPurchasers" value="{{current.account.customFields['potentialPurchasers']}}"></textarea></li> -->
-      <li><label class="col-md-2">Property Info:</label><textarea cols="80" id="curPropertyInfo" value="{{current.account.customFields['propertyInfo']}}"></textarea></li>
+      <li><label class="textarea-label">Already Contacted:</label><textarea id="curAlreadyContacted" value="{{current.account.customFields['alreadyContacted']}}"></textarea></li>
+      <li><label class="textarea-label">Reason for Selling:</label><textarea id="curReasonForSale" value="{{current.account.customFields['reasonForSale']}}"></textarea></li>
+      <li><label class="textarea-label">Property Info:</label><textarea id="curPropertyInfo" value="{{current.account.customFields['propertyInfo']}}"></textarea></li>
     </ul>
   </fieldset>
 </div>

@@ -1,6 +1,6 @@
 { 
   "id": "firmgains", 
-  "show": { "account":true, "marketing":true },
+  "show": { "account":true, "activityAnalysis":false, "marketing":true },
   "accountFields": [ 
     { "label": "EBITDA", "key": "ebitda"},
     { "label": "Surplus", "key": "surplus"},

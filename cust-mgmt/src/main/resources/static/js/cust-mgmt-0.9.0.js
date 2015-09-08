@@ -53,6 +53,10 @@ var ractive = new AuthenticatedRactive({
         return val; 
       }
     },
+    formatAge: function(timeString) {
+      console.log('formatAge: '+timeString);
+      return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
+    },
     formatDate: function(timeString) {
       return new Date(timeString).toLocaleDateString(navigator.languages);
     },
