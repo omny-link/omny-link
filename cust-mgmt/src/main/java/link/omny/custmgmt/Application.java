@@ -85,6 +85,7 @@ public class Application extends WebMvcConfigurerAdapter {
      * 
      * @return public API.
      */
+    @SuppressWarnings("unchecked")
     private Predicate<String> publicPaths() {
         return or(regex("/.*/accounts.*"), 
                 regex("/.*/activities.*"),
@@ -95,10 +96,7 @@ public class Application extends WebMvcConfigurerAdapter {
                 regex("/.*/process-definitions.*"),
                 regex("/.*/process-instances.*"),
                 regex("/.*/task.*"),
-                regex("/.*/tasks.*"), regex("/users.*"),
-                // Decisions 
-                regex("/.*/decisions.*"),
-                regex("/.*/decision-ui-models.*"), regex("/.*/domain.*"));
+                regex("/.*/tasks.*"), regex("/users.*"));
     }
 
     @Bean
