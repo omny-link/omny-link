@@ -13,8 +13,45 @@ function transformToAssocArray( prmstr ) {
   return params;
 }
 
+var $auth = new AuthHelper(); 
+function AuthHelper() {
+  this.getProfile = function(username) {
+    console.log('getProfile: '+username);
+    if (username) $.getJSON('/users/'+username, function(profile) {
+      ractive.set('profile',profile);
+      $('.profile-img').empty().append('<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34"/>');
+      if ($auth.hasRole('super_admin')) $('.super-admin').show();
+      $auth.loadTenantConfig(ractive.get('profile.tenant'));
+    })
+    .error(function(){
+      console.warn('Failed to get profile, will rely on Omny default');
+      ractive.set('profile',{tenant:'omny'});
+      $auth.loadTenantConfig(ractive.get('tenant.id'));
+    });
+    else this.showError('You are not logged in, some functionality will be unavailable.');
+  }
+  this.hasRole = function(role) {
+    if (ractive && ractive.get('profile')) {
+      var hasRole = ractive.get('profile').groups.filter(function(g) {return g.id==role})
+      return hasRole!=undefined && hasRole.length>0;
+    }
+    return false;
+  }
+  this.loadTenantConfig = function(tenant) {
+    console.info('loadTenantConfig:'+tenant);
+    $.getJSON(ractive.getServer()+'/tenants/'+tenant+'.json', function(response) {
+      //console.log('... response: '+JSON.stringify(response));
+      ractive.set('saveObserver', false);
+      ractive.set('tenant', response);
+      ractive.applyBranding();
+      ractive.set('saveObserver', true);
+      if (ractive.tenantCallbacks!=undefined) ractive.tenantCallbacks.fire();
+    });
+  }
+}
+
 ractive.observe('username', function(newValue, oldValue, keypath) {
-  ractive.getProfile();
+  if (ractive['getProfile'] != undefined) ractive.getProfile();
 });
 
 $(document).ready(function() {

@@ -27,6 +27,12 @@ var ractive = new AuthenticatedRactive({
       if (timeString==undefined) return '';
     return new Date(timeString).toLocaleString(navigator.languages);
     },
+    stdPartials: [
+      { "name": "poweredBy", "url": "/partials/powered-by.html"},
+      { "name": "profileArea", "url": "/partials/profile-area.html"},
+      { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "titleArea", "url": "/partials/title-area.html"}
+    ],
     username: localStorage['username'],
   },
   simpleTodoFormExtension: function(x) { 
@@ -40,6 +46,7 @@ var ractive = new AuthenticatedRactive({
   },
   oninit: function() {
     this.ajaxSetup();
+    this.loadStandardPartials(this.get('stdPartials'));
   },
   select: function(event) {
     ractive.set('current', event);

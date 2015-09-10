@@ -15,10 +15,12 @@ var ractive = new AuthenticatedRactive({
 
   // Here, we're passing in some initial data
   data: {
-    // TODO not loaded for now because of ordering issues
-//    stdPartials: [
-//      { "name": "profileArea", "url": "/partials/profileArea.html"}
-//    ],
+    stdPartials: [
+      { "name": "poweredBy", "url": "/partials/powered-by.html"},
+      { "name": "profileArea", "url": "/partials/profile-area.html"},
+      { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "titleArea", "url": "/partials/title-area.html"}
+    ],
     username: localStorage['username'],
     users: []
   },
@@ -107,7 +109,7 @@ var ractive = new AuthenticatedRactive({
   },
   oninit: function() {
     this.ajaxSetup();
-//    this.loadStandardPartials(this.get('stdPartials'));
+    this.loadStandardPartials(this.get('stdPartials'));
   },
   save: function () {
     console.log('save '+ractive.get('current')+' ...');

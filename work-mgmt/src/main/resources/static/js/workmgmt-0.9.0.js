@@ -108,7 +108,10 @@ var ractive = new AuthenticatedRactive({
       }
     },
     stdPartials: [
-      /*{ "name": "navbar", "url": "/partials/simpleTodoFormExtension.html"}*/
+      { "name": "poweredBy", "url": "/partials/powered-by.html"},
+      { "name": "profileArea", "url": "/partials/profile-area.html"},
+      { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "titleArea", "url": "/partials/title-area.html"}
     ],
     tasks: [],
     username: localStorage['username'],

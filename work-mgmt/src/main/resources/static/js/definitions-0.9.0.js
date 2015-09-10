@@ -33,6 +33,12 @@ var ractive = new AuthenticatedRactive({
     hasRole: function(role) {
       return ractive.hasRole(role);
     },
+    stdPartials: [
+      { "name": "poweredBy", "url": "/partials/powered-by.html"},
+      { "name": "profileArea", "url": "/partials/profile-area.html"},
+      { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "titleArea", "url": "/partials/title-area.html"}
+    ],
     username: localStorage['username'],
   },
   simpleTodoFormExtension: function(x) { 
@@ -80,6 +86,7 @@ var ractive = new AuthenticatedRactive({
   },
   oninit: function() {
     this.ajaxSetup();
+    this.loadStandardPartials(this.get('stdPartials'));
   },
   select: function(definition) {
     ractive.set('current', definition);

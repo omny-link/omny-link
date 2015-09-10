@@ -30,10 +30,10 @@ var AuthenticatedRactive = Ractive.extend({
     var tenant = ractive.get('profile').tenant;
     if (tenant != undefined) {
       $('link[rel="icon"]').attr('href',$('link[rel="icon"]').attr('href').replace('omny',tenant));
-      //$('link[rel="stylesheet"]').attr('href',$('link[rel="stylesheet"]').attr('href').replace('omny',tenant));
       $('head').append('<link href="css/'+tenant+'-0.9.0.css" rel="stylesheet">');
       $('.navbar-brand').empty().append('<img src="/images/'+tenant+'-logo.png" alt="logo"/>');
       // ajax loader 
+      $( "#ajax-loader" ).remove();
       $('body').append('<div id="ajax-loader"><img class="ajax-loader" src="images/'+tenant+'-ajax-loader.gif" alt="Loading..."/></div>');
       $( document ).ajaxStart(function() {
         $( "#ajax-loader" ).show();
@@ -41,17 +41,6 @@ var AuthenticatedRactive = Ractive.extend({
       $( document ).ajaxStop(function() {
         $( "#ajax-loader" ).hide();
       });
-      // powered by 
-      if (ractive.get('tenant.id')!='omny' && ractive.get('tenant.showPoweredBy')!=false) {
-        $('body').append('<div class="powered-by"><h1><span class="powered-by-text">powered by</span><img src="images/omny-greyscale-inline-logo.png" alt="powered by Omny Link"/></h1></div><p class="beta bg-warning pull-right">Beta!</p>');
-      }
-      if (ractive.get('tenant.omny-bar')!=undefined) {
-        // 'Omny Bar' 
-        $('body').append('<div class="omny-bar"><ul></ul></div>');
-        $.each(ractive.get('tenant.omny-bar'), function(i,d) {
-          $('.omny-bar ul').append('<li><a href="'+d.url+'"><span class="'+d.classes+'" title="'+d.title+'"></span></a></li>');
-        });
-      }
       ractive.initContentEditable();// required here for the tenant switcher
       // tenant partial templates
       $.each(ractive.get('tenant').partials, function(i,d) {
@@ -76,17 +65,21 @@ var AuthenticatedRactive = Ractive.extend({
       ractive.set('profile',profile);
       $('.profile-img').empty().append('<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34"/>');
       if (ractive.hasRole('super_admin')) $('.super-admin').show();
-      ractive.loadTenantConfig(ractive.get('profile.tenant'));
+      $auth.loadTenantConfig(ractive.get('profile.tenant'));
     })
     .error(function(){
       console.warn('Failed to get profile, will rely on Omny default');
       ractive.set('profile',{tenant:'omny'});
-      ractive.loadTenantConfig(ractive.get('tenant.id'));
+      $auth.loadTenantConfig(ractive.get('tenant.id'));
     });
     else this.showError('You are not logged in, some functionality will be unavailable.');
   },
   handleError: function(jqXHR, textStatus, errorThrown) {
-    switch (jqXHR.status) { 
+    switch (jqXHR.status) {
+    case 400:
+      var msg = jqXHR.responseJSON == null ? textStatus+': '+errorThrown : errorThrown+': '+jqXHR.responseJSON.message;
+      ractive.showError(msg);
+      break; 
     case 401:
     case 403: 
     case 405: /* Could also be a bug but in production we'll assume a timeout */ 
@@ -101,6 +94,7 @@ var AuthenticatedRactive = Ractive.extend({
     default: 
       var msg = "Bother! Something has gone wrong (code "+jqXHR.status+"): "+textStatus+':'+errorThrown;
       console.error('msg:'+msg);
+      $( "#ajax-loader" ).hide();
       ractive.showError(msg);
     }
   },
@@ -186,6 +180,7 @@ var AuthenticatedRactive = Ractive.extend({
     });
   },
   loadStandardPartials: function(stdPartials) {
+    console.info('loadStandardPartials');
     $.each(stdPartials, function(i,d) {
       console.log('loading...: '+d.name)
       $.get(d.url, function(response){
@@ -195,19 +190,8 @@ var AuthenticatedRactive = Ractive.extend({
       });
     });
   },
-  loadTenantConfig: function(tenant) {
-    console.log('loadTenantConfig:'+tenant);
-    $.getJSON(ractive.getServer()+'/tenants/'+tenant+'.json', function(response) {
-      console.log('... response: '+JSON.stringify(response));
-      ractive.set('saveObserver', false);
-      ractive.set('tenant', response);
-      ractive.applyBranding();
-      ractive.set('saveObserver', true);
-      if (ractive.tenantCallbacks!=undefined) ractive.tenantCallbacks.fire();
-    });
-  },
   login: function() {
-    console.log('login');
+    console.info('login');
     if (!document.forms['loginForm'].checkValidity()) {
       // TODO message
       return false;
