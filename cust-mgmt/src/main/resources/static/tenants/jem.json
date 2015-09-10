@@ -1,7 +1,7 @@
 { 
   "id": "jem", 
   "show": { "account":false },
-  "omny-bar": [
+  "omnyBar": [
     { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },    
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }
   ],

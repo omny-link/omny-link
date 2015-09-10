@@ -90,7 +90,13 @@ var ractive = new AuthenticatedRactive({
     matchFilter: function(obj) {
       if (ractive.get('filter')==undefined) return true;
       else return ractive.get('filter').value.toLowerCase()==obj[ractive.get('filter').field].toLowerCase();
-    }
+    },
+    stdPartials: [
+      { "name": "poweredBy", "url": "/partials/powered-by.html"},
+      { "name": "profileArea", "url": "/partials/profile-area.html"},
+      { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "titleArea", "url": "/partials/title-area.html"}
+    ],
   },
   add: function () {
     console.log('add...');
@@ -241,7 +247,8 @@ var ractive = new AuthenticatedRactive({
   },
   oninit: function() {
     console.log('oninit');
-    //this.ajaxSetup();
+    this.ajaxSetup();
+    this.loadStandardPartials(this.get('stdPartials'));
   },
   save: function () {
     console.log('save contact: '+ractive.get('current').lastName+'...');
