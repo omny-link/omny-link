@@ -327,10 +327,13 @@ form#upload {
 	padding-right: 10px;
   text-align: right;
   vertical-align: top;
-  /*width: 200px;*/
+  width: 35%;
+}
+.form .textarea-label {
+  width: 17%; 
 }
 .form input {
-	/*width: 60%;*/
+	width: 60%;
 }
 .form input.create-form {
   padding-bottom: 2px;	
@@ -340,6 +343,15 @@ form#upload {
 }
 .form input.edit-field { 
   border-width: 1px;
+}
+.form .tagit {
+  width: 60%;
+  float: right;
+  left: -20px;
+  position: relative;
+}
+.form textarea {
+  width: 80%;	
 }
 .powered-by { 
   float: left;

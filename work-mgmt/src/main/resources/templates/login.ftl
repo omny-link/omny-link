@@ -15,7 +15,6 @@
     }
     section#main {
       margin: auto;
-      padding-top: 10%;
     }
     section#login {
       padding-top: 0;
@@ -35,6 +34,17 @@
     }
     .btn { 
       height: 40px;
+    }
+    
+    @media (max-width: 480px) {
+      section#main {
+        padding-top: 40%;
+      }
+    }
+    @media (min-width: 481px) {
+      section#main {
+        padding-top: 10%;
+      }
     }
   </style>
 <head>
