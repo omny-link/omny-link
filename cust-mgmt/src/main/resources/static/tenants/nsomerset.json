@@ -1,7 +1,7 @@
 { 
   "id": "nsomerset", 
   "show": { "account":true },
-  "omny-bar": [
+  "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
     { "url": "index.html", "classes": "glyphicon omny-icon-address-book", "title": "Customer Management" },
     { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },
