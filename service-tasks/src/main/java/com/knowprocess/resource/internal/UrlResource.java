@@ -95,6 +95,7 @@ public class UrlResource implements Resource {
         Scanner scanner = null; 
         try {
             // Create connection
+            LOGGER.debug("  " + method + ": " + sUrl);
             url = getUrl(sUrl);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(method);
@@ -154,6 +155,14 @@ public class UrlResource implements Resource {
             }
             is = connection.getInputStream();
         } catch (IOException e) {
+            try {
+                scanner = new Scanner(connection.getErrorStream());
+                String error = scanner.useDelimiter("\\A").next();
+                String msg = "  error stream contains: " + error;
+                LOGGER.error(msg);
+            } finally {
+                scanner.close();
+            }
             throw e;
         } catch (Exception e) {
             LOGGER.error(e.getClass().getName() + ": " + e.getMessage(), e);
