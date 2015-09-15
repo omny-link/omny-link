@@ -76,37 +76,46 @@
        
         <ul class="form edit-form">
           <li class="create-field">
-            <label class="required col-md-3">Username:</label><input id="curUsername" on-blur="save()" required value="{{current.id}}">
+            <label class="required col-md-3">Username:</label>
+            <input class="form-control" id="curUsername" on-blur="save()" required value="{{current.id}}">
           </li>
           <li>
-            <label class="required col-md-3">First Name:</label><input class="no-update-field" id="curFirstName" on-blur="save()" required value="{{current.firstName}}">
-            <span><i>No update allowed</i></span>
+            <label class="required col-md-3">First Name:</label>
+            <input class="no-update-field form-control" id="curFirstName" on-blur="save()" required value="{{current.firstName}}">
+            <div><i>No update allowed</i></div>
           </li>
           <li>
-            <label class="required col-md-3">Last Name:</label><input class="no-update-field" id="curLastName" on-blur="save()" required value="{{current.lastName}}">
-            <span><i>No update allowed</i></span>
+            <label class="required col-md-3">Last Name:</label>
+            <input class="no-update-field form-control" id="curLastName" on-blur="save()" required value="{{current.lastName}}">
+            <div><i>No update allowed</i></div>
           </li>
           <li>
-            <label class="required col-md-3">Email:</label><input class="no-update-field" id="curEmail" on-blur="save()" required type="email" value="{{current.email}}">
-            <span><i>No update allowed</i></span>
+            <label class="required col-md-3">Email:</label>
+            <input class="no-update-field form-control" id="curEmail" on-blur="save()" required type="email" value="{{current.email}}">
+            <div><i>No update allowed</i></div>
           </li>
           <li>
-            <label class="required col-md-3">Mobile Phone:</label><input class="no-update-field" id="curPhone" pattern="\+?[0-9, ]{8,13}" required type="tel" value="{{current.phone}}">
-            <span><i>No update allowed</i></span>
+            <label class="required col-md-3">Mobile Phone:</label>
+            <input class="no-update-field form-control" id="curPhone" pattern="\+?[0-9, ]{8,13}" required type="tel" value="{{current.phone}}">
+            <div><i>No update allowed</i></div>
           </li>
           <li>
-            <label class="required col-md-3">Preferred Contact:</label><input class="no-update-field typeahead" id="curCommsPreference" required value="{{current.commsPreference}}">
-            <span><i>No update allowed</i></span>
+            <label class="required col-md-3">Preferred Contact:</label>
+            <input class="no-update-field typeahead form-control" id="curCommsPreference" required value="{{current.commsPreference}}">
+            <div><i>No update allowed</i></div>
           </li>
           <li>
-            <label class="required col-md-3">Tenant:</label><input class="no-update-field" id="curTenant" required type="text" value="{{current.tenant}}">
-            <span><i>No update allowed</i></span>
+            <label class="required col-md-3">Tenant:</label>
+            <input class="no-update-field form-control" id="curTenant" required type="text" value="{{current.tenant}}">
+            <div><i>No update allowed</i></div>
           </li>
           <li class="create-field">
-            <label class="required col-md-3">Password:</label><input id="curPassword" on-blur="save()" required value="{{current.password}}">
+            <label class="required col-md-3">Password:</label>
+            <input class="form-control" id="curPassword" on-blur="save()" required value="{{current.password}}">
           </li>
           <li class="create-field">
-            <label class="required col-md-3">Confirm Password:</label><input id="curPassword2" on-blur="save()" required value="{{current.confirmPassword}}">
+            <label class="required col-md-3">Confirm Password:</label>
+            <input class="form-control" id="curPassword2" on-blur="save()" required value="{{current.confirmPassword}}">
           </li>
           <li>
             <label class="col-md-3">Groups:</label>

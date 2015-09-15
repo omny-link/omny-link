@@ -222,6 +222,9 @@ tfoot th {
 }
 .field-text { 
 }
+.form-control {
+  border-radius: 0;
+}
 .glyphicon { 
 	font-size: 20px;
   border: solid 1px;
@@ -340,20 +343,44 @@ form#upload {
 .form label {
 	padding-right: 10px;
   text-align: right;
-  vertical-align: top;
   width: 35%;
 }
-.form .textarea-label {
-  width: 17%; 
+.form label.textarea {
+  vertical-align: top;
+  width: 17%;
+}
+.form label.checkbox,
+.form label.radio {
+	width:10%;
 }
 .form input {
 	width: 60%;
 }
-.form input.create-form {
-  padding-bottom: 2px;	
+.form input[type='checkbox'],
+.form input[type='radio'] {
+  margin-top:10px;
+  width: 20px;
+}
+.form input.year {
+	width:80px;
+}
+h2.form.create-form {
+	color:white;
+	padding-bottom: 8px;
 }
 .form input.create-field { 
   border-width: 1px;
+  margin: 5px;
+}
+.form input#curTitle {
+	border-radius: 0;
+  line-height: normal;
+  width: 70px;
+}
+.form input#curFirstName,
+.form input#curLastName {
+  line-height: normal;
+	width: 40%;
 }
 .form input.edit-field { 
   border-width: 1px;

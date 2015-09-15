@@ -62,25 +62,25 @@
           <form action="/msg/{{tenant.id}}/" class="well form" id="sendMessageForm" method="post">
               <fieldset>
                 <div class="form-group">
-                  <label class="col-md-3" for="messageName">Message Name</label>
-                  <input name="tenantId" id="tenantId" type="hidden" value="{{message.tenantId}}"/>
-                  <input name="messageName" id="messageName" placeholder="{{tenant.id}}.message" value="{{message.name}}"/>
+                  <label class="" for="messageName">Message Name</label>
+                  <input class="form-control" name="tenantId" id="tenantId" type="hidden" value="{{message.tenantId}}"/>
+                  <input class="form-control" name="messageName" id="messageName" placeholder="{{tenant.id}}.message" value="{{message.name}}"/>
                 </div>
                 <div class="form-group">
-                  <label class="col-md-3" for="messagePattern">Message Exchange Pattern</label>
-                  <label><input name="{{message.pattern}}" type="radio" checked value="inOut"> In-Out</label>
-                  <label><input name="{{message.pattern}}" type="radio" value="inOnly"> In-Only</label>
+                  <label class="" for="messagePattern">Message Exchange Pattern</label>
+                  <label class="radio"><input class="" name="{{message.pattern}}" type="radio" checked value="inOut"> In-Out</label>
+                  <label class="radio"><input class="" name="{{message.pattern}}" type="radio" value="inOnly"> In-Only</label>
                 </div>
                 <div class="form-group">
-                  <label class="col-md-3" for="bizKey">Business Identifier</label>
-                  <input name="bizKey" id="bizKey" placeholder="" value="{{message.bizKey}}"/>
+                  <label for="bizKey">Business Identifier</label>
+                  <input class="form-control" name="bizKey" id="bizKey" placeholder="" value="{{message.bizKey}}"/>
                 </div>
                 <div class="form-group">
-                  <label class="col-md-3" for="messageBody">Message</label>
-                  <textarea class="col-md-8" name="messageBody" id="messageBody" placeholder="Message payload (JSON)" value="{{message.body}}"></textarea>
+                  <label class="textarea" for="messageBody" style="width: 35%;">Message</label>
+                  <textarea class="form-control" name="messageBody" id="messageBody" placeholder="Message payload (JSON)" style="width:60%;display: inline-block;" value="{{message.body}}"></textarea>
                 </div>
                 <div class="form-group pull-right">
-                  <button class="btn" on-click="collapseSendMessage()" type="button">Cancel</button>
+                  <button class="btn btn-default" on-click="collapseSendMessage()" type="button">Cancel</button>
                   <button class="btn btn-primary" on-click="sendMessage()" type="button">Send message</button>
                 </div>
               </fieldset>
@@ -137,13 +137,13 @@ searchTerm!=undefined && (
           {{/}}
           <div class="col-md-6">
             <ul class="form edit-form">
-              <li><label class="col-md-5">Due:</label><input class="nodatepicker" id="curDueDate" on-blur="save()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm/yyyy" value="{{formatDate(current.dueDate)}}"></li>
+              <li><label class="col-md-5">Due:</label><input class="nodatepicker form-control" id="curDueDate" on-blur="save()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm/yyyy" value="{{formatDate(current.dueDate)}}"></li>
             </ul>
           </div>
           <div class="col-md-6">
             <ul class="form edit-form">
-              <li><label class="col-md-5">Started By:</label><input id="curInitiator" disabled readonly value="{{current.processVariables['initiator']=='anonymousUser' ? 'Web Site' : current.processVariables['initiator']}}"></li>
-              <li><label class="col-md-5">Created:</label><input id="curCreated" disabled readonly value="{{formatDate(current.createTime)}}"></li>
+              <li><label class="col-md-5">Started By:</label><input class="form-control" id="curInitiator" disabled readonly value="{{current.processVariables['initiator']=='anonymousUser' ? 'Web Site' : current.processVariables['initiator']}}"></li>
+              <li><label class="col-md-5">Created:</label><input class="form-control" id="curCreated" disabled readonly value="{{formatDate(current.createTime)}}"></li>
             </ul>
           </div>
         
