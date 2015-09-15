@@ -263,6 +263,8 @@ public class Contact implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     private List<Document> documents;
 
+    private Date now = new Date();
+
     public List<Activity> getActivities() {
         if (activity == null) {
             activity = new ArrayList<Activity>();
@@ -308,33 +310,45 @@ public class Contact implements Serializable {
         lastUpdated = new Date();
     }
 
-    public long timeSinceLogin() {
+    @JsonProperty("timeSinceBusinessPlanDownload")
+    public long getTimeSinceBusinessPlanDownload() {
+        Activity download = getLastActivityOfType("businessPlanDownload");
+        return download == null ? -1 : now.getTime()
+                - download.getOccurred().getTime();
+    }
+
+    @JsonProperty("timeSinceLogin")
+    public long getTimeSinceLogin() {
         Activity lastLogin = getLastActivityOfType("login");
-        return lastLogin == null ? -1 : new Date().getTime()
+        return lastLogin == null ? -1 : now.getTime()
                 - lastLogin.getOccurred().getTime();
     }
 
-    public long timeSinceFirstLogin() {
+    @JsonProperty("timeSinceFirstLogin")
+    public long getTimeSinceFirstLogin() {
         Activity firstLogin = getFirstActivityOfType("login");
-        return firstLogin == null ? -1 : new Date().getTime()
+        return firstLogin == null ? -1 : now.getTime()
                 - firstLogin.getOccurred().getTime();
     }
 
-    public long timeSinceRegistered() {
+    @JsonProperty("timeSinceRegistered")
+    public long getTimeSinceRegistered() {
         Activity registered = getFirstActivityOfType("register");
-        return registered == null ? -1 : new Date().getTime()
+        return registered == null ? -1 : now.getTime()
                 - registered.getOccurred().getTime();
     }
 
-    public long timeSinceEmail() {
-        Activity lastEmail = getFirstActivityOfType("email");
-        return lastEmail == null ? -1 : new Date().getTime()
+    @JsonProperty("timeSinceEmail")
+    public long getTimeSinceEmail() {
+        Activity lastEmail = getLastActivityOfType("email");
+        return lastEmail == null ? -1 : now.getTime()
                 - lastEmail.getOccurred().getTime();
     }
 
-    public long timeSinceValuation() {
-        Activity firstLogin = getFirstActivityOfType("valuation");
-        return firstLogin == null ? -1 : new Date().getTime()
+    @JsonProperty("timeSinceValuation")
+    public long getTimeSinceValuation() {
+        Activity firstLogin = getLastActivityOfType("valuation");
+        return firstLogin == null ? -1 : now.getTime()
                 - firstLogin.getOccurred().getTime();
     }
 
@@ -348,6 +362,7 @@ public class Contact implements Serializable {
         return false;
     }
 
+    @JsonProperty
     public boolean notYetSentEmail(String emailName) {
         return !haveSentEmail(emailName);
     }
