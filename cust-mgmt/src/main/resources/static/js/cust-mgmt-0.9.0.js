@@ -284,7 +284,7 @@ var ractive = new AuthenticatedRactive({
           if (location != undefined) ractive.set('current._links.self.href',location);
           switch (jqXHR.status) {
           case 201: 
-            ractive.set('currentIdx',ractive.get('contacts').push(ractive.get('current')));
+            ractive.set('currentIdx',ractive.get('contacts').push(ractive.get('current'))-1);
             break;
           case 204: 
             ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
