@@ -318,6 +318,9 @@ h2 a.glyphicon:hover {
 #customActionMenu.omny-dropdown {
 	left: -100px;
 }
+#filterMenu.omny-dropdown {
+  width: 200px;
+}
 .form { 
 	display: block;
 	list-style: none;
