@@ -27,7 +27,7 @@ var ractive = new AuthenticatedRactive({
     },
     formatDateTime: function(timeString) {
 //    console.log('formatDate: '+timeString);
-      if (timeString==undefined) return '';
+      if (timeString==undefined) return 'n/a';
       return new Date(timeString).toLocaleString(navigator.languages);
     },
     hasRole: function(role) {
