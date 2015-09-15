@@ -154,12 +154,12 @@
               <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
               {{#if tenant.customerActions!=undefined && tenant.customerActions.length>0 }}
                 <span class="clickable dropdown" aria-hidden="true" title="Start Process">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
                     <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
                   </a>
-                  <ul class="omny-dropdown dropdown-menu" role="menu">
+                  <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
                     {{#each tenant.customerActions }}
-                      <li onclick="ractive.startCustomerAction('{{key}}', '{{label}}', ractive.get('current'))">{{label}}</li>
+                      <li onclick="ractive.startCustomAction('{{key}}', '{{label}}', ractive.get('current'){{#form}}, '{{form}}'{{/form}})">{{label}}</li>
                     {{/each}}
                   </ul>
                 </span>
@@ -393,7 +393,8 @@
       </div>
     <!-- {{/column}} -->
     {{>poweredBy}}
-    {{>sidebar}}
+    {{>sidebar { active: 'index.html' }}}
+    {{>customActionModal}}
   </script>
 
   <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>

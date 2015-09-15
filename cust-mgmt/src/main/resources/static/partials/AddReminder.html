@@ -1,0 +1,35 @@
+<div class="form-group">
+  <label for="when">When</label>
+  <input type="date" class="form-control" id="when" placeholder="Pick when to be reminded" required value="{{instanceToStart.processVariables['when']}}">
+  <p class="help-block field-hint field-error">Please pick when to be reminded.</p>
+</div>
+<div class="form-group">
+  <label for="what">What</label>
+  <textarea class="form-control" id="what" placeholder="Type yourself a reminder of what to do here if you like." value="{{instanceToStart.processVariables['what']}}"></textarea>
+  <p class="help-block field-hint field-error"></p>
+</div>
+<div class="form-group">
+  <label for="who">Who</label>
+  <input class="form-control typeahead" id="who" placeholder="Start typing to filter options" value="{{instanceToStart.processVariables['who']}}"/>
+  <p class="help-block field-hint field-error"></p>
+</div>
+<script>
+  $(document).ready(function() {
+    ractive.initAutoComplete();
+    validateCustomActionForm();
+    $('#submitCustomActionForm').click(function() {
+      console.log('Submit custom action form');
+      validateCustomActionForm();
+    });
+    $('#customActionForm input,#customActionForm select,#customActionForm textarea').blur(function() {
+      console.log('blur custom action form field');
+      validateCustomActionForm();
+    });
+  });
+
+  function validateCustomActionForm() {
+    console.info('validateCustomActionForm');
+    $('#customActionForm input:invalid ~ .field-hint,#customActionForm select:invalid ~ .field-hint,#customActionForm textarea:invalid ~ .field-hint').css('visibility','visible').css('color','#f33').css('line-height','1.5em');
+    $('#customActionForm input:valid ~ .field-hint,#customActionForm select:valid ~ .field-hint,#customActionForm textarea:valid ~ .field-hint').css('visibility','hidden').css('color','#f33').css('line-height','0em');
+  }
+</script>
