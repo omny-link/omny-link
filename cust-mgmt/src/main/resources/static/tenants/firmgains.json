@@ -40,7 +40,9 @@
     { "label": "Placed with Partner", "key": "placedWithPartner"}
   ],
   "customerActions": [
-    { "label": "Run email follow up", "key": "FollowUpOneContact" }
+    { "label": "Run email follow up", "key": "FollowUpOneContact" },
+    { "label": "Send email", "key": "SendContactEmail", "form": "/partials/firmgains/PickMail.html" },
+    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" }
   ],
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
@@ -51,8 +53,10 @@
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }    
   ],
   "partials": [
-    { "name": "firmgainsContactExtension", "url": "/partials/firmgainsContactExtension.html"},
-    { "name": "firmgainsAccountExtension", "url": "/partials/firmgainsAccountExtension.html"}
+    { "name": "firmgainsContactExtension", "url": "/partials/firmgains/ContactExtension.html"},
+    { "name": "firmgainsAccountExtension", "url": "/partials/firmgains/AccountExtension.html"},
+    { "name": "firmgainsSendContactEmail", "url": "/partials/firmgains/PickMail.html"},
+    { "name": "firmgainsAddReminder", "url": "/partials/AddReminder.html"}
   ],
   "typeaheadControls": [
     { "selector": "#curMedium", "url": "/data/media.json"},
@@ -61,6 +65,7 @@
     { "selector": "#curCountry", "url": "/data/countries.json"},
     { "selector": "#curEnquiryType", "url": "/data/firmgains/enquiry-types.json"},
     { "selector": "#curOwner", "url": "/data/firmgains/owners.json"},
+    { "selector": "#who", "url": "/data/firmgains/owners.json"},
     { "selector": "#curPartnersContacted", "url": "/data/firmgains/partners.json"},
     { "selector": "#curRegion", "url": "/data/firmgains/regions.json"},
     { "selector": "#curSector", "url": "/data/firmgains/sectors.json"},
