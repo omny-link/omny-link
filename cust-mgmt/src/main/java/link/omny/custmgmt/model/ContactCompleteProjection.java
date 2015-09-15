@@ -79,4 +79,17 @@ public interface ContactCompleteProjection {
     List<Document> getDocuments();
 
     List<Document> getActivities();
+
+    long getTimeSinceBusinessPlanDownload();
+
+    long getTimeSinceLogin();
+
+    long getTimeSinceFirstLogin();
+
+    long getTimeSinceRegistered();
+
+    long getTimeSinceEmail();
+
+    long getTimeSinceValuation();
+
 }

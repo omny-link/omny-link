@@ -30,7 +30,7 @@ public class ContactActivityTest {
 
     @Test
     public void testTimeSinceLogin() {
-        assertTrue(contact.timeSinceLogin() > ONE_WEEK);
+        assertTrue(contact.getTimeSinceLogin() > ONE_WEEK);
     }
 
     @Test
@@ -38,7 +38,7 @@ public class ContactActivityTest {
         contact.getActivities().add(
                 new Activity("login", new GregorianCalendar(2026, 1, 1, 13, 0,
                         0).getTime()));
-        assertTrue(contact.timeSinceLogin() > ONE_WEEK);
+        assertTrue(contact.getTimeSinceLogin() > ONE_WEEK);
     }
 
     @Test

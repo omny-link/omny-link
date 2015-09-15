@@ -1,5 +1,7 @@
 package link.omny.custmgmt.web;
 
+import io.onedecision.engine.decisions.web.DecisionController;
+
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -9,7 +11,6 @@ import link.omny.custmgmt.model.CustomContactField;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
-import link.omny.custmgmt.web.fg.FollowUpDecision;
 import link.omny.custmgmt.web.fg.ValuationDecision;
 import lombok.Data;
 
@@ -29,8 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.knowprocess.mail.MailData;
-
 /**
  * Temporary stand-in for DMN based implementation
  * 
@@ -38,7 +37,7 @@ import com.knowprocess.mail.MailData;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/decisions")
-public class DecisionsController {
+public class DecisionsController extends DecisionController {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(DecisionsController.class);
@@ -57,9 +56,6 @@ public class DecisionsController {
 
     @Autowired
     private ValuationDecision valuationDecision;
-
-    @Autowired
-    private FollowUpDecision followUpDecision;
 
     /**
      * @return contact updated with valuation.
@@ -107,30 +103,6 @@ public class DecisionsController {
         return wrap(contact);
     }
 
-    /**
-     * @return details of mail to send.
-     */
-    @RequestMapping(value = "/email", method = RequestMethod.POST, produces = { "application/json" })
-    public @ResponseBody String runEmailDecision(
-            @PathVariable("tenantId") String tenantId,
-            @RequestBody Contact contact) {
-
-        LOGGER.info(String.format("Running email follow-up for tenant %1$s",
-                tenantId));
-        // May be redundant but better safe than sorry
-        contact.setTenantId(tenantId);
-
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(String.format("Received contact: %1$s",
-                    contact.getFullName()));
-        }
-
-        MailData mailData = followUpDecision.execute(contact);
-        
-        LOGGER.debug(String.format("Mail data: %1$s", mailData));
-        return mailData == null ? null : mailData.toJson();
-    }
-
     private ContactValuation wrap(Contact contact) {
         ContactValuation resource = new ContactValuation();
         BeanUtils.copyProperties(contact, resource);
@@ -150,7 +122,6 @@ public class DecisionsController {
         }
         return resource;
     }
-    
     
     private Link linkTo(Class<? extends CrudRepository<?, ?>> clazz, Long id) {
         return new Link(clazz.getAnnotation(RepositoryRestResource.class)
