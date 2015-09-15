@@ -57,6 +57,7 @@ textarea.field-error:invalid {
   border: solid 3px #f33;
 }
 
+/* TODO not used ? */
 input:focus:invalid,
 select:focus:invalid,
 textarea:focus:invalid {
@@ -271,7 +272,11 @@ h2 a.glyphicon:hover {
 	list-style: none;
   margin-left: -36px;
 }
-.omny-bar li span {
+.omny-bar li span.glyphicon.active {
+  color: #fcf8e3;
+  background-color: #ff6c06;
+}
+.omny-bar li span:not(.active) {
   border: 0px;
   border-bottom: solid 1px #ff6c06;
   border-bottom-right-radius: 0;
@@ -306,6 +311,12 @@ h2 a.glyphicon:hover {
   background-color: #ff6c06;
 	height: 1px;
   margin: 0 10px 10px 10px;
+}
+#customActionBtn {
+	top: 1px;
+}
+#customActionMenu.omny-dropdown {
+	left: -100px;
 }
 .form { 
 	display: block;
@@ -352,6 +363,9 @@ form#upload {
 }
 .form textarea {
   width: 80%;	
+}
+a.glyphicon-remove {
+  padding: 4px 6px;
 }
 .powered-by { 
   float: left;

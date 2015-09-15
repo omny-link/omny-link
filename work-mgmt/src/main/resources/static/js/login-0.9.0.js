@@ -87,7 +87,11 @@ var AuthenticatedRactive = Ractive.extend({
       window.location.href='/login';
       break; 
     case 404: 
-      var msg = "That's odd, we can't find the page '"+jqXHR.responseJSON.path+"'. Please let us know about this message";
+      var path ='';
+      if (jqXHR.responseJSON != undefined) {
+        path = " '"+jqXHR.responseJSON.path+"'";
+      }
+      var msg = "That's odd, we can't find the page"+path+". Please let us know about this message";
       console.error('msg:'+msg);
       ractive.showError(msg);
       break;

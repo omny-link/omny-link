@@ -1,0 +1,19 @@
+<div class="modal fade" id="customActionModal" tabindex="-1" role="dialog" aria-labelledby="customActionModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="customActionModalLabel">{{instanceToStart.businessKey}}</h4>
+      </div>
+      <div class="modal-body">
+        <form id="customActionForm">
+          {{>(tenant.id+instanceToStart.processDefinitionId)}}
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="cancelCustomActionForm" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button id="submitCustomActionForm" type="button" class="btn btn-primary" onclick="if (document.getElementById('customActionForm').checkValidity()) ractive.submitCustomAction('{{instanceToStart.processDefinitionId}}', '{{instanceToStart.label}}', ractive.get('current'))">{{instanceToStart.label}}</button>
+      </div>
+    </div>
+  </div>
+</div>
