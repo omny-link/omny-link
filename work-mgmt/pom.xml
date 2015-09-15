@@ -122,7 +122,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <!-- END testing dependencies -->
     <!-- START BDD testing dependencies 
@@ -166,6 +166,20 @@
       <groupId>org.activiti</groupId>
       <artifactId>activiti-spring-boot-starter-jpa</artifactId>
       <version>${activiti.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.activiti</groupId>
+      <artifactId>activiti-bdd</artifactId>
+      <version>${activiti.version}</version>
+      <scope>provided</scope>
+      <!-- Because this depends on toxos process assertions we need to 
+           exclude the older activiti-spring it depends on -->
+      <exclusions>
+      	<exclusion>
+          <artifactId>activiti-spring</artifactId>
+      	  <groupId>org.activiti</groupId>
+      	</exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.knowprocess.activiti</groupId>
