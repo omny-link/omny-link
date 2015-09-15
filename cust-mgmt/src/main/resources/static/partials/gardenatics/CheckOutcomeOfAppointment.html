@@ -4,11 +4,11 @@
 <div class="col-md-6">
   <ul class="form edit-form">
     <li><label class="col-md-5">Phone:</label>
-      <input id="curPhone" disabled readonly value="{{current.processVariables.contact.phone1}}"></li>
+      <input class="form-control" id="curPhone" disabled readonly value="{{current.processVariables.contact.phone1}}"></li>
     <li><label class="col-md-5">Email:</label>
-      <input id="curEmail" disabled readonly value="{{current.processVariables.contact.email}}"></li>
+      <input class="form-control" id="curEmail" disabled readonly value="{{current.processVariables.contact.email}}"></li>
     <li><label class="col-md-5">Budget:</label>
-      <input class="autoNumeric" data-a-sign="£ " id="curBudget" on-blur="saveContact()" value="{{current.processVariables.contact.customFields['budget']}}"></li>
+      <input class="autoNumeric form-control" data-a-sign="£ " id="curBudget" on-blur="saveContact()" value="{{current.processVariables.contact.customFields['budget']}}"></li>
     <li><label class="col-md-5">Discussed budget?:</label>
       <input id="curDiscussedBudget" on-blur="saveContact()" type="checkbox" checked="{{current.processVariables.contact.customFields['discussedBudget']}}"></li>
   </ul>
@@ -16,15 +16,15 @@
 <div class="col-md-6">
   <ul class="form edit-form">
     <li><label class="col-md-5 required">Address:</label>
-      <input id="curAddress1" on-blur="saveContact()" required value="{{current.processVariables.contact.address1}}"></li>
+      <input class="form-control" id="curAddress1" on-blur="saveContact()" required value="{{current.processVariables.contact.address1}}"></li>
     <li><label class="col-md-5"></label>
-      <input id="curAddress2" on-blur="saveContact()" value="{{current.processVariables.contact.address2}}"></li>
+      <input class="form-control" id="curAddress2" on-blur="saveContact()" value="{{current.processVariables.contact.address2}}"></li>
     <li><label class="col-md-5">Town:</label>
-      <input id="curTown" on-blur="saveContact()" value="{{current.processVariables.contact.town}}"></li>
+      <input class="form-control" id="curTown" on-blur="saveContact()" value="{{current.processVariables.contact.town}}"></li>
     <li><label class="col-md-5">City or County:</label>
-      <input id="curCountyOrCity" on-blur="saveContact()" value="{{current.processVariables.contact.countyOrCity}}"></li>
+      <input class="form-control" id="curCountyOrCity" on-blur="saveContact()" value="{{current.processVariables.contact.countyOrCity}}"></li>
     <li><label class="col-md-5 required">PostCode:</label>
-      <input id="curPostCode" on-blur="saveContact()" required value="{{current.processVariables.contact.postCode}}"></li>
+      <input class="form-control" id="curPostCode" on-blur="saveContact()" required value="{{current.processVariables.contact.postCode}}"></li>
   </ul>
 </div>
 
@@ -40,9 +40,9 @@
 <div class="col-md-6">
   <ul class="form edit-form">
     <li><label class="col-md-5">Appointment Date:</label>
-      <input class="datepickerdis" id="curAppointmentDate" on-blur="saveContact()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm//yyyy"  value="{{current.processVariables.contact.customFields['appointmentDate']}}"></li>
+      <input class="datepickerdis form-control" id="curAppointmentDate" on-blur="saveContact()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm//yyyy"  value="{{current.processVariables.contact.customFields['appointmentDate']}}"></li>
     <li><label class="col-md-5">Appointment Time:</label>
-      <input id="curAppointmentTime" on-blur="saveContact()" pattern="[0-9]{2}:[0-9]{2}" placeholder="hh:mm" value="{{current.processVariables.contact.customFields['appointmentTime']}}"></li>
+      <input class="form-control" id="curAppointmentTime" on-blur="saveContact()" pattern="[0-9]{2}:[0-9]{2}" placeholder="hh:mm" value="{{current.processVariables.contact.customFields['appointmentTime']}}"></li>
   </ul>
 </div>
 
