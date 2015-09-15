@@ -1,0 +1,15 @@
+<umldiagrams>
+	<UMLClassDiagram name="Class Diagram" backgroundNodes="#ffffbb">
+		<UMLClass id="0.05698983697220683:UMLClass_0" x="105" y="103"
+			width="169" height="65" backgroundColor="#ffffbb" lineColor="#294253"
+			lineWidth="1" tagValues="" abstract="false">
+			<superitem id="stereotypes" visibleSubComponents="true" />
+			<item id="name" value="Email" />
+			<superitem id="attributes" visibleSubComponents="true">
+				<item value="+subjectLine:text" />
+				<item value="+templateName:text" />
+			</superitem>
+			<superitem id="operations" visibleSubComponents="true" />
+		</UMLClass>
+	</UMLClassDiagram>
+</umldiagrams>
