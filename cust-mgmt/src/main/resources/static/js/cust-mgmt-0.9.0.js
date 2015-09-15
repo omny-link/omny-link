@@ -58,6 +58,7 @@ var ractive = new AuthenticatedRactive({
       return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
     },
     formatDate: function(timeString) {
+      if (timeString==undefined) return 'n/a';
       return new Date(timeString).toLocaleDateString(navigator.languages);
     },
     formatJson: function(json) { 
@@ -281,8 +282,14 @@ var ractive = new AuthenticatedRactive({
           var location = jqXHR.getResponseHeader('Location');
           ractive.set('saveObserver',false);
           if (location != undefined) ractive.set('current._links.self.href',location);
-          if (jqXHR.status == 201) ractive.get('contacts').push(ractive.get('current'));
-          if (jqXHR.status == 204) ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
+          switch (jqXHR.status) {
+          case 201: 
+            ractive.set('currentIdx',ractive.get('contacts').push(ractive.get('current')));
+            break;
+          case 204: 
+            ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
+            break;
+          }
           ractive.showMessage('Contact saved');
           ractive.set('saveObserver',true);
         }
