@@ -2,34 +2,23 @@ package link.omny.custmgmt;
 
 import static com.google.common.base.Predicates.or;
 import static springfox.documentation.builders.PathSelectors.regex;
-
-import javax.sql.DataSource;
-
+import io.onedecision.engine.decisions.api.config.OneDecisionConfig;
 import link.omny.custmgmt.internal.JsonPopulatorFactoryBean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.subethamail.wiser.Wiser;
@@ -40,16 +29,16 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.base.Predicate;
-import com.knowprocess.bpm.api.ActivitiUserDetailsService;
-import com.knowprocess.bpm.impl.CorsFilter;
-import com.knowprocess.bpm.impl.JsonManager;
+import com.knowprocess.bpm.BpmConfiguration;
+import com.knowprocess.bpm.api.ActivitiApplicationSecurity;
+
 
 @Configuration
-@ComponentScan(basePackages = { "link.omny.custmgmt",
-		"io.onedecision.engine.decisions", "com.knowprocess.bpm",
-		"io.onedecision.engine.domain" })
+@Import({ OneDecisionConfig.class, BpmConfiguration.class })
+@ComponentScan(basePackages = { "link.omny.custmgmt", 
+        "io.onedecision.engine.decisions.api.config" })
 @EnableAutoConfiguration
-@EntityScan({ "link.omny.custmgmt.model", "com.knowprocess.bpm",
+@EntityScan({ "link.omny.custmgmt.model",
 		"io.onedecision.engine.decisions", "io.onedecision.engine.domain" })
 @EnableJpaRepositories({ "link.omny.custmgmt.repositories",
 		"io.onedecision.engine.domain.repositories",
@@ -90,18 +79,7 @@ public class Application extends WebMvcConfigurerAdapter {
         return or(regex("/.*/accounts.*"), 
                 regex("/.*/activities.*"),
                 regex("/.*/contacts.*"), 
-                regex("/.*/notes.*"),
-                // Work Mgmt 
-                regex("/.*/deployments.*"), regex("/msg.*"),
-                regex("/.*/process-definitions.*"),
-                regex("/.*/process-instances.*"),
-                regex("/.*/task.*"),
-                regex("/.*/tasks.*"), regex("/users.*"));
-    }
-
-    @Bean
-    public JsonManager jsonManager() {
-        return new JsonManager();
+                regex("/.*/notes.*"));
     }
 
     @Bean
@@ -160,76 +138,11 @@ public class Application extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public ApplicationSecurity applicationSecurity() {
-        return new ApplicationSecurity();
+    public ActivitiApplicationSecurity applicationSecurity() {
+        return new ActivitiApplicationSecurity();
     }
 
-    @Bean
-    public ActivitiUserDetailsService activitiUserDetailsService() {
-        return new ActivitiUserDetailsService();
-    }
 
-    @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
-    protected static class ApplicationSecurity extends
-            WebSecurityConfigurerAdapter {
-
-        @Autowired
-        private DataSource dataSource;
-
-        @Autowired
-        private SecurityProperties security;
-
-        @Autowired
-        private ActivitiUserDetailsService activitiUserDetailsService;
-        
-        @Autowired
-        private CorsFilter corsFilter;
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests()
-                    .antMatchers("/css/**", "/data/**", "/fonts/**",
-                            "/images/**", "/js/**", "/mock/**", "/webjars/**")
-                    .permitAll()
-                    .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-                    .antMatchers("/*.html", "/process-instances/**",
-                            "/tasks/**", "/users/**")
-                    .hasRole("user")
-                    .antMatchers("/admin.html", "/deployments/**",
-                            "/process-definitions/**")
-                    .hasRole("admin")
-                    .anyRequest().authenticated()  
-                    .and().formLogin()
-                    .loginPage("/login").failureUrl("/login?error")
-                        .successHandler(getSuccessHandler()).permitAll()
-                    .and().csrf().disable().httpBasic();
-                    //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//             http.requestMatcher
-            // org.apache.catalina.filters.CorsFilter corsFilter = new
-            // org.apache.catalina.filters.CorsFilter();
-            // corsFilter.
-            http.addFilterBefore(corsFilter, BasicAuthenticationFilter.class);
-        }
-
-        private AuthenticationSuccessHandler getSuccessHandler() {
-            SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler(
-                    "/");
-            successHandler.setTargetUrlParameter("redirect");
-            return successHandler;
-        }
-
-        @Override
-        public void configure(AuthenticationManagerBuilder auth)
-                throws Exception {
-            auth.userDetailsService(activitiUserDetailsService);
-            // auth.jdbcAuthentication().dataSource(dataSource)
-            // .withDefaultSchema().withUser("user").password("password")
-            // .roles("USER").and().withUser("admin").password("password")
-            // .roles("USER", "ADMIN");
-            // auth.inMemoryAuthentication().withUser("user").password("user")
-            // .roles("USER");
-        }
-    }
 
     public static void main(String[] args) {
         // ConfigurableApplicationContext context =
