@@ -92,6 +92,15 @@ public class Contact implements Serializable {
     // @Column(nullable = false)
     private String email;
 
+    @JsonProperty
+    private boolean emailConfirmed;
+
+    /**
+     * A code to be quoted in a 'click to activate' email.
+     */
+    @JsonProperty
+    private String emailConfirmationCode;
+
     /**
      */
     @Pattern(regexp = "\\+?[0-9, ]{0,15}")
