@@ -258,11 +258,7 @@ entity,
         String startMarker = "«" + domain + ".";
 
         StringBuilder sb = new StringBuilder();
-        // Nashorn compatibility layer
-        String vsn = System.getProperty("java.version");
-        if (!vsn.startsWith("1.6") && !vsn.startsWith("1.7")) {
-            sb.append("load(\"nashorn:mozilla_compat.js\");");
-        }
+        addNashornCompatibility(sb);
         sb.append("importPackage(Packages." + srcPkg + ");\n");
         sb.append("importPackage(Packages." + trgtPkg + ");\n");
         sb.append("var o = new ").append(trgtType).append("();\n");
@@ -316,6 +312,14 @@ entity,
         return sb.toString();
     }
 
+    private void addNashornCompatibility(StringBuilder sb) {
+        // Nashorn compatibility layer
+        String vsn = System.getProperty("java.version");
+        if (!vsn.startsWith("1.6") && !vsn.startsWith("1.7")) {
+            sb.append("load(\"nashorn:mozilla_compat.js\");");
+        }
+    }
+
     private String toCamelCase(String s) {
         return String.valueOf(s.charAt(0)).toLowerCase() + s.substring(1);
     }
@@ -336,6 +340,7 @@ entity,
         String startMarker = "«" + domain + ".";
 
         StringBuilder sb = new StringBuilder();
+        addNashornCompatibility(sb);
         sb.append("importPackage(Packages." + srcPkg + ");\n");
         sb.append("importPackage(Packages." + trgtPkg + ");\n");
         sb.append("var o = new ").append(trgtType).append("();\n");

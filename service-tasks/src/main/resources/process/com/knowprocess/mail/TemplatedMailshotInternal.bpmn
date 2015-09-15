@@ -70,7 +70,8 @@
     <scriptTask completionQuantity="1" id="_8" isForCompensation="false" name="Script Task" scriptFormat="JavaScript" startQuantity="1">
       <incoming>_18</incoming>
       <outgoing>_19</outgoing>
-      <script><![CDATA[println('SENT AT:'+execution.getVariable('sendAt'));]]></script>
+      <script><![CDATA[var System = java.lang.System;
+System.out.println('SENT AT:'+execution.getVariable('sendAt'));]]></script>
     </scriptTask>
     <sequenceFlow id="_18" name="Yes" sourceRef="_2" targetRef="_8">
       <extensionElements>
@@ -129,7 +130,7 @@ Designed for reuse from line of business processes.</text>
       <bpmndi:BPMNShape bpmnElement="end" id="Yaoqiang-end">
         <dc:Bounds height="32.0" width="32.0" x="751.9999999999999" y="177.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="58.0" x="738.9999999999999" y="217.9130859375"/>
+          <dc:Bounds height="18.955078125" width="58.0" x="738.9999999999999" y="217.935546875"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
@@ -183,13 +184,13 @@ Designed for reuse from line of business processes.</text>
       <bpmndi:BPMNShape bpmnElement="_5" id="Yaoqiang-_5">
         <dc:Bounds height="32.0" width="32.0" x="590.0" y="371.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="130.0" x="541.0" y="411.9130859375"/>
+          <dc:Bounds height="18.955078125" width="130.0" x="541.0" y="411.935546875"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="start" id="Yaoqiang-start">
         <dc:Bounds height="32.0" width="32.0" x="62.33333333333333" y="177.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="115.0" x="20.83333333333333" y="217.9130859375"/>
+          <dc:Bounds height="18.955078125" width="115.0" x="20.83333333333333" y="217.935546875"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_19" id="Yaoqiang-_19">
@@ -201,11 +202,11 @@ Designed for reuse from line of business processes.</text>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_18" id="Yaoqiang-_18">
-        <di:waypoint x="415.40909090909093" y="213.59090909090907"/>
-        <di:waypoint x="415.40909090909093" y="320.77272727272725"/>
-        <di:waypoint x="415.40909090909093" y="370.22727272727275"/>
+        <di:waypoint x="415.0" y="213.18181818181813"/>
+        <di:waypoint x="415.0" y="321.0"/>
+        <di:waypoint x="415.0" y="370.22727272727275"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="32.955078125" width="98.0" x="346.40909090909093" y="259.4315518465909"/>
+          <dc:Bounds height="32.955078125" width="98.0" x="346.0" y="259.22700639204544"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_13" id="Yaoqiang-_13">
@@ -216,18 +217,18 @@ Designed for reuse from line of business processes.</text>
           <dc:Bounds height="18.955078125" width="6.0" x="614.0" y="288.4188260620856"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
-        <di:waypoint x="436.81818181818187" y="193.0"/>
-        <di:waypoint x="581.0454545454546" y="193.0"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="21.0" x="498.43181818181824" y="183.5224609375"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_7" id="Yaoqiang-_7">
         <di:waypoint x="378.0454545454546" y="193.0"/>
         <di:waypoint x="395.27272727272737" y="193.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.955078125" width="6.0" x="383.659090909091" y="183.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
+        <di:waypoint x="436.81818181818187" y="193.0"/>
+        <di:waypoint x="581.0454545454546" y="193.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="21.0" x="498.43181818181824" y="183.5224609375"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_6" id="Yaoqiang-_6">
