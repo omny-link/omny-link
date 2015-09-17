@@ -57,7 +57,7 @@ public class RestGet extends Fetcher implements JavaDelegate {
 
             if (responseVar == null) {
                 LOGGER.debug("No response variable requested");
-            } else if (is == null || is.available() == 0) {
+            } else if (is == null) {
                 LOGGER.warn(String
                         .format("GET response contains no body, variable '%1$s' will be set to null",
                                 responseVar.getExpressionText()));
