@@ -10,26 +10,29 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class Activity implements Serializable {
 
     private static final long serialVersionUID = -3132677793751164824L;
+
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(Activity.class);
 
     @Id
     @Column(name = "id")
@@ -47,7 +50,8 @@ public class Activity implements Serializable {
     private String content;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(style = "M-")
+    // Since this is SQL 92 it should be portable
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
     private Date occurred;
 
@@ -56,14 +60,17 @@ public class Activity implements Serializable {
     @JoinColumn(name = "contact_id")
     private Contact contact;
 
-    /**
-     */
     @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(style = "M-")
     @JsonProperty
     private Date lastUpdated;
 
+    public Activity() {
+        super();
+        setOccurred(new Date());
+    }
+
     public Activity(String type, Date occurred) {
+        super();
         setType(type);
         setOccurred(occurred);
     }
@@ -71,6 +78,15 @@ public class Activity implements Serializable {
     public Activity(String type, Date occurred, String content) {
         this(type, occurred);
         setContent(content);
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if (LOGGER.isWarnEnabled() && lastUpdated != null) {
+            LOGGER.warn(String.format(
+                    "Overwriting update date %1$s with 'now'.", lastUpdated));
+        }
+        lastUpdated = new Date();
     }
 
 }
