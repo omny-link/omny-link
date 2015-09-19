@@ -160,8 +160,15 @@ public class UrlResource implements Resource {
                 String error = scanner.useDelimiter("\\A").next();
                 String msg = "  error stream contains: " + error;
                 LOGGER.error(msg);
+            } catch (Exception e2) {
+                LOGGER.error("Exception thrown but cannot find error stream. "
+                        + e2.getClass().getName() + ":" + e2.getMessage(), e2);
             } finally {
-                scanner.close();
+                try {
+                    scanner.close();
+                } catch (Exception e3) {
+                    ;
+                }
             }
             throw e;
         } catch (Exception e) {

@@ -16,6 +16,7 @@ import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.delegate.JavaDelegate;
+import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -230,9 +231,20 @@ public abstract class RestService implements JavaDelegate {
     }
 
     private String lookupBotName(DelegateExecution execution) {
-        return execution.getEngineServices().getIdentityService()
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("  Looking for bot of tenant %1$s",
+                    execution.getTenantId()));
+        }
+        User botUser = execution.getEngineServices().getIdentityService()
                 .createUserQuery().userFirstName(execution.getTenantId())
-                .userLastName("Bot").singleResult().getId();
+                .userLastName("Bot").singleResult();
+        if (botUser == null) {
+            String msg = String.format("No bot user for tenant '%1$s'",
+                    execution.getTenantId());
+            LOGGER.error(msg);
+            throw new ActivitiObjectNotFoundException(msg, User.class);
+        }
+        return botUser.getId();
     }
 
 }
