@@ -1,0 +1,269 @@
+<section id="currentSect" style="display:none">
+  <form id="currentForm">
+    <div class="form create-form">
+      <input class="create-field form-control col-xs-1" id="curTitle" placeholder="Title" value="{{current.title}}"/>
+      <input class="create-field form-control col-xs-2" id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/>
+      <input class="create-field form-control col-xs-2" id="curLastName" placeholder="Last Name" required value="{{current.lastName}}"/>
+    </div>
+
+    <h2 class="form create-form" style="">&nbsp;</h2>
+    <h2 class="form edit-form">
+      <span contenteditable id="curTitle2" on-focus="editField('#curTitle2','current.title')" on-blur="updateField('#curTitle2','current.title')">{{current.title}}</span>
+      <span contenteditable id="curFirstName2" on-focus="editField('#curFirstName2','current.firstName')" on-blur="updateField('#curFirstName2','current.firstName')">{{current.firstName}}</span>
+      <span contenteditable id="curLastName2" on-focus="editField('#curLastName2','current.lastName')" on-blur="updateField('#curLastName2','current.lastName')">{{current.lastName}}</span>
+      {{#if (current.phone1 != undefined || current.phone2 != undefined) && (current.phone1 != '' || current.phone2 != '')}}
+        <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1 == undefined || current.phone1 == '' ? current.phone2 : current.phone1 }}" title="Click to call"></a>
+        {{#if (current.phone1 != undefined && current.phone1 != '')}}
+          <span>{{current.phone1}}</span>
+        {{/if}}
+        {{#if (current.phone2 != undefined && current.phone2 != '')}}
+          <span> {{current.phone2}}</span>
+        {{/if}}
+      {{/if}}
+      {{#if current.email != undefined && current.email != ''}}
+        <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
+      {{/if}}
+      <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
+      <span class="pull-right">
+        <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+        {{#if tenant.customerActions!=undefined && tenant.customerActions.length>0 }}
+          <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
+              <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+            </a>
+            <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+              {{#each tenant.customerActions }}
+                <li onclick="ractive.startCustomAction('{{key}}', '{{label}}', ractive.get('current'){{#form}}, '{{form}}'{{/form}})">{{label}}</li>
+              {{/each}}
+            </ul>
+          </span>
+        {{/if}}
+      </span>
+    </h2>
+
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+      <ul class="form edit-form">
+        <li><label class=" required">Email:</label><input class="form-control" id="curEmail" required type="email" value="{{current.email}}"></li>
+        <li><label class="">Confirmed?:</label><input class="" id="curEmailConfirmed" type="checkbox" checked="{{current.emailConfirmed}}"></li>
+        <li><label class="">Do Not Email:</label><input class="" id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"></li>
+        <li><label class="">Preferred Phone:</label><input class="form-control" id="curPhone1" value="{{current.phone1}}"></li>
+        <li><label class="">Alternate Phone:</label><input class="form-control" id="curPhone2" value="{{current.phone2}}"></li>
+        <li><label class="">Do Not Call:</label><input class="" id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}"></li>
+        <li><label class="">Owner: </label><input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}"></li>
+        <li><label class="">Stage:</label><input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}"></li>
+        <li><label class="">Enquiry Type:</label><input class="typeahead form-control" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}"></li>
+        <li><label class="">Account Type:</label><input class="typeahead form-control" placeholder="Start typing to filter options" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}"></li>
+      </ul>
+    </div>
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+      <ul class="form edit-form">
+        <li><label class="">Address:</label><input class="form-control" id="curAddress1" value="{{current.address1}}"/></li>
+        <li><label class=""></label><input class="form-control" id="curAddress2" value="{{current.address2}}"/></li>
+        <li><label class=""></label><input class="form-control" id="curTown" placeholder="Town or village" value="{{current.town}}"/></li>
+        <li><label class=""></label><input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/></li>
+        <li><label class="">Post Code:</label><input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}"></li>
+        <li><label class="">Country:</label><input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
+        <li>
+          <label class="" style="margin-right:5px">Tags:</label>
+          <input class="tag-ctrl form-control" id="curTags" data-bind="current.tags"/>     
+        </li>
+      </ul>
+    </div>
+
+    {{#tenant.show.marketing}}
+      <h3 style="clear:both">Marketing</h3>
+      <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+        <ul class="form edit-form">
+          <li><label class="">Source:</label><input class="typeahead form-control" placeholder="Start typing to filter options" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}"></li>
+          <li><label class="">Medium:</label><input class="typeahead form-control" placeholder="Start typing to filter options" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}"></li>
+        </ul>
+      </div>
+      <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+        <ul class="form edit-form">
+          <li><label class="">Page Submitted:</label><input class="form-control" id="curPageSubmitted" disabled readonly value="{{customField(current, 'pageSubmitted')}}"></li>
+          <li><label class="">Campaign:</label><input class="form-control" id="curCampaign" {{ current.campaign ? 'disabled readonly' : '' }} value="{{current.campaign}}"></li>
+        </ul>
+      </div>
+    {{/tenant.show.marketing}}
+
+    {{#tenant.show.budget}}
+      <h3 style="clear:both">Budget</h3>
+      <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+        <ul class="form edit-form">
+          <li><label class="">Budget:</label>
+            <input class="autoNumeric form-control" data-a-sign="£ " id="curBudget" on-blur="ractive.save()" value="{{current.customFields['budget']}}"></li>
+        </ul>
+      </div>
+      <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+        <ul class="form edit-form">
+          <li><label class="">Discussed Budget?:</label>
+            <input class="form-control" id="curDiscussedBudget" on-blur="ractive.save()" type="checkbox" checked="{{current.customFields['discussedBudget']}}"></li>
+        </ul>              
+      </div>
+    {{/tenant.show.account}}
+
+    <div id="currentContactExtended" style="clear: both">
+      {{>(tenant.id+'ContactExtension')}}
+    </div>
+  </form>
+
+  {{#tenant.show.account}}
+  <form id="currentAccountForm">
+    <div id="currentAccount" style="clear: both">
+
+      <h2 class="form">Account</h2>
+
+      <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+        <ul class="form edit-form">
+          <li><label class=" required">Company Name:</label><input class="form-control" id="curAccountName" required value="{{current.account.name}}"></li>
+          <li><label class="">Website:</label><input class="form-control" id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"></li>
+          <!--<li><label class="">Also known as:</label><input class="form-control" id="curAliases" value="{{current.account.aliases}}"></li>-->
+        </ul> 
+      </div>
+      <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+        <ul class="form edit-form">
+          <li><label class="">Company Number:</label><input class="form-control" id="curCompanyNumber" pattern="[0-9]{8}" value="{{current.account.companyNumber}}"></li>
+          <li><label class="">No. of employees:</label><input class="form-control" id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/></li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="currentAccountDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12">
+        <ul class="form edit-form">
+          <li><label class="textarea">Description:</label><textarea class="" id="curDescription" cols="80" value="{{current.account.description}}"></textarea></li>
+        </ul>
+    </div>
+
+    <div id="currentAccountExtended" style="clear: both">
+      {{>(tenant.id+'AccountExtension')}}
+
+      <!-- TODO General purpose account extension if no dedicated one available 
+      {{#if tenant.accountFields}}
+        <div class="col-md-12 col-sm-12 col-xs-12" id="currentAccountExtended">
+          <h2 class="form">
+            <span>More...</span>
+          </h2>
+
+          <!-- first column - ->  
+          {{>column {object: current.account, fields: tenant.accountFields.slice(0,Math.floor(tenant.accountFields.length/2))} }}
+
+          <!-- second column - ->  
+          {{>column {object: current.account, fields: tenant.accountFields.slice(Math.ceil(tenant.accountFields.length/2),tenant.accountFields.length)} }}
+
+        </div>
+      {{/if}}-->
+    </div>
+
+  </form>
+  {{/}}
+  
+{{#if current['activities'] != undefined}}
+  {{#tenant.show.activityAnalysis}}
+      <h2 style="clear:both">At a glance</h2>
+      <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+        <ul class="form edit-form">
+          <li><label class="">Since login:</label><input class="form-control" id="curTimeSinceLogin" disabled readonly value="{{formatAge(current.timeSinceLogin)}}"></li>
+          <li><label class="">Since registration:</label><input class="form-control" id="curTimeSinceRegistration" disabled readonly value="{{formatAge(current.timeSinceRegistered)}}"></li>
+          <li><label class="">Since valuation:</label><input class="form-control" id="curTimeSinceValuation" disabled readonly value="{{formatAge(current.timeSinceValuation)}}"></li>
+        </ul>
+      </div>
+      <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+        <ul class="form edit-form">
+          <li><label class="">Since email:</label><input class="form-control" id="curTimeSinceEmail" disabled readonly value="{{formatAge(current.timeSinceEmail)}}"></li>
+          <li><label class="">Mails sent:</label><input class="form-control" id="curMailsSent" disabled readonly value="{{current.mailsSent}}"></li>
+        </ul>
+      </div>
+  {{/tenant.show.activityAnalysis}}
+  <div style="clear: both"></div>
+
+  <form id="activityForm">
+   <div id="activitySect" style="clear: both">
+    <h2 title="Activities are added automatically by the workflows">
+      <span>Activities</span>
+      <!--<span class="glyphicon glyphicon-flash" aria-hidden="true" on-click="followUp(this.get('current'))"></span>-->
+    </h2>
+    <table id="activitiesTable" class="table table-striped"><tbody>
+      {{#each current.activities:j}}
+        <tr>
+          <td class="field-occurred">{{age(occurred)}} ({{formatDate(occurred)}})</td>
+          <td class="field-type">{{type}}</td>
+          <td class="field-text" id="activity{{j}}">{{{formatJson(content)}}}</td>
+        </tr>
+      {{/each}}
+      {{^ current.activities }}
+        <tr><td>None</td></tr>
+      {{/ current.activities }}
+    </tbody></table>
+   </div>
+  </form>
+{{/if}}
+  
+<div style="clear: both"></div>
+
+  <form id="noteForm">
+   <div id="notesSect" style="clear: both">
+    <h2 id="notes">
+      <span>Notes</span>
+      <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')" title="Add a new note"></span>
+    </h2>
+    <table id="notesTable" class="table table-striped"><tbody>
+      <tr style="display:none;">
+        <td colspan="3">
+          <textarea id="note" on-blur="saveNote()" placeholder="Type your note here" required style="width:100%;"></textarea>
+          <br/>
+          <a onclick="$('#notesTable tr:nth-child(1)').slideUp();">Cancel</a>
+        </td>
+      </tr>
+      {{#each current.notes:j}}
+        <tr>
+          <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
+          <td class="field-author">{{{hash(author)}}}</td>
+          <td class="field-text">{{{content}}}</td>
+        </tr>
+      {{/each}}
+      {{^ current.notes }}
+        <tr><td>None</td></tr>
+      {{/ current.notes }}
+    </tbody></table>
+   </div>
+  </form>
+
+  <form id="documentForm">
+   <div id="documentSect" style="clear: both">
+    <h2>
+      <span>Documents</span>
+      <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')" title="Add a new Document"></span>
+    </h2>
+    <table id="docsTable" class="table table-striped"><tbody>
+      <tr style="display:none;">
+        <td colspan="3">
+          <input class="form-control" id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required style="width:100%;"/>
+          <br/>
+          <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
+        </td>
+      </tr>
+      {{#each current.documents:k}}
+        <tr>
+          <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
+          <td class="field-author">{{{hash(author)}}}</td>
+          <td class="field-url"><a href="{{url}}">Click to open</a></td>
+        </tr>
+      {{/each}}
+      {{^ current.documents }}
+        <tr><td>None</td></tr>
+      {{/ current.documents }}
+    </tbody></table>
+   </div>
+  </form>
+
+</section>
+
+<!-- {{>column}} -->
+  <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+    <ul class="form edit-form">
+      {{#each fields:j}}
+        <li><label class="">{{label}}:</label><input class="form-control" id="curUnknown" value="{{object.customFields[key]}}"></li>
+      {{/each}}
+    </ul>
+  </div>
+<!-- {{/column}} -->
