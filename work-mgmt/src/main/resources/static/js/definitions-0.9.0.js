@@ -30,6 +30,20 @@ var ractive = new AuthenticatedRactive({
       if (timeString==undefined) return 'n/a';
       return new Date(timeString).toLocaleString(navigator.languages);
     },
+    formatJson: function(json) { 
+      console.log('formatJson: '+json);
+      try {
+        var obj = JSON.parse(json);
+        var html = '';
+        $.each(Object.keys(obj), function(i,d) {
+          html += (typeof obj[d] == 'object' ? '' : '<b>'+d+'</b>: '+obj[d]+'<br/>');
+        });
+        return html;
+      } catch (e) {
+        // So it wasn't JSON
+        return json;
+      }
+    },
     hasRole: function(role) {
       return ractive.hasRole(role);
     },
@@ -69,6 +83,18 @@ var ractive = new AuthenticatedRactive({
     });
     return false; // cancel bubbling to prevent edit as well as delete
   },
+  deleteInstance: function (instance,idx) {
+    console.log('deleteInstance '+instance.id+'...');
+    $.ajax({
+        url: '/'+ractive.get('tenant.id')+'/process-instances/'+instance.id,
+        type: 'DELETE',
+        success: completeHandler = function(data) {
+          console.log('  Success, received: '+data);
+          //ractive.fetchInstances();
+        }
+    });
+    return false; // cancel bubbling to prevent edit as well as delete
+  },
   fetch: function () {
     console.log('fetch...');
     $.getJSON('/'+ractive.get('tenant.id')+'/process-definitions', function( data ) {
@@ -101,17 +127,6 @@ var ractive = new AuthenticatedRactive({
     ractive.fetchInstances();
     $('#currentSect').slideDown();
   },
-  showAuditTrail: function(instance, idx) {
-    console.log('showAuditTrail for: '+instance.id);
-    $.getJSON('/'+ractive.get('tenant.id')+'/process-instances/'+instance.id, function( data ) {
-      console.log('found audit trail: '+data.auditTrail.length);
-      data.auditTrail.sort(function(a,b) { return new Date(b.startTime)-new Date(a.startTime); });
-      var def = ractive.get('current');
-      def.instances[idx].auditTrail=data.auditTrail;
-      ractive.set('current',def);
-      $('[data-instanceId='+instance.id+']').slideDown();
-    });
-  },
   showResults: function() {
     console.log('showResults');
     $('#currentSect').slideUp();
@@ -134,6 +149,28 @@ var ractive = new AuthenticatedRactive({
         ractive.showMessage('Started workflow "'+label+'" for '+bizKey);
       },
     });
+  },
+  toggleAuditTrail: function(instance, idx) {
+    console.log('toggleAuditTrail for: '+instance.id);
+    if ($('section[data-instanceid="'+instance.id+'"]').is(':visible')) {
+      $('section[data-instanceid="'+instance.id+'"]').hide();
+      $($('.btn-details')[idx]).empty().append('View Details');
+    } else {
+      $.getJSON('/'+ractive.get('tenant.id')+'/process-instances/'+instance.id, function( data ) {
+        console.log('found audit trail: '+data.auditTrail.length);
+        data.auditTrail.sort(function(a,b) { return new Date(b.startTime)-new Date(a.startTime); });
+        var def = ractive.get('current');
+        def.instances[idx].auditTrail=data.auditTrail;
+        
+        console.log('found processVariables: '+data.processVariables);
+        def.instances[idx].processVariables=data.processVariables;
+        def.instances[idx].processVariableNames=Object.keys(data.processVariables);
+        
+        ractive.set('current',def);
+        $('[data-instanceId='+instance.id+']').slideDown();
+        $($('.btn-details')[idx]).empty().append('Hide Details');
+      });
+    }
   },
   toggleResults: function() {
     console.log('toggleResults');

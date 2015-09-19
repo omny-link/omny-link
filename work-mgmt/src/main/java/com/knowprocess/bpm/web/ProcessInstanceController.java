@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.slf4j.Logger;
@@ -126,6 +127,11 @@ public class ProcessInstanceController {
     public @ResponseBody void deleteFromJson(@PathVariable("id") String id,
             @RequestParam(value = "reason", required = false) String reason) {
         LOGGER.info(String.format("deleting instance: %1$s", id));
-        processEngine.getRuntimeService().deleteProcessInstance(id, reason);
+        try {
+            processEngine.getRuntimeService().deleteProcessInstance(id, reason);
+        } catch (ActivitiObjectNotFoundException e) {
+            // must be complete instance
+            processEngine.getHistoryService().deleteHistoricProcessInstance(id);
+        }
     }
 }
