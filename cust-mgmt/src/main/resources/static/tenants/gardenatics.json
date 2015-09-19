@@ -10,6 +10,8 @@
     { "label": "Pre-Migration", "key": "preMigration", "type":"boolean"}
   ],
   "customerActions": [
+    { "label": "Start enquiry process", "key": "StartEnquiry", "form": "/partials/gardenatics/ReceiveEnquiry.html" },
+    { "label": "Receive order", "key": "GardenaticsDelivery", "form": "/partials/gardenatics/ReceiveOrder.html" },
     { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" }    
   ],
   "omnyBar": [
@@ -20,6 +22,8 @@
   ],  
   "partials": [
     { "name": "gardenaticsContactExtension", "url": "/partials/gardenatics/ContactExtension.html"},
+    { "name": "gardenaticsStartEnquiry", "url": "/partials/gardenatics/ReceiveEnquiry.html"},
+    { "name": "gardenaticsGardenaticsDelivery", "url": "/partials/gardenatics/ReceiveOrder.html"},
     { "name": "gardenaticsAddReminder", "url": "/partials/AddReminder.html"}
   ],
   "stagesInActive": "Appointment,Complete,Enquiry,Order,Placed,Quote,Thank You Pack",
