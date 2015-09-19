@@ -19,28 +19,15 @@
   <div class="container" id="container"></div>
   <script id='template' type='text/ractive'>
     {{>profileArea}}
-    {{>poweredBy}}
-    {{>sidebar { active: 'index.html' }}}
     {{>titleArea}}
-
-    <section>
-      <p>&nbsp;</p>
-      <h2>The next generation of contact management has arrived!</h2>
-      <p>Let's get started right away by introducing the Omny Bar icons:</p>
-      <ul style="list-style:none;">
-        {{#tenant.omnyBar}}
-          <li>
-            <a href="{{url}}">
-              <span class="{{classes}}" title="{{title}}"></span>
-              <span>{{title}}</span>
-            </a>
-            <span>{{description}}</span>          
-          </li>
-        {{/}}
-      </ul>
-    </section>
+    
+    {{>contactListSect}}
+    {{>currentContactSect}}
+    {{>poweredBy}}
+    {{>sidebar { active: 'contacts.html' }}}
+    {{>customActionModal}}
   </script>
-  
+
   <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
   <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <script src="/webjars/Bootstrap-3-Typeahead/3.1.1/bootstrap3-typeahead.js"></script>
@@ -54,6 +41,5 @@
   <script src="js/i18n.js"></script>
   <script src="js/cust-mgmt-0.9.0.js"></script>
   <script src="js/omny-0.9.0.js"></script>
-
 </body>
 </html>

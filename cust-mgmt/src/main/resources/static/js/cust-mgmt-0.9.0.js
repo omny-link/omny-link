@@ -97,7 +97,9 @@ var ractive = new AuthenticatedRactive({
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
-      { "name": "titleArea", "url": "/partials/title-area.html"}
+      { "name": "titleArea", "url": "/partials/title-area.html"},
+      { "name": "contactListSect", "url": "/partials/contact-list-sect.html"},
+      { "name": "currentContactSect", "url": "/partials/contact-current-sect.html"}
     ],
   },
   add: function () {
@@ -258,8 +260,9 @@ var ractive = new AuthenticatedRactive({
     var id = ractive.get('current')._links === undefined ? undefined : (
         ractive.get('current')._links.self.href.indexOf('?') == -1 ? ractive.get('current')._links.self.href : ractive.get('current')._links.self.href.substr(0,ractive.get('current')._links.self.href.indexOf('?')-1)
     );
-    ractive.set('saveObserver',true);
-    if (document.getElementById('currentForm').checkValidity()) {
+    if (document.getElementById('currentForm')==undefined) { 
+      console.debug('still loading, safe to ignore');
+    } else if (document.getElementById('currentForm').checkValidity()) {
       // cannot save contact and account in one (grrhh), this will clone...
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       //console.log('account: '+JSON.stringify(tmp.account));
@@ -298,6 +301,7 @@ var ractive = new AuthenticatedRactive({
       console.warn('Cannot save yet as contact is invalid');
       $('#currentForm :invalid').addClass('field-error');
       ractive.showMessage('Cannot save yet as contact is incomplete');
+      ractive.set('saveObserver',true);
     }
   },
   saveAccount: function () {

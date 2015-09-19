@@ -4,7 +4,7 @@
   "showPoweredBy":false,
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
-    { "url": "index.html", "classes": "glyphicon omny-icon-address-book", "title": "Customer Management" },
+    { "url": "contacts.html", "classes": "glyphicon omny-icon-address-book", "title": "Customer Management" },
     { "url": "domain.html", "classes": "glyphicon omny-icon-domain-model", "title": "Domain Model" },
     { "url": "decisions-ui.html", "classes": "glyphicon glyphicon-list-alt", "title": "Decisions Definer" },
     { "url": "decisions-dmn.html", "classes": "glyphicon glyphicon-list-alt", "title": "Decisions Repository" },
