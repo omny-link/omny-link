@@ -122,7 +122,7 @@
     <dependency>
       <groupId>io.onedecision</groupId>
       <artifactId>onedecision-engine</artifactId>
-      <version>0.8.3-SNAPSHOT</version>
+      <version>0.8.3</version>
       <!--Eclipse debugger does not find this TODO create profile
       <classifier>library</classifier> -->
     </dependency>
