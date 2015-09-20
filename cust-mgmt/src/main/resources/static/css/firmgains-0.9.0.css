@@ -37,6 +37,13 @@
 h1, h2, h3, h4, h5, h6 {
  font-family: 'Montserrat';
 }
+h4 {
+	border-bottom: 3px double #2990b1;
+}
+h5 {
+	border-bottom: 1px solid #2990b1;
+	font-size:16px;
+}
 body {
  font-family: 'Open Sans';
 }
