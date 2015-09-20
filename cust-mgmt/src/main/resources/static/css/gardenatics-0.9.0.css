@@ -46,6 +46,12 @@ h2 a.glyphicon:focus,
 h2 a.glyphicon:hover {
   color: #ff6c06;
 }
+h4 { 
+  border-bottom: 3px double #552e16;
+}
+h5 {
+  border-bottom: 1px solid #552e16;
+}
 .navbar-brand img {
   height: 53px;
   padding-right: 20px;	
