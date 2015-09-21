@@ -1,0 +1,62 @@
+/* FONTS */ 
+
+h1, h2, h3, h4, h5, h6 {
+ font-family: sans-serif;
+}
+
+/* END FONTS */
+
+/*
+ * COLOURS
+ *
+ * red (logo) #da1a3f
+ * grey: #e2e0dd
+ * dark grey: #242424
+ * black: #000
+ * green: #1e7439
+ */
+
+body {
+  color: #141412;
+}
+h1 { 
+  color: #da1a3f;
+}
+section h2 {
+  background-color: #1e7439;
+  border-bottom: solid 1px #fff;
+  color: #fff;
+}
+section h2 .search {
+  bottom: 3px;
+  width: 40%;
+}
+section h2 .search,
+section h2 .entity,
+section h2 .file {
+  background-color: #e2e0dd;
+  border-color: #fff;
+}
+section h2 a.glyphicon:hover,
+section h2 a.glyphicon:focus,
+section h2 .glyphicon:hover,
+section h2 .glyphicon:focus {
+  color: #da1a3f;
+}
+a.glyphicon,
+a.glyphicon:visited,
+.glyphicon,
+.glyphicon:visited {
+  color: #da1a3f;
+}
+a.glyphicon:hover,
+a.glyphicon:focus,
+.glyphicon:hover,
+.glyphicon:focus {
+  color: #15982e;
+}
+.navbar-brand img {
+  height: 70px;
+}
+/* END BOOTSTRAP OVERRIDES */
+ 

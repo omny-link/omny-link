@@ -1,0 +1,28 @@
+<h2 class="form">
+  <span>Place order</span>
+</h2>
+<div class="col-md-12">
+  <ul class="form edit-form">
+    <li><label class="">First Name:</label>
+      <input class="form-control" id="curFirstName" disabled readonly value="{{current.firstName}}"></li>
+    <li><label class="">Last Name:</label>
+      <input class="form-control" id="curLastName" disabled readonly value="{{current.lastName}}"></li>
+    <li><label class="">Phone:</label>
+      <input class="form-control" id="curPhone" disabled readonly value="{{current.phone1}}"></li>
+    <li><label class="">Email:</label>
+      <input class="form-control" id="curEmail" disabled readonly value="{{current.email}}"></li>
+  </ul>
+</div>
+
+<div class="col-md-12">
+  <ul class="form edit-form">
+    <li><textarea id="note" on-blur="saveNote()" placeholder="Type your note here" style="width:93.6%;" value="{{current.note}}"></textarea></li>
+  </ul>
+</div>
+
+<h2 class="form">
+  <span>Next Steps</span>
+</h2>
+<div class="col-md-12">
+  <p class="col-md-12 bg-info text-info">We will now remind you what is needed each step of the way.</p>          
+</div>
