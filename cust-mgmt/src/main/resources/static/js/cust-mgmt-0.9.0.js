@@ -465,11 +465,13 @@ var ractive = new AuthenticatedRactive({
         }
       };
     console.log(JSON.stringify(instanceToStart));
+    // save what we know so far...
+    ractive.set('instanceToStart',instanceToStart);
     if (form == undefined) {
+      // ... and submit 
       ractive.submitCustomAction();
     } else {
-      // save what we know so far and display form 
-      ractive.set('instanceToStart',instanceToStart);
+      // ... or display form 
       $('#customActionModal').modal('show');
     }
   },
