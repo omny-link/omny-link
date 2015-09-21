@@ -1,0 +1,35 @@
+<div class="form-group">
+  <label for="subject">Subject Line</label>
+  <input type="text" class="form-control" id="subject" placeholder="Subject line for message" required value="{{instanceToStart.processVariables['subject']}}">
+  <p class="help-block field-hint field-error">Please enter a subject line for message here.</p>
+</div>
+<div class="form-group">
+  <label for="template">Template</label>
+  <select class="form-control" id="template" required value="{{instanceToStart.processVariables['template']}}">
+    <!--<option selected disabled>Please select a template</option>-->
+    <option selected disabled>No templates currently defined</option>
+  </select>
+  <p class="help-block field-hint field-error">Please select one of the pre-defined templates.</p>
+  <script>
+    $(document).ready(function() {
+      validateCustomActionForm();
+      $('#submitCustomActionForm').click(function() {
+        console.log('Submit custom action form');
+        validateCustomActionForm();
+      });
+      $('#customActionForm input,#customActionForm select,#customActionForm textarea').blur(function() {
+        console.log('blur custom action form field');
+        validateCustomActionForm();
+      });
+    });
+
+    function validateCustomActionForm() {
+      console.info('validateCustomActionForm');
+      if ($('#template').val() == null) document.getElementById('template').setCustomValidity('Required');
+      else document.getElementById('template').setCustomValidity('');
+
+      $('#customActionForm input:invalid ~ .field-hint,#customActionForm select:invalid ~ .field-hint,#customActionForm textarea:invalid ~ .field-hint').css('visibility','visible').css('color','#f33').css('line-height','1.5em');
+      $('#customActionForm input:valid ~ .field-hint,#customActionForm select:valid ~ .field-hint,#customActionForm textarea:valid ~ .field-hint').css('visibility','hidden').css('color','#f33').css('line-height','0em');
+    }
+  </script>
+</div>
