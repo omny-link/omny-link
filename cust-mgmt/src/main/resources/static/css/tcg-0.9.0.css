@@ -60,4 +60,12 @@ a.glyphicon:focus,
   height: 70px;
 }
 /* END BOOTSTRAP OVERRIDES */
+
+.omny-bar {
+    color: #d71921;
+}
+.omny-bar li span.glyphicon.active {
+    color: #fcf8e3;
+    background-color: #d71921;
+}
  
