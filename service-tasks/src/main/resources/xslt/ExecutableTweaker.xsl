@@ -290,7 +290,9 @@
   <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.fbook.FacebookTask']|serviceTask[@activiti:class='com.knowprocess.fbook.FacebookTask']">
     <xsl:copy-of select="."/>
   </xsl:template>
-  
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.mk.EstimateFare']|serviceTask[@activiti:class='com.knowprocess.mk.EstimateFare']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
   <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.resource.spi.RestDelete']|serviceTask[@activiti:class='com.knowprocess.resource.spi.RestDelete']">
     <xsl:copy-of select="."/>
   </xsl:template>
