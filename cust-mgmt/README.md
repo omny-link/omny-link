@@ -24,6 +24,67 @@ Roadmap
 Releases
 --------
 
+0.9.0 - 20 Sep 15
+
+    #81 New index page providing opportunity for embedded docs / training
+    enhancement
+
+    #80 Support for starting Gardenatics enquiry process from Contact
+    enhancement Gardenatics
+
+    #78 If no update has taken place lastUpdated is shown as 01 Jan 1970
+    bug
+
+    #77 Refactor configuration to prevent duplication of code from work-mgmt
+    support
+
+    #76 Per contact custom actions
+    feature Gardenatics Firm Gains Omny Link
+
+    #75 Responsive fixes
+    enhancement
+
+    #74 Cannot save yet message displayed inappropriately on first loading CRM
+    bug
+
+    #73 Firm Gains favicon misnamed so returning 404
+    bug
+
+    #72 Embed Wiser for mail server testing during development
+    enhancement
+
+    #71 Switch from Omny Link decisions to One Decision
+    support Firm Gains
+
+    #69 On creating new contacts it appears to add duplicates
+    support Gardenatics Firm Gains
+
+    #64 Highlight active page in Omny Bar
+    enhancement Gardenatics
+
+    #59 Make filter drop down wider
+    Nile and York
+
+    #57 Replace email follow up decision with One Decision based decision tables
+    Firm Gains
+
+    #45 New stages to Gardenatics, also revising process
+    Gardenatics
+
+0.8.0 - 5 Jul 15
+
+    #65 New partners for Firm Gains typeahead
+    support Firm Gains
+
+    #63 More Firm Gains layout changes
+    support Firm Gains
+
+    #58 Apply Omny branding to Swagger UI
+    support CarQuake
+
+    #56 Per-tenant configuration of sections of UI
+    enhancement Firm Gains Nile and York
+
 0.7.0 - 4 Jun 15
 
     - #55 Add REST API documentation via Swagger 
