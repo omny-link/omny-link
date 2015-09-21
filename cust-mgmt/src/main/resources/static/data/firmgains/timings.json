@@ -1,0 +1,9 @@
+[
+  {"id":"blank", "name":"Not Sure"},
+  {"id":"asap", "name":"As soon as possible"},
+  {"id":"3_months", "name":"Within 3 months"},
+  {"id":"6_months", "name":"Within 6 months"},
+  {"id":"12_months", "name":"Within a year"},
+  {"id":"24_months", "name":"Within 2 years"},
+  {"id":"over_24", "name":"In no particular hurry"}
+]

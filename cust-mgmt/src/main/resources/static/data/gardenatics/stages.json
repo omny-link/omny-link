@@ -1,0 +1,11 @@
+[
+  {  "id": "Appointment", "name": "Appointment"  },
+  {  "id": "Cold", "name": "Cold"  },
+  {  "id": "Complete", "name": "Complete"  },
+  {  "id": "Enquiry", "name": "Enquiry"  },
+  {  "id": "On hold", "name": "On hold"  },
+  {  "id": "Order", "name": "Order"  },
+  {  "id": "Placed", "name": "Placed"  },
+  {  "id": "Quote", "name": "Quote"  },
+  {  "id": "Thank you pack", "name": "Thank you pack"  }
+]

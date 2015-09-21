@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang='en-GB'>
+<head>
+  <meta charset='utf-8'>
+  <title>Customer Management</title>
+  <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
+  <link href="css/jquery.tagit.css" rel="stylesheet" type="text/css">
+  <link href="css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
+  
+  <link href="css/omny-0.9.0.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
+  <!-- nice blocky yet tall font 
+  <link rel='stylesheet' id='google-fonts-css'  href='//fonts.googleapis.com/css?family=Oswald%3A400%7CNoto+Sans&#038;ver=2.1.2' type='text/css' media='all' />
+  -->
+</head>
+<body>
+  <div class="clearfix" id="messages"></div>
+  <div class="container" id="container"></div>
+  <script id='template' type='text/ractive'>
+    {{>profileArea}}
+    {{>poweredBy}}
+    {{>sidebar { active: 'index.html' }}}
+    {{>titleArea}}
+
+    <section>
+      <p>&nbsp;</p>
+      <h2>The next generation of contact management has arrived!</h2>
+      <p>Let's get started right away by introducing the Omny Bar icons:</p>
+      <ul style="list-style:none;">
+        {{#tenant.omnyBar}}
+          <li>
+            <a href="{{url}}">
+              <span class="{{classes}}" title="{{title}}"></span>
+              <span>{{title}}</span>
+            </a>
+            <span>{{description}}</span>          
+          </li>
+        {{/}}
+      </ul>
+    </section>
+  </script>
+  
+  <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
+  <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="/webjars/Bootstrap-3-Typeahead/3.1.1/bootstrap3-typeahead.js"></script>
+  <script src="/webjars/jquery-ui/1.11.4/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="js/tag-it.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/webjars/ractive/0.7.1/ractive.min.js"></script>
+
+  <script src="js/autoNumeric.js"></script>
+  <script src="js/md5.min.js"></script>
+  <script src="js/login-0.9.0.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/cust-mgmt-0.9.0.js"></script>
+  <script src="js/omny-0.9.0.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+<h3 class="form">
+  <span>Further Contact Info</span>
+</h3>
+<div class="col-md-12">
+
+  <div class="col-md-6">
+    <ul class="form edit-form">
+      <li><label class="col-md-5">Current Partner:</label>
+      <input class="typeahead form-control" id="curPartnersContacted" on-blur="console.debug(''+this.value);ractive.save()" value="{{current.customFields['partnersContacted']}}"></li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <ul class="form edit-form">
+      <li><label class="col-md-5">Date Placed:</label>
+      <input class="typeahead form-control" id="curPlacedWithParter" on-blur="console.debug(''+this.value);ractive.save()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm/yyyy" value="{{current.customFields['placedWithParter']}}"></li>    
+    </ul>
+  </div>
+</div>

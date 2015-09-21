@@ -1,0 +1,64 @@
+<h2 class="form">
+  <span>Confirm arrival of kit</span>
+</h2>
+<div class="col-md-6">
+  <ul class="form edit-form">
+    <li><label class="col-md-5">Phone:</label>
+      <input class="form-control" id="curPhone" disabled readonly value="{{current.processVariables.contact.phone1}}"></li>
+    <li><label class="col-md-5">Email:</label>
+      <input class="form-control" id="curEmail" disabled readonly value="{{current.processVariables.contact.email}}"></li>
+    <li><label class="col-md-5">Budget:</label>
+      <input class="autoNumeric form-control" data-a-sign="£ " id="curBudget" on-blur="saveContact()" value="{{current.processVariables.contact.customFields['budget']}}"></li>
+    <li><label class="col-md-5">Discussed budget?:</label>
+      <input id="curDiscussedBudget" on-blur="saveContact()" type="checkbox" checked="{{current.processVariables.contact.customFields['discussedBudget']}}"></li>
+  </ul>
+</div>
+<div class="col-md-6">
+  <ul class="form edit-form">
+    <li><label class="col-md-5">Address:</label>
+      <input class="form-control" id="curAddress1" on-blur="saveContact()" required value="{{current.processVariables.contact.address1}}"></li>
+    <li><label class="col-md-5"></label>
+      <input class="form-control" id="curAddress2" on-blur="saveContact()" value="{{current.processVariables.contact.address2}}"></li>
+    <li><label class="col-md-5">Town:</label>
+      <input class="form-control" id="curTown" on-blur="saveContact()" value="{{current.processVariables.contact.town}}"></li>
+    <li><label class="col-md-5">City or County:</label>
+      <input class="form-control" id="curCountyOrCity" on-blur="saveContact()" value="{{current.processVariables.contact.countyOrCity}}"></li>
+    <li><label class="col-md-5">PostCode:</label>
+      <input class="form-control" id="curPostCode" on-blur="saveContact()" required value="{{current.processVariables.contact.postCode}}"></li>
+  </ul>
+</div>
+
+<h2 class="form">
+  <span>Partner Info</span>
+</h2>
+<div class="col-md-6">
+  <ul class="form edit-form">
+    <li><label class="col-md-5">Partner:</label>
+      <input class="typeahead form-control" id="curPartner" on-blur="saveContact()" required value="{{current.processVariables.contact.customFields['partner']}}"></li>
+  </ul>
+</div>
+<div class="col-md-6">
+  <ul class="form edit-form">
+    <li><label class="col-md-5">Installation Date:</label>
+      <input class="datepickerdis form-control" id="curInstallationDate" on-blur="saveContact()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm//yyyy"  value="{{current.processVariables.contact.customFields['installationDate']}}"></li>
+  </ul>
+</div>
+
+<h2 class="form">
+  <span>More...</span>
+</h2>
+<div class="col-md-12">
+  <ul class="form edit-form">
+    <li><textarea id="note" on-blur="saveNote()" placeholder="Type your note here" style="width:93.6%;" value="{{current.note}}"></textarea></li>
+    <li><a href="http://api.omny.link:8082/index.html?id={{current.processVariables.contactId}}">Open in Customer Management</a></li>
+  </ul>
+</div>
+
+<!--
+<h2 class="form">
+  <span>Next Steps</span>
+</h2>
+<div class="col-md-12">
+  <p class="col-md-12 bg-info text-info">.</p>          
+</div>
+-->

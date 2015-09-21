@@ -1,0 +1,19 @@
+{ 
+  "id": "jem", 
+  "show": { "account":false },
+  "omnyBar": [
+    { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },    
+    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }
+  ],
+  "partials": [
+    { "name": "jemContactExtension", "url": "/partials/omnyContactExtension.html"}
+  ],
+  "typeaheadControls": [
+    { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
+    { "selector": "#curCountry", "url": "/data/countries.json"},
+    { "selector": "#curEnquiryType", "url": "/data/enquiry-types.json"},
+    { "selector": "#curMedium", "url": "/data/media.json"},
+    { "selector": "#curSource", "url": "/data/sources.json"},
+    { "name": "stages", "selector": "#curStage", "url": "/data/stages.json"}
+  ]
+}

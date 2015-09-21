@@ -1,0 +1,112 @@
+Customer Management 
+===================
+
+Features
+--------
+
+    - Web user interface 
+      - Add / View / Update / Delete Contacts
+      - Add / View / Update / Delete Accounts
+      - View Activities related to a Contact or Account
+      - Add / View Notes to Contact 
+      - Add / View Documents to Contact 
+    
+    - REST API feature matches Web UI 
+
+    - Bulk import of Contacts, Accounts, Activities and Notes
+
+Roadmap
+------- 
+
+     - Merge records 
+     - Consider results slide out from side not top 
+     
+Releases
+--------
+
+0.7.0 - 4 Jun 15
+
+    - #55 Add REST API documentation via Swagger 
+      feature Omny Link
+    - #54 Move marketing fields to own section ... 
+      enhancement Gardenatics Firm Gains
+    - #53 Spurious 'Cannot save yet' message on initial load 
+      bug Gardenatics Firm Gains
+    - #52 Change icon for 'Jump to notes' to paperclip 
+      enhancement Gardenatics
+    - #51 Only show migration message on records migrated into Omny 
+      Gardenatics
+    - #50 Changes to budget 
+      enhancement Gardenatics
+    - #49 Move 'do not call' and 'do not email' 
+      7 days ago
+    - #46 Town field not being saved (3rd address field) 
+      bug Gardenatics Firm Gains
+    - #44 Ensure contact form is hidden when results open 
+      bug Gardenatics
+    - #42 Search to include Town, County, Country in addition to current 
+      support Nile and York
+    - #40 Filter on stage 
+      Gardenatics Nile and York
+    - #39 Load customer data 
+      Nile and York
+    - #22 Need feedback for adding Note, Document etc. that auto-save 
+      enhancement 
+    - #11 Need more feedback when Search has no results 
+      enhancement Firm Gains
+
+0.6.0 - 19 May 15
+
+    - #43 Better field validation
+    enhancement Gardenatics Firm Gains
+    - #35 Expose 'do not email' and 'do not call' flags in 
+    enhancement Gardenatics
+    - #34 Trouble adding new record with space in surname
+    bug Gardenatics
+    - #32 'Omny Bar' 
+    feature
+    - #31 Budget (and other?) fields not using the number formatting 
+    Gardenatics
+    - #25 Need way for 'office' users to start workflow 
+    enhancement Gardenatics
+    - #24 On adding a Note (tabbing away) focus changes unexpectedly 
+    Gardenatics
+    - #23 Last updated is too narrowly defined 
+    Gardenatics Firm Gains
+    - #19 Implement gravatar instead of username
+    enhancement Gardenatics Firm Gains
+    - #18 Delete needs to be 'logical' not 'physical' 
+    Gardenatics Firm Gains    
+    - #16 Valuation is not populating AdWords information 
+    bug Firm Gains
+    - #15 Merge detection is not working
+    bug Firm Gains
+
+0.4.0 - 13 Apr 15
+
+    - #3 Powered by Omny logo getting in front of the open/close arrow button
+    and making it unclickable
+    - #4 Make email optional in gardenatics UI
+    - #5 Dates displaying in US format
+    - #6 UI and data tweaks from review 9 Apr 15
+
+0.3.0 - 6 Apr 15
+
+    - Gardenatics UI and data migration 
+    - Allow URL param to open customer page with pre-filtered list
+    - Added Activities to customer mgmt system
+
+0.2.0 - 20 Mar 15
+
+    - Order contacts by last updated
+    - Some extra fields including doNotCall/Email and some specific to customer
+    - REST services to upload Contacts and Accounts plus UI to enable this
+    - UI polish  
+    - Replace ractive.data. with ractive.get calls (API removed in latest version)
+    - Switch datasource connection pool in attempt to avoid disconnection errors
+    - Fix firm gains drop down list data
+    - Fix (in service tasks) to REST URL invocation to support spaces
+
+0.1.0 - 16 Jan 15 
+
+    - Basic features release
