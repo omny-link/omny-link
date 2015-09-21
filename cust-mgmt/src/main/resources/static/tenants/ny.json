@@ -1,9 +1,13 @@
 { 
   "id": "ny", 
-  "show": { "account":false, "budget":false },
+  "show": { "account":false, "activities": true, "budget":false },
   "contactFields": [ 
     { "label": "Credit Limit", "key": "creditLimit"},
     { "label": "Current Credit", "key": "currentCredit"}
+  ],
+  "customerActions": [
+    { "label": "Send email", "key": "SendContactEmail", "form": "/partials/ny/PickMail.html" },
+    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" }
   ],
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
@@ -13,7 +17,9 @@
   ],
   "partials": [
     { "name": "nyContactExtension", "url": "/partials/contactExtension.html"},
-    { "name": "nyAccountExtension", "url": "/partials/accountExtension.html"}
+    { "name": "nyAccountExtension", "url": "/partials/accountExtension.html"},
+    { "name": "nySendContactEmail", "url": "/partials/ny/PickMail.html"},
+    { "name": "nyAddReminder", "url": "/partials/AddReminder.html"}    
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/ny/account-types.json"},
