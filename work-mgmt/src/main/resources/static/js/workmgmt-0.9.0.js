@@ -33,26 +33,20 @@ var ractive = new AuthenticatedRactive({
     },
     userForm: function() {
       console.log('renderUserForm');
-      $.get(ractive.get('current.formKey'), function (partial) {
+      var form = ractive.get('current.formKey');
+      // process migration issue...
+      if (form == 'simpleTodo') form = 'partials/simpleTodoFormExtension.html';
+      $.get(form, function (partial) {
         if (ractive != undefined) ractive.resetPartial('userForm',partial);
         ractive.initControls();
-        $.getJSON(ractive.get('current.processVariables.contactId'), function (data) {
+        var url = ractive.get('current.processVariables.contactId'); 
+        
+        $.getJSON(url, function (data) {
           ractive.set('current.processVariables.contact',data);
         });
       });
       return '<div>Loading...</div>';
-    },
-    simpleTodoFormExtension: function(x) {
-      return '<div class="clearfix"></div>'
-           +'<ul style="padding-left:0">'
-           +  '{{# keys}}'
-           +    '<li>'
-           +      '<label class="col-md-3">{{..toLabel()}}</label>'
-           +      '<input id="cur{{.}}" readonly style="width: 60%" value="{{obj[.]}}">'
-           +    '</li>'
-           +  '{{/}}'
-           +'</ul>';
-    } 
+    }
   },
 
   // Here, we're passing in some initial data
