@@ -1,0 +1,63 @@
+/* FONTS */ 
+
+h1, h2, h3, h4, h5, h6 {
+ font-family: 'barmenoregular';
+}
+
+/* END FONTS */
+
+/* 
+ * COLOURS 
+ *   orange: ff6c06;
+ *   green:  a1cb3a;
+ *   brown:  552e16;
+ */
+
+/* START BOOTSTRAP OVERRIDES */
+
+body {
+  color: #552e16;
+  font-family: Roboto;
+}
+h1 { 
+	color: #a1cb3a;
+}
+section h2 {
+  color: #a1cb3a;
+}
+section h2 .search,
+section h2 .entity,
+section h2 .file {
+	border-color: #a1cb3a;
+}
+section h2 .file {
+  border-radius: 0;
+}
+a.glyphicon,
+a.glyphicon:visited,
+h2 a.glyphicon,
+h2 a.glyphicon:visited {
+  color: #552e16;
+  text-decoration: none;
+}
+a.glyphicon:focus,
+a.glyphicon:hover,
+h2 a.glyphicon:focus,
+h2 a.glyphicon:hover {
+  color: #ff6c06;
+}
+h4 { 
+  border-bottom: 3px double #552e16;
+}
+h5 {
+  border-bottom: 1px solid #552e16;
+}
+.navbar-brand img {
+  height: 53px;
+  padding-right: 20px;	
+/* END BOOTSTRAP OVERRIDES */
+
+.form label, .form input {
+  top: -25px
+}
+

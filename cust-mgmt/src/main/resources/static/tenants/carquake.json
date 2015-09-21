@@ -1,0 +1,22 @@
+{ 
+  "id": "carquake", 
+  "show": { "account":false },
+  "omnyBar": [
+    { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "title": "Work Management" },
+    { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },    
+    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" },
+    { "url": "api.html", "classes": "glyphicon glyphicon-wrench", "title": "API Documentation" }
+  ],
+  "partials": [
+    { "name": "carquakeContactExtension", "url": "/partials/contactExtension.html"},
+    { "name": "carquakeAccountExtension", "url": "/partials/accountExtension.html"}
+  ],
+  "typeaheadControls": [
+    { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
+    { "selector": "#curCountry", "url": "/data/countries.json"},
+    { "selector": "#curEnquiryType", "url": "/data/enquiry-types.json"},
+    { "selector": "#curMedium", "url": "/data/media.json"},
+    { "selector": "#curSource", "url": "/data/sources.json"},
+    { "name": "stages", "selector": "#curStage", "url": "/data/stages.json"}
+  ]
+}

@@ -1,0 +1,92 @@
+<section id="contactsSect">
+  <h2>
+    <a id="contactsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the contact table"></a>
+    <span>Contacts</span>
+    <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new contact"></a>
+    <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+    <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+    <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
+    <a class="clickable dropdown" aria-hidden="true" id="filterBtn" title="Show filters">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
+      </a>
+      <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
+        <li on-click="filter()">Clear filter</li>
+        <li class="divider"></li>
+        {{#stages}}
+          <li onclick="ractive.filter('stage','{{id}}')">{{name}}</li>
+        {{/stages}}
+        <li class="divider"></li>
+        {{#accountTypes}}
+          <li onclick="ractive.filter('accountType','{{id}}')">{{name}}</li>
+        {{/accountTypes}}
+      </ul>
+    </a>
+
+    <form id="upload" class="super-admin pull-right upload">
+      <a class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')" title="Import data from file"></a>
+      <input type="file" class="form-control file pull-right" name="file" placeholder="Select file">
+      <select class="form-control entity pull-right" name="entity">
+        <option value="contacts">Contacts</option>
+        <option value="accounts">Accounts</option>
+        <option value="activities">Activities</option>
+        <option value="notes">Notes</option>
+      </select>
+    </form>
+  </h2>
+  <table id="contactsTable" class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Full Name</th>
+        {{#tenant.show.account}}<th>Business Name</th>{{/}}
+        <th>Stage</th>
+        <th>Enquiry Type</th>
+        <th>Owned by</th>
+        <th>First Contact</th>
+        <th>Last Updated</th>
+        <th>Tags</th>
+        <th class="col-actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {{#each contacts:i}}
+      {{# (searchTerm!=undefined && (
+            (this.firstName!=undefined && this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
+            || (this.lastName!=undefined && this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+            || (this.email!=undefined && this.email.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+            || (this.town!=undefined && this.town.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+            || (this.countyOrCity!=undefined && this.countyOrCity.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+            || (this.country!=undefined && this.country.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+            || (this.accountName!=undefined && this.accountName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+          ))
+          && 
+          (matchFilter(this))
+      }}
+          <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
+            <td>{{i+1}}</td>
+            <td>{{firstName}} {{lastName}}</td>
+            {{#tenant.show.account}}
+              <td>{{account == undefined ? accountName : account.name}}</td>
+            {{/}}
+            <td>{{stage}}</td>
+            <td>{{enquiryType}}</td>
+            <td>{{{hash(owner)}}}</td>
+            <td>{{formatDate(firstContact)}}</td>
+            <td>{{formatDate(lastUpdated)}}</td>
+            <td>{{{formatTags(tags)}}}</td>
+            <td class="col-actions">
+              <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+              <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this contact"></a>
+            </td>
+          </tr>
+      {{/}}
+    {{/each}}
+    </tbody>
+    <tfoot>
+      {{# searchTerm!=undefined }}
+        <tr><th colspan="9">{{searchMatched == 0 ? 'No' : searchMatched}} matching contact{{searchMatched==1 ? '' : 's'}}</th></tr>
+      {{/}} 
+    </tfoot>
+  </table>
+</section>
