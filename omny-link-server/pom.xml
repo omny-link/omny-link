@@ -122,7 +122,7 @@
     <dependency>
       <groupId>link.omny.custmgmt</groupId>
       <artifactId>custmgmt</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
+      <version>0.9.1-SNAPSHOT</version>
       <!-- TODO Debug fails with class not found if this is enabled
       <classifier>library</classifier> -->
     </dependency>
