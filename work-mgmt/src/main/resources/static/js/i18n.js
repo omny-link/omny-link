@@ -1,35 +1,13 @@
 var i18n = new I18nController();
 
 function I18nController() {
-	this.localize = function(locale) {
-		if (locale===undefined) locale = 'en_GB';
-		console.log('localising to: '+locale+'...');
-		var jqxhr = $.ajax({
-		      type: 'GET',
-		      url: '/js/i18n_'+locale+'.json',
-		      contentType: 'application/json',
-		      dataType: 'json',
-		      success: function(s) {
-			      console.log('strings returned: '+ s.length);
-			      i18n.strings = s;
-			      switch (jqxhr.status) {
-			      case 200: 
-			    	$('[data-i18n]').each(function(i,d){
-			  			var code = $(d).data('i18n');
-			  			console.log('... '+code+' = '+s[code]);
-			  			if (s[code]!==undefined) $(d).empty().append(s[code]);
-			  		});
-			        break; 
-			      default: 
-			        sect.append('<p>...Failure: '+jqxhr.status);
-			      }
-			  },
-		      error: function(jqXHR, textStatus, errorThrown) { 
-		        console.log('error:'+textStatus);
-		      }
-		    });
-	};
-	this.getAgeString = function(millis) {
+  /**
+   * @deprecated Use getStrings. 
+   */
+  this.localize = function(locale) {
+    this.getStrings(locale);
+  };
+  this.getAgeString = function(millis) {
     return this.getDurationString(new Date()-millis)+' ago';
   };
   this.getDeadlineString = function(millis) {
@@ -73,4 +51,33 @@ function I18nController() {
           return 'about ' + Math.floor(days) + ' days';
       }
   };
+  this.getStrings = function(locale) {
+    if (locale===undefined) locale = 'en_GB';
+    console.log('localising to: '+locale+'...');
+    var jqxhr = $.ajax({
+      type: 'GET',
+      url: '/js/i18n_'+locale+'.json',
+      contentType: 'application/json',
+      dataType: 'json',
+      success: function(s) {
+        console.log('strings returned: '+ s.length);
+        i18n.strings = s;
+        switch (jqxhr.status) {
+        case 200: 
+          i18n.l10n();
+          break; 
+        default: 
+          console.error('  failed to load i18n strings: '+jqxhr.status);
+        }
+      }
+    });
+  };
+  this.l10n = function() {
+    $('[data-i18n]').each(function(i,d){
+      var code = $(d).data('i18n');
+      console.log('... '+code+' = '+i18n.strings[code]);
+      if (i18n.strings[code]!==undefined) $(d).empty().append(i18n.strings[code]);
+    });
+  };
+  this.getStrings();
 }
