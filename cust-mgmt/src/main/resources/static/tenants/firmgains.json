@@ -40,9 +40,9 @@
     { "label": "Placed with Partner", "key": "placedWithPartner"}
   ],
   "customerActions": [
-    { "label": "Run email follow up", "key": "FollowUpOneContact" },
+    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" },
     { "label": "Send email", "key": "SendContactEmail", "form": "/partials/firmgains/PickMail.html" },
-    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" }
+    { "label": "Run email follow up", "key": "FollowUpOneContact" }
   ],
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },

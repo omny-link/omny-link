@@ -10,9 +10,9 @@
     { "label": "Pre-Migration", "key": "preMigration", "type":"boolean"}
   ],
   "customerActions": [
-    { "label": "Start enquiry process", "key": "StartEnquiry", "form": "/partials/gardenatics/ReceiveEnquiry.html" },
+    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" },
     { "label": "Receive order", "key": "GardenaticsDelivery", "form": "/partials/gardenatics/ReceiveOrder.html" },
-    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" }    
+    { "label": "Start enquiry process", "key": "StartEnquiry", "form": "/partials/gardenatics/ReceiveEnquiry.html" }        
   ],
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
