@@ -12,7 +12,7 @@
   <parent>
     <groupId>link.omny</groupId>
     <artifactId>omny-link-root</artifactId>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -120,7 +120,7 @@
     <dependency>
     	<groupId>link.omny.custmgmt</groupId>
     	<artifactId>custmgmt</artifactId>
-    	<version>0.9.1-SNAPSHOT</version>
+    	<version>${project.version}</version>
     </dependency>
     <dependency>
     	<groupId>com.knowprocess.bpm</groupId>
@@ -134,20 +134,6 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>
-              <groupId>link.omny.custmgmt</groupId>
-              <artifactId>custmgmt</artifactId>
-              <classifier>jar</classifier>
-            </exclude>
-            <exclude>
-              <artifactId>com.knowprocess.bpm</artifactId>
-              <groupId>work-mgmt</groupId>
-              <classifier>jar</classifier>
-            </exclude>
-          </excludes>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
