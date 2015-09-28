@@ -16,11 +16,13 @@ var ractive = new AuthenticatedRactive({
   // Here, we're passing in some initial data
   data: {
     stdPartials: [
+      { "name": "currentUserSect", "url": "/partials/current-user-sect.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"}
     ],
+    title: 'User Management',
     username: localStorage['username'],
     users: []
   },
@@ -39,10 +41,7 @@ var ractive = new AuthenticatedRactive({
         contentType: 'application/json',
         success: completeHandler = function(data) {
           console.log('data: '+ data);
-          ractive.get('current.groups').merge({id:newGroup.toLowerCase(),name:newGroup});
-        },
-        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-            alert("Bother: "+textStatus+':'+errorThrown);
+          ractive.merge('current.groups', {id:newGroup.toLowerCase(),name:newGroup});
         }
       });
   },
