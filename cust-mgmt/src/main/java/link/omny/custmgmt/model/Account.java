@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 // @DiscriminatorValue("account")
 // @Table(name = "account_info")
 @Data
+// @ToString(exclude = "contact")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account implements Serializable {
@@ -157,6 +158,16 @@ public class Account implements Serializable {
                 new CustomAccountField(key, value == null ? null : value
                         .toString()));
         }
+    }
+
+    @Override
+    public String toString() {
+        return String
+                .format("Account [id=%s, name=%s, companyNumber=%s, aliases=%s, businessWebsite=%s, shortDesc=%s, description=%s, incorporationYear=%s, noOfEmployees=%s, tenantId=%s, firstContact=%s, lastUpdated=%s, customFields=%s]",
+                        id, name, companyNumber, aliases, businessWebsite,
+                        shortDesc, description, incorporationYear,
+                        noOfEmployees, tenantId, firstContact, lastUpdated,
+                        customFields);
     }
 
 }

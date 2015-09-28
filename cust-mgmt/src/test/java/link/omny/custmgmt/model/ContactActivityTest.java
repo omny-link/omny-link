@@ -19,9 +19,7 @@ public class ContactActivityTest {
         contact.getActivities().add(
                 new Activity("valuation", new GregorianCalendar(2015, 0, 2, 13,
                         0, 0).getTime()));
-        contact.getActivities().add(
-                new Activity("register", new GregorianCalendar(2015, 0, 1, 13,
-                        0, 0).getTime()));
+        contact.getActivities().add(new Activity("register", null));
         contact.getActivities().add(
                 new Activity("login", new GregorianCalendar(2015, 1, 1, 13, 0,
                         0).getTime()));
@@ -49,4 +47,8 @@ public class ContactActivityTest {
         assertTrue(contact.haveSentEmail("welcome"));
     }
 
+    @Test
+    public void testTimeSinceNonExistantRegistration() {
+        assertTrue(contact.getTimeSinceRegistered() == -1);
+    }
 }
