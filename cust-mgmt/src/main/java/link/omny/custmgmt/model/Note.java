@@ -1,5 +1,6 @@
 package link.omny.custmgmt.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -23,11 +24,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Data
+// @ToString(exclude = "contact")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Note {
+public class Note implements Serializable {
+
+    private static final long serialVersionUID = 6032851169275605576L;
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(Note.class);
+
+    /**
+     * Permits auto-filled columns such as created date to be suspended.
+     */
+    private static boolean bulkImport;
+
+    public static void setBulkImport(boolean b) {
+        bulkImport = b;
+    }
 
     @Id
     @Column(name = "id")
@@ -54,10 +67,7 @@ public class Note {
     // @JsonBackReference
     private Contact contact;
 
-    /**
-     * Permits auto-filled columns such as created date to be suspended.
-     */
-    private static boolean bulkImport;
+
 
     @PrePersist
     void preInsert() {
@@ -72,7 +82,15 @@ public class Note {
         setContent(content);
     }
 
-    public static void setBulkImport(boolean b) {
-        bulkImport = b;
+    @Override
+    public String toString() {
+        System.out.println("toString");
+        System.out.println("  id:" + id);
+        System.out.println("  author:" + author);
+        System.out.println("  created: " + created);
+        System.out.println("  content: " + content);
+        return String.format("Note [id=%s, author=%s, created=%s, content=%s]",
+                id, author, created, content);
     }
+
 }

@@ -1,6 +1,8 @@
 package link.omny.custmgmt.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -38,6 +40,21 @@ public class ContactTest {
         assertEquals("Mr", contact.getTitle());
         assertEquals("and", contact.getFirstName());
         assertEquals("Mrs Rutherford", contact.getLastName());
+    }
+
+    @Test
+    public void testGettingIncompleteFullName() {
+        Contact contact = new Contact();
+        contact.setFirstName("Tim");
+        assertEquals("Tim", contact.getFirstName());
+        assertEquals("Tim", contact.getFullName());
+
+        try {
+            String s = contact.toString();
+            assertTrue(!s.contains("fullName"));
+        } catch (Exception e) {
+            fail(e.getClass().getName() + ":" + e.getMessage());
+        }
     }
 
 }

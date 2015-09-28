@@ -89,4 +89,11 @@ public class Activity implements Serializable {
         lastUpdated = new Date();
     }
 
+    @Override
+    public String toString() {
+        return String
+                .format("Activity [id=%s, type=%s, content=%s, occurred=%s, lastUpdated=%s]",
+                        id, type, content, occurred, lastUpdated);
+    }
+
 }
