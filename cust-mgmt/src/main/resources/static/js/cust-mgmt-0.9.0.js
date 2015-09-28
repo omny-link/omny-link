@@ -35,6 +35,7 @@ var ractive = new AuthenticatedRactive({
     contacts: [],
     filter: undefined,
     //saveObserver:false,
+    title: 'Contact Management',
     username: localStorage['username'],
     age: function(timeString) {
       return i18n.getAgeString(new Date(timeString))
