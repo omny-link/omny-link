@@ -16,15 +16,15 @@
     <relativePath>..</relativePath>
   </parent>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<start-class>com.knowprocess.bpm.Application</start-class>
-		<java.version>1.7</java.version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <start-class>com.knowprocess.bpm.Application</start-class>
+    <java.version>1.7</java.version>
     <activiti.version>5.18.0-SNAPSHOT</activiti.version>
     <serenity.version>1.0.21</serenity.version>
     <serenity.maven.version>1.0.21</serenity.maven.version>
     <webdriver.driver>firefox</webdriver.driver>
-	</properties>
+  </properties>
 
   <repositories>
       <repository>
@@ -176,10 +176,10 @@
       <!-- Because this depends on toxos process assertions we need to 
            exclude the older activiti-spring it depends on -->
       <exclusions>
-      	<exclusion>
+        <exclusion>
           <artifactId>activiti-spring</artifactId>
-      	  <groupId>org.activiti</groupId>
-      	</exclusion>
+          <groupId>org.activiti</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -229,6 +229,11 @@
     </dependency>
     <!-- Web jars -->
     <dependency>
+      <groupId>link.omny</groupId>
+      <artifactId>fonts</artifactId>
+      <version>1.0.0</version>
+    </dependency>    
+    <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>bootstrap</artifactId>
       <version>3.3.5</version>
@@ -251,7 +256,7 @@
   </dependencies>
 
   <build>
-		<plugins>
+    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -261,10 +266,20 @@
             <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
-    	<plugin>
-    		<groupId>org.springframework.boot</groupId>
-    		<artifactId>spring-boot-maven-plugin</artifactId>
-    	</plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+            <configuration>
+              <classifier>exec</classifier>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <!--
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
@@ -307,30 +322,8 @@
         </executions>
       </plugin>
        -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-artifacts</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${project.build.directory}/${project.artifactId}-${project.version}.jar.original</file>
-                  <type>jar</type>
-                  <classifier>library</classifier>
-                </artifact>
-              </artifacts>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-		</plugins>
-	</build>
+    </plugins>
+  </build>
   <dependencyManagement>
     <dependencies>
       <dependency>

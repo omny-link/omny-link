@@ -105,8 +105,6 @@
       <groupId>com.knowprocess.bpm</groupId>
       <artifactId>work-mgmt</artifactId>
       <version>2.0-SNAPSHOT</version>
-      <!-- TODO Debug fails with class not found if this is enabled
-      <classifier>library</classifier>-->
     </dependency>
     <!-- Compiles against SLF4J but this is the implementation of choice -->
     <dependency>
@@ -116,9 +114,7 @@
     <dependency>
       <groupId>io.onedecision</groupId>
       <artifactId>onedecision-engine</artifactId>
-      <version>0.8.3</version>
-      <!--Eclipse debugger does not find this TODO create profile
-      <classifier>library</classifier> -->
+      <version>0.9.0-SNAPSHOT</version>
     </dependency>
     <!-- Generates REST documentation -->
     <dependency>
@@ -170,25 +166,13 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>attach-artifacts</id>
-            <phase>package</phase>
             <goals>
-              <goal>attach-artifact</goal>
+              <goal>repackage</goal>
             </goals>
             <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${project.build.directory}/${project.artifactId}-${project.version}.jar.original</file>
-                  <type>jar</type>
-                  <classifier>library</classifier>
-                </artifact>
-              </artifacts>
+              <classifier>exec</classifier>
             </configuration>
           </execution>
         </executions>

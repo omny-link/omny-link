@@ -5,5 +5,7 @@
 .springBeans
 *.iml
 *.log
+application.properties
+log4j.properties
 src/main/resources/application.properties
 /target/
