@@ -184,7 +184,8 @@ tfoot th {
 }
 
 .admin,
-.super-admin { 
+.super-admin,
+.user { 
   display: none;
 }
 .ajax-loader {

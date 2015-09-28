@@ -65,6 +65,7 @@ var AuthenticatedRactive = Ractive.extend({
       ractive.set('profile',profile);
       $('.profile-img').empty().append('<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34"/>');
       if (ractive.hasRole('super_admin')) $('.super-admin').show();
+      else $('.user').show();
       $auth.loadTenantConfig(ractive.get('profile.tenant'));
     })
     .error(function(){

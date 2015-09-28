@@ -110,6 +110,7 @@ var ractive = new AuthenticatedRactive({
       { "name": "titleArea", "url": "/partials/title-area.html"}
     ],
     tasks: [],
+    title: 'Work Management',
     username: localStorage['username'],
   },
   collapseSendMessage: function() {

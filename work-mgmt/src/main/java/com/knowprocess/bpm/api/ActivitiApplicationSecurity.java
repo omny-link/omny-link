@@ -42,12 +42,13 @@ public class ActivitiApplicationSecurity extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers(/* "/*.html", */"/process-instances/**",
                         "/tasks/**", "/tenants/**", "/users/**")
-                // .permitAll()
                 .hasRole("user")
                 .antMatchers("/admin.html", "/deployments/**",
                         "/process-definitions/**")
-                // .permitAll()
-                .hasRole("admin").anyRequest().authenticated().and()
+                .hasRole("admin")
+                .antMatchers("/admin/**")
+                .hasRole("super_admin")
+                .anyRequest().authenticated().and()
                 .formLogin().loginPage("/login").failureUrl("/login?error")
                 .successHandler(getSuccessHandler()).permitAll().and().csrf()
                 .disable().httpBasic();
