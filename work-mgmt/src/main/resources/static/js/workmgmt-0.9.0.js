@@ -18,7 +18,7 @@ var ractive = new AuthenticatedRactive({
     enumCtrl: function() {
       return $('#enumTemplate').html();
     },
-    jsonCtrl: function() {
+    jsonCtrl: function(v) {
       return $('#jsonTemplate').html();
     },
     linkCtrl: function() {
@@ -35,15 +35,17 @@ var ractive = new AuthenticatedRactive({
       console.log('renderUserForm');
       var form = ractive.get('current.formKey');
       // process migration issue...
-      if (form == 'simpleTodo') form = 'partials/simpleTodoFormExtension.html';
+      if (form == 'simpleTodo') form = '/partials/simpleTodoFormExtension.html';
+      console.log('loading form: '+form);
       $.get(form, function (partial) {
         if (ractive != undefined) ractive.resetPartial('userForm',partial);
         ractive.initControls();
-        var url = ractive.get('current.processVariables.contactId'); 
-        
-        $.getJSON(url, function (data) {
-          ractive.set('current.processVariables.contact',data);
-        });
+
+        if (ractive.get('current.processVariables.contactId') != undefined) {
+          $.getJSON(ractive.get('current.processVariables.contactId'), function (data) {
+            ractive.set('current.processVariables.contact',data);
+          });
+        }
       });
       return '<div>Loading...</div>';
     }

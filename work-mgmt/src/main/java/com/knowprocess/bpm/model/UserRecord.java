@@ -14,6 +14,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import lombok.Data;
+import lombok.ToString;
 
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.ActivitiObjectNotFoundException;
@@ -31,8 +32,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Data
+@ToString(exclude = { "groups", "info" })
 @Component
 public class UserRecord implements Principal, User, UserDetails {
+
+    private static final long serialVersionUID = 6444591690674352972L;
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(UserRecord.class);

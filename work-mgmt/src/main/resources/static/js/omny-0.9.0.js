@@ -50,12 +50,14 @@ function AuthHelper() {
   }
 }
 
-ractive.observe('username', function(newValue, oldValue, keypath) {
-  if (ractive['getProfile'] != undefined) ractive.getProfile();
-});
+
 
 $(document).ready(function() {
   ractive.set('saveObserver',false);
+
+  ractive.observe('username', function(newValue, oldValue, keypath) {
+    if (ractive['getProfile'] != undefined) ractive.getProfile();
+  });
   
   if (ractive.tenantCallbacks==undefined) ractive.tenantCallbacks = $.Callbacks();
   ractive.tenantCallbacks.add(function() {

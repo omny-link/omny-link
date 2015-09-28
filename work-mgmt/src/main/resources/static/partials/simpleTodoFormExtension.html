@@ -1,10 +1,31 @@
-<div class="clearfix"></div>
-<ul>
-	{{# keys}}
-	  <li>
-	    <label class="col-md-3">{{.}}</label>
-	    <input class="form-control" id="cur{{.}}" readonly value="{{obj[.]}}">
-	  </li>
-	{{/}}
-</ul>
+<section style="clear:both">
+  <h3>Data</h3>
+  <ul class="form edit-form" style="">
+    {{#current.formProperties:i}}
+      <li>
+        {{# renderAs(.) == 'enum' }} {{> enumCtrl }} {{/}}
+        {{# renderAs(.) == 'json' }} {{> jsonCtrl { id: ..id, name: ..name, obj: JSON.parse(..value), keys: keys(JSON.parse(..value)) } }} {{/}}
+        {{# renderAs(.) == 'link' }} {{> linkCtrl }} {{/}}
+        {{# renderAs(.) == 'default' }} {{> defaultCtrl }} {{/}}
+      </li>
+    {{/}}
+  </ul>
+</section>
 
+<section class="variables" style="display:none">
+  <h3>Local Variables</h3>
+  <ul class="form edit-form" style="">          
+    {{#current.taskLocalVarNames:i}}
+      <li>{{i}} {{.}} {{current.taskLocalVariables[.]}}</li>
+    {{/current.taskLocalVarNames}}
+  </ul>
+
+  <h3>Process Variables</h3>
+  <ul class="form edit-form" style="">          
+    {{#current.processVarNames:i}}
+      <li>{{i}} {{.}} 
+        {{ typeof current.processVariables[.] == 'object' ? JSON.stringify(current.processVariables[.]) : current.processVariables[.] }}
+      </li>
+    {{/current.processVarNames}}
+  </ul>
+</section>

@@ -6,5 +6,4 @@
 *.iml
 *.log
 src/main/resources/application.properties
-src/main/resources/static/tenants
 /target/

@@ -68,8 +68,8 @@
                 </div>
                 <div class="form-group">
                   <label class="" for="messagePattern">Message Exchange Pattern</label>
-                  <label class="radio"><input class="" name="{{message.pattern}}" type="radio" checked value="inOut"> In-Out</label>
-                  <label class="radio"><input class="" name="{{message.pattern}}" type="radio" value="inOnly"> In-Only</label>
+                  <label class="radio"><input class="" name="{{message.pattern}}" type="radio" value="inOut"> In-Out</label>
+                  <label class="radio"><input class="" name="{{message.pattern}}" type="radio" checked="checked" value="inOnly"> In-Only</label>
                 </div>
                 <div class="form-group">
                   <label for="bizKey">Business Identifier</label>
@@ -148,38 +148,10 @@ searchTerm!=undefined && (
           </div>
         
           {{#current.formKey!=undefined}}
-            {{> userForm }}
+            {{>userForm { current: current } }}
           {{/}}
           {{#current.formKey==undefined && current.formProperties.length>0}}
-            <section style="clear:both">
-              <h3>Data</h3>
-              <ul class="form edit-form" style="">          
-                {{#current.formProperties:i}}
-                  <li>
-                    {{# renderAs(.) == 'enum' }} {{> enumCtrl }} {{/}}
-                    {{# renderAs(.) == 'json' }} {{> jsonCtrl }} {{/}}
-                    {{# renderAs(.) == 'link' }} {{> linkCtrl }} {{/}}
-                    {{# renderAs(.) == 'default' }} {{> defaultCtrl }} {{/}}
-                  </li>
-                {{/current.formProperties}}
-              </ul>
-
-              <section class="variables" style="display:none">
-                <h3>Local Variables</h3>
-                <ul class="form edit-form" style="">          
-                  {{#current.taskLocalVarNames:i}}
-                    <li>{{i}} {{.}} {{current.taskLocalVariables[.]}}</li>
-                  {{/current.taskLocalVarNames}}
-                </ul>
-
-                <h3>Process Variables</h3>
-                <ul class="form edit-form" style="">          
-                  {{#current.processVarNames:i}}
-                    <li>{{i}} {{.}} {{current.processVariables[.]}}</li>
-                  {{/current.processVarNames}}
-                </ul>
-              </section>
-            </section>
+            {{>userForm { current: current } }}
           {{/}}
         </form>
 
@@ -203,8 +175,15 @@ searchTerm!=undefined && (
   </script>
   <script id="jsonTemplate" type="text/html">
     <fieldset><legend class="col-md-12">{{name}}</legend>
-      <!-- TODO need to load this from external file --> 
-      {{> (current.formKey+'FormExtension') { id: ..id, name: ..name, obj: JSON.parse(..value), keys: keys(JSON.parse(..value)) } }}
+<div class="clearfix"></div>
+<ul>
+  {{# keys}}
+    <li>
+      <label class="col-md-3">{{.}}</label>
+      <input class="form-control" id="cur{{.}}" readonly value="{{obj[.]}}">
+    </li>
+  {{/}}
+</ul>
     </fieldset>
   </script>
   <script id="linkTemplate" type="text/html">
