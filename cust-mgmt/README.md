@@ -70,6 +70,9 @@ Releases
 
     #45 New stages to Gardenatics, also revising process
     Gardenatics
+    
+    work-mgmt #23 Save message field in notes
+    Gardenatics
 
 0.8.0 - 5 Jul 15
 
