@@ -24,6 +24,32 @@ Roadmap
 Releases
 --------
 
+1.0.0 beta 1 - 28 Sep 15
+
+    #18 profile page
+    enhancement
+
+    #16 Ensure cannot switch between tenants unless have super-admin role
+    bug
+
+    #15 Configure Maven to include Spring Boot executable jars only in omny-link-server
+    support
+
+    #14 Resolve issue opening Simple TODO forms
+    bug support Firm Gains
+
+    #13 Fix duplicate index.html
+    support
+
+    #12 Reorder contact actions and change logo click destination
+    enhancement Firm Gains
+
+    #10 Exception in log (no visible impact) on opening Lorenzo Jones
+    bug confirmed Firm Gains contact
+
+    #9 Cannot open Lorenzo Jones after upgrade to 0.9.0
+    bug confirmed Firm Gains contact
+
 0.9.0 - 20 Sep 15
 
     #81 New index page providing opportunity for embedded docs / training

@@ -6,7 +6,7 @@
   <groupId>link.omny</groupId>
   <artifactId>omny-link-root</artifactId>
   <packaging>pom</packaging>
-  <version>0.9.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   
   <organization>
     <name>Omny Link</name>
