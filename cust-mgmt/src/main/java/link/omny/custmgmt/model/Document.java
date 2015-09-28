@@ -1,5 +1,6 @@
 package link.omny.custmgmt.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -23,9 +24,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Data
+// @ToString(exclude = "contact")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Document {
+public class Document implements Serializable {
+
+    private static final long serialVersionUID = 157180600778360331L;
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(Document.class);
@@ -58,5 +62,11 @@ public class Document {
     @PrePersist
     void preInsert() {
         created = new Date();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Document [id=%s, author=%s, created=%s, url=%s]",
+                id, author, created, url);
     }
 }

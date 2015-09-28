@@ -37,9 +37,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
-// @DiscriminatorValue("contact")
 // @Table(name = "contact")
 @Data
+// @ToString(exclude = "fullName")
 @AllArgsConstructor
 @NoArgsConstructor
 // TODO for some reason using these instead of jacksonBuilder in Application
@@ -272,7 +272,8 @@ public class Contact implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     private List<Document> documents;
 
-    private Date now = new Date();
+    @Transient
+    private Date now;
 
     public List<Activity> getActivities() {
         if (activity == null) {
@@ -307,7 +308,11 @@ public class Contact implements Serializable {
     }
 
     public String getFullName() {
-        return String.format("%1$s %2$s", firstName, lastName);
+        String fn = firstName == null ? "" : firstName;
+        String ln = lastName == null ? "" : lastName;
+        LOGGER.debug("  have firstName: " + fn);
+        LOGGER.debug("  have lastName: " + ln);
+        return String.format("%1$s %2$s", fn, ln).trim();
     }
 
     @PreUpdate
@@ -319,46 +324,57 @@ public class Contact implements Serializable {
         lastUpdated = new Date();
     }
 
+    private Date getNow() {
+        if (now == null) {
+            now = new Date();
+
+        }
+        return now;
+    }
+
+    private long getTimeSinceSafely(String type) {
+        long time = -1;
+        try {
+            Activity lastEmail = getLastActivityOfType(type);
+            time = lastEmail == null ? -1 : getNow().getTime()
+                    - lastEmail.getOccurred().getTime();
+        } catch (Throwable e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        LOGGER.info(String.format("determined time since %1$s: %2$d", type,
+                time));
+        return time;
+    }
     @JsonProperty("timeSinceBusinessPlanDownload")
     public long getTimeSinceBusinessPlanDownload() {
-        Activity download = getLastActivityOfType("businessPlanDownload");
-        return download == null ? -1 : now.getTime()
-                - download.getOccurred().getTime();
+        return getTimeSinceSafely("businessPlanDownload");
     }
 
     @JsonProperty("timeSinceLogin")
     public long getTimeSinceLogin() {
-        Activity lastLogin = getLastActivityOfType("login");
-        return lastLogin == null ? -1 : now.getTime()
-                - lastLogin.getOccurred().getTime();
+        return getTimeSinceSafely("login");
     }
 
     @JsonProperty("timeSinceFirstLogin")
     public long getTimeSinceFirstLogin() {
         Activity firstLogin = getFirstActivityOfType("login");
-        return firstLogin == null ? -1 : now.getTime()
+        return firstLogin == null ? -1 : getNow().getTime()
                 - firstLogin.getOccurred().getTime();
     }
 
     @JsonProperty("timeSinceRegistered")
     public long getTimeSinceRegistered() {
-        Activity registered = getFirstActivityOfType("register");
-        return registered == null ? -1 : now.getTime()
-                - registered.getOccurred().getTime();
+        return getTimeSinceSafely("register");
     }
 
     @JsonProperty("timeSinceEmail")
     public long getTimeSinceEmail() {
-        Activity lastEmail = getLastActivityOfType("email");
-        return lastEmail == null ? -1 : now.getTime()
-                - lastEmail.getOccurred().getTime();
+        return getTimeSinceSafely("email");
     }
 
     @JsonProperty("timeSinceValuation")
     public long getTimeSinceValuation() {
-        Activity firstLogin = getLastActivityOfType("valuation");
-        return firstLogin == null ? -1 : now.getTime()
-                - firstLogin.getOccurred().getTime();
+        return getTimeSinceSafely("valuation");
     }
 
     public boolean haveSentEmail(String emailName) {
@@ -387,6 +403,7 @@ public class Contact implements Serializable {
     }
 
     public Activity getLastActivityOfType(String type) {
+        LOGGER.info("getLastActivityOfType: " + type);
         Activity lastAct = null;
         for (Activity act : getActivities()) {
             if (type.equalsIgnoreCase(act.getType())
@@ -395,18 +412,33 @@ public class Contact implements Serializable {
                 lastAct = act;
             }
         }
+        LOGGER.info("  found last activity: " + lastAct);
         return lastAct;
     }
 
     public Activity getFirstActivityOfType(String type) {
-        Activity firstLogin = null;
+        LOGGER.info("getFirstActivityOfType: " + type);
+        Activity firstAct = null;
         for (Activity act : getActivities()) {
             if (type.equalsIgnoreCase(act.getType())
-                    && (firstLogin == null || firstLogin.getOccurred().before(
+                    && (firstAct == null || firstAct.getOccurred().before(
                             act.getOccurred()))) {
-                firstLogin = act;
+                firstAct = act;
             }
         }
-        return firstLogin;
+        LOGGER.info("  found last activity: " + firstAct);
+        return firstAct;
+    }
+
+    @Override
+    public String toString() {
+        return String
+                .format("Contact [id=%s, firstName=%s, lastName=%s, title=%s, email=%s, emailConfirmed=%s, emailConfirmationCode=%s, phone1=%s, phone2=%s, address1=%s, address2=%s, town=%s, countyOrCity=%s, postCode=%s, country=%s, stage=%s, enquiryType=%s, accountType=%s, owner=%s, doNotCall=%s, doNotEmail=%s, source=%s, medium=%s, campaign=%s, keyword=%s, tags=%s, firstContact=%s, lastUpdated=%s, tenantId=%s, customFields=%s, account=%s, activity=%s]",
+                        id, firstName, lastName, title, email, emailConfirmed,
+                        emailConfirmationCode, phone1, phone2, address1,
+                        address2, town, countyOrCity, postCode, country, stage,
+                        enquiryType, accountType, owner, doNotCall, doNotEmail,
+                        source, medium, campaign, keyword, tags, firstContact,
+                        lastUpdated, tenantId, customFields, account, activity);
     }
 }
