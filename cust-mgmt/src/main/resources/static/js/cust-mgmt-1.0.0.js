@@ -2,38 +2,14 @@ var EASING_DURATION = 500;
 fadeOutMessages = true;
 var newLineRegEx = /\n/g;
 
-// 4. We've got an element in the DOM, we've created a template, and we've
-// loaded the library - now it's time to build our Hello World app.
 var ractive = new AuthenticatedRactive({
-  // The `el` option can be a node, an ID, or a CSS selector.
   el: 'container',
-  
-  // If two-way data binding is enabled, whether to only update data based on 
-  // text inputs on change and blur events, rather than any event (such as key
-  // events) that may result in new data
   lazy: true,
-  
-  // We could pass in a string, but for the sake of convenience
-  // we're passing the ID of the <script> tag above.
   template: '#template',
-
-  // partial templates
-  // partials: { question: question },
-
-  // Here, we're passing in some initial data
   data: {
     csrfToken: getCookie(CSRF_COOKIE),
-    //server: 'http://api.knowprocess.com:8082',
-/*    tenant: { 
-      name: 'firmgains', 
-      contactFields: [], 
-      contactListFields: [
-        { label: 'Share of Business', key: 'shareOfBusiness' },
-        { label: 'Already contacted', key: 'alreadyContacted'}, 
-      ],
-      */
     contacts: [],
-    filter: undefined,
+    filter: {field: "stage", negate: true, value: "Cold"},
     //saveObserver:false,
     title: 'Contact Management',
     username: localStorage['username'],
@@ -46,7 +22,6 @@ var ractive = new AuthenticatedRactive({
       } else if (!Array.isArray(obj['customFields'])) {
         return obj.customFields[name];
       } else {
-        //console.error('customField 30');
         var val;
         $.each(obj['customFields'], function(i,d) {
           if (d.name == name) val = d.value;
@@ -86,12 +61,36 @@ var ractive = new AuthenticatedRactive({
     },
     hash: function(email) {
       if (email == undefined) return '';
-      console.log('hash '+email+' = '+ractive.hash(email));
+      //console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
     matchFilter: function(obj) {
-      if (ractive.get('filter')==undefined) return true;
-      else return ractive.get('filter').value.toLowerCase()==obj[ractive.get('filter').field].toLowerCase();
+      var filter = ractive.get('filter');
+      if (filter==undefined) {
+        return true;
+      } else {
+        var rtn = filter.value.toLowerCase()==obj[filter.field].toLowerCase();
+        if (filter.negate==true) {
+          return !rtn;
+        } else {
+          return rtn;
+        }
+      }
+    },
+    matchSearch: function(obj) {
+      var searchTerm = ractive.get('searchTerm');
+      //console.info('matchSearch: '+searchTerm);
+      if (searchTerm==undefined || searchTerm.length==0) {
+        return true;
+      } else {
+        return (obj.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0
+          || (obj.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0
+          || (obj.email.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0
+          || (obj.town.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0
+          || (obj.countyOrCity.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0
+          || (obj.country.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0
+          || (obj.accountName.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0;
+      }
     },
     stdPartials: [
       { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
