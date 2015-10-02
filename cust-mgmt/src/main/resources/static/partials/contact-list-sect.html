@@ -51,18 +51,7 @@
     </thead>
     <tbody>
     {{#each contacts:i}}
-      {{# (searchTerm!=undefined && (
-            (this.firstName!=undefined && this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
-            || (this.lastName!=undefined && this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-            || (this.email!=undefined && this.email.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-            || (this.town!=undefined && this.town.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-            || (this.countyOrCity!=undefined && this.countyOrCity.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-            || (this.country!=undefined && this.country.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-            || (this.accountName!=undefined && this.accountName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-          ))
-          && 
-          (matchFilter(this))
-      }}
+      {{# matchSearch(this) && matchFilter(this) }}
           <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
             <td>{{i+1}}</td>
             <td>{{firstName}} {{lastName}}</td>
