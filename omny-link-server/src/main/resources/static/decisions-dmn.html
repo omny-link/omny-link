@@ -2,12 +2,14 @@
 <html lang='en-GB'>
 <head>
   <meta charset='utf-8'>
-  <title>Domain Model</title>
+  <title>Decisions Repository</title>
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
-  <link href="css/omny-1.0.0.css" rel="stylesheet">
-  <link href="css/domain-0.8.0.css" rel="stylesheet">
-  <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
+  <link href="css/omny-1.1.0.css" rel="stylesheet">
+  <link href="css/decisions-0.8.0.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/styles/default.min.css">
+  
+  <link rel="icon" type="image/png" href="images/one-decision-icon-16x16.png" />  
 </head>
 <body>
   <div class="clearfix" id="messages"></div>
@@ -15,9 +17,10 @@
   <script id='template' type='text/ractive'>
     {{>profileArea}}
     {{>titleArea}}
-    {{>domainSect}}
+    {{>dmnListSect}}
+    {{>dmnCurrentSect}}
     {{>poweredBy}}
-    {{>sidebar { active: 'domain.html' }}}
+    {{>sidebar { active: 'decisions-dmn.html' }}}
   </script>
 
   <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
@@ -27,8 +30,9 @@
 
   <script src="js/md5.min.js"></script>
   <script src="js/one-decision-0.8.0.js"></script>
-  <script src="js/domain-0.8.0.js"></script>
-  <script src="js/omny-1.0.0.js"></script>
+  <script src="js/decisions-dmn-0.8.0.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/highlight.min.js"></script>
+  <script src="js/omny-1.1.0.js"></script>
   <script type="text/javascript">
     $(document).ready(function() {
       $auth.getProfile(ractive.get('username'));
