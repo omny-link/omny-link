@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -290,6 +291,29 @@ public class ContactController {
         Activity activity = new Activity(type, new Date(), content);
         activity.setContact(contactRepo.findOne(contactId));
         activityRepo.save(activity);
+    }
+
+    /**
+     * Confirm a user's email by returning a code sent to that address.
+     * 
+     * @param tenantId
+     *            The tenant this contact is associated with.
+     * @param contactId
+     *            Id of contact whose address is being confirmed.
+     * @param email
+     *            Address being confirmed
+     * @param code
+     *            Code to compare to the one previously issued.
+     */
+    @RequestMapping(value = "/{contactId}/{email}", method = RequestMethod.POST)
+    public ModelAndView confirmEmail(@PathVariable("tenantId") String tenantId,
+            @PathVariable("contactId") Long contactId,
+            @PathVariable("email") String email,
+            @RequestParam("code") String code) {
+        Contact contact = contactRepo.findOne(contactId);
+        contact.confirmEmail(code);
+        contactRepo.save(contact);
+        return new ModelAndView("emailConfirmation");
     }
 
     private List<ShortContact> wrap(List<Contact> list) {

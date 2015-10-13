@@ -6,16 +6,10 @@
   <name>Fonts</name>
   <inceptionYear>2015</inceptionYear>
 
+  <groupId>link.omny</groupId>
   <artifactId>fonts</artifactId>
   <version>1.0.0</version>
   <packaging>jar</packaging>
-
-  <parent>
-    <groupId>link.omny</groupId>
-    <artifactId>omny-link-root</artifactId>
-    <version>0.9.1-SNAPSHOT</version>
-    <relativePath>..</relativePath>
-  </parent>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

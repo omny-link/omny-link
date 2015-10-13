@@ -1,6 +1,7 @@
 package link.omny.custmgmt.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -57,4 +58,16 @@ public class ContactTest {
         }
     }
 
+    @Test
+    public void testEmailConfirmation() {
+        Contact contact = new Contact("Fred", "Flintstone",
+                "fred@bedrockslate.com", "omny");
+        assertTrue(!contact.isEmailConfirmed());
+
+        String code = contact.getEmailConfirmationCode();
+        assertNotNull(code);
+
+        contact.confirmEmail(code);
+        assertTrue(contact.isEmailConfirmed());
+    }
 }

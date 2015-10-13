@@ -426,6 +426,16 @@ a.glyphicon-remove {
 .profile-img img { 
 	margin-top: -9px;
 }
+.wizard { 
+	clear: both; 
+	margin-top: 50px;
+}
+.wizard-step li a {
+	border-radius: 40px;
+  border: #337ab7 solid 1px;
+  padding: 5px 15px;
+  margin-right: 50px;
+}
 #messages { 
   position: fixed;
   top: 45px;
