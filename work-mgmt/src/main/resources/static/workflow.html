@@ -2,187 +2,35 @@
 <html lang='en-GB'>
 <head>
   <meta charset='utf-8'>
-  <title>Customer Management</title>
-  <!-- 
-  <link href='http://fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
-   --><link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-0.1.0.css" rel="stylesheet">
+  <title>Workflow Definer</title>
+  <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
+  <link href="css/omny-1.1.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 
-<!--
-  1. This is the element we'll render our Ractive to.
--->
-<body class="container" id="container">
-
-  <!--
-       2. You can load a template in many ways. For convenience, we'll include it in
-       a script tag so that we don't need to mess around with AJAX or multiline strings.
-       Note that we've set the type attribute to 'text/ractive' - though it can be
-       just about anything except 'text/javascript'
-  -->
+<body>
+  <div class="clearfix" id="messages"></div>
+  <div class="container" id="container"></div>
+  
   <script id='template' type='text/ractive'>
-    <div class="profile pull-right">
-      <form name="logoutForm" action="/logout" method="POST">
-        <span>Logged in as: {{username}}</span>
-        <span class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></span>
-        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
-      </form>
-    </div>
-    <h1>
-      <a class="nav navbar-brand" href="http://omny.link">
-        <img src="/images/omny-logo.png" alt="logo"/>
-      </a>
-      <span>Domain model</span>
-    </h1>
-    <div class="clearfix" id="messages">
-       <!--<p class=" bg-danger text-danger">Beta! Please ensure you have backups!</p>-->
-    </div>
+    {{>profileArea}}
+    {{>titleArea}}
 
-    {{#each entities:i}}
-      <section id="entity{{i}}Sect" class="{{# i==0 }} active {{/}} entity" style="display:none">
-        <h2>
-          <span>{{label}}</span>
-        </h2>
-     
-        <section id="entity{{i}}DiagramSect" class="entity-context">
-          <h3>
-            <span>Context</span>
-          </h3>
-         
-          <div>
-            <span class="clickable glyphicon glyphicon-chevron-left" aria-hidden="true" on-click="previousEntity()" style="{{# i==0 }} visibility: hidden {{/}}"></span>
-            <img class="entity-context" src="{{imageUrl}}" alt="{{description}}"/>
-            <span class="clickable glyphicon glyphicon-chevron-right" aria-hidden="true" on-click="nextEntity()"  style="{{# i==entities.length-1 }} visibility: hidden {{/}}"></span>
-          </div> 
-        </section>    
-
-        <section id="entity{{i}}FieldsSect" class="entity-fields">
-          <h2>
-            <span>Fields</span>
-            <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addField()"></span>
-            <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-          </h2>
-          <table id="contactsTable" class="table table-striped">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Field Name</th>
-                <th>Label</th>
-                <th>Type</th>
-                <th>Required?</th>
-                <th>Default</th>
-                <th>Hint text</th>
-                <th>Validation</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each fields:j}}
-                {{# searchTerm!=undefined && (
-                    this.name.toLowerCase().indexOf(searchTerm.toLowerCase())===0 
-                  ) }}
-                  <tr data-href="{{name}}" on-click="edit(this)">
-                    <td>{{j+1}}</td>
-                    <td>{{name}}</td>
-                    <td>{{label}}</td>
-                    <td>{{type}}</td>
-                    <td>{{required}}</td>
-                    <td>{{default}}</td>
-                    <td>{{hint}}</td>
-                    <td>{{pattern}}</td>
-                  </tr>
-                {{/}}
-              {{/each}}
-            </tbody>
-          </table>
-        </section>
-      </section>
-    {{/each}}
-
+    {{>omnyWorkflowWizard}}
   </script>
 
+  <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
+  <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="/webjars/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js"></script>
+  <script src="/webjars/Bootstrap-3-Typeahead/3.1.1/bootstrap3-typeahead.js"></script>
+  <script src="/webjars/ractive/0.7.1/ractive.min.js"></script>
 
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="js/jquery-1.11.0.min.js"></script>
-  <!-- Include all compiled plugins (below), or include individual files as needed -->
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/bootstrap3-typeahead.js"></script>
-  <!--
-       3. You can always get the most recent stable version from the URL below.
-       If you want the newest features, use the 'edge' version instead:
-
-           http://cdn.ractivejs.org/edge/ractive.min.js
-
-       If you need IE8 support, change 'ractive' to 'ractive-legacy'.
-  -->
-  <script src="js/ractive.min.js"></script>
-  <script src="js/login-0.1.0.js"></script>
-  <script src="js/custmgmt-0.1.0.js"></script>
-  <script>
-    $(document).ready(function() {
-      ractive.set('entityIdx', 0);
-      ractive.set('entities', [
-          { 
-            name: "contact", 
-            description: "A Contact is associated with up to one Account, zero to many Notes and zero to many Documents. An Account typically has one contact though may have more.",
-            imageUrl: "images/domain/contact-context.png",
-            fields: [
-			        { name: "firstName", label: "First Name", hint:"Your first or given name", required: true, type: "text" },
-			        { name: "lastName", label: "Last Name", hint:"Your last or family name", required: true, type: "text" },
-			        { name: "title", label: "Title", hint:"Your title / salutation", required: false, type: "text" },
-			        { name: "email", label: "Email Address", hint:"Your business email address", required: true, type: "text" },
-			        { name: "phone1", label: "Preferred Phone Number", hint:"Your preferred telephone number", required: false, type: "tel", pattern:"\\+?[0-9, ]{0,13}" },
-			        { name: "phone2", label: "Other Phone Number", hint:"A backup telephone number", required: false, type: "tel", pattern:"\\+?[0-9, ]{0,13}" },
-			        { name: "address1", label: "Address", hint:"House or apartment name or number", required: false, type: "text" },
-			        { name: "address2", label: "", hint:"Street name", required: false, type: "text" },
-			        { name: "countyOrCity", label: "", hint:"Your County, Town or City", required: false, type: "text" },
-			        { name: "postCode", label: "Post Code", hint:"Your postal or zip code", required: false, type: "text" },
-			        { name: "enquiryType", label: "Enquiry Type", hint:"", required: false, type: "text" },
-			        { name: "stage", label: "Stage", hint:"The stage this contact is at, for example Lead, Customer etc.", required: false, type: "text" },
-			        { name: "source", label: "Source", hint:"The source of the contact, for example Google, Organic etc.", required: false, type: "text" },
-			        { name: "medium", label: "Medium", hint:"The medium, for example CPC", required: false, type: "text" },
-			        { name: "firstContact", label: "First Contact", hint:"Date of first contact", required: false, type: "date" },
-			        { name: "lastUpdate", label: "Last Update", hint:"Date of last update to this contact", required: false, type: "date" }
-		        ]
-          },{ 
-            name: "account", 
-            description: "An account is associated with zero to many Notes and zero to many Documents. It typically has one Contact though may have more.",
-            imageUrl: "images/domain/account-context.png",
-            fields: [
-              { name: "name", label: "Name", hint:"Name of the company or organisation", required: true, type: "text" },
-              { name: "firstContact", label: "First Contact", hint:"Date of first contact with this account", required: false, type: "date" },
-              { name: "lastUpdate", label: "Last Update", hint:"Date of last update to this account", required: false, type: "date" }
-            ]
-          },{ 
-            name: "note", 
-            description: "An account is associated with zero to many Notes and zero to many Documents. It typically has one Contact though may have more.",
-            imageUrl: "images/domain/note-context.png",
-            fields: [
-              { name: "name", label: "Name", hint:"Name of the company or organisation", required: true, type: "text" },
-              { name: "firstContact", label: "First Contact", hint:"Date of first contact with this account", required: false, type: "date" },
-              { name: "lastUpdate", label: "Last Update", hint:"Date of last update to this account", required: false, type: "date" }
-            ]
-          },{ 
-            name: "document", 
-            description: "An account is associated with zero to many Notes and zero to many Documents. It typically has one Contact though may have more.",
-            imageUrl: "images/domain/document-context.png",
-            fields: [
-              { name: "name", label: "Name", hint:"Name of the company or organisation", required: true, type: "text" },
-              { name: "firstContact", label: "First Contact", hint:"Date of first contact with this account", required: false, type: "date" },
-              { name: "lastUpdate", label: "Last Update", hint:"Date of last update to this account", required: false, type: "date" }
-            ]
-          }
-        ]
-      );
-      $('.entity.active').fadeIn();
-    });
-  </script>
-
-  <h1 class="powered-by" style="float: left;opacity:0.5;transform: rotate(-90deg) translate(220px,-120px);transform-origin: left top 0;">
-    <span class="powered-by-text">powered by</span>
-    <img src="images/omny-greyscale-logo.png" alt="powered by Omny Link"/>   
-  </h1>
-
+  <script src="js/autoNumeric.js"></script>
+  <script src="js/md5.min.js"></script>
+  <script src="js/string-functions-0.1.0.js"></script>
+  <script src="js/login-1.1.0.js"></script>
+  <script src="js/workflow-1.1.0.js"></script>
+  <script src="js/omny-1.1.0.js"></script>
 </body>
 </html>

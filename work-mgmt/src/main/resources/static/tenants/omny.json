@@ -28,7 +28,8 @@
   "partials": [
     { "name": "omnyContactExtension", "url": "/partials/contactExtension.html"},
     { "name": "omnyAccountExtension", "url": "/partials/accountExtension.html"},
-    { "name": "omnyAddReminder", "url": "/partials/AddReminder.html"}
+    { "name": "omnyAddReminder", "url": "/partials/AddReminder.html"},
+    { "name": "omnyWorkflowWizard", "url": "/partials/WorkflowWizard.html"}
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
