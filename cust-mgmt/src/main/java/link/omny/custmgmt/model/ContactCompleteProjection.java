@@ -46,6 +46,8 @@ public interface ContactCompleteProjection {
 
     String getEnquiryType();
 
+    String getAccountType();
+
     String getStage();
 
     String getOwner();
