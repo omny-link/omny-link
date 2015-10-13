@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -275,6 +276,16 @@ public class Contact implements Serializable {
     @Transient
     private Date now;
 
+
+    public Contact(String firstName, String lastName, String email,
+            String tenantId) {
+        this();
+        setFirstName(firstName);
+        setLastName(lastName);
+        setEmail(email);
+        setTenantId(tenantId);
+    }
+
     public List<Activity> getActivities() {
         if (activity == null) {
             activity = new ArrayList<Activity>();
@@ -430,6 +441,23 @@ public class Contact implements Serializable {
         return firstAct;
     }
 
+
+    public String getEmailConfirmationCode() {
+        if (emailConfirmationCode == null) {
+            setEmailConfirmationCode(UUID.randomUUID().toString());
+        }
+
+        return emailConfirmationCode;
+    }
+
+    public void confirmEmail(String code) {
+        if (emailConfirmationCode != null && emailConfirmationCode.equals(code)) {
+            setEmailConfirmed(true);
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
     @Override
     public String toString() {
         return String
@@ -441,4 +469,5 @@ public class Contact implements Serializable {
                         source, medium, campaign, keyword, tags, firstContact,
                         lastUpdated, tenantId, customFields, account, activity);
     }
+
 }
