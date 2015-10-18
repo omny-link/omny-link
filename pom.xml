@@ -22,6 +22,7 @@
 
   <properties>
     <java.version>1.8</java.version>
+    <activiti.version>5.18.0-SNAPSHOT</activiti.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
