@@ -28,6 +28,8 @@ public interface ContactCompleteProjection {
 
     boolean getEmailConfirmed();
 
+    String getEmailConfirmationCode();
+
     String getPhone1();
 
     String getPhone2();
