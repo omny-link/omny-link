@@ -27,6 +27,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -296,6 +296,10 @@ public class ContactController {
     /**
      * Confirm a user's email by returning a code sent to that address.
      * 
+     * <p>
+     * Note that this may be used interactively as well as API so return status
+     * code 200 / 403 together with HTML for human consumption.
+     * 
      * @param tenantId
      *            The tenant this contact is associated with.
      * @param contactId
@@ -306,14 +310,16 @@ public class ContactController {
      *            Code to compare to the one previously issued.
      */
     @RequestMapping(value = "/{contactId}/{email}", method = RequestMethod.POST)
-    public ModelAndView confirmEmail(@PathVariable("tenantId") String tenantId,
+    public String confirmEmail(
+            @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @PathVariable("email") String email,
-            @RequestParam("code") String code) {
+            @RequestParam("emailConfirmationCode") String emailConfirmationCode,
+            Model model) {
         Contact contact = contactRepo.findOne(contactId);
-        contact.confirmEmail(code);
+        contact.confirmEmail(emailConfirmationCode);
         contactRepo.save(contact);
-        return new ModelAndView("emailConfirmation");
+        return "emailConfirmation";
     }
 
     private List<ShortContact> wrap(List<Contact> list) {

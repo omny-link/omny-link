@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/website" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1387529213597" name="Register for Trial" targetNamespace="http://omny.link/website" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <message id="omny.registration" name="omny.registration"/>
+  <process id="RegisterOmnyContact" isClosed="false" isExecutable="true" name="Register Omny Link Contact" processType="Public">
+    <documentation id="RegisterOmnyContact_D_1" textFormat="text/plain"><![CDATA[Create a new Omny Link account in the CRM back-end and initiate fulfilment of the account.]]></documentation>
+    <extensionElements>
+      <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <callActivity calledElement="CreateContactAndAccount" completionQuantity="1" id="_11" isForCompensation="false" name="Create &#10;Contact and &#10;Account&#10;in CRM" startQuantity="1">
+      <extensionElements>
+        <activiti:in source="omny_registration" target="json"/>
+        <activiti:in sourceExpression="omny" target="tenantId"/>
+        <activiti:out source="contactId" target="contactId"/>
+        <activiti:out source="contactEmail" target="contactEmail"/>
+        <activiti:out source="contactPwd" target="contactPwd"/>
+        <activiti:out source="accountId" target="accountId"/>
+        <activiti:out source="contact" target="contact"/>
+      </extensionElements>
+      <incoming>_13</incoming>
+      <outgoing>_5</outgoing>
+    </callActivity>
+    <sequenceFlow id="_13" sourceRef="startFromOmnyRegistrationMsg" targetRef="_11"/>
+    <callActivity calledElement="SendWelcomeEmail" completionQuantity="1" id="_4" isForCompensation="false" name="Send welcome &#10;to subscriber" startQuantity="1">
+      <extensionElements>
+        <activiti:in sourceExpression="Welcome!" target="subject"/>
+        <activiti:in source="contactEmail" target="contactEmail"/>
+        <activiti:in sourceExpression="${contact.getString('firstName')}" target="contactFirstName"/>
+        <activiti:in sourceExpression="http://api.omny.link:8082/" target="baseUrl"/>
+        <activiti:in sourceExpression="The Omny Link Team" target="signOff"/>
+        <activiti:in sourceExpression="omny" target="tenantId"/>
+        <activiti:in source="contactId" target="contactId"/>
+        <activiti:in source="contact" target="contact"/>
+      </extensionElements>
+      <incoming>_5</incoming>
+      <outgoing>_8</outgoing>
+    </callActivity>
+    <sequenceFlow id="_5" sourceRef="_11" targetRef="_4"/>
+    <sequenceFlow id="_8" sourceRef="_4" targetRef="endEvent"/>
+    <startEvent activiti:initiator="initiator" id="startFromOmnyRegistrationMsg" isInterrupting="true" name="omny.registration" parallelMultiple="false">
+      <outgoing>_13</outgoing>
+      <messageEventDefinition id="_2_ED_1" messageRef="omny.registration"/>
+    </startEvent>
+    <endEvent id="endEvent" name="End Event">
+      <incoming>_8</incoming>
+    </endEvent>
+    <textAnnotation id="_12" textFormat="text/plain">
+      <text>REGISTER OMNY LINK ACCOUNT</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="Untitled Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="RegisterOmnyContact">
+      <bpmndi:BPMNShape bpmnElement="startFromOmnyRegistrationMsg" id="Yaoqiang-startFromOmnyRegistrationMsg">
+        <dc:Bounds height="32.0" width="32.0" x="75.0" y="183.69230769230768"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="102.0" x="40.0" y="224.65031550480768"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_12" id="Yaoqiang-_12">
+        <dc:Bounds height="55.0" width="182.0" x="75.0" y="65.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="178.0" x="75.0" y="85.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11" isExpanded="false">
+        <dc:Bounds height="77.0" width="125.0" x="180.5" y="161.19230769230768"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.955078125" width="71.0" x="207.5" y="171.21476862980768"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4" isExpanded="false">
+        <dc:Bounds height="77.0" width="125.0" x="332.5" y="161.19230769230768"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="81.0" x="354.5" y="185.21476862980768"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
+        <dc:Bounds height="32.0" width="32.0" x="531.0" y="183.69230769230768"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="58.0" x="517.9999999999999" y="224.65031550480768"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_13" id="Yaoqiang-_13">
+        <di:waypoint x="107.03869507016677" y="199.69230769230768"/>
+        <di:waypoint x="180.04545454545462" y="199.69230769230768"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="140.5420748078107" y="190.21476862980768"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_8" id="Yaoqiang-_8">
+        <di:waypoint x="457.0454545454546" y="199.69230769230768"/>
+        <di:waypoint x="531.0522140207424" y="199.69230769230768"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="491.0488342830985" y="190.21476862980768"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
+        <di:waypoint x="305.0454545454546" y="199.69230769230768"/>
+        <di:waypoint x="332.0454545454546" y="199.69230769230768"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="315.5454545454546" y="190.21476862980768"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

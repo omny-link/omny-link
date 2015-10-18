@@ -453,6 +453,7 @@ public class Contact implements Serializable {
     public void confirmEmail(String code) {
         if (emailConfirmationCode != null && emailConfirmationCode.equals(code)) {
             setEmailConfirmed(true);
+            emailConfirmationCode = null;
         } else {
             throw new IllegalArgumentException();
         }
