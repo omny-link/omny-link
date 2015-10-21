@@ -74,7 +74,7 @@ var ractive = new AuthenticatedRactive({
     },
     formatDate: function(timeString) {
 //      console.log('formatDate: '+timeString);
-      if (timeString==undefined) return '';
+      if (timeString==undefined) return 'n/a';
       return new Date(timeString).toLocaleDateString(navigator.languages);
     },
     formatDateTime: function(timeString) {
@@ -117,9 +117,9 @@ var ractive = new AuthenticatedRactive({
     console.log('collapseSendMessage...');
     $('#sendMessage').slideUp();
   },
-  deferTask: function() {
-    console.log('deferTask...');
-    var until = until == undefined ? 'PT24H' : until;
+  deferTask: function(until) {
+    until = until == undefined ? 'PT24H' : until;
+    console.log('deferTask until: '+until);
     ractive.submitTask('defer='+until);
   },
   edit: function(task) { 
