@@ -34,18 +34,16 @@
                 <li onclick="ractive.filter('deferred')">Hide Deferred Tasks</li>
               </ul>
           </a>
-          <!--
             <span class="clickable dropdown" aria-hidden="true" title="Start Process">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                     <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
                   </a>
                   <ul class="omny-dropdown dropdown-menu" role="menu">
-                    {{#each tenant.customerActions }}
-                      <li onclick="ractive.startCustomerAction('{{key}}', '{{label}}', ractive.get('current'))">{{label}}</li>
+                    {{#each tenant.standardOperatingProcedures }}
+                      <li onclick="ractive.startCustomAction('{{key}}', '{{label}}', '{{form}}')">{{label}}</li>
                     {{/each}}
                   </ul>
                 </span>
-          -->
         </h2>
         <div id="sendMessage" style="display:none">
           <form action="/msg/{{tenant.id}}/" class="well form" id="sendMessageForm" method="post">
@@ -167,6 +165,7 @@ searchTerm!=undefined && (
     </form>
     {{>poweredBy}}
     {{>sidebar { active: 'work.html' }}}
+    {{>customActionModal}}
   </script>
 
   <script id="enumTemplate" type="text/html">
