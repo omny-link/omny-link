@@ -58,8 +58,8 @@
     { "name": "firmgainsAddReminder", "url": "/partials/AddReminder.html"}
   ],
   "typeaheadControls": [
-    { "selector": "#curMedium", "url": "/data/media.json"},
-    { "selector": "#curSource", "url": "/data/sources.json"},
+    { "selector": "#curMedium", "url": "/data/firmgains/media.json"},
+    { "selector": "#curSource", "url": "/data/firmgains/sources.json"},
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/firmgains/account-types.json"},
     { "selector": "#curCountry", "url": "/data/countries.json"},
     { "selector": "#curEnquiryType", "url": "/data/firmgains/enquiry-types.json"},
