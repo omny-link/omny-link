@@ -12,6 +12,7 @@
       <input class="form-control" id="curPhone" disabled readonly value="{{current.processVariables.contact.phone1}}"></li>
     <li><label class="col-md-5">Email:</label>
       <input class="form-control" id="curEmail" disabled readonly value="{{current.processVariables.contact.email}}"></li>
+    <li><label class="">Stage:</label><input class="form-control" readonly id="curStage" value="{{current.processVariables.contact.stage}}"></li>
     <li><label class="col-md-5">Budget:</label>
       <input class="autoNumeric form-control" data-a-sign="£ " id="curBudget" on-blur="saveContact()" value="{{current.processVariables.contact.customFields['budget']}}"></li>
     <li><label class="col-md-5">Discussed budget?:</label>
