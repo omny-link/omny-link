@@ -11,14 +11,19 @@
         <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
       </a>
       <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
-        <li on-click="filter()">Clear filter</li>
+        <li on-click="filter()">Show All</li>
+        <li on-click="filter({field: 'stage', operator: '!in', value: 'Cold,Complete'})">Show Active</li>
         <li class="divider"></li>
         {{#stages}}
-          <li onclick="ractive.filter('stage','{{id}}')">{{name}}</li>
+          <li onclick="ractive.filter({field: 'stage', value: '{{id}}'})">{{name}}</li>
         {{/stages}}
         <li class="divider"></li>
+        {{#enquiryTypes}}
+          <li onclick="ractive.filter({field: 'enquiryType', value: '{{id}}'})">{{name}}</li>
+        {{/}}
+        <li class="divider"></li>
         {{#accountTypes}}
-          <li onclick="ractive.filter('accountType','{{id}}')">{{name}}</li>
+          <li onclick="ractive.filter({field: 'accountType', value: '{{id}}'})">{{name}}</li>
         {{/accountTypes}}
       </ul>
     </a>

@@ -26,14 +26,13 @@
     { "name": "gardenaticsGardenaticsDelivery", "url": "/partials/gardenatics/ReceiveOrder.html"},
     { "name": "gardenaticsAddReminder", "url": "/partials/AddReminder.html"}
   ],
-  "stagesInActive": "Appointment,Complete,Enquiry,Order,Placed,Quote,Thank You Pack",
   "standardOperatingProcedures": [
     { "label": "New Enquiry", "key": "preMigration" }
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
     { "selector": "#curCountry", "url": "/data/countries.json"},
-    { "selector": "#curEnquiryType", "url": "/data/gardenatics/enquiry-types.json"},
+    { "name": "enquiryTypes", "selector": "#curEnquiryType", "url": "/data/gardenatics/enquiry-types.json"},
     { "selector": "#curMedium", "url": "/data/media.json"},
     { "selector": "#curOwner", "url": "/data/gardenatics/owners.json"},
     { "selector": "#curPartner", "url": "/data/gardenatics/partners.json"},
