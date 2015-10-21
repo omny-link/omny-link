@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-1.1.0.css" rel="stylesheet">
+  <link href="css/omny-1.0.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
   <style>
     html,body,section#main {
