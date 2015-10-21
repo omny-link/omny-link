@@ -65,6 +65,12 @@ var ractive = new AuthenticatedRactive({
       //console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
+    haveStageReasons() {
+      console.info('haveStageReasons?');
+      return ractive.get('tenant.typeaheadControls').filter(function(d) {
+        return d.name=='stageReasons';
+      }).length > 0;
+    },
     matchFilter: function(obj) {
       var filter = ractive.get('filter');
       if (filter==undefined) {
