@@ -38,6 +38,7 @@
     { "selector": "#curOwner", "url": "/data/gardenatics/owners.json"},
     { "selector": "#curPartner", "url": "/data/gardenatics/partners.json"},
     { "selector": "#curSource", "url": "/data/gardenatics/sources.json"},
-    { "name": "stages", "selector": "#curStage", "url": "/data/gardenatics/stages.json"}
+    { "name": "stages", "selector": "#curStage", "url": "/data/gardenatics/stages.json"},
+    { "name": "stageReasons", "selector": "#curStageReason", "url": "/data/gardenatics/stageReasons.json"}
   ]
 }
