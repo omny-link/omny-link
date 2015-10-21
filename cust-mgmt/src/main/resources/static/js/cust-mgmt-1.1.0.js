@@ -9,7 +9,7 @@ var ractive = new AuthenticatedRactive({
   data: {
     csrfToken: getCookie(CSRF_COOKIE),
     contacts: [],
-    filter: {field: "stage", negate: true, value: "Cold"},
+    filter: {field: "stage", operator: "!in", value: "cold,complete"},
     //saveObserver:false,
     title: 'Contact Management',
     username: localStorage['username'],
@@ -76,11 +76,15 @@ var ractive = new AuthenticatedRactive({
       if (filter==undefined) {
         return true;
       } else {
-        var rtn = filter.value.toLowerCase()==obj[filter.field].toLowerCase();
-        if (filter.negate==true) {
-          return !rtn;
+        if (filter.operator=='in') {
+          var values = filter.value.toLowerCase().split(',');
+          return values.indexOf(obj[filter.field].toLowerCase())!=-1;
+        } else if (filter.operator=='!in') {
+          var values = filter.value.toLowerCase().split(',');
+          return values.indexOf(obj[filter.field].toLowerCase())==-1;
         } else {
-          return rtn;
+          if (filter.operator==undefined) filter.operator='==';
+          return eval("'"+filter.value.toLowerCase()+"'"+filter.operator+"'"+obj[filter.field].toLowerCase()+"'");
         }
       }
     },
@@ -224,11 +228,9 @@ var ractive = new AuthenticatedRactive({
       }
     });
   },
-  filter: function(field,value) {
-    console.log('filter: field '+field+' = '+value);
-    if (value==undefined) value = ractive.get('tenant.stagesInActive');
-    if (field==undefined) ractive.set('filter',undefined);
-    else ractive.set('filter',{field: field,value: value});
+  filter: function(filter) {
+    console.log('filter: '+JSON.stringify(filter));
+    ractive.set('filter',filter);
     ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
     $('input[type="search"]').blur();
   },

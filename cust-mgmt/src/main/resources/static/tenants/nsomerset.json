@@ -13,10 +13,10 @@
     { "name": "nsomersetAccountExtension", "url": "/partials/accountExtension.html"}
   ],
   "typeaheadControls": [
-    { "selector": "#curEnquiryType", "url": "/data/nsomerset/enquiry-types.json"},
+    { "name": "enquiryTypes", "selector": "#curEnquiryType", "url": "/data/nsomerset/enquiry-types.json"},
     { "selector": "#curCountry", "url": "/data/countries.json"},
     { "selector": "#curMedium", "url": "/data/media.json"},
     { "selector": "#curSource", "url": "/data/sources.json"},
-    { "selector": "#curStage", "url": "/data/nsomerset/stages.json"}
+    { "name": "stages", "selector": "#curStage", "url": "/data/nsomerset/stages.json"}
   ]
 }
