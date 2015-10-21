@@ -5,7 +5,7 @@
   <title>Work Management</title>
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
-  <link href="css/omny-1.1.0.css" rel="stylesheet">
+  <link href="css/omny-1.0.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 <body>
@@ -34,16 +34,16 @@
                 <li onclick="ractive.filter('deferred')">Hide Deferred Tasks</li>
               </ul>
           </a>
-            <span class="clickable dropdown" aria-hidden="true" title="Start Process">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                    <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
-                  </a>
-                  <ul class="omny-dropdown dropdown-menu" role="menu">
-                    {{#each tenant.standardOperatingProcedures }}
-                      <li onclick="ractive.startCustomAction('{{key}}', '{{label}}', '{{form}}')">{{label}}</li>
-                    {{/each}}
-                  </ul>
-                </span>
+          <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+              <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+            </a>
+            <ul class="omny-dropdown dropdown-menu" role="menu">
+              {{#each tenant.standardOperatingProcedures }}
+                <li onclick="ractive.startCustomAction('{{key}}', '{{label}}', '{{form}}')">{{label}}</li>
+              {{/each}}
+            </ul>
+          </span>
         </h2>
         <div id="sendMessage" style="display:none">
           <form action="/msg/{{tenant.id}}/" class="well form" id="sendMessageForm" method="post">
@@ -205,8 +205,8 @@ searchTerm!=undefined && (
   <script src="js/autoNumeric.js"></script>
   <script src="js/md5.min.js"></script>
   <script src="js/string-functions-0.1.0.js"></script>
-  <script src="js/login-1.1.0.js"></script>
-  <script src="js/workmgmt-1.1.0.js"></script>
-  <script src="js/omny-1.1.0.js"></script>
+  <script src="js/login-1.0.0.js"></script>
+  <script src="js/workmgmt-1.0.0.js"></script>
+  <script src="js/omny-1.0.0.js"></script>
 </body>
 </html>

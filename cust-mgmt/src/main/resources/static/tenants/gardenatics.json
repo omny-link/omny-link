@@ -24,9 +24,11 @@
     { "name": "gardenaticsContactExtension", "url": "/partials/gardenatics/ContactExtension.html"},
     { "name": "gardenaticsStartEnquiry", "url": "/partials/gardenatics/ReceiveEnquiry.html"},
     { "name": "gardenaticsGardenaticsDelivery", "url": "/partials/gardenatics/ReceiveOrder.html"},
-    { "name": "gardenaticsAddReminder", "url": "/partials/AddReminder.html"}
+    { "name": "gardenaticsAddReminder", "url": "/partials/AddReminder.html"},
+    { "name": "omnySimpleTodo", "url": "/partials/SimpleTodo.html"}
   ],
   "standardOperatingProcedures": [
+    { "label": "Note to self", "key": "SimpleTodo", "form": "/partials/SimpleTodo.html" }
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
