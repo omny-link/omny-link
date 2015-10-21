@@ -1,5 +1,8 @@
 package com.knowprocess.bpm.web;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -34,6 +37,8 @@ public class TaskController {
     @Autowired
     protected ProcessEngine processEngine;
 
+    protected DateFormat isoDateParser = new SimpleDateFormat("yyyy-MM-dd");
+
     @RequestMapping(value = "/task/{taskId}/", method = RequestMethod.GET)
     public @ResponseBody Task getTask(
             @PathVariable("taskId") String taskId) {
@@ -56,8 +61,13 @@ public class TaskController {
             processEngine.getTaskService().complete(taskId,
                     t.getProcessVariables());
         } else if (defer != null) {
-			processEngine.getTaskService().setVariableLocal(taskId,
-					"deferUntil", getRelativeDate(defer));
+            try {
+                processEngine.getTaskService().setVariableLocal(taskId,
+                        "deferUntil", isoDateParser.parse(defer));
+            } catch (ParseException e) {
+                processEngine.getTaskService().setVariableLocal(taskId,
+                        "deferUntil", getRelativeDate(defer));
+            }
         } else {
             org.activiti.engine.task.Task dest = processEngine.getTaskService()
                     .createTaskQuery().taskId(taskId).singleResult();
@@ -71,18 +81,28 @@ public class TaskController {
     }
 
 	protected Date getRelativeDate(String defer) {
-		try {
-			Calendar cal = new GregorianCalendar();
-			Duration duration = DatatypeFactory.newInstance()
-					.newDuration(defer);
-			cal.setTimeInMillis(cal.getTimeInMillis()
-					+ duration.getTimeInMillis(cal));
-			return cal.getTime();
-		} catch (DatatypeConfigurationException e) {
-			String msg = "Unable to parse duration from " + defer;
-			LOGGER.error(msg, e);
-			throw new IllegalArgumentException(msg);
-		}
+        defer = defer.toUpperCase();
+        Calendar cal = new GregorianCalendar();
+        if (defer.startsWith("P")) {
+            try {
+                Duration duration = DatatypeFactory.newInstance().newDuration(
+                        defer);
+                cal.setTimeInMillis(cal.getTimeInMillis()
+                        + duration.getTimeInMillis(cal));
+                return cal.getTime();
+            } catch (DatatypeConfigurationException e) {
+                String msg = "Unable to parse duration from " + defer;
+                LOGGER.error(msg, e);
+                throw new IllegalArgumentException(msg);
+            }
+        } else if (defer.startsWith("MON")) {
+            cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+            cal.add(Calendar.WEEK_OF_YEAR, 1);
+            return cal.getTime();
+        } else {
+            throw new IllegalArgumentException(String.format(
+                    "Cannot find relative date from %1$s", defer));
+        }
 	}
 
 	@RequestMapping(value = "/{tenantId}/tasks/{username}/")
