@@ -27,7 +27,6 @@
     { "name": "gardenaticsAddReminder", "url": "/partials/AddReminder.html"}
   ],
   "standardOperatingProcedures": [
-    { "label": "New Enquiry", "key": "preMigration" }
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
