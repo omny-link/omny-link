@@ -5,7 +5,7 @@
   <link href='//fonts.googleapis.com/css?family=Roboto:400italic,400,700' rel='stylesheet' type='text/css'>
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
-  <link href="css/omny-1.1.0.css" rel="stylesheet">
+  <link href="css/omny-1.0.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
     <style>
     html,body,section#main {
@@ -77,7 +77,7 @@
   <script src="/webjars/Bootstrap-3-Typeahead/3.1.1/bootstrap3-typeahead.js"></script>
   <script src="/webjars/ractive/0.7.1/ractive.min.js"></script>
 
-  <script src="js/login-1.1.0.js"></script>
-  <script src="js/login-ui-1.1.0.js"></script>
+  <script src="js/login-1.0.0.js"></script>
+  <script src="js/login-ui-1.0.0.js"></script>
 </body>
 </html>
