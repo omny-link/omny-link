@@ -104,6 +104,7 @@ var ractive = new AuthenticatedRactive({
       }
     },
     stdPartials: [
+      { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
@@ -364,20 +365,42 @@ var ractive = new AuthenticatedRactive({
     $('#currentSect').slideUp();
     $('#tasksTable').slideDown({ queue: true });
   },
-  startSop: function(key, bizKey) {
-    console.log('startSop: '+key+' for '+bizKey);
+  startCustomAction: function(key, label, form) {
+    console.log('startCustomAction: '+key);
+    var instanceToStart = {
+        businessKey: label+' at '+new Date(),
+        processDefinitionId: key,
+        label: label,
+        processVariables: {
+          initiator: ractive.get('username'),
+          tenantId: ractive.get('tenant.id')
+        }
+      };
+    console.log(JSON.stringify(instanceToStart));
+    // save what we know so far...
+    ractive.set('instanceToStart',instanceToStart);
+    if (form == undefined) {
+      // ... and submit
+      ractive.submitCustomAction();
+    } else {
+      // ... or display form
+      $('#customActionModal').modal('show');
+    }
+  },
+  submitCustomAction: function(key, bizKey) {
+    console.info('submitCustomAction');
     $.ajax({
       url: '/'+ractive.get('tenant.id')+'/process-instances/',
       type: 'POST',
       contentType: 'application/json',
-      data: JSON.stringify({
-        processDefinitionId: key,
-        businessKey: bizKey
-      }),
-      success: completeHandler = function(data) {
-        console.log('response: '+ data);
-        ractive.showMessage('Started: '+data.getId());
-      },
+      data: JSON.stringify(ractive.get('instanceToStart')),
+      success: completeHandler = function(data, textStatus, jqXHR) {
+        console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
+        var msg = 'Started workflow "'+ractive.get('instanceToStart.label')+'"';
+        if (ractive.get('instanceToStart.businessKey')!=undefined) msg+=(' for '+ractive.get('instanceToStart.businessKey'));
+        ractive.showMessage(msg);
+        $('#customActionModal').modal('hide');
+      }
     });
   },
   submitTask: function(action) {

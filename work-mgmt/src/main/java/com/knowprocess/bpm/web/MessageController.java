@@ -276,12 +276,13 @@ public class MessageController {
             ActivitiObjectNotFoundException e) {
         LOGGER.debug("Detected a missing process exception: " + e.getMessage());
         ProcessInstance instance = processEngine.getRuntimeService()
-                .startProcessInstanceByKeyAndTenantId("SimpleTodo", bizKey,
+                .startProcessInstanceByKeyAndTenantId("CatchAllProcess",
+                        bizKey,
                         vars, tenantId);
         addLocationHeader(uriBuilder, headers, instance);
         LOGGER.debug(String.format(
                 "Created an instance of %1$s to handle it, id: %2$s",
-                "SimpleTodo", instance.getId()));
+                "CatchAllProcess", instance.getId()));
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
@@ -291,12 +292,13 @@ public class MessageController {
             ActivitiException e) {
         LOGGER.debug("An unexpected exception occurred: " + e.getMessage());
         ProcessInstance instance = processEngine.getRuntimeService()
-                .startProcessInstanceByKeyAndTenantId("SimpleTodo", bizKey,
+                .startProcessInstanceByKeyAndTenantId("CatchAllProcess",
+                        bizKey,
                         vars, tenantId);
         addLocationHeader(uriBuilder, headers, instance);
         LOGGER.debug(String.format(
                 "Created an instance of %1$s to handle it, id: %2$s",
-                "SimpleTodo", instance.getId()));
+                "CatchAllProcess", instance.getId()));
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 

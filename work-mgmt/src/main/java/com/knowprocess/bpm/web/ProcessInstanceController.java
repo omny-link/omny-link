@@ -104,6 +104,7 @@ public class ProcessInstanceController {
             instanceToStart.getProcessVariables().put("initiator",
                     req.getUserPrincipal().getName());
         }
+        instanceToStart.getProcessVariables().put("tenantId", tenantId);
         if (LOGGER.isDebugEnabled()
                 && instanceToStart.getProcessVariables() != null) {
             LOGGER.debug("  vars: ");

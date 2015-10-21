@@ -29,7 +29,11 @@
     { "name": "omnyContactExtension", "url": "/partials/contactExtension.html"},
     { "name": "omnyAccountExtension", "url": "/partials/accountExtension.html"},
     { "name": "omnyAddReminder", "url": "/partials/AddReminder.html"},
+    { "name": "omnySimpleTodo", "url": "/partials/SimpleTodo.html"},
     { "name": "omnyWorkflowWizard", "url": "/partials/WorkflowWizard.html"}
+  ],
+  "standardOperatingProcedures": [
+    { "label": "Note to self", "key": "SimpleTodo", "form": "/partials/SimpleTodo.html" }
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
