@@ -24,6 +24,35 @@ Roadmap
 Releases
 --------
 
+1.0.0 beta 1 - 21 Oct 15
+
+    #37 FirmGains needs additional reference data 
+    support Firm Gains
+    
+    #36 Personification of Omny 
+    enhancement Gardenatics Omny Link
+    
+    #35 When stage = Cold need an additional 'reason' field 
+    enhancement Gardenatics
+    
+    #34 Gardenatics task forms should include Stage 
+    enhancement Gardenatics
+    
+    #31 'Active' filter in contact management 
+    enhancement Gardenatics
+    
+    #30 Defer Task functionality 
+    enhancement Firm Gains Gardenatics
+    
+    #24 Exclude 'Cold' contacts by default 
+    support Firm Gains
+    
+    #2 Push tasks / events to Slack 
+    enhancement Nene
+    
+    #31 Create ad-hoc task 
+    feature Gardenatics
+
 1.0.0 beta 1 - 28 Sep 15
 
     #18 profile page
