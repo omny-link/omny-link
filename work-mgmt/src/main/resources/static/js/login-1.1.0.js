@@ -108,6 +108,7 @@ var AuthenticatedRactive = Ractive.extend({
     return ractive.get('server')==undefined ? '' : ractive.get('server');
   },
   hash: function(email) {
+    if (email==undefined) return email; 
     return hex_md5(email.trim().toLowerCase());
   },
   hasRole: function(role) {
