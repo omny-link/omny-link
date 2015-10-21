@@ -131,7 +131,10 @@ searchTerm!=undefined && (
           </div>
           <div class="col-md-6">
             <ul class="form edit-form">
-              <li><label class="col-md-5">Started By:</label><input class="form-control" id="curInitiator" disabled readonly value="{{current.processVariables['initiator']=='anonymousUser' ? 'Web Site' : current.processVariables['initiator']}}"></li>
+              <li>
+                <label class="col-md-5">Started By:</label>
+                <span class="initiator-img">{{current.processVariables['initiator']=='anonymousUser' ? 'Omny Link' : current.processVariables['initiator']}}</span>
+              </li>
               <li><label class="col-md-5">Created:</label><input class="form-control" id="curCreated" disabled readonly value="{{formatDate(current.createTime)}}"></li>
             </ul>
           </div>
