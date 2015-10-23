@@ -126,7 +126,7 @@
     <dependency>
       <groupId>com.knowprocess</groupId>
       <artifactId>sugarcrm</artifactId>
-      <version>0.2</version>
+      <version>0.3.0</version>
       <optional>true</optional>
     </dependency>
     <dependency>
