@@ -127,6 +127,18 @@
     	<artifactId>work-mgmt</artifactId>
     	<version>2.0-SNAPSHOT</version>
     </dependency>
+    
+    <!-- Tenant jars -->
+    <dependency>
+      <groupId>com.knowprocess.mk</groupId>
+      <artifactId>mk</artifactId>
+      <version>0.2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.firmgains.decisions</groupId>
+      <artifactId>firmgains-decisions</artifactId>
+      <version>0.9.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>

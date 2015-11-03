@@ -153,12 +153,6 @@
       <artifactId>fonts</artifactId>
       <version>1.0.0</version>
     </dependency>    
-    <!-- Tenant jars -->
-    <dependency>
-      <groupId>com.knowprocess.mk</groupId>
-      <artifactId>mk</artifactId>
-      <version>0.2.0</version>
-    </dependency>
   </dependencies>
 
   <build>
