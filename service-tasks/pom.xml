@@ -20,16 +20,7 @@
     <java.version>1.7</java.version>
     <activiti.version>5.18.0-SNAPSHOT</activiti.version>
   </properties>
-  <repositories>
-    <repository>
-      <id>cloudbees-private-release-repository</id>
-      <url>https://repository-bigbpmcloud.forge.cloudbees.com/release/</url>
-    </repository>
-    <repository>
-      <id>cloudbees-private-snapshot-repository</id>
-      <url>https://repository-bigbpmcloud.forge.cloudbees.com/snapshot/</url>
-    </repository>
-  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>org.activiti</groupId>

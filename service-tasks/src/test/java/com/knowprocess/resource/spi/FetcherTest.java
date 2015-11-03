@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -112,6 +113,18 @@ public class FetcherTest {
         } catch (IOException e) {
             e.printStackTrace();
             fail("Unable to fetch resource");
+        } catch (NullPointerException e) {
+            if (e.getCause() != null
+                    && e.getCause() instanceof ConnectException) {
+                e.getCause().printStackTrace();
+                Assume.assumeNoException(
+                        String.format(
+                                "Test failed to connect to the URL '%1$s'. Assume a temporary network problem",
+                                resource), e);
+            } else {
+                e.printStackTrace();
+                fail();
+            }
         }
     }
 

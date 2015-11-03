@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -88,7 +89,19 @@ public class UrlResourceTest {
             Assume.assumeNoException(
                     String.format(
                             "Test failed to fetch resource from '%1$s'. Assume because we are running test whilst offline",
-                            e.getMessage()), e);
+                            IMAGE_URL), e);
+        } catch (NullPointerException e) {
+            if (e.getCause() != null
+                    && e.getCause() instanceof ConnectException) {
+                e.getCause().printStackTrace();
+                Assume.assumeNoException(
+                        String.format(
+                                "Test failed to connect to the URL '%1$s'. Assume a temporary network problem",
+                                IMAGE_URL), e);
+            } else {
+                e.printStackTrace();
+                fail();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             fail();
