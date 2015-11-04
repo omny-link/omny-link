@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class UserGroup implements Group {
 
+    private static final long serialVersionUID = -7614584390983558119L;
+
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(UserGroup.class);
     private static ProcessEngine processEngine;

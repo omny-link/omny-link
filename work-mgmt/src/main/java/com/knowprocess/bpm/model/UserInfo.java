@@ -1,5 +1,7 @@
 package com.knowprocess.bpm.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
@@ -11,9 +13,11 @@ import org.springframework.stereotype.Component;
 @Data
 @EqualsAndHashCode(exclude = { "userRecord" })
 @Component
-public class UserInfo {
+public class UserInfo implements Serializable {
 
-	/**
+    private static final long serialVersionUID = -4782038617402728868L;
+
+    /**
      */
 	@Id
 	private String id;

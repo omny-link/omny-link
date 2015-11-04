@@ -1,11 +1,15 @@
 package com.knowprocess.bpm.model;
 
+import java.io.Serializable;
+
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
 @Data
-public class FormProperty {
+public class FormProperty implements Serializable {
+
+    private static final long serialVersionUID = -458420306767602763L;
 
     /**
      */
