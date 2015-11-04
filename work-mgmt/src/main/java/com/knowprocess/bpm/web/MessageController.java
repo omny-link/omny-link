@@ -1,12 +1,21 @@
 package com.knowprocess.bpm.web;
 
+import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonString;
+import javax.json.JsonStructure;
+import javax.json.JsonValue;
 import javax.script.ScriptException;
 import javax.validation.ConstraintViolationException;
 
@@ -30,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.knowprocess.bpm.BadJsonMessageException;
 import com.knowprocess.bpm.api.ReportableException;
 import com.knowprocess.bpm.impl.JsonManager;
 import com.knowprocess.bpm.impl.MessageRegistry;
@@ -85,6 +95,7 @@ public class MessageController {
         // should send kp.foo.json or similar/
         LOGGER.info(String.format("handling In-Out MEP to: %1$s, json: %2$s",
                 msgId, json));
+
         Map<String, Object> vars = new HashMap<String, Object>();
         HttpHeaders headers = null;
         try {
@@ -150,6 +161,12 @@ public class MessageController {
             final UriComponentsBuilder uriBuilder, String tenantId,
             String msgId, String bizDesc, String jsonBody,
             final Map<String, Object> vars, int retry) {
+
+        if (isEmptyJson(jsonBody))
+            throw new BadJsonMessageException(
+                    String.format(
+                            "The JSON requested is empty or otherwise badly formed: %1$s",
+                            jsonBody));
         // if (SecurityContextHolder.getContext().getAuthentication() == null
         // || "anonymousUser".equals(SecurityContextHolder.getContext()
         // .getAuthentication().getName())) {
@@ -333,6 +350,43 @@ public class MessageController {
             LOGGER.error(e.getMessage(), e);
             return null;
         }
+    }
+
+    protected boolean isEmptyJson(String json) {
+        if (json == null) {
+            return true;
+        }
+        boolean isEmpty = false;
+
+        JsonReader jsonReader = null;
+        try {
+            jsonReader = Json.createReader(new StringReader(json));
+
+            JsonStructure jsonObject = jsonReader.read();
+
+            if (jsonObject instanceof JsonObject) {
+                JsonObject jo = (JsonObject) jsonObject;
+                for (Entry<String, JsonValue> jv : jo.entrySet()) {
+                    if (jv.getValue() != null) {
+                        if (jv.getValue() instanceof JsonString) {
+                            String s = jv.getValue().toString().trim();
+                            // remove leading and trailing quotes
+                            s = s.substring(1, s.length() - 1).trim();
+                            return s.length() == 0;
+                        } else {
+                            return  true;
+                        }
+                    }
+                }
+            } else if (jsonObject instanceof JsonArray) {
+                JsonArray ja = (JsonArray) jsonObject;
+                return ja.toArray().length == 0;
+            }
+
+        } finally {
+            jsonReader.close();
+        }
+        return isEmpty;
     }
 
     protected String parseInstanceIdFromLocation(ResponseEntity<String> response) {
