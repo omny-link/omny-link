@@ -1,5 +1,6 @@
 package com.knowprocess.bpm.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +25,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @Component
-public class Task implements org.activiti.engine.task.Task {
+public class Task implements Serializable, org.activiti.engine.task.Task {
+    private static final long serialVersionUID = -5315914372085177492L;
+
     protected static final Logger LOGGER = LoggerFactory.getLogger(Task.class);
 
 	// private static final String[] JSON_FIELDS = { "assignee", "createTime",

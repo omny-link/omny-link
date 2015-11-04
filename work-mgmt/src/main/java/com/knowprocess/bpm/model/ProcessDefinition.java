@@ -3,6 +3,7 @@ package com.knowprocess.bpm.model;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -21,7 +22,9 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-public class ProcessDefinition {
+public class ProcessDefinition implements Serializable {
+    private static final long serialVersionUID = -2657367116355427744L;
+
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(ProcessDefinition.class);
 	// private static final String[] JSON_FIELDS = { "name", "category",

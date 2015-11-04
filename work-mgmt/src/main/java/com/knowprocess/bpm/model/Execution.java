@@ -1,5 +1,7 @@
 package com.knowprocess.bpm.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Id;
 
 import lombok.Data;
@@ -8,7 +10,9 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-public class Execution {
+public class Execution implements Serializable {
+
+    private static final long serialVersionUID = 7684119384630391017L;
 
     /**
      */

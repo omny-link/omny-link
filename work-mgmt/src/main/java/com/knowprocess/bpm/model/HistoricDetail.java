@@ -1,5 +1,6 @@
 package com.knowprocess.bpm.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import lombok.Data;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @NoArgsConstructor
-public class HistoricDetail {
+public class HistoricDetail implements Serializable {
+
+    private static final long serialVersionUID = -3639106734679237763L;
 
     private String id;
 
