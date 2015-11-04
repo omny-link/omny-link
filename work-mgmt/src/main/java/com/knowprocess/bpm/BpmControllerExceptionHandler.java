@@ -28,6 +28,12 @@ public class BpmControllerExceptionHandler {
         LOGGER.error(e.getMessage(), e);
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadJsonMessageException.class)
+    public void handleBadJsonMessage(BadJsonMessageException e) {
+        LOGGER.error(e.getMessage(), e);
+    }
+
 //    @ResponseStatus(HttpStatus.BAD_REQUEST)
 //    @ExceptionHandler(UnsupportedBpmnException.class)
 //    public ModelAndView handleUnsupportedBpmnError(
