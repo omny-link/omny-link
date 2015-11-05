@@ -1,5 +1,6 @@
 package com.knowprocess.bpm.model;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Data
 @ToString(exclude = { "groups", "info" })
 @Component
-public class UserRecord implements Principal, User, UserDetails {
+public class UserRecord implements Serializable, Principal, User, UserDetails {
 
     private static final long serialVersionUID = 6444591690674352972L;
 
