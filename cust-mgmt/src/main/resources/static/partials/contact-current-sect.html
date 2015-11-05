@@ -111,53 +111,59 @@
   </form>
 
   {{#tenant.show.account}}
-  <form id="currentAccountForm">
-    <div id="currentAccount" style="clear: both">
+    <form id="currentAccountForm">
+      <div id="currentAccount" style="clear: both">
 
-      <h2 class="form">Account</h2>
+        <h2 class="form">Account</h2>
 
-      <div class="currentBody col-md-6 col-sm-12 col-xs-12">
-        <ul class="form edit-form">
-          <li><label class=" required">Company Name:</label><input class="form-control" id="curAccountName" required value="{{current.account.name}}"></li>
-          <li><label class="">Website:</label><input class="form-control" id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"></li>
-          <!--<li><label class="">Also known as:</label><input class="form-control" id="curAliases" value="{{current.account.aliases}}"></li>-->
-        </ul> 
-      </div>
-      <div class="currentBody col-md-6 col-sm-12 col-xs-12">
-        <ul class="form edit-form">
-          <li><label class="">Company Number:</label><input class="form-control" id="curCompanyNumber" pattern="[0-9]{8}" value="{{current.account.companyNumber}}"></li>
-          <li><label class="">No. of employees:</label><input class="form-control" id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/></li>
-        </ul>
-      </div>
-    </div>
-
-    <div id="currentAccountDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12">
-        <ul class="form edit-form">
-          <li><label class="textarea">Description:</label><textarea class="" id="curDescription" cols="80" value="{{current.account.description}}"></textarea></li>
-        </ul>
-    </div>
-
-    <div id="currentAccountExtended" style="clear: both">
-      {{>(tenant.id+'AccountExtension')}}
-
-      <!-- TODO General purpose account extension if no dedicated one available 
-      {{#if tenant.accountFields}}
-        <div class="col-md-12 col-sm-12 col-xs-12" id="currentAccountExtended">
-          <h2 class="form">
-            <span>More...</span>
-          </h2>
-
-          <!-- first column - ->  
-          {{>column {object: current.account, fields: tenant.accountFields.slice(0,Math.floor(tenant.accountFields.length/2))} }}
-
-          <!-- second column - ->  
-          {{>column {object: current.account, fields: tenant.accountFields.slice(Math.ceil(tenant.accountFields.length/2),tenant.accountFields.length)} }}
-
+        <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+          <ul class="form edit-form">
+            <li><label class=" required">Company Name:</label><input class="form-control" id="curAccountName" required value="{{current.account.name}}"></li>
+            <li><label class="">Website:</label><input class="form-control" id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"></li>
+            <!--<li><label class="">Also known as:</label><input class="form-control" id="curAliases" value="{{current.account.aliases}}"></li>-->
+          </ul>
         </div>
-      {{/if}}-->
-    </div>
+        <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+          <ul class="form edit-form">
+            <li><label class="">Company Number:</label><input autocomplete="off" class="typeahead form-control" id="curCompanyNumber" pattern="[0-9]{8}" placeholder="Start typing to filter options" type="text" value="{{current.account.companyNumber}}"></li>
+            {{#current.account.companyNumber}}
+              <li><label class=""></label><a href="https://beta.companieshouse.gov.uk/company/{{current.account.companyNumber}}" target="_newTab">View Companies House Information</a></li>
+            {{/}}
+            <li><label class="">No. of employees:</label><input class="form-control" id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/></li>
+          </ul>
+        </div>
+      </div>
 
-  </form>
+      <div id="currentAccountDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12">
+          <ul class="form edit-form">
+            <li><label class="textarea">Description:</label><textarea class="" id="curDescription" cols="80" value="{{current.account.description}}"></textarea></li>
+          </ul>
+      </div>
+
+      <div id="currentAccountExtended" style="clear: both">
+        {{>(tenant.id+'AccountExtension')}}
+
+        <!-- TODO General purpose account extension if no dedicated one available
+        {{#if tenant.accountFields}}
+          <div class="col-md-12 col-sm-12 col-xs-12" id="currentAccountExtended">
+            <h2 class="form">
+              <span>More...</span>
+            </h2>
+
+            <!-- first column - ->
+            {{>column {object: current.account, fields: tenant.accountFields.slice(0,Math.floor(tenant.accountFields.length/2))} }}
+
+            <!-- second column - ->
+            {{>column {object: current.account, fields: tenant.accountFields.slice(Math.ceil(tenant.accountFields.length/2),tenant.accountFields.length)} }}
+
+          </div>
+        {{/if}}-->
+      </div>
+
+    </form>
+    {{#tenant.show.companyBackground}}
+      {{>currentCompanyBackground}}
+    {{/}}
   {{/}}
   
 {{#if current['activities'] != undefined}}
