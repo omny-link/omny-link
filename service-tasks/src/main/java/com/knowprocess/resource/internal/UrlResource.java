@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,8 @@ public class UrlResource implements Resource {
             if (sb.length() > 0) {
                 sb.append("&");
             }
-            sb.append(d.getKey() + "=" + d.getValue());
+            sb.append(d.getKey() + "="
+                    + URLEncoder.encode(d.getValue(), "UTF-8"));
         }
         return sb.toString();
     }
