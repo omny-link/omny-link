@@ -110,7 +110,8 @@ var ractive = new AuthenticatedRactive({
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "contactListSect", "url": "/partials/contact-list-sect.html"},
-      { "name": "currentContactSect", "url": "/partials/contact-current-sect.html"}
+      { "name": "currentContactSect", "url": "/partials/contact-current-sect.html"},
+      { "name": "currentCompanyBackground", "url": "/partials/CompanyBackground.html"}
     ],
   },
   add: function () {
@@ -184,7 +185,7 @@ var ractive = new AuthenticatedRactive({
     return false; // cancel bubbling to prevent edit as well as delete
   },
   fetch: function () {
-    console.log('fetch...');
+    console.info('fetch...');
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
@@ -412,6 +413,36 @@ var ractive = new AuthenticatedRactive({
       });
     }
   },
+  searchCompaniesHouse: function() {
+    console.info('searchCompaniesHouse');
+    var q = ractive.get('current.account.name');
+    ractive.sendMessage({
+      name:"omny.companySearch",
+      body:JSON.stringify({companyName:q}),
+      callback:function(results) {
+        results = JSON.parse(results);
+        ractive.set('companiesHouseResults',results);
+        var data = jQuery.map( results.items, function( n, i ) {
+          return ( {  "id": n.company_number, "name": n.company_number +' '+n.title } );
+        });
+        $('#curCompanyNumber').typeahead({
+          items:'all',
+          minLength:0,
+          source:data,
+          updater:function(item) {
+            return item.id;
+          }
+        });
+        $('#curCompanyNumber').on("click", function (ev) {
+          newEv = $.Event("keydown");
+          newEv.keyCode = newEv.which = 40;
+          $(ev.target).trigger(newEv);
+          return true;
+       });
+      },
+      pattern:"inOut"
+    });
+  },
   select: function(contact) {
     console.log('select: '+JSON.stringify(contact));
     ractive.set('saveObserver',false);
@@ -447,6 +478,23 @@ var ractive = new AuthenticatedRactive({
     }
 	  ractive.toggleResults();
 	  $('#currentSect').slideDown();
+  },
+  sendMessage: function(msg) {
+    console.log('sendMessage: '+msg.name);
+    var type = (msg['pattern'] == 'inOut' || msg['pattern'] == 'outOnly') ? 'GET' : 'POST';
+    var d = (msg['pattern'] == 'inOut') ? {query:msg['body']} : {json:msg['body']};
+    console.log('d: '+d);
+    //var d['businessDescription']=ractive.get('message.bizKey');
+    $.ajax({
+      url: '/msg/'+ractive.get('tenant.id')+'/'+msg.name+'/',
+      type: type,
+      data: d,
+      dataType: 'text',
+      success: completeHandler = function(data) {
+        console.log('Message received:'+data);
+        if (msg['callback']!=undefined) msg.callback(data);
+      },
+    });
   },
   showActivityIndicator: function(msg, addClass) {
     document.body.style.cursor='progress';
@@ -567,6 +615,15 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
     console.warn  ('Skipped contact save of '+keypath);
     //console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
     //console.log('  saveObserver: '+ractive.get('saveObserver'));
+  }
+});
+
+ractive.observe('current.account.name', function(newValue, oldValue, keypath) {
+  console.log('account name changing from '+oldValue+' to '+newValue);
+  if (newValue!=undefined && newValue!='') {
+    $('#curCompanyNumber').typeahead('destroy');
+    ractive.set('current.account.companyNumber',undefined);
+    ractive.searchCompaniesHouse();
   }
 });
 
