@@ -1,4 +1,4 @@
-package com.knowprocess.bpm;
+package com.knowprocess.bpm.api;
 
 /**
  * An exception to return minimal information to help with debugging API calls
