@@ -16,6 +16,7 @@ import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
+import javax.json.stream.JsonParsingException;
 import javax.script.ScriptException;
 import javax.validation.ConstraintViolationException;
 
@@ -39,7 +40,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.knowprocess.bpm.BadJsonMessageException;
+import com.knowprocess.bpm.api.BadJsonMessageException;
 import com.knowprocess.bpm.api.ReportableException;
 import com.knowprocess.bpm.impl.JsonManager;
 import com.knowprocess.bpm.impl.MessageRegistry;
@@ -356,7 +357,7 @@ public class MessageController {
         if (json == null) {
             return true;
         }
-        boolean isEmpty = false;
+        boolean isEmpty = true;
 
         JsonReader jsonReader = null;
         try {
@@ -372,17 +373,21 @@ public class MessageController {
                             String s = jv.getValue().toString().trim();
                             // remove leading and trailing quotes
                             s = s.substring(1, s.length() - 1).trim();
-                            return s.length() == 0;
-                        } else {
-                            return  true;
+                            isEmpty = s.length() == 0;
                         }
+                    }
+                    if (!isEmpty) {
+                        return isEmpty;
                     }
                 }
             } else if (jsonObject instanceof JsonArray) {
                 JsonArray ja = (JsonArray) jsonObject;
                 return ja.toArray().length == 0;
             }
-
+        } catch (JsonParsingException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("json received: " + json);
+            return true;
         } finally {
             jsonReader.close();
         }

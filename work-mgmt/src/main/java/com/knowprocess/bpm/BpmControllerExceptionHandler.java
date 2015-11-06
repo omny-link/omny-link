@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.knowprocess.bpm.api.BadJsonMessageException;
 import com.knowprocess.bpm.web.ProcessInstanceController;
 
 @ControllerAdvice
