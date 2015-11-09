@@ -11,10 +11,12 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.identity.User;
-import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.activiti.spring.SpringAsyncExecutor;
+import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.activiti.spring.boot.AbstractProcessEngineAutoConfiguration;
 import org.activiti.spring.boot.DataSourceProcessEngineAutoConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.CommandLineRunner;
@@ -35,6 +37,9 @@ import com.knowprocess.bpm.impl.JsonManager;
 @AutoConfigureBefore(DataSourceProcessEngineAutoConfiguration.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class BpmConfiguration extends AbstractProcessEngineAutoConfiguration {
+
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(BpmConfiguration.class);
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
@@ -118,15 +123,22 @@ public class BpmConfiguration extends AbstractProcessEngineAutoConfiguration {
         return new CommandLineRunner() {
             @Override
             public void run(String... strings) throws Exception {
-                System.out.println("Number of process definitions : "
-                        + repositoryService.createProcessDefinitionQuery()
-                                .count());
-                System.out.println("Number of users: "
-                        + identityService.createUserQuery().count());
-                List<User> users = identityService.createUserQuery().list();
-                for (User user : users) {
-                    System.out.println("... : " + user.getId() + ":"
-                            + user.getPassword());
+                if (LOGGER.isInfoEnabled()) {
+                    LOGGER.info(
+                            String.format("Number of process definitions: %1$d",
+                            repositoryService.createProcessDefinitionQuery()
+                                            .count()));
+                    LOGGER.info(
+                            String.format("Number of users: %1$d",
+                            identityService.createUserQuery().count()));
+                    if (LOGGER.isDebugEnabled()) {
+                        List<User> users = identityService.createUserQuery()
+                                .list();
+                        for (User user : users) {
+                            LOGGER.debug(String.format("... : %1$s",
+                                    user.getId()));
+                        }
+                    }
                 }
             }
         };
