@@ -111,7 +111,14 @@ public class MessageController {
                     .getProcessVariables()
                     .get(getMessageVarName(msgId));
             LOGGER.debug(String.format("Object to return: %1$s", o));
-            String msg = "";
+            if (o == null) {
+                String msg = String
+                        .format("No message returned from request to %1$s. If this is expected, please POST instead of GET",
+                                msgId);
+                LOGGER.warn(msg);
+                return new ResponseEntity(msg, headers, HttpStatus.OK);
+            }
+            String msg = null;
             try {
                 Method toJson = o.getClass().getMethod("toJson", new Class[0]);
 
@@ -188,9 +195,12 @@ public class MessageController {
      * @param msgId
      * @param bizDesc
      * @param jsonBody
+     *            May be null but if not, must be valid JSON msg payload.
      * @param vars
      * @param retry
-     * @return
+     *            Specify zero on first attempt, will be incremented internally
+     *            on each retry.
+     * @return the instance started
      */
     protected com.knowprocess.bpm.model.ProcessInstance handleMep(
             String tenantId,
@@ -219,6 +229,8 @@ public class MessageController {
         try {
             vars.put("tenantId", tenantId);
             String modifiedMsgId = getMessageVarName(msgId);
+            vars.put("messageName", modifiedMsgId);
+
             if (jsonBody != null) {
                 addJsonToVars(msgId, jsonBody, vars, modifiedMsgId);
             }
@@ -299,7 +311,6 @@ public class MessageController {
 
     private void addJsonToVars(String msgId, String jsonBody,
             final Map<String, Object> vars, String modifiedMsgId) {
-        vars.put("messageName", modifiedMsgId);
         if (messageRegistry.canDeserialise(modifiedMsgId, jsonBody)) {
             vars.put(modifiedMsgId,
                     messageRegistry.deserialiseMessage(msgId, jsonBody));
