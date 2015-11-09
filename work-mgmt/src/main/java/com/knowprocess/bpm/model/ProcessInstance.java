@@ -18,7 +18,8 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-public class ProcessInstance extends Execution {
+public class ProcessInstance extends Execution
+/* implements org.activiti.engine.runtime.ProcessInstance */{
 
     protected static ProcessEngine processEngine;
 
@@ -57,6 +58,7 @@ public class ProcessInstance extends Execution {
         setProcessInstanceId(pi.getProcessInstanceId());
         setProcessVariables(pi.getProcessVariables());
         setSuspended(pi.isSuspended());
+        setTenantId(pi.getTenantId());
     }
 
     public ProcessInstance(HistoricProcessInstance hpi) {

@@ -37,6 +37,8 @@ public class Execution implements Serializable {
      */
     private Boolean ended;
 
+    private String tenantId;
+
     public Execution() {
         ;
     }
