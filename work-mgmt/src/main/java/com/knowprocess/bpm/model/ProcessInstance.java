@@ -76,6 +76,7 @@ public class ProcessInstance extends Execution
         // don't have an instance id
         setProcessVariables(hpi.getProcessVariables());
         setSuspended(false);
+        setTenantId(hpi.getTenantId());
     }
 
 	public ProcessInstance(org.activiti.engine.runtime.Execution execution) {
