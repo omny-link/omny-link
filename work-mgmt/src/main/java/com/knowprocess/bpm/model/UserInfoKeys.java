@@ -1,6 +1,8 @@
 package com.knowprocess.bpm.model;
 
-public enum UserInfoKeys {
+import java.io.Serializable;
+
+public enum UserInfoKeys implements Serializable {
 
     COMMS_PREFERENCE, PHONE, TENANT;
 

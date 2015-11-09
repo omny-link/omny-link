@@ -145,25 +145,59 @@ public class MessageController {
             @PathVariable("tenant") String tenantId,
             @PathVariable("msgId") String msgId,
             @RequestParam(required = false, value = "businessDescription") String bizDesc,
-            @RequestParam String json) {
+            @RequestParam(required = false) String json) {
         long start = System.currentTimeMillis();
         LOGGER.info("handling In-Only MEP: " + msgId + ", json:" + json);
 
         Map<String, Object> vars = new HashMap<String, Object>();
-        ResponseEntity<String> response = handleMep(uriBuilder, tenantId, msgId,
+        ResponseEntity<String> response = handleMep(uriBuilder, tenantId,
+                msgId,
                 bizDesc, json, vars, 0);
 
         LOGGER.debug(String.format("doInOnlyMep took: %1$s ms",
                 (System.currentTimeMillis() - start)));
         return response;
     }
-
+    
     protected ResponseEntity<String> handleMep(
             final UriComponentsBuilder uriBuilder, String tenantId,
             String msgId, String bizDesc, String jsonBody,
             final Map<String, Object> vars, int retry) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
 
-        if (isEmptyJson(jsonBody))
+        com.knowprocess.bpm.model.ProcessInstance instance = handleMep(
+                tenantId, msgId, bizDesc, jsonBody, vars, retry);
+
+        if (instance.getProcessVariables().containsKey("Location")) {
+            String path = instance.getProcessVariables().get("Location")
+                    .toString();
+            if (!path.startsWith("http")) {
+                path = uriBuilder.path(path).build().toUriString();
+            }
+            headers.add("Location", path);
+        } else {
+            addLocationHeader(uriBuilder, headers, instance);
+        }
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * 
+     * @param tenantId
+     * @param msgId
+     * @param bizDesc
+     * @param jsonBody
+     * @param vars
+     * @param retry
+     * @return
+     */
+    protected com.knowprocess.bpm.model.ProcessInstance handleMep(
+            String tenantId,
+            String msgId, String bizDesc, String jsonBody,
+            final Map<String, Object> vars, int retry) {
+
+        if (jsonBody != null && isEmptyJson(jsonBody))
             throw new BadJsonMessageException(
                     String.format(
                             "The JSON requested is empty or otherwise badly formed: %1$s",
@@ -175,28 +209,19 @@ public class MessageController {
             if (Boolean.valueOf(allowAnonymous)) {
                 LOGGER.warn("No user associated with this message, this may result in errors if the process author expected a username.");
             } else {
-                ReportableException e = new ReportableException(
+                throw new ReportableException(
                         "Please ensure you are logged in before sending messages");
-                return new ResponseEntity(e.toJson(), HttpStatus.UNAUTHORIZED);
             }
         // }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
 
         String bizKey = bizDesc == null ? msgId + " - "
                 + isoFormatter.format(new Date()) : bizDesc;
         try {
             vars.put("tenantId", tenantId);
             String modifiedMsgId = getMessageVarName(msgId);
-            vars.put("messageName", modifiedMsgId);
-            if (messageRegistry.canDeserialise(modifiedMsgId, jsonBody)) {
-                vars.put(modifiedMsgId,
-                        messageRegistry.deserialiseMessage(msgId, jsonBody));
-            } else {
-                vars.put(modifiedMsgId, jsonManager.toObject(jsonBody));
+            if (jsonBody != null) {
+                addJsonToVars(msgId, jsonBody, vars, modifiedMsgId);
             }
-            // TODO deprecate query param?
-            vars.put("query", jsonBody);
 
             try {
                 String username = "anonymousUser";
@@ -215,23 +240,13 @@ public class MessageController {
             vars.put("piid", instance.getId());
             com.knowprocess.bpm.model.ProcessInstance pi = com.knowprocess.bpm.model.ProcessInstance
                     .findProcessInstance(instance.getId());
-            if (pi.getProcessVariables().containsKey("Location")) {
-                String path = pi.getProcessVariables().get("Location")
-                        .toString();
-                if (!path.startsWith("http")) {
-                    path = uriBuilder.path(path).build().toUriString();
-                }
-                headers.add("Location", path);
-            } else {
-                addLocationHeader(uriBuilder, headers, instance);
-            }
-            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+            return pi;
         } catch (CannotCreateTransactionException e) {
             LOGGER.error(e.getClass().getName() + ":" + e.getMessage(), e);
             if (e.getCause() instanceof com.mysql.jdbc.exceptions.jdbc4.CommunicationsException
                     && retry < 3) {
                 LOGGER.error("Confirmed timeout exception, retrying...");
-                return handleMep(uriBuilder, tenantId, msgId, bizDesc,
+                return handleMep(tenantId, msgId, bizDesc,
                         jsonBody, vars, ++retry);
             } else {
                 ReportableException e2 = new ReportableException(
@@ -240,17 +255,14 @@ public class MessageController {
                 LOGGER.error("  e.getCause() instanceof com.mysql.jdbc.exceptions.jdbc4.CommunicationsException"
                         + (e.getCause() instanceof com.mysql.jdbc.exceptions.jdbc4.CommunicationsException));
                 LOGGER.error(e.getMessage(), e);
-                return new ResponseEntity<String>(e2.toJson(), headers,
-                        HttpStatus.SERVICE_UNAVAILABLE);
+                throw e2;
             }
         } catch (ActivitiObjectNotFoundException e) {
             if (e.getMessage().contains("no subscription to message with name")) {
-                return startCatchAllProcess(uriBuilder, tenantId, vars,
-                        headers, bizKey, e);
+                return startCatchAllProcess(tenantId, vars, bizKey, e);
             } else if (e.getMessage()
                     .contains("no processes deployed with key")) {
-                return startCatchAllProcess(uriBuilder, tenantId, vars,
-                        headers, bizKey, e);
+                return startCatchAllProcess(tenantId, vars, bizKey, e);
             } else {
                 LOGGER.error("The ObjectNotFound below is NOT a missing process exception");
                 LOGGER.error(e.getMessage(), e);
@@ -266,17 +278,14 @@ public class MessageController {
                     ScriptException.class.getName());
             if (cve != null) {
                 e2 = new ReportableException(cve);
-                return new ResponseEntity<String>(e2.toJson(), headers,
-                        HttpStatus.BAD_REQUEST);
+                throw e2;
             } else if (se != null && se.getMessage().contains("OptimisticLock")) {
                 LOGGER.info("Script Exception message: " + se.getMessage());
                 e2 = new ReportableException(
                         "Optimistic locking exception, please reload the record and try again.");
-                return new ResponseEntity<String>(e2.toJson(), headers,
-                        HttpStatus.BAD_REQUEST);
+                throw e2;
             } else {
-                startExceptionHandlerProcess(uriBuilder, tenantId, vars,
-                        headers, bizKey, e);
+                startExceptionHandlerProcess(tenantId, vars, bizKey, e);
                 throw e;
                 // e2 = new ReportableException(e.getClass().getName() + ":"
                 // + e.getMessage(), e);
@@ -288,40 +297,51 @@ public class MessageController {
         }
     }
 
-    private ResponseEntity<String> startCatchAllProcess(
-            final UriComponentsBuilder uriBuilder, String tenantId,
-            final Map<String, Object> vars, HttpHeaders headers, String bizKey,
+    private void addJsonToVars(String msgId, String jsonBody,
+            final Map<String, Object> vars, String modifiedMsgId) {
+        vars.put("messageName", modifiedMsgId);
+        if (messageRegistry.canDeserialise(modifiedMsgId, jsonBody)) {
+            vars.put(modifiedMsgId,
+                    messageRegistry.deserialiseMessage(msgId, jsonBody));
+        } else {
+            vars.put(modifiedMsgId, jsonManager.toObject(jsonBody));
+        }
+        // TODO deprecate query param?
+        vars.put("query", jsonBody);
+    }
+
+    private com.knowprocess.bpm.model.ProcessInstance startCatchAllProcess(
+            String tenantId,
+            final Map<String, Object> vars, String bizKey,
             ActivitiObjectNotFoundException e) {
         LOGGER.debug("Detected a missing process exception: " + e.getMessage());
         ProcessInstance instance = processEngine.getRuntimeService()
                 .startProcessInstanceByKeyAndTenantId("CatchAllProcess",
                         bizKey,
                         vars, tenantId);
-        addLocationHeader(uriBuilder, headers, instance);
+
         LOGGER.debug(String.format(
                 "Created an instance of %1$s to handle it, id: %2$s",
                 "CatchAllProcess", instance.getId()));
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        return new com.knowprocess.bpm.model.ProcessInstance(instance);
     }
 
-    private ResponseEntity<String> startExceptionHandlerProcess(
-            final UriComponentsBuilder uriBuilder, String tenantId,
-            final Map<String, Object> vars, HttpHeaders headers, String bizKey,
-            ActivitiException e) {
+    private com.knowprocess.bpm.model.ProcessInstance startExceptionHandlerProcess(
+            String tenantId,
+            final Map<String, Object> vars, String bizKey, ActivitiException e) {
         LOGGER.debug("An unexpected exception occurred: " + e.getMessage());
         ProcessInstance instance = processEngine.getRuntimeService()
                 .startProcessInstanceByKeyAndTenantId("CatchAllProcess",
-                        bizKey,
-                        vars, tenantId);
-        addLocationHeader(uriBuilder, headers, instance);
+                        bizKey, vars, tenantId);
         LOGGER.debug(String.format(
                 "Created an instance of %1$s to handle it, id: %2$s",
                 "CatchAllProcess", instance.getId()));
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        return new com.knowprocess.bpm.model.ProcessInstance(instance);
     }
 
     private void addLocationHeader(final UriComponentsBuilder uriBuilder,
-            HttpHeaders headers, ProcessInstance instance) {
+            HttpHeaders headers,
+            com.knowprocess.bpm.model.ProcessInstance instance) {
         RequestMapping a = ProcessInstanceController.class
                 .getAnnotation(RequestMapping.class);
         String basePath = a.value()[0];

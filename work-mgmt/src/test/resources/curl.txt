@@ -2,7 +2,19 @@ curl -X GET -H "Accept:application/xml" http://localhost:8082/process-definition
 
 curl -X POST -u tstephen:tstephen -d 'json={ "description":"do something","performer":"gardenatics","checker": "tstephen" }' http://localhost:9090/gardenatics/msg/omny.todo.json
 
-
 curl -X GET -u tstephen:tstephen -H "Accept:application/json" http://localhost:9090/task/2511
 
-curl -X POST -H 'Content-Type:application/json' -u tstephen:tstephen -d '{ "name": "gardenatics", "contactFields": [{ "label": "Partner", "key": "partner"},{ "label": "Appointment Date", "key": "appointmentDate"}],"typeaheadControls": [{ "selector": "#curEnquiryType", "url": "/data/gardenatics/enquiry-types.json"},{ "selector": "#curMedium", "url": "/data/media.json"},{ "selector": "#curOwner", "url": "/data/gardenatics/owners.json"},{ "selector": "#curPartner", "url": "/data/gardenatics/partners.json"},{ "selector": "#curSource", "url": "/data/sources.json"},{ "selector": "#curStage", "url": "/data/stages.json"}]}' http://localhost:8082/tenants
+curl -X POST -H 'Content-Type:application/json' -u tstephen:tstephen \
+  -d '{ "name": "gardenatics", "contactFields": [{ "label": "Partner", "key": "partner"},{ "label": "Appointment Date", "key": "appointmentDate"}],"typeaheadControls": [{ "selector": "#curEnquiryType", "url": "/data/gardenatics/enquiry-types.json"},{ "selector": "#curMedium", "url": "/data/media.json"},{ "selector": "#curOwner", "url": "/data/gardenatics/owners.json"},{ "selector": "#curPartner", "url": "/data/gardenatics/partners.json"},{ "selector": "#curSource", "url": "/data/sources.json"},{ "selector": "#curStage", "url": "/data/stages.json"}]}' http://localhost:8082/tenants
+  
+# Spam messages
+curl -X POST -u tstephen:tstephen -H "Accept:application/json" -v \
+    -d 'json={ "id":"" }' http://localhost:8082/msg/firmgains/firmgains.contact.json
+
+# DELETE single process instance
+curl -X DELETE -u tstephen:tstephen -H "Accept:application/json" -v \
+    http://localhost:8082/firmgains/process-instances/163279
+
+# Reset Password
+curl -X GET -u tstephen:tstephen -H "Accept:application/json" -v \
+    http://localhost:8082/users/phoward/reset-password
