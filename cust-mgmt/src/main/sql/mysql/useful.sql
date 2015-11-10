@@ -9,13 +9,19 @@ select concat('sleep 2; curl  -u firmgains:firmgains http://tstephen:5QuiWYYt@ap
  INTO OUTFILE '/var/tmp/followup.sh'
  
  
--- Find notes that hold a valuation 
-select contact_id from note where contact_id in (select id from contact where tenant_id = 'firmgains') and content like '%Valuation performed%';
+-- Find notes that hold a valuation but no activity for it 
+select contact_id from note 
+where contact_id in (select id from contact where tenant_id = 'firmgains') 
+and content like '%Valuation performed%'
+and contact_id not in (select id from activity where type = 'valuation');
 
 -- add activity for notes 
  insert into activity (content, occurred, type, contact_id) 
 select 'Valuation performed, see notes for details', created, 'valuation', contact_id
-from note where contact_id in (select id from contact where tenant_id = 'firmgains') and content like '%Valuation performed%';
+from note where contact_id in (
+  select id from contact where tenant_id = 'firmgains') 
+and content like '%Valuation performed%'
+and contact_id not in (select id from activity where type = 'valuation');
 
 -- set enquiry type = valuation where it was missed
 update  contact c, note n set enquiry_type = 'Valuation' where enquiry_type is null and tenant_id = 'firmgains' and n.contact_id = c.id; 
