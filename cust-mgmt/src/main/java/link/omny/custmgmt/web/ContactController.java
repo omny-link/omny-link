@@ -196,6 +196,26 @@ public class ContactController {
     }
 
     /**
+     * Return just the matching contacts (probably will be one in almost every
+     * case).
+     * 
+     * @return contacts for that tenant.
+     */
+    @RequestMapping(value = "/searchByEmail", method = RequestMethod.GET, params = { "email" })
+    public @ResponseBody List<ShortContact> searchByEmail(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam("email") String email) {
+        LOGGER.debug(String.format("List contacts for email %1$s", email));
+
+        // The unwrap stems from a restriction in Activiti JSON handling on
+        // multi-instance loops
+        List<Contact> list = contactRepo.findByEmail(unwrap(email), tenantId);
+        LOGGER.info(String.format("Found %1$s contacts", list.size()));
+
+        return wrap(list);
+    }
+
+    /**
      * Add a document to the specified contact.
      */
     // Jackson cannot deserialise document because of contact reference
@@ -320,6 +340,21 @@ public class ContactController {
         contact.confirmEmail(emailConfirmationCode);
         contactRepo.save(contact);
         return "emailConfirmation";
+    }
+
+    /**
+     * If value is in fact "value", remove the quotes.
+     *
+     * @param value
+     *            Any string.
+     * @return The value param without the leading and trailing quotes.
+     */
+    private String unwrap(String value) {
+        if (value == null)
+            return null;
+        else if (value.toString().startsWith("\""))
+            return value.toString().substring(1, value.toString().length() - 1);
+        return value.toString();
     }
 
     private List<ShortContact> wrap(List<Contact> list) {
