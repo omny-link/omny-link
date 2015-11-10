@@ -17,7 +17,7 @@
     <dependency>
       <groupId>org.activiti</groupId>
       <artifactId>activiti-bdd</artifactId>
-      <version>5.18.0-SNAPSHOT</version>
+      <version>${activiti.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

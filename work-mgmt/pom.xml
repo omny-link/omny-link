@@ -19,8 +19,6 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <start-class>com.knowprocess.bpm.Application</start-class>
-    <java.version>1.7</java.version>
-    <activiti.version>5.18.0-SNAPSHOT</activiti.version>
     <serenity.version>1.0.21</serenity.version>
     <serenity.maven.version>1.0.21</serenity.maven.version>
     <webdriver.driver>firefox</webdriver.driver>
