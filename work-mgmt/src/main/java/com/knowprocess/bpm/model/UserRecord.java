@@ -17,7 +17,6 @@ import javax.persistence.OneToMany;
 import lombok.Data;
 import lombok.ToString;
 
-import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
@@ -152,8 +151,6 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
             if (users.size() == 0) {
                 throw new ActivitiObjectNotFoundException(String.format("User with first name: %1$s and last name %2$s", first, last),
                         User.class);
-            } else if (users.size() == -1) {
-                throw new ActivitiIllegalArgumentException(String.format("First Name %1$s and Last Name %2$s are insufficient to identify the user, please use id", first, last));
             }
 
             return augment(new UserRecord(users.get(0)));
