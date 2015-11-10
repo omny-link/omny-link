@@ -1,0 +1,56 @@
+<section id="memosSect">
+  <h2>
+    <a id="memosTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the memo table"></a>
+    <span>Memos</span>
+    <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new memo"></a>
+    <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+    <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+    <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching memos"></a>
+    
+    <a class="clickable glyphicon glyphicon-cloud-download pull-right" aria-hidden="true" on-click="download(this)" title="Download"></a>
+    <form id="upload" class="super-admin pull-right upload">
+      <a class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')" title="Import data from file"></a>
+      <input type="file" class="form-control file pull-right" name="file" placeholder="Select file">
+      <select class="form-control entity pull-right" name="entity">
+        <option value="memos">Memos</option>
+      </select>
+    </form>
+  </h2>
+  <table id="memosTable" class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Owned by</th>
+        <th>Created</th>
+        <th>Last Updated</th>
+        <th class="col-actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {{#each memos:i}}
+      {{# matchFilter(this) }}
+        <tr data-href="{{links[rel=='self'].href}}" on-click="edit(i,this)">
+          <td>{{i+1}}</td>
+          <td>{{title}}</td>
+          <td>{{status}}</td>
+          <td>{{{hash(owner)}}}</td>
+          <td>{{formatDate(created)}}</td>
+          <td>{{formatDate(lastUpdated)}}</td>
+          <td class="col-actions">
+            <a class="clickable glyphicon glyphicon glyphicon-copy" aria-hidden="true" on-click="clone(this)" title="Clone this record"></a>
+            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+            <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this memo"></a>
+          </td>
+        </tr>
+      {{/}}
+    {{/each}}
+    </tbody>
+    <tfoot>
+      {{# searchTerm!=undefined }}
+        <tr><th colspan="9">{{searchMatched == 0 ? 'No' : searchMatched}} matching memo{{searchMatched==1 ? '' : 's'}}</th></tr>
+      {{/}} 
+    </tfoot>
+  </table>
+</section>

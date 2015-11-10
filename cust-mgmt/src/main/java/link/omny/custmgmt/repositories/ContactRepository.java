@@ -50,13 +50,19 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     @Query("SELECT c FROM Contact c "
             + "WHERE c.firstName = :firstName AND c.lastName = :lastName "
             + "AND c.account.name = :accountName")
+    // TODO ought to restrict this to single tenant
     List<Contact> findByFirstNameLastNameAndAccountName(
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
             @Param("accountName") String accountName);
 
+    @Query("SELECT c FROM Contact c WHERE c.email = :email AND c.tenantId = :tenantId")
+    List<Contact> findByEmail(@Param("email") String email,
+            @Param("tenantId") String tenantId);
+
     @Override
     @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = ?1")
     @Modifying(clearAutomatically = true)
     public void delete(Long id);
+
 }
