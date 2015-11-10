@@ -213,6 +213,9 @@ tfoot th {
 .btn-h2 {
   margin-top: -7px;
 }
+.chosen-container {
+  padding-left: 5px;	
+}
 .col-actions {
   min-width: 101px !important;
 }
@@ -252,6 +255,11 @@ h2 a.glyphicon:focus,
 h2 a.glyphicon:hover {
   color: #ff6c06;
   /*color: #646669;*/
+}
+.help-block { 
+  font-size: 12px;
+	line-height: 1em;
+	padding-left: 5px;
 }
 .navbar-brand { 
 	padding: 0;
@@ -349,10 +357,14 @@ form#upload {
 .form label {
 	padding-right: 10px;
   text-align: right;
-  width: 35%;
+}
+.form .col-md-6 label {
+	width: 35%;
 }
 .form label.textarea {
   vertical-align: top;
+}
+.form .col-md-6 label.textarea {
   width: 17%;
 }
 .form label.checkbox,

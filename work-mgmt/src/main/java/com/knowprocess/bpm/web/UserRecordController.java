@@ -1,6 +1,5 @@
 package com.knowprocess.bpm.web;
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,20 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.knowprocess.bpm.model.UserGroup;
 import com.knowprocess.bpm.model.UserInfo;
 import com.knowprocess.bpm.model.UserInfoKeys;
 import com.knowprocess.bpm.model.UserRecord;
-import com.knowprocess.usermgmt.PasswordGenerator;
-import com.knowprocess.usermgmt.SimplePasswordGenerator;
 
 @Controller
 @RequestMapping("/users")
@@ -42,8 +37,6 @@ public class UserRecordController {
 
     @Autowired(required = true)
     ProcessEngine processEngine;
-
-    private PasswordGenerator passwordGenerator = new SimplePasswordGenerator();
 
 	@RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
 	public @ResponseBody List<UserRecord> showAllJson() {

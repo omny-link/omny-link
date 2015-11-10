@@ -1,0 +1,66 @@
+<section id="currentSect" style="display:none">
+  <form id="currentForm" class="form-inline form">
+    <h2 class="form">Edit Distribution
+      <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
+      <span class="pull-right">
+        <a class="clickable glyphicon glyphicon glyphicon-copy" aria-hidden="true" on-click="clone(this)" title="Clone this record"></a>
+        <a class="clickable glyphicon glyphicon glyphicon-send" aria-hidden="true" on-click="sendMessage(this)" title="Send"></a>
+        <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+      </span>
+    </h2>
+
+    <div class="form-group currentBody col-lg-12 col-md-12 col-sm-12 col-xs-12">
+      <label class="col-md-2 control-label" for="curOwner">Owner: </label>
+      <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}">
+      <p class="col-md-offset-2 help-block">The user responsible for the distribution.</p>
+      <!-- Usually the owner creates and resolves the distribution but may also transfer ownership to another user. -->
+    </div>
+    <div class="form-group currentBody col-lg-12 col-md-12 col-sm-12 col-xs-12">
+      <label class="col-md-2 control-label">Status: </label>
+      <input class="typeahead form-control" disabled placeholder="Start typing to filter options" id="curStatus" readonly value="{{current.status}}">
+      <p class="col-md-offset-2 help-block">Draft until sent, then Sent until all contacts acknowledge, then Complete.</p>
+    </div>
+    <div class="form-group currentBody col-lg-12 col-md-12 col-sm-12 col-xs-12">
+      <label class="col-md-2 control-label">Name:</label>
+      <input class="col-md-9 form-control" id="curName" placeholder="An identifying name for this distribution" required style="width:60%;" type="text" value="{{current.name}}"/>
+      <!--p class="col-md-offset-2 help-block">Give this distribution an identifying name</p-->
+    </div>
+    <div class="form-group currentBody col-lg-12 col-md-12 col-sm-12 col-xs-12">
+      <label class="col-md-2 control-label">Memo Template:</label>
+      <input autocomplete="off" class="col-md-9 form-control" id="curMemoDisplay" placeholder="Please select a template" required style="width:60%;" type="text" value="{{current.memoDisplay}}">
+      <input id="curMemoRef" required type="hidden" value="{{current.memoRef}}">
+      <!--<p class="col-md-offset-2 help-block">The memo template to use for this distribution</p>-->
+    </div>
+    <div class="form-group currentBody col-lg-12 col-md-12 col-sm-12 col-xs-12">
+      <label class="col-md-2 control-label">List of recipients:</label>
+      <select id="curRecipients" class="col-md-9" multiple onchange="ractive.setRecipients(this)" style="width:60%;"></select>
+      <p class="col-md-offset-2 help-block">Individuals or lists to contact</p>
+    </div>
+
+  </form>
+  
+  {{#if current['activities'] != undefined}}
+    <div style="clear: both"></div>
+  
+    <form id="activityForm">
+     <div id="activitySect" style="clear: both">
+      <h2 title="Activities are added automatically by the workflows">
+        <span>Activities</span>
+        <!--<span class="glyphicon glyphicon-flash" aria-hidden="true" on-click="followUp(this.get('current'))"></span>-->
+      </h2>
+      <table id="activitiesTable" class="table table-striped"><tbody>
+        {{#each current.activities:j}}
+          <tr>
+            <td class="field-occurred">{{age(occurred)}} ({{formatDate(occurred)}})</td>
+            <td class="field-type">{{type}}</td>
+            <td class="field-text" id="activity{{j}}">{{{content}}}</td>
+          </tr>
+        {{/each}}
+        {{^ current.activities }}
+          <tr><td>None</td></tr>
+        {{/ current.activities }}
+      </tbody></table>
+     </div>
+    </form>
+  {{/if}}
+</section>
