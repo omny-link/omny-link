@@ -84,7 +84,7 @@ public class Deployment implements Serializable {
                 .createDeploymentQuery().deploymentId(getId()).count();
         if (count > 0) {
             throw new RuntimeException(String.format(
-                    "Failed to delete deployment with id ", getId()));
+                    "Failed to delete deployment with id %1$s", getId()));
         }
     }
 

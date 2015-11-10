@@ -420,7 +420,9 @@ public class MessageController {
             LOGGER.error("json received: " + json);
             return true;
         } finally {
-            jsonReader.close();
+            if (jsonReader != null) {
+                jsonReader.close();
+            }
         }
         return isEmpty;
     }

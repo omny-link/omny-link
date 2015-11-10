@@ -52,7 +52,7 @@ public class DeploymentController {
     @RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<Deployment> showAllJson(
             @PathVariable("tenantId") String tenantId) {
-        LOGGER.info(String.format("showAllJson", tenantId));
+        LOGGER.info(String.format("showAllJson(%1$s)", tenantId));
 
         List<Deployment> list = Deployment.findAllDeployments(tenantId);
         LOGGER.info("Deployments: " + list.size());

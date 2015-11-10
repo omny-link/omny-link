@@ -262,7 +262,7 @@ public class Task implements Serializable, org.activiti.engine.task.Task {
     @JsonIgnore
     public DelegationState getDelegationState() {
         LOGGER.error("Delegation not implemented");
-        throw null;
+        return null;
     }
 
     @Override
