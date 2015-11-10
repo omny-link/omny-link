@@ -24,6 +24,38 @@ Roadmap
 Releases
 --------
 
+1.0.0 beta 6 - 9th Nov 2015
+
+    #52 Carquake requests caught in spam filter
+    bug critical Carquake
+   
+1.0.0 beta 5 - 6th Nov 2015
+
+    #50 Reporting David Carter / Billington Travel as spam in error
+    bug confirmed support Firm Gains
+
+    #49 Lookup Company Number
+    feature Firm Gains
+
+    #45 Exception in log (no visible impact) on startup
+    bug
+
+    #42 Cannot run email follow up for contacts containing ampersands
+    bug support Firm Gains
+
+1.0.0 beta 4 - 4th Nov 2015
+
+    #41 Unable to complete valuation
+    bug support Firm Gains
+
+    #44 Do not post support call for empty JSON messages
+    bug support Firm Gains
+
+1.0.0 beta 3  3rd Nov 2015
+
+    #39 Problem with generating decision script for FG email follow up
+    bug support Firm Gains
+
 1.0.0 beta 1 - 21 Oct 15
 
     #37 FirmGains needs additional reference data 
