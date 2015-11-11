@@ -10,26 +10,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.Nonnull;
-
-import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.delegate.JavaDelegate;
-import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.knowprocess.core.internal.BaseUserAwareTask;
 import com.knowprocess.resource.internal.UrlResource;
 import com.knowprocess.test.mock.MockUrlResource;
 
-public abstract class RestService implements JavaDelegate {
-    protected static final Logger LOGGER = LoggerFactory
+public abstract class RestService extends BaseUserAwareTask implements
+        JavaDelegate {
+    public static final Logger LOGGER = LoggerFactory
             .getLogger(RestService.class);
 
-    protected Expression resourceUsername;
-    protected Expression resourcePassword;
     protected Expression globalResource;
     protected Expression headers;
     /**
@@ -174,26 +170,6 @@ public abstract class RestService implements JavaDelegate {
         }
     }
 
-    protected String lookup(DelegateExecution execution, @Nonnull String usr,
-            @Nonnull Expression expr) {
-        String s = (String) expr.getValue(execution);
-        if (s.startsWith("userInfo('")) {
-            String key = s.substring("userInfo(".length(), s.indexOf(')'));
-            if (key.startsWith("'") || key.startsWith("\"")) {
-                key = key.substring(1, key.length() - 1);
-            }
-            String val = execution.getEngineServices().getIdentityService()
-                    .getUserInfo(usr, key);
-            if (val == null) {
-                throw new ActivitiObjectNotFoundException(String.format(
-                        "No user setting '%1$s' found for '%2$s'", key, usr));
-            }
-            s = val + s.substring(s.indexOf(')') + 1);
-        }
-        return s;
-    }
-
-
     protected String[] getResponseHeadersSought(DelegateExecution execution) {
         if (responseHeaders == null) {
             return new String[0];
@@ -212,39 +188,6 @@ public abstract class RestService implements JavaDelegate {
             ur = new UrlResource(usr, pwd);
         }
         return ur;
-    }
-
-    protected String getPassword(DelegateExecution execution, String usr) {
-        return resourcePassword == null ? null : lookup(execution, usr,
-                resourcePassword);
-    }
-
-    protected String getUsername(DelegateExecution execution) {
-        if (resourceUsername == null) {
-            return null;
-        } else if (resourceUsername.getExpressionText().equals(
-                "userInfo('tenant-bot')")) {
-            return lookupBotName(execution);
-        } else {
-            return (String) resourceUsername.getValue(execution);
-        }
-    }
-
-    private String lookupBotName(DelegateExecution execution) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(String.format("  Looking for bot of tenant %1$s",
-                    execution.getTenantId()));
-        }
-        User botUser = execution.getEngineServices().getIdentityService()
-                .createUserQuery().userFirstName(execution.getTenantId())
-                .userLastName("Bot").singleResult();
-        if (botUser == null) {
-            String msg = String.format("No bot user for tenant '%1$s'",
-                    execution.getTenantId());
-            LOGGER.error(msg);
-            throw new ActivitiObjectNotFoundException(msg, User.class);
-        }
-        return botUser.getId();
     }
 
 }
