@@ -5,14 +5,14 @@
   <parent>
     <groupId>link.omny</groupId>
     <artifactId>omny-link-root</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0.20151117</version>
   </parent>
 
   <dependencies>
     <dependency>
       <groupId>com.knowprocess.bpm</groupId>
       <artifactId>work-mgmt</artifactId>
-      <version>2.0-SNAPSHOT</version>
+      <version>${work-mgmt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.activiti</groupId>
