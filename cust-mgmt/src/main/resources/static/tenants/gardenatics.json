@@ -16,7 +16,7 @@
   ],
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
-    { "url": "contacts.html", "classes": "glyphicon omny-icon-address-book", "description": "Find a particular contact", "title": "Customer Management" },
+    { "url": "contacts.html", "classes": "glyphicon omny-icon-address-book", "description": "Find a particular contact", "title": "Contact Management" },
     { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "description": "View recent activity", "title": "Events Stream" },
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "description": "View your process definitions here", "title": "Process Definitions" }    
   ],  

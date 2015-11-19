@@ -47,6 +47,7 @@
     { "selector": "#curMedium", "url": "/data/media.json"},
     { "selector": "#curSector", "url": "/data/omny/sectors.json"},
     { "selector": "#curSource", "url": "/data/sources.json"},
-    { "name": "stages", "selector": "#curStage", "url": "/data/omny/stages.json"}
+    { "name": "stages", "selector": "#curStage", "url": "/data/omny/stages.json"},
+    { "name": "status", "selector": "#curStatus", "url": "/data/status.json"}
   ]
 }
