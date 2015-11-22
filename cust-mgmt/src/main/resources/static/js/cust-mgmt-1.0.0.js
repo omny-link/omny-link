@@ -76,15 +76,20 @@ var ractive = new AuthenticatedRactive({
       if (filter==undefined) {
         return true;
       } else {
-        if (filter.operator=='in') {
-          var values = filter.value.toLowerCase().split(',');
-          return values.indexOf(obj[filter.field].toLowerCase())!=-1;
-        } else if (filter.operator=='!in') {
-          var values = filter.value.toLowerCase().split(',');
-          return values.indexOf(obj[filter.field].toLowerCase())==-1;
-        } else {
-          if (filter.operator==undefined) filter.operator='==';
-          return eval("'"+filter.value.toLowerCase()+"'"+filter.operator+"'"+obj[filter.field].toLowerCase()+"'");
+        try {
+          if (filter.operator=='in') {
+            var values = filter.value.toLowerCase().split(',');
+            return values.indexOf(obj[filter.field].toLowerCase())!=-1;
+          } else if (filter.operator=='!in') {
+            var values = filter.value.toLowerCase().split(',');
+            return values.indexOf(obj[filter.field].toLowerCase())==-1;
+          } else {
+            if (filter.operator==undefined) filter.operator='==';
+            return eval("'"+filter.value.toLowerCase()+"'"+filter.operator+"'"+obj[filter.field].toLowerCase()+"'");
+          }
+        } catch (e) {
+          console.debug('Exception during filter, probably means record does not have a value for the filtered field');
+          return true;
         }
       }
     },
@@ -97,9 +102,6 @@ var ractive = new AuthenticatedRactive({
         return (obj.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0
           || (obj.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0
           || (obj.email.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0
-          || (obj.town.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0
-          || (obj.countyOrCity.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0
-          || (obj.country.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0
           || (obj.accountName.toLowerCase().indexOf(searchTerm.toLowerCase()))>=0;
       }
     },
