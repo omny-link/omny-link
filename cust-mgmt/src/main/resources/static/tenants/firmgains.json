@@ -49,6 +49,8 @@
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
     { "url": "contacts.html", "classes": "glyphicon omny-icon-address-book", "description": "Find a particular contact", "title": "Contact Management" },
     { "url": "decisions-ui.html", "classes": "glyphicon glyphicon-list-alt", "description": "View and manage your decisions here", "title": "Decisions Definer" },
+    { "url": "memo-distribution.html", "classes": "glyphicon glyphicon-send", "title": "Distribution Centre", "description": "Send messages to groups of contacts" },
+    { "url": "memo.html", "classes": "glyphicon glyphicon-envelope", "title": "Templates", "description": "Create and edit your message templates"  },
     { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "description": "View recent activity", "title": "Events Stream" },
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "description": "View your process definitions here", "title": "Process Definitions" }    
   ],
