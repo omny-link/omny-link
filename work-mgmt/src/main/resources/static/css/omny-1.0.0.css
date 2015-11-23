@@ -213,7 +213,7 @@ tfoot th {
   margin-top: -7px;
 }
 .chosen-container {
-  padding-left: 5px;	
+  left: -7px;
 }
 .col-actions {
   min-width: 101px !important;

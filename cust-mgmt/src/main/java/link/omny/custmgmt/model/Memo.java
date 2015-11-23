@@ -39,6 +39,10 @@ public class Memo implements Serializable {
     private String owner;
 
     @JsonProperty
+    @NotNull
+    private String name;
+
+    @JsonProperty
     private String title;
 
     @JsonProperty
@@ -85,8 +89,8 @@ public class Memo implements Serializable {
     }
 
     public String toCsv() {
-        return String.format("%1$d,%2$s,%3$s,%4$s,%5$s,%6$s", id, title,
-                status, owner, richContent, plainContent);
+        return String.format("%1$d,%2$s,%3$s,%4$s,%5$s,%6$s,%7$s", id, name,
+                title, status, owner, richContent, plainContent);
     }
 
 }
