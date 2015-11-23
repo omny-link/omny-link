@@ -22,6 +22,7 @@ function start {
         exit 1
     fi
     echo "Starting application..."
+    cp /var/log/$APP_NAME/app.log /var/tmp/$APP_NAME-`date -I`.log
     nohup $JAVA_HOME/bin/java -jar $APP_HOME/$APP_JAR \
         --spring.config.location=file:$APP_HOME/   \
         < /dev/null > /var/log/$APP_NAME/app.log 2>&1 &
