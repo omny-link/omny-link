@@ -53,7 +53,6 @@ img.entity-context {
   width: 90%;	
 }
 input,select,textarea { 
-	margin: 0 5px 0 5px;
 	padding: 0 10px 0 10px;
 }
 input.field-error:invalid,
@@ -257,8 +256,11 @@ h2 a.glyphicon:hover {
   /*color: #646669;*/
 }
 .help-block { 
-  font-size: 12px;
+  font-size: 0.65em;
+  font-style: italic;
 	line-height: 1em;
+	margin-bottom: 0.1em;
+	margin-top: 0.1em;
 	padding-left: 5px;
 }
 .navbar-brand { 
@@ -348,7 +350,7 @@ form#upload {
 	min-width: 263px;
 }
 .form li { 
-	margin: 5px 0 5px;
+	/*margin: 5px 0 5px;*/
 }
 .form label, .form input {
   display:inline-block;
@@ -359,7 +361,8 @@ form#upload {
   text-align: right;
 }
 .form .col-md-6 label {
-	width: 35%;
+	margin-bottom: 0;
+	width: 33%;
 }
 .form label.textarea {
   vertical-align: top;
@@ -403,10 +406,14 @@ h2.form.create-form {
 .form input.edit-field { 
   border-width: 1px;
 }
+.form .typeahead {
+/*	position: relative;
+	left: -5px;*/
+}
 .form .tagit {
   width: 60%;
   float: right;
-  left: -20px;
+  left: -30px;
   position: relative;
 }
 .form textarea {

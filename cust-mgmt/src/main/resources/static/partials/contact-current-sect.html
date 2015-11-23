@@ -12,11 +12,12 @@
       <span contenteditable id="curFirstName2" on-focus="editField('#curFirstName2','current.firstName')" on-blur="updateField('#curFirstName2','current.firstName')">{{current.firstName}}</span>
       <span contenteditable id="curLastName2" on-focus="editField('#curLastName2','current.lastName')" on-blur="updateField('#curLastName2','current.lastName')">{{current.lastName}}</span>
       {{#if (current.phone1 != undefined || current.phone2 != undefined) && (current.phone1 != '' || current.phone2 != '')}}
-        <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1 == undefined || current.phone1 == '' ? current.phone2 : current.phone1 }}" title="Click to call"></a>
         {{#if (current.phone1 != undefined && current.phone1 != '')}}
+          <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1}}" title="Click to call"></a>
           <span>{{current.phone1}}</span>
         {{/if}}
         {{#if (current.phone2 != undefined && current.phone2 != '')}}
+          <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone2}}" title="Click to call"></a>
           <span> {{current.phone2}}</span>
         {{/if}}
       {{/if}}
@@ -43,14 +44,36 @@
 
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li><label class=" required">Email:</label><input class="form-control" id="curEmail" required type="email" value="{{current.email}}"></li>
-        <li><label class="">Confirmed?:</label><input class="" id="curEmailConfirmed" type="checkbox" checked="{{current.emailConfirmed}}"></li>
-        <li><label class="">Do Not Email:</label><input class="" id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"></li>
-        <li><label class="">Preferred Phone:</label><input class="form-control" id="curPhone1" value="{{current.phone1}}"></li>
-        <li><label class="">Alternate Phone:</label><input class="form-control" id="curPhone2" value="{{current.phone2}}"></li>
-        <li><label class="">Do Not Call:</label><input class="" id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}"></li>
-        <li><label class="">Owner: </label><input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}"></li>
-        <li><label class="">Stage:</label><input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}"></li>
+        <li>
+          <label class=" required">Email:</label>
+          <input class="form-control" id="curEmail" required type="email" value="{{current.email}}">
+        </li>
+        <li>
+          <label class="">Confirmed?:</label>
+          <input class="" id="curEmailConfirmed" type="checkbox" checked="{{current.emailConfirmed}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Has this email been confirmed valid?</p>
+        </li>
+        <li>
+          <label class="">Do Not Email:</label><input class="" id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"> Owner preference
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Check this if the user should not receive automated emails, for example during sensitive negotiations</p>  
+        </li>
+        <li>
+          <label class="">Opt out:</label><input class="" id="curOptOut" type="checkbox" checked="{{current.optOut}}"> User preference
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This will be checked if the user has opted-out of / unsubscribed from marketing emails</p>
+        </li>
+        <li>
+          <label class="">Preferred Phone:</label><input class="form-control" id="curPhone1" value="{{current.phone1}}"></li>
+        <li>
+          <label class="">Alternate Phone:</label><input class="form-control" id="curPhone2" value="{{current.phone2}}"></li>
+        <li>
+          <label class="">Do Not Call:</label><input class="" id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}"></li>
+        <li>
+          <label class="">Owner: </label><input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}"></li>
+        <li>
+          <label class="">Stage:</label>
+          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">How far through the sales pipeline are you with this contact?</p>
+        </li>
         {{# haveStageReasons() }}
           <li><label class="">Reason:</label><input class="typeahead form-control" placeholder="Start typing to filter options" id="curStageReason" value="{{current.stageReason}}"></li>
         {{/}}
@@ -64,8 +87,16 @@
         <li><label class=""></label><input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/></li>
         <li><label class="">Post Code:</label><input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}"></li>
         <li><label class="">Country:</label><input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
-        <li><label class="">Enquiry Type:</label><input class="typeahead form-control" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}"></li>
-        <li><label class="">Account Type:</label><input class="typeahead form-control" placeholder="Start typing to filter options" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}"></li>
+        <li>
+          <label class="">Enquiry Type:</label>
+          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">The nature of the initial contact</p>
+        </li>
+        <li>
+          <label class="">Account Type:</label>
+          <input class="typeahead form-control" placeholder="Start typing to filter options" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Defines the nature of the relationship with this contact</p>
+        </li>
         <li>
           <label class="" style="margin-right:5px">Tags:</label>
           <input class="tag-ctrl form-control" id="curTags" data-bind="current.tags"/>     
@@ -118,25 +149,30 @@
 
         <div class="currentBody col-md-6 col-sm-12 col-xs-12">
           <ul class="form edit-form">
-            <li><label class=" required">Company Name:</label><input class="form-control" id="curAccountName" required value="{{current.account.name}}"></li>
-            <li><label class="">Website:</label><input class="form-control" id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"></li>
+            <li class="form-group">
+              <label class="col-md-4 required">Company Name:</label>
+              <input class="form-control" id="curAccountName" required value="{{current.account.name}}"></li>
+            <li class="form-group">
+              <label class="col-md-4">Website:</label>
+              <input class="form-control" id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}">
+            </li>
             <!--<li><label class="">Also known as:</label><input class="form-control" id="curAliases" value="{{current.account.aliases}}"></li>-->
           </ul>
         </div>
         <div class="currentBody col-md-6 col-sm-12 col-xs-12">
           <ul class="form edit-form">
-            <li><label class="">Company Number:</label><input autocomplete="off" class="typeahead form-control" id="curCompanyNumber" pattern="[0-9]{8}" placeholder="Start typing to filter options" type="text" value="{{current.account.companyNumber}}"></li>
+            <li class="form-group"><label class="col-md-4">Company Number:</label><input autocomplete="off" class="typeahead form-control" id="curCompanyNumber" pattern="[0-9]{8}" placeholder="Start typing to filter options" type="text" value="{{current.account.companyNumber}}"></li>
             {{#current.account.companyNumber}}
-              <li><label class=""></label><a href="https://beta.companieshouse.gov.uk/company/{{current.account.companyNumber}}" target="_newTab">View Companies House Information</a></li>
+              <li class="form-group"><label class="col-md-4"></label><a href="https://beta.companieshouse.gov.uk/company/{{current.account.companyNumber}}" target="_newTab">View Companies House Information</a></li>
             {{/}}
-            <li><label class="">No. of employees:</label><input class="form-control" id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/></li>
+            <li class="form-group"><label class="col-md-4">No. of employees:</label><input class="form-control" id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/></li>
           </ul>
         </div>
       </div>
 
       <div id="currentAccountDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12">
           <ul class="form edit-form">
-            <li><label class="textarea">Description:</label><textarea class="" id="curDescription" cols="80" value="{{current.account.description}}"></textarea></li>
+            <li class="form-group"><label class="textarea">Description:</label><textarea class="" id="curDescription" cols="80" value="{{current.account.description}}"></textarea></li>
           </ul>
       </div>
 
@@ -171,15 +207,30 @@
       <h2 style="clear:both">At a glance</h2>
       <div class="currentBody col-md-6 col-sm-12 col-xs-12">
         <ul class="form edit-form">
-          <li><label class="">Since login:</label><input class="form-control" id="curTimeSinceLogin" disabled readonly value="{{formatAge(current.timeSinceLogin)}}"></li>
-          <li><label class="">Since registration:</label><input class="form-control" id="curTimeSinceRegistration" disabled readonly value="{{formatAge(current.timeSinceRegistered)}}"></li>
-          <li><label class="">Since valuation:</label><input class="form-control" id="curTimeSinceValuation" disabled readonly value="{{formatAge(current.timeSinceValuation)}}"></li>
+          <li class="form-group">
+            <label class="col-md-4">Since login:</label>
+            <input class="form-control" id="curTimeSinceLogin" disabled readonly value="{{formatAge(current.timeSinceLogin)}}">
+          </li>
+          <li class="form-group">
+            <label class="col-md-4">Since registration:</label>
+            <input class="form-control" id="curTimeSinceRegistration" disabled readonly value="{{formatAge(current.timeSinceRegistered)}}">
+          </li>
+          <li class="form-group">
+            <label class="col-md-4">Since valuation:</label>
+            <input class="form-control" id="curTimeSinceValuation" disabled readonly value="{{formatAge(current.timeSinceValuation)}}">
+          </li>
         </ul>
       </div>
       <div class="currentBody col-md-6 col-sm-12 col-xs-12">
         <ul class="form edit-form">
-          <li><label class="">Since email:</label><input class="form-control" id="curTimeSinceEmail" disabled readonly value="{{formatAge(current.timeSinceEmail)}}"></li>
-          <li><label class="">Mails sent:</label><input class="form-control" id="curEmailsSent" disabled readonly value="{{current.emailsSent}}"></li>
+          <li class="form-group">
+            <label class="col-md-4">Since email:</label>
+            <input class="form-control" id="curTimeSinceEmail" disabled readonly value="{{formatAge(current.timeSinceEmail)}}">
+          </li>
+          <li class="form-group">
+            <label class="col-md-4">Mails sent:</label>
+            <input class="form-control" id="curEmailsSent" disabled readonly value="{{current.emailsSent}}">
+          </li>
         </ul>
       </div>
   {{/tenant.show.activityAnalysis}}
