@@ -1,5 +1,6 @@
 package link.omny.custmgmt.model;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -10,7 +11,8 @@ import org.junit.Test;
 
 public class ContactActivityTest {
 
-    private static final long ONE_WEEK = 7 * 60 * 60 * 1000;
+    private static final long ONE_MINUTE = 60 * 1000;
+    private static final long ONE_WEEK = 7 * 60 * ONE_MINUTE;
     private Contact contact;
 
     @Before
@@ -33,10 +35,8 @@ public class ContactActivityTest {
 
     @Test
     public void testTimeSinceFirstLogin() {
-        contact.getActivities().add(
-                new Activity("login", new GregorianCalendar(2026, 1, 1, 13, 0,
-                        0).getTime()));
-        assertTrue(contact.getTimeSinceLogin() > ONE_WEEK);
+        contact.getActivities().add(new Activity("login", new Date()));
+        assertTrue(contact.getTimeSinceFirstLogin() > ONE_WEEK);
     }
 
     @Test
@@ -50,5 +50,33 @@ public class ContactActivityTest {
     @Test
     public void testTimeSinceNonExistantRegistration() {
         assertTrue(contact.getTimeSinceRegistered() == -1);
+    }
+
+    @Test
+    public void testMailsSent() {
+        assertEquals(contact.getEmailsSent(), 0);
+        contact.getActivities().add(
+                new Activity("email", new Date(), "welcome"));
+        assertEquals(contact.getEmailsSent(), 1);
+    }
+
+    @Test
+    public void testTimeSinceLastEmail() {
+        contact.getActivities().add(
+                new Activity("email", new GregorianCalendar(2015, 1, 1, 13, 0,
+                        0).getTime()));
+        contact.getActivities().add(new Activity("email", new Date()));
+        assertTrue(contact.getTimeSinceEmail() < ONE_MINUTE);
+    }
+
+    @Test
+    public void testTimeSinceBusinessPlanDownload() {
+        contact.getActivities().add(
+                new Activity("businessPlanDownload", new GregorianCalendar(
+                        2015, 1, 1, 13, 0,
+                        0).getTime()));
+        contact.getActivities().add(
+                new Activity("businessPlanDownload", new Date()));
+        assertTrue(contact.getTimeSinceBusinessPlanDownload() < ONE_MINUTE);
     }
 }

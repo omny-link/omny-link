@@ -96,6 +96,8 @@ public interface ContactCompleteProjection {
 
     long getTimeSinceEmail();
 
+    int getEmailsSent();
+
     long getTimeSinceValuation();
 
 }
