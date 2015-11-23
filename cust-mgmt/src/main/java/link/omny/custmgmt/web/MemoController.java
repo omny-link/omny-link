@@ -94,7 +94,7 @@ public class MemoController {
      * @return messages for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public @ResponseBody List<ShortMessage> listForTenant(
+    public @ResponseBody List<ShortMemo> listForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
@@ -166,16 +166,16 @@ public class MemoController {
         // return note;
     }
 
-    private List<ShortMessage> wrap(List<Memo> list) {
-        List<ShortMessage> resources = new ArrayList<ShortMessage>(list.size());
+    private List<ShortMemo> wrap(List<Memo> list) {
+        List<ShortMemo> resources = new ArrayList<ShortMemo>(list.size());
         for (Memo message : list) {
             resources.add(wrap(message));
         }
         return resources;
     }
 
-    private ShortMessage wrap(Memo message) {
-        ShortMessage resource = new ShortMessage();
+    private ShortMemo wrap(Memo message) {
+        ShortMemo resource = new ShortMemo();
         BeanUtils.copyProperties(message, resource);
         Link detail = linkTo(MemoRepository.class, message.getId())
                 .withSelfRel();
@@ -191,8 +191,9 @@ public class MemoController {
     }
 
     @Data
-    public static class ShortMessage extends ResourceSupport {
+    public static class ShortMemo extends ResourceSupport {
         private String selfRef;
+        private String name;
         private String title;
         private String status;
         private String owner;

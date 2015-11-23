@@ -4,39 +4,38 @@
       <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
       <span class="pull-right">
         <a class="clickable glyphicon glyphicon glyphicon-copy" aria-hidden="true" on-click="clone(this)" title="Clone this record"></a>
-        <a class="clickable glyphicon glyphicon glyphicon-send" aria-hidden="true" on-click="sendMessage(this)" title="Send"></a>
+        <a class="clickable glyphicon glyphicon glyphicon-send" aria-hidden="true" on-click="startDistribution(this)" title="Send"></a>
         <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
       </span>
     </h2>
 
-    <div class="form-group currentBody col-lg-12 col-md-12 col-sm-12 col-xs-12">
-      <label class="col-md-2 control-label" for="curOwner">Owner: </label>
-      <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}">
-      <p class="col-md-offset-2 help-block">The user responsible for the distribution.</p>
-      <!-- Usually the owner creates and resolves the distribution but may also transfer ownership to another user. -->
-    </div>
-    <div class="form-group currentBody col-lg-12 col-md-12 col-sm-12 col-xs-12">
-      <label class="col-md-2 control-label">Status: </label>
-      <input class="typeahead form-control" disabled placeholder="Start typing to filter options" id="curStatus" readonly value="{{current.status}}">
-      <p class="col-md-offset-2 help-block">Draft until sent, then Sent until all contacts acknowledge, then Complete.</p>
-    </div>
-    <div class="form-group currentBody col-lg-12 col-md-12 col-sm-12 col-xs-12">
-      <label class="col-md-2 control-label">Name:</label>
-      <input class="col-md-9 form-control" id="curName" placeholder="An identifying name for this distribution" required style="width:60%;" type="text" value="{{current.name}}"/>
+    <div class="form-group currentBody col-md-6 col-sm-12">
+      <label class="col-md-4 control-label">Name:</label>
+      <input class="col-md-6 form-control" id="curName" placeholder="An identifying name for this distribution" required style="width:60%;" type="text" value="{{current.name}}"/>
       <!--p class="col-md-offset-2 help-block">Give this distribution an identifying name</p-->
     </div>
-    <div class="form-group currentBody col-lg-12 col-md-12 col-sm-12 col-xs-12">
-      <label class="col-md-2 control-label">Memo Template:</label>
+    <div class="form-group currentBody col-md-6 col-sm-12">
+      <label class="col-md-4 control-label">Memo Template:</label>
       <input autocomplete="off" class="col-md-9 form-control" id="curMemoDisplay" placeholder="Please select a template" required style="width:60%;" type="text" value="{{current.memoDisplay}}">
       <input id="curMemoRef" required type="hidden" value="{{current.memoRef}}">
       <!--<p class="col-md-offset-2 help-block">The memo template to use for this distribution</p>-->
     </div>
-    <div class="form-group currentBody col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="form-group currentBody col-md-12 col-sm-12">
       <label class="col-md-2 control-label">List of recipients:</label>
-      <select id="curRecipients" class="col-md-9" multiple onchange="ractive.setRecipients(this)" style="width:60%;"></select>
+      <select id="curRecipients" class="col-md-10" multiple onchange="ractive.setRecipients(this)" style="width:80%;position:relative;"></select>
       <p class="col-md-offset-2 help-block">Individuals or lists to contact</p>
     </div>
-
+    <div class="form-group currentBody col-md-6 col-sm-12">
+      <label class="col-md-4 control-label" for="curOwner">Owner: </label>
+      <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}">
+      <p class="col-md-offset-4 help-block">The user responsible for the distribution.</p>
+      <!-- Usually the owner creates and resolves the distribution but may also transfer ownership to another user. -->
+    </div>
+    <div class="form-group currentBody col-md-6 col-sm-12">
+      <label class="col-md-4 control-label">Status: </label>
+      <input class="typeahead form-control" disabled placeholder="Start typing to filter options" id="curStatus" readonly value="{{current.status}}">
+      <p class="col-md-offset-4 help-block">Draft until sent, then Sent until all contacts acknowledge, then Complete.</p>
+    </div>
   </form>
   
   {{#if current['activities'] != undefined}}

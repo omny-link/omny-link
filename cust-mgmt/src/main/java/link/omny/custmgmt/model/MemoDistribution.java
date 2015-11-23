@@ -84,7 +84,9 @@ public class MemoDistribution implements Serializable {
     }
 
     public void setRecipientList(List<String> recipientList) {
-        setRecipients(recipientList.toString());
+        String tmp = recipientList.toString();
+        tmp = tmp.replaceAll(", ", ",");
+        setRecipients(tmp.substring(1, tmp.length() - 1));
     }
 
     @PrePersist

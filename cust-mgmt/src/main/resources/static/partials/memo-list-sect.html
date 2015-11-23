@@ -1,18 +1,17 @@
 <section id="memosSect">
   <h2>
     <a id="memosTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the memo table"></a>
-    <span>Memos</span>
+    <span>Templates</span>
     <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new memo"></a>
     <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
     <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-    <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching memos"></a>
+    <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching templates"></a>
     
-    <a class="clickable glyphicon glyphicon-cloud-download pull-right" aria-hidden="true" on-click="download(this)" title="Download"></a>
     <form id="upload" class="super-admin pull-right upload">
       <a class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')" title="Import data from file"></a>
       <input type="file" class="form-control file pull-right" name="file" placeholder="Select file">
       <select class="form-control entity pull-right" name="entity">
-        <option value="memos">Memos</option>
+        <option value="memos">Templates</option>
       </select>
     </form>
   </h2>
@@ -20,7 +19,7 @@
     <thead>
       <tr>
         <th></th>
-        <th>Title</th>
+        <th>Name</th>
         <th>Status</th>
         <th>Owned by</th>
         <th>Created</th>
@@ -33,7 +32,7 @@
       {{# matchFilter(this) }}
         <tr data-href="{{links[rel=='self'].href}}" on-click="edit(i,this)">
           <td>{{i+1}}</td>
-          <td>{{title}}</td>
+          <td>{{name}}</td>
           <td>{{status}}</td>
           <td>{{{hash(owner)}}}</td>
           <td>{{formatDate(created)}}</td>

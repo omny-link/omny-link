@@ -1,6 +1,6 @@
 { 
   "id": "omny", 
-  "show": { "account":true, "budget":true, "marketing":true, "companyBackground":false },
+  "show": { "account":true, "activityAnalysis":true, "budget":true, "marketing":true, "companyBackground":false },
   "contactFields": [ 
     { "label": "Job Title", "key": "jobTitle"},
     { "label": "Next Steps", "key": "nextSteps"},
@@ -20,8 +20,8 @@
     { "url": "decisions-ui.html", "classes": "glyphicon glyphicon-list-alt", "description": "View and manage your decisions here", "title": "Decisions Definer" },
     { "url": "domain.html", "classes": "glyphicon omny-icon-domain-model", "title": "Domain Model", "description": "Business glossary" },
     { "url": "decisions-dmn.html", "classes": "glyphicon glyphicon-list-alt", "title": "Decisions Repository", "description": "Home of your Decision Models" },
-    { "url": "memo-distribution.html", "classes": "glyphicon glyphicon-send", "title": "Memo Centre", "description": "Send messages to groups of contacts" },
-    { "url": "memo.html", "classes": "glyphicon glyphicon-envelope", "title": "Memo Templates", "description": "Create and edit your memo templates"  },
+    { "url": "memo-distribution.html", "classes": "glyphicon glyphicon-send", "title": "Distribution Centre", "description": "Send messages to groups of contacts" },
+    { "url": "memo.html", "classes": "glyphicon glyphicon-envelope", "title": "Templates", "description": "Create and edit your message templates"  },
     { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "description": "View recent activity", "title": "Events Stream" },
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "description": "View your process definitions here", "title": "Process Definitions" },    
     { "url": "users.html", "classes": "glyphicon omny-icon-users", "title": "Users Management" },

@@ -70,7 +70,7 @@ var ractive = new AuthenticatedRactive({
       { "name": "memoListSect", "url": "/partials/memo-list-sect.html"},
       { "name": "currentMemoSect", "url": "/partials/memo-current-sect.html"}
     ],
-    title: "Memo Library"
+    title: "Template Library"
   },
   add: function () {
     console.log('add...');
