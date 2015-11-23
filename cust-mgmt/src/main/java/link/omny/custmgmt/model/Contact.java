@@ -343,10 +343,26 @@ public class Contact implements Serializable {
         return now;
     }
 
-    private long getTimeSinceSafely(String type) {
+    private long getTimeSinceLast(String type) {
         long time = -1;
         try {
             Activity lastEmail = getLastActivityOfType(type);
+            time = lastEmail == null ? -1 : getNow().getTime()
+                    - lastEmail.getOccurred().getTime();
+        } catch (Throwable e) {
+            LOGGER.warn(String.format(
+                            "Exception in getTimeSinceLast('%1$s'), assume no such activity",
+                    type), e);
+        }
+        LOGGER.info(String.format("determined time since %1$s: %2$d", type,
+                time));
+        return time;
+    }
+
+    private long getTimeSinceFirst(String type) {
+        long time = -1;
+        try {
+            Activity lastEmail = getFirstActivityOfType(type);
             time = lastEmail == null ? -1 : getNow().getTime()
                     - lastEmail.getOccurred().getTime();
         } catch (Throwable e) {
@@ -356,36 +372,35 @@ public class Contact implements Serializable {
                 time));
         return time;
     }
+
     @JsonProperty("timeSinceBusinessPlanDownload")
     public long getTimeSinceBusinessPlanDownload() {
-        return getTimeSinceSafely("businessPlanDownload");
+        return getTimeSinceLast("businessPlanDownload");
     }
 
     @JsonProperty("timeSinceLogin")
     public long getTimeSinceLogin() {
-        return getTimeSinceSafely("login");
+        return getTimeSinceLast("login");
     }
 
     @JsonProperty("timeSinceFirstLogin")
     public long getTimeSinceFirstLogin() {
-        Activity firstLogin = getFirstActivityOfType("login");
-        return firstLogin == null ? -1 : getNow().getTime()
-                - firstLogin.getOccurred().getTime();
+        return getTimeSinceFirst("login");
     }
 
     @JsonProperty("timeSinceRegistered")
     public long getTimeSinceRegistered() {
-        return getTimeSinceSafely("register");
+        return getTimeSinceLast("register");
     }
 
     @JsonProperty("timeSinceEmail")
     public long getTimeSinceEmail() {
-        return getTimeSinceSafely("email");
+        return getTimeSinceLast("email");
     }
 
     @JsonProperty("timeSinceValuation")
     public long getTimeSinceValuation() {
-        return getTimeSinceSafely("valuation");
+        return getTimeSinceLast("valuation");
     }
 
     public boolean haveSentEmail(String emailName) {
@@ -403,6 +418,11 @@ public class Contact implements Serializable {
         return !haveSentEmail(emailName);
     }
 
+    @JsonProperty
+    public int getEmailsSent() {
+        return getActivitiesOfType("email").size();
+    }
+
     public List<Activity> getActivitiesOfType(String type) {
         List<Activity> activities = new ArrayList<Activity>();
         for (Activity act : getActivities()) {
@@ -418,7 +438,7 @@ public class Contact implements Serializable {
         Activity lastAct = null;
         for (Activity act : getActivities()) {
             if (type.equalsIgnoreCase(act.getType())
-                    && (lastAct == null || lastAct.getOccurred().after(
+                    && (lastAct == null || lastAct.getOccurred().before(
                             act.getOccurred()))) {
                 lastAct = act;
             }
@@ -432,7 +452,7 @@ public class Contact implements Serializable {
         Activity firstAct = null;
         for (Activity act : getActivities()) {
             if (type.equalsIgnoreCase(act.getType())
-                    && (firstAct == null || firstAct.getOccurred().before(
+                    && (firstAct == null || firstAct.getOccurred().after(
                             act.getOccurred()))) {
                 firstAct = act;
             }
