@@ -1,5 +1,7 @@
 package com.knowprocess.twitter;
 
+import java.util.Date;
+
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,7 +28,8 @@ public class TweetTaskTest {
     @Test
     public void testOutsideActiviti() {
         TweetTask task = new TweetTask();
-        task.tweet(key, secret, accessToken, accessSecret, "Hello!");
+        task.tweet(key, secret, accessToken, accessSecret,
+                "Hello! The time is: " + new Date());
     }
 
 }
