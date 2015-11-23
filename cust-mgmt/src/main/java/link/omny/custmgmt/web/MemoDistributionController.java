@@ -94,7 +94,7 @@ public class MemoDistributionController {
      * @return mailshots for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public @ResponseBody List<ShortMailshot> listForTenant(
+    public @ResponseBody List<ShortMemoDistribution> listForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
@@ -167,8 +167,8 @@ public class MemoDistributionController {
         // return note;
     }
 
-    private List<ShortMailshot> wrap(List<MemoDistribution> list) {
-        List<ShortMailshot> resources = new ArrayList<ShortMailshot>(
+    private List<ShortMemoDistribution> wrap(List<MemoDistribution> list) {
+        List<ShortMemoDistribution> resources = new ArrayList<ShortMemoDistribution>(
                 list.size());
         for (MemoDistribution mailshot : list) {
             resources.add(wrap(mailshot));
@@ -176,8 +176,8 @@ public class MemoDistributionController {
         return resources;
     }
 
-    private ShortMailshot wrap(MemoDistribution mailshot) {
-        ShortMailshot resource = new ShortMailshot();
+    private ShortMemoDistribution wrap(MemoDistribution mailshot) {
+        ShortMemoDistribution resource = new ShortMemoDistribution();
         BeanUtils.copyProperties(mailshot, resource);
         Link detail = linkTo(MemoDistributionRepository.class, mailshot.getId())
                 .withSelfRel();
@@ -193,7 +193,7 @@ public class MemoDistributionController {
     }
 
     @Data
-    public static class ShortMailshot extends ResourceSupport {
+    public static class ShortMemoDistribution extends ResourceSupport {
         private String selfRef;
         private String name;
         private String status;

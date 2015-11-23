@@ -63,6 +63,7 @@ var ractive = new AuthenticatedRactive({
       if (ractive.get('filter')==undefined) return true;
       else return ractive.get('filter').value.toLowerCase()==obj[ractive.get('filter').field].toLowerCase();
     },
+    saveObserver: false,
     stdPartials: [
       { "name": "helpModal", "url": "/partials/memo-dist-help-modal.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
@@ -72,7 +73,7 @@ var ractive = new AuthenticatedRactive({
       { "name": "memoDistListSect", "url": "/partials/memo-dist-list-sect.html"},
       { "name": "currentMemoDistSect", "url": "/partials/memo-dist-current-sect.html"}
     ],
-    title: "Memo Distribution Centre"
+    title: "Distribution Centre"
   },
   add: function () {
     console.log('add...');
@@ -146,23 +147,18 @@ var ractive = new AuthenticatedRactive({
       success: function( data ) {
         if (data['_embedded'] == undefined) {
           ractive.merge('memoDistributions', data);
-        }else{
+        } else {
           ractive.merge('memoDistributions', data['_embedded'].memoDistributions);
         }
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
         ractive.set('searchMatched',$('#memoDistributionsTable tbody tr:visible').length);
         ractive.set('saveObserver',true);
-      }//,
-//      fail: function( jqXHR, textStatus, errorThrown) {
-//        console.log( "error" );
-//        ractive.handleError(jqXHR,textStatus,errorThrown);
-//      });      
+      }     
     });
   },
   fetchContacts: function () {
     console.log('fetchContacts...');
-    ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/contacts/?projection=complete',
@@ -198,17 +194,15 @@ var ractive = new AuthenticatedRactive({
         // select any recipients already attached to the distribution
         if (ractive.get('current.recipients')!=undefined) {
           $.each(ractive.get('current.recipients').split(','), function(i,d) {
-            $('#curRecipients option[value="'+d+'"]').attr('selected','selected')
+            $('#curRecipients option[value="'+d.trim()+'"]').attr('selected','selected')
           });
           $('#curRecipients').trigger("chosen:updated");
         }
-        ractive.set('saveObserver', true);
       }     
     });
   },
   fetchMemos: function () {
     console.log('fetchMemos...');
-    ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/memos/',
@@ -235,7 +229,6 @@ var ractive = new AuthenticatedRactive({
           $(ev.target).trigger(newEv);
           return true;
         });
-        ractive.set('saveObserver', true);
       }     
     });
   },
@@ -271,20 +264,20 @@ var ractive = new AuthenticatedRactive({
     } 
     return uri;
   },
-  getMemoTitle: function(id) {
-    console.log('getMemoTitle: '+id);
+  getMemoName: function(id) {
+    console.log('getMemoName: '+id);
     if (id == undefined) return '';
-    var title = '';
+    var name = '';
     $.each(ractive.get('memos'), function(i,d) {
-      if (d.selfRef.endsWith('/'+id)) title = d.title;
+      if (d.selfRef.endsWith('/'+id)) name = d.name;
     });
-    return title;
+    return name;
   },
   initMemosTypeahead: function() {
     console.info('initMemosTypeahead');
     return jQuery.map(ractive.get('memos'), function( n, i ) {
       console.log('n: '+n+', i:'+i);
-      return ( {id: n.selfRef, name: n.title} );
+      return ( {id: n.selfRef, name: n.name} );
     });
   },
   oninit: function() {
@@ -352,7 +345,7 @@ var ractive = new AuthenticatedRactive({
 	    $.getJSON(ractive.getServer()+url,  function( data ) {
         console.log('found distribution '+data);
         ractive.set('current', data);
-        $('#curMemoDisplay').val(ractive.getMemoTitle(ractive.get('current.memoRef')))
+        $('#curMemoDisplay').val(ractive.getMemoName(ractive.get('current.memoRef')))
         ractive.initControls();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
@@ -366,12 +359,32 @@ var ractive = new AuthenticatedRactive({
 	  ractive.toggleResults();
 	  $('#currentSect').slideDown();
   },
-  sendMessage: function(distribution) {
+  startDistribution: function(distribution) {
     console.log('sendMessage');
-    if (ractive.get('testMode')==true) ractive.sendMessageInTestMode();
-    else console.error('Not yet implemented workflow');
+    if (ractive.get('testMode')==true) {
+      ractive.startDistributionInTestMode();
+    } else {
+      ractive.startDistributionForReal();
+    }
   },
-  sendMessageInTestMode: function() {
+  startDistributionForReal: function() {
+    console.log('startDistributionForReal');
+    $.ajax({
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        processDefinitionId: 'DistributeMemo',
+        businessKey: ractive.get('current.name')+' '+new Date().toISOString(),
+        processVariables: { distributionId: ractive.get('current.id') }
+      }),
+      success: completeHandler = function(data,textStatus,jqXHR) {
+        console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
+        ractive.showMessage('Started workflow "'+label+'" for '+bizKey);
+      },
+    });
+  },
+  startDistributionInTestMode: function() {
     ractive.showMessage("No memos are actually sent because you are in simulation mode.", 'bg-warning text-warning');
     var distribution = { recipients: ['Red','White','sandrab@yahoo.com'] };
     var toContact = jQuery.map(ractive.get('contacts'), function( n, i ) {
@@ -402,7 +415,10 @@ var ractive = new AuthenticatedRactive({
   },
   setRecipients: function(ctrl) {
     console.info('setRecipients: '+$(ctrl).val());
-    if ($(ctrl).val()!=undefined) ractive.set('current.recipients',$(ctrl).val().join());
+    if ($(ctrl).val()!=undefined) {
+      ractive.set('current.recipientList',$(ctrl).val());
+      ractive.set('current.recipients',$(ctrl).val().join());
+    }
   },
   showActivityIndicator: function(msg, addClass) {
     document.body.style.cursor='progress';

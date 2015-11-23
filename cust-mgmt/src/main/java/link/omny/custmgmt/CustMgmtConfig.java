@@ -5,6 +5,7 @@ import javax.persistence.EntityManagerFactory;
 import link.omny.custmgmt.internal.JsonPopulatorFactoryBean;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.MemoDistribution;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,8 @@ public class CustMgmtConfig extends RepositoryRestMvcConfiguration {
     @Override
     protected void configureRepositoryRestConfiguration(
             RepositoryRestConfiguration config) {
-        config.exposeIdsFor(Contact.class, Account.class);
+        config.exposeIdsFor(Contact.class, Account.class,
+                MemoDistribution.class);
     }
 
     @Bean
