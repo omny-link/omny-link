@@ -42,6 +42,7 @@
   "customerActions": [
     { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" },
     { "label": "Send email", "key": "SendContactEmail", "form": "/partials/firmgains/PickMail.html" },
+    { "label": "Recommend follow up (no mail sent)", "key": "RecommendFollowUp" },
     { "label": "Run email follow up", "key": "FollowUpOneContact" }
   ],
   "omnyBar": [
