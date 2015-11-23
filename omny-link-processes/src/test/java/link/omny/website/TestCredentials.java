@@ -2,6 +2,7 @@ package link.omny.website;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.identity.User;
+import org.junit.Assume;
 
 public class TestCredentials {
 
@@ -17,23 +18,20 @@ public class TestCredentials {
         idSvc.setUserInfo(BOT_USERNAME, "cust-mgmt-secret", BOT_PWD);
         idSvc.setUserInfo(BOT_USERNAME, "cust-mgmt-url", CUST_MGMT_URL);
 
-        if (System.getProperty("consumerKey") != null) {
-            idSvc.setUserInfo(BOT_USERNAME, "twitter-consumer-key",
-                    System.getProperty("consumerKey"));
-        }
-        if (System.getProperty("consumerSecret") != null) {
-            idSvc.setUserInfo(BOT_USERNAME, "twitter-consumer-secret",
-                    System.getProperty("consumerSecret"));
-        }
-        if (System.getProperty("accessToken") != null) {
-            idSvc.setUserInfo(BOT_USERNAME, "twitter-access-token",
-                    System.getProperty("accessToken"));
-        }
-        if (System.getProperty("accessSecret") != null) {
-            idSvc.setUserInfo(BOT_USERNAME, "twitter-access-secret",
-                    System.getProperty("accessSecret"));
-        }
+        Assume.assumeTrue("No credentials provided to allow twitter integration", 
+                System.getProperty("consumerKey") != null
+                || System.getProperty("consumerSecret") != null
+                || System.getProperty("accessToken") != null
+                || System.getProperty("accessSecret") != null);
 
+        idSvc.setUserInfo(BOT_USERNAME, "twitter-consumer-key",
+                System.getProperty("consumerKey"));
+        idSvc.setUserInfo(BOT_USERNAME, "twitter-consumer-secret",
+                System.getProperty("consumerSecret"));
+        idSvc.setUserInfo(BOT_USERNAME, "twitter-access-token",
+                System.getProperty("accessToken"));
+        idSvc.setUserInfo(BOT_USERNAME, "twitter-access-secret",
+                System.getProperty("accessSecret"));
     }
 
     public static void removeBot(IdentityService idSvc, String tenantId) {
