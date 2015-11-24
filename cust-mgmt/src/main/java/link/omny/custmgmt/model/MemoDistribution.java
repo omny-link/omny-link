@@ -2,6 +2,7 @@ package link.omny.custmgmt.model;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -80,7 +81,11 @@ public class MemoDistribution implements Serializable {
     }
 
     public List<String> getRecipientList() {
-        return Arrays.asList(getRecipients().split(","));
+        if (getRecipients() == null) {
+            return Collections.emptyList();
+        } else {
+            return Arrays.asList(getRecipients().split(","));
+        }
     }
 
     public void setRecipientList(List<String> recipientList) {

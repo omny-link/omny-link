@@ -28,4 +28,12 @@ public class MemoDistributionTest {
         assertEquals(4, dist.getRecipientList().size());
         assertEquals("john,paul,george,ringo", dist.getRecipients());
     }
+
+    @Test
+    public void testGetRecipientList() {
+        MemoDistribution dist = new MemoDistribution();
+        dist.getRecipientList();
+        // assertEquals(4, dist.getRecipientList().size());
+        // assertEquals("john,paul,george,ringo", dist.getRecipients());
+    }
 }
