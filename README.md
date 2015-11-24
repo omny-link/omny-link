@@ -24,6 +24,32 @@ Roadmap
 Releases
 --------
 
+1.0.0 beta 7 - 23rd Nov 2015
+
+    #70 Provide library and authoring of Memos
+    feature Bournemouth
+
+    #61 Preserve server log on restart 
+    support
+
+    #60 Clarify purpose of various checkboxes on contact 
+    enhancement Firm Gains
+
+    #59 timeSinceEmail not correctly choosing most recent email 
+    bug confirmed Firm Gains
+
+    #58 Another way can match template when should not be able to 
+    bug confirmed Firm Gains decisions
+
+    #57 Need a 'dry-run' for email follow up 
+    enhancement support Firm Gains 
+
+    #56 Issue invoking email follow up for mass mailing 
+    bug support Firm Gains decisions
+
+    #55 Unable to find Royal Thai Restaurant using search 
+    bug confirmed Firm Gains
+
 1.0.0 beta 6 - 9th Nov 2015
 
     #52 Carquake requests caught in spam filter
