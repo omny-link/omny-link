@@ -1,0 +1,10 @@
+#
+# TS 24 Nov 15
+#
+# Description: In order to support remote restart from Jenkins we need a script
+# that is entitled to be run using sudo without a password. 
+#
+# Use sudo visodo to edit /etc/sudoers and add this _to_the_bottom_
+#   ALL ALL = (root) NOPASSWD: /full/path/to/this/script
+#
+service omny-link restart
