@@ -288,7 +288,7 @@ var ractive = new AuthenticatedRactive({
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save contact'+JSON.stringify(tmp)+' ...');
       $.ajax({
-        url: id === undefined ? '/contacts' : id,
+        url: id === undefined ? '/'+tmp.tenantId+'/contacts/' : id.replace(/contacts/,tmp.tenantId+'/contacts'),
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
