@@ -26,6 +26,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +37,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -216,6 +221,40 @@ public class ContactController {
     }
 
     /**
+     * Create a new contact.
+     * 
+     * @return
+     */
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public @ResponseBody ResponseEntity<?> create(
+            @PathVariable("tenantId") String tenantId,
+            @RequestBody Contact contact, UriComponentsBuilder builder) {
+        contact.setTenantId(tenantId);
+        contactRepo.save(contact);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(builder.path("/contacts/{id}")
+                .buildAndExpand(contact.getId()).toUri());
+        return new ResponseEntity(headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Update an existing contact.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = "application/json")
+    public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long contactId,
+            @RequestBody Contact updatedContact) {
+        Contact contact = contactRepo.findOne(contactId);
+
+        BeanUtils.copyProperties(updatedContact, contact, "id");
+        contact.setTenantId(tenantId);
+        contactRepo.save(contact);
+    }
+
+    /**
      * Add a document to the specified contact.
      */
     // Jackson cannot deserialise document because of contact reference
@@ -278,9 +317,32 @@ public class ContactController {
     }
 
     /**
+     * @deprecated This method does not follow conventions, leading to a clash
+     *             with {@link #update}.
+     * @see {@link #setStage}
+     */
+    @RequestMapping(value = "/{contactId}", method = RequestMethod.PUT, consumes = "application/x-www-form-urlencoded")
+    public @ResponseBody void setStageDeprecated(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("contactId") Long contactId,
+            @RequestParam("stage") String stage) {
+        LOGGER.info(String.format("Setting contact %1$s to stage %2$s",
+                contactId, stage));
+
+        Contact contact = contactRepo.findOne(contactId);
+        contact.setStage(stage);
+        contactRepo.save(contact);
+
+        addActivity(tenantId, contactId, "transition-to-stage",
+                String.format("Waiting for %1$s", stage));
+
+        // return contact;
+    }
+
+    /**
      * Change the sale stage the contact is at.
      */
-    @RequestMapping(value = "/{contactId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{contactId}/stage", method = RequestMethod.PUT, consumes = "application/x-www-form-urlencoded")
     public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
@@ -381,7 +443,9 @@ public class ContactController {
     }
     
     
-    private Link linkTo(Class<? extends CrudRepository> clazz, Long id) {
+    private Link linkTo(
+            @SuppressWarnings("rawtypes") Class<? extends CrudRepository> clazz,
+            Long id) {
         return new Link(clazz.getAnnotation(RepositoryRestResource.class)
                 .path() + "/" + id);
     }
