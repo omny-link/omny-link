@@ -1,0 +1,56 @@
+<section id="currentSect" style="display:none">
+  <h2>
+    <span>{{current.businessKey}}: {{current.name == null ? current.taskDefinitionKey.toLabel() : current.name}}</span> 
+    <span class="admin">({{current.id}})</span>
+  </h2>
+
+  <form id="currentForm">
+    {{#current.description}}
+      <p class="col-md-12 bg-info text-info">{{current.description}}</p>          
+    {{/}}
+    <div class="col-md-6">
+      <ul class="form edit-form">
+        <li class="form-group">
+          <label class="col-md-4">Due:</label>
+          <input class="nodatepicker form-control" id="curDueDate" on-blur="save()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm/yyyy" value="{{formatDateIfPresent(current.dueDate)}}">
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <ul class="form edit-form">
+        <li class="form-group">
+          <label class="col-md-4">Started By:</label>
+          <span class="initiator-img">{{current.processVariables['initiator']=='anonymousUser' ? 'Omny Link' : current.processVariables['initiator']}}</span>
+        </li>
+        <li class="form-group">
+          <label class="col-md-4">Created:</label>
+          <input class="form-control" id="curCreated" disabled readonly value="{{formatDate(current.createTime)}}">
+        </li>
+      </ul>
+    </div>
+  
+    {{#current.formKey!=undefined}}
+      {{>userForm { current: current } }}
+    {{/}}
+    {{#current.formKey==undefined && current.formProperties.length>0}}
+      {{>userForm { current: current } }}
+    {{/}}
+  </form>
+
+  <div class="btn-group">
+    <button class="btn btn-warning dropdown-toggle" id="remindBtn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Remind Me ... <span class="caret"></span></button>
+    <ul class="dropdown-menu btn-warning has-warning" aria-labelledby="remindBtn">
+      <li class="btn-warning" on-click="deferTask(P1D)">Tomorrow</li>
+      <li class="btn-warning" on-click="deferTask()">Next Monday</li>
+      <li class="btn-warning" on-click="deferTask('P7D')">In a week</li>
+      <li class="btn-warning" on-click="deferTask('P14D')">In a fortnight</li>
+      <li class="btn-warning" on-click="deferTask('P30D')">In a month</li>
+      <li class="btn-warning text-warning warning"><input class="form-control" min="{{today}}" on-change="deferTask(this.value)" style="width: 165px" type="date"/></li>
+    </ul>
+  </div>
+  
+  <div class="pull-right">
+    <button class="btn btn-success" on-click="submitCompleteTask()" type="button">Complete Task</button>
+    <button class="btn btn-danger" data-process-instance-id="{{current.processInstanceId}}" on-click="submitColdTask()" type="button">Set to Cold</button>
+  </div>
+</section>

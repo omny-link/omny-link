@@ -1,21 +1,11 @@
 var EASING_DURATION = 500;
 var fadeOutMessages = true;
-// 4. We've got an element in the DOM, we've created a template, and we've
-// loaded the library - now it's time to build our Hello World app.
 var ractive = new AuthenticatedRactive({
-  // The `el` option can be a node, an ID, or a CSS selector.
   el: 'container',
-
-  // We could pass in a string, but for the sake of convenience
-  // we're passing the ID of the <script> tag above.
   template: '#template',
-
-  // partial templates
   partials: { simpleTodoFormExtension: function(x) {
     return 'HELLO'+x
   } },
-
-  // Here, we're passing in some initial data
   data: {
     //server: 'http://api.knowprocess.com',
     duration: function(timeString) {
@@ -48,11 +38,14 @@ var ractive = new AuthenticatedRactive({
       return ractive.hasRole(role);
     },
     stdPartials: [
+      { "name": "defnCurrentSect", "url": "/partials/defn-current-sect.html"},
+      { "name": "defnListSect", "url": "/partials/defn-list-sect.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"}
     ],
+    title: 'Process Definitions',
     username: localStorage['username'],
   },
   simpleTodoFormExtension: function(x) { 

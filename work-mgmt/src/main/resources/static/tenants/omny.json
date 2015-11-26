@@ -31,8 +31,8 @@
     { "name": "omnyContactExtension", "url": "/partials/contactExtension.html"},
     { "name": "omnyAccountExtension", "url": "/partials/accountExtension.html"},
     { "name": "omnyAddReminder", "url": "/partials/AddReminder.html"},
-    { "name": "omnySimpleTodo", "url": "/partials/SimpleTodo.html"},
-    { "name": "omnyWorkflowWizard", "url": "/partials/WorkflowWizard.html"}
+    { "name": "omnySimpleTodo", "url": "/partials/simple-todo.html"},
+    { "name": "omnyWorkflowWizard", "url": "/partials/workflow-wizard.html"}
   ],
   "standardOperatingProcedures": [
     { "label": "Note to self", "key": "SimpleTodo", "form": "/partials/SimpleTodo.html" }

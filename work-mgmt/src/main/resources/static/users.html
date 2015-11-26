@@ -15,51 +15,9 @@
     {{>profileArea}}
     {{>titleArea}}
 
-    <form id="userList">
-      <section id="userSect">
-        <h2>
-          <span id="usersTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the users table"></span>
-          <span>Users</span>
-          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addUser()" title="Add a new user"></span>
-          <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></span>
-          <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-          <span class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching users"></span>
-        </h2>
-        <table id="usersTable" class="table table-striped">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Username</th>
-              <th>Full Name</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-          {{#each users:i}}
-            {{# searchTerm!=undefined && (
-                  (this.firstName!=undefined && this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
-                  || (this.lastName!=undefined && this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-                  || (this.email!=undefined && this.email.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-                  || (this.id!=undefined && this.id.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-                ) }}
-            <tr data-href="{{_links.self.href}}">
-              <td on-click="edit(this)">{{i+1}}</td>
-              <td on-click="edit(this)">{{id}}</td>
-              <td on-click="edit(this)">{{firstName}} {{lastName}}</td>
-              <td>
-                <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('/users/{{id}}')"></span>
-                <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
-              </td>
-            </tr>
-            {{/}}
-          {{/each}}
-          </tbody>
-        </table>
-      </section>
+    {{>userListSect}}
+    {{>userCurrentSect}}
 
-      {{>currentUserSect}}
-
-    </form>
     {{>poweredBy}}
     {{>sidebar { active: 'users.html' }}}
   </script>

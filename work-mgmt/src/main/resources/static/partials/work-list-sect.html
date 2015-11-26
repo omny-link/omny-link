@@ -1,0 +1,97 @@
+<section id="taskSect">
+  <h2>
+    <a id="tasksTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the task table"></a>
+    <span>Tasks</span>
+    <a class="clickable glyphicon glyphicon-envelope admin" aria-hidden="true" on-click="newMessage()" title="Send a new message"></a>
+    <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+    <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+    <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
+    <a class="clickable dropdown" aria-hidden="true" title="Show filters">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+          <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
+        </a>
+        <ul class="omny-dropdown dropdown-menu" role="menu">
+          <li on-click="filter()">Clear filter</li>
+          <li class="divider"></li>
+          <li onclick="ractive.filter('deferred')">Hide Deferred Tasks</li>
+        </ul>
+    </a>
+    <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+      </a>
+      <ul class="omny-dropdown dropdown-menu" role="menu">
+        {{#each tenant.standardOperatingProcedures }}
+          <li onclick="ractive.startCustomAction('{{key}}', '{{label}}', '{{form}}')">{{label}}</li>
+        {{/each}}
+      </ul>
+    </span>
+  </h2>
+  <div id="sendMessage" style="display:none">
+    <form action="/msg/{{tenant.id}}/" class="well form" id="sendMessageForm" method="post">
+        <fieldset>
+          <div class="form-group">
+            <label class="" for="messageName">Message Name</label>
+            <input class="form-control" name="tenantId" id="tenantId" type="hidden" value="{{message.tenantId}}"/>
+            <input class="form-control" name="messageName" id="messageName" placeholder="{{tenant.id}}.message" value="{{message.name}}"/>
+          </div>
+          <div class="form-group">
+            <label class="" for="messagePattern">Message Exchange Pattern</label>
+            <label class="radio"><input class="" name="{{message.pattern}}" type="radio" value="inOut"> In-Out</label>
+            <label class="radio"><input class="" name="{{message.pattern}}" type="radio" checked="checked" value="inOnly"> In-Only</label>
+          </div>
+          <div class="form-group">
+            <label for="bizKey">Business Identifier</label>
+            <input class="form-control" name="bizKey" id="bizKey" placeholder="" value="{{message.bizKey}}"/>
+          </div>
+          <div class="form-group">
+            <label class="textarea" for="messageBody" style="width: 35%;">Message</label>
+            <textarea class="form-control" name="messageBody" id="messageBody" placeholder="Message payload (JSON)" style="width:60%;display: inline-block;" value="{{message.body}}"></textarea>
+          </div>
+          <div class="form-group pull-right">
+            <button class="btn btn-default" on-click="collapseSendMessage()" type="button">Cancel</button>
+            <button class="btn btn-primary" on-click="sendMessage()" type="button">Send message</button>
+          </div>
+        </fieldset>
+      </form>
+  </div>
+  <table id="tasksTable" class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th>From / Regarding</th>
+        <th class="col-truncate">Task</th>
+        <th>Created</th>
+        <th>Deferred Until</th>
+        <th>Due</th>
+        <!--th class="col-truncate" style="width: 400px;">Description</th-->
+        <th>Assigned</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+<!--
+searchTerm!=undefined && (
+                  (this.name!=undefined && this.name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
+                  || (this.businessKey!=undefined && this.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+-->
+    {{#each tasks:i}}
+      {{# matchFilter(this) }}
+      <tr data-href="{{_links.self.href}}">
+        <td on-click="edit(this)">{{i+1}}</td>
+        <td on-click="edit(this)">{{businessKey}}</td>
+        <td on-click="edit(this)">{{name == null ? taskDefinitionKey.toLabel() : name}}</td>
+        <td on-click="edit(this)">{{formatDate(createTime)}}</td>
+        <td on-click="edit(this)">{{formatDate(taskLocalVariables['deferUntil'])}}</td>
+        <td on-click="edit(this)">{{formatDate(dueDate)}}</td>
+        <!--td on-click="edit(this)">{{description}}</td-->
+        <td on-click="edit(this)">{{assignee==null ? 'No' : 'Yes'}}</td>
+        <td>
+          <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></a>
+        </td>
+      </tr>
+      {{/}}
+    {{/each}}
+    </tbody>
+  </table>
+</section>
