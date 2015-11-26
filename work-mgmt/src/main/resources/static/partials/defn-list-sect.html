@@ -1,0 +1,65 @@
+<section id="definitionSect">
+  <h2>
+    <a id="definitionsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the definition table"></a>
+    <span>Definitions</span>
+    <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
+    <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></a>
+    <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+    <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
+  </h2>
+  <div id="upload" style="display:none">
+    <form action="/{{tenant.id}}/deployments" class="well form-inline" enctype="multipart/form-data" id="uploadForm" method="post">
+        <fieldset>
+          <div class="form-group">
+            <label for="deploymentName">Deployment Name</label>
+            <input id="resourceFile" multiple="multiple" name="resourceFile" style="display: none" type="file">
+            <input name="tenantId" id="tenantId" type="hidden" value="{{tenant.id}}">
+            <input name="deploymentName" id="deploymentName" placeholder="my process application">
+            <button class="btn btn-primary" on-click="addDeploymentResource()" type="button">Select Files</button>
+          </div>
+          <div class="pull-right">
+            <button class="btn" on-click="collapseAdd()" type="button">Cancel</button>
+            <button class="btn" on-click="upload('uploadForm')" type="button">Upload</button>
+          </div>
+        </fieldset>
+      </form>
+  </div>
+  <table id="definitionsTable" class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th class="col-md-5">Description</th>
+        <th>Tenant</th>
+        <th>Deployment Bundle</th>
+        <th>Version</th>
+        <th class="col-md-4">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {{#each definitions:i}}
+      {{# searchTerm!=undefined && (
+            (name!=undefined && name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+            || (description!=undefined && description.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+          ) }}
+      <tr data-href="{{_links.self.href}}">
+        <td on-click="select(this)">{{i+1}}</td>
+        <td on-click="select(this)">{{name}} ({{key}})</td>
+        <td class="col-md-5" on-click="select(this)">{{description}}</td>
+        <td on-click="select(this)">{{tenantId}}</td>
+        <td on-click="select(this)">{{deploymentId}}</td>
+        <td on-click="select(this)">{{version}}</td>
+        <td on-click="select(this)">
+          <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{key}}', '{{name}}', '{{username}}')"></a>
+            <a href="/{{tenant.id}}/process-definitions/{{id}}.bpmn" target="_newtab">
+              <a class="glyphicon glyphicon-cloud-download" aria-hidden="true"></a></a>
+            <a href="/{{tenant.id}}/process-definitions/{{id}}.png" target="_newtab">
+              <a class="glyphicon glyphicon-picture" aria-hidden="true"></a></a>
+            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this.deploymentId)"></a>
+          </td>
+        </tr>
+        {{/}}
+      {{/each}}
+      </tbody>
+    </table>
+</section>

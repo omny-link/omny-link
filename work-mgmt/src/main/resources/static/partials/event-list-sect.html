@@ -1,0 +1,52 @@
+<section id="eventSect">
+  <h2>
+    <a id="eventsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the event table"></a>
+    <span>Events</span>
+    <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+    <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+    <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching events"></a>
+  </h2>
+  <table id="eventsTable" class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Type</th>
+        <th class="col-truncate">Event</th>
+        <th>Started</th>
+        <th>Ended</th>
+        <th>Duration</th>
+        <!--th>Audit Trail</th-->
+        <th class="col-md-4">Process Template</th>
+        <!--th>Actions</th-->
+      </tr>
+    </thead>
+    <tbody>
+    {{#each events:i}}
+      {{# searchTerm!=undefined && (
+            (this.activityName!=undefined && this.activityName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
+            || (this.activityType!=undefined && this.activityType.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+          ) }}
+      <tr data-href="{{_links.self.href}}">
+        <td on-click="select(this)">{{i+1}}</td>
+        <td on-click="select(this)">{{activityType.toLabel()}}</td>
+        <td on-click="select(this)">{{activityName}}</td>
+        <td on-click="select(this)">{{formatDateTime(startTime)}}</td>
+        <td on-click="select(this)">{{formatDateTime(endTime)}}</td>
+        <td on-click="select(this)">{{duration(durationInMillis)}}</td>
+        <!--td on-click="select(this)">{{processInstanceId}}</td-->
+        <td on-click="select(this)">
+          <a class="btn" href="/process-definitions/{{processDefinitionId}}.bpmn" target="_newtab">
+            <a class="glyphicon glyphicon-export" aria-hidden="true"></a>View BPMN</a>
+          <a class="btn" href="/process-definitions/{{processDefinitionId}}.png" target="_newtab">
+            <a class="glyphicon glyphicon-picture" aria-hidden="true"></a>View image</a>
+        </td>
+        <td on-click="select(this)">{{assignee}}</td>
+        <!--td>
+          <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="select(this)"></a>
+        </td-->
+      </tr>
+      {{/}}
+    {{/each}}
+    </tbody>
+  </table>
+</section>

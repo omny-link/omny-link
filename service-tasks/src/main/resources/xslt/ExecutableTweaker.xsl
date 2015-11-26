@@ -12,7 +12,8 @@
   - Add an activiti initiator (named 'initiator') if one does not exist. 
   - Convert unsupported service tasks into user tasks and assign to either pool name or initiator if no pools
   - Add form property extensions for data objects (TODO when there is no form key???)  
-  - Suppress assignee and candidate group shortcuts when potentialOwner is specified (also helps avoid namespace clash with camunda)  
+  - Suppress assignee and candidate group shortcuts when potentialOwner is specified (also helps avoid namespace clash with camunda)
+  - Suppress Camunda formKey (those with extension jsf)  
 -->
 <xsl:stylesheet version="1.0" 
   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
@@ -384,6 +385,21 @@
     </xsl:choose>
   </xsl:template>
    
+  <!-- 
+    Because Camunda never changed their namespace we get potential clashes on formKey. Assume theirs will end .jsf.
+  -->
+  <xsl:template match="semantic:userTask/@camunda:formKey|semantic:userTask/@camunda:formKey">
+    <xsl:choose>
+      <xsl:when test="substring(., string-length(.) - string-length('.jsf') +1)='.jsf'">
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>
+          <xsl:apply-templates select="@*"/>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
 	<!-- standard copy template -->
 	<xsl:template match="@*|node()">
 		<xsl:copy>

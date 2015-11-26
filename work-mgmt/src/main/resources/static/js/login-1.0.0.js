@@ -193,7 +193,13 @@ var AuthenticatedRactive = Ractive.extend({
       $.get(d.url, function(response){
         console.log('... loaded: '+d.name)
         //console.log('response: '+response)
-        if (ractive != undefined) ractive.resetPartial(d.name,response);
+        if (ractive != undefined) {
+          try {
+            ractive.resetPartial(d.name,response);
+          } catch (e) {
+            console.warn('Unable to reset partial '+d.name+': '+e);
+          }
+        }
       });
     });
   },

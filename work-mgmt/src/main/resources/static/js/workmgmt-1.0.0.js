@@ -35,8 +35,11 @@ var ractive = new AuthenticatedRactive({
       console.log('renderUserForm');
       var form = ractive.get('current.formKey');
       // process migration issue...
-      if (form == 'simpleTodo') form = '/partials/simpleTodoFormExtension.html';
-      console.log('loading form: '+form);
+      if (form == 'simpleTodo') form = '/partials/generic-form.html';
+      if (form == '/partials/simpleTodoFormExtension.html') form = '/partials/generic-form.html';
+      // catch all form
+      if (form == undefined) form = '/partials/generic-form.html';
+      console.error('loading form: '+form);
       $.get(form, function (partial) {
         if (ractive != undefined) ractive.resetPartial('userForm',partial);
         ractive.initControls();
@@ -48,6 +51,9 @@ var ractive = new AuthenticatedRactive({
         }
       });
       return '<div>Loading...</div>';
+    },
+    userPropertiesForm: function() {
+      console.info('userPropertiesForm');
     }
   },
 
@@ -77,6 +83,10 @@ var ractive = new AuthenticatedRactive({
       if (timeString==undefined) return 'n/a';
       return new Date(timeString).toLocaleDateString(navigator.languages);
     },
+    formatDateIfPresent: function(timeString) {
+    if (timeString==undefined) return undefined;
+    return new Date(timeString).toLocaleDateString(navigator.languages);
+  },
     formatDateTime: function(timeString) {
 //    console.log('formatDate: '+timeString);
       if (timeString==undefined) return '';
@@ -108,7 +118,9 @@ var ractive = new AuthenticatedRactive({
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
-      { "name": "titleArea", "url": "/partials/title-area.html"}
+      { "name": "titleArea", "url": "/partials/title-area.html"},
+      { "name": "workCurrentSect", "url": "/partials/work-current-sect.html"},
+      { "name": "workListSect", "url": "/partials/work-list-sect.html"}
     ],
     tasks: [],
     title: 'Work Management',
@@ -309,7 +321,7 @@ var ractive = new AuthenticatedRactive({
   select: function(task) { 
     ractive.set('saveObserver',false);
     $.getJSON('/task/'+task.id+'/', function( data ) {
-      //console.log('found task '+JSON.stringify(data));
+      console.log('found task '+JSON.stringify(data));
       data.taskLocalVarNames = Object.keys(data.taskLocalVariables);
       data.processVarNames = Object.keys(data.processVariables);
       data.msg = data.processVariables[data.processVariables['messageName']];
