@@ -6,7 +6,7 @@
   <groupId>link.omny</groupId>
   <artifactId>omny-link-root</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.0.20151123</version>
+  <version>1.0.0.0-beta-8</version>
   
   <organization>
     <name>Omny Link</name>
@@ -21,10 +21,11 @@
   </parent>
 
   <properties>
+    <build.number>SNAPSHOT</build.number>
     <java.version>1.8</java.version>
     <activiti.version>5.18.0.20151117</activiti.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <work-mgmt.version>2.0.0.20151123</work-mgmt.version>
+    <work-mgmt.version>2.0.0.0-beta-8</work-mgmt.version>
   </properties>
 
   <licenses>
