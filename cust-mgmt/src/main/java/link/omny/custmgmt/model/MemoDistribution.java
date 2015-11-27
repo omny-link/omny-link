@@ -71,8 +71,7 @@ public class MemoDistribution implements Serializable {
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
-    // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = true)
+    @Column(columnDefinition = "TIMESTAMP", updatable = true)
     @JsonProperty
     private Date lastUpdated;
 
@@ -89,9 +88,21 @@ public class MemoDistribution implements Serializable {
     }
 
     public void setRecipientList(List<String> recipientList) {
-        String tmp = recipientList.toString();
-        tmp = tmp.replaceAll(", ", ",");
-        setRecipients(tmp.substring(1, tmp.length() - 1));
+        StringBuilder sb = new StringBuilder();
+        for (String recipient : recipientList) {
+            sb.append(unwrap(recipient)).append(",");
+        }
+        // String tmp = recipientList.toString();
+        // tmp = tmp.replaceAll(", ", ",");
+        setRecipients(sb.toString().substring(0, sb.toString().length() - 1));
+    }
+
+    private String unwrap(String recipient) {
+        if (recipient.startsWith("\"")) {
+            return recipient.substring(1, recipient.length() - 1);
+        } else {
+            return recipient;
+        }
     }
 
     @PrePersist
