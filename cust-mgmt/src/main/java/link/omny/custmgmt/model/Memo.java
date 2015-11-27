@@ -67,8 +67,7 @@ public class Memo implements Serializable {
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
-    // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = true)
+    @Column(columnDefinition = "TIMESTAMP", updatable = true)
     @JsonProperty
     private Date lastUpdated;
 
