@@ -380,7 +380,7 @@ var ractive = new AuthenticatedRactive({
       }),
       success: completeHandler = function(data,textStatus,jqXHR) {
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
-        ractive.showMessage('Started workflow "'+label+'" for '+bizKey);
+        ractive.showMessage('Started distribution of memos: '+ractive.get('current.name'));
       },
     });
   },

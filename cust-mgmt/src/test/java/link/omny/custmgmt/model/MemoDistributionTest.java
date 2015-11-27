@@ -32,8 +32,9 @@ public class MemoDistributionTest {
     @Test
     public void testGetRecipientList() {
         MemoDistribution dist = new MemoDistribution();
-        dist.getRecipientList();
-        // assertEquals(4, dist.getRecipientList().size());
-        // assertEquals("john,paul,george,ringo", dist.getRecipients());
+        dist.setRecipientList(Arrays.asList(new String[] { "john", "paul",
+                "\"george\"", "ringo" }));
+        assertEquals(4, dist.getRecipientList().size());
+        assertEquals("john,paul,george,ringo", dist.getRecipients());
     }
 }
