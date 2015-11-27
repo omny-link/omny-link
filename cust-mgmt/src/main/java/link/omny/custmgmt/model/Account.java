@@ -16,7 +16,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Digits;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -84,8 +83,8 @@ public class Account implements Serializable {
 
     /**
      */
-    @Min(0L)
-    private Integer noOfEmployees;
+    @Size(max = 20)
+    private String noOfEmployees;
 
     /**
      */

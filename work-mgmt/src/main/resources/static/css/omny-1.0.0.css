@@ -374,7 +374,8 @@ form#upload {
 .form label.radio {
 	width:10%;
 }
-.form input {
+.form input,
+.form select {
 	width: 60%;
 }
 .form input[type='checkbox'],

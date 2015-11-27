@@ -165,7 +165,19 @@
             {{#current.account.companyNumber}}
               <li class="form-group"><label class="col-md-4"></label><a href="https://beta.companieshouse.gov.uk/company/{{current.account.companyNumber}}" target="_newTab">View Companies House Information</a></li>
             {{/}}
-            <li class="form-group"><label class="col-md-4">No. of employees:</label><input class="form-control" id="curNoOfEmployees" type="number" value="{{current.account.noOfEmployees}}"/></li>
+            <li class="form-group">
+              <label class="col-md-4">No. of employees:</label>
+              <select class="form-control" id="curNoOfEmployees" placeholder="Please choose the number of employees you have">
+                 <option value="Please select" selected="">Please select</option>
+                 <option value="under10">less than 10</option> 
+                 <option value="10-49">10-49</option> 
+                 <option value="50-99">50-99</option>
+                 <option value="100-249">100-249</option>
+                 <option value="250-499">250-499</option>
+                 <option value="500-999">500-999</option>
+                 <option value="1000+">over 1000</option>
+               </select>
+            </li>
           </ul>
         </div>
       </div>
