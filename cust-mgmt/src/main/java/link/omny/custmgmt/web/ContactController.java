@@ -133,7 +133,7 @@ public class ContactController {
     }
 
     /**
-     * Return just the contacts for a specific tenant.
+     * Return just the 'mailable' contacts for a specific tenant.
      * 
      * @return contacts for that tenant.
      */
