@@ -1,0 +1,5 @@
+# CREATE
+curl -H "Accept:application/json" -H "Content-Type: application/json" -X POST -d '{ "tenantId":"omny" }' -u tstephen:tstephen http://localhost:8082/tenantConfigs
+
+# LIST 
+curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/configuration/

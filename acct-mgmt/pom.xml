@@ -3,42 +3,32 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <name>Omny Link Server</name>
+  <name>Account Management</name>
+  <description>Tools for managing each Omny tenant</description>
   <inceptionYear>2015</inceptionYear>
 
-  <artifactId>omny-link-server</artifactId>
+  <groupId>link.omny.acctmgmt</groupId>
+  <artifactId>acctmgmt</artifactId>
   <packaging>jar</packaging>
 
   <parent>
     <groupId>link.omny</groupId>
     <artifactId>omny-link-root</artifactId>
-    <version>1.0.0.0-beta-8</version>
     <relativePath>..</relativePath>
+    <version>1.0.0.0-beta-8</version>
   </parent>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <start-class>link.omny.server.Application</start-class>
+    <start-class>link.omny.acctmgmt.Application</start-class>
     <java.version>1.8</java.version>
   </properties>
 
-  <pluginRepositories>
-      <pluginRepository>
-        <id>spring-milestones</id>
-        <name>spring-milestones</name>
-        <url>http://repo.springsource.org/milestone/</url>
-      </pluginRepository>
-  </pluginRepositories>
   <repositories>
       <repository>
         <id>jcenter-snapshots</id>
         <name>jcenter</name>
         <url>https://jcenter.bintray.com/</url>
-      </repository>
-      <repository>
-        <id>spring-milestones</id>
-        <name>spring-milestones</name>
-        <url>http://repo.springsource.org/milestone/</url>
       </repository>
   </repositories>
 
@@ -67,6 +57,7 @@
       <groupId>com.zaxxer</groupId>
       <!-- drop -java6 suffix for Java 8 compiled version -->
       <artifactId>HikariCP-java6</artifactId>
+      <version>2.3.2</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -86,14 +77,20 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.14.8</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.subethamail</groupId>
+      <artifactId>subethasmtp-wiser</artifactId>
+      <version>1.2</version>
+      <optional>true</optional>
     </dependency>
     <!-- Compiles against SLF4J but this is the implementation of choice -->
     <dependency>
@@ -111,39 +108,37 @@
         <artifactId>springfox-swagger-ui</artifactId>
         <version>2.0.0</version>
     </dependency>
+    <!-- Web jars -->
     <dependency>
-      <groupId>io.onedecision</groupId>
-      <artifactId>onedecision-engine</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
-      <groupId>link.omny.acctmgmt</groupId>
-      <artifactId>acctmgmt</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.webjars</groupId>
+      <artifactId>bootstrap</artifactId>
+      <version>3.3.5</version>
     </dependency>
     <dependency>
-    	<groupId>link.omny.custmgmt</groupId>
-    	<artifactId>custmgmt</artifactId>
-    	<version>${project.version}</version>
+      <groupId>org.webjars</groupId>
+      <artifactId>Bootstrap-3-Typeahead</artifactId>
+      <version>3.1.1</version>
     </dependency>
     <dependency>
-    	<groupId>com.knowprocess.bpm</groupId>
-    	<artifactId>work-mgmt</artifactId>
-    	<version>${work-mgmt.version}</version>
-    </dependency>
-    
-    <!-- Tenant jars -->
-    <dependency>
-      <groupId>com.knowprocess.mk</groupId>
-      <artifactId>mk</artifactId>
-      <version>0.2.0</version>
+      <groupId>org.webjars</groupId>
+      <artifactId>ractive</artifactId>
+      <version>0.7.1</version>
     </dependency>
     <dependency>
-      <groupId>com.firmgains.decisions</groupId>
-      <artifactId>firmgains-decisions</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery-ui</artifactId>
+      <version>1.11.4</version>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>chosen</artifactId>
+      <version>1.4.2</version>
+    </dependency>
+    <dependency>
+      <groupId>link.omny</groupId>
+      <artifactId>fonts</artifactId>
+      <version>1.0.0</version>
+    </dependency>    
   </dependencies>
 
   <build>
@@ -151,25 +146,13 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>attach-artifacts</id>
-            <phase>package</phase>
             <goals>
-              <goal>attach-artifact</goal>
+              <goal>repackage</goal>
             </goals>
             <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${project.build.directory}/${project.artifactId}-${project.version}.jar.original</file>
-                  <type>jar</type>
-                  <classifier>library</classifier>
-                </artifact>
-              </artifacts>
+              <classifier>exec</classifier>
             </configuration>
           </execution>
         </executions>
