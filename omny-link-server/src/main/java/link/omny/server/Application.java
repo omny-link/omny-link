@@ -1,6 +1,7 @@
 package link.omny.server;
 
 import io.onedecision.engine.OneDecisionConfig;
+import link.omny.acctmgmt.AcctMgmtConfig;
 import link.omny.custmgmt.CustMgmtConfig;
 
 import org.springframework.boot.SpringApplication;
@@ -16,8 +17,10 @@ import com.knowprocess.bpm.BpmConfiguration;
 import com.knowprocess.bpm.api.ActivitiApplicationSecurity;
 
 @Configuration
-@Import({ OneDecisionConfig.class, BpmConfiguration.class, CustMgmtConfig.class })
-@ComponentScan(basePackages = { "link.omny.custmgmt", "io.onedecision.engine" })
+@Import({ OneDecisionConfig.class, AcctMgmtConfig.class,
+        BpmConfiguration.class, CustMgmtConfig.class })
+@ComponentScan(basePackages = { "link.omny.acctmgmt", "link.omny.custmgmt",
+        "io.onedecision.engine" })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Override

@@ -25,6 +25,7 @@
     <java.version>1.8</java.version>
     <activiti.version>5.18.0.20151117</activiti.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <omny-link.version>1.0.0.0-beta-8</omny-link.version>
     <work-mgmt.version>2.0.0.0-beta-8</work-mgmt.version>
   </properties>
 
@@ -53,6 +54,7 @@
   </dependencyManagement>
 
   <modules>
+    <module>acct-mgmt</module>
     <module>cust-mgmt</module>
     <module>fonts</module>
     <module>omny-link-server</module>
