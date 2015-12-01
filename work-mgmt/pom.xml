@@ -225,6 +225,11 @@
       <artifactId>jaxb-api</artifactId>
       <version>2.2.11</version>
     </dependency>
+    <dependency>
+      <groupId>link.omny.acctmgmt</groupId>
+      <artifactId>acctmgmt</artifactId>
+      <version>${omny-link.version}</version>
+    </dependency>    
     <!-- Web jars -->
     <dependency>
       <groupId>link.omny</groupId>
