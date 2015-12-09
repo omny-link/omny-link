@@ -84,7 +84,7 @@ public interface ContactCompleteProjection {
 
     List<Document> getDocuments();
 
-    List<Document> getActivities();
+    List<Activity> getActivities();
 
     long getTimeSinceBusinessPlanDownload();
 
