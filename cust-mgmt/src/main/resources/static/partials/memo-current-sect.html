@@ -31,7 +31,7 @@
           <div style="clear: both" class="col-md-12 col-sm-12 col-xs-12">
             <ul class="form edit-form">
               <li>
-                <label class="col-md-2">Rich Text Content:</label>
+                <label class="col-md-2">Email template:</label>
                 <div class="col-md-9">
                   <div id="wysihtml5-editor-toolbar" class="wysihtml5-editor-toolbar">
                     <ul class="commands">
@@ -80,8 +80,9 @@
                   
                   <div>
                     <textarea id="curRichContent" cols="80" placeholder="Enter something ..." rows="10" spellcheck="false" value="{{current.richContent}}" wrap="off"></textarea>
-                  </div>  
-                </div>      
+                  </div>
+                  <p class="help-block">A plain text version of this template will be derived automatically and displayed automatically in less capable mail clients.</p>
+                </div>
               </li>
             </ul>
           </div>
@@ -89,11 +90,12 @@
           <div class="col-md-12 col-sm-12 col-xs-12">
             <ul class="form edit-form">
               <li>
-                <label class="col-md-2 control-label">Plain Text Content:</label>
+                <label class="col-md-2 control-label">SMS / Tweet:</label>
                 <textarea id="curPlainContent" class="col-md-9 form-control" cols="80" value="{{current.plainContent}}"></textarea>
                 <div class="clearfix"></div>
                 <label class="col-md-offset-2">Characters used:</label>
-                <span id="curChars" value="{{chars(current.plainContent)}}">{{chars(current.plainContent)}}</span>              
+                <span id="curChars" value="{{chars(current.plainContent)}}">{{chars(current.plainContent)}}</span>
+                <p class="col-md-offset-2 help-block">Consider embedding a URL to fuller information in these short form messages.</p>              
               </li>
             </ul>
           </div>

@@ -1,10 +1,17 @@
 package link.omny.custmgmt.model;
 
 import java.io.Serializable;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +24,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -37,6 +45,9 @@ public class MemoDistribution implements Serializable {
 
     private static final long serialVersionUID = 1237181996013717501L;
 
+    protected static DateFormat isoDateFormat = new SimpleDateFormat(
+            "yyyy-MM-dd");
+    protected static DateFormat isoTimeFormat = new SimpleDateFormat("HH:mm");
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -58,6 +69,23 @@ public class MemoDistribution implements Serializable {
 
     @JsonProperty
     private String memoRef;
+
+
+    @Transient
+    @JsonProperty
+    private Date sendAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date sendAtDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date sendAtTime;
+
+    /**
+     * @see java.util.TimeZone.getAvailableIDs()
+     */
+    @JsonProperty
+    private String sendAtTZ;
 
     @NotNull
     @JsonProperty
@@ -115,6 +143,79 @@ public class MemoDistribution implements Serializable {
     @PreUpdate
     public void preUpdate() {
         lastUpdated = new Date();
+    }
+
+    @JsonProperty
+    public void setSendAtDate(String date) {
+        GregorianCalendar sendAt = new GregorianCalendar();
+        if (sendAtDate != null) {
+            sendAt.setTime(sendAtDate);
+        }
+        try {
+            GregorianCalendar tmp = new GregorianCalendar();
+            tmp.setTime(isoDateFormat.parse(date));
+            sendAt.set(Calendar.DATE, tmp.get(Calendar.DATE));
+            sendAt.set(Calendar.MONTH, tmp.get(Calendar.MONTH));
+            sendAt.set(Calendar.YEAR, tmp.get(Calendar.YEAR));
+            sendAtDate = sendAt.getTime();
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
+    }
+
+    public String getSendAtDate() {
+        return sendAtDate == null ? null : isoDateFormat.format(sendAtDate);
+    }
+
+    @JsonProperty
+    public void setSendAtTime(String time) {
+        GregorianCalendar sendAt = new GregorianCalendar();
+        if (getSendAtTime() != null) {
+            sendAt.setTime(sendAtTime);
+        }
+        try {
+            GregorianCalendar tmp = new GregorianCalendar();
+            if (time.length() > 5) {
+                // only want HH:mm
+                time = time.substring(0, 4);
+            }
+            tmp.setTime(isoTimeFormat.parse(time));
+            sendAt.set(Calendar.HOUR_OF_DAY, tmp.get(Calendar.HOUR_OF_DAY));
+            sendAt.set(Calendar.MINUTE, tmp.get(Calendar.MINUTE));
+            // these will be set zero as scheduling is not that accurate
+            sendAt.set(Calendar.SECOND, tmp.get(Calendar.SECOND));
+            sendAt.set(Calendar.MILLISECOND, tmp.get(Calendar.MILLISECOND));
+            sendAtTime = new Time(sendAt.getTime().getTime());
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
+    }
+
+    public String getSendAtTime() {
+        return sendAtTime == null ? null : isoTimeFormat.format(sendAtTime);
+    }
+
+    public Date getSendAt() {
+        GregorianCalendar cal = new GregorianCalendar();
+        if (getSendAtDate() != null) {
+            GregorianCalendar sendAt = new GregorianCalendar();
+            sendAt.setTime(sendAtDate);
+            cal.set(Calendar.DATE, sendAt.get(Calendar.DATE));
+            cal.set(Calendar.MONTH, sendAt.get(Calendar.MONTH));
+            cal.set(Calendar.YEAR, sendAt.get(Calendar.YEAR));
+        }
+        if (getSendAtTime() != null) {
+            GregorianCalendar sendAt = new GregorianCalendar();
+            sendAt.setTime(this.sendAtTime);
+            cal.set(Calendar.HOUR_OF_DAY, sendAt.get(Calendar.HOUR_OF_DAY));
+            cal.set(Calendar.MINUTE, sendAt.get(Calendar.MINUTE));
+            cal.set(Calendar.SECOND, sendAt.get(Calendar.SECOND));
+            cal.set(Calendar.MILLISECOND, sendAt.get(Calendar.MILLISECOND));
+        }
+        if (getSendAtTZ() != null) {
+            cal.setTimeZone(TimeZone.getTimeZone(getSendAtTZ()));
+        }
+        return cal.getTime();
     }
 
     public String toCsv() {

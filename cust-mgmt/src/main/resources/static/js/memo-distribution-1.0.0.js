@@ -468,6 +468,23 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
   }
 });
 
+/*ractive.observe('current.sendAt', function(newValue, oldValue, keypath) {
+  console.error('send at change: '+newValue +','+oldValue+' '+keypath);
+  var matches = newValue.match(new RegExp(/^([0-9]{4})-(1[0-2]|0[1-9])-(1[0-3]|0[1-9])T(1[0-2]|0[1-9]):(1[0-5]|0[1-9])$/));
+  if (newValue==undefined){
+    console.error('send at save needed 0: ');
+    ractive.save();
+    ractive.set('saveObserver',true);
+  }else if (matches[0].length==16){
+    console.error('send at save needed: ');
+    newValue = matches[0]+':00.000Z';
+    ractive.save();
+    ractive.set('saveObserver',true);
+  }else{
+    ractive.set('saveObserver',false);
+  }
+});*/
+
 function crToSpace(string) {
   return string.replace(/<br>/g,' ');
 }
