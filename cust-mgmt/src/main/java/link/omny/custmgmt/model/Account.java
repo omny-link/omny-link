@@ -17,6 +17,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
@@ -56,9 +57,9 @@ public class Account implements Serializable {
 
     /**
      */
-    @Digits(integer = 8, fraction = 0)
+    @Pattern(regexp = "[0-9]{8}")
     @JsonProperty
-    private Integer companyNumber;
+    private String companyNumber;
 
     @JsonProperty
     private String aliases;
