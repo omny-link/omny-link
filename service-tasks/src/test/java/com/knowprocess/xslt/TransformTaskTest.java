@@ -23,6 +23,7 @@ public class TransformTaskTest {
 	private static final String ACTIVITI_SUPPORT_BPMN = "classpath:///process/activiti-support.bpmn";
     private static final String DATA_OBJECT_BPMN = "classpath:///process/miwg2/handle-invoice-with-data-objects.bpmn";
     private static final String SHORTCUT_POTENTIAL_OWNERS_BPMN = "classpath:///process/miwg2/handle-invoice-no-service-tasks.bpmn";
+    private static final String JSF_FORM_KEY_BPMN = "classpath:///process/miwg2/3_trisotech_handle-invoice.bpmn";
 	private TransformTask svc;
 
 	@Before
@@ -131,6 +132,20 @@ public class TransformTaskTest {
         System.out.println("result: " + result);
         assertNotNull(result);
         assertTrue(!result.contains("assignee"));
+    }
+
+    @Test
+    public void testSuppressJsfFormKey() throws IOException,
+            TransformerConfigurationException {
+        String bpmn = new Fetcher().fetchToString(JSF_FORM_KEY_BPMN);
+
+        svc.setXsltResources("/xslt/ExecutableTweaker.xsl");
+        System.out.println("BPMN: " + bpmn.toString());
+        assertTrue(bpmn.toString().trim().endsWith(">"));
+        String result = svc.transform(bpmn.toString().trim());
+        System.out.println("result: " + result);
+        assertNotNull(result);
+        assertTrue(!result.contains(".jsf"));
     }
 
     @Test

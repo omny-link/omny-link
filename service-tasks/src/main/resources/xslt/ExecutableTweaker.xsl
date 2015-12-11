@@ -25,7 +25,8 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:activiti="http://activiti.org/bpmn"
-  xmlns:camunda="http://activiti.org/bpmn">
+  xmlns:camunda="http://activiti.org/bpmn"
+  xmlns:signavio="http://activiti.org/bpmn">
   
   <xsl:output method="xml" omit-xml-declaration="no" indent="yes"
      cdata-section-elements="activiti:expression documentation semantic:script script"/>
@@ -388,7 +389,7 @@
   <!-- 
     Because Camunda never changed their namespace we get potential clashes on formKey. Assume theirs will end .jsf.
   -->
-  <xsl:template match="semantic:userTask/@camunda:formKey|semantic:userTask/@camunda:formKey">
+  <xsl:template match="@camunda:formKey|@signavio:formKey">
     <xsl:choose>
       <xsl:when test="substring(., string-length(.) - string-length('.jsf') +1)='.jsf'">
       </xsl:when>

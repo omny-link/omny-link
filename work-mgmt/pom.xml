@@ -187,7 +187,7 @@
       <version>[0.0.1,1.0.0)</version>
       0.1.1-SNAPSHOT
       -->
-      <version>2.0.0.20151123</version>
+      <version>${work-mgmt.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>jcl-over-slf4j</artifactId>
