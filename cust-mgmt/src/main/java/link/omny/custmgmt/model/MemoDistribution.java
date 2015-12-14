@@ -116,6 +116,10 @@ public class MemoDistribution implements Serializable {
     }
 
     public void setRecipientList(List<String> recipientList) {
+        if (recipientList == null || recipientList.size() == 0) {
+            setRecipients(null);
+            return;
+        }
         StringBuilder sb = new StringBuilder();
         for (String recipient : recipientList) {
             sb.append(unwrap(recipient)).append(",");
@@ -147,6 +151,10 @@ public class MemoDistribution implements Serializable {
 
     @JsonProperty
     public void setSendAtDate(String date) {
+        if (date == null) {
+            sendAtDate = null;
+            return;
+        }
         GregorianCalendar sendAt = new GregorianCalendar();
         if (sendAtDate != null) {
             sendAt.setTime(sendAtDate);
@@ -169,6 +177,10 @@ public class MemoDistribution implements Serializable {
 
     @JsonProperty
     public void setSendAtTime(String time) {
+        if (time == null) {
+            sendAtTime = null;
+            return;
+        }
         GregorianCalendar sendAt = new GregorianCalendar();
         if (getSendAtTime() != null) {
             sendAt.setTime(sendAtTime);
@@ -197,6 +209,10 @@ public class MemoDistribution implements Serializable {
 
     public Date getSendAt() {
         GregorianCalendar cal = new GregorianCalendar();
+        if (getSendAtDate() == null && getSendAtTime() == null
+                && getSendAtTZ() == null) {
+            return null;
+        }
         if (getSendAtDate() != null) {
             GregorianCalendar sendAt = new GregorianCalendar();
             sendAt.setTime(sendAtDate);
