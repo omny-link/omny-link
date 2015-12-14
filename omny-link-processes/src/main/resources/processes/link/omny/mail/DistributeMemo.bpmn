@@ -28,7 +28,7 @@
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/memo-distributions/${distributionId}</activiti:expression>
+          <activiti:expression>${distributionId}</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Accept:application/json</activiti:string>
