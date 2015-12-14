@@ -360,7 +360,7 @@ var ractive = new AuthenticatedRactive({
 	  $('#currentSect').slideDown();
   },
   startDistribution: function(distribution) {
-    console.log('sendMessage');
+    console.log('startDistribution');
     if (ractive.get('testMode')==true) {
       ractive.startDistributionInTestMode();
     } else {
@@ -376,7 +376,7 @@ var ractive = new AuthenticatedRactive({
       data: JSON.stringify({
         processDefinitionId: 'DistributeMemo',
         businessKey: ractive.get('current.name')+' '+new Date().toISOString(),
-        processVariables: { distributionId: ractive.get('current.id') }
+        processVariables: { distributionId: ractive.getId(ractive.get('current')) }
       }),
       success: completeHandler = function(data,textStatus,jqXHR) {
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
