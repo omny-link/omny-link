@@ -40,7 +40,6 @@
     { "label": "Placed with Partner", "key": "placedWithPartner"}
   ],
   "customerActions": [
-    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" },
     { "label": "Send email", "key": "SendContactEmail", "form": "/partials/firmgains/PickMail.html" },
     { "label": "Recommend follow up (no mail sent)", "key": "RecommendFollowUp" },
     { "label": "Run email follow up", "key": "FollowUpOneContact" }
@@ -55,8 +54,9 @@
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "description": "View your process definitions here", "title": "Process Definitions" }    
   ],
   "partials": [
-    { "name": "firmgainsContactExtension", "url": "/partials/firmgains/ContactExtension.html"},
-    { "name": "firmgainsAccountExtension", "url": "/partials/firmgains/AccountExtension.html"},
+    { "name": "firmgainsContactExtension", "url": "/partials/firmgains/contact-extension.html"},
+    { "name": "firmgainsCustomerExtension", "url": "/partials/firmgains/customer-extension.html"},
+    { "name": "firmgainsPartnerExtension", "url": "/partials/firmgains/partner-extension.html"},
     { "name": "firmgainsSendContactEmail", "url": "/partials/firmgains/PickMail.html"},
     { "name": "firmgainsAddReminder", "url": "/partials/AddReminder.html"}
   ],

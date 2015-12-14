@@ -1,5 +1,5 @@
 <h3 class="form"><span>Valuation</span></h3> 
-<div class="col-md-12" id="currentAccountValuation">
+<div class="" id="currentAccountValuation">
   <div class="col-md-6">
     <ul class="form edit-form">
       <li class="form-group"><label class="col-md-4">Low Quote:</label><input class="autoNumeric form-control" id="curLowQuote" data-a-sign="£ " value="{{current.account.customFields['lowQuote']}}"/></li>
@@ -18,7 +18,7 @@
 </div>
 
 <h3 class="form" style="clear:both"><span>Financials</span></h3> 
-<div class="col-md-12" id="currentAccountFinancials">
+<div id="currentAccountFinancials">
   <div class="col-md-6">
     <ul class="form edit-form">
       <li class="form-group"><label class="col-md-4">EBITDA:</label><input class="autoNumeric form-control" id="curEbitda" data-a-sign="£ "value="{{current.account.customFields['ebitda']}}"/></li>
@@ -34,7 +34,7 @@
       <li class="form-group"><label class="col-md-4">Borrowing:</label><input class="autoNumeric form-control" id="curBorrowing" data-a-sign="£ "value="{{current.account.customFields['borrowing']}}"/></li>
     </ul>
   </div> 
-  <div class="col-md-12">
+  <div class="col-md-12" style="margin-bottom:20px">
     <fieldset>
       <legend>Current Year</legend>
       <label class="col-md-offset-1">Financial Year:</label><input class="year" id="curCurrentFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" type="number" value="{{current.account.customFields['currentFinancialYear']}}"/>
@@ -56,7 +56,7 @@
   </div>
 </div>
 
-<div class="col-md-12" id="currentAccountExtended">
+<div class="" id="currentAccountExtended" style="clear:both">
   <h2 class="form"><span>Business Information</span></h2> 
   <div class="col-md-6">
     <ul class="form edit-form">
@@ -71,13 +71,13 @@
   </div>
 </div>
 
-<div id="currentAccountProperty" style="clear: both" class="col-md-12">
+<div id="currentAccountProperty" style="clear: both" class="">
   <fieldset>
     <legend>Furthermore...</legend>
     <ul class="form edit-form">
-      <li class="form-group"><label class="textarea">Already Contacted:</label><textarea id="curAlreadyContacted" value="{{current.account.customFields['alreadyContacted']}}"></textarea></li>
-      <li class="form-group"><label class="textarea">Reason for Selling:</label><textarea id="curReasonForSale" value="{{current.account.customFields['reasonForSale']}}"></textarea></li>
-      <li class="form-group"><label class="textarea">Property Info:</label><textarea id="curPropertyInfo" value="{{current.account.customFields['propertyInfo']}}"></textarea></li>
+      <li class="form-group"><label class="col-md-2 textarea">Already Contacted:</label><textarea id="curAlreadyContacted" value="{{current.account.customFields['alreadyContacted']}}"></textarea></li>
+      <li class="form-group"><label class="col-md-2 textarea">Reason for Selling:</label><textarea id="curReasonForSale" value="{{current.account.customFields['reasonForSale']}}"></textarea></li>
+      <li class="form-group"><label class="col-md-2 textarea">Property Info:</label><textarea id="curPropertyInfo" value="{{current.account.customFields['propertyInfo']}}"></textarea></li>
     </ul>
   </fieldset>
 </div>

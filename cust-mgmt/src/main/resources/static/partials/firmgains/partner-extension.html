@@ -1,0 +1,61 @@
+<h3 class="form"><span>Business Info</span></h3> 
+<div class="col-md-12" id="currentAccountValuation">
+  <div class="col-md-6">
+    <ul class="form edit-form">
+      <li class="form-group">
+        <label class="col-md-4">Regions covered:</label>
+        <input class="form-control typeahead" id="curRegion" value="{{current.account.customFields['partnerRegions']}}"/></li>
+    </ul>
+  </div> 
+  <div class="col-md-6">
+    <ul class="form edit-form" id="curPartnerSectors">
+      <li class="form-group">
+        <label class="col-md-4">Sectors covered:</label>
+        <input class="form-control typeahead" id="curSector" value="{{current.account.customFields['partnerSectors']}}"/>
+        <span class="glyphicon glyphicon-plus" on-click="addSector()"></span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div id="sectorTemplate" style="display:none">
+  <li class="form-group">
+    <input class="col-md-offset-4 form-control typeahead" id="curSector" value="{{current.account.customFields['partnerSectors']}}"/>
+  </li>
+</div>  
+
+<h4>Budget Range</h4>
+<div class="col-md-12" id="currentAccountValuation">
+  <div class="col-md-6">
+    <ul class="form edit-form">
+      <li class="form-group"><label class="col-md-4">Lowest Turnover:</label><input class="autoNumeric form-control" id="curMinTurnover" data-a-sign="£ " value="{{current.account.customFields['minTurnover']}}"/></li>
+    </ul>
+  </div> 
+  <div class="col-md-6">
+    <ul class="form edit-form">
+      <li class="form-group"><label class="col-md-4">Highest Turnover:</label><input class="autoNumeric form-control" id="curMaxTurnover" data-a-sign="£ " value="{{current.account.customFields['maxTurnover']}}"/></li>
+    </ul>
+  </div>
+</div>
+
+<h4>Fee Structure</h4>
+<div class="col-md-12" id="currentAccountFees">
+  <div class="col-md-6">
+    <ul class="form edit-form">
+      <li class="form-group"><label class="col-md-4">Up Front:</label><input class="autoNumeric form-control" id="curUpFrontFee" data-a-sign="£ " value="{{current.account.customFields['upFrontFee']}}"/></li>
+    </ul>
+  </div> 
+  <div class="col-md-6">
+    <ul class="form edit-form">
+      <li class="form-group"><label class="col-md-4">On Sale:</label><input class="autoNumeric form-control" id="curOnSaleFee" data-a-sign="£ " value="{{current.account.customFields['onSaleFee']}}"/></li>
+    </ul>
+  </div>
+</div>
+
+
+<div class="clearfix"></div>
+<h3 class="form"><span>Placed</span></h3> 
+<div class="col-md-12" id="currentAccountFees">
+  <p>TODO</p>
+</div>
+

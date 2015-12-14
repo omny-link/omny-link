@@ -1,47 +1,51 @@
 <section id="currentSect" style="display:none">
   <form class="inline-form form" id="currentForm">
-    <div class="form create-form">
-      <input class="create-field form-control col-xs-1" id="curTitle" placeholder="Title" value="{{current.title}}"/>
-      <input class="create-field form-control col-xs-2" id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/>
-      <input class="create-field form-control col-xs-2" id="curLastName" placeholder="Last Name" required value="{{current.lastName}}"/>
-    </div>
-
-    <h2 class="form create-form" style="">&nbsp;</h2>
-    <h2 class="form edit-form">
-      <span contenteditable id="curTitle2" on-focus="editField('#curTitle2','current.title')" on-blur="updateField('#curTitle2','current.title')">{{current.title}}</span>
-      <span contenteditable id="curFirstName2" on-focus="editField('#curFirstName2','current.firstName')" on-blur="updateField('#curFirstName2','current.firstName')">{{current.firstName}}</span>
-      <span contenteditable id="curLastName2" on-focus="editField('#curLastName2','current.lastName')" on-blur="updateField('#curLastName2','current.lastName')">{{current.lastName}}</span>
-      {{#if (current.phone1 != undefined || current.phone2 != undefined) && (current.phone1 != '' || current.phone2 != '')}}
-        {{#if (current.phone1 != undefined && current.phone1 != '')}}
-          <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1}}" title="Click to call"></a>
-          <span>{{current.phone1}}</span>
+    {{^current.id}}
+      <div class="form create-form">
+        <input class="create-field form-control col-xs-1" id="curTitle" placeholder="Title" value="{{current.title}}"/>
+        <input class="create-field form-control col-xs-2" id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/>
+        <input class="create-field form-control col-xs-2" id="curLastName" placeholder="Last Name" required value="{{current.lastName}}"/>
+      </div>
+      <h2 class="form create-form" style="">&nbsp;</h2>
+    {{/}}
+    
+    {{#current.id}}
+      <h2 class="form edit-form">
+        <span contenteditable id="curTitle2" on-focus="editField('#curTitle2','current.title')" on-blur="updateField('#curTitle2','current.title')">{{current.title}}</span>
+        <span contenteditable id="curFirstName2" on-focus="editField('#curFirstName2','current.firstName')" on-blur="updateField('#curFirstName2','current.firstName')">{{current.firstName}}</span>
+        <span contenteditable id="curLastName2" on-focus="editField('#curLastName2','current.lastName')" on-blur="updateField('#curLastName2','current.lastName')">{{current.lastName}}</span>
+        {{#if (current.phone1 != undefined || current.phone2 != undefined) && (current.phone1 != '' || current.phone2 != '')}}
+          {{#if (current.phone1 != undefined && current.phone1 != '')}}
+            <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1}}" title="Click to call"></a>
+            <span>{{current.phone1}}</span>
+          {{/if}}
+          {{#if (current.phone2 != undefined && current.phone2 != '')}}
+            <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone2}}" title="Click to call"></a>
+            <span> {{current.phone2}}</span>
+          {{/if}}
         {{/if}}
-        {{#if (current.phone2 != undefined && current.phone2 != '')}}
-          <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone2}}" title="Click to call"></a>
-          <span> {{current.phone2}}</span>
+        {{#if current.email != undefined && current.email != ''}}
+          <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
         {{/if}}
-      {{/if}}
-      {{#if current.email != undefined && current.email != ''}}
-        <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
-      {{/if}}
-      <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
-      <span class="pull-right">
-        <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
-        {{#if tenant.customerActions!=undefined && tenant.customerActions.length>0 }}
-          <span class="clickable dropdown" aria-hidden="true" title="Start Process">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
-              <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
-            </a>
-            <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
-              {{#each tenant.customerActions }}
-                <li onclick="ractive.startCustomAction('{{key}}', '{{label}}', ractive.get('current'){{#form}}, '{{form}}'{{/form}})">{{label}}</li>
-              {{/each}}
-            </ul>
-          </span>
-        {{/if}}
-      </span>
-    </h2>
-
+        <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
+        <span class="pull-right">
+          <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+          {{#if tenant.customerActions!=undefined && tenant.customerActions.length>0 }}
+            <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
+                <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+              </a>
+              <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+                {{#each tenant.customerActions }}
+                  <li onclick="ractive.startCustomAction('{{key}}', '{{label}}', ractive.get('current'){{#form}}, '{{form}}'{{/form}})">{{label}}</li>
+                {{/each}}
+              </ul>
+            </span>
+          {{/if}}
+        </span>
+      </h2>
+    {{/}}
+    
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         <li>
@@ -188,24 +192,8 @@
           </ul>
       </div>
 
-      <div id="currentAccountExtended" style="clear: both">
-        {{>(tenant.id+'AccountExtension')}}
-
-        <!-- TODO General purpose account extension if no dedicated one available
-        {{#if tenant.accountFields}}
-          <div class="col-md-12 col-sm-12 col-xs-12" id="currentAccountExtended">
-            <h2 class="form">
-              <span>More...</span>
-            </h2>
-
-            <!-- first column - ->
-            {{>column {object: current.account, fields: tenant.accountFields.slice(0,Math.floor(tenant.accountFields.length/2))} }}
-
-            <!-- second column - ->
-            {{>column {object: current.account, fields: tenant.accountFields.slice(Math.ceil(tenant.accountFields.length/2),tenant.accountFields.length)} }}
-
-          </div>
-        {{/if}}-->
+      <div id="currentAccountTypeExtended" style="clear: both">
+        {{>(tenant.id+current.accountType+'Extension')}}
       </div>
 
     </form>
