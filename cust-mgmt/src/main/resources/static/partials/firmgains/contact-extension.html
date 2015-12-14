@@ -1,12 +1,15 @@
 <h3 class="form">
   <span>Further Contact Info</span>
 </h3>
-<div class="col-md-12">
+<div class="">
 
   <div class="col-md-6">
     <ul class="form edit-form">
       <li><label class="col-md-5">Current Partner:</label>
       <input class="typeahead form-control" id="curPartnersContacted" on-blur="console.debug(''+this.value);ractive.save()" value="{{current.customFields['partnersContacted']}}"></li>
+      <!-- <span class="glyphicon glyphicon-new-window">
+        
+      </span-->
     </ul>
   </div>
   <div class="col-md-6">
