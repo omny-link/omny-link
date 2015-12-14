@@ -32,6 +32,16 @@ public class MemoDistributionTest {
         assertEquals("john,paul,george,ringo", dist.getRecipients());
     }
 
+    // Useful to allow empty recipient list so partial distributions can be
+    // saved
+    @Test
+    public void testSetEmptyRecipientList() {
+        MemoDistribution dist = new MemoDistribution();
+        dist.setRecipientList(Arrays.asList(new String[] {}));
+        assertEquals(0, dist.getRecipientList().size());
+        // assertEquals("john,paul,george,ringo", dist.getRecipients());
+    }
+
     @Test
     public void testGetRecipientList() {
         MemoDistribution dist = new MemoDistribution();
@@ -56,5 +66,14 @@ public class MemoDistributionTest {
 
         assertEquals(dateTimeParser.parse("2015-12-13T20:34 GMT").getTime(),
                 dist.getSendAt().getTime());
+
+        dist.setSendAtDate(null);
+        dist.setSendAtTime(null);
+        dist.setSendAtTZ(null);
+
+        assertEquals(null, dist.getSendAtDate());
+        assertEquals(null, dist.getSendAtTime());
+        assertEquals(null, dist.getSendAt());
     }
 }
+
