@@ -133,6 +133,11 @@ var ractive = new AuthenticatedRactive({
     ractive.set('current.note', { author:ractive.get('username'), contact: ractive.stripProjection(contact), content: undefined});
     $('#notesTable tr:nth-child(1)').slideDown();
   },
+  addSector: function () {
+    console.log('addSector ...');
+    ractive.showError('Not yet implemented');
+    //$('#curPartnerSectors').append($('#sectorTemplate').html());
+  },
   edit: function (contact) {
     console.log('edit'+contact+'...');
     $('h2.edit-form,h2.edit-field').show();
@@ -257,7 +262,7 @@ var ractive = new AuthenticatedRactive({
         }
       });
     } else if (contact['_links']!=undefined) {
-      uri = contact._links.self.href.indexOf('?')==-1 ? contact._links.self.href : contact._links.self.href.substr(0,contact._links.self.href.indexOf('?')-1);
+      uri = ractive.stripProjection(contact._links.self.href);
     } 
     return uri;
   },
@@ -270,7 +275,7 @@ var ractive = new AuthenticatedRactive({
     console.log('save contact: '+ractive.get('current').lastName+'...');
     ractive.set('saveObserver',false);
     var id = ractive.get('current')._links === undefined ? undefined : (
-        ractive.get('current')._links.self.href.indexOf('?') == -1 ? ractive.get('current')._links.self.href : ractive.get('current')._links.self.href.substr(0,ractive.get('current')._links.self.href.indexOf('?')-1)
+        ractive.stripProjection(ractive.get('current')._links.self.href)
     );
     if (document.getElementById('currentForm')==undefined) { 
       console.debug('still loading, safe to ignore');
@@ -333,9 +338,7 @@ var ractive = new AuthenticatedRactive({
         success: completeHandler = function(data, textStatus, jqXHR) {
           var location = jqXHR.getResponseHeader('Location');
           if (location != undefined) ractive.set('current.account.id',location.substring(location.lastIndexOf('/')+1));
-          var contactAccountLink = ractive.get('current')._links.self.href.indexOf('?')==-1 
-              ? ractive.get('current')._links.self.href
-              : ractive.get('current')._links.self.href.substring(0,ractive.get('current')._links.self.href.indexOf('?')-1);
+          var contactAccountLink = ractive.stripProjection(ractive.get('current')._links.self.href);
           contactAccountLink+='/account';
           console.log(' attempt to link account: '+location+' to '+contactAccountLink);
           if (jqXHR.status == 201) { 
@@ -459,7 +462,11 @@ var ractive = new AuthenticatedRactive({
       });
 	  }
 	  if (contact._links != undefined) {
-	    var url = contact._links.self.href.indexOf('?')==-1 ? contact._links.self.href : contact._links.self.href.substr(0,contact._links.self.href.indexOf('?')-1);
+	    var url = ractive.stripProjection(contact._links.self.href);
+	    if (url == undefined) {
+	      ractive.showError('No contact selected, please check link');
+	      return;
+	    }
 	    console.log('loading detail for '+url);
 	    $.getJSON(ractive.getServer()+url+'?projection=complete',  function( data ) {
         console.log('found contact '+data);
@@ -535,9 +542,15 @@ var ractive = new AuthenticatedRactive({
     }
   },
   stripProjection: function(link) {
+    if (link==undefined) return;
     var idx = link.indexOf('{projection');
     if (idx==-1) { 
-      return link;
+      idx = link.indexOf('{?projection');
+      if (idx==-1) { 
+        return link;
+      } else {
+        return link.substring(0,idx);
+      }
     } else {
       return link.substring(0,idx);
     }
