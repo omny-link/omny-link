@@ -40,7 +40,8 @@
     { "label": "Placed with Partner", "key": "placedWithPartner"}
   ],
   "customerActions": [
-    { "label": "Send email", "key": "SendContactEmail", "form": "/partials/firmgains/PickMail.html" },
+    { "label": "Send email (legacy)", "key": "SendContactEmail", "form": "/partials/firmgains/PickMail.html" },
+    { "label": "Send email", "key": "SendMemo", "form": true  },
     { "label": "Recommend follow up (no mail sent)", "key": "RecommendFollowUp" },
     { "label": "Run email follow up", "key": "FollowUpOneContact" }
   ],
@@ -58,6 +59,7 @@
     { "name": "firmgainsCustomerExtension", "url": "/partials/firmgains/customer-extension.html"},
     { "name": "firmgainsPartnerExtension", "url": "/partials/firmgains/partner-extension.html"},
     { "name": "firmgainsSendContactEmail", "url": "/partials/firmgains/PickMail.html"},
+    { "name": "firmgainsSendMemo", "url": "/partials/pick-memo.html"},
     { "name": "firmgainsAddReminder", "url": "/partials/AddReminder.html"}
   ],
   "typeaheadControls": [
