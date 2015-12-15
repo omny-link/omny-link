@@ -12,7 +12,8 @@
     { "label": "Current Site Capability", "key": "currentSiteCapability"}
   ],
   "customerActions": [
-    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" }
+    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" },
+    { "label": "Send email", "key": "SendMemo", "form": true  }
   ],
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
@@ -32,6 +33,7 @@
     { "name": "omnyAccountExtension", "url": "/partials/accountExtension.html"},
     { "name": "omnyAddReminder", "url": "/partials/AddReminder.html"},
     { "name": "omnySimpleTodo", "url": "/partials/simple-todo.html"},
+    { "name": "omnySendMemo", "url": "/partials/pick-memo.html"},
     { "name": "omnyWorkflowWizard", "url": "/partials/workflow-wizard.html"}
   ],
   "standardOperatingProcedures": [
