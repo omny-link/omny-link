@@ -38,7 +38,7 @@ public class TweetTest {
         IdentityService idSvc = activitiRule.getIdentityService();
         idSvc.saveUser(idSvc.newUser(USERNAME));
 
-        TestCredentials.initBot(idSvc, TENANT_ID);
+        TestCredentials.initBotWithTwitterIntegration(idSvc, TENANT_ID);
     }
 
     @After
