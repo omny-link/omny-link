@@ -16,6 +16,7 @@
     </ioSpecification>
     <startEvent id="_2" isInterrupting="true" name="Start Event" parallelMultiple="false">
       <outgoing>_5</outgoing>
+      <outputSet/>
     </startEvent>
     <sequenceFlow id="_5" sourceRef="_2" targetRef="getDistribution"/>
     <sequenceFlow id="_14" sourceRef="mailContactSubProc" targetRef="endEvent"/>
@@ -68,13 +69,12 @@ execution.setVariable('richContent',execution.getVariable('memo').getString('ric
     <sequenceFlow id="_13" sourceRef="_4" targetRef="mailContactSubProc"/>
     <endEvent id="endEvent" name="End with &#10;mail sent">
       <incoming>_14</incoming>
+      <inputSet/>
     </endEvent>
     <subProcess completionQuantity="1" id="mailContactSubProc" isForCompensation="false" name="Mail each contact in distribution list" startQuantity="1" triggeredByEvent="false">
       <incoming>_13</incoming>
       <outgoing>_14</outgoing>
       <multiInstanceLoopCharacteristics activiti:collection="${distribution.getJsonArray(&quot;recipientList&quot;)}" activiti:elementVariable="contactEmail" behavior="All" isSequential="false"/>
-      <sequenceFlow id="_26" sourceRef="sendMail" targetRef="postActivity"/>
-      <sequenceFlow id="_12" sourceRef="postActivity" targetRef="endSubProc"/>
       <sequenceFlow id="_16" sourceRef="_6" targetRef="getContact"/>
       <sequenceFlow id="_17" sourceRef="getContact" targetRef="sendMail"/>
       <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="getContact" implementation="##WebService" isForCompensation="false" name="Read &#10;contact" startQuantity="1">
@@ -96,30 +96,9 @@ execution.setVariable('richContent',execution.getVariable('memo').getString('ric
         <incoming>_16</incoming>
         <outgoing>_17</outgoing>
       </serviceTask>
-      <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="postActivity" implementation="##WebService" isForCompensation="false" name="Record &#10;email activity" startQuantity="1">
-        <extensionElements>
-          <activiti:field name="resourceUsername">
-            <activiti:string>userInfo('tenant-bot')</activiti:string>
-          </activiti:field>
-          <activiti:field name="resourcePassword">
-            <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
-          </activiti:field>
-          <activiti:field name="globalResource">
-            <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}${contacts[0].getString('selfRef')}/activities</activiti:expression>
-          </activiti:field>
-          <activiti:field name="headers">
-            <activiti:string>Accept:application/json</activiti:string>
-          </activiti:field>
-          <activiti:field name="data">
-            <activiti:expression><![CDATA[type=email,content=${plainContent}]]></activiti:expression>
-          </activiti:field>
-          <activiti:field expression="activityId=Location" name="responseHeaders"/>
-        </extensionElements>
-        <incoming>_26</incoming>
-        <outgoing>_12</outgoing>
-      </serviceTask>
       <startEvent id="_6" isInterrupting="true" name="Start Event" parallelMultiple="false">
         <outgoing>_16</outgoing>
+        <outputSet/>
       </startEvent>
       <serviceTask activiti:async="true" activiti:type="mail" completionQuantity="1" id="sendMail" implementation="##WebService" isForCompensation="false" name="Send mail" startQuantity="1">
         <extensionElements>
@@ -140,11 +119,28 @@ execution.setVariable('richContent',execution.getVariable('memo').getString('ric
           </activiti:field>
         </extensionElements>
         <incoming>_17</incoming>
-        <outgoing>_26</outgoing>
+        <outgoing>_12</outgoing>
       </serviceTask>
       <endEvent id="endSubProc" name="End Event">
-        <incoming>_12</incoming>
+        <incoming>_18</incoming>
+        <inputSet/>
       </endEvent>
+      <callActivity calledElement="AddActivityToContact" completionQuantity="1" id="_10" isForCompensation="false" name="Add activity &#10;to contact" startQuantity="1">
+        <extensionElements>
+        <activiti:in sourceExpression="${contacts.getJsonObject(0)}" target="contact"/>
+        <activiti:in sourceExpression="email" target="activityType"/>
+        <activiti:in sourceExpression="${memo.getString('title')}" target="subject"/>
+        <activiti:in source="richContent" target="richContent"/>
+        <activiti:in source="plainContent" target="plainContent"/>
+        <activiti:in sourceExpression="Memo: ${memo.getString('name')}" target="activityContent"/>
+        <activiti:in sourceExpression="${contacts.getJsonObject(0).getString('selfRef')}" target="contactId"/>
+        <activiti:out source="activityId" target="activityId"/>
+        </extensionElements>
+        <incoming>_12</incoming>
+        <outgoing>_18</outgoing>
+      </callActivity>
+      <sequenceFlow id="_12" sourceRef="sendMail" targetRef="_10"/>
+      <sequenceFlow id="_18" sourceRef="_10" targetRef="endSubProc"/>
     </subProcess>
     <textAnnotation id="_7" textFormat="text/plain">
       <text>Send memo to distribution list</text>
@@ -155,7 +151,7 @@ execution.setVariable('richContent',execution.getVariable('memo').getString('ric
       <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
         <dc:Bounds height="32.0" width="32.0" x="55.0" y="223.07142857142858"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="63.0" x="39.5" y="264.08900669642856"/>
+          <dc:Bounds height="18.955078125" width="63.0" x="39.5" y="264.13392857142856"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7">
@@ -212,12 +208,6 @@ execution.setVariable('richContent',execution.getVariable('memo').getString('ric
           <dc:Bounds height="18.955078125" width="57.0" x="761.3333333333334" y="223.92722284226193"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="postActivity" id="Yaoqiang-postActivity">
-        <dc:Bounds height="55.0" width="85.0" x="853.8333333333334" y="203.9047619047619"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="32.955078125" width="75.0" x="858.8333333333334" y="216.92722284226193"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="getContact" id="Yaoqiang-getContact">
         <dc:Bounds height="55.0" width="85.0" x="639.5555555555555" y="203.9047619047619"/>
         <bpmndi:BPMNLabel>
@@ -227,15 +217,28 @@ execution.setVariable('richContent',execution.getVariable('memo').getString('ric
       <bpmndi:BPMNShape bpmnElement="endSubProc" id="Yaoqiang-endSubProc">
         <dc:Bounds height="32.0" width="32.0" x="960.0" y="215.4047619047619"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="58.0" x="947.0" y="256.0170665922619"/>
+          <dc:Bounds height="18.955078125" width="58.0" x="947.0" y="256.0619884672619"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6">
         <dc:Bounds height="32.0" width="32.0" x="579.6666666666667" y="215.4047619047619"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="63.0" x="564.1666666666667" y="256.0170665922619"/>
+          <dc:Bounds height="18.955078125" width="63.0" x="564.1666666666667" y="256.0619884672619"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_10" id="Yaoqiang-_10" isExpanded="false">
+        <dc:Bounds height="55.0" width="85.0" x="848.5" y="201.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="69.0" x="856.5" y="214.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_18" id="Yaoqiang-_18">
+        <di:waypoint x="933.0454545454546" y="229.0"/>
+        <di:waypoint x="960.0464390259962" y="231.40476190476193"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="943.75" y="220.52078867560635"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_17" id="Yaoqiang-_17">
         <di:waypoint x="725.0454545454546" y="231.40476190476193"/>
         <di:waypoint x="747.0454545454546" y="231.40476190476193"/>
@@ -244,10 +247,10 @@ execution.setVariable('richContent',execution.getVariable('memo').getString('ric
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_16" id="Yaoqiang-_16">
-        <di:waypoint x="612.0430556099687" y="231.40476190476193"/>
+        <di:waypoint x="612.0444700649131" y="231.40476190476193"/>
         <di:waypoint x="640.0454545454546" y="231.40476190476193"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="623.0442550777117" y="221.92722284226193"/>
+          <dc:Bounds height="18.955078125" width="6.0" x="623.0449623051838" y="221.92722284226193"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_15" id="Yaoqiang-_15">
@@ -259,9 +262,9 @@ execution.setVariable('richContent',execution.getVariable('memo').getString('ric
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_14" id="Yaoqiang-_14">
         <di:waypoint x="1023.0454545454546" y="239.07142857142856"/>
-        <di:waypoint x="1062.0501988818428" y="239.07142857142856"/>
+        <di:waypoint x="1062.0462135447356" y="239.07142857142856"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="1039.5478267136486" y="229.59388950892856"/>
+          <dc:Bounds height="18.955078125" width="6.0" x="1039.545834045095" y="229.59388950892856"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_13" id="Yaoqiang-_13">
@@ -272,10 +275,10 @@ execution.setVariable('richContent',execution.getVariable('memo').getString('ric
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
-        <di:waypoint x="939.0454545454546" y="231.40476190476193"/>
-        <di:waypoint x="960.0478534809405" y="231.40476190476193"/>
+        <di:waypoint x="832.0454545454546" y="231.40476190476193"/>
+        <di:waypoint x="848.0454545454546" y="229.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="946.5466540131976" y="221.92722284226193"/>
+          <dc:Bounds height="18.955078125" width="6.0" x="837.4166666666666" y="221.09605401109297"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_11" id="Yaoqiang-_11">
@@ -286,17 +289,10 @@ execution.setVariable('richContent',execution.getVariable('memo').getString('ric
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
-        <di:waypoint x="87.04071020906649" y="239.07142857142856"/>
+        <di:waypoint x="87.04469554617366" y="239.07142857142856"/>
         <di:waypoint x="150.04545454545462" y="239.07142857142856"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="115.54308237726056" y="229.59388950892856"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_26" id="Yaoqiang-_26">
-        <di:waypoint x="832.0454545454546" y="231.40476190476193"/>
-        <di:waypoint x="854.0454545454546" y="231.40476190476193"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="840.0454545454546" y="221.92722284226193"/>
+          <dc:Bounds height="18.955078125" width="6.0" x="115.54507504581414" y="229.59388950892856"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

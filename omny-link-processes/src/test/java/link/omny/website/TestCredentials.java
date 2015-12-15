@@ -17,7 +17,16 @@ public class TestCredentials {
         idSvc.saveUser(botUser);
         idSvc.setUserInfo(BOT_USERNAME, "cust-mgmt-secret", BOT_PWD);
         idSvc.setUserInfo(BOT_USERNAME, "cust-mgmt-url", CUST_MGMT_URL);
+    }
 
+    public static void initBotWithTwitterIntegration(IdentityService idSvc,
+            String tenantId) {
+        initBot(idSvc, tenantId);
+        initTwitterConfig(idSvc, tenantId);
+    }
+
+    protected static void initTwitterConfig(IdentityService idSvc,
+            String tenantId) {
         Assume.assumeTrue("No credentials provided to allow twitter integration", 
                 System.getProperty("consumerKey") != null
                 || System.getProperty("consumerSecret") != null
