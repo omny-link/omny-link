@@ -58,10 +58,10 @@ public class TweetTest {
             Map<String, Object> putVars = new HashMap<String, Object>();
             putVars.put("tweet", "Hello! The time is " + new Date());
             new ActivitiSpec(activitiRule, "testSendTweet")
-                    .startByKey(SEND_TWEET_KEY, collectVars, putVars, TENANT_ID)
-                    .executeJobsForTime(5000)
-                    .assertProcessEndedAndInExclusiveEndEvent("endEvent")
-                    .external(new DumpAuditTrail(activitiRule));
+                    .whenEventOccurs("", SEND_TWEET_KEY, collectVars, putVars, TENANT_ID)
+                    .whenExecuteJobsForTime(5000)
+                    .thenProcessEndedAndInExclusiveEndEvent("endEvent")
+                    .thenExtension(new DumpAuditTrail(activitiRule));
         } catch (Exception e) {
             e.printStackTrace();
             fail();

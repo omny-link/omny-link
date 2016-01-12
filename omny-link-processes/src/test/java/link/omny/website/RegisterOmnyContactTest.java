@@ -63,9 +63,9 @@ public class RegisterOmnyContactTest {
         try {
             ActivitiSpec spec = new ActivitiSpec(activitiRule,
                     "testMinimalRegistration")
-                    .startByMsg(REGISTER_SELF_MSG, "/omny.registration.json",
-                            TENANT_ID)
-                    .executeJobsForTime(5000)
+                    .whenMsgReceived("", REGISTER_SELF_MSG,
+                            "/omny.registration.json", TENANT_ID)
+                    .whenExecuteJobsForTime(5000)
                     // TODO This does not work due to the Activiti ReceiveTask
                     // implementation
                     // Consider intermediate msgEvent but then cannot use
@@ -77,10 +77,10 @@ public class RegisterOmnyContactTest {
                     // .receiveSignal("awaitConfirmation")
                     // Note: sub-proc only returns id after msg received
                     .collectVar("contactId")
-                    .executeAllJobs(2000)
-                     .assertProcessEndedAndInExclusiveEndEvent(
+                    .whenExecuteAllJobs(2000)
+                     .thenProcessEndedAndInExclusiveEndEvent(
                      "endEvent")
-                    .external(new DumpAuditTrail(activitiRule));
+                    .thenExtension(new DumpAuditTrail(activitiRule));
 
             // Note, this is a hard delete
             delete((String) spec.getVar("contactId"));

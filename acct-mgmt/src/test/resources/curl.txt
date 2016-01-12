@@ -3,3 +3,5 @@ curl -H "Accept:application/json" -H "Content-Type: application/json" -X POST -d
 
 # LIST 
 curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/configuration/
+
+curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/operations/
