@@ -5,7 +5,7 @@
 *.bak
 *.class
 *.log*
-/application.properties
+application.properties
 /log4k.properties
 target/
 
