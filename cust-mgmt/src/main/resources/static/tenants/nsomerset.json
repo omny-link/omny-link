@@ -8,7 +8,7 @@
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }    
   ],
   "partials": [
-    { "name": "simpleTodoFormExtension", "url": "/partials/simpleTodoFormExtension.html"},
+    { "name": "simpleTodoFormExtension", "url": "/partials/simple-todo.html"},
     { "name": "nsomersetContactExtension", "url": "/partials/contactExtension.html"},
     { "name": "nsomersetAccountExtension", "url": "/partials/accountExtension.html"}
   ],
