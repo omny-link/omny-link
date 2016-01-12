@@ -17,7 +17,7 @@
     <dependency>
       <groupId>org.activiti</groupId>
       <artifactId>activiti-bdd</artifactId>
-      <version>${activiti.version}</version>
+      <version>${activiti.bdd.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

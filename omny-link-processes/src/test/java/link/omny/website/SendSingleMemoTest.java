@@ -73,11 +73,11 @@ public class SendSingleMemoTest {
             putVars.put("contactId", "http://localhost:8082/contacts/1");
             putVars.put("memoId", "1");
             new ActivitiSpec(activitiRule, "testSendMemo")
-                    .startByKey(SEND_MEMO_KEY, collectVars, putVars,
-                            TENANT_ID)
-                    .executeJobsForTime(3000)
-                    .assertProcessEnded()
-                    .external(new DumpAuditTrail(activitiRule));
+                    .whenEventOccurs("", SEND_MEMO_KEY, collectVars,
+                            putVars, TENANT_ID)
+                    .whenExecuteJobsForTime(3000)
+                    .thenProcessIsComplete()
+                    .thenExtension(new DumpAuditTrail(activitiRule));
 
             // TODO assert activity added
 

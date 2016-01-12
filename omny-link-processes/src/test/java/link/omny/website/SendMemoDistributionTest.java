@@ -70,11 +70,11 @@ public class SendMemoDistributionTest {
                     "http://localhost:8082/memo-distributions/1");
             new ActivitiSpec(activitiRule,
                     "testMemoDistribution")
-                    .startByKey(DISTRIBUTE_MEMO_KEY, collectVars, putVars,
-                            TENANT_ID)
-                    .executeJobsForTime(3000)
-                    .assertProcessEnded()
-                    .external(new DumpAuditTrail(activitiRule));
+                    .whenEventOccurs("", DISTRIBUTE_MEMO_KEY, collectVars,
+                            putVars, TENANT_ID)
+                    .whenExecuteJobsForTime(3000)
+                    .thenProcessIsComplete()
+                    .thenExtension(new DumpAuditTrail(activitiRule));
 
             // TODO assert activity added
 
