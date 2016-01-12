@@ -27,7 +27,7 @@ public class RestDelete extends RestService implements JavaDelegate {
 
     public void delete(String resource, String usr,
             String pwd, String headers, Object data) throws IOException {
-        LOGGER.info(String.format("DELETEing to %1$s as %2$s", resource, usr));
+        LOGGER.info(String.format("DELETEing %1$s as %2$s", resource, usr));
 
         URL url;
         HttpURLConnection connection = null;
