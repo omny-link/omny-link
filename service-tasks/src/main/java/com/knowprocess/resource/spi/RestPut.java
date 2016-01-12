@@ -49,7 +49,11 @@ public class RestPut extends RestService implements JavaDelegate {
                     LOGGER.error(msg);
                     throw new IOException(msg);
                 } finally {
-                    scanner.close();
+                    try {
+                        scanner.close();
+                    } catch (Exception e) {
+                        ;
+                    }
                 }
             } else {
                 LOGGER.debug("Response code: " + code);
