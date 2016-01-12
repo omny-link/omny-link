@@ -50,7 +50,5 @@
 
   <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
   <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <script src="/webjars/Bootstrap-3-Typeahead/3.1.1/bootstrap3-typeahead.js"></script>
-  <script src="/webjars/ractive/0.7.1/ractive.min.js"></script>
 </body>
 </html>

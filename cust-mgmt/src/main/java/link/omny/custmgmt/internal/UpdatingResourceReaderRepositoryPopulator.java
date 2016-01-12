@@ -12,7 +12,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.repository.core.CrudInvoker;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.init.RepositoriesPopulatedEvent;
 import org.springframework.data.repository.init.RepositoryPopulator;
 import org.springframework.data.repository.init.ResourceReader;
@@ -156,13 +156,12 @@ public class UpdatingResourceReaderRepositoryPopulator extends
      */
     @SuppressWarnings({ "unchecked" })
     private void persist(Object object, Repositories repositories) {
-
-        CrudInvoker<Object> invoker = (CrudInvoker<Object>) repositories
-                .getCrudInvoker(object.getClass());
+        CrudRepository<Object, ?> repositoryFor = (CrudRepository<Object, ?>) repositories
+                .getRepositoryFor(object.getClass());
         LOGGER.debug(String.format("Persisting %s using repository %s", object,
-                invoker));
+                repositoryFor));
         try {
-            invoker.invokeSave(object);
+            repositoryFor.save(object);
         } catch (DataIntegrityViolationException e) {
             LOGGER.warn(String.format(
                     "Ignoring failed data initialization: %1$s",
