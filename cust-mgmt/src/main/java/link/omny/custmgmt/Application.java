@@ -2,7 +2,6 @@ package link.omny.custmgmt;
 
 import io.onedecision.engine.OneDecisionConfig;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,12 +22,6 @@ import com.knowprocess.bpm.api.ActivitiApplicationSecurity;
 @ComponentScan(basePackages = { "link.omny.custmgmt", "io.onedecision.engine" })
 @EnableSwagger2
 public class Application extends WebMvcConfigurerAdapter {
-
-    @Value("${omny.populator.skip:true}")
-    protected boolean skipPopulator;
-
-    @Value("${omny.mock.smtp:true}")
-    protected boolean mockSmtpServer;
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
