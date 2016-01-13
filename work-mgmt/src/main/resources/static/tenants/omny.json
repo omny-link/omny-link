@@ -11,6 +11,15 @@
     { "label": "Lead Office", "key": "leadOffice"},
     { "label": "Current Site Capability", "key": "currentSiteCapability"}
   ],
+  "analytics": {
+    "funnel": {
+      "stage1": "Enquiry",
+      "stage2": "Appointment",
+      "stage3": "Proposal",
+      "stage4": "Order",
+      "stage5": "Complete"
+    }
+  },
   "customerActions": [
     { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" },
     { "label": "Send email", "key": "SendMemo", "form": true  }

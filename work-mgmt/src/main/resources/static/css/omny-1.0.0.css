@@ -574,3 +574,33 @@ a.glyphicon-remove {
 }
 
 /* END ICONS */
+
+/* ANALYTICS */
+
+#funnelResultSect {
+	font-size: 1.2em;
+}
+#funnelResultLegend2 {
+  position:relative;
+  left:30px;
+}
+.funnel-legend {
+	position: absolute;
+	left: 100px;
+}
+.funnel-legend#stage1 {
+  top: 190px;
+}
+.funnel-legend#stage2 {
+  top: 310px;
+}
+.funnel-legend#stage3 {
+  top: 430px; 
+}
+.funnel-legend#stage4 {
+  top: 550px; 
+}
+.funnel-legend#stage5 {
+  top: 670px; 
+}
+/* END ANALYTICS */
