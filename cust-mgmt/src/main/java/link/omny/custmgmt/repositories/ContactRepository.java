@@ -60,6 +60,10 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     List<Contact> findByEmail(@Param("email") String email,
             @Param("tenantId") String tenantId);
 
+    @Query("SELECT c.stage, COUNT(c) FROM Contact c WHERE c.tenantId = :tenantId GROUP BY c.stage")
+    List<Object[]> findAllForTenantGroupByStage(
+            @Param("tenantId") String tenantId);
+
     @Override
     @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = ?1")
     @Modifying(clearAutomatically = true)

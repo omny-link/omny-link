@@ -25,3 +25,6 @@ curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen http://local
 
 # Get 1 memo distribution
 curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen http://localhost:8082/memo-distributions/1/
+
+# GET sales funnel 
+curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://localhost:8082/ony/analytics/funnel
