@@ -20,7 +20,11 @@
       <ul class="form edit-form">
         <li class="form-group">
           <label class="col-md-4">Started By:</label>
-          <span class="initiator-img">{{current.processVariables['initiator']=='anonymousUser' ? 'Omny Link' : current.processVariables['initiator']}}</span>
+          {{#current.processVariables['initiator']==undefined || current.processVariables['initiator']=='anonymousUser'}}
+            <span class="initiator-img" title="Omny Link"></span>
+          {{else}}
+            <span class="initiator-img" title="{{current.processVariables['initiator']}}"></span>
+          {{/}}
         </li>
         <li class="form-group">
           <label class="col-md-4">Created:</label>

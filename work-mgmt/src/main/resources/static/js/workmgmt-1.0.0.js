@@ -363,7 +363,7 @@ var ractive = new AuthenticatedRactive({
       ractive.set('current', data);
 
       // set image for initiator
-      if (ractive.get('current.processVariables')["initiator"]=='anonymousUser') {
+      if (ractive.get('current.processVariables')["initiator"]==undefined || ractive.get('current.processVariables')["initiator"]=='anonymousUser') {
         $('.initiator-img').empty().append('<img class="img-rounded" src="/images/icon/omny-icon.png" width="34"/>');
       } else if (ractive.get('current.processVariables')["initiator"]=='tstephen') {
         $('.initiator-img').empty().append('<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash('tim@omny.link')+'?s=34"/>');
