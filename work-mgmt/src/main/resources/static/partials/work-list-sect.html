@@ -80,7 +80,7 @@ searchTerm!=undefined && (
 -->
     {{#each tasks:i}}
       {{# matchFilter(this) }}
-      <tr data-href="{{_links.self.href}}">
+      <tr class="{{renderPriority(this)}}" data-href="{{_links.self.href}}">
         <td on-click="edit(this)">{{i+1}}</td>
         <td on-click="edit(this)">{{businessKey}}</td>
         <td on-click="edit(this)">{{name == null ? taskDefinitionKey.toLabel() : name}}</td>

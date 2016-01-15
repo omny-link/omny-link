@@ -113,6 +113,12 @@ var ractive = new AuthenticatedRactive({
         return 'default';
       }
     },
+    renderPriority: function(task) {
+      console.log('renderPriority');
+      if (ractive.isOverdue(task)) return 'overdue';
+      if (ractive.isDue(task)) return 'due';
+      return '';
+    },
     stdPartials: [
       { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
@@ -220,11 +226,29 @@ var ractive = new AuthenticatedRactive({
       todayHighlight: true
     });
   },
-  isDeferred: function(obj) {
-    if (obj.taskLocalVariables.length==0 || obj.taskLocalVariables['deferUntil']==undefined || obj.taskLocalVariables['deferUntil'] <= new Date().getTime()) { 
+  isDeferred: function(task) {
+    if (task.taskLocalVariables.length==0 || task.taskLocalVariables['deferUntil']==undefined || new Date(task.taskLocalVariables['deferUntil']).getTime() <= new Date().getTime()) { 
       return false;
     } else { 
       return true;
+    }
+  },
+  isDue: function(task) {
+    if (task.dueDate!=undefined && new Date(task.dueDate).getTime() <= (new Date().getTime()+24*60*60*1000)) { 
+      return true;
+    } else if (task.taskLocalVariables!=undefined && task.taskLocalVariables['deferUntil']!=undefined && new Date(task.taskLocalVariables['deferUntil']).getTime() <= (new Date().getTime()+24*60*60*1000)) {
+      return true;
+    } else { 
+      return false;
+    }
+  },
+  isOverdue: function(task) {
+    if (task.dueDate!=undefined && new Date(task.dueDate).getTime() <= new Date().getTime()) { 
+      return true;
+    } else if (task.taskLocalVariables!=undefined && task.taskLocalVariables['deferUntil']!=undefined && new Date(task.taskLocalVariables['deferUntil']).getTime() <= new Date().getTime()) {
+      return true;
+    } else { 
+      return false;
     }
   },
   newMessage: function() {

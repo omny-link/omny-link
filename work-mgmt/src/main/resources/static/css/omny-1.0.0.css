@@ -159,6 +159,18 @@ section h3 {
 .table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
   vertical-align: middle;
 }
+.table-striped>tbody>tr:nth-of-type(odd).overdue {
+	background-color: rgba(255,0,0,0.4);
+}
+.table-striped>tbody>tr:nth-of-type(even).overdue {
+  background-color: rgba(255,0,0,0.3);
+}
+.table-striped>tbody>tr:nth-of-type(odd).due {
+  background-color: rgba(255,100,0,0.4);
+}
+.table-striped>tbody>tr:nth-of-type(even).due {
+  background-color: rgba(255,100,0,0.3);
+}
 th { 
 	font-weight: bold;
 }
