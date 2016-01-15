@@ -1,15 +1,17 @@
 <section style="clear:both">
   <h3>Data</h3>
-  <ul class="form edit-form" style="">
-    {{#current.formProperties:i}}
-      <li class="form-group">
-        {{# renderAs(.) == 'enum' }} {{> enumCtrl }} {{/}}
-        {{# renderAs(.) == 'json' }} {{> jsonCtrl { id: ..id, name: ..name, obj: JSON.parse(..value), keys: keys(JSON.parse(..value)) } }} {{/}}
-        {{# renderAs(.) == 'link' }} {{> linkCtrl }} {{/}}
-        {{# renderAs(.) == 'default' }} {{> defaultCtrl }} {{/}}
-      </li>
-    {{/}}
-  </ul>
+  <form class="inline-form form" id="currentForm">
+    <ul class="form edit-form" style="">
+      {{#current.formProperties:i}}
+        <li class="form-group">
+          {{# renderAs(.) == 'enum' }} {{> enumCtrl }} {{/}}
+          {{# renderAs(.) == 'json' }} {{> jsonCtrl { id: ..id, name: ..name, obj: JSON.parse(..value), keys: keys(JSON.parse(..value)) } }} {{/}}
+          {{# renderAs(.) == 'link' }} {{> linkCtrl }} {{/}}
+          {{# renderAs(.) == 'default' }} {{> defaultCtrl }} {{/}}
+        </li>
+      {{/}}
+    </ul>
+  </form>
 </section>
 
 <section class="variables" style="display:none">

@@ -31,11 +31,11 @@
   <script id="jsonTemplate" type="text/html">
     <fieldset><legend class="col-md-12">{{name}}</legend>
       <div class="clearfix"></div>
-      <ul>
+      <ul class="form edit-form">
         {{# keys}}
-          <li>
+          <li class="col-md-12">
             <label class="col-md-3">{{.}}</label>
-            <input class="form-control" id="cur{{.}}" readonly value="{{obj[.]}}">
+            <input class="form-control col-md-9" id="cur{{.}}" readonly value="{{obj[.]}}">
           </li>
         {{/}}
       </ul>
