@@ -1,8 +1,10 @@
 package com.knowprocess.bpm.web;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -16,8 +18,8 @@ import org.activiti.engine.ProcessEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.knowprocess.bpm.model.Task;
+import com.rometools.rome.feed.atom.Entry;
+import com.rometools.rome.feed.atom.Feed;
 
 @RequestMapping()
 @Controller
@@ -105,38 +109,59 @@ public class TaskController {
         }
 	}
 
-	@RequestMapping(value = "/{tenantId}/tasks/{username}/")
+    @RequestMapping(value = "/{tenantId}/tasks/{username}", produces = {
+            MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
     public @ResponseBody List<Task> listForUser(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("username") String username,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size,
             @RequestParam(value = "sortFieldName", required = false) String sortFieldName,
-            @RequestParam(value = "sortOrder", required = false) String sortOrder,
-            Model uiModel) {
+            @RequestParam(value = "sortOrder", required = false) String sortOrder) {
         LOGGER.info(String.format("listForUser %1$s", username));
 
-        String requestor = "tim@omny.link";
-        // = SecurityContextHolder.getContext()
-        // .getAuthentication().getName();
         if (page != null || size != null) {
-            // int sizeNo = size == null ? 10 : size.intValue();
-            // final int firstResult = page == null ? 0 : (page.intValue() - 1)
-            // * sizeNo;
-            // Task.findTaskEntries(involvesUser, firstResult, sizeNo,
-            // sortFieldName, sortOrder);
-            // float nrOfPages = (float) Task.countTasks() / sizeNo;
-            // uiModel.addAttribute(
-            // "maxPages",
-            // (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ?
-            // nrOfPages + 1
-            // : nrOfPages));
             throw new IllegalStateException("No paging implemented yet");
         } else {
             return Task.findAllTasks(tenantId, username, sortFieldName,
                     sortOrder);
         }
-        // addDateTimeFormatPatterns(uiModel);
-        // return "tasks/list";
+    }
+
+    @RequestMapping(value = "/{tenantId}/tasks/{username}/", produces = MediaType.APPLICATION_ATOM_XML_VALUE)
+    public @ResponseBody Feed listForUserAsAtom(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("username") String username,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
+            @RequestParam(value = "sortFieldName", required = false) String sortFieldName,
+            @RequestParam(value = "sortOrder", required = false) String sortOrder)
+            throws IOException {
+        LOGGER.info(String.format("listForUserAsAtom %1$s", username));
+
+        List<Task> tasks = null;
+        if (page != null || size != null) {
+            throw new IllegalStateException("No paging implemented yet");
+        } else {
+            tasks = Task.findAllTasks(tenantId, username, sortFieldName,
+                    sortOrder);
+        }
+
+        Feed feed = new Feed();
+
+        feed.setFeedType("atom_1.0");
+        feed.setTitle(String.format("Task Atom Feed for %1$s", username));
+
+        List<Entry> entries = new ArrayList<Entry>();
+        for (Task task : tasks) {
+            Entry entry = new Entry();
+            entry.setId(Long.valueOf(task.getId()).toString());
+            entry.setTitle(String.format("%1$s: %2$s", task.getName(),
+                    task.getBusinessKey()));
+            entry.setCreated(task.getCreateTime());
+            entries.add(entry);
+        }
+        feed.setEntries(entries);
+        return feed;
     }
 }
