@@ -80,6 +80,12 @@
       <artifactId>HikariCP-java6</artifactId>
       <version>2.3.2</version>
     </dependency>
+    
+    <!-- Spring XML to/back object -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-oxm</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-rest</artifactId>
@@ -212,7 +218,6 @@
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
-      <version>2.6</version>
     </dependency>
     <!-- Required for native JSON support -->
     <dependency>
@@ -225,6 +230,13 @@
       <artifactId>jaxb-api</artifactId>
       <version>2.2.11</version>
     </dependency>
+    <!-- RSS dependencies -->
+    <dependency>
+  <groupId>com.rometools</groupId>
+  <artifactId>rome</artifactId>
+  <version>1.5.0</version>
+</dependency>
+
     <dependency>
       <groupId>link.omny.acctmgmt</groupId>
       <artifactId>acctmgmt</artifactId>

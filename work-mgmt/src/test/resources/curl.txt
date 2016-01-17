@@ -2,6 +2,13 @@ curl -X GET -H "Accept:application/xml" http://localhost:8082/process-definition
 
 curl -X POST -u tstephen:tstephen -d 'json={ "description":"do something","performer":"gardenatics","checker": "tstephen" }' http://localhost:9090/gardenatics/msg/omny.todo.json
 
+# GET tasks for user (JSON) 
+curl -X GET -u tstephen:tstephen -H "Accept:application/json" http://localhost:8082/omny/tasks/tstephen/
+
+# GET tasks for user (ATOM) 
+curl -X GET -u tstephen:tstephen -H "Accept:application/json" http://localhost:8082/omny/tasks/tstephen/
+
+# GET single task
 curl -X GET -u tstephen:tstephen -H "Accept:application/json" http://localhost:9090/task/2511
 
 curl -X POST -H 'Content-Type:application/json' -u tstephen:tstephen \
