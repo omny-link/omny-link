@@ -59,6 +59,7 @@
     <module>cust-mgmt</module>
     <module>fonts</module>
     <module>omny-link-server</module>
+    <module>omny-link-processes</module>
     <module>service-tasks</module>
     <module>work-mgmt</module>
   </modules>
