@@ -264,6 +264,11 @@ var ractive = new AuthenticatedRactive({
     } 
     return uri;
   },
+  getShortId: function(distribution) { 
+    console.log('getShortId: '+distribution);
+    var id = ractive.getId(distribution);
+    return id.substring(id.indexOf('/memo-distributions')+20);
+  },
   getMemoName: function(id) {
     console.log('getMemoName: '+id);
     if (id == undefined) return '';
@@ -376,7 +381,7 @@ var ractive = new AuthenticatedRactive({
       data: JSON.stringify({
         processDefinitionId: 'DistributeMemo',
         businessKey: ractive.get('current.name')+' '+new Date().toISOString(),
-        processVariables: { distributionId: ractive.getId(ractive.get('current')) }
+        processVariables: { distributionId: ractive.getShortId(ractive.get('current')) }
       }),
       success: completeHandler = function(data,textStatus,jqXHR) {
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
