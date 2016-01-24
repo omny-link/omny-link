@@ -221,6 +221,26 @@ public class ContactController {
     }
 
     /**
+     * Return just the matching contacts.
+     * 
+     * @return contacts for that tenant with the matching tag.
+     */
+    @RequestMapping(value = "/findByTag", method = RequestMethod.GET, params = { "tag" })
+    public @ResponseBody List<ShortContact> findByTag(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam("tag") String tag) {
+        LOGGER.debug(String.format("List contacts for tag %1$s", tag));
+
+        // The unwrap stems from a restriction in Activiti JSON handling on
+        // multi-instance loops
+        List<Contact> list = contactRepo.findByTag("%" + unwrap(tag) + "%",
+                tenantId);
+        LOGGER.info(String.format("Found %1$s contacts", list.size()));
+
+        return wrap(list);
+    }
+
+    /**
      * Create a new contact.
      * 
      * @return

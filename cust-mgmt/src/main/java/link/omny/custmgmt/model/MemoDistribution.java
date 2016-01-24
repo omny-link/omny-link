@@ -5,6 +5,7 @@ import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -107,12 +108,33 @@ public class MemoDistribution implements Serializable {
         created = new Date();
     }
 
+    public void addRecipients(List<Contact> contacts) {
+        for (Contact contact : contacts) {
+            recipients += ("," + contact.getEmail());
+        }
+    }
+
+    public void removeRecipient(String recipient) {
+        recipients = recipients.replace(recipient, "").replace(",,", ",");
+    }
+
     public List<String> getRecipientList() {
         if (getRecipients() == null) {
             return Collections.emptyList();
         } else {
             return Arrays.asList(getRecipients().split(","));
         }
+    }
+
+    public List<String> getRecipientTagList() {
+        List<String> tags = new ArrayList<String>();
+        List<String> recipients = getRecipientList();
+        for (String recipient : recipients) {
+            if (recipient.indexOf('@') == -1) {
+                tags.add(recipient);
+            }
+        }
+        return tags;
     }
 
     public void setRecipientList(List<String> recipientList) {

@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.MemoDistribution;
 import link.omny.custmgmt.model.Note;
+import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.custmgmt.repositories.MemoDistributionRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
@@ -48,6 +50,9 @@ public class MemoDistributionController {
 
     @Autowired
     private MemoDistributionRepository mailshotRepo;
+
+    @Autowired
+    private ContactRepository contactRepo;
 
     @Autowired
     private NoteRepository noteRepo;
@@ -110,6 +115,28 @@ public class MemoDistributionController {
         LOGGER.info(String.format("Found %1$s mailshots", list.size()));
 
         return wrap(list);
+    }
+
+    /**
+     * @return the distribution with any tags recipients expanded.
+     */
+    @RequestMapping(value = "/{distributionId}/expandedTags", method = RequestMethod.GET)
+    public @ResponseBody MemoDistribution getExpandedDistribution(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("distributionId") Long distributionId) {
+        LOGGER.info(String.format("getExpandedDistribution %1$s for tenant %2$s", distributionId, tenantId));
+        
+        MemoDistribution dist = mailshotRepo.findOne(distributionId);
+        for (String tag : dist.getRecipientTagList()) {
+            List<Contact> list = contactRepo.findByTag("%" + tag + "%",
+                    tenantId);
+            LOGGER.info(String.format("Found %1$s contact(s) for tag %2$s",
+                    list.size(), tag));
+            dist.addRecipients(list);
+            dist.removeRecipient(tag);
+        }
+        
+        return dist;
     }
 
     /**
