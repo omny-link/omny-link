@@ -1,4 +1,4 @@
-package link.omny.website;
+package link.omny.mail;
 
 import static org.junit.Assert.fail;
 
@@ -8,8 +8,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import link.omny.website.TestCredentials;
+
 import org.activiti.bdd.ActivitiSpec;
 import org.activiti.engine.IdentityService;
+import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.identity.User;
 import org.junit.After;
 import org.junit.Before;
@@ -20,12 +23,8 @@ import com.knowprocess.bpm.test.actions.DumpAuditTrail;
 import com.knowprocess.test.activiti.ExtendedRule;
 import com.knowprocess.test.mailserver.TestMailServer;
 
-public class SendSingleMemoTest {
-    private static final String EMAIL_CONTENT = "<h1><b>Title</b></h1>";
-
-    private static final String EMAIL_SUBJECT = "A test email";
-
-    private static final String USER_EMAIL = "fred@bedrock.com";
+public class SendMemoDistributionIT {
+    private static final String USER_EMAIL = "tim@knowprocess.com";
 
     private static final String SYSTEM_EMAIL = "info@omny.link";
 
@@ -35,7 +34,7 @@ public class SendSingleMemoTest {
 
     private static final String TENANT_ID = MSG_NAMESPACE;
 
-    private static final String SEND_MEMO_KEY = "SendMemo";
+    private static final String DISTRIBUTE_MEMO_KEY = "DistributeMemo";
 
     @Rule
     public ExtendedRule activitiRule = new ExtendedRule("test-activiti.cfg.xml");
@@ -51,6 +50,9 @@ public class SendSingleMemoTest {
         idSvc.saveUser(newUser);
 
         TestCredentials.initBot(idSvc, TENANT_ID);
+
+        ProcessEngine processEngine = activitiRule.getProcessEngine();
+        System.out.println("" + processEngine);
     }
 
     @After
@@ -63,17 +65,44 @@ public class SendSingleMemoTest {
 
     @Test
     @org.activiti.engine.test.Deployment(resources = {
-            "processes/link/omny/mail/SendMemo.bpmn",
+            "processes/link/omny/mail/DistributeMemo.bpmn",
             "processes/link/omny/custmgmt/AddActivityToContact.bpmn" }, tenantId = TENANT_ID)
-    public void testSendMemo() {
+    public void testMemoDistributionToIndividuals() {
         try {
             Set<String> collectVars = new HashSet<String>();
             Map<String, Object> putVars = new HashMap<String, Object>();
             putVars.put("tenantId", TENANT_ID);
-            putVars.put("contactId", "http://localhost:8082/contacts/1");
-            putVars.put("memoId", "1");
-            new ActivitiSpec(activitiRule, "testSendMemo")
-                    .whenEventOccurs("", SEND_MEMO_KEY, collectVars,
+            putVars.put("distributionId", "1");
+            new ActivitiSpec(activitiRule, "testMemoDistributionToIndividuals")
+                    .whenEventOccurs("", DISTRIBUTE_MEMO_KEY, collectVars,
+                            putVars, TENANT_ID).whenExecuteJobsForTime(3000)
+                    .thenProcessIsComplete()
+                    .thenExtension(new DumpAuditTrail(activitiRule));
+
+            // TODO assert activity added
+
+            mailServer.assertEmailSend(0, true, "A test email",
+                    "<h1><b>Title</b></h1>", SYSTEM_EMAIL,
+                    Collections.singletonList(USER_EMAIL));
+            mailServer.dumpMailSent();
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
+    @org.activiti.engine.test.Deployment(resources = {
+            "processes/link/omny/mail/DistributeMemo.bpmn",
+            "processes/link/omny/custmgmt/AddActivityToContact.bpmn" }, tenantId = TENANT_ID)
+    public void testMemoDistributionToList() {
+        try {
+            Set<String> collectVars = new HashSet<String>();
+            Map<String, Object> putVars = new HashMap<String, Object>();
+            putVars.put("tenantId", TENANT_ID);
+            putVars.put("distributionId", "2");
+            new ActivitiSpec(activitiRule, "testMemoDistributionToList")
+                    .whenEventOccurs("", DISTRIBUTE_MEMO_KEY, collectVars,
                             putVars, TENANT_ID)
                     .whenExecuteJobsForTime(3000)
                     .thenProcessIsComplete()
@@ -81,8 +110,8 @@ public class SendSingleMemoTest {
 
             // TODO assert activity added
 
-            mailServer.assertEmailSend(0, true, EMAIL_SUBJECT,
-                    EMAIL_CONTENT, SYSTEM_EMAIL,
+            mailServer.assertEmailSend(0, true, "A test email",
+                    "<h1><b>Title</b></h1>", SYSTEM_EMAIL,
                     Collections.singletonList(USER_EMAIL));
             mailServer.dumpMailSent();
         } catch (Exception e) {

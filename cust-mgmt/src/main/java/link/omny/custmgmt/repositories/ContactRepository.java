@@ -60,6 +60,10 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     List<Contact> findByEmail(@Param("email") String email,
             @Param("tenantId") String tenantId);
 
+    @Query("SELECT c FROM Contact c WHERE c.tags LIKE :tag AND c.tenantId = :tenantId")
+    List<Contact> findByTag(@Param("tag") String tag,
+            @Param("tenantId") String tenantId);
+
     @Query("SELECT c.stage, COUNT(c) FROM Contact c WHERE c.tenantId = :tenantId GROUP BY c.stage")
     List<Object[]> findAllForTenantGroupByStage(
             @Param("tenantId") String tenantId);

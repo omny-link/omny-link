@@ -25,6 +25,11 @@ curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen http://local
 
 # Get 1 memo distribution
 curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen http://localhost:8082/memo-distributions/1/
+# Get memo expanding any tags to individual recipient addresses
+curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen http://localhost:8082/omny/memo-distributions/1/expandedTags
 
 # GET sales funnel 
-curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://localhost:8082/ony/analytics/funnel
+curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://localhost:8082/omny/analytics/funnel
+
+# GET contacts with a given tag
+curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://localhost:8082/omny/contacts/findByTag?tag=blue
