@@ -53,6 +53,12 @@ public class SpamMsgDetectionTest {
     }
 
     @Test
+    public void tcgIssueTest() {
+        String json = "{\"to\": {\"lat\":51.432916,\"long\":-2.190617 },\"from\": {\"lat\":51.469675,\"long\":-0.491393 }}";
+        assertTrue(!svc.isEmptyJson(json));
+    }
+
+    @Test
     @Deployment(resources = { "processes/NoOp.bpmn" }, tenantId = "carquake")
     public void issue51NoPayloadTest() {
         new ProcessInstance().setProcessEngine(activitiRule.getProcessEngine());
