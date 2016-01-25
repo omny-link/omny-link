@@ -388,10 +388,16 @@ var ractive = new AuthenticatedRactive({
       type: type,
       data: d,
       dataType: 'text',
-      success: completeHandler = function() {
+      success: function(data) {
         ractive.showMessage('Message received.');
+        if (ractive.get('message.pattern') == 'inOut' || ractive.get('message.pattern') == 'outOnly') {
+          $('#response').slideDown();
+          $('#responseBody').html(data);
+          $('#cancel').empty().append('Close');
+        } else {
+          ractive.collapseSendMessage();
+        }
         ractive.fetch();
-        ractive.collapseSendMessage();
       },
     });
   },

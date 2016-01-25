@@ -33,28 +33,34 @@
   <div id="sendMessage" style="display:none">
     <form action="/msg/{{tenant.id}}/" class="well form" id="sendMessageForm" method="post">
         <fieldset>
-          <div class="form-group">
-            <label class="" for="messageName">Message Name</label>
-            <input class="form-control" name="tenantId" id="tenantId" type="hidden" value="{{message.tenantId}}"/>
-            <input class="form-control" name="messageName" id="messageName" placeholder="{{tenant.id}}.message" value="{{message.name}}"/>
-          </div>
-          <div class="form-group">
-            <label class="" for="messagePattern">Message Exchange Pattern</label>
-            <label class="radio"><input class="" name="{{message.pattern}}" type="radio" value="inOut"> In-Out</label>
-            <label class="radio"><input class="" name="{{message.pattern}}" type="radio" checked="checked" value="inOnly"> In-Only</label>
-          </div>
-          <div class="form-group">
-            <label for="bizKey">Business Identifier</label>
-            <input class="form-control" name="bizKey" id="bizKey" placeholder="" value="{{message.bizKey}}"/>
-          </div>
-          <div class="form-group">
-            <label class="textarea" for="messageBody" style="width: 35%;">Message</label>
-            <textarea class="form-control" name="messageBody" id="messageBody" placeholder="Message payload (JSON)" style="width:60%;display: inline-block;" value="{{message.body}}"></textarea>
-          </div>
-          <div class="form-group pull-right">
-            <button class="btn btn-default" on-click="collapseSendMessage()" type="button">Cancel</button>
-            <button class="btn btn-primary" on-click="sendMessage()" type="button">Send message</button>
-          </div>
+          <ul class="form edit-form">
+            <li class="col-md-12">
+              <label class="col-md-3" for="messageName">Message Name</label>
+              <input name="tenantId" id="tenantId" type="hidden" value="{{message.tenantId}}"/>
+              <input class="form-control col-md-9" name="messageName" id="messageName" placeholder="{{tenant.id}}.message" value="{{message.name}}"/>
+            </li>
+            <li class="col-md-12">
+              <label class="col-md-3" for="bizKey">Business Identifier</label>
+              <input class="form-control col-md-9" name="bizKey" id="bizKey" placeholder="" value="{{message.bizKey}}"/>
+            </li>
+            <li class="col-md-12">
+              <label class="col-md-3" for="messagePattern">Message Exchange Pattern</label>
+              <label class="radio"><input class="" name="{{message.pattern}}" type="radio" value="inOut"> In-Out</label>
+              <label class="radio"><input class="" name="{{message.pattern}}" type="radio" checked="checked" value="inOnly"> In-Only</label>
+            </li>
+            <li class="col-md-12">
+              <label class="textarea col-md-3" for="messageBody">Message</label>
+              <textarea class="form-control col-md-9" name="messageBody" id="messageBody" placeholder="Message payload (JSON)" style="width:60%;display: inline-block;" value="{{message.body}}"></textarea>
+            </li>
+            <li class="col-md-12" style="margin-top:10px;">
+              <button class="btn btn-default pull-right" id="cancel" on-click="collapseSendMessage()" type="button">Cancel</button>
+              <button class="btn btn-primary pull-right" on-click="sendMessage()" type="button">Send message</button>
+            </li>
+          </ul>
+        </fieldset>
+        <fieldset id="response" style="display:none">
+          <legend>Response</legend>
+          <div id="responseBody"></div>
         </fieldset>
       </form>
   </div>
