@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonString;
@@ -398,18 +399,8 @@ public class MessageController {
 
             if (jsonObject instanceof JsonObject) {
                 JsonObject jo = (JsonObject) jsonObject;
-                for (Entry<String, JsonValue> jv : jo.entrySet()) {
-                    if (jv.getValue() != null) {
-                        if (jv.getValue() instanceof JsonString) {
-                            String s = jv.getValue().toString().trim();
-                            // remove leading and trailing quotes
-                            s = s.substring(1, s.length() - 1).trim();
-                            isEmpty = s.length() == 0;
-                        }
-                    }
-                    if (!isEmpty) {
-                        return isEmpty;
-                    }
+                if (!isEmpty(jo)) {
+                    return false;
                 }
             } else if (jsonObject instanceof JsonArray) {
                 JsonArray ja = (JsonArray) jsonObject;
@@ -422,6 +413,25 @@ public class MessageController {
         } finally {
             if (jsonReader != null) {
                 jsonReader.close();
+            }
+        }
+        return isEmpty;
+    }
+
+    private boolean isEmpty(JsonObject jo) {
+        boolean isEmpty = true;
+        for (Entry<String, JsonValue> jv : jo.entrySet()) {
+            if (jv.getValue() != null) {
+                if (jv.getValue() instanceof JsonString) {
+                    String s = jv.getValue().toString().trim();
+                    // remove leading and trailing quotes
+                    s = s.substring(1, s.length() - 1).trim();
+                    isEmpty = s.length() == 0;
+                } else if (jv.getValue() instanceof JsonNumber) {
+                    isEmpty = false;
+                } else if (jv.getValue() instanceof JsonObject) {
+                    return isEmpty((JsonObject) jv.getValue());
+                }
             }
         }
         return isEmpty;
