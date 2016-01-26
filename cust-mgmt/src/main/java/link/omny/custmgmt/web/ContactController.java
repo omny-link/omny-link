@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.Document;
@@ -263,7 +264,8 @@ public class ContactController {
      * Update an existing contact.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = "application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = {
+            "application/json" })
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long contactId,
             @RequestBody Contact updatedContact) {
@@ -272,6 +274,17 @@ public class ContactController {
         BeanUtils.copyProperties(updatedContact, contact, "id");
         contact.setTenantId(tenantId);
         contactRepo.save(contact);
+
+        // For some reason contact never has account deserialised even though it
+        // is sent by browser
+        if (updatedContact.getAccount() != null) {
+            Account account = accountRepo.findOne(updatedContact.getAccount()
+                    .getId());
+            BeanUtils
+                    .copyProperties(updatedContact.getAccount(), account, "id");
+            account.setTenantId(tenantId);
+            accountRepo.save(account);
+        }
     }
 
     /**

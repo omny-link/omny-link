@@ -8,14 +8,21 @@ import link.omny.custmgmt.repositories.AccountRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,7 +41,7 @@ public class AccountController {
             .getLogger(AccountController.class);
 
     @Autowired
-    private AccountRepository repo;
+    private AccountRepository accountRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -67,9 +74,44 @@ public class AccountController {
             account.setTenantId(tenantId);
         }
 
-        Iterable<Account> result = repo.save(list);
+        Iterable<Account> result = accountRepo.save(list);
         LOGGER.info("  saved.");
 
         return result;
     }
+
+    /**
+     * Create a new contact.
+     * 
+     * @return
+     */
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public @ResponseBody ResponseEntity<?> create(
+            @PathVariable("tenantId") String tenantId,
+            @RequestBody Account account, UriComponentsBuilder builder) {
+        account.setTenantId(tenantId);
+        accountRepo.save(account);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(builder.path("/contacts/{id}")
+                .buildAndExpand(account.getId()).toUri());
+        return new ResponseEntity(headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Update an existing account.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = "application/json")
+    public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long accountId,
+            @RequestBody Account updatedAccount) {
+        Account account = accountRepo.findOne(accountId);
+
+        BeanUtils.copyProperties(updatedAccount, account, "id");
+        account.setTenantId(tenantId);
+        accountRepo.save(account);
+    }
 }
+
