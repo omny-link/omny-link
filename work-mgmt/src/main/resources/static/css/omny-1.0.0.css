@@ -432,6 +432,10 @@ h2.form.create-form {
 .form textarea {
   width: 80%;	
 }
+ul.form,
+.form ul {
+	padding-left: 0px;
+}
 a.glyphicon-remove {
   padding: 4px 6px;
 }

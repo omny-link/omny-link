@@ -20,13 +20,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
+import link.omny.custmgmt.json.JsonCustomAccountFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -97,14 +95,14 @@ public class Account implements Serializable {
     /**
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(style = "M-")
+    // Since this is SQL 92 it should be portable
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
     private Date firstContact;
 
     /**
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(style = "M-")
     @JsonProperty
     private Date lastUpdated;
 
@@ -115,7 +113,7 @@ public class Account implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     // , mappedBy = "account", targetEntity = CustomAccountField.class)
-    @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
+    @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomAccountField> customFields;
 
