@@ -274,21 +274,20 @@ var ractive = new AuthenticatedRactive({
   save: function () {
     console.log('save contact: '+ractive.get('current').lastName+'...');
     ractive.set('saveObserver',false);
-    var id = ractive.get('current')._links === undefined ? undefined : (
-        ractive.stripProjection(ractive.get('current')._links.self.href)
-    );
+    var id = ractive.getId(ractive.get('current'));
     if (document.getElementById('currentForm')==undefined) { 
       console.debug('still loading, safe to ignore');
     } else if (document.getElementById('currentForm').checkValidity()) {
       // cannot save contact and account in one (grrhh), this will clone...
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       //console.log('account: '+JSON.stringify(tmp.account));
-      tmp.notes = undefined;
-      tmp.documents = undefined;
+      delete tmp.notes;
+      delete tmp.documents;
       if (id != undefined && tmp.account != undefined && Object.keys(tmp.account).length > 0 && tmp.account.id != undefined) {
         tmp.account = id.substring(0,id.indexOf('/',8))+'/accounts/'+tmp.account.id;  
       } else {
-        tmp.account = null;
+        delete tmp.account;
+        delete tmp.accountId;
       }       
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save contact'+JSON.stringify(tmp)+' ...');
@@ -325,14 +324,16 @@ var ractive = new AuthenticatedRactive({
     if (ractive.get('current.account')==undefined) return;
     console.log('saveAccount '+ractive.get('current.account').name+' ...');
     if (ractive.get('current.account') == undefined) ractive.set('current.account',{});
-    var id = ractive.get('current.account.id');
+    var id = ractive.get('current.accountId');
+    console.log(' id: '+id);
     ractive.set('saveObserver',false);
     ractive.set('current.account.tenantId',ractive.get('tenant.id'));
+    if (ractive.get('current.account.companyNumber')=='') ractive.set('current.account.companyNumber',undefined); 
     ractive.set('saveObserver',true);
     if ($('#currentAccountForm:visible').length!=0 && document.getElementById('currentAccountForm').checkValidity()) { 
       $.ajax({
-        url: ractive.getServer()+(id === undefined ? '/accounts' : '/accounts/'+id),
-        type: id === undefined ? 'POST' : 'PUT',
+        url: id == undefined ? ractive.getServer()+'/'+ractive.get('tenant.id')+'/accounts/' : ractive.get('tenant.id')+'/accounts/'+id,
+        type: id == undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(ractive.get('current.account')),
         success: completeHandler = function(data, textStatus, jqXHR) {
@@ -349,20 +350,16 @@ var ractive = new AuthenticatedRactive({
               data: location,
               success: completeHandler = function(data, textStatus, jqXHR) {
                 console.log('linked account: '+location+' to '+contactAccountLink);
+                ractive.get('contacts').push(ractive.get('current'));
                 ractive.showMessage('Account saved');
-              },
-              error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-                  ractive.handleError(jqXHR,textStatus,errorThrown);
               }
             });
+          } else if (jqXHR.status == 204) {
+            ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
+            ractive.showMessage('Account updated');
           }
-          if (jqXHR.status == 201) ractive.get('contacts').push(ractive.get('current'));
-          if (jqXHR.status == 204) ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
           //ractive.get('contacts')[ractive.get('currentIdx')].lastUpdated=new Date().toISOString();
           //ractive.sortContacts();
-        },
-        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-            ractive.handleError(jqXHR,textStatus,errorThrown);
         }
       });
     } else if ($('#currentAccountForm:visible').length!=0) {

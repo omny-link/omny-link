@@ -76,6 +76,8 @@ public interface ContactCompleteProjection {
 
     Account getAccount();
 
+    Long getAccountId();
+
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     List<CustomContactField> getCustomFields();
