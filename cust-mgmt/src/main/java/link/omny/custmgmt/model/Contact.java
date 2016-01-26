@@ -260,8 +260,15 @@ public class Contact implements Serializable {
     // does not support them
     // at
     // com.fasterxml.jackson.databind.JsonDeserializer.findBackReference(JsonDeserializer.java:310)
-    // @JsonManagedReference
+    //@JsonManagedReference
     private Account account;
+
+    @JsonProperty
+    private transient Long accountId;
+
+    public Long getAccountId() {
+        return getAccount() == null ? null : getAccount().getId();
+    }
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     // @JsonManagedReference
@@ -275,7 +282,6 @@ public class Contact implements Serializable {
 
     @Transient
     private Date now;
-
 
     public Contact(String firstName, String lastName, String email,
             String tenantId) {
