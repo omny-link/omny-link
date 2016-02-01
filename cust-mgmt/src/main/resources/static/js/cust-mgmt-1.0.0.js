@@ -60,10 +60,13 @@ var ractive = new AuthenticatedRactive({
       });
       return html;
     },
+    gravatar: function(email) {
+      if (email == undefined) return '';
+      return '<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
+    },
     hash: function(email) {
       if (email == undefined) return '';
-      //console.log('hash '+email+' = '+ractive.hash(email));
-      return '<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
+      return ractive.hash(email);
     },
     haveStageReasons() {
       console.info('haveStageReasons?');
