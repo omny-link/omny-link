@@ -11,6 +11,7 @@
     
     {{#current.id}}
       <h2 class="form edit-form">
+        <img class="img-rounded" src="//www.gravatar.com/avatar/{{hash(current.email)}}?d=blank&s=36" style="margin-top:-10px"/>
         <span contenteditable id="curTitle2" on-focus="editField('#curTitle2','current.title')" on-blur="updateField('#curTitle2','current.title')">{{current.title}}</span>
         <span contenteditable id="curFirstName2" on-focus="editField('#curFirstName2','current.firstName')" on-blur="updateField('#curFirstName2','current.firstName')">{{current.firstName}}</span>
         <span contenteditable id="curLastName2" on-focus="editField('#curLastName2','current.lastName')" on-blur="updateField('#curLastName2','current.lastName')">{{current.lastName}}</span>
@@ -286,7 +287,7 @@
       {{#each current.notes:j}}
         <tr>
           <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
-          <td class="field-author">{{{hash(author)}}}</td>
+          <td class="field-author">{{{gravatar(author)}}}</td>
           <td class="field-text">{{{content}}}</td>
         </tr>
       {{/each}}
