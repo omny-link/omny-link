@@ -65,7 +65,9 @@ a.glyphicon:focus,
     color: #d71921;
 }
 .omny-bar li span.glyphicon.active {
-    color: #fcf8e3;
-    background-color: #d71921;
+  color: #fcf8e3;
+  background-color: #d71921;
 }
- 
+.omny-bar li span:not(.active) {
+  border-bottom-color: #d71921;
+}
