@@ -75,6 +75,10 @@ textarea ~ .field-hint {
   line-height: 0em;
 }
 
+input[type='checkbox'] ~ .help-block {
+	margin-top: -1em;
+}
+
 input:focus:invalid ~ .field-hint,
 select:focus:invalid ~ .field-hint,
 textarea:focus:invalid ~ .field-hint {
@@ -428,6 +432,9 @@ h2.form.create-form {
   float: right;
   left: -30px;
   position: relative;
+}
+.form .tagit input {
+	font-size: 0.85em;
 }
 .form textarea {
   width: 80%;	
