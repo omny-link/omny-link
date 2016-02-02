@@ -60,6 +60,10 @@ a.glyphicon:focus, a.glyphicon:hover, h2 a.glyphicon:focus, h2 a.glyphicon:hover
   height: 53px;
   width: 157px;	
 }
+.powered-by {
+  left: -30px;
+  top: 305px;
+}
 /* END BOOTSTRAP OVERRIDES */
 
 .omny-bar {
@@ -68,6 +72,13 @@ a.glyphicon:focus, a.glyphicon:hover, h2 a.glyphicon:focus, h2 a.glyphicon:hover
 }
 .omny-bar li span {
   border-bottom: solid 1px #D33E62;
+}
+.omny-bar li span:not(.active) {
+  border-bottom-color: #D33E62;
+}
+.omny-bar li span.glyphicon.active {
+  color: #efefef;
+  background-color: #D33E62;
 }
 .replaceable {
 	color: #efefef;
