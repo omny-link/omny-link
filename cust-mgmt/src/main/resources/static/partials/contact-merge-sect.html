@@ -1,0 +1,66 @@
+<style>
+  table {
+    width: 100%;
+  }
+  td { 
+    padding: 2px;
+  }
+</style>
+<div class="modal fade" id="mergeModal" tabindex="-1" role="dialog" aria-labelledby="mergeModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="mergeModalLabel">Merge Contacts</h4>
+      </div>
+      <div class="modal-body">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Contact 1</th>
+              <th>Contact 2</th>
+              <th>Merged Contact</th>
+            </tr>
+          <thead>
+          <tbody>
+            <tr>
+              <td><label class=" required">First Name:</label>
+              <td><input class="form-control" id="curFirstName1" required type="email" value="{{contact1.firstName}}">
+              <td><input class="form-control" id="curFirstName2" required type="email" value="{{contact2.firstName}}">
+              <td><input class="form-control" id="curFirstNameMerged" required type="email" value="{{mergedContact.firstName}}">
+            </tr>
+            <tr>
+              <td><label class=" required">Last Name:</label>
+              <td><input class="form-control" id="curLastName1" required type="email" value="{{contact1.lastName}}">
+              <td><input class="form-control" id="curLastName2" required type="email" value="{{contact2.lastName}}">
+              <td><input class="form-control" id="curLastNameMerged" required type="email" value="{{mergedContact.lastName}}">
+            </tr>
+            <tr>
+              <td><label class=" required">Email:</label>
+              <td><input class="form-control" id="curEmail" required type="email" value="{{contact1.email}}">
+              <td><input class="form-control" id="curEmail" required type="email" value="{{contact2.email}}">
+              <td><input class="form-control" id="curEmail" required type="email" value="{{mergedContact.email}}">
+            </tr>
+            <tr>
+              <td><label class="">Confirmed?:</label>
+              <td><input class="" id="curEmailConfirmed" type="checkbox" checked="{{contact1.emailConfirmed}}">
+              <td><input class="" id="curEmailConfirmed" type="checkbox" checked="{{contact2.emailConfirmed}}">
+              <td><input class="" id="curEmailConfirmed" type="checkbox" checked="{{mergedContact.emailConfirmed}}">
+            </tr>
+            <tr>
+              <td><label class="">Preferred Phone:</label>
+              <td><input class="form-control" id="curPhone1" value="{{contact1.phone1}}">
+              <td><input class="form-control" id="curPhone1" value="{{contact2.phone1}}">
+              <td><input class="form-control" id="curPhone1" value="{{mergedContact.phone1}}">
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer" style="clear:both;">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>

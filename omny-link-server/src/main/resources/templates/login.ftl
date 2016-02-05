@@ -60,7 +60,7 @@
 
   <script id='template' type='text/ractive'>
       <!--h2>Login with Username and Password</h2-->
-      <form name="loginForm" action="/login" method="POST">
+      <form id="loginForm" name="loginForm" action="/login" method="POST">
         <fieldset>
           <input type="text" id="username" name="username" placeholder="Username" required/>
           <input type="password" id="password" name="password" placeholder="Password" required/>

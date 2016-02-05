@@ -59,13 +59,27 @@ var ractive = new AuthenticatedRactive({
       console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
+    help: '<p>The distribution centre allows you to manage notifications across organisations and confirm they are acknowledged.</p>\
+      <h2>How can we help you today?</h2>\
+      <p>Common questions that people have include:\
+      <ul>\
+        <li>\
+          <h3 id="reuseDistribution">How can I use a previous distribution notification again?</h3>\
+          <p>In the list of distributions click <span class="glyphicon glyphicon-copy"></span> to duplicate an existing distribution notification</p>\
+        </li>\
+        <li>\
+          <h3 id="acknowledgements">How can I monitor acknowledgments of distribution notifications?</h3>\
+          <p>Once the distribution notification has been sent, a list of Activities will appear below the Distribution showing the individuals that have been contacted and whether they have each acknowledged the distribution or not.</p>\
+        </li>\
+        <li>...</li>\
+      </ul>';
     matchFilter: function(obj) {
       if (ractive.get('filter')==undefined) return true;
       else return ractive.get('filter').value.toLowerCase()==obj[ractive.get('filter').field].toLowerCase();
     },
     saveObserver: false,
     stdPartials: [
-      { "name": "helpModal", "url": "/partials/memo-dist-help-modal.html"},
+      { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},

@@ -1,6 +1,6 @@
 { 
   "id": "omny", 
-  "show": { "account":true, "activityAnalysis":true, "budget":true, "marketing":true, "companyBackground":false },
+  "show": { "account":true, "activityAnalysis":true, "budget":true, "companyBackground":false, "marketing":true, "merge":true },
   "contactFields": [ 
     { "label": "Job Title", "key": "jobTitle"},
     { "label": "Next Steps", "key": "nextSteps"},

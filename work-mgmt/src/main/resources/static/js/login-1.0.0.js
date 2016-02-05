@@ -254,6 +254,18 @@ var AuthenticatedRactive = Ractive.extend({
   }
 });
 
+$( document ).bind('keypress', function(e) {
+  switch (e.keyCode) {
+  case 13: // Enter
+    break; 
+  case 63:   // ?
+    console.log('help requested');
+    $('#helpModal').modal({});
+    break;
+  }
+});
+
+
 // TODO remove the redundancy of having this in AuthenticatedRactive and here
 function getCookie(name) {
   //console.log('getCookie: '+name)
