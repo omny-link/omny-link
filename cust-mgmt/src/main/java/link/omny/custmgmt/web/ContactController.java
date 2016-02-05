@@ -488,10 +488,13 @@ public class ContactController {
         private String selfRef;
         private String firstName;
         private String lastName;
+        private String fullName;
         private String town;
         private String countyOrCity;
         private String country;
         private String email;
+        private String phone1;
+        private String phone2;
         private String accountName;
         private String owner;
         private String stage;

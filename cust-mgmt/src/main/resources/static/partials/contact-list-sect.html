@@ -11,19 +11,19 @@
         <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
       </a>
       <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
-        <li on-click="filter()">Show All</li>
-        <li on-click="filter({field: 'stage', operator: '!in', value: 'Cold,Complete'})">Show Active</li>
+        <li on-click="filter:{idx:1}">Show All</li>
+        <li on-click="filter:{idx:2,field: 'stage', operator: '!in', value: 'Cold,Complete'}">Show Active</li>
         <li class="divider"></li>
-        {{#stages}}
-          <li onclick="ractive.filter({field: 'stage', value: '{{id}}'})">{{name}}</li>
+        {{#stages:i}}
+          <li on-click="filter:{idx:{{4+i}},field: 'stage', value: '{{id}}'}">{{name}}</li>
         {{/stages}}
         <li class="divider"></li>
-        {{#enquiryTypes}}
-          <li onclick="ractive.filter({field: 'enquiryType', value: '{{id}}'})">{{name}}</li>
+        {{#enquiryTypes:j}}
+          <li on-click="filter:{idx:{{4+stages.length+j}},field: 'enquiryType', value: '{{id}}'}">{{name}}</li>
         {{/}}
         <li class="divider"></li>
-        {{#accountTypes}}
-          <li onclick="ractive.filter({field: 'accountType', value: '{{id}}'})">{{name}}</li>
+        {{#accountTypes:k}}
+          <li on-click="filter:{idx:{{4+stages.length+enquiryTypes.length+k}},field: 'accountType', value: '{{id}}'}">{{name}}</li>
         {{/accountTypes}}
       </ul>
     </a>
@@ -39,37 +39,44 @@
       </select>
     </form>
   </h2>
-  <table id="contactsTable" class="table table-striped">
+  <table id="contactsTable" class="contacts table table-striped">
     <thead>
       <tr>
         <th></th>
-        <th>Full Name</th>
-        {{#tenant.show.account}}<th>Business Name</th>{{/}}
-        <th>Stage</th>
-        <th>Enquiry Type</th>
-        <th>Owned by</th>
-        <th>First Contact</th>
-        <th>Last Updated</th>
+        {{#tenant.show.merge}}
+          <th><input class="checkbox" type="checkbox"/></th>
+        {{/}}
+        <th on-click="sort:fullName">Full Name<span class="sortable {{ sorted('fullName') }} glyphicon "></th>
+        {{#tenant.show.account}}<th on-click="sort:accountName">Business Name<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
+        <th on-click="sort:stage">Stage<span class="sortable {{ sorted('stage') }} glyphicon"></th>
+        <th on-click="sort:enquiryType">Enquiry Type<span class="sortable {{ sorted('enquiryType') }} glyphicon"></th>
+        <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon"></th>
+        <th on-click="sort:firstContact">First Contact<span class="sortable {{ sorted('firstContact') }} glyphicon"></th>
+        <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
         <th>Tags</th>
         <th class="col-actions">Actions</th>
       </tr>
     </thead>
     <tbody>
-    {{#each contacts:i}}
+    {{#each sort(contacts,sortColumn,sortAsc):i}}
       {{# matchSearch(this) && matchFilter(this) }}
-          <tr data-href="{{links[rel=='self'].href}}" on-click="edit(this)">
-            <td>{{i+1}}</td>
-            <td>{{firstName}} {{lastName}}</td>
-            {{#tenant.show.account}}
-              <td>{{account == undefined ? accountName : account.name}}</td>
+          <tr data-href="{{selfRef}}">
+            <td on-click="edit(this)">{{i+1}}</td>
+            {{#tenant.show.merge}}
+              <td><input class="checkbox" type="checkbox" on-change="selectMultiple(this)"/></td>
             {{/}}
-            <td>{{stage}}</td>
-            <td>{{enquiryType}}</td>
-            <td>{{{gravatar(owner)}}}</td>
-            <td>{{formatDate(firstContact)}}</td>
-            <td>{{formatDate(lastUpdated)}}</td>
-            <td>{{{formatTags(tags)}}}</td>
+            <td on-click="edit(this)">{{fullName}}</td>
+            {{#tenant.show.account}}
+              <td on-click="edit(this)">{{account == undefined ? accountName : account.name}}</td>
+            {{/}}
+            <td on-click="edit(this)">{{stage}}</td>
+            <td on-click="edit(this)">{{enquiryType}}</td>
+            <td on-click="edit(this)">{{{gravatar(owner)}}}</td>
+            <td on-click="edit(this)">{{formatDate(firstContact)}}</td>
+            <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
+            <td on-click="edit(this)">{{{formatTags(tags)}}}</td>
             <td class="col-actions">
+              <a class="clickable glyphicon glyphicon-transfer" aria-hidden="true" on-click="mergeContacts(this)" style="display:none;" title="Merge two records"></a>
               <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
               <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this contact"></a>
             </td>

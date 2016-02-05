@@ -30,7 +30,6 @@ body {
   color: #646669;
   font-family: Roboto/*CalibriRegular*/;
   font-size: 16px;
-  line-height: 2.5em;
 }
 h1 { 
 	color: #0e9acd;
@@ -271,6 +270,17 @@ h2 a.glyphicon:hover {
   color: #ff6c06;
   /*color: #646669;*/
 }
+.sort-asc,
+.sort-desc {
+  border: none;
+  font-size: .7em;	
+}
+.sort-asc::after {
+  content: '\e253';
+}
+.sort-desc::after {
+  content: '\e252';
+}
 .help-block { 
   font-size: 0.65em;
   font-style: italic;
@@ -342,6 +352,12 @@ h2 a.glyphicon:hover {
 	height: 25px;
 	padding-left: 10px;
 }
+.omny-dropdown.dropdown-menu li.selected::after {
+    content: "\e013";
+    font-family: 'Glyphicons Halflings';
+    float: right;
+    margin-right: 10px;
+}
 .omny-dropdown.dropdown-menu li.divider {
   background-color: #ff6c06;
 	height: 1px;
@@ -361,6 +377,11 @@ h2 a.glyphicon:hover {
 	list-style: none;
   /*padding-top: 20px;
   margin-bottom: -30px;*/
+}
+.form,
+#loginForm,
+#messages {
+  line-height: 2.5em;
 }
 form#upload {
 	min-width: 263px;
@@ -490,6 +511,13 @@ a.glyphicon-remove {
 }
 #messages.text-danger { 
   font-style: italic;
+}
+
+/* MODALS */
+
+.modal-dialog { 
+	width: 80%;
+	height: 80%;
 }
 
 /* ICONS */ 
