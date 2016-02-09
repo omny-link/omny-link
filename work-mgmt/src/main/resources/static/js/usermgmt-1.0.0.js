@@ -128,9 +128,6 @@ var ractive = new AuthenticatedRactive({
         ractive.showMessage('User has been saved successfully');
         ractive.fetch();
         setTimeout(function() { $('#currentSect').slideUp(); }, EASING_DURATION*4);
-      },
-      error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-        ractive.showError("Bother: "+textStatus+':'+errorThrown);
       }
     });
   },
@@ -148,6 +145,25 @@ var ractive = new AuthenticatedRactive({
     console.log('toggleResults');
     $('#usersTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
     $('#usersTable').slideToggle();
+  },
+  updatePassword: function () {
+    console.log('updatePassword '+ractive.get('current')+' ...');
+    if (!document.getElementById('userPwdForm').checkValidity()) { 
+      ractive.showFormError('userForm','Please correct the highlighted fields');
+      return ;
+    }
+    
+    $.ajax({
+      url: '/users/'+ractive.get('current.id')+'/reset-password',
+      type: 'POST',
+      data: { password: $('#curPassword').val(), password2:$('#curPassword2').val() },
+      success: completeHandler = function(data) {
+        console.log('data: '+ data);
+        ractive.showMessage('User password has been updated');
+        ractive.fetch();
+        setTimeout(function() { $('#currentSect').slideUp(); }, EASING_DURATION*4);
+      }
+    });
   }
 });
 
