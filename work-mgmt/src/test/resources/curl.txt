@@ -22,6 +22,12 @@ curl -X POST -u tstephen:tstephen -H "Accept:application/json" -v \
 curl -X DELETE -u tstephen:tstephen -H "Accept:application/json" -v \
     http://localhost:8082/firmgains/process-instances/163279
 
-# Reset Password
+# archive (to file) process instances
 curl -X GET -u tstephen:tstephen -H "Accept:application/json" -v \
-    http://localhost:8082/users/phoward/reset-password
+    http://localhost:8082/operations/carquake/archive
+ 
+# Reset Password
+ curl -X POST -u tstephen:tstephen -H "Accept:application/json" -v \
+   -d'password=foo' -d'password2=foo' \
+   http://localhost:8083/users/jdoe/reset-password
+ 

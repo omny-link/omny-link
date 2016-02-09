@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.knowprocess.bpm.model.UserGroup;
@@ -165,6 +166,23 @@ public class UserRecordController {
                     userRecord.getTenant());
         }
         return new UserRecord(user);
+    }
+
+    @RequestMapping(value = "/{id}/reset-password", method = RequestMethod.POST, headers = "Accept=application/json")
+    public @ResponseBody void updatePassword(
+            @PathVariable("id") String id,
+            @RequestParam(name = "password") String pwd,
+            @RequestParam(name = "password2") String pwd2) {
+        LOGGER.info(String.format("Updating password of %1$s", id));
+
+        if (!pwd.equals(pwd2)) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        IdentityService idSvc = processEngine.getIdentityService();
+        User user = idSvc.createUserQuery().userId(id).singleResult();
+        user.setPassword(pwd);
+        idSvc.saveUser(user);
     }
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
