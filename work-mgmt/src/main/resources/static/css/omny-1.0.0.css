@@ -264,6 +264,8 @@ h2 a.glyphicon:visited {
   color: #949699;
   text-decoration: none;
 }
+.clickable:focus,
+.clickable:hover,
 a.glyphicon:focus,
 a.glyphicon:hover,
 h2 a.glyphicon:focus,
@@ -340,8 +342,10 @@ h2 a.glyphicon:hover {
 }
 /* END BOOTSTRAP OVERRIDES */
 
+.clickable:active,
+.clickable:focus,
 .clickable:hover {
-	cursor: pointer; 
+	cursor: pointer;
 }
 .currentBody { 
 	margin-top: 10px;
@@ -354,10 +358,10 @@ h2 a.glyphicon:hover {
 	padding-left: 10px;
 }
 .omny-dropdown.dropdown-menu li.selected::after {
-    content: "\e013";
-    font-family: 'Glyphicons Halflings';
-    float: right;
-    margin-right: 10px;
+  content: "\e013";
+  font-family: 'Glyphicons Halflings';
+  float: right;
+  margin-right: 10px;
 }
 .omny-dropdown.dropdown-menu li.divider {
   background-color: #ff6c06;
