@@ -72,7 +72,7 @@ var ractive = new AuthenticatedRactive({
           <p>Once the distribution notification has been sent, a list of Activities will appear below the Distribution showing the individuals that have been contacted and whether they have each acknowledged the distribution or not.</p>\
         </li>\
         <li>...</li>\
-      </ul>';
+      </ul>',
     matchFilter: function(obj) {
       if (ractive.get('filter')==undefined) return true;
       else return ractive.get('filter').value.toLowerCase()==obj[ractive.get('filter').field].toLowerCase();
