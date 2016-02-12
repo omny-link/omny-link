@@ -90,6 +90,8 @@ h2 a.glyphicon:visited {
   color: #55A4D8;
   text-decoration: none;
 }
+.clickable:focus,
+.clickable:hover,
 a.glyphicon:focus,
 a.glyphicon:hover,
 h2 a.glyphicon:focus,
