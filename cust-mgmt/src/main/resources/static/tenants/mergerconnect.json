@@ -1,6 +1,6 @@
 { 
   "id": "mergerconnect",
-  "show": { "account":true, "budget":true, "marketing":true },
+  "show": { "account":true, "budget":true, "companyBackground": true, "marketing":true },
   "analytics": {
     "funnel": {
       "stage1": "Enquiry",
