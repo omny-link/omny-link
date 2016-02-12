@@ -177,6 +177,7 @@ var ractive = new AuthenticatedRactive({
     $('.create-form,create-field').show();
     var contact = { account: {}, author:ractive.get('username'), tenantId: ractive.get('tenant.id'), url: undefined };
     ractive.select( contact );
+    ractive.initTags();
   },
   addDoc: function (contact) {
     console.log('addDoc '+contact+' ...');
