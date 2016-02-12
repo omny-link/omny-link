@@ -52,7 +52,7 @@ img.entity-context {
   width: 90%;	
 }
 input,select,textarea { 
-	border-color: rgb(204,204,204);
+	border-color: #ccc;
 	padding: 0 10px 0 10px;
 }
 input.field-error:invalid,
@@ -394,8 +394,9 @@ form#upload {
   display:inline-block;
   /*top: -25px*/
 }
+.form-inline label,
 .form label {
-	padding-right: 10px;
+  padding-right: 10px;
   text-align: right;
 }
 .form .col-md-6 label {
