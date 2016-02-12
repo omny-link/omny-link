@@ -23,6 +23,43 @@ Roadmap
      
 Releases
 --------
+1.0.0 beta 9 - 12 Feb 2016
+
+    #108 New section embedding Companies House data
+    enhancement Firm Gains Stephen
+
+    #106 Display contextual help
+    enhancement Dorset
+
+    #105 Switch FG to non-blocky headings as other designs have
+    Firm Gains John
+
+    #104 Hint text following checkboxes is too far from checkbox
+    Firm Gains Gardenatics Omny Link John
+
+    #100 Telephone field validation
+    bug enhancement Firm Gains Gardenatics Omny Link John
+
+    #99 Revised Account types
+    Firm Gains John
+
+    #98 Open contact address in Google maps
+    enhancement Dorset
+
+    #94 Problems saving Accounts CLOSED
+    confirmed Firm Gains Stephen
+
+    #93 RSS feed for tasks CLOSED
+    enhancement
+
+    #92 colour code work mgmt list CLOSED
+    enhancement Gardenatics John
+
+    #86 upgrade to ractive webjar 0.7.3
+    bug confirmed
+
+#84 Enhanced search functionality
+updated 7 days ago enhancement contact Stephen
 
 1.0.0 beta 7 - 23rd Nov 2015
 
