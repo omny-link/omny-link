@@ -48,10 +48,11 @@
     { "label": "Placed with Partner", "key": "placedWithPartner"}
   ],
   "customerActions": [
-    { "label": "Send email (legacy)", "key": "SendContactEmail", "form": "/partials/firmgains/PickMail.html" },
     { "label": "Send email", "key": "SendMemo", "form": true  },
     { "label": "Recommend follow up (no mail sent)", "key": "RecommendFollowUp" },
-    { "label": "Run email follow up", "key": "FollowUpOneContact" }
+    { "label": "Run email follow up", "key": "FollowUpOneContact" },
+    { "key": "divider" },
+    { "label": "Send email (legacy)", "key": "SendContactEmail", "form": "/partials/firmgains/PickMail.html" }
   ],
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },

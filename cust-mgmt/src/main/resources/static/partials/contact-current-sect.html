@@ -38,7 +38,11 @@
               </a>
               <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
                 {{#each tenant.customerActions }}
-                  <li onclick="ractive.startCustomAction('{{key}}', '{{label}}', ractive.get('current'){{#form}}, '{{form}}'{{/form}})">{{label}}</li>
+                  {{#label}}
+                    <li onclick="ractive.startCustomAction('{{key}}', '{{label}}', ractive.get('current'){{#form}}, '{{form}}'{{/form}})">{{label}}</li>
+                  {{else}}
+                    <li class="divider"></li>
+                  {{/}}
                 {{/each}}
               </ul>
             </span>
