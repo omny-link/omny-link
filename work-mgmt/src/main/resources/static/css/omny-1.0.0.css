@@ -52,6 +52,7 @@ img.entity-context {
   width: 90%;	
 }
 input,select,textarea { 
+	border-color: rgb(204,204,204);
 	padding: 0 10px 0 10px;
 }
 input.field-error:invalid,
@@ -518,6 +519,15 @@ a.glyphicon-remove {
 .modal-dialog { 
 	width: 80%;
 	height: 80%;
+}
+
+/* COMPANIES HOUSE */
+
+#fhTable th:nth-child(1) {
+  width: 100px;
+}
+#fhTable th:nth-child(4) {
+  width: 150px;
 }
 
 /* ICONS */ 

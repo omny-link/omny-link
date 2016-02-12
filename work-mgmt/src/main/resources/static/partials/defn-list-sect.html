@@ -8,13 +8,13 @@
     <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
   </h2>
   <div id="upload" style="display:none">
-    <form action="/{{tenant.id}}/deployments" class="well form-inline" enctype="multipart/form-data" id="uploadForm" method="post">
+    <form action="/{{tenant.id}}/deployments" class="well form form-inline" enctype="multipart/form-data" id="uploadForm" method="post">
         <fieldset>
           <div class="form-group">
             <label for="deploymentName">Deployment Name</label>
             <input id="resourceFile" multiple="multiple" name="resourceFile" style="display: none" type="file">
             <input name="tenantId" id="tenantId" type="hidden" value="{{tenant.id}}">
-            <input name="deploymentName" id="deploymentName" placeholder="my process application">
+            <input class="form-control" name="deploymentName" id="deploymentName" placeholder="my process application">
             <button class="btn btn-primary" on-click="addDeploymentResource()" type="button">Select Files</button>
           </div>
           <div class="pull-right">
