@@ -104,13 +104,13 @@ public class Contact implements Serializable {
 
     /**
      */
-    @Pattern(regexp = "\\+?[0-9, ]{0,15}")
+    @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
     @JsonProperty
     private String phone1;
 
     /**
      */
-    @Pattern(regexp = "\\+?[0-9, ]{0,15}")
+    @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
     @JsonProperty
     private String phone2;
 
