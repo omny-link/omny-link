@@ -3,12 +3,11 @@
   "show": { "account":true },
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
-    { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "title": "Events Stream" },    
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }
   ],
   "partials": [
-    { "name": "tcgContactExtension", "url": "/partials/omnyContactExtension.html"},
-    { "name": "tcgAccountExtension", "url": "/partials/accountExtension.html"}
+    { "name": "tcgContactExtension", "url": "/partials/contact-extension.html"},
+    { "name": "tcgAccountExtension", "url": "/partials/account-extension.html"}
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},

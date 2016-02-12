@@ -12,7 +12,7 @@
   "contactFields": [ ],
   "customerActions": [
     { "label": "Send email", "key": "SendMemo", "form": true  },
-    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" }    
+    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/add-reminder.html" }    
   ],
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
