@@ -6,11 +6,11 @@
         <input class="create-field form-control col-xs-2" id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/>
         <input class="create-field form-control col-xs-2" id="curLastName" placeholder="Last Name" required value="{{current.lastName}}"/>
       </div>
-      <h2 class="form create-form" style="">&nbsp;</h2>
+      <h2 class="create-form" style="">&nbsp;</h2>
     {{/}}
     
     {{#current.id}}
-      <h2 class="form edit-form">
+      <h2 class="edit-form">
         <img class="img-rounded" src="//www.gravatar.com/avatar/{{hash(current.email)}}?d=blank&s=36" style="margin-top:-10px"/>
         <span contenteditable id="curTitle2" on-focus="editField('#curTitle2','current.title')" on-blur="updateField('#curTitle2','current.title')">{{current.title}}</span>
         <span contenteditable id="curFirstName2" on-focus="editField('#curFirstName2','current.firstName')" on-blur="updateField('#curFirstName2','current.firstName')">{{current.firstName}}</span>
@@ -67,9 +67,9 @@
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This will be checked if the user has opted-out of / unsubscribed from marketing emails</p>
         </li>
         <li>
-          <label class="">Preferred Phone:</label><input class="form-control" id="curPhone1" value="{{current.phone1}}"></li>
+          <label class="">Preferred Phone:</label><input class="form-control" id="curPhone1" pattern="\+?[0-9, \-()]{0,15}" value="{{current.phone1}}"></li>
         <li>
-          <label class="">Alternate Phone:</label><input class="form-control" id="curPhone2" value="{{current.phone2}}"></li>
+          <label class="">Alternate Phone:</label><input class="form-control" id="curPhone2" pattern="\+?[0-9, \-()]{0,15}" value="{{current.phone2}}"></li>
         <li>
           <label class="">Do Not Call:</label><input class="" id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}"></li>
         <li>
@@ -159,7 +159,7 @@
     <form id="currentAccountForm">
       <div id="currentAccount" style="clear: both">
 
-        <h2 class="form">Account</h2>
+        <h2>Account</h2>
 
         <div class="currentBody col-md-6 col-sm-12 col-xs-12">
           <ul class="form edit-form">
@@ -176,7 +176,7 @@
         <div class="currentBody col-md-6 col-sm-12 col-xs-12">
           <ul class="form edit-form">
             <li class="form-group"><label class="col-md-4">Company Number:</label><input autocomplete="off" class="typeahead form-control" id="curCompanyNumber" pattern="[0-9]{8}" placeholder="Start typing to filter options" type="text" value="{{current.account.companyNumber}}"></li>
-            {{#current.account.companyNumber}}
+            {{# false && current.account.companyNumber}}
               <li class="form-group"><label class="col-md-4"></label><a href="https://beta.companieshouse.gov.uk/company/{{current.account.companyNumber}}" target="_newTab">View Companies House Information</a></li>
             {{/}}
             <li class="form-group">
@@ -195,7 +195,7 @@
           </ul>
         </div>
       </div>
-
+      
       <div id="currentAccountDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12">
           <ul class="form edit-form">
             <li class="form-group"><label class="textarea col-md-2">Description:</label><textarea class="" id="curDescription" cols="80" value="{{current.account.description}}"></textarea></li>

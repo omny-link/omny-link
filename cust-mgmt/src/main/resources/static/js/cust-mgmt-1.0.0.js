@@ -168,7 +168,7 @@ var ractive = new AuthenticatedRactive({
       { "name": "contactListSect", "url": "/partials/contact-list-sect.html"},
       { "name": "mergeModal", "url": "/partials/contact-merge-sect.html"},
       { "name": "currentContactSect", "url": "/partials/contact-current-sect.html"},
-      { "name": "currentCompanyBackground", "url": "/partials/CompanyBackground.html"}
+      { "name": "currentCompanyBackground", "url": "/partials/contact-company-sect.html"}
     ],
   },
   add: function () {
@@ -263,11 +263,7 @@ var ractive = new AuthenticatedRactive({
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
         ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
         ractive.set('saveObserver', true);
-      }//,
-//      fail: function( jqXHR, textStatus, errorThrown) {
-//        console.log( "error" );
-//        ractive.handleError(jqXHR,textStatus,errorThrown);
-//      });      
+      }
     });
   },
   fetchDocs: function() { 
@@ -289,6 +285,28 @@ var ractive = new AuthenticatedRactive({
         // sort most recent first
         ractive.get('current.notes').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
       }
+    });
+  },
+  fetchCompaniesHouseInfo: function() { 
+    console.info('fetchCompaniesHouseInfo for '+ractive.get('current.account.companyNumber'));
+    ractive.sendMessage({
+      name:"omny.companyRecord",
+      body:JSON.stringify({companyNumber:ractive.get('current.account.companyNumber')}),
+      callback:function(results) {
+        //results = JSON.parse(results);
+        ractive.set('current.account.companiesHouseInfo',JSON.parse(results));
+        // A bit of a hack required here, will resolve once can move to proper JSON API
+        var o = ractive.get('current.account.companiesHouseInfo.companyOfficersHtml');
+        if (o.indexOf('<h2 class="heading-medium total-appointments"')!=-1) { 
+          ractive.set('current.account.companiesHouseInfo.companyOfficersHtml', o.substring(o.indexOf('<h2 class="heading-medium total-appointments"')));
+        }
+        var fh = ractive.get('current.account.companiesHouseInfo.companyFilingsHtml');
+        if (fh.indexOf('<div class="js-hidden warning-overview" id="firefox-pdf-notice">')!=-1) { 
+          ractive.set('current.account.companiesHouseInfo.companyFilingsHtml', fh.substring(fh.indexOf('<div class="js-hidden warning-overview" id="firefox-pdf-notice">')));
+        }
+        $('#fhTable').addClass('table-striped');
+      },
+      pattern:"inOut"
     });
   },
   filter: function(filter) {
@@ -504,7 +522,8 @@ var ractive = new AuthenticatedRactive({
           newEv.keyCode = newEv.which = 40;
           $(ev.target).trigger(newEv);
           return true;
-       });
+        });
+        if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
       },
       pattern:"inOut"
     });
@@ -538,6 +557,7 @@ var ractive = new AuthenticatedRactive({
         $('.autoNumeric').autoNumeric('update',{});
         ractive.fetchNotes();
         ractive.fetchDocs();
+        if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
         // sort most recent first
         ractive.get('current.activities').sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
       });

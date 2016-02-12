@@ -1,0 +1,29 @@
+{{#current.account.companyNumber}}
+  <style>
+    .total-appointments,
+    .appointments-list,
+    #fhTable {
+      margin-left: 50px;
+    }
+    .column-quarter {
+      width:25%;
+    }
+    .grid-row {
+      display: -webkit-box; /* Firefox and IE??? */
+    }
+  </style>
+
+  <section>
+    <h3>
+      <span>Company Officers</span>
+    </h3>
+    {{{current.account.companiesHouseInfo.companyOfficersHtml}}}
+  </section>
+
+  <section>
+    <h3>
+      <span>Company Filings</span>
+    </h3>
+    {{{current.account.companiesHouseInfo.companyFilingsHtml}}}
+  </section>
+{{/}}
