@@ -3,8 +3,8 @@
   "show": { "account":false, "budget":false, "marketing":false },
   "contactFields": [ ],
   "customerActions": [
-    { "label": "Send email", "key": "SendContactEmail", "form": "/partials/circom/PickMail.html" },
-    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" }    
+    { "label": "Send email", "key": "SendContactEmail", "form": "/partials/circom/pick-mail.html" },
+    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/add-reminder.html" }    
   ],
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
@@ -12,7 +12,7 @@
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "description": "View your process definitions here", "title": "Process Definitions" }    
   ],  
   "partials": [
-    { "name": "circomAddReminder", "url": "/partials/AddReminder.html"}
+    { "name": "circomAddReminder", "url": "/partials/add-reminder.html"}
   ],
   "standardOperatingProcedures": [ ],
   "typeaheadControls": [
