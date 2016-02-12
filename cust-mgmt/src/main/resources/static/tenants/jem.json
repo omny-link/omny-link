@@ -6,7 +6,7 @@
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "title": "Process Definitions" }
   ],
   "partials": [
-    { "name": "jemContactExtension", "url": "/partials/omnyContactExtension.html"}
+    { "name": "jemContactExtension", "url": "/partials/contact-extension.html"}
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},

@@ -6,18 +6,17 @@
   ],
   "customerActions": [
     { "label": "Send email", "key": "SendContactEmail", "form": "/partials/lawrence/PickMail.html" },
-    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/AddReminder.html" }    
+    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/add-reminder.html" }    
   ],
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
     { "url": "contacts.html", "classes": "glyphicon omny-icon-address-book", "description": "Find a particular contact", "title": "Contact Management" },
-    { "url": "events.html", "classes": "glyphicon glyphicon-th-list", "description": "View recent activity", "title": "Events Stream" },
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "description": "View your process definitions here", "title": "Process Definitions" }    
   ],  
   "partials": [
-    { "name": "lawrenceContactExtension", "url": "/partials/contactExtension.html"},
+    { "name": "lawrenceContactExtension", "url": "/partials/contact-extension.html"},
     { "name": "lawrenceSendContactEmail", "url": "/partials/lawrence/PickMail.html"},
-    { "name": "lawrenceAddReminder", "url": "/partials/AddReminder.html"}
+    { "name": "lawrenceAddReminder", "url": "/partials/add-reminder.html"}
   ],
   "standardOperatingProcedures": [
     { "label": "New Enquiry", "key": "preMigration" }

@@ -8,8 +8,8 @@
     { "url": "api.html", "classes": "glyphicon glyphicon-wrench", "title": "API Documentation" }
   ],
   "partials": [
-    { "name": "carquakeContactExtension", "url": "/partials/contactExtension.html"},
-    { "name": "carquakeAccountExtension", "url": "/partials/accountExtension.html"}
+    { "name": "carquakeContactExtension", "url": "/partials/contact-extension.html"},
+    { "name": "carquakeAccountExtension", "url": "/partials/account-extension.html"}
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
