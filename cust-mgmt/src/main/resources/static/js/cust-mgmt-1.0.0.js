@@ -180,11 +180,19 @@ var ractive = new AuthenticatedRactive({
   },
   addDoc: function (contact) {
     console.log('addDoc '+contact+' ...');
+    if (contact==undefined || contact == '') {
+      ractive.showMessage('You must have created your contact before adding documents');
+      return;
+    }
     ractive.set('current.doc', { author:ractive.get('username'), contact: ractive.stripProjection(contact), url: undefined});
     $('#docsTable tr:nth-child(1)').slideDown();
   },
   addNote: function (contact) {
     console.log('addNote '+contact+' ...');
+    if (contact==undefined || contact == '') {
+      ractive.showMessage('You must have created your contact before adding notes');
+      return;
+    }
     ractive.set('current.note', { author:ractive.get('username'), contact: ractive.stripProjection(contact), content: undefined});
     $('#notesTable tr:nth-child(1)').slideDown();
   },
