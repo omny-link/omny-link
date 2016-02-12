@@ -188,7 +188,7 @@ var ractive = new AuthenticatedRactive({
     } 
     return uri;
   },
-  initEditor: function() {
+  initEditor: function(enabled) {
     ractive.editor = new wysihtml5.Editor("curRichContent", {
       toolbar:     "wysihtml5-editor-toolbar",
       stylesheets: ["http://yui.yahooapis.com/2.9.0/build/reset/reset-min.css", "/css/wysihtml5/editor.css"],
@@ -210,7 +210,7 @@ var ractive = new AuthenticatedRactive({
       $('.wysihtml5-sandbox')
         .css('border-color','#ccc')
         .css('margin-left',0);
-    
+      if (!enabled) ractive.editor.disable();
     });
     ractive.editor.on("change", function() {
       console.log('wysihtml5 changed value to: '+ractive.editor.getValue());
@@ -288,7 +288,13 @@ var ractive = new AuthenticatedRactive({
         ractive.initControls();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
-        ractive.initEditor();
+        if (ractive.get('current.status')=='Published') { 
+          $('#currentForm input,#currentForm select,#currentForm textarea').prop('disabled',true).prop('readonly',true);
+          $('.glyphicon-remove').remove();
+          ractive.initEditor(false);
+        } else {
+          ractive.initEditor(true);
+        }
         ractive.editor.setValue(ractive.get('current.richContent'));
         ractive.set('saveObserver',true);
       });
