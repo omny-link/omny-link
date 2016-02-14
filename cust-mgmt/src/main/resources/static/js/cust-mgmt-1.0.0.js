@@ -7,6 +7,7 @@ var ractive = new AuthenticatedRactive({
   lazy: true,
   template: '#template',
   data: {
+    accounts: [],
     csrfToken: getCookie(CSRF_COOKIE),
     contacts: [],
     filter: {field: "stage", operator: "!in", value: "cold,complete"},
@@ -275,6 +276,42 @@ var ractive = new AuthenticatedRactive({
       }
     });
   },
+  fetchAccounts: function () {
+    console.info('fetchAccounts...');
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer()+'/accounts/',
+      crossDomain: true,
+      success: function( data ) {
+        if (data['_embedded'] == undefined) {
+          ractive.merge('accounts', data);
+        } else {
+          ractive.merge('accounts', data['_embedded'].accounts);
+        }
+        // set up account typeahead
+        var accData = jQuery.map( ractive.get('accounts'), function( n, i ) {
+          return ( {  "id": ractive.getId(n), "name": n.name } );
+        });
+        ractive.set('accountsDropDown',accData);
+//        $('#curAccountName').typeahead({
+//          items:'all',
+//          minLength:0,
+//          source:accData,
+////          updater:function(item) {
+////            return item.id;
+////          }
+//        });
+//        $('#curCompanyName').on("click", function (ev) {
+//          newEv = $.Event("keydown");
+//          newEv.keyCode = newEv.which = 40;
+//          $(ev.target).trigger(newEv);
+//          return true;
+//        });
+        ractive.set('saveObserver', true);
+      }
+    });
+  },
   fetchDocs: function() { 
     $.getJSON(ractive.getId(ractive.get('current'))+'/documents',  function( data ) {
       if (data['_embedded'] != undefined) {
@@ -395,7 +432,9 @@ var ractive = new AuthenticatedRactive({
           if (location != undefined) ractive.set('current._links.self.href',location);
           switch (jqXHR.status) {
           case 201: 
-            ractive.set('currentIdx',ractive.get('contacts').push(ractive.get('current'))-1);
+            ractive.set('current.fullName',ractive.get('current.firstName')+' '+ractive.get('current.lastName'));
+            var currentIdx = ractive.get('contacts').push(ractive.get('current'))-1;
+            ractive.set('currentIdx',currentIdx);
             break;
           case 204: 
             ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
@@ -414,14 +453,12 @@ var ractive = new AuthenticatedRactive({
   },
   saveAccount: function () {
     if (ractive.get('current.account')==undefined) return;
-    console.log('saveAccount '+ractive.get('current.account').name+' ...');
-    if (ractive.get('current.account') == undefined) ractive.set('current.account',{});
+    console.log('saveAccount '+ractive.get('current.account.name')+' ...');
     var id = ractive.get('current.accountId');
     console.log(' id: '+id);
     ractive.set('saveObserver',false);
     ractive.set('current.account.tenantId',ractive.get('tenant.id'));
     if (ractive.get('current.account.companyNumber')=='') ractive.set('current.account.companyNumber',undefined); 
-    ractive.set('saveObserver',true);
     if ($('#currentAccountForm:visible').length!=0 && document.getElementById('currentAccountForm').checkValidity()) { 
       $.ajax({
         url: id == undefined ? ractive.getServer()+'/'+ractive.get('tenant.id')+'/accounts/' : ractive.get('tenant.id')+'/accounts/'+id,
@@ -441,22 +478,29 @@ var ractive = new AuthenticatedRactive({
               contentType: 'text/uri-list',
               data: location,
               success: completeHandler = function(data, textStatus, jqXHR) {
+                ractive.set('saveObserver',false);
                 console.log('linked account: '+location+' to '+contactAccountLink);
-                ractive.get('contacts').push(ractive.get('current'));
+                ractive.merge('contacts', ractive.get('current'));
                 ractive.showMessage('Account saved');
+                ractive.set('saveObserver',true);
               }
             });
           } else if (jqXHR.status == 204) {
-            ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
+            ractive.set('saveObserver',false);
+            var currentIdx =ractive.get('currentIdx');
+            ractive.splice('contacts',currentIdx,1,ractive.get('current'));
             ractive.showMessage('Account updated');
+            ractive.set('saveObserver',true);
           }
-          //ractive.get('contacts')[ractive.get('currentIdx')].lastUpdated=new Date().toISOString();
+          ractive.set('contacts.'+ractive.get('currentIdx')+'.accountName',ractive.get('current.account.name'));
         }
       });
     } else if ($('#currentAccountForm:visible').length!=0) {
-      console.warn('Cannot save yet as account is invalid');
+      var msg = 'Cannot save yet as account is invalid';
+      console.warn(msg);
       $('#currentAccountForm :invalid').addClass('field-error');
-      ractive.showMessage('Cannot save yet as account is incomplete');
+      ractive.showMessage(msg);
+      ractive.set('saveObserver',true);
     }
   },
   saveDoc: function () {
@@ -728,7 +772,7 @@ ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
 // done this way rather than with on-* attributes because autocomplete 
 // controls done that way save the oldValue 
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
-  ignored=['current.documents','current.doc','current.notes','current.note'];
+  ignored=['current.account.companiesHouseInfo','current.documents','current.doc','current.notes','current.note'];
   if (ractive.get('saveObserver') && ignored.indexOf(keypath)==-1) {
     console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
     if (keypath=='current.account') ractive.saveAccount();
@@ -740,14 +784,14 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
   }
 });
 
-ractive.observe('current.account.name', function(newValue, oldValue, keypath) {
-  console.log('account name changing from '+oldValue+' to '+newValue);
-  if (newValue!=undefined && newValue!='') {
-    $('#curCompanyNumber').typeahead('destroy');
-    ractive.set('current.account.companyNumber',undefined);
-    ractive.searchCompaniesHouse();
-  }
-});
+//ractive.observe('current.account.name', function(newValue, oldValue, keypath) {
+//  console.log('account name changing from '+oldValue+' to '+newValue);
+//  if (newValue!=undefined && newValue!='') {
+//    $('#curCompanyNumber').typeahead('destroy');
+//    ractive.set('current.account.companyNumber',undefined);
+//    ractive.searchCompaniesHouse();
+//  }
+//});
 
 // Cannot work due to http://docs.ractivejs.org/0.5/observers#a-gotcha-to-be-aware-of
 function significantDifference(newValue,oldValue) {
