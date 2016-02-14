@@ -387,6 +387,26 @@ var ractive = new AuthenticatedRactive({
     } 
     return uri;
   },
+  inferDomainName: function() {
+    console.info('inferDomainName');
+    var email = ractive.get('current.email');
+    if (email==undefined) return false;
+    var emailDomain = email.substring(email.indexOf('@')+1);
+    switch (emailDomain) {
+    case 'aol.com':
+    case 'gmail.com':
+    case 'googlemail.com':
+    case 'mac.com':
+    case 'outlook.com':
+    case 'yahoo.com':
+    case 'yahoo.co.uk':
+      break;
+    default:
+      console.log('Assuming this is company-owned domain: '+emailDomain);
+      ractive.set('current.account.businessWebsite','http://'+emailDomain);
+    }
+    console.log('  emailDomain: '+emailDomain);
+  },
   mergeContacts: function() {
     console.info('mergeContacts');
     ractive.set('contact1',ractive.get('contacts[0]'));
@@ -613,6 +633,8 @@ var ractive = new AuthenticatedRactive({
         if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
         // sort most recent first
         ractive.get('current.activities').sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
+        if (ractive.get('current.account')!=undefined &&
+            (ractive.get('current.account.businessWebsite')==undefined || ractive.get('current.account.businessWebsite')=='')) ractive.inferDomainName(); 
       });
     } else { 
       console.log('Skipping load as no _links.'+contact.lastName);
@@ -784,14 +806,21 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
   }
 });
 
-//ractive.observe('current.account.name', function(newValue, oldValue, keypath) {
-//  console.log('account name changing from '+oldValue+' to '+newValue);
-//  if (newValue!=undefined && newValue!='') {
-//    $('#curCompanyNumber').typeahead('destroy');
-//    ractive.set('current.account.companyNumber',undefined);
-//    ractive.searchCompaniesHouse();
-//  }
-//});
+ractive.observe('current.account.name', function(newValue, oldValue, keypath) {
+  console.log('account name changing from '+oldValue+' to '+newValue);
+  if (newValue!=undefined && newValue!='') {
+    $('#curCompanyNumber').typeahead('destroy');
+    ractive.set('current.account.companyNumber',undefined);
+    ractive.searchCompaniesHouse();
+  }
+});
+
+ractive.observe('current.account.businessWebsite', function(newValue, oldValue, keypath) {
+  console.log('account businessWebsite changing from '+oldValue+' to '+newValue);
+  if (newValue!=undefined && newValue!='' && !(newValue.startsWith('http') || newValue.startsWith('https'))) {
+    ractive.set('current.account.businessWebsite','http://'+newValue);
+  }
+});
 
 // Cannot work due to http://docs.ractivejs.org/0.5/observers#a-gotcha-to-be-aware-of
 function significantDifference(newValue,oldValue) {
