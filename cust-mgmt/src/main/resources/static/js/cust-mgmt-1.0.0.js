@@ -763,9 +763,11 @@ var ractive = new AuthenticatedRactive({
     var formElement = document.getElementById(formId);
     var formData = new FormData(formElement);
     var entity = $('#'+formId+' .entity').val();
+    var fileName = $('#'+formId+' input[type="file"]').val();
+    var fileExt = fileName.substring(fileName.lastIndexOf('.')+1);
     return $.ajax({
         type: 'POST',
-        url: '/'+ractive.get('tenant.id')+'/'+entity+'/upload',
+        url: '/'+ractive.get('tenant.id')+'/'+entity+'/upload'+fileExt.toLowerCase(),
         data: formData,
         cache: false,
         contentType: false,

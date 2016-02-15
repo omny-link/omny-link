@@ -1,0 +1,4 @@
+account.name,address1,address2,cityOrCounty,postCode,phone1,fullName,doNotEmail,email,account.facsimile,account.pCode,account.doctors
+Oswald Medical Practice,4 Oswald Road,Chorlton,Manchester ,M21 9LH,881 4744,Michelle Kelly,FALSE,michelle.kelly@nhs.net,861 7027,P84676,Dr J Black
+The Wilbraham Surgery,515 Wilbraham Road Chorlton,,Manchester ,M21 0UF,881 6120,Marion Murray                                         ,FALSE, m.murray@nhs.net,861 7796,P84071,Dr M Cooke G Wilson
+"Dr Dass's Practice, Alexandra Park Health Centre",2 Whitswood Close,Alexandra Park,Manchester, M16 7AP,226 4616,Mrs K Dass                                                           ,TRUE, xxxxxxxx.xxxx@xxx.xxx,232 7514,P84642,Dr L Dass
