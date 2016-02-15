@@ -1,10 +1,12 @@
 package link.omny.custmgmt.web;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import link.omny.custmgmt.internal.CsvImporter;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.model.Contact;
@@ -88,7 +90,7 @@ public class ContactController {
      * @throws IOException
      *             If cannot parse the JSON.
      */
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadjson", method = RequestMethod.POST)
     public @ResponseBody Iterable<Contact> handleFileUpload(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
@@ -102,6 +104,40 @@ public class ContactController {
         LOGGER.info(String.format("  found %1$d contacts", list.size()));
         for (Contact contact : list) {
             contact.setTenantId(tenantId);
+        }
+
+        Iterable<Contact> result = contactRepo.save(list);
+        LOGGER.info("  saved.");
+        return result;
+    }
+
+    /**
+     * Imports JSON representation of contacts.
+     *
+     * <p>
+     * This is a handy link: http://shancarter.github.io/mr-data-converter/
+     *
+     * @param file
+     *            A file posted in a multi-part request
+     * @return The meta data of the added model
+     * @throws IOException
+     *             If cannot parse the JSON.
+     */
+    @RequestMapping(value = "/uploadcsv", method = RequestMethod.POST)
+    public @ResponseBody Iterable<Contact> handleCsvFileUpload(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam(value = "file", required = true) MultipartFile file)
+            throws IOException {
+        LOGGER.info(String.format("Uploading CSV contacts for: %1$s", tenantId));
+        String content = new String(file.getBytes());
+        List<Contact> list = new CsvImporter().readContacts(
+                new StringReader(content),
+                content.substring(0, content.indexOf('\n')).split(",")
+                );
+        LOGGER.info(String.format("  found %1$d contacts", list.size()));
+        for (Contact contact : list) {
+            contact.setTenantId(tenantId);
+            contact.getAccount().setTenantId(tenantId);
         }
 
         Iterable<Contact> result = contactRepo.save(list);
