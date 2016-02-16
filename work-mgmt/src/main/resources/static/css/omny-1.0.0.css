@@ -300,39 +300,7 @@ h2 a.glyphicon:hover {
 .navbar-brand img {
   height: 80px;	
 }
-.omny-bar {
-  background-color: #fcf8e3;
-  border-bottom-right-radius: 5px;
-  border-top-right-radius: 5px;
-  border-bottom-style: double;
-  border-right-style: double;
-  border-top-style: double;
-  color: #ff6c06;
-  left: 0px;
-  position: fixed;
-  top: 40%;  
-  width: 50px;
-}
-.omny-bar li.admin-bar span {
-	/*color: red;*/
-}
-.omny-bar li {
-	list-style: none;
-  margin-left: -36px;
-}
-.omny-bar li span.glyphicon.active {
-  color: #fcf8e3;
-  background-color: #ff6c06;
-}
-.omny-bar li span:not(.active) {
-  border: 0px;
-  border-bottom: solid 1px #ff6c06;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-.omny-bar li:last-child span {
-  border-bottom: 0;
-}
+
 .search {
 	border-radius:15px;
 	width:100px;
@@ -341,6 +309,78 @@ h2 a.glyphicon:hover {
 	bottom:5px;	
 }
 /* END BOOTSTRAP OVERRIDES */
+
+/* OMNY BAR */
+
+.omny-bar {
+  background-color: #fcf8e3;
+  color: #ff6c06;
+  position: fixed;
+}
+.omny-bar-left {
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-style: double;
+  border-right-style: double;
+  border-top-style: double;
+  left: 0px;
+  top: 40%;  
+  width: 50px;
+}
+.omny-bar li.admin-bar span {
+  /*color: red;*/
+}
+.omny-bar li {
+  list-style: none;
+  margin-left: -36px;
+}
+.omny-bar li span.glyphicon.active {
+  color: #fcf8e3;
+  background-color: #ff6c06;
+}
+.omny-bar li span:not(.active) {
+  border: 0px;
+}
+.omny-bar-left li span:not(.active) {
+  border-bottom: solid 1px #ff6c06;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.omny-bar li:last-child span {
+  border-bottom: 0;
+}
+
+.omny-bar-top {
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-style: double;
+  border-right-style: double;
+  border-left-style: double;
+  left: 20%;
+  top: 0%;
+  width: 750px;
+  padding-left: 20px;
+  right: 20%;
+}
+
+.omny-bar-top ul>li {
+  float: left;
+  position: relative;
+  display: block;
+}
+.omny-bar-top ul>li>a {
+	border-radius: 4px;
+  position: relative;
+  display: block;
+  padding: 5px 7px;
+}
+.omny-bar-top ul>li+li {
+    margin-left: 2px;
+}
+.omny-bar-top .glyphicon {
+	padding: 10px
+}
+/* END OMNY BAR */
 
 .clickable:active,
 .clickable:focus,

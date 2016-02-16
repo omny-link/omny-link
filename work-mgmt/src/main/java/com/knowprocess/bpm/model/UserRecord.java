@@ -63,6 +63,8 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
 
     private String commsPreference;
 
+    private String omnyBarPosition;
+
     private String tenant;
 
     private String userPicture;
@@ -183,6 +185,9 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
             } else if (UserInfoKeys.COMMS_PREFERENCE.toString().equals(key)) {
                 wrappedUser.setCommsPreference(svc.getUserInfo(username,
                         UserInfoKeys.COMMS_PREFERENCE.toString()));
+            } else if (UserInfoKeys.OMNY_BAR_POSITION.toString().equals(key)) {
+                wrappedUser.setOmnyBarPosition(svc.getUserInfo(username,
+                        UserInfoKeys.OMNY_BAR_POSITION.toString()));
             } else if (UserInfoKeys.TENANT.toString().equals(key)) {
                 wrappedUser.setTenant(svc.getUserInfo(username,
                         UserInfoKeys.TENANT.toString()));
@@ -194,6 +199,7 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
         }
         return wrappedUser;
     }
+
 
     public static List<UserRecord> findUserRecordEntries(int firstResult,
             int maxResults) {
