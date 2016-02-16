@@ -8,7 +8,6 @@ var ractive = new AuthenticatedRactive({
   template: '#template',
   data: {
     contacts: [],
-    //server: 'http://api.knowprocess.com:8082',
     testMode: false,
     memoDistributions: [],
     memos: [],
@@ -40,18 +39,20 @@ var ractive = new AuthenticatedRactive({
     formatDate: function(timeString) {
       return new Date(timeString).toLocaleDateString(navigator.languages).replace('Invalid Date','n/a').replace('01/01/1970','n/a');
     },
-    formatJson: function(json) { 
-      console.log('formatJson: '+json);
+    formatObj: function(obj) {
+      console.log('formatObj:'+typeof obj+', stringified: '+JSON.stringify(obj));
+      if (obj==undefined) return obj;
       try {
-        var obj = JSON.parse(json);
-        var html = '';
+        var html = '<table class="table table-striped">';
         $.each(Object.keys(obj), function(i,d) {
-          html += (typeof obj[d] == 'object' ? '' : '<b>'+d+'</b>: '+obj[d]+'<br/>');
+          html += (typeof obj[d] == 'object' ? '' : '<tr><th style="text-align:right">'+d.toLabel()+'</th><td>'+obj[d]+'</td></tr>');
         });
+        html+= '</table>'
         return html;
       } catch (e) {
-        // So it wasn't JSON
-        return json;
+        // So it wasn't an object?
+        console.error(e);
+        return obj;
       }
     },
     hash: function(email) {
@@ -244,6 +245,18 @@ var ractive = new AuthenticatedRactive({
           return true;
         });
       }     
+    });
+  },
+  fetchStatus: function() {
+    console.info('fetchStatus');
+    var campaignId = ractive.get('current.providerRef');
+    ractive.sendMessage({
+      name:"omny.campaignStatus",
+      body:JSON.stringify({campaignId:campaignId}),
+      callback:function(results) {
+        results = JSON.parse(results);
+        ractive.set('current.providerStatus',results);
+      }
     });
   },
   filter: function(field,value) {

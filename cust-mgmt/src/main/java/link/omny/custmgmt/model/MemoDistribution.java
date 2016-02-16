@@ -34,7 +34,7 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Relates a Message to its recipients.
+ * Relates a Memo Template to its recipients.
  * 
  * @author Tim Stephenson
  */
@@ -71,7 +71,6 @@ public class MemoDistribution implements Serializable {
     @JsonProperty
     private String memoRef;
 
-
     @Transient
     @JsonProperty
     private Date sendAt;
@@ -87,6 +86,17 @@ public class MemoDistribution implements Serializable {
      */
     @JsonProperty
     private String sendAtTZ;
+
+    /**
+     * When a newsletter or other communication is sent out in bulk the mail or
+     * telephony provider will typically provide a reference by which to
+     * subsequently check status.
+     *
+     * <p>
+     * For example with Mailjet this would be the campaign id.
+     */
+    @JsonProperty
+    private String providerRef;
 
     @NotNull
     @JsonProperty

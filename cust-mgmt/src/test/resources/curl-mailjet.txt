@@ -1,0 +1,111 @@
+# Send mail thru Mailjet 
+curl -s     -X POST --user "1e7bbaee742c84b5d6f0ab53147a1088:9d15ccd512b72f5e934159ce7ba4b2d4" \
+    https://api.mailjet.com/v3/send \
+    -H "Content-Type: application/json" \
+    -d '{
+        "FromEmail":"tim@omny.link",
+        "FromName":"Me",
+        "Recipients": [ 
+            {
+            "Email":"tim@thestephensons.me.uk"
+            }
+        ],
+        "Subject":"My first Mailjet Email!",
+        "Text-part":"Greetings from Mailjet."
+    }'
+
+
+# Create a contact list: only need a Name (id 1503806)
+curl -s \
+    -X POST \
+    --user "1e7bbaee742c84b5d6f0ab53147a1088:9d15ccd512b72f5e934159ce7ba4b2d4" \
+    https://api.mailjet.com/v3/REST/contactslist \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "Name":"TestList"
+    }'
+    
+# Create : Definition of available extra data items for contacts.
+curl -s \
+    -X POST \
+    --user "1e7bbaee742c84b5d6f0ab53147a1088:9d15ccd512b72f5e934159ce7ba4b2d4" \
+    https://api.mailjet.com/v3/REST/contactmetadata \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "Datatype":"str",
+        "Name":"jobTitle",
+        "NameSpace":"static"
+    }'
+    
+# Add a contact to the list
+curl -s \
+    -X POST \
+    --user "1e7bbaee742c84b5d6f0ab53147a1088:9d15ccd512b72f5e934159ce7ba4b2d4" \
+    https://api.mailjet.com/v3/REST/contactslist/1503806/managecontact \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "Email":"tim@thestephensons.me.uk",
+        "Name":"Mr Tim Stephenson",
+        "Action":"addnoforce",
+        "Properties":{
+          "jobTitle": "Founder"
+        }
+    }'
+    
+# Create : Newsletter data. (ID 3556833, 3556838)
+curl -s \
+    -X POST \
+    --user "1e7bbaee742c84b5d6f0ab53147a1088:9d15ccd512b72f5e934159ce7ba4b2d4" \
+    https://api.mailjet.com/v3/REST/newsletter \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "Locale":"en_GB",
+        "Sender":"Tim Stephenson",
+        "SenderEmail":"tim@omny.link",
+        "Subject":"Greetings from Mailjet",
+        "ContactsListID":"1503806",
+        "Title":"Monday newsletter"
+    }'
+    
+# Modify : Newsletter data.
+curl -s \
+    -X PUT \
+    --user "1e7bbaee742c84b5d6f0ab53147a1088:9d15ccd512b72f5e934159ce7ba4b2d4" \
+    https://api.mailjet.com/v3/REST/newsletter/3556838/detailcontent \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "Html-part":"Hello <strong>world</strong>! Please click <a href='http://api.omny.link'>me</a>!",
+        "Text-part":"Hello world! Please click me: http://api.omny.link!"
+    }'
+    
+# Send immediately (schedule is different)
+curl -s \
+    -X POST \
+    --user "1e7bbaee742c84b5d6f0ab53147a1088:9d15ccd512b72f5e934159ce7ba4b2d4" \
+    https://api.mailjet.com/v3/REST/newsletter/3556838/send \
+    -H 'Content-Type: application/json' \
+    -d '{
+    }'
+    
+# View : Campaign linked to the Newsletter :NEWSLETTER_ID (Campaign ID: 4866756149)
+curl -s \
+    -X GET \
+    --user "1e7bbaee742c84b5d6f0ab53147a1088:9d15ccd512b72f5e934159ce7ba4b2d4" \
+    https://api.mailjet.com/v3/REST/campaign/mj.nl=3556838
+    
+# View : Statistics related to emails processed by Mailjet, grouped in a Campaign.
+curl -s \
+    -X GET \
+    --user "1e7bbaee742c84b5d6f0ab53147a1088:9d15ccd512b72f5e934159ce7ba4b2d4" \
+    https://api.mailjet.com/v3/REST/campaignstatistics     
+
+# View stats for single campaign
+curl -s -X GET \
+    --user "1e7bbaee742c84b5d6f0ab53147a1088:9d15ccd512b72f5e934159ce7ba4b2d4" \
+    https://api.mailjet.com/v3/REST/campaignstatistics/4866756664
+    
+    
+# list messagesentstatistics resources
+curl -s -X GET \
+    --user "1e7bbaee742c84b5d6f0ab53147a1088:9d15ccd512b72f5e934159ce7ba4b2d4" \
+    https://api.mailjet.com/v3/REST/messagesentstatistics   
