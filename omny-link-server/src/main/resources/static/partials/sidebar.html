@@ -1,4 +1,4 @@
-<div class="omny-bar">
+<div class="omny-bar {{#profile.omnyBarPosition}}omny-bar-{{profile.omnyBarPosition}}{{/}} {{^profile.omnyBarPosition}}omny-bar-left{{/}}">
   <ul>
     {{#tenant.omnyBar}}
       <li><a href="{{url}}">
