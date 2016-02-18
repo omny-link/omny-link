@@ -1,7 +1,9 @@
 package com.knowprocess.bpm;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -31,6 +33,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.knowprocess.bpm.api.ActivitiUserDetailsService;
 import com.knowprocess.bpm.impl.JsonManager;
+import com.knowprocess.bpm.impl.TaskAllocationMapper;
 
 @Configuration
 @ComponentScan(basePackages = { "com.knowprocess.bpm" })
@@ -65,6 +68,10 @@ public class BpmConfiguration extends AbstractProcessEngineAutoConfiguration {
 
         config.setDataSource(activitiDataSource);
         config.setMailServers(overrideProperties.getServers());
+
+        Set<Class<?>> mappers = new HashSet<Class<?>>();
+        mappers.add(TaskAllocationMapper.class);
+        config.setCustomMybatisMappers(mappers);
 
         return config;
     }

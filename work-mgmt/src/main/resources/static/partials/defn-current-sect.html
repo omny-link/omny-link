@@ -72,7 +72,7 @@
               <th>Started</th>
               <th>Ended</th>
               <th>Duration</th>
-              <!-- TODO Always empty? <th>Actioned by</th>-->
+              <th>Actioned by</th>
             </tr>
           </thead>
           <tbody>
@@ -84,7 +84,11 @@
                 <td>{{formatDateTime(startTime)}}</td>
                 <td>{{formatDateTime(endTime)}}</td>
                 <td>{{endTime == undefined ? '' : duration(durationInMillis)}}</td>
-                <!-- TODO Always empty? td>{{assignee}}</td>-->
+                <td>
+                  {{#allocations}}
+                    {{#type=='candidate'}}Offered to:{{/}} {{groupId}} {{userId}}
+                  {{/}}
+                </td>
               </tr>
             {{/each}}
           </tbody>

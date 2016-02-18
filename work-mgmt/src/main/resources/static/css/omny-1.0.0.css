@@ -19,9 +19,10 @@ h1, h2, h3, h4, h5, h6 {
 
 /* 
  * COLOURS 
- *   orange: ff6c06;
- *   blue:   0e9acd;
- *   grey:   949699;
+ *   orange:    ff6c06;
+ *   blue:      0e9acd;
+ *   pale blue: 59C4ED
+ *   grey:      949699;
  */
 
 /* START BOOTSTRAP OVERRIDES */
@@ -105,6 +106,19 @@ section h2 {
   padding-top: 10px;
   padding-left: 20px;
   padding-right: 20px;
+}
+@media (max-width: 767px) {
+	section:nth-of-type(1) h2 {
+    height: 85px;
+	}
+  section h2 div {
+    height: 40px;
+  }
+}
+@media (min-width: 768px) {
+  section:nth-of-type(1) h2 {
+    height: 45px;
+  }
 }
 section h2 .search {
 /*margin-bottom: 10px;*/
@@ -263,6 +277,13 @@ h2 a.glyphicon,
 h2 a.glyphicon:visited {
   color: #949699;
   text-decoration: none;
+}
+.input-group-addon .glyphicon {
+  font-size: 16px;
+  border: none;
+  padding: 0px;
+  margin: 0px;
+  border-radius: 0px !important;
 }
 .clickable:focus,
 .clickable:hover,

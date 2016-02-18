@@ -1,7 +1,9 @@
 package com.knowprocess.bpm.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -44,6 +46,8 @@ public class HistoricDetail implements Serializable {
 
     public String calledProcessInstanceId;
 
+    public List<Allocation> allocations;
+
     // public HistoricDetail(org.activiti.engine.history.HistoricDetail detail)
     // {
     // setId(detail.getId());
@@ -68,5 +72,16 @@ public class HistoricDetail implements Serializable {
         setCalledProcessInstanceId(detail.getCalledProcessInstanceId());
         setProcessInstanceId(detail.getProcessInstanceId());
         setProcessDefinitionId(detail.getProcessDefinitionId());
+    }
+
+    public List<Allocation> getAllocations() {
+        if (allocations==null) { 
+            allocations = new ArrayList<Allocation>();
+        }
+        return allocations;
+    }
+
+    public void addAllocation(Allocation allocation) {
+        getAllocations().add(allocation);
     }
 }
