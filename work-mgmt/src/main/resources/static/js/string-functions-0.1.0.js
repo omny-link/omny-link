@@ -1,5 +1,5 @@
 String.prototype.toLabel = function() {
-  return this.replace(/_/g, ' ').toLeadingCaps();
+  return this.replace(/([A-Z])/, function(v) { return '_'+v; }).replace(/_/g, ' ').toLeadingCaps();
 };
 
 String.prototype.toLeadingCaps = function() {

@@ -9,12 +9,17 @@ import java.util.Map;
 import lombok.Data;
 
 import org.activiti.engine.ActivitiObjectNotFoundException;
+import org.activiti.engine.ManagementService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
+import org.activiti.engine.impl.cmd.AbstractCustomSqlExecution;
+import org.activiti.engine.impl.cmd.CustomSqlExecution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.knowprocess.bpm.impl.TaskAllocationMapper;
 
 @Data
 @Component
@@ -79,16 +84,16 @@ public class ProcessInstance extends Execution
         setTenantId(hpi.getTenantId());
     }
 
-	public ProcessInstance(org.activiti.engine.runtime.Execution execution) {
-		this();
-		setActivityId(execution.getActivityId());
-		setEnded(execution.isEnded());
-		setId(execution.getId());
-		setParentId(execution.getParentId());
-		setSuspended(execution.isSuspended());
-	}
+    public ProcessInstance(org.activiti.engine.runtime.Execution execution) {
+        this();
+        setActivityId(execution.getActivityId());
+        setEnded(execution.isEnded());
+        setId(execution.getId());
+        setParentId(execution.getParentId());
+        setSuspended(execution.isSuspended());
+    }
 
-	// Autowiring static fields is obviously dangerous, but should be ok in this
+    // Autowiring static fields is obviously dangerous, but should be ok in this
     // case as PE is thread safe.
     @Autowired(required = true)
     public void setProcessEngine(ProcessEngine pe) {
@@ -130,17 +135,17 @@ public class ProcessInstance extends Execution
     public static List<ProcessInstance> findAllProcessInstancesForDefinition(
             String procDefId) {
         List<ProcessInstance> instances = new ArrayList<ProcessInstance>();
-		instances.addAll(wrap(processEngine.getRuntimeService()
+        instances.addAll(wrap(processEngine.getRuntimeService()
                 .createProcessInstanceQuery().processDefinitionId(procDefId)
-				.list()));
-		List<HistoricProcessInstance> historicInstances = processEngine
-				.getHistoryService().createHistoricProcessInstanceQuery()
-				.processDefinitionId(procDefId).list();
-		for (HistoricProcessInstance instance : historicInstances) {
-			if (instance.getEndTime() != null) {
-				instances.add(new ProcessInstance(instance));
-			}
-		}
+                .list()));
+        List<HistoricProcessInstance> historicInstances = processEngine
+                .getHistoryService().createHistoricProcessInstanceQuery()
+                .processDefinitionId(procDefId).list();
+        for (HistoricProcessInstance instance : historicInstances) {
+            if (instance.getEndTime() != null) {
+                instances.add(new ProcessInstance(instance));
+            }
+        }
         return instances;
     }
 
@@ -215,8 +220,29 @@ public class ProcessInstance extends Execution
 
     public void addToAuditTrail(List<HistoricActivityInstance> list) {
         auditTrail = getAuditTrail();
+        ManagementService managementService = processEngine
+                .getManagementService();
         for (HistoricActivityInstance detail : list) {
-            auditTrail.add(new HistoricDetail(detail));
+            HistoricDetail wrapper = new HistoricDetail(detail);
+            auditTrail.add(wrapper);
+            if ("userTask".equals(detail.getActivityType())) {
+
+                CustomSqlExecution<TaskAllocationMapper, List<Map<String, Object>>> customSqlExecution = new AbstractCustomSqlExecution<TaskAllocationMapper, List<Map<String, Object>>>(
+                        TaskAllocationMapper.class) {
+                    public List<Map<String, Object>> execute(
+                            TaskAllocationMapper customMapper) {
+                        return customMapper.selectTaskAllocation(detail
+                                .getTaskId());
+                    }
+                };
+
+                List<Map<String, Object>> results = managementService
+                        .executeCustomSql(customSqlExecution);
+                for (Map<String, Object> map : results) {
+                    wrapper.addAllocation(new Allocation(map.get("type"), map
+                            .get("groupId"), map.get("userId")));
+                }
+            }
         }
     }
 
@@ -237,7 +263,6 @@ public class ProcessInstance extends Execution
     // }
     // return list2;
     // }
-
 
     // public String toJson() {
     // return new JSONSerializer()
