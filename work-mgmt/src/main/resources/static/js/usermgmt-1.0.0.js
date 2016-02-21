@@ -1,19 +1,6 @@
-var EASING_DURATION = 500;
-var fadeOutMessages = true;
-// 4. We've got an element in the DOM, we've created a template, and we've
-// loaded the library - now it's time to build our Hello World app.
 var ractive = new AuthenticatedRactive({
-  // The `el` option can be a node, an ID, or a CSS selector.
   el: 'container',
-
-  // We could pass in a string, but for the sake of convenience
-  // we're passing the ID of the <script> tag above.
   template: '#template',
-
-  // partial templates
-  // partials: { question: question },
-
-  // Here, we're passing in some initial data
   data: {
     stdPartials: [
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
@@ -71,6 +58,7 @@ var ractive = new AuthenticatedRactive({
     console.log('editUser '+user+' ...');
     $('.create-field').hide();
     $('.no-update-field').prop('readonly','readonly');
+    ractive.set('currentAction', 'EDIT');
     ractive.set('current',user);
     ractive.select(user);
   },
@@ -131,13 +119,18 @@ var ractive = new AuthenticatedRactive({
       }
     });
   },
-  select: function(user) { 
-    ractive.set('saveObserver',false);
-    $.getJSON('/users/'+user.id, function( data ) {
-      console.log('found user '+JSON.stringify(data));
-      ractive.set('current', data);
-      ractive.set('saveObserver',true);
-    });
+  select: function(user) {
+    if (user!=undefined && user['id']!=undefined) {
+      ractive.set('saveObserver',false);
+      $.getJSON('/users/'+user.id, function( data ) {
+        console.log('found user '+JSON.stringify(data));
+        ractive.set('current', data);
+        $('#userPwdForm input[type="password"]').on('blur', function(ev) {
+          ractive.updatePassword();
+        });
+        ractive.set('saveObserver',true);
+      });
+    }
     ractive.toggleResults();
     $('#currentSect').slideDown();
   },
@@ -148,6 +141,11 @@ var ractive = new AuthenticatedRactive({
   },
   updatePassword: function () {
     console.log('updatePassword '+ractive.get('current')+' ...');
+    if (document.getElementById('curPassword').value != document.getElementById('curPassword2').value) {
+      document.getElementById('curPassword').setCustomValidity('Passwords must match.');
+    } else {
+      document.getElementById('curPassword').setCustomValidity('');
+    }
     if (!document.getElementById('userPwdForm').checkValidity()) { 
       ractive.showFormError('userForm','Please correct the highlighted fields');
       return ;
@@ -166,5 +164,3 @@ var ractive = new AuthenticatedRactive({
     });
   }
 });
-
-
