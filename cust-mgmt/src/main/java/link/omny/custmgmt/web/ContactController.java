@@ -32,6 +32,10 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -153,13 +157,24 @@ public class ContactController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public @ResponseBody List<ShortContact> listForTenant(
             @PathVariable("tenantId") String tenantId,
+            @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
         LOGGER.info(String.format("List contacts for tenant %1$s", tenantId));
 
         List<Contact> list;
         if (limit == null) {
-            list = contactRepo.findAllForTenant(tenantId);
+            // TODO unfortunately activeUser is null, prob some kind of class
+            // cast error it seems
+            // Use SecurityContextHolder as temporary fallback
+            Authentication authentication = SecurityContextHolder.getContext()
+                    .getAuthentication();
+            if (authentication.getAuthorities().contains("ROLE_editor")) {
+                list = contactRepo.findAllForTenant(tenantId);
+            } else {
+                list = contactRepo.findAllForTenantOwnedByUser(tenantId,
+                        authentication.getName());
+            }
         } else {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
             list = contactRepo.findPageForTenant(tenantId, pageable);
