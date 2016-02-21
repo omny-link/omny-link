@@ -2,14 +2,10 @@ package com.knowprocess.bpm;
 
 import javax.persistence.EntityManagerFactory;
 
-import org.activiti.spring.boot.DataSourceProcessEngineAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,22 +16,19 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
 import com.knowprocess.bpm.api.ActivitiApplicationSecurity;
 import com.knowprocess.bpm.impl.JsonManager;
 
 @Configuration
-@AutoConfigureBefore(DataSourceProcessEngineAutoConfiguration.class)
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
 @ComponentScan(basePackages = { "com.knowprocess.bpm",
-        "com.knowprocess.decisions" })
+        "com.knowprocess.decisions", "link.omny.acctmgmt" })
 @EnableAutoConfiguration
-@EntityScan({ "com.knowprocess.bpm", "com.knowprocess.decisions" })
+@EntityScan({ "com.knowprocess.bpm", "com.knowprocess.decisions",
+        "link.omny.acctmgmt.model" })
 @EnableJpaRepositories({ "com.knowprocess.decisions.repositories",
         "com.knowprocess.bpm.decisions.repositories",
-        "com.knowprocess.bpm.domain.repositories" })
-@EnableSwagger2
+        "com.knowprocess.bpm.domain.repositories",
+        "link.omny.acctmgmt.repositories" })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Autowired

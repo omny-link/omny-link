@@ -21,8 +21,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 
 @Configuration
-@Import({
-        CustMgmtConfig.class })
+@Import({ CustMgmtConfig.class })
 @ComponentScan(basePackages = { "link.omny.custmgmt", "io.onedecision.engine" })
 @EnableSwagger2
 public class Application extends WebMvcConfigurerAdapter {

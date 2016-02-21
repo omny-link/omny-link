@@ -60,6 +60,11 @@ public class UserRecordController {
         // directly as Spring will truncate the extension.
         id = request.getServletPath().substring(
                 request.getServletPath().lastIndexOf('/') + 1);
+
+        return showJson(id);
+    }
+
+    protected @ResponseBody UserRecord showJson(@PathVariable("id") String id) {
 		LOGGER.info("Find user with id: " + id);
 		// HttpHeaders headers = new HttpHeaders();
 		// headers.add("Content-Type", "application/json; charset=utf-8");
@@ -195,11 +200,15 @@ public class UserRecordController {
 		id = request.getServletPath().substring(
 				request.getServletPath().lastIndexOf('/') + 1);
 
-		IdentityService idSvc = processEngine.getIdentityService();
-		idSvc.deleteUser(id);
-
-		// return id;
+        delete(id);
 	}
+
+    public @ResponseBody void delete(@PathVariable("id") String id) {
+        LOGGER.info(String.format("Deleting profile of %1$s", id));
+
+        IdentityService idSvc = processEngine.getIdentityService();
+        idSvc.deleteUser(id);
+    }
 
 	@RequestMapping(value = "/{id}/groups", method = RequestMethod.GET, headers = "Accept=application/json")
 	public @ResponseBody List<UserGroup> listGroups(

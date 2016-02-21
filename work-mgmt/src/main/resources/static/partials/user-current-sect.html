@@ -11,59 +11,63 @@
         <li class="create-field">
           <label class="required col-md-3 col-sm-6">Username:</label>
           <input class="form-control" id="curUsername" on-blur="save()" required value="{{current.id}}">
+          <p class="help-block">No update allowed</p>
         </li>
         <li>
           <label class="required col-md-3 col-sm-6">First Name:</label>
           <input class="no-update-field form-control" id="curFirstName" on-blur="save()" required value="{{current.firstName}}">
-          <div><i>No update allowed</i></div>
+          <p class="help-block">No update allowed</p>
         </li>
         <li>
           <label class="required col-md-3 col-sm-6">Last Name:</label>
           <input class="no-update-field form-control" id="curLastName" on-blur="save()" required value="{{current.lastName}}">
-          <div><i>No update allowed</i></div>
+          <p class="help-block">No update allowed</p>
         </li>
         <li>
           <label class="required col-md-3 col-sm-6">Email:</label>
           <input class="no-update-field form-control" id="curEmail" on-blur="save()" required type="email" value="{{current.email}}">
-          <div><i>No update allowed</i></div>
+          <p class="help-block">No update allowed</p>
         </li>
         <li>
           <label class="required col-md-3 col-sm-6">Phone:</label>
-          <input class="no-update-field form-control" id="curPhone" pattern="\+?[0-9, ]{8,13}" required type="tel" value="{{current.phone}}">
-          <div><i>No update allowed</i></div>
+          <input class="no-update-field form-control" id="curPhone" on-blur="save()" pattern="\+?[0-9, ]{8,13}" required type="tel" value="{{current.phone}}">
+          <p class="help-block">No update allowed</p>
         </li>
         <li>
           <label class="required col-md-3 col-sm-6">Preferred:</label>
-          <input class="no-update-field typeahead form-control" id="curCommsPreference" required value="{{current.commsPreference}}">
-          <div><i>No update allowed</i></div>
+          <input class="no-update-field typeahead form-control" id="curCommsPreference" on-blur="save()" required value="{{current.commsPreference}}">
+          <p class="help-block">No update allowed</p>
         </li>
         <li>
           <label class="required col-md-3 col-sm-6">Tenant:</label>
-          <input class="no-update-field form-control" id="curTenant" required type="text" value="{{current.tenant}}">
-          <div><i>No update allowed</i></div>
+          <input class="no-update-field form-control" id="curTenant" on-blur="save()" required type="text" value="{{current.tenant}}">
+          <p class="help-block">No update allowed</p>
         </li>
       </ul>
     </form>
   </div>
-  <div class="currentBody col-md-6 col-sm-12">
-    <form id="userPwdForm">
-      <ul class="form edit-form">
-        <li>
-          <label class="col-md-3 col-sm-6">Groups:</label>
-          <span id="curGroups">
-            {{#each current.groups:j}}<span>{{name}}, </span>{{/each}}
-            <input id="curNewGroup" class="hidden" on-blur="addUserToGroup()" value="{{current.newGroup}}">
-            <span class="clickable glyphicon glyphicon-plus admin super-admin" aria-hidden="true" onclick="ractive.addGroup()"></span>
-          </span>
-        </li>
-        <li style="clear:both">
-          <label class="col-md-3 col-sm-6">Reset Password:</label>
-          <input class="form-control" id="curPassword" on-blur="updatePassword()" placeholder="New password" required type="password" value="{{current.password}}">
-        </li>
-        <li>
-          <input class="form-control" id="curPassword2" on-blur="updatePassword()" placeholder="Confirm password" required type="password" value="{{current.confirmPassword}}">
-        </li>
-      </ul>
-    </form>
-  </div>
+
+  {{#currentAction!='CREATE'}}
+    <div class="currentBody col-md-6 col-sm-12">
+      <form id="userPwdForm">
+        <ul class="form edit-form">
+          <li>
+            <label class="col-md-3 col-sm-6">Groups:</label>
+            <span id="curGroups">
+              {{#each current.groups:j}}<span>{{name}}, </span>{{/each}}
+              <input id="curNewGroup" class="hidden" on-blur="addUserToGroup()" value="{{current.newGroup}}">
+              <span class="clickable glyphicon glyphicon-plus admin super-admin" aria-hidden="true" onclick="ractive.addGroup()"></span>
+            </span>
+          </li>
+          <li style="clear:both">
+            <label class="col-md-3 col-sm-6">Reset Password:</label>
+            <input class="form-control" id="curPassword" placeholder="New password" required type="password" value="{{current.password}}">
+          </li>
+          <li>
+            <input class="form-control" id="curPassword2" placeholder="Confirm password" required type="password" value="{{current.confirmPassword}}">
+          </li>
+        </ul>
+      </form>
+    </div>
+  {{/}}
 </section>
