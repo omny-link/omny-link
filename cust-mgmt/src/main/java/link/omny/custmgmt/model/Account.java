@@ -54,8 +54,11 @@ public class Account implements Serializable {
     private String name;
 
     /**
+     * <ul>
+     * <li>UK company numbers are 8 digits.
+     * <li>UK LLP numbers are OC then 6 digits.
      */
-    @Pattern(regexp = "[0-9]{8}")
+    @Pattern(regexp = "[0-9O][0-9C][0-9]{6}")
     @JsonProperty
     private String companyNumber;
 

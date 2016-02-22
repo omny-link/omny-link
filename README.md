@@ -23,6 +23,26 @@ Roadmap
      
 Releases
 --------
+1.0.0 beta 10 - 
+    
+    #120 New partners for FG
+    Firm Gains Stephen
+
+    #116 Cannot add new users
+    bug confirmed
+
+    #115 Allow user preference to put the omny bar at the top
+    enhancement John 
+
+    #112 LLP numbers start OC unlike ltd companies
+    enhancement Stephen 
+
+    #111 Clicking Send Memo button does nothing
+    bug critical confirmed Stephen
+
+    #109 Contact and account records are becoming detached somehow
+    bug confirmed contact Stephen
+
 1.0.0 beta 9 - 12 Feb 2016
 
     #108 New section embedding Companies House data
