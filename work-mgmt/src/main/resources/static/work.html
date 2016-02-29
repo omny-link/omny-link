@@ -34,7 +34,7 @@
       <ul class="form edit-form">
         {{# keys}}
           <li class="col-md-12">
-            <label class="col-md-3">{{.}}</label>
+            <label class="col-md-3">{{formatLabel(.)}}</label>
             <input class="form-control col-md-9" id="cur{{.}}" readonly value="{{obj[.]}}">
           </li>
         {{/}}
@@ -47,7 +47,7 @@
   </script>
   <script id="defaultTemplate" type="text/html">
     <label class="col-md-3">{{name}}</label>
-    <input id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
+    <input class="form-control" id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
   </script>
 
   <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>

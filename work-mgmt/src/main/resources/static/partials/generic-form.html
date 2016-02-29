@@ -18,14 +18,14 @@
   <h3>Local Variables</h3>
   <ul class="form edit-form" style="">
     {{#current.taskLocalVarNames:i}}
-      <li>{{i}} {{.}} {{current.taskLocalVariables[.]}}</li>
+      <li>{{i}} {{formatLabel(.)}} {{current.taskLocalVariables[.]}}</li>
     {{/current.taskLocalVarNames}}
   </ul>
 
   <h3>Process Variables</h3>
   <ul class="form edit-form" style="">
     {{#current.processVarNames:i}}
-      <li>{{i}} {{.}} 
+      <li>{{i}} {{formatLabel(.)}}
         {{ typeof current.processVariables[.] == 'object' ? JSON.stringify(current.processVariables[.]) : current.processVariables[.] }}
       </li>
     {{/current.processVarNames}}
