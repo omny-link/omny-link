@@ -84,13 +84,16 @@ var ractive = new AuthenticatedRactive({
       return new Date(timeString).toLocaleDateString(navigator.languages);
     },
     formatDateIfPresent: function(timeString) {
-    if (timeString==undefined) return undefined;
-    return new Date(timeString).toLocaleDateString(navigator.languages);
-  },
+      if (timeString==undefined) return undefined;
+      return new Date(timeString).toLocaleDateString(navigator.languages);
+    },
     formatDateTime: function(timeString) {
 //    console.log('formatDate: '+timeString);
       if (timeString==undefined) return '';
-    return new Date(timeString).toLocaleDatetimeString(navigator.languages);
+      return new Date(timeString).toLocaleDatetimeString(navigator.languages);
+    },
+    formatLabel: function(str) {
+      return str.toLabel();
     },
     keys: function(obj) {
       return Object.keys(obj);

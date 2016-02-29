@@ -45,7 +45,8 @@ h4 {
   font-size: 20px;
   border-bottom: 3px double #949699;
 }
-h5 {
+h5,
+legend {
   border-bottom: 1px solid #949699;
   font-size:16px;
 }
