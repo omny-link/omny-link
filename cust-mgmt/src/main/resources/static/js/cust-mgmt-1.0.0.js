@@ -340,6 +340,7 @@ var ractive = new AuthenticatedRactive({
       body:JSON.stringify({companyNumber:ractive.get('current.account.companyNumber')}),
       callback:function(results) {
         //results = JSON.parse(results);
+        ractive.set('saveObserver',false);
         ractive.set('current.account.companiesHouseInfo',JSON.parse(results));
         // A bit of a hack required here, will resolve once can move to proper JSON API
         var o = ractive.get('current.account.companiesHouseInfo.companyOfficersHtml');
@@ -350,6 +351,7 @@ var ractive = new AuthenticatedRactive({
         if (fh.indexOf('<div class="js-hidden warning-overview" id="firefox-pdf-notice">')!=-1) { 
           ractive.set('current.account.companiesHouseInfo.companyFilingsHtml', fh.substring(fh.indexOf('<div class="js-hidden warning-overview" id="firefox-pdf-notice">')));
         }
+        ractive.set('saveObserver',true);
         $('#fhTable').addClass('table-striped');
       },
       pattern:"inOut"
@@ -396,6 +398,8 @@ var ractive = new AuthenticatedRactive({
     case 'aol.com':
     case 'gmail.com':
     case 'googlemail.com':
+    case 'hotmail.co.uk':
+    case 'hotmail.com':
     case 'mac.com':
     case 'outlook.com':
     case 'yahoo.com':
@@ -577,6 +581,7 @@ var ractive = new AuthenticatedRactive({
       name:"omny.companySearch",
       body:JSON.stringify({companyName:q}),
       callback:function(results) {
+        console.log('  sendMessage callback...')
         results = JSON.parse(results);
         ractive.set('companiesHouseResults',results);
         var data = jQuery.map( results.items, function( n, i ) {
@@ -599,6 +604,11 @@ var ractive = new AuthenticatedRactive({
         if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
       },
       pattern:"inOut"
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+      var msg = "Unable to lookup company data at the moment. Please try later.";
+      console.warn('msg:'+msg);
+      ractive.showMessage(msg,'alert-warning');
     });
   },
   select: function(contact) {
@@ -670,7 +680,7 @@ var ractive = new AuthenticatedRactive({
     var d = (msg['pattern'] == 'inOut') ? {query:msg['body']} : {json:msg['body']};
     console.log('d: '+d);
     //var d['businessDescription']=ractive.get('message.bizKey');
-    $.ajax({
+    return $.ajax({
       url: '/msg/'+ractive.get('tenant.id')+'/'+msg.name+'/',
       type: type,
       data: d,
