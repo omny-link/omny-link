@@ -22,6 +22,8 @@ public interface ContactCompleteProjection {
 
     String getLastName();
 
+    String getFullName();
+
     String getTitle();
 
     String getEmail();
