@@ -1,0 +1,52 @@
+{ 
+  "id": "wmsp", 
+  "show": { "account":false, "activityAnalysis":true, "budget":false, "companyBackground":false, "marketing":true, "merge":false },
+  "contactFields": [ 
+    { "label": "Complaint", "key": "complaint"}
+  ],
+  "analytics": {
+    "funnel": {
+      "stage1": "Enquiry",
+      "stage2": "Appointment",
+      "stage3": "Proposal",
+      "stage4": "Order",
+      "stage5": "Complete"
+    }
+  },
+  "customerActions": [
+    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/add-reminder.html" },
+    { "label": "Send email", "key": "SendMemo", "form": true  }
+  ],
+  "omnyBar": [
+    { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
+    { "url": "contacts.html", "classes": "glyphicon omny-icon-address-book", "description": "Find a particular contact", "title": "Customer Management" },
+    { "url": "decisions-ui.html", "classes": "glyphicon glyphicon-list-alt", "description": "View and manage your decisions here", "title": "Decisions Definer" },
+    { "url": "domain.html", "classes": "glyphicon omny-icon-domain-model", "title": "Domain Model", "description": "Business glossary" },
+    { "url": "decisions-dmn.html", "classes": "glyphicon glyphicon-list-alt", "title": "Decisions Repository", "description": "Home of your Decision Models" },
+    { "url": "memo-distribution.html", "classes": "glyphicon glyphicon-send", "title": "Distribution Centre", "description": "Send messages to groups of contacts" },
+    { "url": "memo.html", "classes": "glyphicon glyphicon-envelope", "title": "Templates", "description": "Create and edit your message templates"  },
+    { "url": "funnel.html", "classes": "glyphicon glyphicon-filter", "description": "View recent activity", "title": "Funnel" },
+    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "description": "View your process definitions here", "title": "Process Definitions" }
+  ],
+  "partials": [
+    { "name": "wmspContactExtension", "url": "/partials/contact-extension.html"},
+    { "name": "wmspAccountExtension", "url": "/partials/account-extension.html"},
+    { "name": "wmspAddReminder", "url": "/partials/add-reminder.html"},
+    { "name": "wmspSimpleTodo", "url": "/partials/simple-todo.html"},
+    { "name": "wmspSendMemo", "url": "/partials/pick-memo.html"}
+  ],
+  "standardOperatingProcedures": [
+    { "label": "Note to self", "key": "SimpleTodo", "form": "/partials/SimpleTodo.html" }
+  ],
+  "typeaheadControls": [
+    { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},
+    { "selector": "#curCountry", "url": "/data/countries.json"},
+    { "selector": "#curEnquiryType", "url": "/data/enquiry-types.json"},
+    { "selector": "#curOwner", "url": "/data/owners.json"},
+    { "selector": "#who", "url": "/data/owners.json"},
+    { "selector": "#curMedium", "url": "/data/media.json"},
+    { "selector": "#curSource", "url": "/data/sources.json"},
+    { "name": "stages", "selector": "#curStage", "url": "/data/stages.json"},
+    { "name": "status", "selector": "#curStatus", "url": "/data/status.json"}
+  ]
+}
