@@ -10,10 +10,12 @@
   - Set default transition for exclusive gateway
   - Suppress non-executable process
   - Add an activiti initiator (named 'initiator') if one does not exist. 
-  - Convert unsupported service tasks into user tasks and assign to either pool name or initiator if no pools
+  - Convert unsupported service tasks into user tasks, suppressing ST attributes, and assign to either pool name or initiator if no pools.
   - Add form property extensions for data objects (TODO when there is no form key???)  
   - Suppress assignee and candidate group shortcuts when potentialOwner is specified (also helps avoid namespace clash with camunda)
   - Suppress Camunda formKey (those with extension jsf)  
+  - Suppress interface that does not have complete operation and message ref 
+  - Suppress incomplete start events (e.g. signalEvent without signalRef)
 -->
 <xsl:stylesheet version="1.0" 
   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
@@ -71,10 +73,29 @@
           <xsl:apply-templates select="participant"/>
         </xsl:otherwise>
       </xsl:choose>
-      
     </xsl:copy>
   </xsl:template>
   
+  <xsl:template match="semantic:conditionExpression">
+    <xsl:choose>
+      <xsl:when test="/semantic:definitions/@expressionLanguage='http://www.w4.eu/spec/EL/20110701'"> 
+        <xsl:comment>ATTEMPT TO CONVERT W4 UEL EXPRESSION</xsl:comment>
+        <xsl:copy>
+          <xsl:apply-templates select="@*"/>
+          <xsl:value-of select="substring-before(text(),'processInstance.dataEntries.')"/>
+          <xsl:value-of select="substring-before(substring-after(text(),'processInstance.dataEntries.'),'.value')"/>
+          <xsl:value-of select="substring-after(substring-after(text(),'processInstance.dataEntries.'),'.value')"/>
+        </xsl:copy>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>
+          <xsl:apply-templates select="@*"/>
+          <xsl:apply-templates/>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
   <xsl:template match="semantic:dataOutput|dataOutput" mode="formProperty">
     <xsl:element name="activiti:formProperty">
       <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
@@ -131,6 +152,43 @@
           <xsl:apply-templates select="@*"/>
           <xsl:apply-templates/>
         </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <!-- 
+    Suppress incomplete start events 
+    Arose in 2016 Reston demo  
+  -->
+  <xsl:template match="semantic:flowNodeRef">
+    <xsl:variable name="flowNodeId"><xsl:value-of select="text()"/></xsl:variable>
+    <xsl:choose>
+      <xsl:when test="//semantic:startEvent[@id=$flowNodeId]/semantic:signalEventDefinition[not(@signalRef)]">
+        <xsl:comment>Suppressed ref to incomplete start event <xsl:value-of select="$flowNodeId"/></xsl:comment>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>
+          <xsl:apply-templates select="@*"/>
+          <xsl:apply-templates/>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <!-- 
+    Suppress interface that does not have complete operation and message ref 
+    Arose in 2016 Reston demo
+  -->
+  <xsl:template match="semantic:interface|interface">
+    <xsl:choose>
+      <xsl:when test="semantic:operation|operation and .//semantic:inMessageRef|.//inMessageRef|.//semantic:outMessageRef|.//outMessageRef and .//semantic:inMessageRef/text()|.//inMessageRef/text()|.//semantic:outMessageRef/text()|.//outMessageRef/text()">
+        <xsl:copy>
+          <xsl:apply-templates select="@*"/>
+          <xsl:apply-templates/>
+        </xsl:copy>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:comment>Suppressed incomplete interface with id: <xsl:value-of select="@id"/></xsl:comment>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -262,10 +320,55 @@
         <xsl:otherwise>
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:apply-templates select="@*[not(local-name(.)='delegateExpression' or local-name(.)='messageRef')]"/>
+      <xsl:apply-templates select="@*[not(local-name(.)='delegateExpression' or local-name(.)='instantiate' or local-name(.)='messageRef' or local-name(.)='operationRef')]"/>
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
+  
+  <xsl:template match="semantic:scriptTask|scriptTask">
+    <xsl:choose>
+      <xsl:when test="@scriptFormat='text/x-apache-velocity'"> 
+        <xsl:comment>ATTEMPT TO CONVERT text/x-apache-velocity SCRIPT (PROBABLY FROM W4)</xsl:comment>
+        <xsl:element name="semantic:scriptTask">
+          <xsl:attribute name="scriptFormat">JavaScript</xsl:attribute>
+          <xsl:apply-templates select="@id"/>
+          <xsl:apply-templates select="@isForCompensation"/>
+          <xsl:apply-templates select="@name"/>
+          <xsl:apply-templates select="@name"/>
+          <semantic:script>
+            <xsl:text><![CDATA[1==1;]]></xsl:text>
+          </semantic:script>
+        </xsl:element>  
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>  
+          <xsl:apply-templates select="@*"/>
+          <xsl:apply-templates/>
+        </xsl:copy>  
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <!-- 
+    Suppress incomplete start events 
+    Arose in 2016 Reston demo  
+  -->
+  <xsl:template match="semantic:sequenceFlow">
+    <xsl:variable name="flowNodeId"><xsl:value-of select="@sourceRef"/></xsl:variable>
+    <xsl:choose>
+      <xsl:when test="//semantic:startEvent[@id=$flowNodeId]/semantic:signalEventDefinition[not(@signalRef)]">
+        <xsl:comment>Suppressed ref to incomplete start event <xsl:value-of select="$flowNodeId"/></xsl:comment>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>
+          <xsl:apply-templates select="@*"/>
+          <xsl:apply-templates/>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+
+  </xsl:template>
+  
   
   <!-- Pass thru template of the service tasks that are supported follows -->
   
@@ -342,6 +445,23 @@
     </xsl:choose>
   </xsl:template>
    -->
+   
+  <!-- 
+    Suppress incomplete start events 
+    Arose in 2016 Reston demo
+  -->
+  <xsl:template match="semantic:startEvent">
+    <xsl:choose>
+      <xsl:when test="semantic:signalEventDefinition[not(@signalRef)]">
+        <xsl:comment>Suppress incomplete signal start event (without signal reference)</xsl:comment>
+      </xsl:when>
+      <xsl:otherwise>
+	      <xsl:copy>
+		      <xsl:apply-templates select="@*|*"/>
+		    </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
    
   <xsl:template match="collaboration/participant" mode="resource">
     <xsl:param name="id"/>
