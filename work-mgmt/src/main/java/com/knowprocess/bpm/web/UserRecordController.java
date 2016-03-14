@@ -72,8 +72,7 @@ public class UserRecordController {
         if (id.indexOf(' ') == -1) {
             userRecord = UserRecord.findUserRecord(id);
         } else {
-            System.out
-                    .println("TODO This is probably firstName / lastName not id");
+            LOGGER.warn("TODO This is probably firstName / lastName not id");
             userRecord = UserRecord.findUserRecordByNames(
                     id.substring(0, id.indexOf(' ')),
                     id.substring(id.indexOf(' ') + 1));
