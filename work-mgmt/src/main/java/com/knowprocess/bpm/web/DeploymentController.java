@@ -1,11 +1,13 @@
 package com.knowprocess.bpm.web;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 
 import javax.xml.transform.TransformerConfigurationException;
 
@@ -28,6 +30,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.knowprocess.bpm.api.UnsupportedBpmnException;
 import com.knowprocess.bpm.model.Deployment;
+import com.knowprocess.bpm.model.ProcessModel;
+import com.knowprocess.bpm.repositories.ProcessModelRepository;
 import com.knowprocess.xslt.TransformTask;
 
 @Controller
@@ -39,6 +43,8 @@ public class DeploymentController {
 
     private static final String PREPROCESSOR_RESOURCES = "/xslt/ExecutableTweaker.xsl";
 
+    private static final String VALIDATOR_RESOURCES = "/xslt/KpSupportRules.xsl";
+
     /**
      * Set true to make verbose debug level logging.
      */
@@ -47,7 +53,12 @@ public class DeploymentController {
     @Autowired(required = true)
     ProcessEngine processEngine;
 
+    @Autowired
+    private ProcessModelRepository processModelRepo;
+
     private TransformTask preProcessor;
+
+    private TransformTask validator;
 
     @RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<Deployment> showAllJson(
@@ -92,20 +103,15 @@ public class DeploymentController {
         }
         final Map<String, String> processes = new HashMap<String, String>();
         for (MultipartFile resource : resourceFile) {
-
             LOGGER.debug(String.format("Deploying file: %1$s",
                     resource.getOriginalFilename()));
             if (resource.getOriginalFilename().toLowerCase().endsWith(".bpmn")
                     || resource.getOriginalFilename().toLowerCase()
                             .endsWith(".bpmn20.xml")) {
-                LOGGER.debug("... BPMN resource");
-                String bpmn = getPreProcessor().transform(
-                        new String(resource.getBytes(), "UTF-8"));
-                if (LOGGER.isDebugEnabled() && verbose) {
-                    LOGGER.debug("BPMN: " + bpmn);
-                }
-                processes.put(resource.getOriginalFilename(), bpmn);
-                builder.addString(resource.getOriginalFilename(), bpmn.trim());
+                LOGGER.info("... BPMN resource: "
+                        + resource.getOriginalFilename());
+                processes.put(resource.getOriginalFilename(), new String(
+                        resource.getBytes()));
             } else {
                 LOGGER.debug("... non-BPMN resource");
                 builder.addInputStream(resource.getOriginalFilename(),
@@ -115,24 +121,70 @@ public class DeploymentController {
 
         if (isValid(processes)) {
             try {
+                for (Entry<String, String> entry : runExecutableTweaker(
+                        processes).entrySet()) {
+                    builder.addString(entry.getKey(), entry.getValue());
+                }
                 deployment = builder.deploy();
+
+                LOGGER.info(String.format(
+                        "Completed deployment: %1$s(%2$s) at %3$s", deployment
+                                .getName(), deployment.getId(), deployment
+                                .getDeploymentTime().toString()));
+                for (Entry<String, ResourceEntity> entry : ((DeploymentEntity) deployment)
+                        .getResources().entrySet()) {
+                    LOGGER.debug("  ...including: " + entry.getKey());
+                }
+                return deployment;
             } catch (ActivitiException e) {
-                UnsupportedBpmnException e2 = new UnsupportedBpmnException(
-                        String.format("Unsupported BPMN, cause: %1$s",
-                                e.getMessage()));
-                throw e2;
+                handleIncompleteModel(tenantId, processes);
+                return null;
             }
-            LOGGER.info("Completed deployment: " + deployment.getName() + "("
-                    + deployment.getId() + ")");
-            for (Entry<String, ResourceEntity> entry : ((DeploymentEntity) deployment)
-                    .getResources().entrySet()) {
-                LOGGER.debug("  ...including: " + entry.getKey());
-            }
-            return deployment;
         } else {
-            UnsupportedBpmnException e2 = new UnsupportedBpmnException(
-                    "Rejected BPMN as unsupported, see log for details.");
-            throw new RuntimeException(e2.toJson(), e2);
+            handleIncompleteModel(tenantId, processes);
+            return null;
+        }
+    }
+
+    private Map<String, String> runExecutableTweaker(
+            Map<String, String> processes) throws UnsupportedEncodingException {
+        HashMap<String, String> tweakedProcesses = new HashMap<String, String>();
+        for (Entry<String, String> entry : processes.entrySet()) {
+            String bpmn = getPreProcessor().transform(
+                    new String(entry.getValue().getBytes(), "UTF-8"));
+            if (LOGGER.isDebugEnabled() && verbose) {
+                LOGGER.debug("BPMN: " + bpmn);
+            }
+            tweakedProcesses.put(entry.getKey(), bpmn);
+        }
+        return tweakedProcesses;
+    }
+
+    private void handleIncompleteModel(String tenantId,
+            final Map<String, String> processes) {
+        for (Entry<String, String> entry : processes.entrySet()) {
+            ProcessModel model = new ProcessModel();
+            model.setName(entry.getKey());
+            model.setBpmnString(entry.getValue());
+            // First id="xyz" is our id
+            int start = entry.getValue().indexOf("id=") + 4;
+            int end = entry.getValue().indexOf("\"", start);
+            if (entry.getValue().indexOf("'", start) > -1
+                    && entry.getValue().indexOf("'", start) < end) {
+                end = entry.getValue().indexOf("'", start);
+            }
+            String id = entry.getValue().substring(start, end);
+            model.setId(id);
+            // model.setDeploymentId(deploymentId);
+            model.setTenantId(tenantId);
+
+            String issues = getValidator().transform(entry.getValue());
+            if (LOGGER.isDebugEnabled() && verbose) {
+                LOGGER.debug("ISSUES: " + issues);
+            }
+            model.setIssuesAsString(issues);
+
+            createModel(model);
         }
     }
 
@@ -150,6 +202,19 @@ public class DeploymentController {
         return preProcessor;
     }
 
+    private TransformTask getValidator() {
+        if (validator == null) {
+            validator = new TransformTask();
+            try {
+                validator.setXsltResources(VALIDATOR_RESOURCES);
+            } catch (TransformerConfigurationException e) {
+                LOGGER.error(String.format(
+                        "Unable to location deployment validator: %1$s",
+                        VALIDATOR_RESOURCES), e);
+            }
+        }
+        return validator;
+    }
     private boolean isValid(Map<String, String> processes) {
         // TODO rethink this in more Activiti way
         // for (Entry<String, String> entry : processes.entrySet()) {
@@ -164,13 +229,31 @@ public class DeploymentController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public @ResponseBody void deleteFromJson(@PathVariable("id") String id) {
         LOGGER.info(String.format("deleting deployment: %1$s", id));
-        Deployment deployment = Deployment.findDeployment(id);
-        // if (deployment == null) {
-            // return new ResponseEntity<String>(headers,
-            // HttpStatus.NOT_FOUND);
-        // }
-        deployment.remove();
-        // return deployment;
+        try {
+            Deployment deployment = Deployment.findDeployment(id);
+            deployment.remove();
+        } catch (Exception e) {
+            // assume this is an incomplete model....
+            processModelRepo.delete(id);
+        }
+    }
+
+    protected ProcessModel createModel(ProcessModel model) {
+        return processModelRepo.save(model);
+    }
+
+    private String readString(InputStream is) {
+        try {
+            return new Scanner(is).useDelimiter("\\A").next();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+            }
+        }
     }
 
 }

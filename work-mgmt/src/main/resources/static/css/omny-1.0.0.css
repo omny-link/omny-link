@@ -532,6 +532,10 @@ ul.form,
 .form ul {
 	padding-left: 0px;
 }
+h4 a.glyphicon-remove {
+  position: relative;
+  top: -12px;
+}
 a.glyphicon-remove {
   padding: 4px 6px;
 }
@@ -564,7 +568,7 @@ a.glyphicon-remove {
 }
 .wizard-step li a {
 	border-radius: 40px;
-  border: #337ab7 solid 1px;
+  border: #59C4ED solid 1px;
   padding: 5px 15px;
   margin-right: 50px;
 }
@@ -587,6 +591,72 @@ a.glyphicon-remove {
 	width: 80%;
 	height: 80%;
 }
+
+/* SVG DIAGRAMS */
+
+text {
+  font-family: Roboto, sans-serif;
+  font-weight: 400;
+  stroke-width: 0px;
+}
+text.endEvent,
+text.intermediateCatchEvent,
+text.intermediateThrowEvent,
+text.startEvent {
+	/*fill: #0e9acd;*/
+	fill: #666;
+	stroke-width: 0px;
+}
+
+text.callActivity,
+text.businessRuleTask,
+text.manualTask,
+text.receiveTask,
+text.scriptTask,
+text.sendTask,
+text.serviceTask,
+text.userTask {
+  fill: #fff;
+  stroke-width: 0px;
+}
+        
+#propertySectMin {
+  background-color: #fcf8e3;
+  border: #ff6c06 double 3px;
+  bottom: 0;
+  display: none;
+  position: fixed;
+  right:5%;
+}
+#propertySectMin .glyphicon {
+	border:none;
+}
+
+#propertySect {
+	background-color: #fcf8e3;
+	border: #ff6c06 double 3px;
+  display:'inline';
+  padding: 20px;
+  position: fixed;
+  z-index:'100';
+  bottom: 0;
+  left: auto;
+  right: auto;
+  height: 150px;
+  width: 90%;
+}
+#propertySect .close {
+  top: -20px;
+  right: -20px;
+  border: none;
+}
+
+.selected {
+  stroke: #ff6c06;
+  stroke-width: 3px;	
+}
+
+/* END SVG DIAGRAMS */
 
 /* COMPANIES HOUSE */
 

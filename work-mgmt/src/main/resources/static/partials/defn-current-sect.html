@@ -2,10 +2,17 @@
   <h2>
     <span>{{current.name}}</span>
     <div class="pull-right">
-      <a class="clickable glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{current.key}}', '{{current.name}}', '{{username}}')" title="Start new instance"></a>
-      <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" onclick="ractive.fetchInstances()" title="Refresh instance list"></a>
+      {{#current.deploymentId}}
+        <a class="clickable glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{current.key}}', '{{current.name}}', '{{username}}')" title="Start new instance"></a>
+        <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" onclick="ractive.fetchInstances()" title="Refresh instance list"></a>
+      {{/}}
       <a class="glyphicon glyphicon-cloud-download" href="/{{tenant.id}}/process-definitions/{{current.id}}.bpmn" target="_newtab" title="Download the BPMN representation of the process"></a>
-      <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete({{current.deploymentId}})" title="Delete this definition"></a>
+      {{#current.deploymentId}}
+        <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete({{current.deploymentId}})" title="Delete this definition"></a>
+      {{/}}
+      {{^current.deploymentId}}
+        <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('{{current.id}}')" title="Delete this definition"></a>
+      {{/}}
     </div>          
   </h2>
   <p>{{current.description}}</p>
@@ -13,87 +20,116 @@
     <span class="a-primary-label control-label">{{current.deployment.name}}: </span>
     <span class="a-primary-data control-label">{{activityType.toLabel()}}</span>
     <span class="a-secondary-label control-label">Id: </span> {{current.id}};
-    <span class="a-secondary-label control-label">Deployment Id: </span> {{current.deploymentId}};
-    <span class="a-secondary-label control-label">Deployed: </span> {{formatDateTime(current.deployment.deploymentTime)}};
+    {{#current.deploymentId}}
+      <span class="a-secondary-label control-label">Deployment Id: </span> {{current.deploymentId}};
+    {{/}}
+    {{! No deployment time now using process definition service rather than deployment}}
+    {{#current.deployment.deploymentTime}} 
+      <span class="a-secondary-label control-label">Deployed: </span> {{current.deployment.deploymentTime}};
+    {{/}}
+    {{^current.deploymentId}}
+      <span class="a-secondary-label control-label">Incomplete model cannot be run</span>
+    {{/}}
     {{#if current.deployment.category}}
       <span class="a-secondary-label control-label">Category: </span> {{current.deployment.category}};
     {{/if current.deployment.category}} 
   </p>
   {{#if current.id}}
-    <img src="/{{tenant.id}}/process-definitions/{{current.id}}.png"/>
+    <div id="curImage">{{{current.image}}}</div>
   {{/if current.id}}
-  <h3>Instances</h3>
-  {{#each current.instances:i}}
-    <section>
-      <span class="a-primary-label control-label">Name: </span>
-      <span class="a-primary-data">{{current.instances[i].businessKey == undefined ? 'N/A' : current.instances[i].businessKey}}</span>
-      {{#if hasRole('admin') }}
-        <span class="a-secondary-label control-label">Id: </span>
-        <span class="a-secondary-data">{{current.instances[i].id}};</span>
-      {{/if}}
-      <span class="a-secondary-label control-label">Complete?: </span>
-      <span class="a-secondary-data">{{current.instances[i].ended ? 'Yes' : 'No'}};</span>
-      {{# !current.instances[i].ended}}
-        <span class="a-secondary-label control-label">Current task: </span>
-        <span class="a-secondary-data">{{current.instances[i].activityId.toLabel()}};</span>
-      {{/}}
-      <button class="btn btn-details" on-click="toggleAuditTrail(current.instances[i],i)" type="button">View Details</button>
-      <section data-instanceId="{{current.instances[i].id}}" style="display:none">
-        <h4> {{current.instances[i].businessKey == undefined ? 'Instance '+current.instances[i].id : current.instances[i].businessKey+' ('+current.instances[i].id+')' }}
-          <!--<span>Click to delete (cannot be undone!)</span>
-          <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteInstance(current.instances[i],i)"></a>-->
-        </h4>
-        <h5>Latest Data</h5>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th></th>
-              <th class="col-truncate">Name</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each current.instances[i].processVariableNames:j}}
-              <tr data-href="{{_links.self.href}}">
-                <td>{{j+1}}</td>
-                <td>{{current.instances[i].processVariableNames[j]}}</td>
-                <td>{{(JSON.stringify(current.instances[i].processVariables[current.instances[i].processVariableNames[j]]))}}</td>
+  {{#current.deploymentId}}
+    <h3>Instances</h3>
+    {{#each current.instances:i}}
+      <section>
+        <span class="a-primary-label control-label">Name: </span>
+        <span class="a-primary-data">{{current.instances[i].businessKey == undefined ? 'N/A' : current.instances[i].businessKey}}</span>
+        {{#if hasRole('admin') }}
+          <span class="a-secondary-label control-label">Id: </span>
+          <span class="a-secondary-data">{{current.instances[i].id}};</span>
+        {{/if}}
+        <span class="a-secondary-label control-label">Complete?: </span>
+        <span class="a-secondary-data">{{current.instances[i].ended ? 'Yes' : 'No'}};</span>
+        {{# !current.instances[i].ended}}
+          <span class="a-secondary-label control-label">Current task: </span>
+          <span class="a-secondary-data">{{current.instances[i].activityId.toLabel()}};</span>
+        {{/}}
+        <button class="btn btn-details" on-click="toggleAuditTrail(current.instances[i],i)" type="button">View Details</button>
+        <section data-instanceId="{{current.instances[i].id}}" style="display:none">
+          <h4> {{current.instances[i].businessKey == undefined ? 'Instance '+current.instances[i].id : current.instances[i].businessKey+' ('+current.instances[i].id+')' }}
+            <!--<span>Click to delete (cannot be undone!)</span>
+            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteInstance(current.instances[i],i)"></a>-->
+          </h4>
+          <h5>Latest Data</h5>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th></th>
+                <th class="col-truncate">Name</th>
+                <th>Value</th>
               </tr>
-            {{/each}}
-          </tbody>
-        </table> 
-        <h5>History</h5> 
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Type</th>
-              <th class="col-truncate">Event</th>
-              <th>Started</th>
-              <th>Ended</th>
-              <th>Duration</th>
-              <th>Actioned by</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each current.instances[i].auditTrail:j}}
-              <tr data-href="{{_links.self.href}}">
-                <td>{{j+1}}</td>
-                <td>{{activityType.toLabel()}}</td>
-                <td>{{activityName}}</td>
-                <td>{{formatDateTime(startTime)}}</td>
-                <td>{{formatDateTime(endTime)}}</td>
-                <td>{{endTime == undefined ? '' : duration(durationInMillis)}}</td>
-                <td>
-                  {{#allocations}}
-                    {{#type=='candidate'}}Offered to:{{/}} {{groupId}} {{userId}}
-                  {{/}}
-                </td>
+            </thead>
+            <tbody>
+              {{#each current.instances[i].processVariableNames:j}}
+                <tr data-href="{{_links.self.href}}">
+                  <td>{{j+1}}</td>
+                  <td>{{current.instances[i].processVariableNames[j]}}</td>
+                  <td>{{(JSON.stringify(current.instances[i].processVariables[current.instances[i].processVariableNames[j]]))}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table> 
+          <h5>History</h5> 
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Type</th>
+                <th class="col-truncate">Event</th>
+                <th>Started</th>
+                <th>Ended</th>
+                <th>Duration</th>
+                <th>Actioned by</th>
               </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </section>
-    </section><!-- /List of events -->
-  {{/each}}
+            </thead>
+            <tbody>
+              {{#each current.instances[i].auditTrail:j}}
+                <tr data-href="{{_links.self.href}}">
+                  <td>{{j+1}}</td>
+                  <td><span class="{{renderBpmnIcon(activityType)}}" style="font-size:24px"></span></td>
+                  <td>{{activityName}}</td>
+                  <td>{{formatDateTime(startTime)}}</td>
+                  <td>{{formatDateTime(endTime)}}</td>
+                  <td>{{endTime == undefined ? '' : duration(durationInMillis)}}</td>
+                  <td>
+                    {{#allocations}}
+                      {{#type=='candidate'}}Offered to:{{/}} {{groupId}} {{userId}}
+                    {{/}}
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </section>
+      </section><!-- /List of events -->
+    {{/each}}
+  {{/}}
+  {{^current.deploymentId}}
+    <section style="margin-bottom: 2px;">
+      <span class="glyphicon glyphicon-warning-sign pull-right" on-click="showIssues()" style="position:relative;top:-12px;"></span>
+      <h3>Items to be completed</h3>
+      <p>To be eligible for execution these parts of the model need to be completed.</p>
+      <table>
+        <thead></thead>
+        <tbody>
+          {{#current.issues:i}}
+            <tr>
+              <td><a href="#{{modelRef}}">{{i+1}}</a></td>
+              <!-- <td class="col-md-1">{{level}}</td> -->
+              <td>{{description}}</td>
+            </tr>
+          {{/}}
+        </tbody>
+      </table>
+    </section><!-- /List of items to complete -->
+  {{/}}
 </section>

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1456607412176" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="4.0" expressionLanguage="http://activiti.org/Juel" id="_1456607412176" name="" targetNamespace="http://sourceforge.net/bpmn/definitions/_1456607412176" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <message id="omny.complaint" name="omny.complaint"/>
+  <process id="HandleComplaint" isClosed="false" isExecutable="true" name="Handle a complaint" processType="None">
+    <extensionElements>
+      <yaoqiang:pageFormat height="841.8897637795276" imageableHeight="831.8897637795276" imageableWidth="588.1102362204724" imageableX="5.0" imageableY="5.0" orientation="0" width="598.1102362204724"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <sequenceFlow id="_15" sourceRef="reviewComplaint" targetRef="_14"/>
+    <sequenceFlow id="_24" sourceRef="startWithComplaintMsg" targetRef="createContact"/>
+    <boundaryEvent attachedToRef="reviewComplaint" cancelActivity="false" id="_8" parallelMultiple="false">
+      <extensionElements>
+        <yaoqiang:style align="left" labelPosition="right" verticalAlign="middle" verticalLabelPosition="top"/>
+        <yaoqiang:label offset-x="91.0" offset-y="-16.0" x="0.0" y="1.0"/>
+      </extensionElements>
+      <outgoing>_9</outgoing>
+      <outputSet/>
+      <timerEventDefinition id="_8_ED_1">
+        <timeDuration><![CDATA[P2D]]></timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="_9" sourceRef="_8" targetRef="acknowledgeEscalation"/>
+    <sequenceFlow id="_18" name="Yes" sourceRef="_14" targetRef="addResolvedActivity"/>
+    <sequenceFlow id="_22" sourceRef="addResolvedActivity" targetRef="endResolved"/>
+    <exclusiveGateway default="_18" gatewayDirection="Diverging" id="_14" name="Resolved?">
+      <extensionElements>
+        <yaoqiang:label offset-x="-31.0" offset-y="-6.0"/>
+      </extensionElements>
+      <incoming>_15</incoming>
+      <outgoing>_18</outgoing>
+      <outgoing>_6</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="_29" sourceRef="acknowledgeEscalation" targetRef="addEscalationActivity"/>
+    <startEvent id="startWithComplaintMsg" isInterrupting="true" name="omny.complaint" parallelMultiple="false">
+      <outgoing>_24</outgoing>
+      <outputSet/>
+      <messageEventDefinition id="_21_ED_1" messageRef="omny.complaint"/>
+    </startEvent>
+    <callActivity calledElement="CreateContactAndAccount" completionQuantity="1" id="createContact" isForCompensation="false" name="Create Contact in CRM" startQuantity="1">
+      <extensionElements>
+        <activiti:in source="omny_complaint" target="json"/>
+        <activiti:in sourceExpression="omny" target="tenantId"/>
+        <activiti:out source="contactId" target="contactId"/>
+        <activiti:out source="contactEmail" target="contactEmail"/>
+        <activiti:out source="contactPwd" target="contactPwd"/>
+        <activiti:out source="accountId" target="accountId"/>
+        <activiti:out source="contact" target="contact"/>
+      </extensionElements>
+      <incoming>_24</incoming>
+      <outgoing>_3</outgoing>
+    </callActivity>
+    <userTask completionQuantity="1" id="reviewComplaint" implementation="##unspecified" isForCompensation="false" name="Review complaint  and contact  customer" startQuantity="1">
+      <extensionElements>
+        <activiti:formProperty id="omny_complaint" name="Complaint"/>
+      </extensionElements>
+      <incoming>_7</incoming>
+      <outgoing>_15</outgoing>
+      <ioSpecification>
+        <dataOutput id="DoutreviewComplaint_4" isCollection="false" name="resolution"/>
+        <inputSet/>
+        <outputSet>
+          <dataOutputRefs>DoutreviewComplaint_4</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataOutputAssociation id="_5">
+        <sourceRef>DoutreviewComplaint_4</sourceRef>
+        <targetRef>_4</targetRef>
+      </dataOutputAssociation>
+      <potentialOwner id="_12_RES_1">
+        <resourceRef>csr</resourceRef>
+      </potentialOwner>
+    </userTask>
+    <callActivity calledElement="AddActivityToContact" completionQuantity="1" id="addResolvedActivity" isForCompensation="false" name="Add resolution to contact" startQuantity="1">
+      <extensionElements>
+        <activiti:in source="omny_complaint" target="contact"/>
+        <activiti:in sourceExpression="complaint" target="activityType"/>
+        <activiti:in source="resolution" target="activityContent"/>
+        <activiti:in source="contactId" target="contactId"/>
+        <activiti:out source="activityId" target="activityId"/>
+      </extensionElements>
+      <incoming>_18</incoming>
+      <outgoing>_22</outgoing>
+    </callActivity>
+    <userTask completionQuantity="1" id="acknowledgeEscalation" implementation="##unspecified" isForCompensation="false" name="Acknowledge escalation" startQuantity="1">
+      <incoming>_9</incoming>
+      <outgoing>_29</outgoing>
+    </userTask>
+    <callActivity calledElement="AddActivityToContact" completionQuantity="1" id="addEscalationActivity" isForCompensation="false" name="Add activity to contact" startQuantity="1">
+      <extensionElements>
+        <activiti:in source="omny_complaint" target="contact"/>
+        <activiti:in sourceExpression="complaint" target="activityType"/>
+        <activiti:in source="resolution" target="activityContent"/>
+        <activiti:in source="contactId" target="contactId"/>
+        <activiti:out source="activityId" target="activityId"/>
+      </extensionElements>
+      <incoming>_29</incoming>
+    </callActivity>
+    <endEvent id="endResolved" name="End Resolved">
+      <incoming>_22</incoming>
+      <inputSet/>
+    </endEvent>
+    <endEvent id="endUresolved" name="End Unresolved">
+      <incoming>_6</incoming>
+      <inputSet/>
+    </endEvent>
+    <dataObject id="DO_HandleComplaint_2" isCollection="false" name="resolution"/>
+    <sequenceFlow id="_6" name="No" sourceRef="_14" targetRef="endUresolved">
+      <conditionExpression><![CDATA[${empty resolution}]]></conditionExpression>
+    </sequenceFlow>
+    <callActivity calledElement="AddActivityToContact" completionQuantity="1" id="_2" isForCompensation="false" name="Record complaint" startQuantity="1">
+      <extensionElements>
+        <activiti:in source="omny_complaint" target="contact"/>
+        <activiti:in sourceExpression="complaint" target="activityType"/>
+        <activiti:in sourceExpression="${omny_complaint.getString('message')}" target="activityContent"/>
+        <activiti:in source="contactId" target="contactId"/>
+        <activiti:out source="activityId" target="activityId"/>
+      </extensionElements>
+      <incoming>_3</incoming>
+      <outgoing>_7</outgoing>
+    </callActivity>
+    <sequenceFlow id="_3" sourceRef="createContact" targetRef="_2"/>
+    <sequenceFlow id="_7" sourceRef="_2" targetRef="reviewComplaint"/>
+    <dataObjectReference dataObjectRef="DO_HandleComplaint_2" id="_4"/>
+  </process>
+  <dataStore id="DS_1" isUnlimited="true" name="Contact"/>
+  <resource id="csr" name="customer_service_representative"/>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="Untitled Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="HandleComplaint">
+      <bpmndi:BPMNShape bpmnElement="reviewComplaint" id="Yaoqiang-reviewComplaint">
+        <dc:Bounds height="83.0" width="114.0" x="486.0" y="106.84615384615384"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="46.955078125" width="98.0" x="494.0" y="126.86861478365384"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endResolved" id="Yaoqiang-endResolved">
+        <dc:Bounds height="32.0" width="32.0" x="973.5" y="279.2142857142857"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="77.0" x="951.0" y="320.0511997767857"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="createContact" id="Yaoqiang-createContact" isExpanded="false">
+        <dc:Bounds height="83.0" width="114.0" x="178.0" y="106.84615384615384"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="99.0" x="185.5" y="133.86861478365384"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="acknowledgeEscalation" id="Yaoqiang-acknowledgeEscalation">
+        <dc:Bounds height="83.0" width="114.0" x="646.9285714285714" y="365.28571428571433"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="77.0" x="665.4285714285714" y="392.30817522321433"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startWithComplaintMsg" id="Yaoqiang-startWithComplaintMsg">
+        <dc:Bounds height="32.0" width="32.0" x="82.64285714285714" y="132.34615384615384"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="92.0" x="52.64285714285714" y="173.18306790865384"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="addEscalationActivity" id="Yaoqiang-addEscalationActivity" isExpanded="false">
+        <dc:Bounds height="83.0" width="114.0" x="791.7857142857143" y="365.28571428571433"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="83.0" x="807.2857142857143" y="392.30817522321433"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="addResolvedActivity" id="Yaoqiang-addResolvedActivity" isExpanded="false">
+        <dc:Bounds height="83.0" width="114.0" x="791.7857142857143" y="253.71428571428572"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="100.0" x="798.7857142857143" y="280.7367466517857"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_14" id="Yaoqiang-_14" isMarkerVisible="true">
+        <dc:Bounds height="42.0" width="42.0" x="696.6428571428571" y="127.34615384615384"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="59.0" x="657.1428571428571" y="165.34615384615384"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endUresolved" id="Yaoqiang-endUresolved">
+        <dc:Bounds height="32.0" width="32.0" x="973.5" y="132.34615384615384"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="90.0" x="944.5" y="173.16060697115384"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2" isExpanded="false">
+        <dc:Bounds height="83.0" width="114.0" x="334.1923076923077" y="106.84615384615384"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="100.0" x="341.1923076923077" y="140.86861478365384"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4">
+        <dc:Bounds height="38.0" width="29.0" x="501.97058823529414" y="222.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="61.0" x="485.97058823529414" y="262.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_8" id="Yaoqiang-_8">
+        <dc:Bounds height="32.0" width="32.0" x="577.0" y="173.84615384615384"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="609.0" y="150.36861478365384"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_18" id="Yaoqiang-_18">
+        <di:waypoint x="718.3235294117648" y="168.17647058823525"/>
+        <di:waypoint x="718.3235294117648" y="296.47058823529414"/>
+        <di:waypoint x="791.5" y="296.47058823529414"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="25.0" x="705.8235294117648" y="259.4342256433823"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_15" id="Yaoqiang-_15">
+        <di:waypoint x="600.5" y="148.34615384615384"/>
+        <di:waypoint x="696.8461538461538" y="148.34615384615384"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="645.6730769230769" y="138.86861478365384"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9">
+        <di:waypoint x="592.4411764705883" y="205.96492695672498"/>
+        <di:waypoint x="592.4411764705883" y="298.8235294117647"/>
+        <di:waypoint x="646.5" y="406.78571428571433"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="589.4411764705883" y="323.9271933234255"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_7" id="Yaoqiang-_7">
+        <di:waypoint x="448.5" y="148.34615384615384"/>
+        <di:waypoint x="486.5" y="148.34615384615384"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="464.5" y="138.86861478365384"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_6" id="Yaoqiang-_6">
+        <di:waypoint x="738.1538461538462" y="148.34615384615384"/>
+        <di:waypoint x="973.5037448909193" y="148.34615384615384"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="112.0" x="799.8287955223827" y="131.86861478365384"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
+        <di:waypoint x="516.4705882352941" y="190.0"/>
+        <di:waypoint x="516.4705882352941" y="222.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="513.4705882352941" y="196.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
+        <di:waypoint x="292.5" y="148.34615384615384"/>
+        <di:waypoint x="334.5" y="148.34615384615384"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="310.5" y="138.86861478365384"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_29" id="Yaoqiang-_29">
+        <di:waypoint x="760.5" y="406.78571428571433"/>
+        <di:waypoint x="791.5" y="406.78571428571433"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="773.0" y="397.30817522321433"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_24" id="Yaoqiang-_24">
+        <di:waypoint x="114.49625510908078" y="148.34615384615384"/>
+        <di:waypoint x="178.5" y="148.34615384615384"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="143.4981275545404" y="138.86861478365384"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_22" id="Yaoqiang-_22">
+        <di:waypoint x="905.5" y="295.2142857142857"/>
+        <di:waypoint x="889.0" y="258.0"/>
+        <di:waypoint x="973.5014350133316" y="295.2142857142857"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="936.5007175066658" y="285.7367466517857"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

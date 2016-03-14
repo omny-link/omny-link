@@ -35,6 +35,12 @@
    
     <!-- history configuration, 'audit' is default -->
     <property name="history" value="full" />    
+    
+    <property name="customMybatisMappers">
+      <set>
+        <value>com.knowprocess.bpm.impl.TaskAllocationMapper</value>
+      </set>
+    </property>
   </bean>
 
 </beans>

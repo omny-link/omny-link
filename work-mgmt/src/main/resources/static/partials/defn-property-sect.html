@@ -1,0 +1,18 @@
+<section id="propertySectMin" on-click="showPropertySect()">
+  <span class="glyphicon glyphicon-option-horizontal"></span>
+</section>
+
+<section id="propertySect" style="display:none">
+  <span class="close glyphicon glyphicon-triangle-bottom pull-right" on-click="hidePropertySect()"></span>
+  <div class="currentBody col-md-3 col-sm-6">
+    <form id="propertyForm">
+      <ul class="form">
+        <li>
+          <label class="required col-md-3 col-sm-6">Field 1:</label>
+          <input class="form-control" id="curUsername" on-blur="save()" required value="{{current.id}}">
+          <p class="help-block"></p>
+        </li>
+      </ul>
+    </form>
+  </div>
+</section>

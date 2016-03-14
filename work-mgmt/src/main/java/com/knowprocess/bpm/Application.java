@@ -23,12 +23,9 @@ import com.knowprocess.bpm.impl.JsonManager;
 @ComponentScan(basePackages = { "com.knowprocess.bpm",
         "com.knowprocess.decisions", "link.omny.acctmgmt" })
 @EnableAutoConfiguration
-@EntityScan({ "com.knowprocess.bpm", "com.knowprocess.decisions",
-        "link.omny.acctmgmt.model" })
+@EntityScan({ "com.knowprocess.bpm", "link.omny.acctmgmt.model" })
 @EnableJpaRepositories({ "com.knowprocess.decisions.repositories",
-        "com.knowprocess.bpm.decisions.repositories",
-        "com.knowprocess.bpm.domain.repositories",
-        "link.omny.acctmgmt.repositories" })
+        "com.knowprocess.bpm.repositories", "link.omny.acctmgmt.repositories" })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Autowired
@@ -56,13 +53,13 @@ public class Application extends WebMvcConfigurerAdapter {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-      registry.addViewController("/login").setViewName("login");
-      registry.addViewController("/loginError").setViewName("loginError");
+        registry.addViewController("/login").setViewName("login");
+        registry.addViewController("/loginError").setViewName("loginError");
     }
 
     @Bean
     public ActivitiApplicationSecurity applicationSecurity() {
-      return new ActivitiApplicationSecurity();
+        return new ActivitiApplicationSecurity();
     }
 
     public static void main(String[] args) {
