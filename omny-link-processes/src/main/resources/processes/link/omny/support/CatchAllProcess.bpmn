@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://knowprocess.com/website" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1421859323498" name="" targetNamespace="http://knowprocess.com/website" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <process id="CatchAllProcess" isClosed="false" isExecutable="true" name="Catch all handler that creates a user task to sort out whatever happened" processType="None">
+    <documentation id="CatchAllProcess_D_1" textFormat="text/plain"><![CDATA[Catch all handler when there is no process available for a received message]]></documentation>
+    <extensionElements>
+      <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <startEvent id="_2" isInterrupting="true" name="Start Event" parallelMultiple="false">
+      <outgoing>_11</outgoing>
+      <outputSet/>
+    </startEvent>
+    <userTask activiti:dueDate="P1D" activiti:formKey="/partials/simpleTodoFormExtension.html" completionQuantity="1" id="_3" implementation="##unspecified" isForCompensation="false" name="Deal with contact from the website" startQuantity="1">
+      <documentation id="_3_D_1" textFormat="text/plain"><![CDATA[
+        A form has been submitted from the web site that has no workflow associated with it so please review the form details below and decide what action is needed. 
+      ]]></documentation>
+      <extensionElements>
+        <activiti:formProperty expression="#{messageName}" id="messageName" name="Message Name"/>
+        <activiti:formProperty expression="#{query}" id="json" name="Form data"/>
+      </extensionElements>
+      <incoming>_12</incoming>
+      <outgoing>_16</outgoing>
+      <potentialOwner id="_90_RES_1" name="tenantAdmin">
+        <resourceAssignmentExpression>
+          <formalExpression><![CDATA[${tenantId}_admin]]></formalExpression>
+        </resourceAssignmentExpression>
+      </potentialOwner>
+      <potentialOwner id="_90_RES_2" name="superAdmin">
+        <resourceAssignmentExpression>
+          <formalExpression><![CDATA[super_admin]]></formalExpression>
+        </resourceAssignmentExpression>
+      </potentialOwner>
+    </userTask>
+    <parallelGateway gatewayDirection="Diverging" id="_10">
+      <incoming>_11</incoming>
+      <outgoing>_12</outgoing>
+      <outgoing>_14</outgoing>
+    </parallelGateway>
+    <sequenceFlow id="_11" sourceRef="_2" targetRef="_10"/>
+    <sequenceFlow id="_12" sourceRef="_10" targetRef="_3"/>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="_13" implementation="##WebService" isForCompensation="false" name="Post alert to Slack" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="globalResource">
+          <activiti:expression>https://hooks.slack.com/services/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</activiti:expression>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field name="data">
+          <activiti:expression><![CDATA[{ "channel":"#support","attachments":[ { "fallback":"I've created a task that should have been handled by a customer process, please investigate: <http://api.knowprocess.com:8082/work.html|Click to open work manager>","pretext":"I've created a task that should have been handled by a customer process, please investigate: <http://api.knowprocess.com:8082/work.html|Click to open work manager>", "color":"#d9534f","fields":[{"title":"Support Call: ${tenantId}","value":"This is a NOT a test.","short":false }]}]}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field expression="slackId=Location" name="responseHeaders"/>
+      </extensionElements>
+      <incoming>_14</incoming>
+      <outgoing>_18</outgoing>
+    </serviceTask>
+    <sequenceFlow id="_14" sourceRef="_10" targetRef="_13"/>
+    <sequenceFlow id="_16" sourceRef="_3" targetRef="_15"/>
+    <sequenceFlow id="_17" sourceRef="_15" targetRef="_5"/>
+    <sequenceFlow id="_18" sourceRef="_13" targetRef="_15"/>
+    <endEvent id="_5" name="End Event">
+      <incoming>_17</incoming>
+      <inputSet/>
+    </endEvent>
+    <parallelGateway gatewayDirection="Converging" id="_15">
+      <incoming>_16</incoming>
+      <incoming>_18</incoming>
+      <outgoing>_17</outgoing>
+    </parallelGateway>
+    <textAnnotation id="_4" textFormat="text/plain">
+      <text>OMNY LINK SAFETY NET</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="New Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="CatchAllProcess">
+      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
+        <dc:Bounds height="32.0" width="32.0" x="85.65384615384616" y="298.1363636363636"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="63.0" x="70.15384615384619" y="338.8014026988636"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_3" id="Yaoqiang-_3">
+        <dc:Bounds height="70.0" width="108.0" x="241.0" y="379.6153846153846"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="97.0" x="246.5" y="400.1378455528846"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_10" id="Yaoqiang-_10">
+        <dc:Bounds height="42.0" width="42.0" x="153.9545454545455" y="293.1363636363636"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="171.9545454545455" y="337.1363636363636"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_13" id="Yaoqiang-_13">
+        <dc:Bounds height="70.0" width="108.0" x="241.0" y="175.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="70.0" x="260.0" y="195.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_5" id="Yaoqiang-_5">
+        <dc:Bounds height="32.0" width="32.0" x="476.80769230769226" y="298.1363636363636"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="58.0" x="463.80769230769226" y="338.8014026988636"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_15" id="Yaoqiang-_15">
+        <dc:Bounds height="42.0" width="42.0" x="391.6818181818182" y="293.1363636363636"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="409.6818181818182" y="337.1363636363636"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4">
+        <dc:Bounds height="34.0" width="190.0" x="86.0" y="102.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="133.0" x="86.0" y="111.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_18" id="Yaoqiang-_18">
+        <di:waypoint x="349.5" y="211.76470588235296"/>
+        <di:waypoint x="411.2647058823529" y="211.76470588235296"/>
+        <di:waypoint x="411.2647058823529" y="294.2352941176471"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="408.2647058823529" y="212.64010799632354"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_17" id="Yaoqiang-_17">
+        <di:waypoint x="433.3636363636364" y="314.1363636363636"/>
+        <di:waypoint x="476.50058110559394" y="314.1363636363636"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="451.93210873461516" y="304.6588245738636"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_16" id="Yaoqiang-_16">
+        <di:waypoint x="349.5" y="410.0"/>
+        <di:waypoint x="411.0" y="410.0"/>
+        <di:waypoint x="411.0" y="333.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="408.0" y="393.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_14" id="Yaoqiang-_14">
+        <di:waypoint x="177.0" y="295.5"/>
+        <di:waypoint x="177.0" y="212.0"/>
+        <di:waypoint x="241.5" y="212.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="174.0" y="212.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
+        <di:waypoint x="177.0" y="332.5"/>
+        <di:waypoint x="177.0" y="409.0"/>
+        <di:waypoint x="241.5" y="409.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="174.0" y="393.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_11" id="Yaoqiang-_11">
+        <di:waypoint x="117.49941889440606" y="314.1363636363636"/>
+        <di:waypoint x="153.63636363636363" y="314.1363636363636"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="132.56789126538484" y="304.6588245738636"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

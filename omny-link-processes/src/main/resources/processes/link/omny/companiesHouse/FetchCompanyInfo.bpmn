@@ -36,7 +36,7 @@
       <outputSet/>
       <messageEventDefinition id="_2_ED_1" messageRef="omny.companyRecord"/>
     </startEvent>
-    <scriptTask completionQuantity="1" id="_9" isForCompensation="false" name="Extract the &#10;useful part" scriptFormat="JavaScript" startQuantity="1">
+    <scriptTask completionQuantity="1" id="_9" isForCompensation="false" name="Extract the useful part" scriptFormat="JavaScript" startQuantity="1">
       <incoming>_13</incoming>
       <outgoing>_11</outgoing>
       <script><![CDATA[var companyRecord = JSON.stringify(execution.getVariable('omny_companyRecord').toString()).replace(/\\/g,'');
@@ -62,7 +62,7 @@ execution.setVariable('omny_companyRecord',JSON.stringify(companyRecord));]]></s
       <inputSet/>
     </endEvent>
     <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="_6" implementation="##WebService" isForCompensation="false" name="Fetch filings" startQuantity="1">
-    <extensionElements>
+      <extensionElements>
         <activiti:field name="globalResource">
           <activiti:string>https://beta.companieshouse.gov.uk/company/${omny_companyRecord.getString('companyNumber')}/filing-history</activiti:string>
         </activiti:field>
@@ -88,7 +88,7 @@ execution.setVariable('omny_companyRecord',JSON.stringify(companyRecord));]]></s
       <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
         <dc:Bounds height="32.0" width="32.0" x="77.16666666666669" y="230.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="126.0" x="30.166666666666686" y="270.7021484375"/>
+          <dc:Bounds height="18.955078125" width="126.0" x="30.166666666666686" y="270.724609375"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7">
@@ -106,13 +106,13 @@ execution.setVariable('omny_companyRecord',JSON.stringify(companyRecord));]]></s
       <bpmndi:BPMNShape bpmnElement="_9" id="Yaoqiang-_9">
         <dc:Bounds height="89.0" width="120.0" x="602.25" y="201.5"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="32.955078125" width="64.0" x="630.25" y="231.5224609375"/>
+          <dc:Bounds height="32.955078125" width="100.0" x="612.25" y="231.5224609375"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_5" id="Yaoqiang-_5">
         <dc:Bounds height="32.0" width="32.0" x="835.9444444444445" y="230.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="58.0" x="822.9444444444445" y="270.7021484375"/>
+          <dc:Bounds height="18.955078125" width="58.0" x="822.9444444444445" y="270.724609375"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6">
@@ -122,31 +122,31 @@ execution.setVariable('omny_companyRecord',JSON.stringify(companyRecord));]]></s
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_13" id="Yaoqiang-_13">
-        <di:waypoint x="532.409090909091" y="246.0"/>
-        <di:waypoint x="602.409090909091" y="246.0"/>
+        <di:waypoint x="532.5" y="246.0"/>
+        <di:waypoint x="602.5" y="246.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="564.409090909091" y="236.5224609375"/>
+          <dc:Bounds height="18.955078125" width="6.0" x="564.5" y="236.5224609375"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
-        <di:waypoint x="342.409090909091" y="246.0"/>
-        <di:waypoint x="412.409090909091" y="246.0"/>
+        <di:waypoint x="342.5" y="246.0"/>
+        <di:waypoint x="412.5" y="246.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="374.409090909091" y="236.5224609375"/>
+          <dc:Bounds height="18.955078125" width="6.0" x="374.5" y="236.5224609375"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_11" id="Yaoqiang-_11">
-        <di:waypoint x="722.409090909091" y="246.0"/>
-        <di:waypoint x="836.409155475337" y="246.0"/>
+        <di:waypoint x="722.5" y="246.0"/>
+        <di:waypoint x="835.5" y="246.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="776.409123192214" y="236.5224609375"/>
+          <dc:Bounds height="18.955078125" width="6.0" x="776.0" y="236.5224609375"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_4" id="Yaoqiang-_4">
-        <di:waypoint x="109.40902634284501" y="246.0"/>
-        <di:waypoint x="222.409090909091" y="246.0"/>
+        <di:waypoint x="109.5" y="246.0"/>
+        <di:waypoint x="222.5" y="246.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="162.909058625968" y="236.5224609375"/>
+          <dc:Bounds height="18.955078125" width="6.0" x="163.0" y="236.5224609375"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

@@ -7,7 +7,7 @@
       <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
     </extensionElements>
-    <callActivity calledElement="CreateContactAndAccount" completionQuantity="1" id="_11" isForCompensation="false" name="Create &#10;Contact and &#10;Account&#10;in CRM" startQuantity="1">
+    <callActivity calledElement="CreateContactAndAccount" completionQuantity="1" id="_11" isForCompensation="false" name="Create Contact and &#10;Account in CRM" startQuantity="1">
       <extensionElements>
         <activiti:in source="omny_registration" target="json"/>
         <activiti:in sourceExpression="omny" target="tenantId"/>
@@ -21,7 +21,7 @@
       <outgoing>_5</outgoing>
     </callActivity>
     <sequenceFlow id="_13" sourceRef="startFromOmnyRegistrationMsg" targetRef="_11"/>
-    <callActivity calledElement="SendWelcomeEmail" completionQuantity="1" id="_4" isForCompensation="false" name="Send welcome &#10;to subscriber" startQuantity="1">
+    <callActivity calledElement="SendWelcomeEmail" completionQuantity="1" id="_4" isForCompensation="false" name="Send welcome to&#10; subscriber" startQuantity="1">
       <extensionElements>
         <activiti:in sourceExpression="Welcome!" target="subject"/>
         <activiti:in source="contactEmail" target="contactEmail"/>
@@ -39,10 +39,12 @@
     <sequenceFlow id="_8" sourceRef="_4" targetRef="endEvent"/>
     <startEvent activiti:initiator="initiator" id="startFromOmnyRegistrationMsg" isInterrupting="true" name="omny.registration" parallelMultiple="false">
       <outgoing>_13</outgoing>
+      <outputSet/>
       <messageEventDefinition id="_2_ED_1" messageRef="omny.registration"/>
     </startEvent>
     <endEvent id="endEvent" name="End Event">
       <incoming>_8</incoming>
+      <inputSet/>
     </endEvent>
     <textAnnotation id="_12" textFormat="text/plain">
       <text>REGISTER OMNY LINK ACCOUNT</text>
@@ -53,52 +55,52 @@
       <bpmndi:BPMNShape bpmnElement="startFromOmnyRegistrationMsg" id="Yaoqiang-startFromOmnyRegistrationMsg">
         <dc:Bounds height="32.0" width="32.0" x="75.0" y="183.69230769230768"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="102.0" x="40.0" y="224.65031550480768"/>
+          <dc:Bounds height="18.955078125" width="102.0" x="40.0" y="224.67277644230768"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_12" id="Yaoqiang-_12">
-        <dc:Bounds height="55.0" width="182.0" x="75.0" y="65.0"/>
+        <dc:Bounds height="29.0" width="255.0" x="75.0" y="65.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="178.0" x="75.0" y="85.0224609375"/>
+          <dc:Bounds height="18.955078125" width="178.0" x="75.0" y="72.0224609375"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11" isExpanded="false">
-        <dc:Bounds height="77.0" width="125.0" x="180.5" y="161.19230769230768"/>
+        <dc:Bounds height="88.0" width="125.0" x="180.5" y="155.69230769230768"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="60.955078125" width="71.0" x="207.5" y="171.21476862980768"/>
+          <dc:Bounds height="32.955078125" width="109.0" x="188.5" y="185.21476862980768"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4" isExpanded="false">
-        <dc:Bounds height="77.0" width="125.0" x="332.5" y="161.19230769230768"/>
+        <dc:Bounds height="88.0" width="125.0" x="382.5" y="155.69230769230768"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="32.955078125" width="81.0" x="354.5" y="185.21476862980768"/>
+          <dc:Bounds height="32.955078125" width="95.0" x="397.5" y="185.21476862980768"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
-        <dc:Bounds height="32.0" width="32.0" x="531.0" y="183.69230769230768"/>
+        <dc:Bounds height="32.0" width="32.0" x="581.0" y="183.69230769230768"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="58.0" x="517.9999999999999" y="224.65031550480768"/>
+          <dc:Bounds height="18.955078125" width="58.0" x="567.9999999999999" y="224.67277644230768"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_13" id="Yaoqiang-_13">
-        <di:waypoint x="107.03869507016677" y="199.69230769230768"/>
-        <di:waypoint x="180.04545454545462" y="199.69230769230768"/>
+        <di:waypoint x="107.4970411465304" y="199.69230769230768"/>
+        <di:waypoint x="180.5" y="199.69230769230768"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="140.5420748078107" y="190.21476862980768"/>
+          <dc:Bounds height="18.955078125" width="6.0" x="140.9985205732652" y="190.21476862980768"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_8" id="Yaoqiang-_8">
-        <di:waypoint x="457.0454545454546" y="199.69230769230768"/>
-        <di:waypoint x="531.0522140207424" y="199.69230769230768"/>
+        <di:waypoint x="507.5" y="199.69230769230768"/>
+        <di:waypoint x="581.5029588534696" y="199.69230769230768"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="491.0488342830985" y="190.21476862980768"/>
+          <dc:Bounds height="18.955078125" width="6.0" x="541.5014794267348" y="190.21476862980768"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
-        <di:waypoint x="305.0454545454546" y="199.69230769230768"/>
-        <di:waypoint x="332.0454545454546" y="199.69230769230768"/>
+        <di:waypoint x="305.5" y="199.69230769230768"/>
+        <di:waypoint x="382.5" y="199.69230769230768"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="315.5454545454546" y="190.21476862980768"/>
+          <dc:Bounds height="18.955078125" width="6.0" x="341.0" y="190.21476862980768"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
