@@ -85,7 +85,9 @@ public class ProcessDefinition implements Serializable {
 		setKey(pd.getKey());
 		setName(pd.getName());
 		setCategory(pd.getCategory());
-		setDeploymentId(Integer.valueOf(pd.getDeploymentId()));
+        if (pd.getDeploymentId() != null) {
+            setDeploymentId(Integer.valueOf(pd.getDeploymentId()));
+        }
 		setDescription(pd.getDescription());
 		setVersion(Integer.valueOf(pd.getVersion()));
 		setResourceName(pd.getResourceName());
@@ -93,7 +95,7 @@ public class ProcessDefinition implements Serializable {
         setTenantId(pd.getTenantId());
 	}
 
-	// Autowiring static fields is obviously dangerous, but should be ok in this
+    // Autowiring static fields is obviously dangerous, but should be ok in this
 	// case as PE is thread safe.
 	@Autowired(required = true)
 	public void setProcessEngine(ProcessEngine pe) {

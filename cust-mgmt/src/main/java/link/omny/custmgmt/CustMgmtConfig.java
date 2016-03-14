@@ -12,16 +12,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.subethamail.wiser.Wiser;
 
 @Configuration
 @EnableAutoConfiguration
+@ComponentScan(basePackages = { "io.onedecision.engine.decisions",
+        "io.onedecision.engine.domain",
+        "link.omny.custmgmt" })
+@EntityScan({ "io.onedecision.engine.decisions.model",
+        "io.onedecision.engine.domain.model",
+        "link.omny.custmgmt.model" })
+@EnableJpaRepositories({ "io.onedecision.engine.decisions.repositories",
+        "io.onedecision.engine.domain.repositories",
+        "link.omny.custmgmt.repositories" })
 public class CustMgmtConfig extends RepositoryRestMvcConfiguration {
 
     private static final Logger LOGGER = LoggerFactory

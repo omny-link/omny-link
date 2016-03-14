@@ -37,9 +37,48 @@ var ractive = new AuthenticatedRactive({
     hasRole: function(role) {
       return ractive.hasRole(role);
     },
+    renderBpmnIcon: function(activityType) {
+      switch(activityType) {
+      case 'boundaryError':
+        return 'bpmn-icon-intermediate-event-catch-error';
+      case 'boundarySignal':
+        return 'bpmn-icon-intermediate-event-catch-signal';
+      case 'boundaryTimer':
+        return 'bpmn-icon-intermediate-event-catch-timer';
+      case 'callActivity':
+        return 'bpmn-icon-call-activity';
+      case 'endEvent':
+        return 'bpmn-icon-end-event-none';
+      case 'exclusiveGateway':
+        return 'bpmn-icon-gateway-xor';
+      case 'inclusiveGateway':
+        return 'bpmn-icon-gateway-or';
+      case 'intermediateThrowEvent':
+        return 'bpmn-icon-intermediate-event-none';
+      case 'messageStartEvent':
+        return 'bpmn-icon-start-event-message';
+      case 'parallelGateway':
+        return 'bpmn-icon-gateway-parallel';
+      case 'receiveTask':
+        return 'bpmn-icon-receive-task';
+      case 'scriptTask':
+        return 'bpmn-icon-script-task';
+      case 'sendTask':
+        return 'bpmn-icon-send-task';
+      case 'serviceTask':
+        return 'bpmn-icon-service-task';
+      case 'startEvent':
+        return 'bpmn-icon-start-event-none';
+      case 'userTask':
+        return 'bpmn-icon-user-task';
+      default:
+        console.error('Unable to render '+activityType);
+      }
+    },
     stdPartials: [
       { "name": "defnCurrentSect", "url": "/partials/defn-current-sect.html"},
       { "name": "defnListSect", "url": "/partials/defn-list-sect.html"},
+      { "name": "defnPropSect", "url": "/partials/defn-property-sect.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
@@ -94,14 +133,34 @@ var ractive = new AuthenticatedRactive({
       ractive.merge('definitions', data);
     });
   },
-  fetchInstances: function() {
+  fetchImage: function(definition) {
+    console.info('fetchImage');
+    $.get('/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'.svg', function( data ) {
+      console.log('found image');
+      ractive.set('current.image',data);
+      $('.userTask').on('click',ractive.showSelection);
+      $('.sequenceFlow').on('mouseover',ractive.showSeqFlowPropertySect);
+      $('.userTask').on('mouseover',ractive.showUserTaskPropertySect);
+    }, 'text');
+  },
+  fetchInstances: function(definition) {
     console.log('fetch instances');
-    var definition = ractive.get('current');
     $.getJSON('/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'/instances', function( data ) {
       console.log('found instances '+data.length);
       definition.instances = data;
       ractive.set('current',definition);
     });
+  },
+  fetchIssues: function(definition) {
+    console.log('fetch issues');
+    $.getJSON('/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'/issues', function( data ) {
+      console.log('found issues '+data.length);
+      ractive.set('current.issues',data);
+    });
+  },
+  hidePropertySect: function() {
+    console.info('hidePropertySect');
+    $('#propertySect').slideUp();
   },
   oninit: function() {
     this.ajaxSetup();
@@ -110,15 +169,38 @@ var ractive = new AuthenticatedRactive({
   select: function(definition) {
     ractive.set('current', definition);
 //    ractive.set('saveObserver',false);
-    $.getJSON('/'+ractive.get('tenant.id')+'/deployments/'+definition.deploymentId, function( data ) {
+    $.getJSON('/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id, function( data ) {
       console.log('found deployment '+JSON.stringify(data));
       definition.deployment = data;
       ractive.set('current',definition);
       ractive.toggleResults();
+      ractive.fetchImage(definition);
       //      ractive.set('saveObserver',true);
     });
-    ractive.fetchInstances();
+    if (definition.deploymentId==null) {
+      ractive.fetchIssues(definition);
+    } else {
+      ractive.fetchInstances(definition);
+    }
     $('#currentSect').slideDown();
+  },
+  showIssues: function() {
+    console.info('showIssues');
+    $.each(ractive.get('current.issues'), function(i,d) {
+      $('#'+d.modelRef+'Issue').attr('visibility','visible');
+      $('#'+d.modelRef+'IssueBG').attr('visibility','visible');
+    });
+  },
+  showPropertySect: function() {
+    console.info('showPropertySect');
+    $('#propertySect').slideDown();
+//    if (ev.clientX > window.innerWidth/2) {
+//      $('#propertySect').css('left',0);
+//      $('#propertySect').css('right','auto');
+//    } else {
+//      $('#propertySect').css('left','auto');
+//      $('#propertySect').css('right',0);
+//    }
   },
   showResults: function() {
     console.log('showResults');
@@ -126,6 +208,34 @@ var ractive = new AuthenticatedRactive({
     $('#definitionsTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
     $('#definitionsTable').slideDown();
   },
+  showSelection: function(ev) {
+    console.log('showSelection:'+ev.target.id);
+    // jQuery does not have SVG support for add/removeClass
+    if ($('.selected').length>0)
+        $('.selected').attr('class', $('.selected').attr('class').replace(/selected/,''))
+    $('#'+ev.target.id).attr('class',$('#'+ev.target.id).attr('class')+' selected');
+    ractive.set('selected',ev.target.id);
+  },
+//  showUserTaskPropertySect: function(ev) {
+//    console.info('showUserTaskPropertySect at x,y:'+ev.clientX+','+ev.clientY);
+//    var side = ev.clientX > window.innerWidth/2 ? 'left' :'right';
+//    console.log('  side: '+side);
+////    'left': function() { return (ev.clientX > window.innerWidth/2) ? ev.clientX-450 : undefined },
+////    'right': function() { return (ev.clientX > window.innerWidth/2) ? undefined : ev.clientX-450 },
+//    $('#propertySect').css({
+//      'display':'block',
+//      /*'right':0,
+//      'top':ev.clientY-100,
+//      'width':'400px'*/
+//    });
+//    /*if (ev.clientX > window.innerWidth/2) {
+//      $('#propertySect').css('left',0);
+//      $('#propertySect').css('right','auto');
+//    } else {
+//      $('#propertySect').css('left','auto');
+//      $('#propertySect').css('right',0);
+//    }*/
+//  },
   startInstance: function(key, label, bizKey) {
     console.log('startInstance: '+key+' for '+bizKey);
     $.ajax({
@@ -138,7 +248,7 @@ var ractive = new AuthenticatedRactive({
       }),
       success: completeHandler = function(data,textStatus,jqXHR) {
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
-        ractive.fetchInstances();
+        ractive.fetchInstances(ractive.get('current'));
         ractive.showMessage('Started workflow "'+label+'" for '+bizKey);
       },
     });

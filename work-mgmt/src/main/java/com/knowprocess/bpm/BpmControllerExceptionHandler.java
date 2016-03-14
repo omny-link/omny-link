@@ -1,5 +1,7 @@
 package com.knowprocess.bpm;
 
+import java.net.UnknownHostException;
+
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.slf4j.Logger;
@@ -7,10 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.knowprocess.bpm.api.BadJsonMessageException;
 import com.knowprocess.bpm.web.ProcessInstanceController;
+import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 @ControllerAdvice
 public class BpmControllerExceptionHandler {
@@ -21,6 +25,15 @@ public class BpmControllerExceptionHandler {
     @ExceptionHandler(ActivitiObjectNotFoundException.class)
     public void handleNotFound(Exception e) {
         LOGGER.error(e.getMessage(), e);
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(BusinessEntityNotFoundException.class)
+    public @ResponseBody String handleNotFoundException(
+            BusinessEntityNotFoundException e) {
+        LOGGER.error(String.format("%1$s with id %2$s not found",
+                e.getEntity(), e.getId()));
+        return e.getMessage();
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -40,6 +53,13 @@ public class BpmControllerExceptionHandler {
     public void handleIllegalArgument(IllegalArgumentException e) {
         LOGGER.error(e.getMessage(), e);
     }
+
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    @ExceptionHandler(UnknownHostException.class)
+    public void handleUnknownHost(UnknownHostException e) {
+        LOGGER.error(e.getMessage(), e);
+    }
+
 //    @ResponseStatus(HttpStatus.BAD_REQUEST)
 //    @ExceptionHandler(UnsupportedBpmnException.class)
 //    public ModelAndView handleUnsupportedBpmnError(

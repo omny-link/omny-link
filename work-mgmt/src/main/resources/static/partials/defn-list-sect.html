@@ -28,9 +28,9 @@
     <thead>
       <tr>
         <th></th>
-        <th>Name</th>
+        <th colspan="1">Name</th>
         <th class="col-md-5">Description</th>
-        <th>Tenant</th>
+        <!--<th>Tenant</th> -->
         <th>Deployment Bundle</th>
         <th>Version</th>
         <th class="col-md-4">Actions</th>
@@ -44,18 +44,26 @@
           ) }}
       <tr data-href="{{_links.self.href}}">
         <td on-click="select(this)">{{i+1}}</td>
-        <td on-click="select(this)">{{name}} ({{key}})</td>
+        <td on-click="select(this)">{{name}} {{#key}}({{key}}){{/}}</td>
+        <!-- <td on-click="select(this)">
+          <img class="col-md-1" src="/{{tenant.id}}/process-definitions/{{id}}.svg"/>
+        </td>-->
         <td class="col-md-5" on-click="select(this)">{{description}}</td>
-        <td on-click="select(this)">{{tenantId}}</td>
+        <!-- <td on-click="select(this)">{{tenantId}}</td> -->
         <td on-click="select(this)">{{deploymentId}}</td>
         <td on-click="select(this)">{{version}}</td>
         <td on-click="select(this)">
           <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{key}}', '{{name}}', '{{username}}')"></a>
             <a href="/{{tenant.id}}/process-definitions/{{id}}.bpmn" target="_newtab">
               <a class="glyphicon glyphicon-cloud-download" aria-hidden="true"></a></a>
-            <a href="/{{tenant.id}}/process-definitions/{{id}}.png" target="_newtab">
+            <a href="/{{tenant.id}}/process-definitions/{{id}}.svg" target="_newtab">
               <a class="glyphicon glyphicon-picture" aria-hidden="true"></a></a>
-            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this.deploymentId)"></a>
+            {{#current.deploymentId}}
+              <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this.deploymentId)" title="Delete this definition"></a>
+            {{/}}
+            {{^current.deploymentId}}
+              <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this.id)" title="Delete this definition"></a>
+            {{/}}
           </td>
         </tr>
         {{/}}

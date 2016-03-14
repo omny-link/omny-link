@@ -20,7 +20,13 @@
   
   <xsl:template match="semantic:serviceTask|serviceTask">
     <xsl:choose>
-      <xsl:when test="@activiti:class = 'com.knowprocess.resource.spi.Fetcher'">
+      <xsl:when test="starts-with(@activiti:class,'com.knowprocess.fbook') or starts-with(@activiti:class,'com.knowprocess.identity') or starts-with(@activiti:class,'com.knowprocess.resource.spi') or  starts-with(@activiti:class,'com.knowprocess.xslt')">
+        <xsl:text>INFO: Can handle service task '</xsl:text>
+        <xsl:value-of select="./@id"/>
+        <xsl:text>' with Activiti extension: </xsl:text>
+        <xsl:value-of select="@activiti:class"/>
+      </xsl:when>
+      <xsl:when test="starts-with(@activiti:class,'com.knowprocess.mk')">
         <xsl:text>INFO: Can handle service task '</xsl:text>
         <xsl:value-of select="./@id"/>
         <xsl:text>' with Activiti extension: </xsl:text>

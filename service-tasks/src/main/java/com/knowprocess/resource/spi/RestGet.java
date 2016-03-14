@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.activiti.engine.delegate.BpmnError;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.slf4j.Logger;
@@ -80,6 +81,9 @@ public class RestGet extends Fetcher implements JavaDelegate {
                 LOGGER.debug(String.format("Setting %1$s to %2$s",
                         responseVar.getExpressionText(), response));
             }
+        } catch (Throwable e) {
+            throw new BpmnError(String.format("%1$sNotFoundException",
+                    e.getMessage()));
         } finally {
             try {
                 is.close();
