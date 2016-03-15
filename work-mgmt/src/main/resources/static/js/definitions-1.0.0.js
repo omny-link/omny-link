@@ -122,7 +122,7 @@ var ractive = new AuthenticatedRactive({
         type: 'DELETE',
         success: completeHandler = function(data) {
           console.log('  Success, received: '+data);
-          //ractive.fetchInstances();
+          ractive.get('current.instances').splice(idx,1);
         }
     });
     return false; // cancel bubbling to prevent edit as well as delete
