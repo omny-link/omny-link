@@ -40,7 +40,7 @@
   {{#current.deploymentId}}
     <h3>Instances</h3>
     {{#each current.instances:i}}
-      <section>
+      <section style="margin-bottom: 2px;">
         <span class="a-primary-label control-label">Name: </span>
         <span class="a-primary-data">{{current.instances[i].businessKey == undefined ? 'N/A' : current.instances[i].businessKey}}</span>
         {{#if hasRole('admin') }}
@@ -54,11 +54,9 @@
           <span class="a-secondary-data">{{current.instances[i].activityId.toLabel()}};</span>
         {{/}}
         <button class="btn btn-details" on-click="toggleAuditTrail(current.instances[i],i)" type="button">View Details</button>
-        <section data-instanceId="{{current.instances[i].id}}" style="display:none">
-          <h4> {{current.instances[i].businessKey == undefined ? 'Instance '+current.instances[i].id : current.instances[i].businessKey+' ('+current.instances[i].id+')' }}
-            <!--<span>Click to delete (cannot be undone!)</span>
-            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteInstance(current.instances[i],i)"></a>-->
-          </h4>
+        <button class="btn btn-details" on-click="deleteInstance(current.instances[i],i)" type="button">Delete</button>
+        <section data-instanceId="{{current.instances[i].id}}" style="clear:both;display:none">
+          <h4> {{current.instances[i].businessKey == undefined ? 'Instance '+current.instances[i].id : current.instances[i].businessKey+' ('+current.instances[i].id+')' }}</h4>
           <h5>Latest Data</h5>
           <table class="table table-striped">
             <thead>
