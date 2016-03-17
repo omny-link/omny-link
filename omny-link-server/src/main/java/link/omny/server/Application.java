@@ -2,6 +2,7 @@ package link.omny.server;
 
 import io.onedecision.engine.OneDecisionConfig;
 import link.omny.acctmgmt.AcctMgmtConfig;
+import link.omny.acctmgmt.model.SystemConfig;
 import link.omny.custmgmt.CustMgmtConfig;
 
 import org.springframework.boot.SpringApplication;
@@ -22,6 +23,11 @@ import com.knowprocess.bpm.api.ActivitiApplicationSecurity;
 @ComponentScan(basePackages = { "link.omny.acctmgmt", "link.omny.custmgmt",
         "io.onedecision.engine" })
 public class Application extends WebMvcConfigurerAdapter {
+
+    @Bean
+    public SystemConfig systemConfig() {
+        return new SystemConfig();
+    }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
