@@ -274,24 +274,21 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="process" select="parent::node()"/>
-    <xsl:for-each select="//collaboration/participant">
-      <xsl:choose>
-        <xsl:when test="$process/@id=@processRef">
-          <xsl:text>HELLO 2!</xsl:text>
-            <xsl:value-of select="@name"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:text>GOODBYE 2</xsl:text>
-          <xsl:attribute name="activiti:assignee">${initiator}</xsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
-      </xsl:for-each>
+
     <xsl:element name="{$elName}">
-      <xsl:attribute name="activiti:candidateGroups">*
-      <xsl:apply-templates select="//collaboration/participant[@processRef=$process/@id]" mode="resource">
-        <xsl:with-param name="id" select="@id"/>
-        <xsl:with-param name="process" select="parent::node()"/>
-      </xsl:apply-templates></xsl:attribute>
+      <xsl:choose>
+        <xsl:when test="//collaboration/participant[@processRef=$process/@id]">
+          <xsl:attribute name="activiti:candidateGroups">
+			      <xsl:apply-templates select="//collaboration/participant[@processRef=$process/@id]" mode="resource">
+			        <xsl:with-param name="id" select="@id"/>
+			        <xsl:with-param name="process" select="parent::node()"/>
+			      </xsl:apply-templates>
+			    </xsl:attribute>
+		    </xsl:when>
+		    <xsl:otherwise>
+		      <xsl:attribute name="activiti:assignee">${initiator}</xsl:attribute>
+		    </xsl:otherwise>
+	    </xsl:choose>
       <xsl:apply-templates select="@*"/>
       <xsl:apply-templates/>
     </xsl:element>
