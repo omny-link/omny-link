@@ -77,6 +77,7 @@
   <script src="/webjars/Bootstrap-3-Typeahead/3.1.1/bootstrap3-typeahead.js"></script>
   <script src="/webjars/ractive/0.7.3/ractive.min.js"></script>
 
+  <script src="js/activity-1.0.0.js"></script>
   <script src="js/login-1.0.0.js"></script>
   <script src="js/login-ui-1.0.0.js"></script>
 </body>
