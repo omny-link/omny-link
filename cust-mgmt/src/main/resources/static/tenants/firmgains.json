@@ -35,14 +35,6 @@
     { "label": "Previous Turnover", "key": "previousTurnover"},
     { "label": "Previous Profit", "key": "previousProfit"}
   ],
-  "analytics": {
-    "funnel": {
-      "stage1": "Enquiry",
-      "stage2": "Lead",
-      "stage3": "Placed",
-      "stage4": "Complete"
-    }
-  },
   "contactFields": [ 
     { "label": "Current Partner", "key": "partnersContacted"},
     { "label": "Placed with Partner", "key": "placedWithPartner"}
