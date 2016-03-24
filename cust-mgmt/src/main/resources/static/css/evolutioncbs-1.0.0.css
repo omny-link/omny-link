@@ -1,0 +1,134 @@
+/* FONTS */ 
+@import url(https://fonts.googleapis.com/css?family=Dosis);
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+h4 {
+	border-bottom: 3px double #00ADEF;
+}
+h5 {
+	border-bottom: 1px solid #00ADEF;
+	font-size:16px;
+}
+body {
+ font-family: Helvetica, sans-serif;
+}
+
+/* END FONTS */
+
+/* 
+ * COLOURS 
+ *   purple: #644A96
+ *   blue 1: #0063B6
+ *   blue 2: #027CC9
+ *   blue 3: #00ADEF
+ *   title text: #25408F
+ *   body text: #000
+ *   accent text: #333333
+ */
+ 
+ 
+
+/* START BOOTSTRAP OVERRIDES */
+
+body {
+  color: #333333;
+}
+h1 { 
+  color: #25408F;
+  /*margin-bottom: 50px;*/
+}
+section h2 {
+  border-bottom: solid 1px #00ADEF;
+  color: #25408F;
+}
+section h2 .search {
+  bottom: 3px;
+  width: 40%;
+}
+section h2 .search,
+section h2 .entity,
+section h2 .file {
+  background-color: #efefef;
+  border-color: #25408F;
+}
+section h2 .file {
+  border-radius: 0;
+}
+section h2 .glyphicon-search {
+	margin-left: -1px;
+  top: 2px;
+}
+section h2 .glyphicon-import {
+  font-size: 18px;
+  left: -2px;
+  top: 5px;
+}
+section h3 {
+  border-bottom: solid 1px #00ADEF;
+  color: #644A96;
+  padding: 5px 20px 5px 20px;
+}
+a.glyphicon,
+a.glyphicon:visited,
+h2 a.glyphicon,
+h2 a.glyphicon:visited {
+  color: #644A96;
+  text-decoration: none;
+}
+.clickable:focus,
+.clickable:hover,
+a.glyphicon:focus,
+a.glyphicon:hover,
+h2 a.glyphicon:focus,
+h2 a.glyphicon:hover {
+  color: #00ADEF;
+}
+#messages { 
+  position: fixed;
+  top: 45px;
+  margin-left: 25%;
+  margin-right: 25%;
+  width: 50%;
+  z-index: 10;
+}
+.navbar-brand { 
+  top: -13px;  
+}
+.navbar-brand img {
+  height: 53px;
+  height: 53px;
+  padding: 5px;
+  margin-right: 15px;
+}
+/* END BOOTSTRAP OVERRIDES */
+.profile {
+  background-color: #efefef;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 0 20px;  
+}
+form.upload {
+  padding-top: 4px;
+}
+form.upload .glyphicon {
+  font-size: 20px;
+}
+
+.omny-bar {
+  color: #644A96;
+}
+.omny-bar li span.glyphicon.active {
+  background-color: #644A96;
+}
+.omny-bar li span:not(.active) {
+  border-bottom-color: #644A96;
+}
+
+/* SVG diagrams */ 
+
+#funnel text {
+	/* TODO why does this not get applied? */
+  fill: #644A96;
+}

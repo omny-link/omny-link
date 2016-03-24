@@ -17,7 +17,8 @@
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
     { "url": "contacts.html", "classes": "glyphicon omny-icon-address-book", "description": "Find a particular contact", "title": "Contact Management" },
-    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "description": "View your process definitions here", "title": "Process Definitions" }    
+    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "description": "View your process definitions here", "title": "Process Definitions" },    
+    { "url": "funnel.html", "classes": "glyphicon glyphicon-filter", "description": "View recent activity", "title": "Funnel" }
   ],  
   "partials": [
     { "name": "gardenaticsContactExtension", "url": "/partials/gardenatics/ContactExtension.html"},

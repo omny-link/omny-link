@@ -619,7 +619,10 @@ text.userTask {
   fill: #fff;
   stroke-width: 0px;
 }
-        
+
+#funnel text {
+	fill: #ff6c06 !important;
+}
 #propertySectMin {
   background-color: #fcf8e3;
   border: #ff6c06 double 3px;

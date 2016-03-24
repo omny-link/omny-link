@@ -1,0 +1,11 @@
+[
+  {  "idx": 0,   "name": "Client contract signed"  },
+  {  "idx": 1,   "name": "Discovery meeting held"  },
+  {  "idx": 2,   "name": "Documents prepared"  },
+  {  "idx": 3,   "name": "Financial meeting held"  },
+  {  "idx": 4,   "name": "Dry-run meeting held"  },
+  {  "idx": 5,   "name": "Marketing plan approved"  },
+  {  "idx": -1,  "name": "On hold"  },
+  {  "idx": -1,  "name": "Complete"  },
+  {  "idx": -1,  "name": "Cold"  }
+]

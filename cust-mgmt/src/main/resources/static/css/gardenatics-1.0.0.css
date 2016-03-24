@@ -63,3 +63,10 @@ h5 {
   top: -25px
 }
 
+/* SVG diagrams */
+
+#funnel text {
+  /* TODO why does this not get applied? */
+	fill: #ff6c06 !important;
+}
+
