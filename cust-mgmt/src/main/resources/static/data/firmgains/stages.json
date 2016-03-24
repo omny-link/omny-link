@@ -1,8 +1,8 @@
 [
-  {  "id": "Cold", "name": "Cold"  },
-  {  "id": "Complete", "name": "Complete"  },
-  {  "id": "Enquiry", "name": "Enquiry"  },
-  {  "id": "Lead", "name": "Lead"  },
-  {  "id": "OnHold", "name": "On hold"  },
-  {  "id": "Placed", "name": "Placed"  }
+  {  "idx": 0,  "name": "Enquiry"  },
+  {  "idx": 1,  "name": "Lead"  },
+  {  "idx": 2,  "name": "Placed"  },
+  {  "idx": 3,  "name": "Complete"  },
+  {  "idx": -1, "name": "Cold"  },
+  {  "idx": -1, "name": "On hold"  }
 ]

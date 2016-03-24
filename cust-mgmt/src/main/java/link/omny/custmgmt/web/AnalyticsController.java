@@ -71,8 +71,9 @@ public class AnalyticsController {
         }
 
         public void addStage(String stage, Number count) {
-            getStages().put(stage == null ? "N/A" : stage,
-                    count == null ? 0 : count);
+            getStages().put(
+                    (stage == null || stage.length() == 0)
+                    ? "N/A" : stage, count == null ? 0 : count);
         }
       }
 }

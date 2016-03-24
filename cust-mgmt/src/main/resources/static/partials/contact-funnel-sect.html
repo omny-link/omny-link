@@ -1,70 +1,45 @@
-<div style="clear:both;"></div>
-<section id="funnelCriteriaSect">
-  <div>
-    <div class="col-sm-12 col-md-6">
-      <ul class="form edit-form">
-        <li class="form-group"><label class="col-md-4">Period:</label>
-        <input class="typeahead form-control" disabled="disabled" id="rptPeriod" value="All time"></li>
-      </ul>
-    </div>
-    <div class="col-sm-12 col-md-6">
-      <ul class="form edit-form">
-        <li class="form-group">
-        <label class="col-md-4">By Individual:</label>
-          <label class="radio-inline">
-            <input type="radio" checked="checked" disabled="disabled" name="inlineRadioOptions" id="rptByAcctMgrYes" value="yes"> Yes
-          </label>
-          <label class="radio-inline">
-            <input type="radio" disabled="disabled" name="inlineRadioOptions" id="rptByAcctMgrNo" value="no"> No
-          </label>
-        </li>
-      </ul>
-    </div>
-  </div>
-</section>
+<section style="clear:both;">
+  <h2>Summary</h2>
+  {{#show.funnelOptions}}
+    <section id="funnelCriteriaSect">
+      <div>
+        <div class="col-sm-12 col-md-6">
+          <ul class="form edit-form">
+            <li class="form-group"><label class="col-md-4">Period:</label>
+            <input class="typeahead form-control" disabled="disabled" id="rptPeriod" value="All time"></li>
+          </ul>
+        </div>
+        <div class="col-sm-12 col-md-6">
+          <ul class="form edit-form">
+            <li class="form-group">
+            <label class="col-md-4">By Individual:</label>
+              <label class="radio-inline">
+                <input type="radio" checked="checked" disabled="disabled" name="inlineRadioOptions" id="rptByAcctMgrYes" value="yes"> Yes
+              </label>
+              <label class="radio-inline">
+                <input type="radio" disabled="disabled" name="inlineRadioOptions" id="rptByAcctMgrNo" value="no"> No
+              </label>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  {{/}}
 
-<div style="clear:both;"></div>
-<section id="funnelResultSect">
-  <div id="funnelResultLegend">
-    <span class="funnel-legend" id="stage1">
-      <label>{{tenant.analytics.funnel.stage1}}:</label>
-      <span>{{#report.stages[tenant.analytics.funnel.stage1]==undefined}}0{{/}}{{report.stages[tenant.analytics.funnel.stage1]}}</span>
-    </span>
-    <span class="funnel-legend" id="stage2">
-      <label>{{tenant.analytics.funnel.stage2}}:</label>
-      <span>{{#report.stages[tenant.analytics.funnel.stage2]==undefined}}0{{/}}{{report.stages[tenant.analytics.funnel.stage2]}}</span>
-    </span>
-    <span class="funnel-legend" id="stage3">
-      <label>{{tenant.analytics.funnel.stage3}}:</label>
-      <span>{{#report.stages[tenant.analytics.funnel.stage3]==undefined}}0{{/}}{{report.stages[tenant.analytics.funnel.stage3]}}</span>
-    </span>
-    <span class="funnel-legend" id="stage4">
-      <label>{{tenant.analytics.funnel.stage4}}:</label>
-      <span>{{#report.stages[tenant.analytics.funnel.stage4]==undefined}}0{{/}}{{report.stages[tenant.analytics.funnel.stage4]}}</span>
-    </span>
-    {{#tenant.analytics.funnel.stage5}}
-      <span class="funnel-legend" id="stage5">
-        <label>{{tenant.analytics.funnel.stage5}}:</label>
-        <span>{{#report.stages[tenant.analytics.funnel.stage5]==undefined}}0{{/}}{{report.stages[tenant.analytics.funnel.stage5]}}</span>
-      </span>
-    {{/}}
-  </div>
-  <div class="col-md-12">
-    {{#tenant.analytics.funnel.stage5}}
-      <img class="col-md-offset-2" src="/images/funnel5.jpg" alt="Funnel Graph of Sales Activity"/>
-    {{/}}
-    {{^tenant.analytics.funnel.stage5}}
-      <img class="col-md-offset-2" src="/images/funnel4.jpg" alt="Funnel Graph of Sales Activity"/>
-    {{/}}
-  </div>
-  <div id="funnelResultLegend2">
-    {{#report.stages['Cold']}}
-      <label id="stageCold">Cold:</label>
-      <span>{{report.stages['Cold']}}</span>
-    {{/}}
-    {{#report.stages['deleted']}}
-      <label id="stageDeleted">Deleted:</label>
-      <span>{{report.stages['deleted']}}</span>
-    {{/}}
-  </div>
+  <div style="clear:both;"></div>
+  <section id="funnelResultSect" class="">
+    <div class="col-md-offset-1" id="funnel"></div>
+    <div class="col-md-1">&nbsp;</div>
+
+    <div id="funnelResultLegend2">
+      {{#report.stages['Cold']}}
+        <label id="stageCold">Cold:</label>
+        <span>{{report.stages['Cold']}}</span>
+      {{/}}
+      {{#report.stages['deleted']}}
+        <label id="stageDeleted">Deleted:</label>
+        <span>{{report.stages['deleted']}}</span>
+      {{/}}
+    </div>
+  </section>
 </section>
