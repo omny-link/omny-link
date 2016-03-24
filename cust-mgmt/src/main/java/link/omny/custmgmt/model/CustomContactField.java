@@ -3,10 +3,17 @@ package link.omny.custmgmt.model;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "OL_CONTACT_CUSTOM")
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
 public class CustomContactField extends CustomField {
@@ -17,10 +24,7 @@ public class CustomContactField extends CustomField {
         super(key, value);
     }
 
-    // @ManyToOne
-    // (optional = false, targetEntity = Contact.class)
-    // (fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST,
-    // CascadeType.MERGE })
-    // private Contact contact;
+    @ManyToOne(optional = false, targetEntity = Contact.class)
+    private Contact contact;
 
 }
