@@ -32,6 +32,8 @@ public interface ContactCompleteProjection {
 
     String getEmailConfirmationCode();
 
+    String getUuid();
+
     String getPhone1();
 
     String getPhone2();

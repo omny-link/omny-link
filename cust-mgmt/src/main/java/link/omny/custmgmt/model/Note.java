@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Data
-// @ToString(exclude = "contact")
+@Table(name = "OL_NOTE")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Note implements Serializable {
@@ -64,10 +65,7 @@ public class Note implements Serializable {
     @RestResource(rel = "noteContact")
     @ManyToOne(targetEntity = Contact.class)
     @JoinColumn(name = "contact_id")
-    // @JsonBackReference
     private Contact contact;
-
-
 
     @PrePersist
     void preInsert() {

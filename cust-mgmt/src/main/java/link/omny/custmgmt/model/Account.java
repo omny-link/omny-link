@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Digits;
@@ -31,10 +32,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
-// @DiscriminatorValue("account")
-// @Table(name = "account_info")
+@Table(name = "OL_ACCOUNT")
 @Data
-// @ToString(exclude = "contact")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account implements Serializable {
@@ -114,8 +113,7 @@ public class Account implements Serializable {
     // @JsonBackReference
     private List<Contact> contact;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    // , mappedBy = "account", targetEntity = CustomAccountField.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "account", targetEntity = CustomAccountField.class)
     @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomAccountField> customFields;
@@ -129,6 +127,9 @@ public class Account implements Serializable {
 
     public void setCustomFields(List<CustomAccountField> fields) {
         this.customFields = fields;
+        for (CustomAccountField customAccountField : fields) {
+            customAccountField.setAccount(this);
+        }
         setLastUpdated(new Date());
     }
 

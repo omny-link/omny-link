@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Data
-// @ToString(exclude = "contact")
+@Table(name = "OL_DOCUMENT")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Document implements Serializable {
