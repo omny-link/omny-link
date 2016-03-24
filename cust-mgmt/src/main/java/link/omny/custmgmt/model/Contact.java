@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -38,15 +39,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
-// @Table(name = "contact")
+@Table(name = "OL_CONTACT")
 @Data
-// @ToString(exclude = "fullName")
 @AllArgsConstructor
 @NoArgsConstructor
-// TODO for some reason using these instead of jacksonBuilder in Application
-// class results in StackOverflow
-// @JsonSerialize(using = JsonContactSerializer.class)
-// @JsonDeserialize(using = JsonContactDeserializer.class)
 public class Contact implements Serializable {
 
     private static final long serialVersionUID = -6080589981067789428L;
@@ -88,19 +84,18 @@ public class Contact implements Serializable {
 
     /**
      */
-    // @NotNull
     @JsonProperty
-    // @Column(nullable = false)
     private String email;
 
     @JsonProperty
     private boolean emailConfirmed;
 
     /**
-     * A code to be quoted in a 'click to activate' email.
+     * A code to identify contact before registration and to be quoted in a
+     * 'click to activate' email.
      */
     @JsonProperty
-    private String emailConfirmationCode;
+    private String uuid;
 
     /**
      */
@@ -205,11 +200,7 @@ public class Contact implements Serializable {
     @Column(nullable = false)
     private String tenantId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    // , mappedBy = "contact")
-    // @JsonTypeInfo
-    // @JsonTypeResolver(value = null)
-    // @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "contact", targetEntity = CustomContactField.class)
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomContactField> customFields;
@@ -223,6 +214,9 @@ public class Contact implements Serializable {
 
     public void setCustomFields(List<CustomContactField> fields) {
         this.customFields = fields;
+        for (CustomContactField customContactField : fields) {
+            customContactField.setContact(this);
+        }
         setLastUpdated(new Date());
     }
 
@@ -271,7 +265,6 @@ public class Contact implements Serializable {
     }
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
-    // @JsonManagedReference
     private List<Note> notes;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
@@ -297,6 +290,14 @@ public class Contact implements Serializable {
             activity = new ArrayList<Activity>();
         }
         return activity;
+    }
+
+    public String getFirstName() {
+        return firstName == null ? "Unknown" : firstName;
+    }
+
+    public String getLastName() {
+        return lastName == null ? uuid : lastName;
     }
 
     public void setFullName(String name) {
@@ -325,11 +326,15 @@ public class Contact implements Serializable {
     }
 
     public String getFullName() {
-        String fn = firstName == null ? "" : firstName;
-        String ln = lastName == null ? "" : lastName;
-        LOGGER.debug("  have firstName: " + fn);
-        LOGGER.debug("  have lastName: " + ln);
-        return String.format("%1$s %2$s", fn, ln).trim();
+        if (firstName == null && lastName == null) {
+            return String.format("Unknown %1$s", uuid);
+        } else {
+            String fn = firstName == null ? "" : firstName;
+            String ln = lastName == null ? "" : lastName;
+            LOGGER.debug("  have firstName: " + fn);
+            LOGGER.debug("  have lastName: " + ln);
+            return String.format("%1$s %2$s", fn, ln).trim();
+        }
     }
 
     @PreUpdate
@@ -469,17 +474,17 @@ public class Contact implements Serializable {
 
 
     public String getEmailConfirmationCode() {
-        if (emailConfirmationCode == null) {
-            setEmailConfirmationCode(UUID.randomUUID().toString());
+        if (uuid == null) {
+            setUuid(UUID.randomUUID().toString());
         }
 
-        return emailConfirmationCode;
+        return uuid;
     }
 
     public void confirmEmail(String code) {
-        if (emailConfirmationCode != null && emailConfirmationCode.equals(code)) {
+        if (uuid != null && uuid.equals(code)) {
             setEmailConfirmed(true);
-            emailConfirmationCode = null;
+            uuid = null;
         } else {
             throw new IllegalArgumentException();
         }
@@ -490,7 +495,7 @@ public class Contact implements Serializable {
         return String
                 .format("Contact [id=%s, firstName=%s, lastName=%s, title=%s, email=%s, emailConfirmed=%s, emailConfirmationCode=%s, phone1=%s, phone2=%s, address1=%s, address2=%s, town=%s, countyOrCity=%s, postCode=%s, country=%s, stage=%s, enquiryType=%s, accountType=%s, owner=%s, doNotCall=%s, doNotEmail=%s, source=%s, medium=%s, campaign=%s, keyword=%s, tags=%s, firstContact=%s, lastUpdated=%s, tenantId=%s, customFields=%s, account=%s, activity=%s]",
                         id, firstName, lastName, title, email, emailConfirmed,
-                        emailConfirmationCode, phone1, phone2, address1,
+                        uuid, phone1, phone2, address1,
                         address2, town, countyOrCity, postCode, country, stage,
                         enquiryType, accountType, owner, doNotCall, doNotEmail,
                         source, medium, campaign, keyword, tags, firstContact,
