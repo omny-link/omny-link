@@ -72,6 +72,18 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     List<Object[]> findAllForTenantGroupByStage(
             @Param("tenantId") String tenantId);
 
+    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.tenantId = :tenantId")
+    List<Contact> findByUuid(@Param("uuid") String uuid,
+            @Param("tenantId") String tenantId);
+
+    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.email IS NOT NULL AND c.tenantId = :tenantId")
+    List<Contact> findKnownByUuid(@Param("uuid") String uuid,
+            @Param("tenantId") String tenantId);
+
+    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.firstName IS NULL AND c.lastName IS NULL AND c.tenantId = :tenantId")
+    List<Contact> findAnonByUuid(@Param("uuid") String uuid,
+            @Param("tenantId") String tenantId);
+
     @Override
     @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = ?1")
     @Modifying(clearAutomatically = true)
