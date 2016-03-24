@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/website" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1458563793062" name="" targetNamespace="http://omny.link/website" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <message id="omny.userRecognition" name="omny.userRecognition"/>
+  <process id="RecogniseUser" isClosed="false" isExecutable="true" name="Recognise Anonymous User" processType="None">
+    <documentation id="RecogniseUser_D_1" textFormat="text/plain"><![CDATA[Link an anonymous and known contact]]></documentation>
+    <extensionElements>
+      <!-- <activiti:eventListener class="com.knowprocess.bpm.listeners.JsonInputListener" />-->
+      <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <sequenceFlow id="_7" sourceRef="startEvent" targetRef="fetchContact"/>
+    <boundaryEvent attachedToRef="fetchContact" cancelActivity="true" id="_4" name="Not found" parallelMultiple="false">
+      <extensionElements>
+        <yaoqiang:style align="right" labelPosition="left" verticalAlign="middle" verticalLabelPosition="bottom"/>
+        <yaoqiang:label offset-x="68.33107088989436" offset-y="-16.0" x="0.0" y="1.0"/>
+      </extensionElements>
+      <outgoing>_9</outgoing>
+      <outputSet/>
+      <errorEventDefinition id="_4_ED_1"/>
+    </boundaryEvent>
+    <endEvent id="endEvent" name="End Event">
+      <incoming>_5</incoming>
+      <inputSet/>
+    </endEvent>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="fetchContact" implementation="##WebService" isForCompensation="false" name="Fetch contact" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername">
+          <activiti:string>userInfo('tenant-bot')</activiti:string>
+        </activiti:field>
+        <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="globalResource">
+          <activiti:expression>userInfo('cust-mgmt-url')/${omny_userRecognition.getString('tenantId')}/contacts/findByUuid?uuid=${omny_userRecognition.getString('uuid')}</activiti:expression>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field expression="contact" name="responseVar"/>
+      </extensionElements>
+      <incoming>_7</incoming>
+      <outgoing>_12</outgoing>
+    </serviceTask>
+    <startEvent id="startEvent" isInterrupting="true" name="omny.userRecognition" parallelMultiple="false">
+      <outgoing>_7</outgoing>
+      <outputSet/>
+      <messageEventDefinition id="_2_ED_1" messageRef="omny.userRecognition"/>
+    </startEvent>
+    <endEvent id="endEventNewVisitor" name="End Event (New Visitor)">
+      <incoming>_9</incoming>
+      <inputSet/>
+    </endEvent>
+    <sequenceFlow id="_9" sourceRef="_4" targetRef="endEventNewVisitor"/>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="updateContact" implementation="##WebService" isForCompensation="false" name="Update contact" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername">
+          <activiti:string>userInfo('tenant-bot')</activiti:string>
+        </activiti:field>
+        <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="globalResource">
+          <activiti:string>userInfo('cust-mgmt-url')/${omny_userRecognition.getString('tenantId')}/contacts/${omny_userRecognition.getString('email')}/</activiti:string>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field name="data">
+          <activiti:expression>uuid=${omny_userRecognition.getString('uuid')}</activiti:expression>
+        </activiti:field>
+      </extensionElements>
+      <incoming>_12</incoming>
+      <outgoing>_5</outgoing>
+    </serviceTask>
+    <sequenceFlow id="_12" sourceRef="fetchContact" targetRef="updateContact"/>
+    <sequenceFlow id="_5" sourceRef="updateContact" targetRef="endEvent"/>
+    <textAnnotation id="_11" textFormat="text/plain">
+      <text>RECOGNISE USER</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="New Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="RecogniseUser">
+      <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
+        <dc:Bounds height="31.0" width="238.0" x="41.0" y="41.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="97.0" x="41.0" y="49.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
+        <dc:Bounds height="32.0" width="32.0" x="678.0714285714287" y="173.35714285714286"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="58.0" x="665.0714285714287" y="215.65890066964286"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="fetchContact" id="Yaoqiang-fetchContact">
+        <dc:Bounds height="91.0" width="119.0" x="220.8571428571429" y="143.85714285714286"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="78.0" x="241.3571428571429" y="181.87960379464286"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
+        <dc:Bounds height="32.0" width="32.0" x="57.500000000000014" y="173.35714285714286"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="127.0" x="10.0" y="215.65890066964286"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endEventNewVisitor" id="Yaoqiang-endEventNewVisitor">
+        <dc:Bounds height="32.0" width="32.0" x="678.0714285714287" y="306.8571428571429"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="129.0" x="629.5714285714287" y="347.5817522321429"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="updateContact" id="Yaoqiang-updateContact">
+        <dc:Bounds height="91.0" width="119.0" x="427.7142857142858" y="143.85714285714286"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="87.0" x="443.7142857142858" y="181.87960379464286"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4">
+        <dc:Bounds height="32.0" width="32.0" x="289.18821374703725" y="218.85714285714286"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="60.0" x="229.18821374703725" y="259.37960379464283"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
+        <di:waypoint x="339.5" y="189.35714285714286"/>
+        <di:waypoint x="427.5" y="189.35714285714286"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="380.5" y="179.87960379464286"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9">
+        <di:waypoint x="301.3181818181818" y="249.85293747315052"/>
+        <di:waypoint x="301.3181818181818" y="317.59090909090907"/>
+        <di:waypoint x="679.2427025995119" y="317.59090909090907"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="453.41145639996756" y="308.11337002840907"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_7" id="Yaoqiang-_7">
+        <di:waypoint x="89.4999156685246" y="189.35714285714286"/>
+        <di:waypoint x="220.5" y="189.35714285714286"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="151.99995783426232" y="179.87960379464286"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
+        <di:waypoint x="546.5" y="189.35714285714286"/>
+        <di:waypoint x="678.5000843314754" y="189.35714285714286"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="609.5000421657377" y="179.87960379464286"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

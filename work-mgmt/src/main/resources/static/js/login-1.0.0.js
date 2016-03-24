@@ -211,6 +211,9 @@ var AuthenticatedRactive = Ractive.extend({
     }
     localStorage['username'] = $('#username').val();
     localStorage['password'] = $('#password').val();
+    if (window.ua) {
+      ua.login($('#username').val());
+    }
     document.forms['loginForm'].submit();
   },
   logout: function() {

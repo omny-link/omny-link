@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
+
 import link.omny.custmgmt.internal.CsvImporter;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Activity;
@@ -33,6 +36,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -50,6 +54,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 /**
  * REST web service for uploading and accessing a file of JSON Contacts (over
@@ -134,10 +139,9 @@ public class ContactController {
             throws IOException {
         LOGGER.info(String.format("Uploading CSV contacts for: %1$s", tenantId));
         String content = new String(file.getBytes());
-        List<Contact> list = new CsvImporter().readContacts(
-                new StringReader(content),
-                content.substring(0, content.indexOf('\n')).split(",")
-                );
+        List<Contact> list = new CsvImporter().readContacts(new StringReader(
+                content), content.substring(0, content.indexOf('\n'))
+                .split(","));
         LOGGER.info(String.format("  found %1$d contacts", list.size()));
         for (Contact contact : list) {
             contact.setTenantId(tenantId);
@@ -169,12 +173,20 @@ public class ContactController {
             // Use SecurityContextHolder as temporary fallback
             Authentication authentication = SecurityContextHolder.getContext()
                     .getAuthentication();
-            if (authentication.getAuthorities().contains("ROLE_editor")) {
-                list = contactRepo.findAllForTenant(tenantId);
-            } else {
-                list = contactRepo.findAllForTenantOwnedByUser(tenantId,
-                        authentication.getName());
+
+            for (GrantedAuthority a : authentication.getAuthorities()) {
+                System.out.println("  " + a.getAuthority());
+                System.out.println("  "
+                        + a.getAuthority().equals("ROLE_editor"));
+                System.out.println("  " + a.getAuthority().equals("editor"));
             }
+
+            // if (authentication.getAuthorities().contains("ROLE_editor")) {
+            list = contactRepo.findAllForTenant(tenantId);
+            // } else {
+            // list = contactRepo.findAllForTenantOwnedByUser(tenantId,
+            // authentication.getName());
+            // }
         } else {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
             list = contactRepo.findPageForTenant(tenantId, pageable);
@@ -215,9 +227,8 @@ public class ContactController {
      * 
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/searchByAccountNameLastNameFirstName",
-            method = RequestMethod.GET, 
-            params = { "accountName", "lastName", "firstName" })
+    @RequestMapping(value = "/searchByAccountNameLastNameFirstName", method = RequestMethod.GET, params = {
+            "accountName", "lastName", "firstName" })
     public @ResponseBody List<ShortContact> listForAccountNameLastNameFirstName(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("lastName") String lastName,
@@ -293,6 +304,45 @@ public class ContactController {
     }
 
     /**
+     * Return just the matching contact.
+     * 
+     * @return contacts for that tenant with the matching tag.
+     * @throws BusinessEntityNotFoundException
+     */
+    @RequestMapping(value = "/findByUuid", method = RequestMethod.GET, params = { "uuid" })
+    @Transactional
+    public @ResponseBody ShortContact findByUuid(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam("uuid") String uuid)
+            throws BusinessEntityNotFoundException {
+        LOGGER.debug(String.format("Find contact for uuid %1$s", uuid));
+
+        return wrap(consolidateContactsWithUuid(uuid, tenantId));
+    }
+
+    protected synchronized Contact consolidateContactsWithUuid(String uuid,
+            String tenantId) {
+        // Because of ASYNC calls from JavaScript uuid may not be unique...
+        List<Contact> contacts = contactRepo.findByUuid(uuid, tenantId);
+        switch (contacts.size()) {
+        case 0:
+            String msg = String.format("No contact with uuid: %1$s", uuid);
+            LOGGER.warn(msg);
+            throw new BusinessEntityNotFoundException("Contact", uuid);
+        case 1:
+            Contact contact = contacts.get(0);
+            LOGGER.info(String.format("Found contact: ", contact.getId()));
+            return contact;
+        default:
+            // TODO should we attempt a cleanup?
+            LOGGER.warn(String.format("Found %1$d contacts with uuid: %2$s...",
+                    contacts.size(), uuid));
+            contact = contacts.get(0);
+            return contact;
+        }
+    }
+
+    /**
      * Create a new contact.
      * 
      * @return
@@ -315,8 +365,7 @@ public class ContactController {
      * Update an existing contact.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = {
-            "application/json" })
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long contactId,
             @RequestBody Contact updatedContact) {
@@ -336,6 +385,105 @@ public class ContactController {
             account.setTenantId(tenantId);
             accountRepo.save(account);
         }
+    }
+
+    /**
+     * Link anonymous contact to a known one.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{email}/", method = RequestMethod.POST, produces = { "application/json" })
+    @Transactional(value = TxType.REQUIRED)
+    public @ResponseBody void linkToKnownContact(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("email") String email,
+            @RequestParam("uuid") String uuid) {
+        // Almost certainly only one contact but apparently we're not 100%
+        List<Contact> contacts = contactRepo.findByEmail(email, tenantId);
+
+        Contact anonContact = consolidateContactsWithUuid(uuid, tenantId);
+        if (anonContact.getEmail() == null) {
+            updateActivities(anonContact, contacts);
+
+            // move uuid and activities to existing un-anonymous contact
+            updateKnownContact(tenantId, uuid, contacts, anonContact);
+
+        } else {
+            LOGGER.info(String
+                    .format("UUID %1$s already linked to known contact %2$s, record login.",
+                            uuid, anonContact.getFullName()));
+            Activity entity = new Activity("login", new Date(), String.format(
+                    "User %1$s (%2$d) logged in", anonContact.getFullName(),
+                    anonContact.getId()));
+            entity.setContact(anonContact);
+            activityRepo.save(entity);
+
+        }
+    }
+
+    // @Transactional(value = TxType.REQUIRES_NEW)
+    public void updateActivities(Contact anonContact, List<Contact> contacts) {
+        for (Contact contact : contacts) {
+            activityRepo.updateContact(anonContact, contact);
+        }
+    }
+
+    // @Transactional(value = TxType.REQUIRES_NEW)
+    public void updateKnownContact(String tenantId, String uuid,
+            List<Contact> contacts, Contact anonContact) {
+        for (Contact contact : contacts) {
+            contact.setUuid(uuid);
+            contact.setTenantId(tenantId);
+            contactRepo.save(contact);
+
+            Activity entity = new Activity("linkToKnownContact", new Date(),
+                    String.format("Linked %1$s (%2$d) to user %3$s (%4$d)",
+                            anonContact.getUuid(), anonContact.getId(),
+                            contact.getFullName(), contact.getId()));
+            entity.setContact(contact);
+            activityRepo.save(entity);
+        }
+        if (contacts.size() > 0) {
+            contactRepo.delete(anonContact.getId());
+        }
+    }
+
+    /**
+     * Link anonymous contact's activities to the specified known contact.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{email}/activities", method = RequestMethod.POST, produces = { "application/json" })
+    @Transactional(value = TxType.REQUIRES_NEW)
+    public @ResponseBody void linkActivitiesToKnownContact(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("email") String email,
+            @RequestParam("uuid") String uuid) {
+        LOGGER.info(String.format(
+                "linkActivitiesToKnownContact %1$s %2$s %3$s", tenantId, email,
+                uuid));
+
+        // Almost certainly only one contact but apparently we're not 100%
+        List<Contact> contacts = contactRepo.findByEmail(email, tenantId);
+
+        List<Contact> anonContacts = contactRepo.findAnonByUuid(uuid, tenantId);
+        // Contact anonContact = consolidateContactsWithUuid(uuid, tenantId);
+
+        for (Contact contact : contacts) {
+            for (Contact anonContact : anonContacts) {
+                activityRepo.updateContact(anonContact, contact);
+            }
+        }
+    }
+
+    /**
+     * Delete an existing contact.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = { "application/json" })
+    public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long contactId) {
+        Contact contact = contactRepo.findOne(contactId);
+
+        contactRepo.delete(contact);
     }
 
     /**
@@ -374,7 +522,7 @@ public class ContactController {
      * Add a note to the specified contact.
      */
     // TODO Jackson cannot deserialise document because of contact reference
-//    @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.PUT)
+    // @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.PUT)
     public @ResponseBody void addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId, @RequestBody Note note) {
@@ -525,8 +673,7 @@ public class ContactController {
         }
         return resource;
     }
-    
-    
+
     private Link linkTo(
             @SuppressWarnings("rawtypes") Class<? extends CrudRepository> clazz,
             Long id) {
@@ -554,5 +701,5 @@ public class ContactController {
         private String tags;
         private Date firstContact;
         private Date lastUpdated;
-      }
+    }
 }
