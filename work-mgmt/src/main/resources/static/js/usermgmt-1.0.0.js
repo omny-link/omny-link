@@ -27,9 +27,8 @@ var ractive = new AuthenticatedRactive({
         url: '/users/'+ractive.get('current.id')+'/groups/'+newGroup,
         type: 'POST',
         contentType: 'application/json',
-        success: completeHandler = function(data) {
-          console.log('data: '+ data);
-          ractive.merge('current.groups', {id:newGroup.toLowerCase(),name:newGroup});
+        success: completeHandler = function() {
+          ractive.get('current.groups').push( {id:newGroup.toLowerCase(),name:newGroup} );
         }
       });
   },
@@ -66,6 +65,7 @@ var ractive = new AuthenticatedRactive({
     console.log('fetch...');
     $.getJSON("/users/",  function( data ) {
       ractive.merge('users', data);
+      if (ractive.hasRole('admin')) $('.admin').show();
     });
   },
   fetchUserGroups: function () {
@@ -73,6 +73,11 @@ var ractive = new AuthenticatedRactive({
     $.getJSON("/users/"+ractive.get('current.id')+'/groups',  function( data ) {
       ractive.merge('currentGroups', data);
     });
+  },
+  hideResults: function() {
+    console.log('hideResults');
+    $('#usersTableToggle').removeClass('glyphicon-triangle-bottom').addClass('glyphicon-triangle-right');
+    $('#usersTable').slideUp();
   },
   initAutoComplete: function() {
     console.log('initAutoComplete');
@@ -128,11 +133,29 @@ var ractive = new AuthenticatedRactive({
         $('#userPwdForm input[type="password"]').on('blur', function(ev) {
           ractive.updatePassword();
         });
+        if (ractive.hasRole('admin')) $('.admin').show();
         ractive.set('saveObserver',true);
       });
     }
-    ractive.toggleResults();
+    ractive.hideResults();
     $('#currentSect').slideDown();
+  },
+  togglePwdFields: function() {
+    console.info('togglePwdFields');
+    if ($('#resetPwdBtn').text()=='Cancel') {
+      $('#resetPwdBtn').empty().append('Reset Password');
+      $('.pwdField').slideUp();
+    } else {
+      $('#resetPwdBtn').empty().append('Cancel');
+      $('.pwdField').slideDown();
+      $('.pwdField input')[0].focus();
+      ractive.hideMessage();
+    }
+  },
+  showResults: function() {
+    console.log('showResults');
+    $('#usersTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
+    $('#usersTable').slideDown();
   },
   toggleResults: function() {
     console.log('toggleResults');
@@ -143,6 +166,8 @@ var ractive = new AuthenticatedRactive({
     console.log('updatePassword '+ractive.get('current')+' ...');
     if (document.getElementById('curPassword').value != document.getElementById('curPassword2').value) {
       document.getElementById('curPassword').setCustomValidity('Passwords must match.');
+    } else if (document.getElementById('curPassword').value.trim().length <= 8 || document.getElementById('curPassword2').value.trim().length <= 8) {
+      document.getElementById('curPassword').setCustomValidity('Passwords must be at least 8 characters.');
     } else {
       document.getElementById('curPassword').setCustomValidity('');
     }
@@ -151,6 +176,7 @@ var ractive = new AuthenticatedRactive({
       return ;
     }
     
+    $('.pwdField').slideUp();
     $.ajax({
       url: '/users/'+ractive.get('current.id')+'/reset-password',
       type: 'POST',
@@ -160,6 +186,7 @@ var ractive = new AuthenticatedRactive({
         ractive.showMessage('User password has been updated');
         ractive.fetch();
         setTimeout(function() { $('#currentSect').slideUp(); }, EASING_DURATION*4);
+        ractive.showResults();
       }
     });
   }
