@@ -247,7 +247,6 @@ var ractive = new AuthenticatedRactive({
         type: 'DELETE',
         success: completeHandler = function(data) {
           ractive.fetch();
-          ractive.toggleResults();
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
           console.error('XX: '+errorThrown);
@@ -312,27 +311,6 @@ var ractive = new AuthenticatedRactive({
       }
     });
   },
-  fetchDocs: function() { 
-    $.getJSON(ractive.getId(ractive.get('current'))+'/documents',  function( data ) {
-      if (data['_embedded'] != undefined) {
-        console.log('found docs '+data);
-        ractive.merge('current.documents', data['_embedded'].documents);
-        // sort most recent first
-        ractive.get('current.documents').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-      }
-      ractive.set('saveObserver',true);
-    });
-  },
-  fetchNotes: function() { 
-    $.getJSON(ractive.getId(ractive.get('current'))+'/notes',  function( data ) {
-      if (data['_embedded'] != undefined) {
-        console.log('found notes '+data);
-        ractive.merge('current.notes', data['_embedded'].notes);
-        // sort most recent first
-        ractive.get('current.notes').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-      }
-    });
-  },
   fetchCompaniesHouseInfo: function() { 
     console.info('fetchCompaniesHouseInfo for '+ractive.get('current.account.companyNumber'));
     ractive.sendMessage({
@@ -374,20 +352,6 @@ var ractive = new AuthenticatedRactive({
       }
     });
     return c;
-  },
-  getId: function(contact) { 
-    console.log('getId: '+contact);
-    var uri; 
-    if (contact['links']!=undefined) {
-      $.each(contact.links, function(i,d) { 
-        if (d.rel == 'self') { 
-          uri = d.href;
-        }
-      });
-    } else if (contact['_links']!=undefined) {
-      uri = ractive.stripProjection(contact._links.self.href);
-    } 
-    return uri;
   },
   inferDomainName: function() {
     console.info('inferDomainName');
@@ -525,53 +489,6 @@ var ractive = new AuthenticatedRactive({
       $('#currentAccountForm :invalid').addClass('field-error');
       ractive.showMessage(msg);
       ractive.set('saveObserver',true);
-    }
-  },
-  saveDoc: function () {
-    console.log('saveDoc '+JSON.stringify(ractive.get('current.doc'))+' ...');
-    var n = ractive.get('current.doc');
-    n.url = $('#doc').val();
-    var url = ractive.getId(ractive.get('current'))+'/documents';
-    url = url.replace('contacts/',ractive.get('tenant.id')+'/contacts/');
-    if (n.url.trim().length > 0) { 
-      $('#docsTable tr:nth-child(1)').slideUp();
-      $.ajax({
-        /*url: '/documents',
-        contentType: 'application/json',*/
-        url: url,
-        type: 'POST',
-        data: n,
-        success: completeHandler = function(data) {
-          console.log('data: '+ data);
-          ractive.showMessage('Document link saved successfully');
-          ractive.fetchDocs();
-          $('#doc').val(undefined);
-        }
-      });
-    } 
-  },
-  saveNote: function () {
-    console.info('saveNote '+JSON.stringify(ractive.get('current.note'))+' ...');
-    var n = ractive.get('current.note');
-    n.content = $('#note').val();
-    var url = ractive.getId(ractive.get('current'))+'/notes';
-    url = url.replace('contacts/',ractive.get('tenant.id')+'/contacts/');
-    console.log('  url:'+url);
-    if (n.content.trim().length > 0) { 
-      $('#notesTable tr:nth-child(1)').slideUp();
-      $.ajax({
-        /*url: '/notes',
-        contentType: 'application/json',*/
-        url: url,
-        type: 'POST',
-        data: n,
-        success: completeHandler = function(data) {
-          console.log('response: '+ data);
-          ractive.showMessage('Note saved successfully'); 
-          ractive.fetchNotes();
-          $('#note').val(undefined);
-        }
-      });
     }
   },
   searchCompaniesHouse: function() {
@@ -722,20 +639,6 @@ var ractive = new AuthenticatedRactive({
     } else {
       // ... or display form 
       $('#customActionModal').modal('show');
-    }
-  },
-  stripProjection: function(link) {
-    if (link==undefined) return;
-    var idx = link.indexOf('{projection');
-    if (idx==-1) { 
-      idx = link.indexOf('{?projection');
-      if (idx==-1) { 
-        return link;
-      } else {
-        return link.substring(0,idx);
-      }
-    } else {
-      return link.substring(0,idx);
     }
   },
   submitCustomAction: function() {

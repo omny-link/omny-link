@@ -320,8 +320,8 @@
       {{#each current.documents:k}}
         <tr>
           <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
-          <td class="field-author">{{{hash(author)}}}</td>
-          <td class="field-url"><a href="{{url}}">Click to open</a></td>
+          <td class="field-author">{{{gravatar(author)}}}</td>
+          <td class="field-url"><a href="{{url}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span>Click to open</a></td>
         </tr>
       {{/each}}
       {{^ current.documents }}
