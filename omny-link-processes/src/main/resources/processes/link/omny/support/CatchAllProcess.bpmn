@@ -47,7 +47,7 @@
           <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
         </activiti:field>
         <activiti:field name="data">
-          <activiti:expression><![CDATA[{ "channel":"#support","attachments":[ { "fallback":"I've created a task that should have been handled by a customer process, please investigate: <http://api.knowprocess.com:8082/work.html|Click to open work manager>","pretext":"I've created a task that should have been handled by a customer process, please investigate: <http://api.knowprocess.com:8082/work.html|Click to open work manager>", "color":"#d9534f","fields":[{"title":"Support Call: ${tenantId}","value":"This is a NOT a test.","short":false }]}]}]]></activiti:expression>
+          <activiti:expression><![CDATA[{ "channel":"#support","attachments":[ { "fallback":"I've created a task that should have been handled by a customer process, please investigate: <https://api.omny.link/work.html|Click to open work manager>","pretext":"I've created a task that should have been handled by a customer process, please investigate: <https://api.omny.link/work.html|Click to open work manager>", "color":"#d9534f","fields":[{"title":"Support Call: ${tenantId}","value":"This is a NOT a test.","short":false }]}]}]]></activiti:expression>
         </activiti:field>
         <activiti:field expression="slackId=Location" name="responseHeaders"/>
       </extensionElements>
