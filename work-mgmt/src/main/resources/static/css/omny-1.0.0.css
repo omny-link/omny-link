@@ -473,7 +473,7 @@ form#upload {
   vertical-align: top;
 }
 .form .col-md-6 label.textarea {
-  width: 17%;
+  /*width: 17%;*/
 }
 .form label.checkbox,
 .form label.radio {
@@ -525,8 +525,11 @@ h2.form.create-form {
 .form .tagit input {
 	font-size: 0.85em;
 }
-.form textarea {
+.form .col-md-12 textarea {
   width: 80%;	
+}
+.form .col-md-6 textarea {
+  width: 60%; 
 }
 ul.form,
 .form ul {

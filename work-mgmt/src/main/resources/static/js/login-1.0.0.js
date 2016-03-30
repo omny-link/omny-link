@@ -16,6 +16,11 @@ var newLineRegEx = /\n/g;
  */
 var AuthenticatedRactive = Ractive.extend({
   CSRF_TOKEN: 'XSRF-TOKEN',
+  addResource: function () {
+    console.log('addResource...');
+    //$('#upload fieldset').append($('#resourceControl').html());
+    $("#file").click();
+  },
   ajaxSetup: function() {
     console.log('ajaxSetup: '+this);
     $.ajaxSetup({
@@ -52,11 +57,42 @@ var AuthenticatedRactive = Ractive.extend({
       if (ractive.brandingCallbacks!=undefined) ractive.brandingCallbacks.fire();
     }
   },
+  entityName: function(entity) {
+    console.info('entityName');
+    var id = ractive.getId(entity);
+    var lastSlash = id.lastIndexOf('/');
+    return id.substring(id.lastIndexOf('/', lastSlash-1)+1, lastSlash);
+  },
+  fetchDocs: function() {
+    $.getJSON(ractive.getId(ractive.get('current'))+'/documents',  function( data ) {
+      if (data['_embedded'] != undefined) {
+        console.log('found docs '+data);
+        ractive.merge('current.documents', data['_embedded'].documents);
+        // sort most recent first
+        ractive.get('current.documents').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
+      }
+      ractive.set('saveObserver',true);
+    });
+  },
+  fetchNotes: function() {
+    $.getJSON(ractive.getId(ractive.get('current'))+'/notes',  function( data ) {
+      if (data['_embedded'] != undefined) {
+        console.log('found notes '+data);
+        ractive.merge('current.notes', data['_embedded'].notes);
+        // sort most recent first
+        ractive.get('current.notes').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
+      }
+    });
+  },
   getCookie: function(name) {
     //console.log('getCookie: '+name)
     var value = "; " + document.cookie;
     var parts = value.split("; " + name + "=");
     if (parts.length == 2) return parts.pop().split(";").shift();
+  },
+  /** @deprecated use uri() */
+  getId: function(entity) {
+    return ractive.uri(entity);
   },
   getProfile: function() {
     console.log('getProfile: '+this.get('username'));
@@ -75,6 +111,9 @@ var AuthenticatedRactive = Ractive.extend({
       $auth.loadTenantConfig(ractive.get('tenant.id'));
     });
     else this.showError('You are not logged in, some functionality will be unavailable.');
+  },
+  getServer: function() {
+    return ractive.get('server')==undefined ? '' : ractive.get('server');
   },
   handleError: function(jqXHR, textStatus, errorThrown) {
     switch (jqXHR.status) {
@@ -104,9 +143,6 @@ var AuthenticatedRactive = Ractive.extend({
       ractive.showError(msg);
     }
   },
-  getServer: function() {
-    return ractive.get('server')==undefined ? '' : ractive.get('server');
-  },
   hash: function(email) {
     if (email==undefined) return email; 
     return hex_md5(email.trim().toLowerCase());
@@ -121,6 +157,15 @@ var AuthenticatedRactive = Ractive.extend({
   },
   hideMessage: function() {
     $('#messages').hide();
+  },
+  hideUpload: function () {
+    console.log('hideUpload...');
+    $('#upload').slideUp();
+  },
+  id: function(entity) {
+    console.log('id: '+entity);
+    var id = ractive.getId(entity);
+    return id.substring(id.lastIndexOf('/')+1);
   },
   initAutoComplete: function() {
     console.log('initAutoComplete');
@@ -197,7 +242,7 @@ var AuthenticatedRactive = Ractive.extend({
           try {
             ractive.resetPartial(d.name,response);
           } catch (e) {
-            console.warn('Unable to reset partial '+d.name+': '+e);
+            console.error('Unable to reset partial '+d.name+': '+e);
           }
         }
       });
@@ -222,6 +267,53 @@ var AuthenticatedRactive = Ractive.extend({
     document.cookie = this.CSRF_COOKIE+'=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     document.forms['logoutForm'].submit();
   },
+  saveDoc: function () {
+    console.log('saveDoc '+JSON.stringify(ractive.get('current.doc'))+' ...');
+    var n = ractive.get('current.doc');
+    n.url = $('#doc').val();
+    var url = ractive.getId(ractive.get('current'))+'/documents';
+    url = url.replace(ractive.entityName(ractive.get('current')),ractive.get('tenant.id')+'/'+ractive.entityName(ractive.get('current')));
+    if (n.url.trim().length > 0) {
+      $('#docsTable tr:nth-child(1)').slideUp();
+      $.ajax({
+        /*url: '/documents',
+        contentType: 'application/json',*/
+        url: url,
+        type: 'POST',
+        data: n,
+        success: completeHandler = function(data) {
+          console.log('data: '+ data);
+          ractive.showMessage('Document link saved successfully');
+          ractive.fetchDocs();
+          $('#doc').val(undefined);
+        }
+      });
+    }
+  },
+  saveNote: function () {
+    console.info('saveNote '+JSON.stringify(ractive.get('current.note'))+' ...');
+    var n = ractive.get('current.note');
+    n.content = $('#note').val();
+    var url = ractive.getId(ractive.get('current'))+'/notes';
+    url = url.replace(ractive.entityName(ractive.get('current')),ractive.get('tenant.id')+'/'+ractive.entityName(ractive.get('current')));
+    console.log('  url:'+url);
+    if (n.content.trim().length > 0) {
+      $('#notesTable tr:nth-child(1)').slideUp();
+      $.ajax({
+        /*url: '/notes',
+        contentType: 'application/json',*/
+        url: url,
+        type: 'POST',
+        data: n,
+        success: completeHandler = function(data) {
+          console.log('response: '+ data);
+          ractive.showMessage('Note saved successfully');
+          ractive.fetchNotes();
+          $('#note').val(undefined);
+        }
+      });
+    }
+  },
   showError: function(msg) {
     this.showMessage(msg, 'bg-danger text-danger');
   },
@@ -242,6 +334,24 @@ var AuthenticatedRactive = Ractive.extend({
     }, EASING_DURATION*10);
     else $('#messages').append('<span class="text-danger pull-right glyphicon glyphicon-remove" onclick="ractive.hideMessage()"></span>');
   },
+  showUpload: function () {
+    console.log('showUpload...');
+    $('#upload').slideDown();
+  },
+  stripProjection: function(link) {
+    if (link==undefined) return;
+    var idx = link.indexOf('{projection');
+    if (idx==-1) {
+      idx = link.indexOf('{?projection');
+      if (idx==-1) {
+        return link;
+      } else {
+        return link.substring(0,idx);
+      }
+    } else {
+      return link.substring(0,idx);
+    }
+  },
   switchToTenant: function(tenant) {
     if (tenant==undefined || typeof tenant != 'string') {
       return false;
@@ -254,6 +364,38 @@ var AuthenticatedRactive = Ractive.extend({
         window.location.reload();
       }
     })
+  },
+  upload: function(formId) {
+    console.log('upload, id: '+formId);
+    var formElement = document.getElementById(formId);
+    var formData = new FormData(formElement);
+    return $.ajax({
+        type: 'POST',
+        url: formElement.action,
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+          console.log('successfully uploaded resource');
+          ractive.fetch();
+          ractive.hideUpload();
+        }
+    });
+  },
+  uri: function(entity) {
+    console.log('uri: '+entity);
+    var uri;
+    if (entity['links']!=undefined) {
+      $.each(entity.links, function(i,d) {
+        if (d.rel == 'self') {
+          uri = d.href;
+        }
+      });
+    } else if (entity['_links']!=undefined) {
+      uri = ractive.stripProjection(entity._links.self.href);
+    }
+    return uri;
   }
 });
 
