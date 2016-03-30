@@ -1,0 +1,76 @@
+<section id="currentSect" style="display:none">
+  <form class="inline-form form" id="currentForm">
+    <h2 class="">
+      <span contenteditable id="curName2" on-focus="editField('#curName2','current.name')" on-blur="updateField('#curName2','current.name')" value="{{current.name}}"></span>
+    </h2>
+    
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+      <ul class="form edit-form">
+        <li>
+          <label class="">Category:</label>
+          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockCategory" value="{{current.stockCategory.name}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block"></p>
+        </li>
+        <li>
+          <label class="">Type:</label>
+          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockType" value="{{current.type}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block"></p>
+        </li>
+        <li class="form-group">
+          <label class="textarea">Description:</label>
+          <textarea class="" id="curDescription" value="{{current.description}}"></textarea>
+        </li>
+      </ul>
+    </div>
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+      <ul class="form edit-form">
+        <li>
+          <label class="">Unit:</label><input class="form-control" id="curUnit" value="{{current.unit}}">
+        </li>
+        <li>
+          <label class="">Unit Price:</label><input class="form-control" id="curUnitPrice" step="any" type="number" value="{{current.unitPrice}}">
+        </li>
+        <li>
+          <label class="">Size:</label>
+          <input class="form-control" id="curSize" type="number" value="{{current.size}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block"></p>
+        </li>
+      </ul>
+    </div>
+
+    <form id="documentForm">
+       <div id="documentSect" style="clear: both">
+        <h2>
+          <span>Images</span>
+          <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addImage('{{current._links.self.href}}')" title="Add a new image"></span>
+        </h2>
+        <table id="imagesTable" class="table table-striped"><tbody>
+          <tr style="display:none;">
+            <td colspan="3">
+              <input class="form-control" id="image" on-blur="saveImage()" placeholder="Paste image link here" required style="width:100%;"/>
+              <br/>
+              <a onclick="$('#imagesTable tr:nth-child(1)').slideUp();">Cancel</a>
+            </td>
+          </tr>
+          {{#each current.images:k}}
+            <tr>
+              <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
+              <td class="field-author">{{{gravatar(author)}}}</td>
+              <td class="field-url"><img src="{{url}}" alt="Image {{k+1}} of {{current.name}}"/></td>
+            </tr>
+          {{/each}}
+          {{^ current.images }}
+            <tr><td>None</td></tr>
+          {{/ current.images }}
+        </tbody></table>
+      </div>
+    </form>
+
+    {{#tenant}}
+      <div id="currentStockItemExtended" style="clear: both">
+        {{! >(tenant.id+'StockItemExtension')}}
+      </div>  
+    {{/}}
+  </form>
+    
+</section>

@@ -1,0 +1,61 @@
+<section id="currentSect" style="display:none">
+  <form class="inline-form form" id="currentForm">
+    {{^current.id}}
+      <div class="form create-form">
+        <input class="create-field form-control col-xs-2" id="curName" placeholder="Name" required value="{{current.name}}"/>
+      </div>
+      <h2 class="create-form" style="">&nbsp;</h2>
+    {{/}}
+    
+    {{#current.id}}
+      <h2 class="edit-form">
+        <span contenteditable id="curName2" on-focus="editField('#curName2','current.name')" on-blur="updateField('#curName2','current.name')">{{current.name}}</span>
+        <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
+      </h2>
+    {{/}}
+    
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+      <ul class="form edit-form">
+        <li class="form-group">
+          <label class="textarea">Description:</label>
+          <textarea class="" id="curDescription" value="{{current.description}}"></textarea>
+        </li>
+        <li>
+          <label class="">Focal Image:</label>
+          <input class="form-control" id="curFocalImage" placeholder="http://acme.com/image.jpg" type="url" value="{{current.focalImage}}">
+          {{#current.focalImage}}
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">
+              <img alt="Focal image for {{current.name}}" class="col-md-12" src="{{current.focalImage}}"/>
+            </p>
+          {{/}}
+        </li>
+      </ul>
+    </div>
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+      <ul class="form edit-form">
+              <ul class="form edit-form">
+        <li><label class="">Address:</label><input class="form-control" id="curAddress1" value="{{current.address1}}"/></li>
+        <li><label class=""></label><input class="form-control" id="curAddress2" value="{{current.address2}}"/></li>
+        <li><label class=""></label><input class="form-control" id="curTown" placeholder="Town or village" value="{{current.town}}"/></li>
+        <li><label class=""></label><input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/></li>
+        <li><label class="">Post Code:</label><input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}"></li>
+        <li><label class="">Country:</label><input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
+        {{#current.postCode}}
+          <li><label class="">Map:</label><a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
+        {{/}}
+        {{^current.postCode}}
+          {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
+          <li><label class="">Map:</label><a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
+          {{/}}
+        {{/}}
+      </ul>
+    </div>
+
+    {{#tenant}}
+      <div id="currentStockCategoryExtended" style="clear: both">
+        {{>(tenant.id+'StockCategoryExtension')}}
+      </div>  
+    {{/}}
+  </form>
+  
+</section>
