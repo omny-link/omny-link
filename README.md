@@ -23,7 +23,43 @@ Roadmap
      
 Releases
 --------
-1.0.0 beta 10 - 
+1.0.0 beta 10 - 31 Mar 16
+
+    #140 Stack overflow in hashcode prevents update of contact
+    bug confirmed
+
+    #139 Change link in catch all process to new Omny Url
+    bug confirmed
+
+    #138 product catalogue
+    feature
+
+    #136 Database schema cleanup
+    support enhancement
+
+    #135 User activity tracking
+    feature Performance Telecom
+
+    #134 Revised funnel design
+    feature contact
+
+    #133 clicking pencil has stopped opening contact records
+    bug confirmed Jules
+
+    #132 Gardenatics support - manual update to workflow
+    Gardenatics Jules
+
+    #131 Render processes self instead of relying on Yaoqiang or Activiti
+    feature MIWG
+
+    #128 Tenant config for WMSP, Flexspace and Maven
+    WMSP Flexspace Maven
+
+    #126 On opening a contact the name gets wiped out in the results list
+    bug Jules
+
+    #125 On opening a contact that has a company number the company search triggers a save
+    bug Jules
     
     #120 New partners for FG
     Firm Gains Stephen
@@ -66,20 +102,20 @@ Releases
     #98 Open contact address in Google maps
     enhancement Dorset
 
-    #94 Problems saving Accounts CLOSED
+    #94 Problems saving Accounts
     confirmed Firm Gains Stephen
 
-    #93 RSS feed for tasks CLOSED
+    #93 RSS feed for tasks
     enhancement
 
-    #92 colour code work mgmt list CLOSED
+    #92 colour code work mgmt list
     enhancement Gardenatics John
 
     #86 upgrade to ractive webjar 0.7.3
     bug confirmed
 
-#84 Enhanced search functionality
-updated 7 days ago enhancement contact Stephen
+    #84 Enhanced search functionality
+    enhancement contact Stephen
 
 1.0.0 beta 7 - 23rd Nov 2015
 
