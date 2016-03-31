@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -27,6 +28,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -39,6 +43,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class Account implements Serializable {
 
     private static final long serialVersionUID = -1955316248920138892L;
+
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(Account.class);
 
     @Id
     @Column(name = "id")
@@ -160,6 +167,15 @@ public class Account implements Serializable {
                 new CustomAccountField(key, value == null ? null : value
                         .toString()));
         }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if (LOGGER.isWarnEnabled() && lastUpdated != null) {
+            LOGGER.warn(String.format(
+                    "Overwriting update date %1$s with 'now'.", lastUpdated));
+        }
+        lastUpdated = new Date();
     }
 
     @Override
