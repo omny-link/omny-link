@@ -109,4 +109,24 @@ public class ContactTest {
         violations = validator.validateProperty(acct, "companyNumber");
         assertEquals(1, violations.size());
     }
+
+    @Test
+    public void testHashCodeForStackOverflow() {
+        Contact c1 = new Contact("Fred", "Flintstone",
+                "fred@bedrockslateandgravel.com", "omny");
+        Contact c2 = new Contact("Fred", "Flintstone",
+                "fred@bedrockslateandgravel.com", "omny");
+        assertEquals(c1, c2);
+
+        c1.setField("favouriteColour", "orange");
+        c2.setField("favouriteColour", "orange");
+
+        CustomContactField colour1 = c1.getCustomFields().get(0);
+        colour1.setContact(c1);
+        colour1.hashCode();
+        c2.getCustomFields().get(0).setContact(c2);
+
+        c1.hashCode();
+        assertEquals(c1, c2);
+    }
 }
