@@ -27,6 +27,7 @@ import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import org.hibernate.annotations.NotFound;
@@ -41,6 +42,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Entity
 @Table(name = "OL_CONTACT")
 @Data
+@EqualsAndHashCode(exclude = { "fullName" })
 @AllArgsConstructor
 @NoArgsConstructor
 public class Contact implements Serializable {
