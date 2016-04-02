@@ -169,6 +169,11 @@
       <artifactId>performance-telecom-omny</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>co.uk.circumcisioncentre</groupId>
+      <artifactId>circom-omny</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>
