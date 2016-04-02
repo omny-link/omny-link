@@ -3,17 +3,18 @@
  */
 
 var ua = new UserActivity();
-ua.init('omny');
+ua.init();
 
 function UserActivity() {
-  this.tenantId;
+  this.server = 'https://api.omny.link';
+  // default only, user will override
+  this.tenantId = 'omny'; 
   this.getId = function() {
     var tmp = document.cookie.substring(document.cookie.indexOf('ua=')+3);
     if (tmp.indexOf(';')!=-1) return tmp.substring(0, tmp.indexOf(';'));
     else return tmp;
   };
-  this.init = function(tenant) {
-    this.tenantId=tenant;
+  this.init = function() {
     if (document.cookie.indexOf('ua') >= 0) {
       // user has been here before.
       ua.record('visit',document.location.href);
@@ -42,7 +43,7 @@ function UserActivity() {
       };
     console.log('d: '+JSON.stringify(d));
     return $.ajax({
-      url: '/msg/'+ua.tenantId+'/omny.userRecognition.json',
+      url: ua.server+'/msg/'+ua.tenantId+'/omny.userRecognition.json',
       type: 'POST',
       data: { json:JSON.stringify(d) },
       dataType: 'text',
@@ -66,7 +67,7 @@ function UserActivity() {
       };
     console.log('d: '+JSON.stringify(d));
     return $.ajax({
-      url: '/msg/'+ua.tenantId+'/omny.userActivity.json',
+      url: ua.server+'/msg/'+ua.tenantId+'/omny.userActivity.json',
       type: 'POST',
       data: { json:JSON.stringify(d) },
       dataType: 'text',
