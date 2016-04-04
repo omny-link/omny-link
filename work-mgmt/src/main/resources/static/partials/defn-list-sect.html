@@ -37,23 +37,28 @@
       </tr>
     </thead>
     <tbody>
-    {{#each definitions:i}}
-      {{# searchTerm!=undefined && (
-            (name!=undefined && name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-            || (description!=undefined && description.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-          ) }}
-      <tr data-href="{{_links.self.href}}">
-        <td on-click="select(this)">{{i+1}}</td>
-        <td on-click="select(this)">{{name}} {{#key}}({{key}}){{/}}</td>
-        <!-- <td on-click="select(this)">
-          <img class="col-md-1" src="/{{tenant.id}}/process-definitions/{{id}}.svg"/>
-        </td>-->
-        <td class="col-md-5" on-click="select(this)">{{description}}</td>
-        <!-- <td on-click="select(this)">{{tenantId}}</td> -->
-        <td on-click="select(this)">{{deploymentId}}</td>
-        <td on-click="select(this)">{{version}}</td>
-        <td on-click="select(this)">
-          <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{key}}', '{{name}}', '{{username}}')"></a>
+      {{#each definitions:i}}
+        {{# searchTerm!=undefined && (
+              (name!=undefined && name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+              || (description!=undefined && description.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
+            ) }}
+        <tr data-href="{{_links.self.href}}">
+          <td on-click="select(this)">{{i+1}}</td>
+          <td on-click="select(this)">{{name}} {{#key}}({{key}}){{/}}</td>
+          <!-- <td on-click="select(this)">
+            <img class="col-md-1" src="/{{tenant.id}}/process-definitions/{{id}}.svg"/>
+          </td>-->
+          <td class="col-md-5" on-click="select(this)">{{description}}</td>
+          <!-- <td on-click="select(this)">{{tenantId}}</td> -->
+          <td on-click="select(this)">{{deploymentId}}</td>
+          <td on-click="select(this)">{{version}}</td>
+          <td>
+            {{#suspended}}
+              <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.activate('{{key}}')" title="Activate"></a>
+            {{else}}
+              <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{key}}', '{{name}}', '{{username}}')" title="Start instance"></a>
+              <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.suspend('{{key}}')" title="Suspend"></a>
+            {{/}}
             <a href="/{{tenant.id}}/process-definitions/{{id}}.bpmn" target="_newtab">
               <a class="glyphicon glyphicon-cloud-download" aria-hidden="true"></a></a>
             <a href="/{{tenant.id}}/process-definitions/{{id}}.svg" target="_newtab">
@@ -68,6 +73,6 @@
         </tr>
         {{/}}
       {{/each}}
-      </tbody>
-    </table>
+    </tbody>
+  </table>
 </section>
