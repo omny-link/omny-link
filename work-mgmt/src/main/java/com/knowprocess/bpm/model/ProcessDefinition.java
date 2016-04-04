@@ -70,6 +70,8 @@ public class ProcessDefinition implements Serializable {
 
 	private String formKey;
 
+    private boolean suspended;
+
     private String tenantId;
 
 	private List<FormProperty> formProperties;
@@ -92,6 +94,7 @@ public class ProcessDefinition implements Serializable {
 		setVersion(Integer.valueOf(pd.getVersion()));
 		setResourceName(pd.getResourceName());
 		setDiagramResourceName(pd.getDiagramResourceName());
+        setSuspended(pd.isSuspended());
         setTenantId(pd.getTenantId());
 	}
 

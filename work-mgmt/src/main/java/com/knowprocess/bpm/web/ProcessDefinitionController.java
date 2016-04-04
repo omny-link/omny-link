@@ -76,6 +76,26 @@ public class ProcessDefinitionController {
         return pd;
     }
 
+    @RequestMapping(value = "/{id}/activate", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody void activate(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id) {
+        LOGGER.info(String.format("activate %1$s definition", id));
+
+        processEngine.getRepositoryService().activateProcessDefinitionByKey(id,
+                tenantId);
+    }
+
+    @RequestMapping(value = "/{id}/suspend", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody void suspend(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id) {
+        LOGGER.info(String.format("suspend %1$s definition", id));
+
+        processEngine.getRepositoryService().suspendProcessDefinitionByKey(id,
+                tenantId);
+    }
+
     @RequestMapping(value = "/{id}/instances", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<ProcessInstance> showInstancesJson(
             @PathVariable("tenantId") String tenantId,

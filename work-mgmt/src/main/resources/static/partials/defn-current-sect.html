@@ -3,7 +3,12 @@
     <span>{{current.name}}</span>
     <div class="pull-right">
       {{#current.deploymentId}}
-        <a class="clickable glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{current.key}}', '{{current.name}}', '{{username}}')" title="Start new instance"></a>
+        {{#current.suspended}}
+          <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.activate('{{current.key}}')" title="Activate"></a>
+        {{else}}
+          <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{current.key}}', '{{current.name}}', '{{username}}')" title="Start instance"></a>
+          <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.suspend('{{current.key}}')" title="Suspend"></a>
+        {{/}}
         <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" onclick="ractive.fetchInstances()" title="Refresh instance list"></a>
       {{/}}
       <a class="glyphicon glyphicon-cloud-download" href="/{{tenant.id}}/process-definitions/{{current.id}}.bpmn" target="_newtab" title="Download the BPMN representation of the process"></a>

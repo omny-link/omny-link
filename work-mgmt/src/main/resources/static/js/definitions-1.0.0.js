@@ -90,6 +90,20 @@ var ractive = new AuthenticatedRactive({
   simpleTodoFormExtension: function(x) { 
     console.log('simpleTodoFormExtension: '+JSON.stringify(x));    
   },
+  activate: function(key) {
+    console.log('activate: '+key);
+    $.ajax({
+      url: '/'+ractive.get('tenant.id')+'/process-definitions/'+key+'/activate',
+      type: 'GET',
+      contentType: 'application/json',
+      success: completeHandler = function(data,textStatus,jqXHR) {
+        console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
+        ractive.fetch();
+        ractive.showMessage('Activated workflow "'+key+'"');
+        ractive.showResults();
+      },
+    });
+  },
   add: function () {
     console.log('add...');
     $('#upload').slideDown();
@@ -250,6 +264,20 @@ var ractive = new AuthenticatedRactive({
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
         ractive.fetchInstances(ractive.get('current'));
         ractive.showMessage('Started workflow "'+label+'" for '+bizKey);
+      },
+    });
+  },
+  suspend: function(key) {
+    console.log('suspend: '+key);
+    $.ajax({
+      url: '/'+ractive.get('tenant.id')+'/process-definitions/'+key+'/suspend',
+      type: 'GET',
+      contentType: 'application/json',
+      success: completeHandler = function(data,textStatus,jqXHR) {
+        console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
+        ractive.fetch();
+        ractive.showMessage('Suspended workflow "'+key+'"');
+        ractive.showResults();
       },
     });
   },
