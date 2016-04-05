@@ -22,7 +22,9 @@
   </h2>
   <p>{{current.description}}</p>
   <p>
-    <span class="a-primary-label control-label">{{current.deployment.name}}: </span>
+    {{#current.deployment}}
+      <span class="a-primary-label control-label">{{current.deployment.name}}: </span>
+    {{/}}
     <span class="a-primary-data control-label">{{activityType.toLabel()}}</span>
     <span class="a-secondary-label control-label">Id: </span> {{current.id}};
     {{#current.deploymentId}}
@@ -37,8 +39,13 @@
     {{/}}
     {{#if current.deployment.category}}
       <span class="a-secondary-label control-label">Category: </span> {{current.deployment.category}};
-    {{/if current.deployment.category}} 
+    {{/if current.deployment.category}}
   </p>
+  {{#current.messageNames}}
+    <ul>
+      <li><a href="/{{tenant.id}}/messages/{{.}}.html">API for {{.}}</a></li>
+    </ul>
+  {{/}}
   {{#if current.id}}
     <div id="curImage">{{{current.image}}}</div>
   {{/if current.id}}

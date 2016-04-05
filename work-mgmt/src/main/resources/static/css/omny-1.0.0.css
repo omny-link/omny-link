@@ -402,6 +402,7 @@ h2 a.glyphicon:hover {
 .omny-bar-top .glyphicon {
 	padding: 10px
 }
+
 /* END OMNY BAR */
 
 .clickable:active,
@@ -808,3 +809,12 @@ text.userTask {
   top: 670px; 
 }
 /* END ANALYTICS */
+
+@media print {
+  .beta,
+  .omny-bar,
+  .profile {
+    display:none;
+  }
+}
+

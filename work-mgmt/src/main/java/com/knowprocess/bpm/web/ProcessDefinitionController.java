@@ -29,6 +29,8 @@ public class ProcessDefinitionController {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(ProcessDefinitionController.class);
 
+    private static final String MSG_INTROSPECTOR_RESOURCES = "/static/xslt/bpmn2msgs.xslt";
+
     private static final String RENDERER_RESOURCES = "/static/xslt/bpmn2svg.xslt";
 
     @Autowired
@@ -36,6 +38,8 @@ public class ProcessDefinitionController {
 
     @Autowired
     private ProcessModelRepository processModelRepo;
+
+    private TransformTask messageIntrospector;
 
     private TransformTask renderer;
 
@@ -69,6 +73,15 @@ public class ProcessDefinitionController {
         ProcessDefinition pd = null;
         try {
             pd = ProcessDefinition.findProcessDefinition(id);
+
+            // TODO why no API to get event subscriptions of proc def
+            String bpmn = ProcessDefinition.findProcessDefinitionAsBpmn(id);
+            String[] msgNames = getMessageIntrospector().transform(bpmn).split(",");
+            for (String name : msgNames) {
+                if (name != null && name.length() > 0) {
+                    pd.addMessageName(name);
+                }
+            }
         } catch (NullPointerException e) {
             // assume this is an incomplete model....
             pd = new ProcessDefinition(processModelRepo.findOne(id));
@@ -196,6 +209,22 @@ public class ProcessDefinitionController {
         return getProcessRenderer().transform(bpmn).getBytes();
     }
 
+    private TransformTask getMessageIntrospector() {
+        if (messageIntrospector == null) {
+            messageIntrospector = new TransformTask();
+            try {
+                messageIntrospector
+                        .setXsltResources(MSG_INTROSPECTOR_RESOURCES);
+            } catch (TransformerConfigurationException e) {
+                LOGGER.error(
+                        String.format(
+                                "Unable to locate messageIntrospector pre-processors: %1$s",
+                                RENDERER_RESOURCES), e);
+            }
+        }
+        return messageIntrospector;
+    }
+
     private TransformTask getProcessRenderer() {
         if (renderer == null) {
             renderer = new TransformTask();
@@ -203,7 +232,7 @@ public class ProcessDefinitionController {
                 renderer.setXsltResources(RENDERER_RESOURCES);
             } catch (TransformerConfigurationException e) {
                 LOGGER.error(String.format(
-                        "Unable to location deployment pre-processors: %1$s",
+                        "Unable to locate renderer pre-processors: %1$s",
                         RENDERER_RESOURCES), e);
             }
         }

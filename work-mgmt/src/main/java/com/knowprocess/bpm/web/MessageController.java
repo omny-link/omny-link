@@ -84,11 +84,11 @@ public class MessageController {
         MessageController.processEngine = pe;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{tenant}/{msgId}", headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "/{tenantId}/{msgId}", headers = "Accept=application/json")
     @ResponseBody
     public final ResponseEntity<String> doInOutMep(
             UriComponentsBuilder uriBuilder,
-            @PathVariable("tenant") String tenantId,
+            @PathVariable("tenantId") String tenantId,
             @PathVariable("msgId") String msgId,
             @RequestParam(required = false, value = "businessDescription") String bizDesc,
             @RequestParam(required = false, value = "query") String json) {
@@ -136,7 +136,7 @@ public class MessageController {
                 msg = o.toString();
             }
             LOGGER.debug("msg: " + msg);
-            return new ResponseEntity(msg, headers, HttpStatus.OK);
+            return new ResponseEntity(msg, headers, HttpStatus.CREATED);
         } catch (ActivitiException e) {
             throw e;
         } catch (Exception e) {
@@ -147,10 +147,10 @@ public class MessageController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{tenant}/{msgId}", headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.POST, value = "/{tenantId}/{msgId}", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> doInOnlyMep(UriComponentsBuilder uriBuilder,
-            @PathVariable("tenant") String tenantId,
+            @PathVariable("tenantId") String tenantId,
             @PathVariable("msgId") String msgId,
             @RequestParam(required = false, value = "businessDescription") String bizDesc,
             @RequestParam(required = false) String json) {
