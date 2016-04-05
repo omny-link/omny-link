@@ -41,6 +41,11 @@
     <xsl:apply-templates select="child::node()"/>
   </xsl:template>
   
+  <xsl:template match="semantic:callActivity|callActivity">
+    <xsl:text>INFO: Can handle callActivity </xsl:text>
+    <xsl:value-of select="@id"/>
+  </xsl:template>
+
   <xsl:template match="semantic:endEvent|endEvent">
     <xsl:choose>
       <xsl:when test="text() and not(semantic:errorEventDefinition|semantic:cancelEventDefinition)">
@@ -83,6 +88,18 @@
     </xsl:choose>
   </xsl:template>
   
+  <xsl:template match="semantic:extensionElements|extensionElements">
+    <xsl:choose>
+      <xsl:when test="1=2">
+        <!-- No tests defined yet -->
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>Pass: extensionElements </xsl:text>
+        <xsl:value-of select="@id"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
   <xsl:template match="semantic:intermediateCatchEvent|intermediateCatchEvent">
     <xsl:choose>
       <xsl:when test="not(semantic:messageEventDefinition|semantic:signalEventDefinition|semantic:timerEventDefinition)">
@@ -159,7 +176,7 @@
         <!-- No tests defined yet -->
       </xsl:when>
       <xsl:otherwise>
-        <xsl:text>Pass: signal</xsl:text>
+        <xsl:text>Pass: signal </xsl:text>
         <xsl:value-of select="@id"/>
       </xsl:otherwise>
     </xsl:choose>
@@ -181,6 +198,11 @@
     </xsl:choose>
   </xsl:template>
   
+  <xsl:template match="semantic:textAnnotation|textAnnotation">
+    <xsl:text>PASS: text annotation </xsl:text>
+    <xsl:value-of select="@id"/>
+  </xsl:template>
+
   <xsl:template match="semantic:timeCycle|timeCycle|semantic:timeDate|timeDate|semantic:timeDuration|timeDuration ">
     <xsl:choose>
       <xsl:when test="not(text())">

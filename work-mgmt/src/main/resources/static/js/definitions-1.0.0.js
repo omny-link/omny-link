@@ -7,7 +7,6 @@ var ractive = new AuthenticatedRactive({
     return 'HELLO'+x
   } },
   data: {
-    //server: 'http://api.knowprocess.com',
     duration: function(timeString) {
       return i18n.getDurationString(new Date(timeString))
     },
@@ -162,7 +161,7 @@ var ractive = new AuthenticatedRactive({
     $.getJSON('/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'/instances', function( data ) {
       console.log('found instances '+data.length);
       definition.instances = data;
-      ractive.set('current',definition);
+      ractive.set('current.instances',data);
     });
   },
   fetchIssues: function(definition) {
@@ -184,17 +183,16 @@ var ractive = new AuthenticatedRactive({
     ractive.set('current', definition);
 //    ractive.set('saveObserver',false);
     $.getJSON('/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id, function( data ) {
-      console.log('found deployment '+JSON.stringify(data));
-      definition.deployment = data;
-      ractive.set('current',definition);
+      console.log('found definition '+JSON.stringify(data));
+      ractive.set('current',data);
       ractive.toggleResults();
-      ractive.fetchImage(definition);
+      ractive.fetchImage(ractive.get('current'));
       //      ractive.set('saveObserver',true);
     });
-    if (definition.deploymentId==null) {
-      ractive.fetchIssues(definition);
+    if (ractive.get('current').deploymentId==null) {
+      ractive.fetchIssues(ractive.get('current'));
     } else {
-      ractive.fetchInstances(definition);
+      ractive.fetchInstances(ractive.get('current'));
     }
     $('#currentSect').slideDown();
   },
@@ -290,14 +288,11 @@ var ractive = new AuthenticatedRactive({
       $.getJSON('/'+ractive.get('tenant.id')+'/process-instances/'+instance.id, function( data ) {
         console.log('found audit trail: '+data.auditTrail.length);
         data.auditTrail.sort(function(a,b) { return new Date(b.startTime)-new Date(a.startTime); });
-        var def = ractive.get('current');
-        def.instances[idx].auditTrail=data.auditTrail;
+        ractive.set('current.instances.'+idx+'.auditTrail',data.auditTrail);
         
         console.log('found processVariables: '+data.processVariables);
-        def.instances[idx].processVariables=data.processVariables;
-        def.instances[idx].processVariableNames=Object.keys(data.processVariables);
-        
-        ractive.set('current',def);
+        ractive.set('current.instances.'+idx+'.processVariables',data.processVariables);
+        ractive.set('current.instances.'+idx+'.processVariableNames',Object.keys(data.processVariables));
         $('[data-instanceId='+instance.id+']').slideDown();
         $($('.btn-details')[idx]).empty().append('Hide Details');
       });

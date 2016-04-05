@@ -72,6 +72,8 @@ public class ProcessDefinition implements Serializable {
 
     private boolean suspended;
 
+    private List<String> messageNames;
+
     private String tenantId;
 
 	private List<FormProperty> formProperties;
@@ -213,6 +215,17 @@ public class ProcessDefinition implements Serializable {
 		}
 		return list2;
 	}
+
+    public List<String> getMessageNames() {
+        if (messageNames == null) {
+            messageNames = new ArrayList<String>();
+        }
+        return messageNames;
+    }
+
+    public void addMessageName(String name) {
+        getMessageNames().add(name);
+    }
 
 	// public String toJson() {
 	// return toJson(JSON_FIELDS);

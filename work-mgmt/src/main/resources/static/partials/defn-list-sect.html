@@ -53,20 +53,22 @@
           <td on-click="select(this)">{{deploymentId}}</td>
           <td on-click="select(this)">{{version}}</td>
           <td>
-            {{#suspended}}
-              <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.activate('{{key}}')" title="Activate"></a>
-            {{else}}
-              <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{key}}', '{{name}}', '{{username}}')" title="Start instance"></a>
-              <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.suspend('{{key}}')" title="Suspend"></a>
+            {{#deploymentId}}
+              {{#suspended}}
+                <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.activate('{{key}}')" title="Activate"></a>
+              {{else}}
+                <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{key}}', '{{name}}', '{{username}}')" title="Start instance"></a>
+                <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.suspend('{{key}}')" title="Suspend"></a>
+              {{/}}
             {{/}}
             <a href="/{{tenant.id}}/process-definitions/{{id}}.bpmn" target="_newtab">
               <a class="glyphicon glyphicon-cloud-download" aria-hidden="true"></a></a>
             <a href="/{{tenant.id}}/process-definitions/{{id}}.svg" target="_newtab">
               <a class="glyphicon glyphicon-picture" aria-hidden="true"></a></a>
-            {{#current.deploymentId}}
+            {{#deploymentId}}
               <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this.deploymentId)" title="Delete this definition"></a>
             {{/}}
-            {{^current.deploymentId}}
+            {{^deploymentId}}
               <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this.id)" title="Delete this definition"></a>
             {{/}}
           </td>
