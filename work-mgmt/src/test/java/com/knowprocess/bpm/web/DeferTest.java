@@ -32,9 +32,9 @@ public class DeferTest {
 						.getTime()));
 		// A 'good enough' assertion since execution time may be interferring
 		// and days are not in fact 24 h exactly
-        assertTrue(now.getTimeInMillis() + (24 * 60 * 60 * 1000) - 100 < relativeDate
+        assertTrue(now.getTimeInMillis() + (24 * 60 * 60 * 1000) - 150 < relativeDate
 				.getTime());
-        assertTrue(now.getTimeInMillis() + (24 * 60 * 61 * 1000) + 100 > relativeDate
+        assertTrue(now.getTimeInMillis() + (24 * 60 * 61 * 1000) + 150 > relativeDate
 				.getTime());
 	}
 
