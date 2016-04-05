@@ -1,9 +1,9 @@
 [
-  {  "name": "Enquiry"  },
-  {  "name": "Appointment"  },
-  {  "name": "Quote"  },
-  {  "name": "Order"  },
-  {  "name": "Complete"  },
-  {  "name": "On hold"  },
-  {  "name": "Cold"  }
+  {  "idx": 0,  "name": "Enquiry"  },
+  {  "idx": 1,  "name": "Appointment"  },
+  {  "idx": 2,  "name": "Quote"  },
+  {  "idx": 3,  "name": "Order"  },
+  {  "idx": 4,  "name": "Complete"  },
+  {  "idx": -1, "name": "On hold"  },
+  {  "idx": -1, "name": "Cold"  }
 ]

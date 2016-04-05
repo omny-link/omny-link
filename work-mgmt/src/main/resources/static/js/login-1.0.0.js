@@ -171,7 +171,7 @@ var AuthenticatedRactive = Ractive.extend({
     console.log('initAutoComplete');
     if (ractive.get('tenant.typeaheadControls')!=undefined && ractive.get('tenant.typeaheadControls').length>0) {
       $.each(ractive.get('tenant.typeaheadControls'), function(i,d) {
-        console.log('binding ' +d.url+' to typeahead control: '+d.selector);
+        //console.log('binding ' +d.url+' to typeahead control: '+d.selector);
         $.get(ractive.getServer()+d.url, function(data){
           if (d.name!=undefined) ractive.set(d.name,data); 
           $(d.selector).typeahead({ items:'all',minLength:0,source:data });
@@ -234,9 +234,9 @@ var AuthenticatedRactive = Ractive.extend({
   loadStandardPartials: function(stdPartials) {
     console.info('loadStandardPartials');
     $.each(stdPartials, function(i,d) {
-      console.log('loading...: '+d.name)
+      //console.log('loading...: '+d.name)
       $.get(d.url, function(response){
-        console.log('... loaded: '+d.name)
+        //console.log('... loaded: '+d.name)
         //console.log('response: '+response)
         if (ractive != undefined) {
           try {
