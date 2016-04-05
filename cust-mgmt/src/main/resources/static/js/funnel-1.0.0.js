@@ -74,16 +74,13 @@ var ractive = new AuthenticatedRactive({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/analytics/funnel',
       crossDomain: true,
       success: function( data ) {
-        ractive.set('report',data); 
-        var funnelData = [ractive.activeStages().length];
-        $.each(ractive.activeStages(), function(i,d) {
-          console.log(i+': '+d+' = '+data.stages[d]);
-          var color = (i % 2 == 0 ? '#949699' : '#f9f9f9');
-          funnelData[i] = [d,data.stages[d]==undefined ? 0 :data.stages[d], ColorLuminance(color,EDGE_LUMINANCE), ColorLuminance(color,CENTER_LUMINANCE)];
-        });
-        ractive.merge('funnel.data',funnelData); 
-        var chart = new D3Funnel('#funnel');
-        chart.draw(funnelData, ractive.get('funnel.options'));
+        ractive.set('funnel.raw', data);
+        if (ractive.get('stages')==undefined || ractive.get('stages').length==0) {
+          console.warn('Stages not yet loaded, defer chart load');
+          return;
+        } else {
+          ractive.renderChart();
+        }
       }      
     });
 
@@ -96,14 +93,39 @@ var ractive = new AuthenticatedRactive({
     });
     return inactiveStages;
   },
-
   oninit: function() {
     console.log('oninit');
     this.ajaxSetup();
     this.loadStandardPartials(this.get('stdPartials'));
+  },
+  renderChart: function() {
+    console.info('renderChart');
+    if (ractive.get('funnel.raw')==undefined) return;
+    var data = ractive.get('funnel.raw');
+    var funnelData = [ractive.activeStages().length];
+    var activeStages = ractive.activeStages();
+    var haveFunnel = false;
+    $.each(activeStages, function(i,d) {
+      //console.log(i+': '+d+' = '+data.stages[d]);
+      var color = (i % 2 == 0 ? '#949699' : '#f9f9f9');
+      funnelData[i] = [d,data.stages[d]==undefined ? 0 :data.stages[d], ColorLuminance(color,EDGE_LUMINANCE), ColorLuminance(color,CENTER_LUMINANCE)];
+      if (!haveFunnel) haveFunnel = (data.stages[d]>0);
+    });
+    ractive.merge('funnel.data',funnelData);
+    // TODO a bug? If all funnel data is 0 chart does not render
+    if (haveFunnel) {
+      var chart = new D3Funnel('#funnel');
+      chart.draw(funnelData, ractive.get('funnel.options'));
+    } else {
+      ractive.showMessage('No records in your funnel, check stage field is set correctly.');
+    }
   }
 });
 
+ractive.observe('stages', function(newValue, oldValue, keypath) {
+  console.log('stages loaded');
+  if (newValue!=undefined && ractive.get('funnel')!=undefined) ractive.renderChart();
+});
 
 // FROM http://www.sitepoint.com/javascript-generate-lighter-darker-color/
 function ColorLuminance(hex, lum) {
@@ -125,14 +147,4 @@ function ColorLuminance(hex, lum) {
 
   return rgb;
 }
-var data = [
-  ['Client contract signed',         2, ColorLuminance('#f9f9f9',EDGE_LUMINANCE), ColorLuminance('#f9f9f9',CENTER_LUMINANCE)],
-  ['Discovery meeting held',     9, ColorLuminance('#949699',EDGE_LUMINANCE),  ColorLuminance('#949699',CENTER_LUMINANCE)],
-  ['Documents prepared',        9, ColorLuminance('#f9f9f9',EDGE_LUMINANCE), ColorLuminance('#f9f9f9',CENTER_LUMINANCE)],
-  ['Financial meeting held',           2, ColorLuminance('#949699',EDGE_LUMINANCE),  ColorLuminance('#949699',CENTER_LUMINANCE)],
-  ['Dry-run meeting held',          1, ColorLuminance('#f9f9f9',EDGE_LUMINANCE), ColorLuminance('#f9f9f9',CENTER_LUMINANCE)],
-  ['Marketing plan approved',  10, ColorLuminance('#949699',EDGE_LUMINANCE),  ColorLuminance('#949699',CENTER_LUMINANCE)]
-];
-
-
 
