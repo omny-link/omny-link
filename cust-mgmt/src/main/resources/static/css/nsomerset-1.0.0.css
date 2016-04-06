@@ -76,9 +76,24 @@ a.glyphicon:focus, a.glyphicon:hover, h2 a.glyphicon:focus, h2 a.glyphicon:hover
 .omny-bar li span:not(.active) {
   border-bottom-color: #D33E62;
 }
+.omny-bar li span.glyphicon:hover,
+.omny-bar li span.glyphicon:active,
 .omny-bar li span.glyphicon.active {
   color: #efefef;
   background-color: #D33E62;
+}
+.omny-bar-left li span:not(.active):not(:active):not(:hover) {
+  border-bottom: solid 1px #D33E62;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.omny-burger span.glyphicon,
+.omny-burger span.glyphicon:visited {
+  color: #00ADDC;
+}
+.omny-burger span.glyphicon:hover,
+.omny-burger span.glyphicon:active {
+	color: #D33E62;
 }
 .replaceable {
 	color: #efefef;

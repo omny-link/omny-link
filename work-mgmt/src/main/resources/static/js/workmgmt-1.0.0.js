@@ -124,6 +124,7 @@ var ractive = new AuthenticatedRactive({
     },
     stdPartials: [
       { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
+      { "name": "navbar", "url": "/partials/work-navbar.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},

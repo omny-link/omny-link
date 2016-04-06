@@ -64,10 +64,12 @@ a.glyphicon:focus,
 .omny-bar {
     color: #d71921;
 }
+.omny-bar li span.glyphicon:hover,
+.omny-bar li span.glyphicon:active,
 .omny-bar li span.glyphicon.active {
   color: #fcf8e3;
   background-color: #d71921;
 }
-.omny-bar li span:not(.active) {
+.omny-bar-left li span:not(.active):not(:active):not(:hover) {
   border-bottom-color: #d71921;
 }

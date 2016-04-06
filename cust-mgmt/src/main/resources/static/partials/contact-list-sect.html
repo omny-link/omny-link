@@ -1,32 +1,12 @@
-<section id="contactsSect">
+<section class="navbar-sticky">
   <h2>
-    <a id="contactsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the contact table"></a>
-    <span>Contacts</span>
-    <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new contact"></a>
-    <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
-    <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-    <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
-    <a class="clickable dropdown" aria-hidden="true" id="filterBtn" title="Show filters">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-        <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
-      </a>
-      <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
-        <li on-click="filter:{idx:1}">Show All</li>
-        <li on-click="filter:{idx:2,field: 'stage', operator: '!in', value: 'Cold,Complete'}">Show Active</li>
-        <li class="divider"></li>
-        {{#stages:i}}
-          <li on-click="filter:{idx:{{4+i}},field: 'stage', value: '{{id}}'}">{{name}}</li>
-        {{/stages}}
-        <li class="divider"></li>
-        {{#enquiryTypes:j}}
-          <li on-click="filter:{idx:{{4+stages.length+j}},field: 'enquiryType', value: '{{id}}'}">{{name}}</li>
-        {{/}}
-        <li class="divider"></li>
-        {{#accountTypes:k}}
-          <li on-click="filter:{idx:{{4+stages.length+enquiryTypes.length+k}},field: 'accountType', value: '{{id}}'}">{{name}}</li>
-        {{/accountTypes}}
-      </ul>
-    </a>
+    {{>navbar}}
+    {{>profileArea}}
+  </h2>
+</section>
+<section id="contactsSect">
+  <h2 class="navbar-top">
+    {{>navbar}}
 
     <form id="upload" class="super-admin pull-right upload">
       <a class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')" title="Import data from file"></a>

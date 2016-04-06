@@ -215,6 +215,7 @@ tfoot th {
 
 .admin,
 .super-admin,
+.tenant,
 .user { 
   display: none;
 }
@@ -227,6 +228,7 @@ tfoot th {
 .beta {
   border: solid 1px #ff6c06;
   color: #ff6c06;
+  display:none;
   font-family: barmenoregular, sans-serif;
   font-style: italic;
   line-height: 1.1em;
@@ -320,7 +322,26 @@ h2 a.glyphicon:hover {
   top: -18px;  
 }
 .navbar-brand img {
-  height: 80px;	
+  height: 79px;	
+}
+.navbar-top {
+	 background-color:white;
+	 z-index:200;
+	 position:relative;
+	 margin-top: 0;
+   padding-top: 20px;
+}
+.navbar-sticky {
+  background-color: white;
+  position: fixed;
+  width: 90%;
+  left: auto;
+  right: auto;
+  top: 0;
+  z-index: 100;
+}
+.navbar-sticky h2 { 
+	margin-top:0;
 }
 
 .search {
@@ -340,14 +361,23 @@ h2 a.glyphicon:hover {
   position: fixed;
 }
 .omny-bar-left {
-  border-bottom-right-radius: 5px;
-  border-top-right-radius: 5px;
-  border-bottom-style: double;
+  border-bottom-style: none;
   border-right-style: double;
-  border-top-style: double;
+  border-top-style: none;
+  bottom: 0;
+  display:none;
   left: 0px;
-  top: 40%;  
+  top: 0;  
   width: 50px;
+}
+.omny-bar-left .page {
+	position: relative;
+	top: 20px;
+}
+.omny-bar-left .powered-by-icon img {
+  position: fixed;
+  bottom: 10px;
+  width: 40px;
 }
 .omny-bar li.admin-bar span {
   /*color: red;*/
@@ -356,6 +386,8 @@ h2 a.glyphicon:hover {
   list-style: none;
   margin-left: -36px;
 }
+.omny-bar li span.glyphicon:hover,
+.omny-bar li span.glyphicon:active,
 .omny-bar li span.glyphicon.active {
   color: #fcf8e3;
   background-color: #ff6c06;
@@ -363,7 +395,7 @@ h2 a.glyphicon:hover {
 .omny-bar li span:not(.active) {
   border: 0px;
 }
-.omny-bar-left li span:not(.active) {
+.omny-bar-left li span:not(.active):not(:active):not(:hover) {
   border-bottom: solid 1px #ff6c06;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
@@ -397,10 +429,18 @@ h2 a.glyphicon:hover {
   padding: 5px 7px;
 }
 .omny-bar-top ul>li+li {
-    margin-left: 2px;
+  margin-left: 2px;
 }
 .omny-bar-top .glyphicon {
 	padding: 10px
+}
+
+.omny-burger {
+  /*border-bottom-style: double;
+  border-right-style: double;*/
+	left: 0px;
+	position: fixed;
+	top: 0px;
 }
 
 /* END OMNY BAR */
@@ -544,6 +584,7 @@ a.glyphicon-remove {
   padding: 4px 6px;
 }
 .powered-by { 
+  display:none;
   float: left;
   left: -1px;
   opacity: 0.5;
@@ -562,6 +603,11 @@ a.glyphicon-remove {
 }
 .profile { 
 	font-style: italic;
+	position: relative;
+	z-index: 250;
+}
+.navbar-top .profile .tenant {
+	display:inline;
 }
 .profile-img img { 
 	margin-top: -9px;
