@@ -131,7 +131,7 @@ h2 a.glyphicon:hover {
   padding-right: 20px;  
 }
 /* END BOOTSTRAP OVERRIDES */
-.profile {
+.container > .profile {
   background-color: #efefef;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -155,9 +155,11 @@ form.upload .glyphicon {
 .omny-bar {
   color: #87a956;
 }
+.omny-bar li span.glyphicon:hover,
+.omny-bar li span.glyphicon:active,
 .omny-bar li span.glyphicon.active {
   background-color: #87a956;
 }
-.omny-bar li span:not(.active) {
+.omny-bar-left li span:not(.active):not(:active):not(:hover) {
   border-bottom-color: #87a956;
 }
