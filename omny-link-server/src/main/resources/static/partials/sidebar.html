@@ -1,9 +1,18 @@
+<div class="omny-burger" on-click="toggleSidebar()">
+  <span class="clickable glyphicon glyphicon-menu-hamburger" title="{{title}}"></span>
+</div>
 <div class="omny-bar {{#profile.omnyBarPosition}}omny-bar-{{profile.omnyBarPosition}}{{/}} {{^profile.omnyBarPosition}}omny-bar-left{{/}}">
   <ul>
+    <li>
+      <span class="clickable glyphicon glyphicon-menu-hamburger" on-click="toggleSidebar()" title="{{title}}"></span>
+    </li>
     {{#tenant.omnyBar}}
-      <li><a href="{{url}}">
+      <li class="page"><a href="{{url}}">
         <span class="{{classes}} {{#active==url}}active{{/}}" title="{{title}}"></span>
       </a></li>
     {{/}}
+    <li class="powered-by-icon">
+      <img src="/images/icon/omny-icon-greyscale.png" alt="powered by Omny Link">
+    </li>
   </ul>
 </div>
