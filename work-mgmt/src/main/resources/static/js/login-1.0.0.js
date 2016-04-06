@@ -103,6 +103,8 @@ var AuthenticatedRactive = Ractive.extend({
       if (ractive.hasRole('super_admin')) $('.super-admin').show();
       else if (ractive.hasRole('admin')) $('.admin').show();
       else $('.user').show();
+      // TODO
+      $('.navbar-sticky .tenant').hide();
       $auth.loadTenantConfig(ractive.get('profile.tenant'));
     })
     .error(function(){
@@ -364,6 +366,10 @@ var AuthenticatedRactive = Ractive.extend({
         window.location.reload();
       }
     })
+  },
+  toggleSidebar: function() {
+    console.info('toggleSidebar');
+    $('.omny-bar-left').toggle(EASING_DURATION);
   },
   upload: function(formId) {
     console.log('upload, id: '+formId);

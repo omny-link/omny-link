@@ -63,9 +63,11 @@ a.glyphicon:focus,
 .omny-bar {
   color: #1e7439;
 }
+.omny-bar li span.glyphicon:hover,
+.omny-bar li span.glyphicon:active,
 .omny-bar li span:not(.active) {
   border-bottom-color: #1e7439;
 } 
-.omny-bar li span.glyphicon.active {
+.omny-bar-left li span:not(.active):not(:active):not(:hover) {
   background-color: #1e7439;
 }

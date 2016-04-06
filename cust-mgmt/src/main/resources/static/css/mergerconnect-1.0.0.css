@@ -130,9 +130,11 @@ form.upload .glyphicon {
 .omny-bar {
   color: #55A4D8;
 }
+.omny-bar li span.glyphicon:hover,
+.omny-bar li span.glyphicon:active,
 .omny-bar li span.glyphicon.active {
   background-color: #55A4D8;
 }
-.omny-bar li span:not(.active) {
+.omny-bar-left li span:not(.active):not(:active):not(:hover) {
   border-bottom-color: #55A4D8;
 }

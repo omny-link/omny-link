@@ -17,7 +17,7 @@ h1, h2, h3, h4, h5, h6 {
 
 body {
   color: #552e16;
-  font-family: Roboto;
+  font-family: Roboto, sans-serif;
 }
 h1 { 
 	color: #a1cb3a;
@@ -69,4 +69,3 @@ h5 {
   /* TODO why does this not get applied? */
 	fill: #ff6c06 !important;
 }
-
