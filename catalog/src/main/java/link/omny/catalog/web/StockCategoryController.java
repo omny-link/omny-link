@@ -2,9 +2,11 @@ package link.omny.catalog.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.repositories.StockCategoryRepository;
 import lombok.Data;
@@ -13,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
@@ -52,11 +55,26 @@ public class StockCategoryController {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(StockCategoryController.class);
 
+    @Value("${omny.catalog.searchRadius:100}")
+    private String searchRadius;
+
+    private int iSearchRadius;
+
     @Autowired
     private StockCategoryRepository stockCategoryRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private GeolocationService geo;
+
+    public int getSearchRadius() {
+        if (iSearchRadius == 0) {
+            iSearchRadius = Integer.parseInt(searchRadius);
+        }
+        return iSearchRadius;
+    }
 
     /**
      * Imports JSON representation of stockCategorys.
@@ -141,6 +159,60 @@ public class StockCategoryController {
     }
 
     /**
+     * Return Stock Categories for a specific tenant within a given distance of
+     * the search location.
+     * 
+     * @return stockCategorys for that tenant.
+     * @throws IOException
+     *             If unable to contact the geocoding service or it in turn
+     *             throws an exception.
+     */
+    @RequestMapping(value = "/findByLocation", method = RequestMethod.GET)
+    public @ResponseBody List<ShortStockCategory> findByLocation(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam(value = "q", required = true) String q,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit)
+            throws IOException {
+        LOGGER.info(String.format("List stockCategories for tenant %1$s",
+                tenantId));
+
+        List<StockCategory> list;
+        StockCategory exactMatch = stockCategoryRepo.findByName(q);
+        if (exactMatch == null) {
+            GeoPoint target = geo.locate(q);
+
+            list = new ArrayList<StockCategory>();
+            List<StockCategory> tmpList = stockCategoryRepo
+                    .findAllForTenant(tenantId);
+            for (StockCategory stockCategory : tmpList) {
+                try {
+                    if (stockCategory.getLng() == 0.0d) {
+                        stockCategory.setGeoPoint(geo.locate(stockCategory
+                                .getPostCode()));
+                        stockCategoryRepo.save(stockCategory);
+                    }
+
+                    if (geo.distance(target, stockCategory) < getSearchRadius()) {
+                        list.add(stockCategory);
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("Exception calculating distance of "
+                            + stockCategory.getName() + " from " + q);
+                }
+            }
+        } else {
+            list = Collections.singletonList(exactMatch);
+        }
+        Collections.sort(list,
+                        (o1, o2) -> ((int) o1.getDistance())
+                                - ((int) o2.getDistance()));
+        LOGGER.info(String.format("Found %1$s stockCategorys", list.size()));
+
+        return wrap(list);
+    }
+
+    /**
      * Create a new stock category.
      * 
      * @return
@@ -201,6 +273,9 @@ public class StockCategoryController {
     private ShortStockCategory wrap(StockCategory stockCategory) {
         ShortStockCategory resource = new ShortStockCategory();
         BeanUtils.copyProperties(stockCategory, resource);
+        // Not set by BeanUtils due to diff type
+        resource.setDistance(String.valueOf(Math.round(stockCategory
+                .getDistance())));
         Link detail = linkTo(StockCategoryRepository.class,
                 stockCategory.getId())
                 .withSelfRel();
@@ -220,6 +295,8 @@ public class StockCategoryController {
     public static class ShortStockCategory extends ResourceSupport {
         private String selfRef;
         private String name;
+        private String postCode;
+        private String distance;
         private Date created;
         private Date lastUpdated;
     }

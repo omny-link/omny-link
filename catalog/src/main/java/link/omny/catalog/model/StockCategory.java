@@ -17,6 +17,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
@@ -76,6 +77,12 @@ public class StockCategory {
     private String country;
 
     @JsonProperty
+    private double lat;
+
+    @JsonProperty
+    private double lng;
+
+    @JsonProperty
     private URL focalImage;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -90,6 +97,10 @@ public class StockCategory {
 
     @JsonProperty
     private String tenantId;
+
+    @Transient
+    @JsonProperty
+    private double distance;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockCategory")
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
@@ -125,6 +136,15 @@ public class StockCategory {
         getCustomFields().add(
                 new CustomStockCategoryField(key, value == null ? null : value
                         .toString()));
+    }
+
+    public GeoPoint getGeoPoint() {
+        return new GeoPoint(getLat(), getLng());
+    }
+
+    public void setGeoPoint(GeoPoint point) {
+        setLat(point.getLat());
+        setLng(point.getLng());
     }
 
     @PreUpdate
