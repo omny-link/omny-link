@@ -38,7 +38,7 @@
         <li><label class=""></label><input class="form-control" id="curAddress2" value="{{current.address2}}"/></li>
         <li><label class=""></label><input class="form-control" id="curTown" placeholder="Town or village" value="{{current.town}}"/></li>
         <li><label class=""></label><input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/></li>
-        <li><label class="">Post Code:</label><input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}"></li>
+        <li><label class="required">Post Code:</label><input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" required value="{{current.postCode}}"></li>
         <li><label class="">Country:</label><input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
         {{#current.postCode}}
           <li><label class="">Map:</label><a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
