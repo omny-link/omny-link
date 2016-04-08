@@ -1,0 +1,8 @@
+# List all stock items (individual lettings)
+curl -v -H "Accept:application/json" -u tstephen:tstephen https://api.omny.link/flexspace/stock-items/
+
+# Access a single stock item
+curl -v -H "Accept:application/json" -u tstephen:tstephen https://api.omny.link/stock-items/1535
+
+# Location based search
+curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham
