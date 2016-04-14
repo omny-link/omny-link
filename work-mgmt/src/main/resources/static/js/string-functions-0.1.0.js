@@ -35,3 +35,13 @@ Number.prototype.formatDecimal = function(c, d, t) {
       j = (j = i.length) > 3 ? j % 3 : 0;
   return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
+
+Number.prototype.sigFigs = function(sig) {
+  if (this == undefined || this == null || sig == undefined) return this;
+  var neg = this<0;
+  var n = Math.abs(this);
+  var mult = Math.pow(10,
+      sig - Math.floor(Math.log(n) / Math.LN10) - 1);
+  var r = Math.round(n * mult) / mult;
+  return neg ? -r : r;
+}
