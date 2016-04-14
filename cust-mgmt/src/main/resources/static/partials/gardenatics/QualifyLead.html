@@ -48,7 +48,7 @@
   <div class="col-md-6 col-sm-12">
     <ul class="form edit-form">
       <li><label class="col-md-5">Appointment Date:</label>
-        <input class="datepickerdis form-control" id="curAppointmentDate" on-blur="saveContact()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm//yyyy"  value="{{current.processVariables.contact.customFields['appointmentDate']}}"></li>
+        <input class="form-control" id="curAppointmentDate" on-blur="saveContact()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm//yyyy" type="date" value="{{current.processVariables.contact.customFields['appointmentDate']}}"></li>
       <li><label class="col-md-5">Appointment Time:</label>
         <input class="form-control" id="curAppointmentTime" on-blur="saveContact()" pattern="[0-9]{2}:[0-9]{2}" placeholder="hh:mm" value="{{current.processVariables.contact.customFields['appointmentTime']}}"></li>
     </ul>

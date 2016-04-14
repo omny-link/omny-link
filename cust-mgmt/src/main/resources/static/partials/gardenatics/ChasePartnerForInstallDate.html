@@ -42,7 +42,7 @@
   <div class="col-md-6 col-sm-12">
     <ul class="form edit-form">
       <li><label class="col-md-5">Installation Date:</label>
-        <input class="datepickerdis" id="curInstallationDate" on-blur="saveContact()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm//yyyy"  value="{{current.processVariables.contact.customFields['installationDate']}}"></li>
+        <input class="form-control" id="curInstallationDate" on-blur="saveContact()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm//yyyy"  type="date" value="{{current.processVariables.contact.customFields['installationDate']}}"></li>
     </ul>
   </div>
   
