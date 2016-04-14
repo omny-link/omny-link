@@ -15,7 +15,7 @@
 <div class="col-md-6 col-sm-12">
   <ul class="form edit-form">
     <li><label class="col-md-5">Appointment Date:</label>
-    <input class="datepickerdis fform-control" id="curAppointmentDate" on-blur="console.error(''+this.value);ractive.save()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm/yyyy" value="{{current.customFields['appointmentDate']}}"></li>
+    <input class="form-control" id="curAppointmentDate" on-blur="console.error(''+this.value);ractive.save()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm/yyyy" type="date" value="{{current.customFields['appointmentDate']}}"></li>
     <li><label class="col-md-5">Appointment Time:</label>
     <input class="form-control" id="curAppointmentTime" on-blur="ractive.save()" pattern="[0-9]{2}:[0-9]{2}" placeholder="hh:mm" value="{{current.customFields['appointmentTime']}}"></li>
     <li><label class="col-md-5">Installation Date:</label>
