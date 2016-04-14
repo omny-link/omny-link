@@ -97,6 +97,16 @@ public class ContactTest {
     }
 
     @Test
+    public void testScottishCompanyNumber() {
+        Account acct = new Account();
+        acct.setCompanyNumber("SC345678");
+
+        Set<ConstraintViolation<Account>> violations = validator
+                .validateProperty(acct, "companyNumber");
+        assertEquals(0, violations.size());
+    }
+
+    @Test
     public void testUKPartnershipNumber() {
         Account acct = new Account();
         acct.setCompanyNumber("OC345678");
