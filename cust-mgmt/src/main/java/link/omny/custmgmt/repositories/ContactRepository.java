@@ -1,5 +1,6 @@
 package link.omny.custmgmt.repositories;
 
+import java.util.Date;
 import java.util.List;
 
 import link.omny.custmgmt.model.Contact;
@@ -35,11 +36,6 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
 
     List<Contact> findByLastName(@Param("lastName") String lastName);
 
-    // This does not work
-    List<Contact> findByFirstNameAndLastName(
-            @Param("firstName") String firstName,
-            @Param("lastName") String lastName);
-
     // This applies AND semantics
     List<Contact> findByFirstNameOrLastName(
             @Param("firstName") String firstName,
@@ -50,6 +46,13 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
             @Param("account.name") String accountName);
+
+    @Query("SELECT c FROM Contact c "
+            + "WHERE c.firstName = :firstName AND c.lastName = :lastName ")
+    // TODO ought to restrict this to single tenant
+    List<Contact> findByFirstNameAndLastName(
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName);
 
     @Query("SELECT c FROM Contact c "
             + "WHERE c.firstName = :firstName AND c.lastName = :lastName "
@@ -83,6 +86,14 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.firstName IS NULL AND c.lastName IS NULL AND c.tenantId = :tenantId")
     List<Contact> findAnonByUuid(@Param("uuid") String uuid,
             @Param("tenantId") String tenantId);
+
+    @Query("SELECT c FROM Contact c INNER JOIN c.activity a WHERE a.occurred > :sinceDate AND c.tenantId = :tenantId ORDER BY a.occurred DESC")
+    List<Contact> findActiveForTenant(@Param("sinceDate") Date sinceDate,
+            @Param("tenantId") String tenantId);
+
+    @Query(value = "UPDATE OL_CONTACT c set c.account_id = ?2 WHERE c.id = ?1", nativeQuery = true)
+    @Modifying(clearAutomatically = true)
+    public void setAccount(Long contactId, Long accountId);
 
     @Override
     @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = ?1")

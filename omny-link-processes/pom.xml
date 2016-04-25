@@ -10,20 +10,20 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.knowprocess.bpm</groupId>
-      <artifactId>work-mgmt</artifactId>
-      <version>${work-mgmt.version}</version>
+      <groupId>org.activiti</groupId>
+      <artifactId>activiti-engine</artifactId>
+      <version>${activiti.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.activiti</groupId>
       <artifactId>activiti-bdd</artifactId>
       <version>${activiti.bdd.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.subethamail</groupId>
-      <artifactId>subethasmtp-wiser</artifactId>
-      <version>1.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -36,6 +36,29 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.knowprocess.bpm</groupId>
+      <artifactId>work-mgmt</artifactId>
+      <!-- NOTE: this does not work on Jenkins (fine locally)
+      <version>[0.0.1,1.0.0)</version>
+      0.1.1-SNAPSHOT
+      -->
+      <version>${work-mgmt.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>activiti-spring-rest</artifactId>
+          <groupId>org.activiti</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>javax.persistence</artifactId>
+          <groupId>org.eclipse.persistence</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>

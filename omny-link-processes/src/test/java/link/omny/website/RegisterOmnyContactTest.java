@@ -5,6 +5,9 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 
 import org.activiti.bdd.ActivitiSpec;
+import org.activiti.bdd.ext.DumpAuditTrail;
+import org.activiti.bdd.test.activiti.ExtendedRule;
+import org.activiti.bdd.test.mailserver.TestMailServer;
 import org.activiti.engine.IdentityService;
 import org.junit.After;
 import org.junit.Before;
@@ -12,10 +15,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.knowprocess.bpm.test.actions.DumpAuditTrail;
 import com.knowprocess.resource.spi.RestDelete;
-import com.knowprocess.test.activiti.ExtendedRule;
-import com.knowprocess.test.mailserver.TestMailServer;
 
 public class RegisterOmnyContactTest {
 

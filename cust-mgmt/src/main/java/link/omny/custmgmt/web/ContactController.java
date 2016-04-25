@@ -3,7 +3,10 @@ package link.omny.custmgmt.web;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -35,10 +38,7 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -86,6 +87,9 @@ public class ContactController {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    // @Value("omny.minsConsideredActive:-60")
+    private int minsConsideredActive = -60;
 
     /**
      * Imports JSON representation of contacts.
@@ -171,15 +175,18 @@ public class ContactController {
             // TODO unfortunately activeUser is null, prob some kind of class
             // cast error it seems
             // Use SecurityContextHolder as temporary fallback
-            Authentication authentication = SecurityContextHolder.getContext()
-                    .getAuthentication();
+            // Authentication authentication =
+            // SecurityContextHolder.getContext()
+            // .getAuthentication();
 
-            for (GrantedAuthority a : authentication.getAuthorities()) {
-                System.out.println("  " + a.getAuthority());
-                System.out.println("  "
-                        + a.getAuthority().equals("ROLE_editor"));
-                System.out.println("  " + a.getAuthority().equals("editor"));
-            }
+            // if (LOGGER.isDebugEnabled()) {
+            // for (GrantedAuthority a : authentication.getAuthorities()) {
+            // System.out.println("  " + a.getAuthority());
+            // System.out.println("  "
+            // + a.getAuthority().equals("ROLE_editor"));
+            // System.out.println("  " + a.getAuthority().equals("editor"));
+            // }
+            // }
 
             // if (authentication.getAuthorities().contains("ROLE_editor")) {
             list = contactRepo.findAllForTenant(tenantId);
@@ -320,6 +327,30 @@ public class ContactController {
         return wrap(consolidateContactsWithUuid(uuid, tenantId));
     }
 
+    /**
+     * Return contacts currently active on the site.
+     * 
+     * <p>
+     * TODO 'Currently' can be defined per tenant.
+     * </p>
+     * 
+     * @return contacts for that tenant with the matching tag.
+     * @throws BusinessEntityNotFoundException
+     */
+    @RequestMapping(value = "/findActive", method = RequestMethod.GET)
+    @Transactional
+    public @ResponseBody List<ShortContact> findActive(
+            @PathVariable("tenantId") String tenantId)
+            throws BusinessEntityNotFoundException {
+        LOGGER.debug(String.format("Find active contacts for tenant %1$s",
+                tenantId));
+
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.add(Calendar.MINUTE, minsConsideredActive);
+        Date sinceDate = cal.getTime();
+        return wrap(contactRepo.findActiveForTenant(sinceDate, tenantId));
+    }
+
     protected synchronized Contact consolidateContactsWithUuid(String uuid,
             String tenantId) {
         // Because of ASYNC calls from JavaScript uuid may not be unique...
@@ -347,17 +378,24 @@ public class ContactController {
      * 
      * @return
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public @ResponseBody ResponseEntity<?> create(
             @PathVariable("tenantId") String tenantId,
-            @RequestBody Contact contact, UriComponentsBuilder builder) {
+            @RequestBody Contact contact) {
         contact.setTenantId(tenantId);
-        contactRepo.save(contact);
+        contact = contactRepo.save(contact);
+
+        UriComponentsBuilder builder = MvcUriComponentsBuilder
+                .fromController(getClass());
+        HashMap<String, String> vars = new HashMap<String, String>();
+        vars.put("tenantId", tenantId);
+        vars.put("id", contact.getId().toString());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(builder.path("/contacts/{id}")
-                .buildAndExpand(contact.getId()).toUri());
+        headers.setLocation(builder.path("/{id}").buildAndExpand(vars)
+                .toUri());
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
@@ -370,8 +408,7 @@ public class ContactController {
             @PathVariable("id") Long contactId,
             @RequestBody Contact updatedContact) {
         Contact contact = contactRepo.findOne(contactId);
-
-        BeanUtils.copyProperties(updatedContact, contact, "id");
+        BeanUtils.copyProperties(updatedContact, contact, "id", "account");
         contact.setTenantId(tenantId);
         contactRepo.save(contact);
 
@@ -590,6 +627,27 @@ public class ContactController {
                 String.format("Waiting for %1$s", stage));
 
         // return contact;
+    }
+
+    /**
+     * Change the sale stage the contact is at.
+     */
+    @RequestMapping(value = "/{contactId}/account", method = RequestMethod.PUT, consumes = "text/uri-list")
+    @Transactional
+    public @ResponseBody void setAccount(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("contactId") Long contactId,
+            @RequestBody String accountUri) {
+        LOGGER.info(String.format("Linking account %2$s to contact %1$s",
+                contactId, accountUri));
+
+        Long acctId = Long.parseLong(accountUri.substring(accountUri
+                .lastIndexOf('/') + 1));
+
+        contactRepo.setAccount(contactId, acctId);
+
+        addActivity(tenantId, contactId, "link-account",
+                String.format("Linked for %1$s", accountUri));
     }
 
     /**
