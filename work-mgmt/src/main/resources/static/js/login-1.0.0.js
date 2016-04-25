@@ -165,6 +165,7 @@ var AuthenticatedRactive = Ractive.extend({
     $('#upload').slideUp();
   },
   id: function(entity) {
+    // TODO switch to modular vsn
     console.log('id: '+entity);
     var id = ractive.getId(entity);
     return id.substring(id.lastIndexOf('/')+1);
@@ -341,6 +342,7 @@ var AuthenticatedRactive = Ractive.extend({
     $('#upload').slideDown();
   },
   stripProjection: function(link) {
+    // TODO switch to modularized version
     if (link==undefined) return;
     var idx = link.indexOf('{projection');
     if (idx==-1) {
@@ -390,6 +392,7 @@ var AuthenticatedRactive = Ractive.extend({
     });
   },
   uri: function(entity) {
+    // TODO switch to use modularized version
     console.log('uri: '+entity);
     var uri;
     if (entity['links']!=undefined) {

@@ -11,6 +11,9 @@ import java.util.Set;
 import link.omny.website.TestCredentials;
 
 import org.activiti.bdd.ActivitiSpec;
+import org.activiti.bdd.ext.DumpAuditTrail;
+import org.activiti.bdd.test.activiti.ExtendedRule;
+import org.activiti.bdd.test.mailserver.TestMailServer;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.identity.User;
@@ -18,10 +21,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import com.knowprocess.bpm.test.actions.DumpAuditTrail;
-import com.knowprocess.test.activiti.ExtendedRule;
-import com.knowprocess.test.mailserver.TestMailServer;
 
 public class SendMemoDistributionIT {
     private static final String USER_EMAIL = "tim@knowprocess.com";

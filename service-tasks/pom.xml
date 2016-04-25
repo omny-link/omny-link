@@ -106,10 +106,18 @@
       <version>1.0.0</version>
     </dependency>
     <dependency>
-      <groupId>org.subethamail</groupId>
-      <artifactId>subethasmtp-wiser</artifactId>
-      <version>1.2</version>
-      <optional>true</optional>
+      <groupId>org.activiti</groupId>
+      <artifactId>activiti-bdd</artifactId>
+      <version>${activiti.bdd.version}</version>
+      <scope>provided</scope>
+      <!-- Because this depends on toxos process assertions we need to 
+           exclude the older activiti-spring it depends on -->
+      <exclusions>
+        <exclusion>
+          <artifactId>activiti-spring</artifactId>
+          <groupId>org.activiti</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- Sugar CRM -->
     <dependency>
