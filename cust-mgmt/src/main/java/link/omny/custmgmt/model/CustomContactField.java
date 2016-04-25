@@ -55,4 +55,12 @@ public class CustomContactField extends CustomField {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return String.format(
+                "CustomContactField [contact=%s, id=%s, name=%s, value=%s]",
+                (contact == null || contact.getId() == null) ? null : contact
+                        .getId(), getId(), getName(), getValue());
+    }
+
 }

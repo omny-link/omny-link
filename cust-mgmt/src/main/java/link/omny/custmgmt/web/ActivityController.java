@@ -5,10 +5,16 @@ import java.util.List;
 
 import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.repositories.ActivityRepository;
+import lombok.Data;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,10 +34,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/activities")
-public class ActivitiesController {
+public class ActivityController {
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(ActivitiesController.class);
+            .getLogger(ActivityController.class);
 
     @Autowired
     private ActivityRepository repo;
@@ -69,4 +75,49 @@ public class ActivitiesController {
 
         return result;
     }
+
+    // /**
+    // * @return just the latest matching activity.
+    // */
+    // @RequestMapping(value = "/findLatestByTimeTypeAndContent", method =
+    // RequestMethod.GET, params = { "tag" })
+    // public @ResponseBody ShortActivity findLatestByTimeTypeAndContent(
+    // @PathVariable("tenantId") String tenantId,
+    // @RequestParam("time") String time,
+    // @RequestParam("type") String type,
+    // @RequestParam("content") String content) {
+    // LOGGER.debug(String.format("List contacts for tag %1$s", type));
+    //
+    // List<Activity> list = repo.findByTimeTypeAndContent(time, type,
+    // content, tenantId);
+    // LOGGER.info(String.format("Found %1$s activities", list.size()));
+    //
+    // return wrap(list.get(0));
+    // }
+
+    private ShortActivity wrap(Activity activity) {
+        ShortActivity resource = new ShortActivity();
+        BeanUtils.copyProperties(activity, resource);
+        Link detail = linkTo(ActivityRepository.class, activity.getId())
+                .withSelfRel();
+        resource.add(detail);
+        resource.setSelfRef(detail.getHref());
+        return resource;
+    }
+
+    private Link linkTo(
+            @SuppressWarnings("rawtypes") Class<? extends CrudRepository> clazz,
+            Long id) {
+        return new Link(clazz.getAnnotation(RepositoryRestResource.class)
+                .path() + "/" + id);
+    }
+
+    @Data
+    public static class ShortActivity extends ResourceSupport {
+        private String selfRef;
+        private String type;
+        private String occurred;
+        private String content;
+    }
 }
+
