@@ -392,7 +392,7 @@ var ractive = new AuthenticatedRactive({
   save: function () {
     console.log('save contact: '+ractive.get('current').lastName+'...');
     ractive.set('saveObserver',false);
-    var id = ractive.getId(ractive.get('current'));
+    var id = ractive.uri(ractive.get('current'));
     if (document.getElementById('currentForm')==undefined) { 
       console.debug('still loading, safe to ignore');
     } else if (document.getElementById('currentForm').checkValidity()) {
@@ -450,7 +450,7 @@ var ractive = new AuthenticatedRactive({
     if (ractive.get('current.account.companyNumber')=='') ractive.set('current.account.companyNumber',undefined); 
     if ($('#currentAccountForm:visible').length!=0 && document.getElementById('currentAccountForm').checkValidity()) { 
       $.ajax({
-        url: id == undefined ? ractive.getServer()+'/'+ractive.get('tenant.id')+'/accounts/' : ractive.get('tenant.id')+'/accounts/'+id,
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/accounts/'+(id == undefined ? '' : id),
         type: id == undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(ractive.get('current.account')),
@@ -543,7 +543,7 @@ var ractive = new AuthenticatedRactive({
       });
 	  }
 	  if (contact._links != undefined) {
-	    var url = ractive.stripProjection(contact._links.self.href);
+	    var url = ractive.uri(contact);
 	    if (url == undefined) {
 	      ractive.showError('No contact selected, please check link');
 	      return;

@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -339,6 +340,15 @@ public class Contact implements Serializable {
         }
     }
 
+    @PrePersist
+    public void prePersist() {
+        if (LOGGER.isWarnEnabled() && firstContact != null) {
+            LOGGER.warn(String.format(
+                    "Overwriting create date %1$s with 'now'.", firstContact));
+        }
+        firstContact = new Date();
+    }
+
     @PreUpdate
     public void preUpdate() {
         if (LOGGER.isWarnEnabled() && lastUpdated != null) {
@@ -495,13 +505,14 @@ public class Contact implements Serializable {
     @Override
     public String toString() {
         return String
-                .format("Contact [id=%s, firstName=%s, lastName=%s, title=%s, email=%s, emailConfirmed=%s, emailConfirmationCode=%s, phone1=%s, phone2=%s, address1=%s, address2=%s, town=%s, countyOrCity=%s, postCode=%s, country=%s, stage=%s, enquiryType=%s, accountType=%s, owner=%s, doNotCall=%s, doNotEmail=%s, source=%s, medium=%s, campaign=%s, keyword=%s, tags=%s, firstContact=%s, lastUpdated=%s, tenantId=%s, customFields=%s, account=%s, activity=%s]",
+                .format("Contact [id=%s, firstName=%s, lastName=%s, title=%s, email=%s, emailConfirmed=%s, emailConfirmationCode=%s, phone1=%s, phone2=%s, address1=%s, address2=%s, town=%s, countyOrCity=%s, postCode=%s, country=%s, stage=%s, enquiryType=%s, accountType=%s, owner=%s, doNotCall=%s, doNotEmail=%s, source=%s, medium=%s, campaign=%s, keyword=%s, tags=%s, firstContact=%s, lastUpdated=%s, tenantId=%s, customFields=%s, account=%d]",
                         id, firstName, lastName, title, email, emailConfirmed,
                         uuid, phone1, phone2, address1,
                         address2, town, countyOrCity, postCode, country, stage,
                         enquiryType, accountType, owner, doNotCall, doNotEmail,
                         source, medium, campaign, keyword, tags, firstContact,
-                        lastUpdated, tenantId, customFields, account, activity);
+                        lastUpdated, tenantId, customFields,
+                        account == null ? null : account.getId());
     }
 
 }

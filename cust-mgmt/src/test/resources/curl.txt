@@ -39,3 +39,6 @@ curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://lo
 
 # record user activity
 curl -X POST -H 'Content-Type:application/json' -u tstephen:tstephen -v -d '' http://localhost:8082/msg/omny/omny.userActivity.json
+
+# current active users
+#curl -H 'Accept:application/json' -u tstephen:tstephen -v http://localhost:8082/gardenatics/contacts/findActive
