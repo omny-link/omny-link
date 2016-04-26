@@ -98,14 +98,6 @@ h2 a.glyphicon:focus,
 h2 a.glyphicon:hover {
   color: #E0B54F;
 }
-#messages { 
-  position: fixed;
-  top: 45px;
-  margin-left: 25%;
-  margin-right: 25%;
-  width: 50%;
-  z-index: 10;
-}
 .navbar-brand { 
   top: -13px;  
 }
