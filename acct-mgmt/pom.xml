@@ -34,6 +34,28 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.activiti</groupId>
+      <artifactId>activiti-engine</artifactId>
+      <version>${activiti.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+		  <groupId>org.activiti</groupId>
+		  <artifactId>activiti-spring-boot-starter-basic</artifactId>
+		  <version>${activiti.version}</version>
+		</dependency>
+    <!-- Required for native JSON support -->
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.json</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+		<dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
       <exclusions>
@@ -57,7 +79,6 @@
       <groupId>com.zaxxer</groupId>
       <!-- drop -java6 suffix for Java 8 compiled version -->
       <artifactId>HikariCP-java6</artifactId>
-      <version>2.3.2</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -113,6 +134,19 @@
         <artifactId>springfox-swagger-ui</artifactId>
         <version>2.0.0</version>
     </dependency>
+    
+    <dependency>
+      <groupId>io.onedecision</groupId>
+      <artifactId>onedecision-engine</artifactId>
+      <version>${onedecision.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>ractive</artifactId>
+          <groupId>org.webjars</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
     <!-- Web jars -->
     <dependency>
       <groupId>org.webjars</groupId>

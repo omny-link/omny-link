@@ -1,20 +1,16 @@
 package link.omny.acctmgmt;
 
-import javax.persistence.EntityManagerFactory;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
+@ComponentScan
 @Import({ AcctMgmtConfig.class })
 public class Application extends WebMvcConfigurerAdapter {
-
-    @Autowired
-    private EntityManagerFactory entityManagerFactory;
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -26,4 +22,14 @@ public class Application extends WebMvcConfigurerAdapter {
         SpringApplication.run(Application.class, args);
     }
 
+    // @Bean
+    // public DataSource database() {
+    // return dataSource;
+    // return DataSourceBuilder.create()
+    // .url("jdbc:mysql://127.0.0.1:3306/activiti-spring-boot?characterEncoding=UTF-8")
+    // .username("alfresco")
+    // .password("alfresco")
+    // .driverClassName("com.mysql.jdbc.Driver")
+    // .build();
+    // }
 }
