@@ -160,17 +160,17 @@
       <version>0.9.0-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>co.uk.flexspace</groupId>
+      <groupId>uk.co.flexspace</groupId>
       <artifactId>flexspace-omny</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>co.uk.performancetelecom</groupId>
+      <groupId>uk.co.performancetelecom</groupId>
       <artifactId>performance-telecom-omny</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>co.uk.circumcisioncentre</groupId>
+      <groupId>uk.co.circumcisioncentre</groupId>
       <artifactId>circom-omny</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
