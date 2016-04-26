@@ -1,11 +1,10 @@
 package com.knowprocess.in;
 
+import org.activiti.bdd.test.activiti.ExtendedRule;
 import org.activiti.engine.IdentityService;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
-
-import com.knowprocess.test.activiti.ExtendedRule;
 
 public class AbstractLinkedInTest {
 

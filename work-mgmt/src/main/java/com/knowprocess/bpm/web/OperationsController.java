@@ -68,24 +68,24 @@ public class OperationsController {
 
         for (TenantConfig tenant : tenantRepo.findAll()) {
             OperationsSummary summary = new OperationsSummary();
-            summary.setTenantId(tenant.getTenantId());
+            summary.setTenantId(tenant.getId());
             summary.setJobs(mgmtSvc.createJobQuery()
-                    .jobTenantId(tenant.getTenantId())
+                    .jobId(tenant.getId())
                     .count());
             summary.setActiveInstances(runtimeSvc.createProcessInstanceQuery()
-                    .processInstanceTenantId(tenant.getTenantId()).count());
+                    .processInstanceId(tenant.getId()).count());
             summary.setCompletedInstances(histSvc
                     .createHistoricProcessInstanceQuery()
-                    .processInstanceTenantId(tenant.getTenantId()).finished()
+                    .processInstanceId(tenant.getId()).finished()
                     .count());
             summary.setTotalDefinitions(repoSvc.createProcessDefinitionQuery()
-                    .processDefinitionTenantId(tenant.getTenantId()).count());
+                    .processDefinitionId(tenant.getId()).count());
             summary.setActiveDefinitions(repoSvc.createProcessDefinitionQuery()
                     .latestVersion()
-                    .processDefinitionTenantId(tenant.getTenantId())
+                    .processDefinitionId(tenant.getId())
                     .count());
             summary.setTasks(taskSvc.createTaskQuery()
-                    .taskTenantId(tenant.getTenantId())
+                    .taskId(tenant.getId())
                     .active().count());
             // TODO find users for tenant
             // summary.setUsers(idSvc.createUserQuery().count());
@@ -119,8 +119,8 @@ public class OperationsController {
 
         List<HistoricProcessInstance> archivedInstances = histSvc
                 .createHistoricProcessInstanceQuery()
-                .processInstanceTenantId(tenantId)
-.finishedBefore(beforeDate)
+                .processInstanceId(tenantId)
+                .finishedBefore(beforeDate)
                 .list();
         for (HistoricProcessInstance hpi : archivedInstances) {
             histSvc.deleteHistoricProcessInstance(hpi.getId());

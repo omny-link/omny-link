@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,7 +30,8 @@ public class UrlResourceTest {
     private static final String SMS_FROM = "+15005550006";
     private static final String SMS_TO = "+14108675309";
     private static final String IMAGE_URL = "http://farm4.staticflickr.com/3140/3094868910_41c19ce2a3_b_d.jpg";
-    private String destinationFile = "tux.jpg";
+    private String destinationFile = "target" + File.separator + "test-classes"
+            + File.separator + "tux.jpg";
 
     private static final String USR = "AC4b0f9bd131e7896a8de0ec87b30174cb";
     private static final String PWD = "2993fc0d08c4cc60fe141c794994a91b";

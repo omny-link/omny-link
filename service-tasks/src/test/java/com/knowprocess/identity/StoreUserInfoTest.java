@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.activiti.bdd.test.activiti.ExtendedRule;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.identity.Authentication;
@@ -16,7 +17,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.knowprocess.test.activiti.ExtendedRule;
 
 public class StoreUserInfoTest {
 

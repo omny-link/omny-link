@@ -2,6 +2,7 @@ package com.knowprocess.resource.spi;
 
 import static org.junit.Assert.fail;
 
+import org.activiti.bdd.test.activiti.ExtendedRule;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.impl.el.FixedValue;
@@ -18,7 +19,6 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.knowprocess.test.activiti.ExtendedRule;
 
 public class RestPostTest {
 

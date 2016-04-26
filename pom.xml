@@ -28,6 +28,7 @@
     <omny-link.version>1.0.0.0-beta-10</omny-link.version>
     <work-mgmt.version>2.0.0.0-beta-10</work-mgmt.version>
     <activiti.bdd.version>5.19.0.20160314</activiti.bdd.version>
+    <onedecision.version>0.9.0-SNAPSHOT</onedecision.version>
   </properties>
 
   <licenses>

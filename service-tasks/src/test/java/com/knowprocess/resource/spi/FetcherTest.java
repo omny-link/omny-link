@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.activiti.bdd.test.activiti.ExtendedRule;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
 import org.activiti.engine.repository.Deployment;
 import org.junit.Assume;
@@ -21,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import com.knowprocess.resource.internal.gdrive.GDriveConfigurationException;
-import com.knowprocess.test.activiti.ExtendedRule;
 
 public class FetcherTest {
     @Rule

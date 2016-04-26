@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.activiti.bdd.test.activiti.ExtendedRule;
+import org.activiti.bdd.test.mailserver.TestMailServer;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.test.JobTestHelper;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -15,8 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.toxos.activiti.assertion.ProcessAssert;
 
-import com.knowprocess.test.activiti.ExtendedRule;
-import com.knowprocess.test.mailserver.TestMailServer;
 
 public class TemplatedMailshotProcessTest {
 

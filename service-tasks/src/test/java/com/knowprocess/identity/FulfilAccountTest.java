@@ -1,6 +1,8 @@
 package com.knowprocess.identity;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -9,6 +11,8 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 
+import org.activiti.bdd.test.activiti.ExtendedRule;
+import org.activiti.bdd.test.mailserver.TestMailServer;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.identity.User;
@@ -20,8 +24,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.knowprocess.test.activiti.ExtendedRule;
-import com.knowprocess.test.mailserver.TestMailServer;
 
 public class FulfilAccountTest {
 

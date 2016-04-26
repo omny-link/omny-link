@@ -274,6 +274,16 @@ tfoot th {
   border-radius: 5px;
   color: #0e9acd;
 }
+.glyphicon-success {
+  color: #3c763d;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+}
+.glyphicon-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
 a.glyphicon,
 a.glyphicon:visited,
 h2 a.glyphicon,
@@ -629,7 +639,7 @@ a.glyphicon-remove {
   margin-right: 25%;
   padding: 0 10px 0 10px;
   width: 50%;
-  z-index: 10;
+  z-index: 500;
 }
 #messages.text-danger { 
   font-style: italic;

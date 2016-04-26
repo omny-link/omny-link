@@ -1,0 +1,104 @@
+<section id="currentSect">
+  <form class="inline-form form" id="currentForm">
+    <h2 class="edit-form">
+      <span>Features enabled for </span>
+      <span contenteditable id="curName" on-focus="editField('#curName','current.name')" on-blur="updateField('#curName','current.name')">{{current.name}}</span>
+      <span id="curId" >({{current.id}})</span>
+    </h2>
+    
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+      <ul class="form edit-form">
+        <li>
+          <label class="">Account:</label>
+          <input id="curFeatureAccount" type="checkbox" checked="{{current.features.account}}"> {{#current.features.account==true}}Enabled{{/}}
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Enable if contacts need to be associated with a company or other organisation.</p>
+        </li>
+        <li>
+          <label class="">Activity Analysis:</label>
+          <input id="curFeatureActivity" type="checkbox" checked="{{current.features.activityAnalysis}}"> {{#current.features.activityAnalysis==true}}Enabled{{/}}
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Displays recent activity information such as last login.</p>  
+        </li>
+        <li>
+          <label class="">Budget:</label>
+          <input id="curFeatureBudget" type="checkbox" checked="{{current.features.budget}}"> {{#current.features.budget==true}}Enabled{{/}}
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Display fields to manage a contact's budget.</p>
+        </li>
+      </ul>
+    </div>
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+      <ul class="form edit-form">
+        <li>
+          <label class="">Company Data:</label>
+          <input class="" id="curFeatureCompany" type="checkbox" checked="{{current.features.companyBackground}}"> {{#current.features.companyBackground==true}}Enabled{{/}}
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Displays research information about the company.</p>
+        </li>
+        <li>
+          <label class="">Marketing:</label>
+          <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.features.marketing}}"> {{#current.features.marketing==true}}Enabled{{/}}
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Display marketing information about the source of the lead.</p>  
+        </li>
+        <li>
+          <label class="">Merge:</label>
+          <input class="" id="curOptOut" type="checkbox" checked="{{current.features.merge}}"> {{#current.features.merge==true}}Enabled{{/}}
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Enable the experimental merge functionality.</p>
+        </li>
+      </ul>
+    </div>
+  </form>
+
+  <div id="currentToolbar" style="clear: both">
+    <h2>Toolbar entries</h2>
+    {{>statusTable { property: 'toolbar' }}}
+  </div>
+
+  <div id="currentBot" style="clear: both">
+    <h2>Bot settings</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>API Key</th>
+          <th>API Secret</th>
+          <th>Contact Mgmt URL</th>
+          <th>Contact Mgmt Secret</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{current.bot.apiKey}}</td>
+          <td>{{current.bot.apiSecret}}</td>
+          <td>{{current.bot.custMgmtUrl}}</td>
+          <td>{{current.bot.custMgmtSecret}}</td>
+          <td>
+            {{# current.bot.valid==true}}
+              <span class="glyphicon glyphicon-ok-sign glyphicon-success" title="Deployed and ready"></span>
+            {{else}}
+              <span class="glyphicon glyphicon-remove-sign glyphicon-danger" title="Missing or out of date"></span>
+            {{/}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="currentActions" style="clear: both">
+    <h2>Actions</h2>
+    {{>statusTable { property: 'actions' }}}
+  </div>
+
+  <div id="currentProcesses" style="clear: both">
+    <h2>Processes</h2>
+    {{>statusTable { property: 'processes' }}}
+  </div>
+
+  <div id="currentPartials" style="clear: both">
+    <h2>Partials</h2>
+    {{>statusTable { property: 'partials' }}}
+  </div>
+    
+  <div id="currentTypeaheadControls" style="clear: both">
+    <h2>Typeahead controls</h2>
+    {{>statusTable { property: 'typeaheadControls' }}}
+  </div>
+
+</section>

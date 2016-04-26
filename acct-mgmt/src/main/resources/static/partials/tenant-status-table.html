@@ -1,0 +1,28 @@
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th class="col-md-2">Name</th>
+      <th class="col-md-9">Description</th>
+      <!-- th>Version</td-->
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each current[property]:i}}
+      <tr data-href="{{_links.self.href}}">
+        <td>{{i+1}}</td>
+        <td class="col-md-2">{{name}}</td>
+        <td class="col-md-9">{{description}}</td>
+        <!-- td>{{version}}</td-->
+        <td>
+          {{# valid==true}}
+            <span class="glyphicon glyphicon-ok-sign glyphicon-success" title="Deployed and ready"></span>
+          {{else}}
+            <span class="glyphicon glyphicon-remove-sign glyphicon-danger" title="Missing or out of date"></span>
+          {{/}}
+        </td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

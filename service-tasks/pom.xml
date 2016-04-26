@@ -30,46 +30,26 @@
       <artifactId>activiti-bpmn-model</artifactId>
       <version>${activiti.version}</version>
     </dependency>
-<!--     <dependency>
-      <groupId>org.activiti</groupId>
-      <artifactId>activiti-spring</artifactId>
-      <version>${activiti.version}</version>
-    </dependency>-->
-<!--     <dependency>
-      <groupId>org.activiti</groupId>
-      <artifactId>activiti-spring-rest</artifactId>
-      <version>${activiti.version}</version>
-    </dependency>-->
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy</artifactId>
-      <version>1.7.5</version>
-    </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>1.2.132</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
       <!--scope>test</scope-->
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.5</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.5</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
     </dependency>
     <!-- Google Drive dependencies -->
     <dependency>
@@ -109,7 +89,7 @@
       <groupId>org.activiti</groupId>
       <artifactId>activiti-bdd</artifactId>
       <version>${activiti.bdd.version}</version>
-      <scope>provided</scope>
+      <scope>test</scope>
       <!-- Because this depends on toxos process assertions we need to 
            exclude the older activiti-spring it depends on -->
       <exclusions>
