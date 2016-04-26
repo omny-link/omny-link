@@ -1,0 +1,1328 @@
+<?xml version="1.0" encoding="UTF-8"?><tns:definitions xmlns:tns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:style="http://www.w4.eu/spec/DataComposer/20120927/Diagram/Style" xmlns:w4="http://www.w4.eu/spec/BPMN/20110701/MODEL" xmlns:w4graph="http://www.w4.eu/spec/BPMN/20110930/GRAPH" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="W4 BPMN+ Composer" exporterVersion="9.2.0.40" expressionLanguage="http://activiti.org/Juel" id="BranchOfficeOnlyLoan" name="BranchOfficeOnlyLoan" targetNamespace="http://www.omg.org/spec/BPMN/20100524/MODEL" typeLanguage="http://www.w4.eu/spec/BPMN/20110701/DT" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <tns:itemDefinition id="LoanRequest" isCollection="false" itemKind="Information" structureRef="string"/>
+  <tns:itemDefinition id="MedicalForm" isCollection="false" itemKind="Information" structureRef="string"/>
+  <tns:itemDefinition id="LoanOffer" isCollection="false" itemKind="Information" structureRef="string"/>
+  <tns:itemDefinition id="EligibilityResult" isCollection="false" itemKind="Information" structureRef="string"/>
+  <tns:itemDefinition id="Conditions" isCollection="false" itemKind="Information" structureRef="string"/>
+  <tns:itemDefinition id="Status" isCollection="false" itemKind="Information" structureRef="string"/>
+  <tns:itemDefinition id="LoanOfferRef" isCollection="false" itemKind="Information" structureRef="string"/>
+  <tns:itemDefinition id="Validation" isCollection="false" itemKind="Information" structureRef="boolean"/>
+  <tns:error errorCode="Offer Expired" id="Bpmn2_Error_OnyTgJlrEeONXJy5WRVCwQ" name="Offer Expired"/>
+  <tns:message id="Bpmn2_Message_oCuc0JlrEeONXJy5WRVCwQ" name="MsgLoanResquest"/>
+  <tns:message id="Bpmn2_Message_o-4jEJlrEeONXJy5WRVCwQ" name="MsgLoanOffer"/>
+  <tns:message id="Bpmn2_Message_z-PMkJlrEeONXJy5WRVCwQ" name="MsgRefusal"/>
+  <tns:message id="Bpmn2_Message_1ow0sJlrEeONXJy5WRVCwQ" name="MsgMedicalForm"/>
+  <tns:message id="Bpmn2_Message_C6l3IJlsEeONXJy5WRVCwQ" name="MsgConfirmation"/>
+  <tns:interface id="Bpmn2_Interface_ijKAUJlsEeONXJy5WRVCwQ" name="LoanHandling">
+    <tns:operation id="Bpmn2_Operation_ijKAUZlsEeONXJy5WRVCwQ" name="LoanRequest">
+      <tns:inMessageRef>Bpmn2_Message_oCuc0JlrEeONXJy5WRVCwQ</tns:inMessageRef>
+      <tns:outMessageRef>Bpmn2_Message_oCuc0JlrEeONXJy5WRVCwQ</tns:outMessageRef>
+    </tns:operation>
+    <tns:operation id="Bpmn2_Operation_ijKAUplsEeONXJy5WRVCwQ" name="MedicalForm">
+      <tns:inMessageRef>Bpmn2_Message_1ow0sJlrEeONXJy5WRVCwQ</tns:inMessageRef>
+      <tns:outMessageRef>Bpmn2_Message_1ow0sJlrEeONXJy5WRVCwQ</tns:outMessageRef>
+    </tns:operation>
+    <tns:operation id="Bpmn2_Operation_ijKAU5lsEeONXJy5WRVCwQ" name="Confirmation">
+      <tns:inMessageRef>Bpmn2_Message_C6l3IJlsEeONXJy5WRVCwQ</tns:inMessageRef>
+      <tns:outMessageRef>Bpmn2_Message_C6l3IJlsEeONXJy5WRVCwQ</tns:outMessageRef>
+    </tns:operation>
+    <tns:operation id="Bpmn2_Operation_ijKAVJlsEeONXJy5WRVCwQ" name="Refusal">
+      <tns:inMessageRef>Bpmn2_Message_z-PMkJlrEeONXJy5WRVCwQ</tns:inMessageRef>
+      <tns:outMessageRef>Bpmn2_Message_z-PMkJlrEeONXJy5WRVCwQ</tns:outMessageRef>
+    </tns:operation>
+    <tns:operation id="Bpmn2_Operation_FA8rYZmHEeONXJy5WRVCwQ" name="LaonOffer">
+      <tns:inMessageRef>Bpmn2_Message_o-4jEJlrEeONXJy5WRVCwQ</tns:inMessageRef>
+      <tns:outMessageRef>Bpmn2_Message_o-4jEJlrEeONXJy5WRVCwQ</tns:outMessageRef>
+    </tns:operation>
+  </tns:interface>
+  <tns:signal id="Bpmn2_Signal_ReD9EJlrEeONXJy5WRVCwQ" name="OffreSigne${processInstance.dataEntries.Offre.value.dwbOffreRef}" structureRef="LoanOffer"/>
+  <tns:process id="Bpmn2_Process_Ahx95Zo2EeODY5gs4RP0gg" isClosed="true" isExecutable="true" name="Emprunt en agence" processType="Private">
+    <tns:extensionElements>
+      <w4graph:graphStyle>
+        <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+      </w4graph:graphStyle>
+      <yaoqiang:pageFormat height="841.8897637795276" imageableHeight="831.8897637795276" imageableWidth="588.1102362204724" imageableX="5.0" imageableY="5.0" orientation="0" width="598.1102362204724"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="2" verticalCount="1"/>
+    </tns:extensionElements>
+    <tns:laneSet>
+      <tns:lane id="Bpmn2_Lane_uFLqQpo2EeO1WrMpxYFn7Q" name="Branch office">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:flowNodeRef>Bpmn2_StartEvent_u-hGApo2EeO1WrMpxYFn7Q</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_ExclusiveGateway_13bekpo2EeO1WrMpxYFn7Q</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_EndEvent_6lo6Ipo2EeO1WrMpxYFn7Q</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_UserTask_GARKYZo3EeO1WrMpxYFn7Q</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_ReceiveTask_Gc-7kZo3EeO1WrMpxYFn7Q</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_EndEvent_rSpbwpo3EeO1WrMpxYFn7Q</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_EndEvent_uDw4gpo3EeO1WrMpxYFn7Q</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_ExclusiveGateway_Pki1opo6EeO1WrMpxYFn7Q</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_EndEvent_Sdy6spo6EeO1WrMpxYFn7Q</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_UserTask_4m2bwJpCEeOaLPEr7parPA</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_IntermediateThrowEvent_yXG30ppJEeOaLPEr7parPA</tns:flowNodeRef>
+      </tns:lane>
+      <tns:lane id="Bpmn2_Lane_0d2AApo3EeO1WrMpxYFn7Q" name="Branch office manager">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:flowNodeRef>Bpmn2_UserTask_-UX_QZpCEeOaLPEr7parPA</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_ExclusiveGateway_pkPeoqqdEeOU-ea4bX5igg</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_EndEvent_reGjQ6qdEeOU-ea4bX5igg</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_ServiceTask_fJ3VAaqeEeOU-ea4bX5igg</tns:flowNodeRef>
+      </tns:lane>
+      <tns:lane id="Bpmn2_Lane_TPPbMpo5EeO1WrMpxYFn7Q" name="IT">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:flowNodeRef>Bpmn2_IntermediateCatchEvent_ZHFYUpo5EeO1WrMpxYFn7Q</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_EndEvent_otNYopo5EeO1WrMpxYFn7Q</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_ScriptTask_5PYbYZpCEeOaLPEr7parPA</tns:flowNodeRef>
+        <tns:flowNodeRef>Bpmn2_ScriptTask_5yYawZpCEeOaLPEr7parPA</tns:flowNodeRef>
+      </tns:lane>
+    </tns:laneSet>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_r6SjMJo6EeO1WrMpxYFn7Q" isImmediate="true" sourceRef="Bpmn2_IntermediateCatchEvent_3PWZIppJEeOaLPEr7parPA" targetRef="Bpmn2_IntermediateThrowEvent_psTBopo6EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:endEvent id="Bpmn2_EndEvent_sgEw0po6EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="190,0,0" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_sgEw0Zo6EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:inputSet/>
+    </tns:endEvent>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_sgEw0Zo6EeO1WrMpxYFn7Q" isImmediate="true" sourceRef="Bpmn2_IntermediateThrowEvent_psTBopo6EeO1WrMpxYFn7Q" targetRef="Bpmn2_EndEvent_sgEw0po6EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:dataStoreReference dataStoreRef="Bpmn_DataStore_M36G8I4MEeWzZeFCV54HNQ" id="Bpmn2_DataStoreReference_I65ysJo7EeO1WrMpxYFn7Q" name="Loan offer">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:dataState id="Bpmn2_DataState_J8Yd0Jo7EeO1WrMpxYFn7Q" name="Approved"/>
+    </tns:dataStoreReference>
+    <tns:startEvent id="Bpmn2_StartEvent_A4rD0ppKEeOaLPEr7parPA" isInterrupting="true" name="Provided loan offer" parallelMultiple="false">
+<tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="109,183,0" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+        <yaoqiang:label offset-x="-18.0" offset-y="-67.0"/>
+      </tns:extensionElements>
+<tns:outgoing>Bpmn2_SequenceFlow_DjbZ4JpKEeOaLPEr7parPA</tns:outgoing>
+<tns:dataOutput id="Bpmn2_DataOutput_IdGekJpKEeOaLPEr7parPA" isCollection="false" itemSubjectRef="LoanOffer" name="Loan offer"/>
+<tns:dataOutputAssociation id="Bpmn2_DataOutputAssociation_IdAX85pKEeOaLPEr7parPA">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Oblique"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:sourceRef>Bpmn2_DataOutput_IdGekJpKEeOaLPEr7parPA</tns:sourceRef>
+        <tns:targetRef>Bpmn2_DataStoreReference_FqOuUJpKEeOaLPEr7parPA</tns:targetRef>
+      </tns:dataOutputAssociation>
+<tns:outputSet id="Bpmn2_OutputSet_IdGekZpKEeOaLPEr7parPA" name="default output set">
+        <tns:dataOutputRefs>Bpmn2_DataOutput_IdGekJpKEeOaLPEr7parPA</tns:dataOutputRefs>
+      </tns:outputSet>
+<tns:messageEventDefinition id="Bpmn2_MessageEventDefinition_SbUbMJpKEeOaLPEr7parPA" messageRef="Bpmn2_Message_o-4jEJlrEeONXJy5WRVCwQ">
+        <tns:operationRef>Bpmn2_Operation_FA8rYZmHEeONXJy5WRVCwQ</tns:operationRef>
+      </tns:messageEventDefinition>
+</tns:startEvent>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_DjbZ4JpKEeOaLPEr7parPA" isImmediate="true" sourceRef="Bpmn2_StartEvent_A4rD0ppKEeOaLPEr7parPA" targetRef="Bpmn2_IntermediateCatchEvent_3PWZIppJEeOaLPEr7parPA">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:dataStoreReference dataStoreRef="Bpmn_DataStore_M36G8I4MEeWzZeFCV54HNQ" id="Bpmn2_DataStoreReference_FqOuUJpKEeOaLPEr7parPA" name="Loan offer">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:dataState id="Bpmn2_DataState_GwoVsJpKEeOaLPEr7parPA" name="Provided"/>
+    </tns:dataStoreReference>
+    <tns:intermediateCatchEvent id="Bpmn2_IntermediateCatchEvent_3PWZIppJEeOaLPEr7parPA" name="Received signed loan offer" parallelMultiple="false">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="41,83,231" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_DjbZ4JpKEeOaLPEr7parPA</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_r6SjMJo6EeO1WrMpxYFn7Q</tns:outgoing>
+      <tns:dataOutput id="Bpmn2_DataOutput_34Xg8JpJEeOaLPEr7parPA" isCollection="false" itemSubjectRef="LoanOffer" name="Loan offer"/>
+      <tns:dataOutputAssociation id="Bpmn2_DataOutputAssociation_ICFUUZo7EeO1WrMpxYFn7Q">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:sourceRef>Bpmn2_DataOutput_34Xg8JpJEeOaLPEr7parPA</tns:sourceRef>
+        <tns:targetRef>Bpmn2_DataStoreReference_I65ysJo7EeO1WrMpxYFn7Q</tns:targetRef>
+      </tns:dataOutputAssociation>
+      <tns:outputSet id="Bpmn2_OutputSet_34Xg8ZpJEeOaLPEr7parPA" name="default output set">
+        <tns:dataOutputRefs>Bpmn2_DataOutput_34Xg8JpJEeOaLPEr7parPA</tns:dataOutputRefs>
+      </tns:outputSet>
+      <tns:signalEventDefinition id="Bpmn2_SignalEventDefinition_LojAIKieEeOHMfwF_q0-ng" signalRef="Bpmn2_Signal_ReD9EJlrEeONXJy5WRVCwQ"/>
+    </tns:intermediateCatchEvent>
+    <tns:intermediateThrowEvent id="Bpmn2_IntermediateThrowEvent_psTBopo6EeO1WrMpxYFn7Q" name="Signed loan offer transmitted">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="0,83,144" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_r6SjMJo6EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_sgEw0Zo6EeO1WrMpxYFn7Q</tns:outgoing>
+      <tns:dataInput id="Bpmn2_DataInput_LE0FhJo7EeO1WrMpxYFn7Q" isCollection="false" itemSubjectRef="LoanOffer" name="Loan offer"/>
+      <tns:dataInputAssociation id="Bpmn2_DataInputAssociation_LE0Fg5o7EeO1WrMpxYFn7Q">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:sourceRef>Bpmn2_DataStoreReference_I65ysJo7EeO1WrMpxYFn7Q</tns:sourceRef>
+        <tns:targetRef>Bpmn2_DataInput_LE0FhJo7EeO1WrMpxYFn7Q</tns:targetRef>
+      </tns:dataInputAssociation>
+      <tns:inputSet id="Bpmn2_InputSet_LE0FhZo7EeO1WrMpxYFn7Q" name="default input set">
+        <tns:dataInputRefs>Bpmn2_DataInput_LE0FhJo7EeO1WrMpxYFn7Q</tns:dataInputRefs>
+      </tns:inputSet>
+    </tns:intermediateThrowEvent>
+  </tns:process>
+  <tns:process id="Bpmn2_Process_uHFuwpo2EeO1WrMpxYFn7Q" isClosed="true" isExecutable="true" name="BranchOffice loan request handling" processType="Private">
+    <tns:extensionElements>
+      <w4graph:graphStyle>
+        <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+      </w4graph:graphStyle>
+    </tns:extensionElements>
+    <tns:startEvent id="Bpmn2_StartEvent_u-hGApo2EeO1WrMpxYFn7Q" isInterrupting="true" name="Manual start" parallelMultiple="false">
+<tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="109,183,0" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+<tns:outgoing>Bpmn2_SequenceFlow_vpiY8Zo2EeO1WrMpxYFn7Q</tns:outgoing>
+<tns:outputSet id="Bpmn_OutputSet_wFhvUDnBEeSGOJQn7hdE9Q" name="default output set"/>
+</tns:startEvent>
+    <tns:userTask completionQuantity="1" id="Bpmn2_UserTask_GARKYZo3EeO1WrMpxYFn7Q" implementation="##unspecified" isForCompensation="false" name="Provide loan offer" startQuantity="1">
+      <tns:extensionElements>
+<w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="194,215,235" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+<activiti:formProperty xmlns:activiti="http://activiti.org/bpmn" id="Loan offer" name="Loan offer"/>
+<activiti:formProperty xmlns:activiti="http://activiti.org/bpmn" id="Status" name="Status"/>
+</tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_vpiY8Zo2EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_13bekZo2EeO1WrMpxYFn7Q</tns:outgoing>
+      <tns:ioSpecification id="Bpmn2_InputOutputSpecification_xmSSIpo5EeO1WrMpxYFn7Q">
+        <tns:dataOutput id="Bpmn2_DataOutput_xmwzQJo5EeO1WrMpxYFn7Q" isCollection="false" itemSubjectRef="LoanOffer" name="Loan offer">
+          <tns:extensionElements>
+            <w4graph:graphStyle>
+              <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            </w4graph:graphStyle>
+          </tns:extensionElements>
+        </tns:dataOutput>
+        <tns:dataOutput id="Bpmn_DataOutput_c-92UMUQEeWtyJWrpr6YKg" isCollection="false" itemSubjectRef="Status" name="Status">
+          <tns:extensionElements>
+            <w4graph:graphStyle>
+              <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            </w4graph:graphStyle>
+          </tns:extensionElements>
+        </tns:dataOutput>
+        <tns:inputSet id="Bpmn2_InputSet_xmSSJJo5EeO1WrMpxYFn7Q" name="default input set">
+          <tns:outputSetRefs>Bpmn2_OutputSet_xmSSI5o5EeO1WrMpxYFn7Q</tns:outputSetRefs>
+        </tns:inputSet>
+        <tns:outputSet id="Bpmn2_OutputSet_xmSSI5o5EeO1WrMpxYFn7Q" name="default output set">
+          <tns:dataOutputRefs>Bpmn2_DataOutput_xmwzQJo5EeO1WrMpxYFn7Q</tns:dataOutputRefs>
+          <tns:dataOutputRefs>Bpmn_DataOutput_c-92UMUQEeWtyJWrpr6YKg</tns:dataOutputRefs>
+          <tns:inputSetRefs>Bpmn2_InputSet_xmSSJJo5EeO1WrMpxYFn7Q</tns:inputSetRefs>
+        </tns:outputSet>
+      </tns:ioSpecification>
+      <tns:dataOutputAssociation id="Bpmn2_DataOutputAssociation_xmSSIZo5EeO1WrMpxYFn7Q">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:sourceRef>Bpmn2_DataOutput_xmwzQJo5EeO1WrMpxYFn7Q</tns:sourceRef>
+        <tns:targetRef>Bpmn2_DataStoreReference_yRPToJo5EeO1WrMpxYFn7Q</tns:targetRef>
+      </tns:dataOutputAssociation>
+      <tns:dataOutputAssociation id="Bpmn_DataOutputAssociation_c-YAcsUQEeWtyJWrpr6YKg">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:sourceRef>Bpmn_DataOutput_c-92UMUQEeWtyJWrpr6YKg</tns:sourceRef>
+        <tns:targetRef>Bpmn_DataObjectReference_amQ5kMUQEeWtyJWrpr6YKg</tns:targetRef>
+      </tns:dataOutputAssociation>
+      <tns:potentialOwner id="Bpmn2_ResourceRole_TEyBMJpFEeOaLPEr7parPA" name="Agent">
+        <tns:resourceRef>Bpmn2_Resource_gz5IULQqEeOE1M41eDOGDg</tns:resourceRef>
+      </tns:potentialOwner>
+    </tns:userTask>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_vpiY8Zo2EeO1WrMpxYFn7Q" isImmediate="true" sourceRef="Bpmn2_StartEvent_u-hGApo2EeO1WrMpxYFn7Q" targetRef="Bpmn2_UserTask_GARKYZo3EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:exclusiveGateway gatewayDirection="Unspecified" id="Bpmn2_ExclusiveGateway_13bekpo2EeO1WrMpxYFn7Q" name="Provided?">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="185,139,0" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_13bekZo2EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_6lo6IZo2EeO1WrMpxYFn7Q</tns:outgoing>
+      <tns:outgoing>Bpmn2_SequenceFlow_9gC1wZo2EeO1WrMpxYFn7Q</tns:outgoing>
+    </tns:exclusiveGateway>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_13bekZo2EeO1WrMpxYFn7Q" isImmediate="true" sourceRef="Bpmn2_UserTask_GARKYZo3EeO1WrMpxYFn7Q" targetRef="Bpmn2_ExclusiveGateway_13bekpo2EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:endEvent id="Bpmn2_EndEvent_6lo6Ipo2EeO1WrMpxYFn7Q" name="Shelved loan offer">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="190,0,0" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_6lo6IZo2EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:inputSet/>
+    </tns:endEvent>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_6lo6IZo2EeO1WrMpxYFn7Q" isImmediate="true" name="No" sourceRef="Bpmn2_ExclusiveGateway_13bekpo2EeO1WrMpxYFn7Q" targetRef="Bpmn2_EndEvent_6lo6Ipo2EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:conditionExpression id="Bpmn2_FormalExpression_7ooYcJpHEeOaLPEr7parPA" xsi:type="tns:tFormalExpression">${Status!='Fournie'}</tns:conditionExpression>
+    </tns:sequenceFlow>
+    <tns:userTask xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" completionQuantity="1" id="Bpmn2_ReceiveTask_Gc-7kZo3EeO1WrMpxYFn7Q" implementation="##unspecified" isForCompensation="false" name="Receive signed loan offer" startQuantity="1">
+      <tns:extensionElements>
+<w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="194,215,235" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+<activiti:formProperty id="Loan offer" name="Loan offer"/>
+</tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_2BBk0JpJEeOaLPEr7parPA</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_BhaHgJo5EeO1WrMpxYFn7Q</tns:outgoing>
+      <tns:ioSpecification id="Bpmn2_InputOutputSpecification_IR85IJo3EeO1WrMpxYFn7Q">
+        <tns:dataOutput id="Bpmn2_DataOutput_ISC_wJo3EeO1WrMpxYFn7Q" isCollection="false" itemSubjectRef="LoanOffer" name="Loan offer">
+          <tns:extensionElements>
+            <w4graph:graphStyle>
+              <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            </w4graph:graphStyle>
+          </tns:extensionElements>
+        </tns:dataOutput>
+        <tns:inputSet id="Bpmn2_InputSet_IR85Ipo3EeO1WrMpxYFn7Q" name="default input set">
+          <tns:outputSetRefs>Bpmn2_OutputSet_IR85IZo3EeO1WrMpxYFn7Q</tns:outputSetRefs>
+        </tns:inputSet>
+        <tns:outputSet id="Bpmn2_OutputSet_IR85IZo3EeO1WrMpxYFn7Q" name="default output set">
+          <tns:dataOutputRefs>Bpmn2_DataOutput_ISC_wJo3EeO1WrMpxYFn7Q</tns:dataOutputRefs>
+          <tns:inputSetRefs>Bpmn2_InputSet_IR85Ipo3EeO1WrMpxYFn7Q</tns:inputSetRefs>
+        </tns:outputSet>
+      </tns:ioSpecification>
+      <tns:dataOutputAssociation id="Bpmn2_DataOutputAssociation_IR2ygZo3EeO1WrMpxYFn7Q">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:sourceRef>Bpmn2_DataOutput_ISC_wJo3EeO1WrMpxYFn7Q</tns:sourceRef>
+        <tns:targetRef>Bpmn2_DataStoreReference_LL9zMJo3EeO1WrMpxYFn7Q</tns:targetRef>
+      </tns:dataOutputAssociation>
+    </tns:userTask>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_9gC1wZo2EeO1WrMpxYFn7Q" isImmediate="true" name="Yes" sourceRef="Bpmn2_ExclusiveGateway_13bekpo2EeO1WrMpxYFn7Q" targetRef="Bpmn2_IntermediateThrowEvent_yXG30ppJEeOaLPEr7parPA">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+        <yaoqiang:label offset-x="3.0" offset-y="0.0" x="-1.0" y="70.0"/>
+      </tns:extensionElements>
+      <tns:conditionExpression id="Bpmn2_FormalExpression_5DEEYJpHEeOaLPEr7parPA" xsi:type="tns:tFormalExpression">${Status=='Fournie'}</tns:conditionExpression>
+    </tns:sequenceFlow>
+    <tns:dataStoreReference dataStoreRef="Bpmn_DataStore_M36G8I4MEeWzZeFCV54HNQ" id="Bpmn2_DataStoreReference_LL9zMJo3EeO1WrMpxYFn7Q" name="Loan offer">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:dataState id="Bpmn2_DataState_MvdmQJo3EeO1WrMpxYFn7Q" name="Approved"/>
+    </tns:dataStoreReference>
+    <tns:boundaryEvent attachedToRef="Bpmn2_ReceiveTask_Gc-7kZo3EeO1WrMpxYFn7Q" cancelActivity="false" id="Bpmn2_BoundaryEvent_Q4FogZo3EeO1WrMpxYFn7Q" name="Every 10 days" parallelMultiple="false">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="0,0,0" borderColor="255,255,255" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:outgoing>Bpmn2_SequenceFlow_V9s3cZo3EeO1WrMpxYFn7Q</tns:outgoing>
+      <tns:outputSet/>
+      <tns:timerEventDefinition id="Bpmn2_TimerEventDefinition_DO7o4LQaEeOoBvTrFaspCA">
+        <tns:timeCycle id="Bpmn2_FormalExpression_DCRF4LQaEeOoBvTrFaspCA" language="http://www.w4.eu/spec/EL/20110701" xsi:type="tns:tFormalExpression">R2/PT10M</tns:timeCycle>
+      </tns:timerEventDefinition>
+    </tns:boundaryEvent>
+    <tns:userTask completionQuantity="1" id="Bpmn2_UserTask_4m2bwJpCEeOaLPEr7parPA" implementation="##unspecified" isForCompensation="false" name="Revive customer" startQuantity="1">
+      <tns:extensionElements>
+<w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="194,215,235" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+<activiti:formProperty xmlns:activiti="http://activiti.org/bpmn" id="Status" name="Status"/>
+</tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_V9s3cZo3EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_uhdhIJo3EeO1WrMpxYFn7Q</tns:outgoing>
+      <tns:ioSpecification id="Bpmn2_InputOutputSpecification_EhMc9Jo6EeO1WrMpxYFn7Q">
+        <tns:dataInput id="Bpmn2_DataInput_Eh3LUJo6EeO1WrMpxYFn7Q" isCollection="false" itemSubjectRef="LoanOffer" name="Loan offer">
+          <tns:extensionElements>
+            <w4graph:graphStyle>
+              <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            </w4graph:graphStyle>
+          </tns:extensionElements>
+        </tns:dataInput>
+        <tns:dataOutput id="Bpmn2_DataOutput_ZiYiUJo7EeO1WrMpxYFn7Q" isCollection="false" itemSubjectRef="Status" name="Status">
+          <tns:extensionElements>
+            <w4graph:graphStyle>
+              <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            </w4graph:graphStyle>
+          </tns:extensionElements>
+        </tns:dataOutput>
+        <tns:inputSet id="Bpmn2_InputSet_EhMc9po6EeO1WrMpxYFn7Q" name="default input set">
+          <tns:dataInputRefs>Bpmn2_DataInput_Eh3LUJo6EeO1WrMpxYFn7Q</tns:dataInputRefs>
+          <tns:outputSetRefs>Bpmn2_OutputSet_EhMc9Zo6EeO1WrMpxYFn7Q</tns:outputSetRefs>
+        </tns:inputSet>
+        <tns:outputSet id="Bpmn2_OutputSet_EhMc9Zo6EeO1WrMpxYFn7Q" name="default output set">
+          <tns:dataOutputRefs>Bpmn2_DataOutput_ZiYiUJo7EeO1WrMpxYFn7Q</tns:dataOutputRefs>
+          <tns:inputSetRefs>Bpmn2_InputSet_EhMc9po6EeO1WrMpxYFn7Q</tns:inputSetRefs>
+        </tns:outputSet>
+      </tns:ioSpecification>
+      <tns:dataInputAssociation id="Bpmn2_DataInputAssociation_EhMc85o6EeO1WrMpxYFn7Q">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:sourceRef>Bpmn2_DataStoreReference_yRPToJo5EeO1WrMpxYFn7Q</tns:sourceRef>
+        <tns:targetRef>Bpmn2_DataInput_Eh3LUJo6EeO1WrMpxYFn7Q</tns:targetRef>
+      </tns:dataInputAssociation>
+      <tns:dataOutputAssociation id="Bpmn2_DataOutputAssociation_Zhz6kZo7EeO1WrMpxYFn7Q">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:sourceRef>Bpmn2_DataOutput_ZiYiUJo7EeO1WrMpxYFn7Q</tns:sourceRef>
+        <tns:targetRef>Bpmn2_DataObjectReference_a1nr0Jo7EeO1WrMpxYFn7Q</tns:targetRef>
+      </tns:dataOutputAssociation>
+      <tns:potentialOwner id="Bpmn2_ResourceRole_QvQUQJpFEeOaLPEr7parPA" name="Agent">
+        <tns:resourceRef>Bpmn2_Resource_gz5IULQqEeOE1M41eDOGDg</tns:resourceRef>
+      </tns:potentialOwner>
+    </tns:userTask>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_V9s3cZo3EeO1WrMpxYFn7Q" isImmediate="true" sourceRef="Bpmn2_BoundaryEvent_Q4FogZo3EeO1WrMpxYFn7Q" targetRef="Bpmn2_UserTask_4m2bwJpCEeOaLPEr7parPA">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:boundaryEvent attachedToRef="Bpmn2_ReceiveTask_Gc-7kZo3EeO1WrMpxYFn7Q" cancelActivity="true" id="Bpmn2_BoundaryEvent_kS9FwZo3EeO1WrMpxYFn7Q" name="Cancellation" parallelMultiple="false">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="0,0,0" borderColor="255,255,255" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:outgoing>Bpmn2_SequenceFlow_rSpbwZo3EeO1WrMpxYFn7Q</tns:outgoing>
+      <tns:outputSet/>
+      <tns:signalEventDefinition id="Bpmn2_SignalEventDefinition_DC1yIJpGEeOaLPEr7parPA" signalRef="Bpmn2_Signal_xfPDYJpDEeOaLPEr7parPA"/>
+    </tns:boundaryEvent>
+    <tns:endEvent id="Bpmn2_EndEvent_rSpbwpo3EeO1WrMpxYFn7Q" name="Loan offer cancelled by customer">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="190,0,0" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_rSpbwZo3EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:inputSet/>
+    </tns:endEvent>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_rSpbwZo3EeO1WrMpxYFn7Q" isImmediate="true" sourceRef="Bpmn2_BoundaryEvent_kS9FwZo3EeO1WrMpxYFn7Q" targetRef="Bpmn2_EndEvent_rSpbwpo3EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:endEvent id="Bpmn2_EndEvent_uDw4gpo3EeO1WrMpxYFn7Q" name="Loan offer shelved">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="190,0,0" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_Riz5IJo6EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:inputSet/>
+      <tns:signalEventDefinition id="Bpmn2_SignalEventDefinition_EYO3wJpGEeOaLPEr7parPA" signalRef="Bpmn2_Signal_xfPDYJpDEeOaLPEr7parPA"/>
+    </tns:endEvent>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_uhdhIJo3EeO1WrMpxYFn7Q" isImmediate="true" sourceRef="Bpmn2_UserTask_4m2bwJpCEeOaLPEr7parPA" targetRef="Bpmn2_ExclusiveGateway_Pki1opo6EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:userTask completionQuantity="1" id="Bpmn2_UserTask_-UX_QZpCEeOaLPEr7parPA" implementation="##unspecified" isForCompensation="false" name="Validate loan offer" startQuantity="1">
+      <tns:extensionElements>
+<w4:notification id="Notification_fsZCgCPFEeWR2OLIHp06TA">
+          <w4:onActive/>
+          <w4:serviceDefinition id="W4_ServiceDefinition_tH308GW_EeSInqc4JlfQjw" name="SendMail" version="1.0">
+            <w4:mail contentType="Html" encoding="UTF-8" id="Mail_fsa3sCPFEeWR2OLIHp06TA" locale="fr">
+              <w4:from id="From_fsa3sSPFEeWR2OLIHp06TA">admin@w4demo.com</w4:from>
+              <w4:to id="Recipient_fsa3siPFEeWR2OLIHp06TA">${activityInstance.potentialAndNotExcludedOwnerUsers}</w4:to>
+              <w4:to id="Recipient_fsa3syPFEeWR2OLIHp06TA">${activityInstance.potentialAndNotExcludedOwnerGroups{}.users}</w4:to>
+              <w4:subject id="Subject_fsa3tCPFEeWR2OLIHp06TA">Offre d'emprunt ${processInstance.dataEntries.Offre.value.dwbOffreRef} à valider</w4:subject>
+              <w4:body id="Body_fsbewCPFEeWR2OLIHp06TA">&lt;html&gt;
+&lt;body&gt;
+&lt;pre&gt;
+Bonjour,
+   Vous avez à valider une nouvelle offre d'emprunt.
+
+    Référence : &lt;a href="http://localhost:7718/dwb/invoke.htm?_classInfo=dwbValiderOffreUserTaskInstance&amp;_action=dwbValiderOffreUserTaskInstance_complete&amp;_objectId=${activityInstance.identifier.id}"&gt;${processInstance.dataEntries.Offre.value.dwbOffreRef}&lt;/a&gt;
+    Nom du client : ${processInstance.dataEntries.Offre.value.dwbOffreClient.dwbClientNom}
+    Prénom du client : ${processInstance.dataEntries.Offre.value.dwbOffreClient.dwbClientPrenom}
+    Coût total : ${processInstance.dataEntries.Offre.value.dwbOffreCouttotal}
+  Cdt,
+
+       W4
+&lt;/pre&gt;
+&lt;/body&gt;
+&lt;/html&gt;</w4:body>
+            </w4:mail>
+          </w4:serviceDefinition>
+        </w4:notification>
+<w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="194,215,235" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+<activiti:formProperty xmlns:activiti="http://activiti.org/bpmn" id="Validation" name="Validation"/>
+</tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_BhaHgJo5EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_pkPeoaqdEeOU-ea4bX5igg</tns:outgoing>
+      <tns:ioSpecification id="Bpmn2_InputOutputSpecification_6LMSdJo5EeO1WrMpxYFn7Q">
+        <tns:dataInput id="Bpmn2_DataInput_6L3A0Jo5EeO1WrMpxYFn7Q" isCollection="false" itemSubjectRef="LoanOffer" name="Loan offer">
+          <tns:extensionElements>
+            <w4graph:graphStyle>
+              <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            </w4graph:graphStyle>
+          </tns:extensionElements>
+        </tns:dataInput>
+        <tns:dataOutput id="Bpmn2_DataOutput_Eur2saqeEeOU-ea4bX5igg" isCollection="false" itemSubjectRef="Validation" name="Validation">
+          <tns:extensionElements>
+            <w4graph:graphStyle>
+              <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            </w4graph:graphStyle>
+          </tns:extensionElements>
+        </tns:dataOutput>
+        <tns:inputSet id="Bpmn2_InputSet_6LMSdpo5EeO1WrMpxYFn7Q" name="default input set">
+          <tns:dataInputRefs>Bpmn2_DataInput_6L3A0Jo5EeO1WrMpxYFn7Q</tns:dataInputRefs>
+          <tns:outputSetRefs>Bpmn2_OutputSet_6LMSdZo5EeO1WrMpxYFn7Q</tns:outputSetRefs>
+        </tns:inputSet>
+        <tns:outputSet id="Bpmn2_OutputSet_6LMSdZo5EeO1WrMpxYFn7Q" name="default output set">
+          <tns:dataOutputRefs>Bpmn2_DataOutput_Eur2saqeEeOU-ea4bX5igg</tns:dataOutputRefs>
+          <tns:inputSetRefs>Bpmn2_InputSet_6LMSdpo5EeO1WrMpxYFn7Q</tns:inputSetRefs>
+        </tns:outputSet>
+      </tns:ioSpecification>
+      <tns:dataInputAssociation id="Bpmn2_DataInputAssociation_6LMSc5o5EeO1WrMpxYFn7Q">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:sourceRef>Bpmn2_DataStoreReference_LL9zMJo3EeO1WrMpxYFn7Q</tns:sourceRef>
+        <tns:targetRef>Bpmn2_DataInput_6L3A0Jo5EeO1WrMpxYFn7Q</tns:targetRef>
+      </tns:dataInputAssociation>
+      <tns:dataOutputAssociation id="Bpmn2_DataOutputAssociation_Eur2sKqeEeOU-ea4bX5igg">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:sourceRef>Bpmn2_DataOutput_Eur2saqeEeOU-ea4bX5igg</tns:sourceRef>
+        <tns:targetRef>Bpmn2_DataStoreReference_K2s90KqeEeOU-ea4bX5igg</tns:targetRef>
+      </tns:dataOutputAssociation>
+      <tns:potentialOwner id="Bpmn2_ResourceRole_VneAYJpFEeOaLPEr7parPA" name="Directeur Agence">
+        <tns:resourceRef>Bpmn2_Resource_iLZt0LQqEeOE1M41eDOGDg</tns:resourceRef>
+      </tns:potentialOwner>
+    </tns:userTask>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_BhaHgJo5EeO1WrMpxYFn7Q" isImmediate="true" sourceRef="Bpmn2_ReceiveTask_Gc-7kZo3EeO1WrMpxYFn7Q" targetRef="Bpmn2_UserTask_-UX_QZpCEeOaLPEr7parPA">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:scriptTask xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" completionQuantity="1" id="Bpmn2_ScriptTask_5PYbYZpCEeOaLPEr7parPA" isForCompensation="false" name="Transfer to customer" scriptFormat="JavaScript" startQuantity="1">
+      <tns:incoming>Bpmn2_SequenceFlow_4KhykaqdEeOU-ea4bX5igg</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_nvgaQJo5EeO1WrMpxYFn7Q</tns:outgoing>
+      <tns:script><![CDATA[1==1;]]></tns:script>
+    </tns:scriptTask>
+    <tns:intermediateCatchEvent id="Bpmn2_IntermediateCatchEvent_ZHFYUpo5EeO1WrMpxYFn7Q" name="Every month" parallelMultiple="false">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="41,83,231" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_nvgaQJo5EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_aKOQUZo5EeO1WrMpxYFn7Q</tns:outgoing>
+      <tns:outputSet/>
+      <tns:timerEventDefinition id="Bpmn2_TimerEventDefinition_MAXGwJpGEeOaLPEr7parPA">
+        <tns:timeCycle id="Bpmn2_FormalExpression_Lt2acJpGEeOaLPEr7parPA" language="http://www.w4.eu/spec/EL/20110701" xsi:type="tns:tFormalExpression">R5/PT5M</tns:timeCycle>
+      </tns:timerEventDefinition>
+    </tns:intermediateCatchEvent>
+    <tns:scriptTask xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" completionQuantity="1" id="Bpmn2_ScriptTask_5yYawZpCEeOaLPEr7parPA" isForCompensation="false" name="Monthly debit customer account" scriptFormat="JavaScript" startQuantity="1">
+      <tns:incoming>Bpmn2_SequenceFlow_aKOQUZo5EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_otNYoZo5EeO1WrMpxYFn7Q</tns:outgoing>
+      <tns:script><![CDATA[1==1;]]></tns:script>
+    </tns:scriptTask>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_aKOQUZo5EeO1WrMpxYFn7Q" isImmediate="true" sourceRef="Bpmn2_IntermediateCatchEvent_ZHFYUpo5EeO1WrMpxYFn7Q" targetRef="Bpmn2_ScriptTask_5yYawZpCEeOaLPEr7parPA">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_nvgaQJo5EeO1WrMpxYFn7Q" isImmediate="true" sourceRef="Bpmn2_ScriptTask_5PYbYZpCEeOaLPEr7parPA" targetRef="Bpmn2_IntermediateCatchEvent_ZHFYUpo5EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:endEvent id="Bpmn2_EndEvent_otNYopo5EeO1WrMpxYFn7Q" name="Loan completed">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="190,0,0" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_otNYoZo5EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:inputSet/>
+    </tns:endEvent>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_otNYoZo5EeO1WrMpxYFn7Q" isImmediate="true" sourceRef="Bpmn2_ScriptTask_5yYawZpCEeOaLPEr7parPA" targetRef="Bpmn2_EndEvent_otNYopo5EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:dataStoreReference dataStoreRef="Bpmn_DataStore_M36G8I4MEeWzZeFCV54HNQ" id="Bpmn2_DataStoreReference_yRPToJo5EeO1WrMpxYFn7Q" name="Loan offer">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:dataStoreReference>
+    <tns:dataObject id="Bpmn2_DataObject_z3EpApo5EeO1WrMpxYFn7Q" isCollection="false" itemSubjectRef="Status" name="Status">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:dataObject>
+    <tns:exclusiveGateway gatewayDirection="Unspecified" id="Bpmn2_ExclusiveGateway_Pki1opo6EeO1WrMpxYFn7Q" name="Cancel?">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="185,139,0" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_uhdhIJo3EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_Riz5IJo6EeO1WrMpxYFn7Q</tns:outgoing>
+      <tns:outgoing>Bpmn2_SequenceFlow_Sdy6sZo6EeO1WrMpxYFn7Q</tns:outgoing>
+    </tns:exclusiveGateway>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_Riz5IJo6EeO1WrMpxYFn7Q" isImmediate="true" name="Yes" sourceRef="Bpmn2_ExclusiveGateway_Pki1opo6EeO1WrMpxYFn7Q" targetRef="Bpmn2_EndEvent_uDw4gpo3EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:conditionExpression id="Bpmn2_FormalExpression_x1pbcJpHEeOaLPEr7parPA" xsi:type="tns:tFormalExpression">${Status=='Annulée'}</tns:conditionExpression>
+    </tns:sequenceFlow>
+    <tns:endEvent id="Bpmn2_EndEvent_Sdy6spo6EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="190,0,0" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_Sdy6sZo6EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:inputSet/>
+    </tns:endEvent>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_Sdy6sZo6EeO1WrMpxYFn7Q" isImmediate="true" name="No" sourceRef="Bpmn2_ExclusiveGateway_Pki1opo6EeO1WrMpxYFn7Q" targetRef="Bpmn2_EndEvent_Sdy6spo6EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+        <yaoqiang:label offset-x="0.0" offset-y="9.0" x="1.0" y="-38.0"/>
+      </tns:extensionElements>
+      <tns:conditionExpression id="Bpmn2_FormalExpression_AhwqkJpIEeOaLPEr7parPA" xsi:type="tns:tFormalExpression">${Status!='Annulée'}</tns:conditionExpression>
+    </tns:sequenceFlow>
+    <tns:dataObjectReference dataObjectRef="Bpmn2_DataObject_z3EpApo5EeO1WrMpxYFn7Q" id="Bpmn2_DataObjectReference_a1nr0Jo7EeO1WrMpxYFn7Q" name="Status">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:dataObjectReference>
+    <tns:intermediateThrowEvent id="Bpmn2_IntermediateThrowEvent_yXG30ppJEeOaLPEr7parPA" name="Loan offer provided">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="0,83,144" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_9gC1wZo2EeO1WrMpxYFn7Q</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_2BBk0JpJEeOaLPEr7parPA</tns:outgoing>
+      <tns:dataInput id="Bpmn2_DataInput_y6JeBJpKEeOaLPEr7parPA" isCollection="false" itemSubjectRef="LoanOffer" name="Loan offer"/>
+      <tns:dataInputAssociation id="Bpmn2_DataInputAssociation_y6JeA5pKEeOaLPEr7parPA">
+        <tns:extensionElements>
+          <w4graph:graphStyle>
+            <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+            <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Oblique"/>
+          </w4graph:graphStyle>
+        </tns:extensionElements>
+        <tns:sourceRef>Bpmn2_DataStoreReference_yRPToJo5EeO1WrMpxYFn7Q</tns:sourceRef>
+        <tns:targetRef>Bpmn2_DataInput_y6JeBJpKEeOaLPEr7parPA</tns:targetRef>
+      </tns:dataInputAssociation>
+      <tns:inputSet id="Bpmn2_InputSet_y6JeBZpKEeOaLPEr7parPA" name="default input set">
+        <tns:dataInputRefs>Bpmn2_DataInput_y6JeBJpKEeOaLPEr7parPA</tns:dataInputRefs>
+      </tns:inputSet>
+    </tns:intermediateThrowEvent>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_2BBk0JpJEeOaLPEr7parPA" isImmediate="true" sourceRef="Bpmn2_IntermediateThrowEvent_yXG30ppJEeOaLPEr7parPA" targetRef="Bpmn2_ReceiveTask_Gc-7kZo3EeO1WrMpxYFn7Q">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:exclusiveGateway gatewayDirection="Diverging" id="Bpmn2_ExclusiveGateway_pkPeoqqdEeOU-ea4bX5igg" name="Validated?">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="185,139,0" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_pkPeoaqdEeOU-ea4bX5igg</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_reGjQaqdEeOU-ea4bX5igg</tns:outgoing>
+      <tns:outgoing>Bpmn2_SequenceFlow_4KhykaqdEeOU-ea4bX5igg</tns:outgoing>
+    </tns:exclusiveGateway>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_pkPeoaqdEeOU-ea4bX5igg" isImmediate="true" sourceRef="Bpmn2_UserTask_-UX_QZpCEeOaLPEr7parPA" targetRef="Bpmn2_ExclusiveGateway_pkPeoqqdEeOU-ea4bX5igg">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:endEvent id="Bpmn2_EndEvent_reGjQ6qdEeOU-ea4bX5igg" name="Loan offer not  validated">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="190,0,0" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_WaTj4aqeEeOU-ea4bX5igg</tns:incoming>
+      <tns:inputSet/>
+    </tns:endEvent>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_reGjQaqdEeOU-ea4bX5igg" isImmediate="true" name="No" sourceRef="Bpmn2_ExclusiveGateway_pkPeoqqdEeOU-ea4bX5igg" targetRef="Bpmn2_ServiceTask_fJ3VAaqeEeOU-ea4bX5igg">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+      <tns:conditionExpression id="Bpmn2_FormalExpression_Ki730KqfEeOU-ea4bX5igg" xsi:type="tns:tFormalExpression">${!Validation}</tns:conditionExpression>
+    </tns:sequenceFlow>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_4KhykaqdEeOU-ea4bX5igg" isImmediate="true" name="Yes" sourceRef="Bpmn2_ExclusiveGateway_pkPeoqqdEeOU-ea4bX5igg" targetRef="Bpmn2_ScriptTask_5PYbYZpCEeOaLPEr7parPA">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="false" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+        <yaoqiang:label offset-x="37.0" offset-y="1.0" x="1.0" y="-36.0"/>
+      </tns:extensionElements>
+      <tns:conditionExpression id="Bpmn2_FormalExpression_Iurr8KqfEeOU-ea4bX5igg" xsi:type="tns:tFormalExpression">${Validation}</tns:conditionExpression>
+    </tns:sequenceFlow>
+    <tns:dataStoreReference dataStoreRef="Bpmn2_DataObject_EqTF8qqeEeOU-ea4bX5igg" id="Bpmn2_DataStoreReference_K2s90KqeEeOU-ea4bX5igg" name="Validation">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:dataStoreReference>
+    <tns:userTask xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" completionQuantity="1" id="Bpmn2_ServiceTask_fJ3VAaqeEeOU-ea4bX5igg" implementation="##unspecified" isForCompensation="false" name="Notify Customer and Branch Office" startQuantity="1" w4:serviceName="SendMail">
+      <tns:extensionElements>
+<w4:mail contentType="Text" id="Mail_fseiECPFEeWR2OLIHp06TA">
+          <w4:from id="From_fseiESPFEeWR2OLIHp06TA">demo@w4.demo</w4:from>
+          <w4:to id="Recipient_19vV8CPLEeWR2OLIHp06TA">${processInstance.initiator}</w4:to>
+          <w4:subject id="Subject_fseiFCPFEeWR2OLIHp06TA">Refus du prêt ${processInstance.dataEntries.Offre.value.dwbOffreRef}</w4:subject>
+          <w4:body id="Body_fseiFSPFEeWR2OLIHp06TA">Bonjour,
+   Votre offre de prêt a été refusée.
+
+   Salutations distinguées,
+
+       Votre Agence W4 Bank</w4:body>
+        </w4:mail>
+<w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="194,215,235" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+        </w4graph:graphStyle>
+</tns:extensionElements>
+      <tns:incoming>Bpmn2_SequenceFlow_reGjQaqdEeOU-ea4bX5igg</tns:incoming>
+      <tns:outgoing>Bpmn2_SequenceFlow_WaTj4aqeEeOU-ea4bX5igg</tns:outgoing>
+      <tns:ioSpecification id="Bpmn_InputOutputSpecification_5XrxcMlvEeShXsaiRBTFdQ">
+        <tns:inputSet id="Bpmn_InputSet_5XrxcslvEeShXsaiRBTFdQ" name="default input set">
+          <tns:outputSetRefs>Bpmn_OutputSet_5XrxcclvEeShXsaiRBTFdQ</tns:outputSetRefs>
+        </tns:inputSet>
+        <tns:outputSet id="Bpmn_OutputSet_5XrxcclvEeShXsaiRBTFdQ" name="default output set">
+          <tns:inputSetRefs>Bpmn_InputSet_5XrxcslvEeShXsaiRBTFdQ</tns:inputSetRefs>
+        </tns:outputSet>
+      </tns:ioSpecification>
+    </tns:userTask>
+    <tns:sequenceFlow id="Bpmn2_SequenceFlow_WaTj4aqeEeOU-ea4bX5igg" isImmediate="true" sourceRef="Bpmn2_ServiceTask_fJ3VAaqeEeOU-ea4bX5igg" targetRef="Bpmn2_EndEvent_reGjQ6qdEeOU-ea4bX5igg">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="255,255,255" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+          <w4graph:line automaticRoute="true" avoidObstacleRoute="false" closestRoute="false" routerType="Rectilinear"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:sequenceFlow>
+    <tns:dataObjectReference dataObjectRef="Bpmn2_DataObject_z3EpApo5EeO1WrMpxYFn7Q" id="Bpmn_DataObjectReference_amQ5kMUQEeWtyJWrpr6YKg" name="Status">
+      <tns:extensionElements>
+        <w4graph:graphStyle>
+          <w4graph:basic autoResize="false" background="153,153,153" borderColor="100,100,100" collapsed="false" foreground="0,0,0"/>
+        </w4graph:graphStyle>
+      </tns:extensionElements>
+    </tns:dataObjectReference>
+  </tns:process>
+  <tns:signal id="Bpmn2_Signal_xfPDYJpDEeOaLPEr7parPA" name="Annulation${processInstance.identifier.id}"/>
+  <tns:resource id="Bpmn2_Resource_QvpV0JpFEeOaLPEr7parPA" name="everybody" w4:type="Group"/>
+  <tns:resource id="Bpmn2_Resource_TY690JpIEeOaLPEr7parPA" name="BackOffice" w4:type="Group"/>
+  <tns:dataStore id="Bpmn2_DataObject_EqTF8qqeEeOU-ea4bX5igg" isUnlimited="true" itemSubjectRef="Validation" name="Validation"/>
+  <tns:signal id="Bpmn2_Signal_B0MmEKqfEeOU-ea4bX5igg" name="SignalOffreNonValidee"/>
+  <tns:resource id="Bpmn2_Resource_gz5IULQqEeOE1M41eDOGDg" name="Officer" w4:type="Group"/>
+  <tns:resource id="Bpmn2_Resource_iLZt0LQqEeOE1M41eDOGDg" name="BranchOfficeMgr" w4:type="Group"/>
+  <tns:dataStore id="Bpmn_DataStore_M36G8I4MEeWzZeFCV54HNQ" isUnlimited="true" itemSubjectRef="LoanOffer" name="Loan offer"/>
+  <tns:dataStore id="Bpmn_DataStore_dOvpsJN2EeWFk_NJDSTEdg" isUnlimited="true" itemSubjectRef="LoanRequest" name="Loan request"/>
+  <tns:dataStore id="Bpmn_DataStore_NG18kJN3EeWFk_NJDSTEdg" isUnlimited="true" itemSubjectRef="MedicalForm" name="Medical form"/>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="Branch office loan application" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="Bpmn2_Process_Ahx95Zo2EeODY5gs4RP0gg">
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_Lane_TPPbMpo5EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_Lane_TPPbMpo5EeO1WrMpxYFn7Q" isExpanded="true" isHorizontal="true">
+        <dc:Bounds height="137.0" width="1261.0" x="21.0" y="712.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="21.0" width="22.48828125" x="27.255859375" y="770.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_Lane_0d2AApo3EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_Lane_0d2AApo3EeO1WrMpxYFn7Q" isExpanded="true" isHorizontal="true">
+        <dc:Bounds height="137.0" width="1261.0" x="21.0" y="575.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="167.0" width="22.48828125" x="27.255859375" y="540.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_Lane_uFLqQpo2EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_Lane_uFLqQpo2EeO1WrMpxYFn7Q" isExpanded="true" isHorizontal="true">
+        <dc:Bounds height="359.0" width="1261.0" x="21.0" y="216.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="100.0" width="22.48828125" x="27.255859375" y="345.5"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_DataStoreReference_LL9zMJo3EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_DataStoreReference_LL9zMJo3EeO1WrMpxYFn7Q">
+        <dc:Bounds height="30.0" width="35.0" x="549.0" y="461.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="61.0" x="536.0" y="493.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_DataStoreReference_yRPToJo5EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_DataStoreReference_yRPToJo5EeO1WrMpxYFn7Q">
+        <dc:Bounds height="30.0" width="35.0" x="323.0" y="240.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="61.0" x="310.0" y="272.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_DataObjectReference_a1nr0Jo7EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_DataObjectReference_a1nr0Jo7EeO1WrMpxYFn7Q">
+        <dc:Bounds height="38.0" width="29.0" x="918.0" y="356.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="39.0" x="913.0" y="396.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_DataStoreReference_K2s90KqeEeOU-ea4bX5igg" id="Yaoqiang-Bpmn2_DataStoreReference_K2s90KqeEeOU-ea4bX5igg">
+        <dc:Bounds height="30.0" width="35.0" x="902.0" y="487.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="59.0" x="890.0" y="519.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn_DataObjectReference_amQ5kMUQEeWtyJWrpr6YKg" id="Yaoqiang-Bpmn_DataObjectReference_amQ5kMUQEeWtyJWrpr6YKg">
+        <dc:Bounds height="38.0" width="29.0" x="269.0" y="485.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="39.0" x="264.0" y="525.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_EndEvent_sgEw0po6EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_EndEvent_sgEw0po6EeO1WrMpxYFn7Q">
+        <dc:Bounds height="32.0" width="32.0" x="625.0" y="37.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="638.5" y="69.0673828125"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_DataStoreReference_I65ysJo7EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_DataStoreReference_I65ysJo7EeO1WrMpxYFn7Q">
+        <dc:Bounds height="30.0" width="35.0" x="399.0" y="84.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="61.0" x="386.0" y="116.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_StartEvent_A4rD0ppKEeOaLPEr7parPA" id="Yaoqiang-Bpmn2_StartEvent_A4rD0ppKEeOaLPEr7parPA">
+        <dc:Bounds height="32.0" width="32.0" x="205.0" y="37.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="108.0" x="149.0" y="10.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_DataStoreReference_FqOuUJpKEeOaLPEr7parPA" id="Yaoqiang-Bpmn2_DataStoreReference_FqOuUJpKEeOaLPEr7parPA">
+        <dc:Bounds height="30.0" width="35.0" x="257.0" y="102.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="61.0" x="244.0" y="134.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_StartEvent_u-hGApo2EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_StartEvent_u-hGApo2EeO1WrMpxYFn7Q">
+        <dc:Bounds height="32.0" width="32.0" x="122.0" y="368.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="72.0" x="102.0" y="400.0673828125"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_UserTask_GARKYZo3EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_UserTask_GARKYZo3EeO1WrMpxYFn7Q">
+        <dc:Bounds height="64.0" width="112.0" x="216.0" y="352.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="101.0" x="221.5" y="376.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_ExclusiveGateway_13bekpo2EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_ExclusiveGateway_13bekpo2EeO1WrMpxYFn7Q" isMarkerVisible="true">
+        <dc:Bounds height="42.0" width="42.0" x="368.0" y="363.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="58.0" x="363.5" y="346.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_EndEvent_6lo6Ipo2EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_EndEvent_6lo6Ipo2EeO1WrMpxYFn7Q">
+        <dc:Bounds height="32.0" width="32.0" x="376.0" y="440.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="102.0" x="341.5" y="472.0673828125"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_ReceiveTask_Gc-7kZo3EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_ReceiveTask_Gc-7kZo3EeO1WrMpxYFn7Q">
+        <dc:Bounds height="64.0" width="112.0" x="544.0" y="352.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="85.0" x="557.5" y="369.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_UserTask_4m2bwJpCEeOaLPEr7parPA" id="Yaoqiang-Bpmn2_UserTask_4m2bwJpCEeOaLPEr7parPA">
+        <dc:Bounds height="55.0" width="85.0" x="728.0" y="250.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="57.0" x="742.0" y="263.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_EndEvent_rSpbwpo3EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_EndEvent_rSpbwpo3EeO1WrMpxYFn7Q">
+        <dc:Bounds height="32.0" width="32.0" x="698.0" y="456.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="184.0" x="622.5" y="495.5673828125"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_EndEvent_uDw4gpo3EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_EndEvent_uDw4gpo3EeO1WrMpxYFn7Q">
+        <dc:Bounds height="32.0" width="32.0" x="1024.0" y="309.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="105.0" x="988.0" y="341.0673828125"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_ExclusiveGateway_Pki1opo6EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_ExclusiveGateway_Pki1opo6EeO1WrMpxYFn7Q" isMarkerVisible="true">
+        <dc:Bounds height="42.0" width="42.0" x="864.0" y="304.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="47.0" x="857.0" y="336.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_EndEvent_Sdy6spo6EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_EndEvent_Sdy6spo6EeO1WrMpxYFn7Q">
+        <dc:Bounds height="32.0" width="32.0" x="864.0" y="240.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="877.5" y="272.0673828125"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_IntermediateThrowEvent_yXG30ppJEeOaLPEr7parPA" id="Yaoqiang-Bpmn2_IntermediateThrowEvent_yXG30ppJEeOaLPEr7parPA">
+        <dc:Bounds height="32.0" width="32.0" x="464.0" y="368.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="112.0" x="424.5" y="400.0673828125"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_UserTask_-UX_QZpCEeOaLPEr7parPA" id="Yaoqiang-Bpmn2_UserTask_-UX_QZpCEeOaLPEr7parPA">
+        <dc:Bounds height="64.0" width="128.0" x="704.0" y="607.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="103.0" x="716.5" y="631.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_ExclusiveGateway_pkPeoqqdEeOU-ea4bX5igg" id="Yaoqiang-Bpmn2_ExclusiveGateway_pkPeoqqdEeOU-ea4bX5igg" isMarkerVisible="true">
+        <dc:Bounds height="42.0" width="42.0" x="888.0" y="618.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="60.0" x="882.5" y="601.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_EndEvent_reGjQ6qdEeOU-ea4bX5igg" id="Yaoqiang-Bpmn2_EndEvent_reGjQ6qdEeOU-ea4bX5igg">
+        <dc:Bounds height="32.0" width="32.0" x="1184.0" y="623.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="136.0" x="1132.0" y="662.5673828125"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_ServiceTask_fJ3VAaqeEeOU-ea4bX5igg" id="Yaoqiang-Bpmn2_ServiceTask_fJ3VAaqeEeOU-ea4bX5igg">
+        <dc:Bounds height="64.0" width="112.0" x="1016.0" y="607.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="101.0" x="1021.5" y="624.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_ScriptTask_5PYbYZpCEeOaLPEr7parPA" id="Yaoqiang-Bpmn2_ScriptTask_5PYbYZpCEeOaLPEr7parPA">
+        <dc:Bounds height="64.0" width="112.0" x="712.0" y="744.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="46.955078125" width="85.0" x="725.5" y="754.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_IntermediateCatchEvent_ZHFYUpo5EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_IntermediateCatchEvent_ZHFYUpo5EeO1WrMpxYFn7Q">
+        <dc:Bounds height="32.0" width="32.0" x="896.0" y="760.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="73.0" x="875.5" y="743.0673828125"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_ScriptTask_5yYawZpCEeOaLPEr7parPA" id="Yaoqiang-Bpmn2_ScriptTask_5yYawZpCEeOaLPEr7parPA">
+        <dc:Bounds height="64.0" width="112.0" x="1016.0" y="744.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="46.955078125" width="79.0" x="1032.5" y="754.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_EndEvent_otNYopo5EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_EndEvent_otNYopo5EeO1WrMpxYFn7Q">
+        <dc:Bounds height="32.0" width="32.0" x="1184.0" y="760.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="91.0" x="1155.0" y="792.0673828125"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_IntermediateCatchEvent_3PWZIppJEeOaLPEr7parPA" id="Yaoqiang-Bpmn2_IntermediateCatchEvent_3PWZIppJEeOaLPEr7parPA">
+        <dc:Bounds height="32.0" width="32.0" x="330.0" y="37.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="147.0" x="273.0" y="10.5673828125"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_IntermediateThrowEvent_psTBopo6EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_IntermediateThrowEvent_psTBopo6EeO1WrMpxYFn7Q">
+        <dc:Bounds height="32.0" width="32.0" x="510.0" y="37.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="162.0" x="445.5" y="10.5673828125"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_BoundaryEvent_Q4FogZo3EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_BoundaryEvent_Q4FogZo3EeO1WrMpxYFn7Q">
+        <dc:Bounds height="32.0" width="32.0" x="618.0" y="340.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="80.0" x="594.0" y="330.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Bpmn2_BoundaryEvent_kS9FwZo3EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_BoundaryEvent_kS9FwZo3EeO1WrMpxYFn7Q">
+        <dc:Bounds height="32.0" width="32.0" x="618.0" y="404.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="72.0" x="598.0" y="444.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_rSpbwZo3EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_rSpbwZo3EeO1WrMpxYFn7Q">
+        <di:waypoint x="637.1428571428572" y="435.6882901866198"/>
+        <di:waypoint x="637.1428571428572" y="471.42857142857144"/>
+        <di:waypoint x="698.0102073375621" y="471.42857142857144"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="646.7063916192338" y="461.95103236607144"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_Riz5IJo6EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_Riz5IJo6EeO1WrMpxYFn7Q">
+        <di:waypoint x="906.0" y="325.0"/>
+        <di:waypoint x="1024.0" y="325.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="122.0" x="904.0" y="308.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_Sdy6sZo6EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_Sdy6sZo6EeO1WrMpxYFn7Q">
+        <di:waypoint x="880.0" y="309.0"/>
+        <di:waypoint x="880.0" y="272.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="116.0" x="860.0" y="264.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_DataInputAssociation_LE0Fg5o7EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_DataInputAssociation_LE0Fg5o7EeO1WrMpxYFn7Q">
+        <di:waypoint x="434.0" y="104.0"/>
+        <di:waypoint x="491.0" y="104.0"/>
+        <di:waypoint x="510.0" y="53.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="488.0" y="88.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_DataOutputAssociation_ICFUUZo7EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_DataOutputAssociation_ICFUUZo7EeO1WrMpxYFn7Q">
+        <di:waypoint x="336.0" y="65.4899959967968"/>
+        <di:waypoint x="336.0" y="104.0"/>
+        <di:waypoint x="399.0" y="104.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="345.2449979983984" y="94.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_DataOutputAssociation_Eur2sKqeEeOU-ea4bX5igg" id="Yaoqiang-Bpmn2_DataOutputAssociation_Eur2sKqeEeOU-ea4bX5igg">
+        <di:waypoint x="822.0" y="607.0"/>
+        <di:waypoint x="822.0" y="521.0"/>
+        <di:waypoint x="902.0" y="502.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="819.0" y="505.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_otNYoZo5EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_otNYoZo5EeO1WrMpxYFn7Q">
+        <di:waypoint x="1128.0" y="776.0"/>
+        <di:waypoint x="1184.0" y="776.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="1153.0" y="766.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_DataOutputAssociation_xmSSIZo5EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_DataOutputAssociation_xmSSIZo5EeO1WrMpxYFn7Q">
+        <di:waypoint x="264.0" y="352.0"/>
+        <di:waypoint x="264.0" y="250.0"/>
+        <di:waypoint x="323.0" y="250.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="261.0" y="272.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_DataInputAssociation_EhMc85o6EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_DataInputAssociation_EhMc85o6EeO1WrMpxYFn7Q">
+        <di:waypoint x="358.0" y="255.0"/>
+        <di:waypoint x="728.0" y="277.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="540.0" y="256.7724609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_DataOutputAssociation_IdAX85pKEeOaLPEr7parPA" id="Yaoqiang-Bpmn2_DataOutputAssociation_IdAX85pKEeOaLPEr7parPA">
+        <di:waypoint x="221.42857142857144" y="68.99425917417284"/>
+        <di:waypoint x="221.42857142857144" y="115.71428571428572"/>
+        <di:waypoint x="257.0" y="115.71428571428572"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="218.42857142857144" y="100.66244766744356"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_reGjQaqdEeOU-ea4bX5igg" id="Yaoqiang-Bpmn2_SequenceFlow_reGjQaqdEeOU-ea4bX5igg">
+        <di:waypoint x="930.0" y="639.0"/>
+        <di:waypoint x="1016.0" y="639.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="77.0" x="934.5" y="622.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_4KhykaqdEeOU-ea4bX5igg" id="Yaoqiang-Bpmn2_SequenceFlow_4KhykaqdEeOU-ea4bX5igg">
+        <di:waypoint x="910.0000000000001" y="658.9999999999999"/>
+        <di:waypoint x="910.0000000000001" y="710"/>
+        <di:waypoint x="800.0" y="710.0"/>
+        <di:waypoint x="800.0" y="776.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="74.0" x="824.0" y="724.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_nvgaQJo5EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_nvgaQJo5EeO1WrMpxYFn7Q">
+        <di:waypoint x="824.0" y="776.0"/>
+        <di:waypoint x="896.0" y="776.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="857.0" y="766.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_9gC1wZo2EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_9gC1wZo2EeO1WrMpxYFn7Q">
+        <di:waypoint x="410.0" y="384.0"/>
+        <di:waypoint x="464.0" y="384.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="119.0" x="353.5" y="297.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_2BBk0JpJEeOaLPEr7parPA" id="Yaoqiang-Bpmn2_SequenceFlow_2BBk0JpJEeOaLPEr7parPA">
+        <di:waypoint x="496.0" y="384.0"/>
+        <di:waypoint x="544.0" y="384.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="517.0" y="374.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_vpiY8Zo2EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_vpiY8Zo2EeO1WrMpxYFn7Q">
+        <di:waypoint x="154.0" y="384.0"/>
+        <di:waypoint x="216.0" y="384.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="182.0" y="374.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_13bekZo2EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_13bekZo2EeO1WrMpxYFn7Q">
+        <di:waypoint x="328.0" y="384.0"/>
+        <di:waypoint x="368.0" y="384.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="345.0" y="374.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_DataOutputAssociation_Zhz6kZo7EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_DataOutputAssociation_Zhz6kZo7EeO1WrMpxYFn7Q">
+        <di:waypoint x="776.0" y="305.0"/>
+        <di:waypoint x="776.0" y="368.0"/>
+        <di:waypoint x="918.0" y="368.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="812.5" y="358.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_V9s3cZo3EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_V9s3cZo3EeO1WrMpxYFn7Q">
+        <di:waypoint x="632.0" y="340.12549213361245"/>
+        <di:waypoint x="632.0" y="288.0"/>
+        <di:waypoint x="728.0" y="288.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="650.9372539331938" y="278.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_DjbZ4JpKEeOaLPEr7parPA" id="Yaoqiang-Bpmn2_SequenceFlow_DjbZ4JpKEeOaLPEr7parPA">
+        <di:waypoint x="237.0" y="53.0"/>
+        <di:waypoint x="330.0" y="53.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="280.5" y="43.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_aKOQUZo5EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_aKOQUZo5EeO1WrMpxYFn7Q">
+        <di:waypoint x="928.0" y="776.0"/>
+        <di:waypoint x="1016.0" y="776.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="969.0" y="766.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_DataInputAssociation_y6JeA5pKEeOaLPEr7parPA" id="Yaoqiang-Bpmn2_DataInputAssociation_y6JeA5pKEeOaLPEr7parPA">
+        <di:waypoint x="358.0" y="255.0"/>
+        <di:waypoint x="464.0" y="384.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="408.0" y="310.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_BhaHgJo5EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_BhaHgJo5EeO1WrMpxYFn7Q">
+        <di:waypoint x="656.0" y="387.0"/>
+        <di:waypoint x="780.0" y="387.0"/>
+        <di:waypoint x="780.0" y="607.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="777.0" y="425.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_r6SjMJo6EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_r6SjMJo6EeO1WrMpxYFn7Q">
+        <di:waypoint x="362.0" y="53.0"/>
+        <di:waypoint x="510.0" y="53.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="433.0" y="43.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_sgEw0Zo6EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_sgEw0Zo6EeO1WrMpxYFn7Q">
+        <di:waypoint x="542.0" y="53.0"/>
+        <di:waypoint x="625.0" y="53.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="580.5" y="43.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_pkPeoaqdEeOU-ea4bX5igg" id="Yaoqiang-Bpmn2_SequenceFlow_pkPeoaqdEeOU-ea4bX5igg">
+        <di:waypoint x="832.0" y="639.0"/>
+        <di:waypoint x="888.0" y="639.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="857.0" y="629.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_uhdhIJo3EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_uhdhIJo3EeO1WrMpxYFn7Q">
+        <di:waypoint x="813.0" y="281.0"/>
+        <di:waypoint x="850.0" y="281.0"/>
+        <di:waypoint x="850.0" y="319.0"/>
+        <di:waypoint x="864.0" y="325.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="847.0" y="282.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_6lo6IZo2EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_SequenceFlow_6lo6IZo2EeO1WrMpxYFn7Q">
+        <di:waypoint x="392.0" y="402.0"/>
+        <di:waypoint x="392.0" y="440.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="113.0" x="335.5" y="404.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_SequenceFlow_WaTj4aqeEeOU-ea4bX5igg" id="Yaoqiang-Bpmn2_SequenceFlow_WaTj4aqeEeOU-ea4bX5igg">
+        <di:waypoint x="1128.0" y="639.0"/>
+        <di:waypoint x="1184.0" y="639.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="1153.0" y="629.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_DataOutputAssociation_IR2ygZo3EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_DataOutputAssociation_IR2ygZo3EeO1WrMpxYFn7Q">
+        <di:waypoint x="566.5" y="416.0"/>
+        <di:waypoint x="566.5" y="461.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="563.5" y="429.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn2_DataInputAssociation_6LMSc5o5EeO1WrMpxYFn7Q" id="Yaoqiang-Bpmn2_DataInputAssociation_6LMSc5o5EeO1WrMpxYFn7Q">
+        <di:waypoint x="565.7142857142858" y="491.0"/>
+        <di:waypoint x="565.7142857142858" y="640.0"/>
+        <di:waypoint x="704.0" y="640.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="562.7142857142858" y="625.1653180803571"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Bpmn_DataOutputAssociation_c-YAcsUQEeWtyJWrpr6YKg" id="Yaoqiang-Bpmn_DataOutputAssociation_c-YAcsUQEeWtyJWrpr6YKg">
+        <di:waypoint x="242.0" y="416.0"/>
+        <di:waypoint x="242.0" y="507.0"/>
+        <di:waypoint x="269.0" y="507.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="239.0" y="465.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</tns:definitions>

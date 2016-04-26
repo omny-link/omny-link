@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>activiti-miwg</artifactId>
+  <packaging>jar</packaging>
+  <name>BPMN 2.0 with Activiti - Examples</name>
+  <description>Various tests and examples produced by BPMN MIWG group targetting Activiti engine for execution.</description>
+  
+  <parent>
+    <groupId>link.omny</groupId>
+    <artifactId>omny-link-root</artifactId>
+    <version>1.0.0.0-beta-10</version>
+  </parent>
+  
+  <properties>
+    <bpmn-miwg-version>0.2-SNAPSHOT</bpmn-miwg-version>
+    <project.bpmn.application>Activiti 5.15.1</project.bpmn.application>
+  </properties>
+  
+  <pluginRepositories>
+    <pluginRepository>
+      <id>bpmn-miwg-snapshot</id>
+      <name>BPMN-MIWG Snapshot Repository</name>
+      <url>http://repository-bpmn-miwg.forge.cloudbees.com/snapshot/</url>
+    </pluginRepository>
+  </pluginRepositories>
+  
+  <dependencies>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <!-- TODO for now the BPMN modified during upload to server is committed rather than original tests
+    <dependency>
+      <groupId>org.omg.bpmn.miwg</groupId>
+      <artifactId>test-suite</artifactId>
+      <version>${bpmn-miwg-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.omg.bpmn.miwg</groupId>
+      <artifactId>bpmn-miwg-demos</artifactId>
+      <version>0.3.0-SNAPSHOT</version>
+    </dependency>-->
+    <dependency>
+      <groupId>org.activiti</groupId>
+      <artifactId>activiti-bdd</artifactId>
+      <version>${activiti.bdd.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>
