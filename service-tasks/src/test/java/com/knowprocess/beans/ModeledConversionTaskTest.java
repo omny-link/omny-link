@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.activiti.bdd.test.activiti.ExtendedRule;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.test.Deployment;
@@ -16,7 +17,6 @@ import org.junit.Test;
 
 import com.knowprocess.beans.model.LeadActivity;
 import com.knowprocess.sugarcrm.api.SugarLead;
-import com.knowprocess.test.activiti.ExtendedRule;
 
 public class ModeledConversionTaskTest {
 

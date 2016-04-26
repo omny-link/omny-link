@@ -6,14 +6,13 @@ import static org.junit.Assert.fail;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.activiti.bdd.test.mailserver.TestMailServer;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.test.ActivitiRule;
 import org.junit.Rule;
 import org.junit.Test;
-
-import com.knowprocess.test.mailserver.TestMailServer;
 
 public class MonitorProcessTest {
 

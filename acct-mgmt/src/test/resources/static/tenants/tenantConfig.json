@@ -1,19 +1,6 @@
 { 
   "id": "omny", 
-  "name": "Omny Link",
-  "show": { "account":true, "activityAnalysis":true, "budget":true, "companyBackground":false, "marketing":true, "merge":true },
-  "contactFields": [ 
-    { "name": "Job Title", "ref": "jobTitle"},
-    { "name": "Next Steps", "ref": "nextSteps"},
-    { "name": "Been Demo'ed", "ref": "isDemoed"}
-  ],
-  "accountFields": [ 
-    { "name": "Sector", "ref": "sector"},
-    { "name": "Lead Office", "ref": "leadOffice"},
-    { "name": "Current Site Capability", "ref": "currentSiteCapability"}
-  ],
   "contactActions": [
-    { "name": "Add reminder", "ref": "AddReminder", "url": "/partials/add-reminder.html" },
     { "name": "Send email", "ref": "SendMemo", "url": true  }
   ],
   "toolbar": [
@@ -26,8 +13,7 @@
     { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates"  },
     { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View recent activity", "name": "Funnel" },
     { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },    
-    { "url": "users.html", "icon": "omny-icon-user", "name": "User Management" },
-    { "url": "status.html", "icon": "omny-icon-users", "name": "Tenant Profile" },
+    { "url": "users.html", "icon": "omny-icon-users", "name": "Users Management" },
     { "url": "api.html", "icon": "glyphicon-wrench", "name": "API Documentation" }
   ],
   "partials": [
@@ -39,23 +25,22 @@
     { "name": "omnyWorkflowWizard", "url": "/partials/workflow-wizard.html"}
   ],
   "processes": [
-    { "name": "Catch All", "ref": "CatchAllProcess" },
-    { "name": "Note to self", "ref": "SimpleTodo", "url": "/partials/SimpleTodo.html" }
+    { "name": "Catch All", "ref": "CatchAllProcess" }
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},
-    { "name": "countries", "ref": "#curCountry", "url": "/data/countries.json"},
-    { "name": "currentSiteCapability", "ref": "#curCurrentSiteCapability", "url": "/data/omny/current-site-capabilities.json"},
-    { "name": "enquiryTypes", "ref": "#curEnquiryType", "url": "/data/omny/enquiry-types.json"},
-    { "name": "owners", "ref": "#curOwner", "url": "/data/omny/owners.json"},
-    { "name": "who", "ref": "#who", "url": "/data/omny/owners.json"},
-    { "name": "media", "ref": "#curMedium", "url": "/data/media.json"},
-    { "name": "sectors", "ref": "#curSector", "url": "/data/omny/sectors.json"},
-    { "name": "sources", "ref": "#curSource", "url": "/data/sources.json"},
+    { "ref": "#curCountry", "url": "/data/countries.json"},
+    { "ref": "#curCurrentSiteCapability", "url": "/data/omny/current-site-capabilities.json"},
+    { "ref": "#curEnquiryType", "url": "/data/omny/enquiry-types.json"},
+    { "ref": "#curOwner", "url": "/data/omny/owners.json"},
+    { "ref": "#who", "url": "/data/omny/owners.json"},
+    { "ref": "#curMedium", "url": "/data/media.json"},
+    { "ref": "#curSector", "url": "/data/omny/sectors.json"},
+    { "ref": "#curSource", "url": "/data/sources.json"},
     { "name": "stages", "ref": "#curStage", "url": "/data/omny/stages.json"},
     { "name": "status", "ref": "#curStatus", "url": "/data/status.json"}
   ],
   "workActions": [
     { "name": "Note to self", "ref": "SimpleTodo", "url": "/partials/SimpleTodo.html" }
-  ]
+  ]  
 }
