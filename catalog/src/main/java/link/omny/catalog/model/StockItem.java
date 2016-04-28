@@ -20,6 +20,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import link.omny.catalog.json.JsonCustomStockItemFieldDeserializer;
@@ -61,19 +62,24 @@ public class StockItem implements Serializable {
 
     @JsonProperty
     private String description;
-    
+
     @JsonProperty
     private String size;
-    
+
+    @JsonProperty
+    @Transient
+    private String sizeString;
+
     @JsonProperty
     private String unit;
 
     @JsonProperty
-    private BigDecimal unitPrice;
-    
-    @JsonProperty
-    private String mapUrl;
-    
+    private BigDecimal price;
+
+    // @JsonProperty
+    // @Transient
+    // private String priceString;
+
     @JsonProperty
     private String type;
 
@@ -102,6 +108,8 @@ public class StockItem implements Serializable {
     @JsonDeserialize(using = JsonCustomStockItemFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomStockItemField> customFields;
+
+    public static final int CURRENCY_SCALE = 2;
 
     public List<CustomStockItemField> getCustomFields() {
         if (customFields == null) {
@@ -139,6 +147,35 @@ public class StockItem implements Serializable {
             stockCategory = new StockCategory();
         }
         return stockCategory;
+    }
+
+    public List<MediaResource> getImages() {
+        if (images == null || images.size() == 0) {
+            images = new ArrayList<MediaResource>(
+                    StockCategory.DEFAULT_IMAGE_COUNT);
+            for (int i = 0; i < StockCategory.DEFAULT_IMAGE_COUNT; i++) {
+                images.add(new MediaResource(getTenantId(), String.format(
+                        "/images/%1$s/%2$s/%3$d.jpg", name.toLowerCase()
+                                .replaceAll(" ", "_"), type.toLowerCase()
+                                .replaceAll(" ", "_"), i)));
+            }
+        }
+        return images;
+    }
+
+    public String getSizeString() {
+        return String.format("%1$s %2$s", size, unit);
+    }
+
+    @JsonProperty
+    @Transient
+    public String getPriceString() {
+        if (price == null) {
+            return "";
+        } else {
+            return price.setScale(CURRENCY_SCALE, BigDecimal.ROUND_HALF_DOWN)
+                    .toPlainString();
+        }
     }
 
     @PreUpdate

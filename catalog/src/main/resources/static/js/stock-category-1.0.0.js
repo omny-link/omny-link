@@ -112,16 +112,10 @@ var ractive = new AuthenticatedRactive({
     },
     matchSearch: function(obj) {
       var searchTerm = ractive.get('searchTerm');
-      //console.info('matchSearch: '+searchTerm);
       if (searchTerm==undefined || searchTerm.length==0) {
         return true;
       } else {
-        return ( (obj.firstName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-          || (obj.lastName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-          || (obj.email.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-          || (obj.phone1!=undefined && obj.phone1.indexOf(searchTerm)>=0)
-          || (obj.phone2!=undefined && obj.phone2.indexOf(searchTerm)>=0)
-          || (obj.stockCategoryName!=undefined && obj.stockCategoryName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+        return ( (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
           || (searchTerm.startsWith('created>') && new Date(obj.firstStockCategory)>new Date(ractive.get('searchTerm').substring(8)))
           || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(ractive.get('searchTerm').substring(8)))

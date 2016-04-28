@@ -6,14 +6,12 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -69,30 +67,56 @@ public class TenantConfig implements Serializable {
     @Transient
     private BotConfig bot;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    // @JoinColumn(name = "ENTITY_ID")
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Transient
     private List<ContactField> contactFields;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    // @JoinColumn(name = "ENTITY_ID")
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Transient
     private List<AccountField> accountFields;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = TenantToolbarEntry.class)
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Transient
+    private List<StockCategoryField> stockCategoryFields;
+
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // @JoinColumn(name = "tenantId")
+    @Transient
+    private List<StockItemField> stockItemFields;
+
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // TODO figure out how to persist
+    @Transient
+    private Map<String, String> strings;
+
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
+    // targetEntity = TenantToolbarEntry.class)
+    @Transient
     private List<TenantToolbarEntry> toolbar;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = TenantProcess.class)
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
+    // targetEntity = TenantProcess.class)
+    @Transient
     private List<TenantProcess> processes;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = TenantPartial.class)
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
+    // targetEntity = TenantPartial.class)
+    @Transient
     private List<TenantPartial> partials;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = TenantTypeaheadControl.class)
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
+    // targetEntity = TenantTypeaheadControl.class)
+    @Transient
     private List<TenantTypeaheadControl> typeaheadControls;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = TenantAction.class)
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
+    // targetEntity = TenantAction.class)
+    @Transient
     private List<TenantAction> contactActions;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = TenantAction.class)
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
+    // targetEntity = TenantAction.class)
+    @Transient
     private List<TenantAction> workActions;
 
     public TenantConfig(String tenantId) {
