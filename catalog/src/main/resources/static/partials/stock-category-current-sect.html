@@ -20,15 +20,6 @@
           <label class="textarea">Description:</label>
           <textarea class="" id="curDescription" value="{{current.description}}"></textarea>
         </li>
-        <li>
-          <label class="">Focal Image:</label>
-          <input class="form-control" id="curFocalImage" placeholder="http://acme.com/image.jpg" type="url" value="{{current.focalImage}}">
-          {{#current.focalImage}}
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">
-              <img alt="Focal image for {{current.name}}" class="col-md-12" src="{{current.focalImage}}"/>
-            </p>
-          {{/}}
-        </li>
       </ul>
     </div>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
@@ -51,7 +42,7 @@
       </ul>
     </div>
 
-    {{#tenant}}
+    {{#tenant.stockCategoryFields.length>0}}
       <div id="currentStockCategoryExtended" style="clear: both">
         {{>(tenant.id+'StockCategoryExtension')}}
       </div>  

@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.data.rest.core.config.Projection;
 
 @Projection(name = "complete", types = { CustomStockCategoryField.class,
-        StockCategory.class })
+        MediaResource.class, StockCategory.class, StockItem.class })
 interface StockCategoryCompleteProjection {
 
     Long getId();
@@ -29,8 +29,6 @@ interface StockCategoryCompleteProjection {
 
     String getCountry();
 
-    String getFocalImage();
-
     Date getCreated();
 
     Date getLastUpdated();
@@ -38,6 +36,8 @@ interface StockCategoryCompleteProjection {
     String getTenantId();
 
     List<CustomStockCategoryField> getCustomFields();
+
+    List<StockItem> getStockItems();
 
     Object getField(@NotNull String fieldName);
 
