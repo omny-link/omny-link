@@ -51,7 +51,12 @@ public class MediaResource implements Serializable {
     private String url;
 
     @ManyToOne(targetEntity = StockItem.class)
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "stock_cat_id")
+    @RestResource(rel = "media")
+    private StockCategory stockCategory;
+
+    @ManyToOne(targetEntity = StockItem.class)
+    @JoinColumn(name = "stock_item_id")
     @RestResource(rel = "media")
     private StockItem stockItem;
 

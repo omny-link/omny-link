@@ -5,6 +5,7 @@ import java.util.List;
 import link.omny.catalog.model.StockItem;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -27,4 +28,11 @@ public interface StockItemRepository extends CrudRepository<StockItem, Long> {
             @Param("categoryName") String categoryName,
             @Param("tenantId") String tenantId);
 
+    @Query(value = "UPDATE OL_STOCK_ITEM i SET i.stock_cat_id = ?2 WHERE i.id = ?1", nativeQuery = true)
+    @Modifying(clearAutomatically = true)
+    public void setStockCategory(Long itemId, Long categoryId);
+
+    @Query(value = "DELETE OL_STOCK_ITEM i WHERE i.stock_cat_id = ?1", nativeQuery = true)
+    @Modifying(clearAutomatically = true)
+    public void deleteByStockCategory(Long stockCategoryId);
 }

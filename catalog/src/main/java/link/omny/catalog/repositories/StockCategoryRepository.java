@@ -22,5 +22,4 @@ public interface StockCategoryRepository extends
     @Query("SELECT c FROM StockCategory c WHERE c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
     List<StockCategory> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
-
 }

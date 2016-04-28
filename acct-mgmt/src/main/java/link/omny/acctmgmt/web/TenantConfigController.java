@@ -107,8 +107,13 @@ public class TenantConfigController {
     public @ResponseBody TenantConfig showTenant(@PathVariable("id") String id) {
         LOGGER.info(String.format("showTenant"));
 
-        // Despite JavaDoc not found does NOT throw exception
-        TenantConfig tenantConfig = tenantRepo.findOne(id);
+        TenantConfig tenantConfig = null;
+        try {
+            // Despite JavaDoc, not found does NOT throw exception
+            tenantConfig = tenantRepo.findOne(id);
+        } catch (Throwable e) {
+            // will use JSON file as fallback
+        }
         String resource = STATIC_BASE + "/tenants/" + id + ".json";
         boolean legacyConfig = resourceExists(resource);
         if (tenantConfig == null && !legacyConfig) {

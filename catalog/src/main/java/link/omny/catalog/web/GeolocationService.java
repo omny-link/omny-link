@@ -13,20 +13,25 @@ import javax.json.JsonReader;
 import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.StockCategory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GeolocationService {
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(GeolocationService.class);
 
     private static final String GEOCODING_URL = "https://maps.googleapis.com/maps/api/geocode/json?address=%1$s,UK";
 
     public GeoPoint locate(String q) throws IOException {
         URL url = new URL(String.format(GEOCODING_URL,
                 URLEncoder.encode(q, "UTF-8")));
+        LOGGER.debug(String.format("  Geo-coding url constructed: %1$s", url));
         // String content;
         InputStream is = null;
-        // experiment suggests content should be shorter than this.
-        StringBuilder sb = new StringBuilder();
+        // StringBuilder sb = new StringBuilder();
         // try {
         // is = (InputStream) url.getContent();
         // char[] buf = new char[1024];

@@ -1,6 +1,6 @@
 package link.omny.catalog.model;
 
-import java.net.URL;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,13 +34,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-// Location in FlexSpace terminology
 @Entity
 @Table(name = "OL_STOCK_CAT")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StockCategory {
+public class StockCategory implements Serializable {
+
+    public static final int DEFAULT_IMAGE_COUNT = 4;
+
+    private static final long serialVersionUID = -6115608228931780960L;
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(StockCategory.class);
@@ -83,13 +86,22 @@ public class StockCategory {
     private double lng;
 
     @JsonProperty
-    private URL focalImage;
+    @Transient
+    private String types;
+
+    @JsonProperty
+    @Transient
+    private String mapUrl;
+
+    @JsonProperty
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stockCategory")
+    private List<MediaResource> images;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
-    private Date created;
+    private Date created = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
@@ -106,6 +118,9 @@ public class StockCategory {
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomStockCategoryField> customFields;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockCategory", targetEntity = StockItem.class)
+    private List<StockItem> stockItems;
 
     public List<CustomStockCategoryField> getCustomFields() {
         if (customFields == null) {
@@ -138,6 +153,40 @@ public class StockCategory {
                         .toString()));
     }
 
+    public List<MediaResource> getImages() {
+        if (images == null || images.size() == 0) {
+            images = new ArrayList<MediaResource>(DEFAULT_IMAGE_COUNT);
+            for (int i = 0; i < DEFAULT_IMAGE_COUNT; i++) {
+                images.add(new MediaResource(getTenantId(), String.format(
+                        "/images/%1$s/%2$d.jpg",
+                        name.toLowerCase().replaceAll(" ", "_"), i + 1)));
+            }
+        }
+        return images;
+    }
+
+    public String getTypes() {
+        List<String> types = new ArrayList<String>();
+        for (StockItem stockItem : stockItems) {
+            if (!types.contains(stockItem.getType())) {
+                types.add(stockItem.getType());
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String stockItem : types) {
+            sb.append(stockItem).append(",");
+        }
+        if (sb.toString().endsWith(",")) {
+            return sb.deleteCharAt(sb.length() - 1).toString();
+        } else {
+            return sb.toString();
+        }
+    }
+
+    public String getMapUrl() {
+        return String.format("http://www.google.com/maps/place/%1$s", postCode);
+    }
+    
     public GeoPoint getGeoPoint() {
         return new GeoPoint(getLat(), getLng());
     }

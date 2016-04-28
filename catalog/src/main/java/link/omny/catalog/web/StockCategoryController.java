@@ -4,12 +4,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import link.omny.catalog.model.GeoPoint;
+import link.omny.catalog.model.MediaResource;
 import link.omny.catalog.model.StockCategory;
+import link.omny.catalog.model.StockItem;
 import link.omny.catalog.repositories.StockCategoryRepository;
+import link.omny.catalog.repositories.StockItemRepository;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +30,6 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,6 +63,9 @@ public class StockCategoryController {
 
     @Autowired
     private StockCategoryRepository stockCategoryRepo;
+
+    @Autowired
+    private StockItemRepository stockItemRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -122,7 +126,6 @@ public class StockCategoryController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public @ResponseBody List<ShortStockCategory> listForTenant(
             @PathVariable("tenantId") String tenantId,
-            @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
         LOGGER.info(String.format("List stockCategorys for tenant %1$s",
@@ -130,25 +133,7 @@ public class StockCategoryController {
 
         List<StockCategory> list;
         if (limit == null) {
-            // TODO unfortunately activeUser is null, prob some kind of class
-            // cast error it seems
-            // Use SecurityContextHolder as temporary fallback
-            Authentication authentication = SecurityContextHolder.getContext()
-                    .getAuthentication();
-
-            for (GrantedAuthority a : authentication.getAuthorities()) {
-                System.out.println("  " + a.getAuthority());
-                System.out.println("  "
-                        + a.getAuthority().equals("ROLE_editor"));
-                System.out.println("  " + a.getAuthority().equals("editor"));
-            }
-
-            // if (authentication.getAuthorities().contains("ROLE_editor")) {
             list = stockCategoryRepo.findAllForTenant(tenantId);
-            // } else {
-            // list = stockCategoryRepo.findAllForTenantOwnedByUser(tenantId,
-            // authentication.getName());
-            // }
         } else {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
             list = stockCategoryRepo.findPageForTenant(tenantId, pageable);
@@ -170,44 +155,46 @@ public class StockCategoryController {
     @RequestMapping(value = "/findByLocation", method = RequestMethod.GET)
     public @ResponseBody List<ShortStockCategory> findByLocation(
             @PathVariable("tenantId") String tenantId,
-            @RequestParam(value = "q", required = true) String q,
+            @RequestParam(value = "q", required = false) String q,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit)
             throws IOException {
         LOGGER.info(String.format("List stockCategories for tenant %1$s",
                 tenantId));
 
-        List<StockCategory> list;
-        StockCategory exactMatch = stockCategoryRepo.findByName(q);
-        if (exactMatch == null) {
-            GeoPoint target = geo.locate(q);
-
-            list = new ArrayList<StockCategory>();
-            List<StockCategory> tmpList = stockCategoryRepo
-                    .findAllForTenant(tenantId);
-            for (StockCategory stockCategory : tmpList) {
-                try {
-                    if (stockCategory.getLng() == 0.0d) {
-                        stockCategory.setGeoPoint(geo.locate(stockCategory
-                                .getPostCode()));
-                        stockCategoryRepo.save(stockCategory);
-                    }
-
-                    if (geo.distance(target, stockCategory) < getSearchRadius()) {
-                        list.add(stockCategory);
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("Exception calculating distance of "
-                            + stockCategory.getName() + " from " + q);
-                }
-            }
-        } else {
-            list = Collections.singletonList(exactMatch);
+        List<StockCategory> list = new ArrayList<StockCategory>();
+        GeoPoint qPoint = null;
+        if (q != null && q.trim().length() > 0) {
+            qPoint = geo.locate(q);
         }
-        Collections.sort(list,
+
+        List<StockCategory> tmpList = stockCategoryRepo
+                .findAllForTenant(tenantId);
+        for (StockCategory stockCategory : tmpList) {
+            try {
+                if (stockCategory.getLng() == 0.0d) {
+                    stockCategory.setGeoPoint(geo.locate(stockCategory
+                            .getPostCode()));
+                    stockCategoryRepo.save(stockCategory);
+                }
+
+                if (q == null
+                        || q.trim().length() == 0
+                        || geo.distance(qPoint, stockCategory) <= getSearchRadius()) {
+                    list.add(stockCategory);
+                }
+            } catch (Exception e) {
+                LOGGER.error(String.format(
+                        "Exception calculating distance of %1$s from %2$s",
+                        stockCategory.getName(), q), e);
+            }
+        }
+        Collections
+                .sort(list,
                         (o1, o2) -> ((int) o1.getDistance())
                                 - ((int) o2.getDistance()));
-        LOGGER.info(String.format("Found %1$s stockCategorys", list.size()));
+
+        LOGGER.info(String.format("Found %1$s stockCategories", list.size()));
 
         return wrap(list);
     }
@@ -217,18 +204,23 @@ public class StockCategoryController {
      * 
      * @return
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public @ResponseBody ResponseEntity<?> create(
             @PathVariable("tenantId") String tenantId,
-            @RequestBody StockCategory stockCategory,
-            UriComponentsBuilder builder) {
+            @RequestBody StockCategory stockCategory) {
         stockCategory.setTenantId(tenantId);
         stockCategoryRepo.save(stockCategory);
 
+        UriComponentsBuilder builder = MvcUriComponentsBuilder
+                .fromController(getClass());
+        HashMap<String, String> vars = new HashMap<String, String>();
+        vars.put("tenantId", tenantId);
+        vars.put("id", stockCategory.getId().toString());
+
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(builder.path("/stockCategorys/{id}")
-                .buildAndExpand(stockCategory.getId()).toUri());
+        headers.setLocation(builder.path("/{id}").buildAndExpand(vars).toUri());
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
@@ -243,7 +235,8 @@ public class StockCategoryController {
         StockCategory stockCategory = stockCategoryRepo
                 .findOne(stockCategoryId);
 
-        BeanUtils.copyProperties(updatedStockCategory, stockCategory, "id");
+        BeanUtils.copyProperties(updatedStockCategory, stockCategory, "id",
+                "item");
         stockCategory.setTenantId(tenantId);
         stockCategoryRepo.save(stockCategory);
     }
@@ -255,10 +248,7 @@ public class StockCategoryController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = { "application/json" })
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long stockCategoryId) {
-        StockCategory stockCategory = stockCategoryRepo
-                .findOne(stockCategoryId);
-
-        stockCategoryRepo.delete(stockCategory);
+        stockCategoryRepo.delete(stockCategoryId);
     }
 
     private List<ShortStockCategory> wrap(List<StockCategory> list) {
@@ -277,8 +267,7 @@ public class StockCategoryController {
         resource.setDistance(String.valueOf(Math.round(stockCategory
                 .getDistance())));
         Link detail = linkTo(StockCategoryRepository.class,
-                stockCategory.getId())
-                .withSelfRel();
+                stockCategory.getId()).withSelfRel();
         resource.add(detail);
         resource.setSelfRef(detail.getHref());
         return resource;
@@ -292,11 +281,22 @@ public class StockCategoryController {
     }
 
     @Data
+    @EqualsAndHashCode(callSuper = true)
     public static class ShortStockCategory extends ResourceSupport {
         private String selfRef;
         private String name;
+        private String description;
+        private String address1;
+        private String address2;
+        private String town;
+        private String cityOrCounty;
         private String postCode;
+        private String country;
         private String distance;
+        private List<StockItem> stockItems;
+        private List<MediaResource> images;
+        private String types;
+        private String mapUrl;
         private Date created;
         private Date lastUpdated;
     }
