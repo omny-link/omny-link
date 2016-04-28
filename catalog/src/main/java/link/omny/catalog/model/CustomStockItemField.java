@@ -8,6 +8,7 @@ import javax.persistence.Table;
 
 import link.omny.custmgmt.model.CustomField;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -15,6 +16,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 @Entity
 @Table(name = "OL_STOCK_ITEM_CUSTOM")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
 public class CustomStockItemField extends CustomField {

@@ -2,10 +2,12 @@ package link.omny.catalog.web;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+
+import javax.transaction.Transactional;
 
 import link.omny.catalog.internal.CatalogCsvImporter;
 import link.omny.catalog.model.MediaResource;
@@ -14,6 +16,7 @@ import link.omny.catalog.repositories.MediaResourceRepository;
 import link.omny.catalog.repositories.StockCategoryRepository;
 import link.omny.catalog.repositories.StockItemRepository;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -177,17 +181,24 @@ public class StockItemController {
      * 
      * @return
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public @ResponseBody ResponseEntity<?> create(
             @PathVariable("tenantId") String tenantId,
-            @RequestBody StockItem stockItem, UriComponentsBuilder builder) {
+            @RequestBody StockItem stockItem) {
         stockItem.setTenantId(tenantId);
         stockItemRepo.save(stockItem);
 
+        UriComponentsBuilder builder = MvcUriComponentsBuilder
+                .fromController(getClass());
+        HashMap<String, String> vars = new HashMap<String, String>();
+        vars.put("tenantId", tenantId);
+        vars.put("id", stockItem.getId().toString());
+
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(builder.path("/stockItems/{id}")
-                .buildAndExpand(stockItem.getId()).toUri());
+        headers.setLocation(builder.path("/{id}").buildAndExpand(vars).toUri());
+
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
@@ -234,6 +245,22 @@ public class StockItemController {
         stockItemRepo.save(stockItem);
     }
 
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{categoryId}/stockCategory", method = RequestMethod.PUT, consumes = { "application/json" })
+    @Transactional
+    public @ResponseBody void setStockCategory(
+            @PathVariable("tenantId") String tenantId,
+            @RequestBody String itemUri,
+            @PathVariable("categoryId") Long categoryId) {
+        LOGGER.info(String.format("Linking item %2$s to category %1$s",
+                categoryId, itemUri));
+
+        Long itemId = Long
+                .parseLong(itemUri.substring(itemUri.lastIndexOf('/') + 1));
+
+        stockItemRepo.setStockCategory(itemId, categoryId);
+    }
+
     /**
      * Delete an existing stockItem.
      */
@@ -262,6 +289,7 @@ public class StockItemController {
             resource.setStockCategoryName(stockItem.getStockCategory()
                     .getName());
         }
+        resource.setPrice(stockItem.getPriceString());
 
         Link detail = linkTo(StockItemRepository.class, stockItem.getId())
                 .withSelfRel();
@@ -278,12 +306,13 @@ public class StockItemController {
     }
 
     @Data
+    @EqualsAndHashCode(callSuper = true)
     public static class ShortStockItem extends ResourceSupport {
         private String selfRef;
         private String name;
         private String stockCategoryName;
         private String type;
-        private BigDecimal unitPrice;
+        private String price;
         private Date created;
         private Date lastUpdated;
     }
