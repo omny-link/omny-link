@@ -14,9 +14,6 @@ var ractive = new AuthenticatedRactive({
     //saveObserver:false,
     title: 'Stock Management',
     username: localStorage['username'],
-    age: function(timeString) {
-      return i18n.getAgeString(new Date(timeString))
-    },
     customField: function(obj, name) {
       if (obj['customFields']==undefined) {
         return undefined;
@@ -27,12 +24,12 @@ var ractive = new AuthenticatedRactive({
         $.each(obj['customFields'], function(i,d) {
           if (d.name == name) val = d.value;
         });
-        return val; 
+        return val;
       }
     },
     formatAge: function(timeString) {
       console.log('formatAge: '+timeString);
-      return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
+      return (timeString == "-1" || timeString==undefined) ? 'n/a' : i18n.getDurationString(timeString)+' ago';
     },
     formatDate: function(timeString) {
       if (timeString==undefined) return 'n/a';
@@ -156,7 +153,8 @@ var ractive = new AuthenticatedRactive({
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "stockItemListSect", "url": "/partials/stock-item-list-sect.html"},
-      { "name": "currentStockItemSect", "url": "/partials/stock-item-current-sect.html"},
+      { "name": "currentImageSect", "url": "/partials/image-current-sect.html"},
+      { "name": "currentStockItemSect", "url": "/partials/stock-item-current-sect.html"}
     ],
   },
   add: function () {
@@ -312,8 +310,7 @@ var ractive = new AuthenticatedRactive({
       console.debug('still loading, safe to ignore');
     } else if (document.getElementById('currentForm').checkValidity()) {
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
-      delete tmp.notes;
-      delete tmp.documents;
+      delete tmp.images;
       if (id != undefined && tmp.stockCategory != undefined) {
         tmp.stockCategory = ractive.findUri('stockCategories','name',tmp.stockCategory.name);  
       } else {

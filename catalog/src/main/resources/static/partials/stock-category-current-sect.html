@@ -20,11 +20,15 @@
           <label class="textarea">Description:</label>
           <textarea class="" id="curDescription" value="{{current.description}}"></textarea>
         </li>
+        <li>
+          <label class="">Video Code:</label>
+          <input class="form-control" id="curVideoCode" value="{{current.videoCode}}"/>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This might be either embed code from YouTube, Vimeo etc. or simply a URL but must match API client code.</p>
+        </li>
       </ul>
     </div>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-              <ul class="form edit-form">
         <li><label class="">Address:</label><input class="form-control" id="curAddress1" value="{{current.address1}}"/></li>
         <li><label class=""></label><input class="form-control" id="curAddress2" value="{{current.address2}}"/></li>
         <li><label class=""></label><input class="form-control" id="curTown" placeholder="Town or village" value="{{current.town}}"/></li>
@@ -36,7 +40,7 @@
         {{/}}
         {{^current.postCode}}
           {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
-          <li><label class="">Map:</label><a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
+            <li><label class="">Map:</label><a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
           {{/}}
         {{/}}
       </ul>
@@ -48,5 +52,7 @@
       </div>  
     {{/}}
   </form>
+  
+  {{>currentImageSect}}
   
 </section>

@@ -25,10 +25,12 @@
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         <li>
-          <label class="">Unit:</label><input class="form-control" id="curUnit" value="{{current.unit}}">
+          <label class="">Price:</label>
+          <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
         </li>
         <li>
-          <label class="">Unit Price:</label><input class="form-control" id="curUnitPrice" step="any" type="number" value="{{current.unitPrice}}">
+          <label class="">Unit:</label>
+          <input class="form-control" id="curUnit" value="{{current.unit}}">
         </li>
         <li>
           <label class="">Size:</label>
@@ -46,32 +48,6 @@
     
   </form>
   
-  <form id="documentForm">
-     <div id="documentSect" style="clear: both">
-      <h2>
-        <span>Images</span>
-        <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addImage('{{current._links.self.href}}')" title="Add a new image"></span>
-      </h2>
-      <table id="imagesTable" class="table table-striped"><tbody>
-        <tr style="display:none;">
-          <td colspan="3">
-            <input class="form-control" id="image" on-blur="saveImage()" placeholder="Paste image link here" required style="width:100%;"/>
-            <br/>
-            <a onclick="$('#imagesTable tr:nth-child(1)').slideUp();">Cancel</a>
-          </td>
-        </tr>
-        {{#each current.images:k}}
-          <tr>
-            <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
-            <td class="field-author">{{{gravatar(author)}}}</td>
-            <td class="field-url"><img src="{{url}}" alt="Image {{k+1}} of {{current.name}}"/></td>
-          </tr>
-        {{/each}}
-        {{^ current.images }}
-          <tr><td>None</td></tr>
-        {{/ current.images }}
-      </tbody></table>
-    </div>
-  </form>
+  {{>currentImageSect}}
     
 </section>

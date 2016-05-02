@@ -3,6 +3,7 @@ package link.omny.catalog.json;
 import java.util.List;
 import java.util.Map.Entry;
 
+import link.omny.catalog.model.CustomStockCategoryField;
 import link.omny.custmgmt.json.JsonCustomFieldDeserializer;
 import link.omny.custmgmt.model.CustomContactField;
 import link.omny.custmgmt.model.CustomField;
@@ -13,7 +14,8 @@ public class JsonCustomStockItemFieldDeserializer extends
         JsonCustomFieldDeserializer<List<CustomContactField>> {
 
     protected CustomField newInstance(Entry<String, JsonNode> entry) {
-        return new CustomContactField(entry.getKey(), entry.getValue().asText());
+        return new CustomStockCategoryField(entry.getKey(), entry.getValue()
+                .asText());
     }
 
 }

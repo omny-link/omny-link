@@ -14,7 +14,9 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 public interface StockCategoryRepository extends
         CrudRepository<StockCategory, Long> {
 
-    StockCategory findByName(@Param("name") String name);
+    @Query("SELECT c FROM StockCategory c WHERE c.name = :name AND c.tenantId = :tenantId")
+    StockCategory findByName(@Param("name") String name,
+            @Param("tenantId") String tenantId);
 
     @Query("SELECT c FROM StockCategory c WHERE c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
     List<StockCategory> findAllForTenant(@Param("tenantId") String tenantId);
@@ -22,4 +24,8 @@ public interface StockCategoryRepository extends
     @Query("SELECT c FROM StockCategory c WHERE c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
     List<StockCategory> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
+
+    @Query("SELECT c FROM StockCategory c JOIN c.stockItems i LEFT JOIN i.images m WHERE i.type = :type AND c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
+    List<StockCategory> findByTypeForTenant(@Param("tenantId") String tenantId,
+            @Param("type") String type);
 }
