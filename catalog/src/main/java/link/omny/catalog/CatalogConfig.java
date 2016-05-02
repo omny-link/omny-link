@@ -1,7 +1,8 @@
 package link.omny.catalog;
 
-import link.omny.catalog.model.StockItem;
 import link.omny.catalog.model.StockCategory;
+import link.omny.catalog.model.StockItem;
+import link.omny.catalog.web.StockCategoryController.ShortStockCategory;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;
@@ -21,7 +22,8 @@ public class CatalogConfig extends RepositoryRestMvcConfiguration {
     @Override
     protected void configureRepositoryRestConfiguration(
             RepositoryRestConfiguration config) {
-        config.exposeIdsFor(StockItem.class, StockCategory.class);
+        config.exposeIdsFor(ShortStockCategory.class, StockItem.class,
+                StockCategory.class);
     }
 
 }

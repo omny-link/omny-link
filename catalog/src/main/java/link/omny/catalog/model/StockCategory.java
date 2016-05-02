@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @NoArgsConstructor
 public class StockCategory implements Serializable {
 
-    public static final int DEFAULT_IMAGE_COUNT = 4;
+    public static final int DEFAULT_IMAGE_COUNT = 8;
 
     private static final long serialVersionUID = -6115608228931780960L;
 
@@ -90,11 +90,13 @@ public class StockCategory implements Serializable {
     private String types;
 
     @JsonProperty
-    @Transient
     private String mapUrl;
 
     @JsonProperty
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stockCategory")
+    private String videoCode;
+
+    @JsonProperty
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockCategory")
     private List<MediaResource> images;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -166,9 +168,12 @@ public class StockCategory implements Serializable {
     }
 
     public String getTypes() {
+        if (stockItems == null) {
+            return null;
+        }
         List<String> types = new ArrayList<String>();
         for (StockItem stockItem : stockItems) {
-            if (!types.contains(stockItem.getType())) {
+            if (stockItem != null && !types.contains(stockItem.getType())) {
                 types.add(stockItem.getType());
             }
         }
@@ -184,9 +189,20 @@ public class StockCategory implements Serializable {
     }
 
     public String getMapUrl() {
-        return String.format("http://www.google.com/maps/place/%1$s", postCode);
+        if (mapUrl == null) {
+            mapUrl = String.format("http://www.google.com/maps/place/%1$s",
+                    postCode);
+        }
+        return mapUrl;
     }
-    
+
+    public String getVideoCode() {
+        if (videoCode == null) {
+            videoCode = "";
+        }
+        return videoCode;
+    }
+
     public GeoPoint getGeoPoint() {
         return new GeoPoint(getLat(), getLng());
     }

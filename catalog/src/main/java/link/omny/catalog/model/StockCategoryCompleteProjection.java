@@ -17,6 +17,8 @@ interface StockCategoryCompleteProjection {
 
     String getDescription();
 
+    String getVideoCode();
+
     String getAddress1();
 
     String getAddress2();
@@ -38,6 +40,8 @@ interface StockCategoryCompleteProjection {
     List<CustomStockCategoryField> getCustomFields();
 
     List<StockItem> getStockItems();
+
+    List<MediaResource> getImages();
 
     Object getField(@NotNull String fieldName);
 

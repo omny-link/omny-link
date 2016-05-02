@@ -59,8 +59,12 @@ public class GeolocationService {
             return new GeoPoint(location.getJsonNumber("lat").doubleValue(),
                     location.getJsonNumber("lng").doubleValue());
         } finally {
-            is.close();
-            jsonReader.close();
+            try {
+                is.close();
+                jsonReader.close();
+            } catch (Exception e) {
+                ;
+            }
         }
     }
 

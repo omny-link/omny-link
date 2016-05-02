@@ -50,6 +50,8 @@ public class StockItem implements Serializable {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(StockItem.class);
 
+    public static final int DEFAULT_IMAGE_COUNT = 4;
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -81,6 +83,7 @@ public class StockItem implements Serializable {
     // private String priceString;
 
     @JsonProperty
+    // @NotNull
     private String type;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -101,7 +104,7 @@ public class StockItem implements Serializable {
     private StockCategory stockCategory;
 
     @JsonProperty
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stockItem")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockItem")
     private List<MediaResource> images;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockItem")
@@ -110,6 +113,15 @@ public class StockItem implements Serializable {
     private List<CustomStockItemField> customFields;
 
     public static final int CURRENCY_SCALE = 2;
+
+    public StockItem(String name, String type) {
+        setName(name);
+        setType(type);
+    }
+
+    public String getSelfRef() {
+        return String.format("/stock-items/%1$d", id);
+    }
 
     public List<CustomStockItemField> getCustomFields() {
         if (customFields == null) {
@@ -149,11 +161,18 @@ public class StockItem implements Serializable {
         return stockCategory;
     }
 
+    public String getDescription() {
+        if (description == null && stockCategory != null) {
+            return stockCategory.getDescription();
+        } else {
+            return description;
+        }
+    }
+
     public List<MediaResource> getImages() {
         if (images == null || images.size() == 0) {
-            images = new ArrayList<MediaResource>(
-                    StockCategory.DEFAULT_IMAGE_COUNT);
-            for (int i = 0; i < StockCategory.DEFAULT_IMAGE_COUNT; i++) {
+            images = new ArrayList<MediaResource>(DEFAULT_IMAGE_COUNT);
+            for (int i = 0; i < DEFAULT_IMAGE_COUNT; i++) {
                 images.add(new MediaResource(getTenantId(), String.format(
                         "/images/%1$s/%2$s/%3$d.jpg", name.toLowerCase()
                                 .replaceAll(" ", "_"), type.toLowerCase()

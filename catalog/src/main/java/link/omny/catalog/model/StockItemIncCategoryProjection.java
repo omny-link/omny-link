@@ -22,9 +22,7 @@ interface StockItemIncCategoryProjection {
 
     String getUnit();
 
-    BigDecimal getUnitPrice();
-
-    String getMapUrl();
+    BigDecimal getPrice();
 
     String getType();
 

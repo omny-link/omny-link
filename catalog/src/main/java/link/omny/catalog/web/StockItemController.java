@@ -105,8 +105,8 @@ public class StockItemController {
         for (StockItem stockItem : list) {
             if (stockItem.getStockCategory() != null
                     && stockItem.getStockCategory().getName() != null) {
-                stockItem.setStockCategory(stockCategoryRepo
-                        .findByName(stockItem.getStockCategory().getName()));
+                stockItem.setStockCategory(stockCategoryRepo.findByName(
+                        stockItem.getStockCategory().getName(), tenantId));
             } else {
                 stockItem.setStockCategory(null);
             }

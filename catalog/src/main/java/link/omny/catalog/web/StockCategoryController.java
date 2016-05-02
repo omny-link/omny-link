@@ -1,6 +1,7 @@
 package link.omny.catalog.web;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -143,19 +144,38 @@ public class StockCategoryController {
         return wrap(list);
     }
 
+    @RequestMapping(value = "/{name}", method = RequestMethod.GET)
+    public ShortStockCategory findByName(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("name") String name,
+            @RequestParam(value = "type", required = false) String type)
+            throws IOException {
+        LOGGER.info(String.format("findByName %1$s, type %2$s for tenant %3$s",
+                name, type, tenantId));
+
+        StockCategory category = stockCategoryRepo.findByName(name, tenantId);
+
+        if (type != null && type.trim().length() > 0) {
+            filter(category, type);
+        }
+
+        return wrap(category);
+    }
+
     /**
      * Return Stock Categories for a specific tenant within a given distance of
      * the search location.
      * 
-     * @return stockCategorys for that tenant.
+     * @return stockCategories for that tenant.
      * @throws IOException
-     *             If unable to contact the geocoding service or it in turn
+     *             If unable to contact the geo-coding service or it in turn
      *             throws an exception.
      */
     @RequestMapping(value = "/findByLocation", method = RequestMethod.GET)
     public @ResponseBody List<ShortStockCategory> findByLocation(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "q", required = false) String q,
+            @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit)
             throws IOException {
@@ -165,11 +185,21 @@ public class StockCategoryController {
         List<StockCategory> list = new ArrayList<StockCategory>();
         GeoPoint qPoint = null;
         if (q != null && q.trim().length() > 0) {
-            qPoint = geo.locate(q);
+            try {
+                qPoint = geo.locate(q);
+            } catch (UnknownHostException e) {
+                LOGGER.error(String.format(
+                        "Unable to geo locate '%1$s', will return unfiltered list", q));
+                q = null;
+            }
         }
 
-        List<StockCategory> tmpList = stockCategoryRepo
-                .findAllForTenant(tenantId);
+        List<StockCategory> tmpList = null;
+        if (type == null) {
+            tmpList = stockCategoryRepo.findAllForTenant(tenantId);
+        } else {
+            tmpList = stockCategoryRepo.findByTypeForTenant(tenantId, type);
+        }
         for (StockCategory stockCategory : tmpList) {
             try {
                 if (stockCategory.getLng() == 0.0d) {
@@ -178,11 +208,19 @@ public class StockCategoryController {
                     stockCategoryRepo.save(stockCategory);
                 }
 
-                if (q == null
-                        || q.trim().length() == 0
-                        || geo.distance(qPoint, stockCategory) <= getSearchRadius()) {
+                if (matchQuery(q, qPoint, stockCategory)) {
+                    // TODO On the face of it the SQL query does this already,
+                    // but something is going wrong
+                    filter(stockCategory, type);
                     list.add(stockCategory);
                 }
+            } catch (UnknownHostException e) {
+                LOGGER.error(String
+                        .format("Unable to geo locate '%1$s', will return unfiltered list",
+                                stockCategory.getPostCode()));
+                // TODO see above
+                filter(stockCategory, type);
+                list.add(stockCategory);
             } catch (Exception e) {
                 LOGGER.error(String.format(
                         "Exception calculating distance of %1$s from %2$s",
@@ -197,6 +235,23 @@ public class StockCategoryController {
         LOGGER.info(String.format("Found %1$s stockCategories", list.size()));
 
         return wrap(list);
+    }
+
+    private void filter(final StockCategory stockCategory, final String type) {
+        ArrayList<StockItem> filteredItems = new ArrayList<StockItem>();
+        for (StockItem item : stockCategory.getStockItems()) {
+            if (type == null || item.getType().equalsIgnoreCase(type)) {
+                filteredItems.add(item);
+            }
+        }
+        stockCategory.setStockItems(filteredItems);
+    }
+
+    private boolean matchQuery(String q, GeoPoint qPoint,
+            StockCategory stockCategory) {
+        return q == null
+                || q.trim().length() == 0
+                || geo.distance(qPoint, stockCategory) <= getSearchRadius();
     }
 
     /**
@@ -262,7 +317,20 @@ public class StockCategoryController {
 
     private ShortStockCategory wrap(StockCategory stockCategory) {
         ShortStockCategory resource = new ShortStockCategory();
+
+        for (StockItem item : stockCategory.getStockItems()) {
+            System.out.println(String.format("  item: %1$d has %2$d images",
+                    item.getId(), item.getImages().size()));
+        }
+
         BeanUtils.copyProperties(stockCategory, resource);
+
+        for (StockItem item : resource.getStockItems()) {
+            System.out.println(String.format(
+                    "  resource item: %1$d has %2$d images",
+                    item.getId(), item.getImages().size()));
+        }
+
         // Not set by BeanUtils due to diff type
         resource.setDistance(String.valueOf(Math.round(stockCategory
                 .getDistance())));
@@ -297,6 +365,7 @@ public class StockCategoryController {
         private List<MediaResource> images;
         private String types;
         private String mapUrl;
+        private String videoCode;
         private Date created;
         private Date lastUpdated;
     }
