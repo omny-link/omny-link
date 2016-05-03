@@ -318,18 +318,7 @@ public class StockCategoryController {
     private ShortStockCategory wrap(StockCategory stockCategory) {
         ShortStockCategory resource = new ShortStockCategory();
 
-        for (StockItem item : stockCategory.getStockItems()) {
-            System.out.println(String.format("  item: %1$d has %2$d images",
-                    item.getId(), item.getImages().size()));
-        }
-
         BeanUtils.copyProperties(stockCategory, resource);
-
-        for (StockItem item : resource.getStockItems()) {
-            System.out.println(String.format(
-                    "  resource item: %1$d has %2$d images",
-                    item.getId(), item.getImages().size()));
-        }
 
         // Not set by BeanUtils due to diff type
         resource.setDistance(String.valueOf(Math.round(stockCategory
