@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.MediaResource;
 import link.omny.catalog.model.StockCategory;
@@ -144,22 +146,27 @@ public class StockCategoryController {
         return wrap(list);
     }
 
-    @RequestMapping(value = "/{name}", method = RequestMethod.GET)
-    public ShortStockCategory findByName(
+    @RequestMapping(value = "/findByName", method = RequestMethod.GET)
+    public @ResponseBody ShortStockCategory findByName(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("name") String name,
+            @RequestParam("name") String name,
             @RequestParam(value = "type", required = false) String type)
             throws IOException {
         LOGGER.info(String.format("findByName %1$s, type %2$s for tenant %3$s",
                 name, type, tenantId));
 
         StockCategory category = stockCategoryRepo.findByName(name, tenantId);
+        if (category == null) {
+            throw new EntityNotFoundException(String.format(
+                    "No Stock Category with name %1$s", name));
+        }
 
         if (type != null && type.trim().length() > 0) {
             filter(category, type);
         }
 
-        return wrap(category);
+        ShortStockCategory shortStockCategory = wrap(category);
+        return shortStockCategory;
     }
 
     /**
