@@ -1,5 +1,6 @@
 package link.omny.custmgmt;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
@@ -30,5 +31,13 @@ public class CustMgmtExceptionHandler {
         }
         LOGGER.error(sb.toString());
         return sb.toString();
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(EntityNotFoundException.class)
+    public @ResponseBody String handleEntityNotFoundException(
+            EntityNotFoundException e) {
+        LOGGER.error(e.getMessage(), e);
+        return e.getMessage();
     }
 }
