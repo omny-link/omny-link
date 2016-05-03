@@ -195,7 +195,7 @@ public class StockCategoryController {
         }
 
         List<StockCategory> tmpList = null;
-        if (type == null) {
+        if (type == null || type.trim().length() == 0) {
             tmpList = stockCategoryRepo.findAllForTenant(tenantId);
         } else {
             tmpList = stockCategoryRepo.findByTypeForTenant(tenantId, type);
