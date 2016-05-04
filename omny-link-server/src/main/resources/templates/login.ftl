@@ -13,6 +13,16 @@
       text-align: center;
       width: 100%;
     }
+    a,a:visited {
+      color: #0e9acd;
+    }
+    a:hover,a:active {
+      color: #ff6c06;
+    }
+    input {
+      border-style: solid;
+      border-width: 1px;
+    }
     section#main {
       margin: auto;
     }
