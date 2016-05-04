@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Data
@@ -63,6 +64,7 @@ public class TenantExtension implements Serializable {
     private boolean valid;
 
     @ManyToOne(optional = false, targetEntity = TenantConfig.class)
+    @JsonIgnore
     public TenantConfig tenant;
 
     public TenantExtension(String name, String url) {

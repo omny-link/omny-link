@@ -11,6 +11,7 @@ public class FeatureConfig {
     private boolean companyBackground = false;
     private boolean marketing = false;
     private boolean merge = false;
+    private boolean poweredBy = true;
 
     public void set(String name, boolean b) {
         switch (name) {
@@ -31,6 +32,9 @@ public class FeatureConfig {
             break;
         case "merge":
             setMerge(b);
+            break;
+        case "poweredBy":
+            setPoweredBy(b);
             break;
         default:
             System.err.println("Unsupported feature: " + name);
