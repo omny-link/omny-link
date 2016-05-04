@@ -57,4 +57,20 @@ public class TenantConfigTest {
                 config.getId()));
     }
 
+    @Test
+    public void testDeserialiseSdu() throws JsonParseException,
+            JsonMappingException, IOException {
+        TenantConfig config = objectMapper.readValue(
+                TenantConfig.readResource("/static/tenants/sdu.json"),
+                new TypeReference<TenantConfig>() {
+                });
+        System.out.println(String.format("  found %1$s tenant config",
+                config.getId()));
+        assertEquals(0, config.getContactActions().size());
+        assertEquals(7, config.getToolbar().size());
+        assertEquals(2, config.getPartials().size());
+        assertEquals(1, config.getProcesses().size());
+        assertEquals(10, config.getTypeaheadControls().size());
+    }
+
 }

@@ -6,18 +6,26 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import link.omny.acctmgmt.Application;
 import link.omny.acctmgmt.web.TenantConfigController;
 
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.identity.User;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -35,12 +43,27 @@ public class TenantConfigControllerTest {
     private static final String TENANT_ID = "test";
 
     @Autowired
+    public ObjectMapper objectMapper;
+
+    @Autowired
     public TenantConfigController svc;
 
     @Autowired
     private ProcessEngine processEngine;
 
+    @Before
+    public void setUp() {
+        User botUser = processEngine.getIdentityService().newUser(TENANT_ID);
+        botUser.setFirstName(TENANT_ID);
+        botUser.setLastName("Bot");
+        processEngine.getIdentityService().saveUser(botUser);
+
+        // processEngine.getIdentityService().setUserInfo(userId, key, value);
+    }
+
+    @After
     public void tearDown() {
+        processEngine.getIdentityService().deleteUser(TENANT_ID);
         try {
             svc.delete(TENANT_ID);
             TenantConfig TenantConfig6 = svc.showTenant(TENANT_ID);
@@ -51,19 +74,9 @@ public class TenantConfigControllerTest {
     }
 
     @Test
-    public void testLifecycle() {
+    public void testLifecycle() throws IOException {
         // CREATE
-        TenantConfig tenantConfig = new TenantConfig(TENANT_ID);
-        tenantConfig.setFeature("account", true);
-        tenantConfig.addPartial(new TenantPartial("omnyContactExtension",
-                PARTIAL_EXTENSION));
-        tenantConfig.addProcess(new TenantProcess("Dummy Process",
-                PROCESS_DUMMY_1, "Dummy1"));
-        tenantConfig.addToolbarEntry(new TenantToolbarEntry("90 Moving Window",
-                TOOLBAR_ENTRY_WINDOW, "omny-icon-dashboard",
-                "View your 90 day moving window report here"));
-        tenantConfig.addTypeaheadControl(new TenantTypeaheadControl("owners",
-                CONTROL_EXTENSION));
+        TenantConfig tenantConfig = getTestTenantConfig();
         svc.create(TENANT_ID, tenantConfig);
 
         // RETRIEVE
@@ -104,6 +117,36 @@ public class TenantConfigControllerTest {
         } catch (IllegalArgumentException e) {
             ; // good
         }
+    }
+
+    private TenantConfig getTestTenantConfig() throws IOException {
+        TenantConfig tenantConfig = new TenantConfig(TENANT_ID);
+        tenantConfig.setFeature("account", true);
+        tenantConfig.addPartial(new TenantPartial("omnyContactExtension",
+                PARTIAL_EXTENSION));
+        tenantConfig.addProcess(new TenantProcess("Dummy Process",
+                PROCESS_DUMMY_1, "Dummy1"));
+        tenantConfig.addToolbarEntry(new TenantToolbarEntry("90 Moving Window",
+                TOOLBAR_ENTRY_WINDOW, "omny-icon-dashboard",
+                "View your 90 day moving window report here"));
+        tenantConfig.addTypeaheadControl(new TenantTypeaheadControl("owners",
+                CONTROL_EXTENSION));
+
+        // save JSON resource for fallback (non-db) testing
+        ObjectWriter objectWriter = objectMapper.writerFor(TenantConfig.class);
+        StringBuilder sb = new StringBuilder();
+        sb.append("target").append(File.separator).append("test-classes")
+                .append(File.separator).append("static").append(File.separator)
+                .append("tenants");
+        File jsonFolder = new File(sb.toString());
+        System.out.println("Writing tenant file to:"
+                + jsonFolder.getAbsolutePath());
+        jsonFolder.mkdirs();
+        File jsonFile = new File(sb.toString(), TENANT_ID + ".json");
+        objectWriter.writeValue(jsonFile, tenantConfig);
+        assertTrue(jsonFile.exists());
+
+        return tenantConfig;
     }
 
 }
