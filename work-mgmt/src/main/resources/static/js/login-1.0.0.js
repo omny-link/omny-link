@@ -411,6 +411,7 @@ var AuthenticatedRactive = Ractive.extend({
 $( document ).bind('keypress', function(e) {
   switch (e.keyCode) {
   case 13: // Enter
+    if (window['ractive'] && ractive['enter']) ractive['enter']();
     break; 
   case 63:   // ?
     console.log('help requested');
