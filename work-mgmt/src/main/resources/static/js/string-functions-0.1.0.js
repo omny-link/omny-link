@@ -25,6 +25,14 @@ String.prototype.formatNumber = function(thousandsSeparator) {
   .split('').reverse().join(''); // don't forget to restore number to correct order!
 }
 
+/**
+ * Format a number with the specified separators and rounding to a specified
+ * number of decimal places.
+ *
+ * @param c Number of decimal places required
+ * @param d Decimal separator, default: full stop
+ * @param t Thousands separator, default: comma
+ */
 Number.prototype.formatDecimal = function(c, d, t) {
   var n = this,
       c = isNaN(c = Math.abs(c)) ? 2 : c,
@@ -36,12 +44,17 @@ Number.prototype.formatDecimal = function(c, d, t) {
   return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 
-Number.prototype.sigFigs = function(sig) {
-  if (this == undefined || this == null || sig == undefined) return this;
-  var neg = this<0;
+Number.prototype.sigFigs = function(sig, d, t) {
+  if (this == undefined || this == null || this == 0 || sig == undefined) return this;
   var n = Math.abs(this);
   var mult = Math.pow(10,
       sig - Math.floor(Math.log(n) / Math.LN10) - 1);
-  var r = Math.round(n * mult) / mult;
-  return neg ? -r : r;
+  d = d == undefined ? "." : d;
+  t = t == undefined ? "," : t;
+  var s = n < 0 ? "-" : "";
+  var r = Math.round(n * mult) / mult + "";
+  if (r.indexOf(d) == -1) var j =  (j = r.length) > 3 ? j % 3 : 0;
+  else var j =  (j = r.substr(0,r.indexOf(d))).length > 3 ? j % 3 : 0;
+  if (r.indexOf('0.')==0) return s+r;
+  else return s + (j ? r.substr(0, j) + t : "") + r.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t);
 }
