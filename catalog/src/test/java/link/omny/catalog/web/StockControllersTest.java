@@ -4,9 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import link.omny.catalog.TestApplication;
+import link.omny.catalog.model.CustomStockItemField;
 import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
 import link.omny.catalog.repositories.StockCategoryRepository;
@@ -32,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = TestApplication.class)
 @WebAppConfiguration
-public class StockCategoryControllerTest {
+public class StockControllersTest {
 
     private static final String CATEGORY_BOREHAMWOOD = "Borehamwood";
 
@@ -45,7 +49,7 @@ public class StockCategoryControllerTest {
     private StockCategoryRepository categoryRepo;
 
     @Autowired
-    private StockItemRepository accountRepo;
+    private StockItemRepository itemRepo;
 
     @Autowired
     private StockCategoryController categoryController;
@@ -56,6 +60,8 @@ public class StockCategoryControllerTest {
     private Long categoryId;
 
     private String itemUri;
+
+    private DateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
     @After
     public void tearDown() {
@@ -83,7 +89,25 @@ public class StockCategoryControllerTest {
         // TODO h2 test db not supporting default?
         // assertNotNull(category2.getLastUpdated());
 
-        findByName(category, officeItem, warehouseItem);
+        ShortStockCategory category3 = findByName(category, officeItem,
+                warehouseItem);
+
+        update(category3);
+    }
+
+    protected void update(ShortStockCategory category) {
+        StockItem stockItem = category.getStockItems().get(0);
+        assertNotNull(stockItem.getId());
+
+        GregorianCalendar cal = new GregorianCalendar();
+        stockItem.addCustomField(new CustomStockItemField("tenancyEndDate",
+                isoFormatter.format(cal.getTime())));
+
+        itemController.update(TENANT_ID, stockItem.getId(), stockItem);
+
+        StockItem stockItem2 = itemRepo.findOne(stockItem.getId());
+        assertEquals(stockItem.getCustomFields().size(), stockItem2
+                .getCustomFields().size());
     }
 
     protected void findByLocation(StockCategory category, StockItem officeItem,
@@ -104,8 +128,7 @@ public class StockCategoryControllerTest {
         assertNotNull(categoryResults.get(0).getStockItems());
         assertEquals(2, categoryResults.get(0).getStockItems().size());
         assertEquals(officeItem.getName(), categoryResults.get(0)
-                .getStockItems()
-                .get(0).getName());
+                .getStockItems().get(0).getName());
         // item desc if null should default to category
         assertEquals(category.getDescription(), categoryResults.get(0)
                 .getStockItems().get(0).getDescription());
@@ -117,9 +140,14 @@ public class StockCategoryControllerTest {
         categoryResults = categoryController.findByLocation(TENANT_ID, null,
                 "Office", null, null);
         assertEquals(1, categoryResults.get(0).getStockItems().size());
+
+        // check custom fields
+        assertEquals(1, categoryResults.get(0).getStockItems().get(0)
+                .getCustomFields().size());
     }
 
-    protected void findByName(StockCategory category, StockItem officeItem,
+    protected ShortStockCategory findByName(StockCategory category,
+            StockItem officeItem,
             StockItem warehouseItem) throws IOException {
         ShortStockCategory categoryFound = categoryController.findByName(
                 TENANT_ID, CATEGORY_BOREHAMWOOD, null);
@@ -146,6 +174,8 @@ public class StockCategoryControllerTest {
         categoryFound = categoryController.findByName(TENANT_ID, CATEGORY_BOREHAMWOOD,
                 "Office");
         assertEquals(1, categoryFound.getStockItems().size());
+
+        return categoryFound;
     }
 
     protected void addItemToCategory(StockCategory category, String itemUri) {
@@ -185,6 +215,12 @@ public class StockCategoryControllerTest {
 
         String itemUri = getLocationUri(itemResp);
         item.setId(Long.parseLong(itemUri.substring(itemUri.lastIndexOf('/') + 1)));
+
+        assertEquals("trademark", item.getName());
+        assertEquals("Office", item.getType());
+        assertEquals("vacant", item.getCustomFields().get(0).getName());
+        assertEquals("true", item.getCustomFields().get(0).getValue());
+        assertEquals("true", item.getCustomFieldValue("vacant"));
 
         // assert derived fields
         assertNotNull(item.getImages());
@@ -233,12 +269,17 @@ public class StockCategoryControllerTest {
         String itemJson = "{\"name\":\"trademark\",\"type\":\"Office\","
                 + "\"tenantId\":\"" + TENANT_ID + "\","
                 + "\"firstContact\":null,\"lastUpdated\":null,"
-                + "\"customFields\":{}}";
+                + "\"customFields\":{ \"vacant\": true }}";
 
         StockItem item = objectMapper.readValue(itemJson,
                 new TypeReference<StockItem>() {
                 });
         assertNotNull(item);
+        assertEquals("trademark", item.getName());
+        assertEquals("Office", item.getType());
+        assertEquals("vacant", item.getCustomFields().get(0).getName());
+        assertEquals("true", item.getCustomFields().get(0).getValue());
+        assertEquals("true", item.getCustomFieldValue("vacant"));
 
         return item;
     }

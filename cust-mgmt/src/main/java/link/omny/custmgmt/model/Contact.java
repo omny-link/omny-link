@@ -216,14 +216,13 @@ public class Contact implements Serializable {
     }
 
     public void setCustomFields(List<CustomContactField> fields) {
-        this.customFields = fields;
-        for (CustomContactField customContactField : fields) {
-            customContactField.setContact(this);
+        for (CustomContactField newField : fields) {
+            setCustomField(newField);
         }
         setLastUpdated(new Date());
     }
 
-    public Object getField(@NotNull String fieldName) {
+    public Object getCustomFieldValue(@NotNull String fieldName) {
         for (CustomField field : getCustomFields()) {
             if (fieldName.equals(field.getName())) {
                 return field.getValue();
@@ -233,13 +232,23 @@ public class Contact implements Serializable {
     }
 
     public void addCustomField(CustomContactField customField) {
+        customField.setContact(this);
         getCustomFields().add(customField);
     }
 
-    public void setField(String key, Object value) {
-        getCustomFields().add(
-                new CustomContactField(key, value == null ? null : value
-                        .toString()));
+    protected void setCustomField(CustomContactField newField) {
+        boolean found = false;
+        for (CustomContactField field : getCustomFields()) {
+            if (field.getName().equals(newField.getName())) {
+                field.setValue(newField.getValue() == null ? null : newField
+                        .getValue().toString());
+                found = true;
+            }
+        }
+        if (!found) {
+            newField.setContact(this);
+            getCustomFields().add(newField);
+        }
     }
 
     @JsonProperty
