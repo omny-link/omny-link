@@ -136,8 +136,8 @@ public class ContactAndAccountControllerTest {
 
         Contact contact2 = contactRepo.findOne(contactId);
         assertNotNull(contact2.getFirstContact());
-        assertEquals(contact.getField("eyeColor"),
-                contact2.getField("eyeColor"));
+        assertEquals(contact.getCustomFieldValue("eyeColor"),
+                contact2.getCustomFieldValue("eyeColor"));
         // TODO this should be null but is not
         // assertNull(contact2.getLastUpdated());
 
@@ -179,7 +179,7 @@ public class ContactAndAccountControllerTest {
         assertEquals("Fred", contact.getFirstName());
         assertEquals("Flintstone", contact.getLastName());
         assertEquals("fred@bedrockslateandgravel.com", contact.getEmail());
-        assertEquals("blue", contact.getField("eyeColor"));
+        assertEquals("blue", contact.getCustomFieldValue("eyeColor"));
 
         return contact;
     }

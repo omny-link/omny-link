@@ -5,7 +5,13 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import link.omny.catalog.json.JsonCustomStockCategoryFieldDeserializer;
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
+
 import org.springframework.data.rest.core.config.Projection;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Projection(name = "complete", types = { CustomStockCategoryField.class,
         MediaResource.class, StockCategory.class, StockItem.class })
@@ -37,6 +43,8 @@ interface StockCategoryCompleteProjection {
 
     String getTenantId();
 
+    @JsonDeserialize(using = JsonCustomStockCategoryFieldDeserializer.class)
+    @JsonSerialize(using = JsonCustomFieldSerializer.class)
     List<CustomStockCategoryField> getCustomFields();
 
     List<StockItem> getStockItems();

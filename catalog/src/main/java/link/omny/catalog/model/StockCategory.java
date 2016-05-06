@@ -20,7 +20,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
-import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
+import link.omny.catalog.json.JsonCustomStockCategoryFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
 import lombok.AllArgsConstructor;
@@ -56,6 +56,7 @@ public class StockCategory implements Serializable {
 
     @JsonProperty
     @Column(unique = true)
+    @NotNull
     private String name;
 
     @JsonProperty
@@ -117,7 +118,7 @@ public class StockCategory implements Serializable {
     private double distance;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockCategory")
-    @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
+    @JsonDeserialize(using = JsonCustomStockCategoryFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomStockCategoryField> customFields;
 
@@ -132,11 +133,13 @@ public class StockCategory implements Serializable {
     }
 
     public void setCustomFields(List<CustomStockCategoryField> fields) {
-        this.customFields = fields;
+        for (CustomStockCategoryField newField : fields) {
+            setCustomField(newField);
+        }
         // setLastUpdated(new Date());
     }
 
-    public Object getField(@NotNull String fieldName) {
+    public Object getCustomFieldValue(@NotNull String fieldName) {
         for (CustomField field : getCustomFields()) {
             if (fieldName.equals(field.getName())) {
                 return field.getValue();
@@ -146,13 +149,23 @@ public class StockCategory implements Serializable {
     }
 
     public void addCustomField(CustomStockCategoryField customField) {
+        customField.setStockCategory(this);
         getCustomFields().add(customField);
     }
 
-    public void setField(String key, Object value) {
-        getCustomFields().add(
-                new CustomStockCategoryField(key, value == null ? null : value
-                        .toString()));
+    protected void setCustomField(CustomStockCategoryField newField) {
+        boolean found = false;
+        for (CustomStockCategoryField field : getCustomFields()) {
+            if (field.getName().equals(newField.getName())) {
+                field.setValue(newField.getValue() == null ? null : newField
+                        .getValue().toString());
+                found = true;
+            }
+        }
+        if (!found) {
+            newField.setStockCategory(this);
+            getCustomFields().add(newField);
+        }
     }
 
     public List<MediaResource> getImages() {

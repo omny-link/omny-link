@@ -45,8 +45,8 @@ public class CustomField implements Serializable {
     @JsonProperty
     private String value;
 
-    public CustomField(String key, String value) {
+    public CustomField(String key, Object value2) {
         this.name = key;
-        this.value = value;
+        this.value = value2 == null ? null : value2.toString();
     }
 }
