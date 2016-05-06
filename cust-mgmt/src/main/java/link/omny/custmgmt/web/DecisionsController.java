@@ -7,12 +7,14 @@ import java.util.Map.Entry;
 
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.CustomAccountField;
 import link.omny.custmgmt.model.CustomContactField;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
 import link.omny.custmgmt.web.fg.ValuationDecision;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,21 +80,22 @@ public class DecisionsController extends DecisionController {
 
         Map<String, Double> results = valuationDecision.calc(
                 mvcConversionService.convert(
-                        contact.getField("operatingProfit"), Double.class),
+                        contact.getCustomFieldValue("operatingProfit"), Double.class),
                 mvcConversionService.convert(
-                        contact.getField("depreciationAmortisation"),
+                        contact.getCustomFieldValue("depreciationAmortisation"),
                         Double.class), 
                 mvcConversionService.convert(
-                        contact.getField("adjustments"), Double.class),
-                mvcConversionService.convert(contact.getField("ebitda"),
+                        contact.getCustomFieldValue("adjustments"), Double.class),
+                mvcConversionService.convert(contact.getCustomFieldValue("ebitda"),
                         Double.class), 
                 mvcConversionService.convert(
-                        contact.getField("surplus"), Double.class),
-                mvcConversionService.convert(contact.getField("borrowing"),
+                        contact.getCustomFieldValue("surplus"), Double.class),
+                mvcConversionService.convert(contact.getCustomFieldValue("borrowing"),
                         Double.class));
 
         for (Entry<String, Double> entry : results.entrySet()) {
-            contact.setField(entry.getKey(), entry.getValue());
+            contact.addCustomField(new CustomContactField(entry.getKey(), entry
+                    .getValue()));
         }
 
         if (LOGGER.isDebugEnabled()) {
@@ -107,13 +110,14 @@ public class DecisionsController extends DecisionController {
         ContactValuation resource = new ContactValuation();
         BeanUtils.copyProperties(contact, resource);
         for (CustomContactField field: contact.getCustomFields()) {
-            resource.getAccount().setField(field.getName(), field.getValue());
+            resource.getAccount().addCustomField(
+                    new CustomAccountField(field.getName(), field.getValue()));
         }
         Link detail = linkTo(ContactRepository.class, contact.getId())
                 .withSelfRel();
         resource.add(detail);
         resource.getAccount().setTenantId(contact.getTenantId());
-        resource.getAccount().setName((String) contact.getField("accountName"));
+        resource.getAccount().setName((String) contact.getCustomFieldValue("accountName"));
         resource.add(linkTo(AccountRepository.class, contact.getId()).withRel(
                 "account"));
 
@@ -129,6 +133,7 @@ public class DecisionsController extends DecisionController {
     }
 
     @Data
+    @EqualsAndHashCode(callSuper = true)
     public static class ContactValuation extends ResourceSupport {
         private String firstName;
         private String lastName;

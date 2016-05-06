@@ -133,14 +133,13 @@ public class Account implements Serializable {
     }
 
     public void setCustomFields(List<CustomAccountField> fields) {
-        this.customFields = fields;
-        for (CustomAccountField customAccountField : fields) {
-            customAccountField.setAccount(this);
+        for (CustomAccountField newField : fields) {
+            setCustomField(newField);
         }
         setLastUpdated(new Date());
     }
 
-    public Object getField(@NotNull String fieldName) {
+    public Object getCustomFieldValue(@NotNull String fieldName) {
         for (CustomField field : getCustomFields()) {
             if (fieldName.equals(field.getName())) {
                 return field.getValue();
@@ -150,22 +149,22 @@ public class Account implements Serializable {
     }
 
     public void addCustomField(CustomAccountField customField) {
+        customField.setAccount(this);
         getCustomFields().add(customField);
     }
 
-    public void setField(String key, String value) {
+    protected void setCustomField(CustomAccountField newField) {
         boolean found = false;
         for (CustomAccountField field : getCustomFields()) {
-            if (field.getName().equals(key)) {
-                field.setValue(value);
+            if (field.getName().equals(newField.getName())) {
+                field.setValue(newField.getValue() == null ? null : newField
+                        .getValue().toString());
                 found = true;
-                break;
             }
         }
         if (!found) {
-            getCustomFields().add(
-                new CustomAccountField(key, value == null ? null : value
-                        .toString()));
+            newField.setAccount(this);
+            getCustomFields().add(newField);
         }
     }
 
