@@ -2,9 +2,11 @@ package link.omny.custmgmt.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Collections;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -128,8 +130,8 @@ public class ContactTest {
                 "fred@bedrockslateandgravel.com", "omny");
         assertEquals(c1, c2);
 
-        c1.setField("favouriteColour", "orange");
-        c2.setField("favouriteColour", "orange");
+        c1.setCustomField(new CustomContactField("favouriteColour", "orange"));
+        c2.setCustomField(new CustomContactField("favouriteColour", "orange"));
 
         CustomContactField colour1 = c1.getCustomFields().get(0);
         colour1.setContact(c1);
@@ -138,5 +140,21 @@ public class ContactTest {
 
         c1.hashCode();
         assertEquals(c1, c2);
+    }
+
+    @Test
+    public void testMergeCustomFields() {
+        Contact contact = new Contact();
+        CustomContactField field1 = new CustomContactField("field1", "foo");
+        field1.setId(1l);
+        contact.addCustomField(field1);
+
+        CustomContactField field2 = new CustomContactField("field1", "foo");
+        assertNull(field2.getId());
+
+        contact.setCustomFields(Collections.singletonList(field2));
+
+        assertEquals(1, contact.getCustomFields().size());
+        assertEquals(field1.getId(), contact.getCustomFields().get(0).getId());
     }
 }

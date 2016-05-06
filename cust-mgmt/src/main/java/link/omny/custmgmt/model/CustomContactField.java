@@ -7,18 +7,20 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "OL_CONTACT_CUSTOM")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
 public class CustomContactField extends CustomField {
 
     private static final long serialVersionUID = -7683896817261973079L;
 
-    public CustomContactField(String key, String value) {
+    public CustomContactField(String key, Object value) {
         super(key, value);
     }
 
