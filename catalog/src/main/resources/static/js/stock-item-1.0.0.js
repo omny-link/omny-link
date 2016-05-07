@@ -7,8 +7,8 @@ var ractive = new AuthenticatedRactive({
   lazy: true,
   template: '#template',
   data: {
+    contacts: [],
     stockCategories: [],
-    csrfToken: getCookie(CSRF_COOKIE),
     stockItems: [],
     filter: {field: "stage", operator: "!in", value: "cold,complete"},
     //saveObserver:false,
@@ -223,7 +223,46 @@ var ractive = new AuthenticatedRactive({
         ractive.set('saveObserver', true);
       }
     });
+    ractive.fetchContacts();
     ractive.fetchStockCategories();
+  },
+  fetchContacts: function () {
+    console.info('fetchContacts...');
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/contacts/?projection=complete',
+      crossDomain: true,
+      success: function( data ) {
+        if (data['_embedded'] == undefined) {
+          ractive.merge('contacts', data);
+        } else {
+          ractive.merge('contacts', data['_embedded'].contacts);
+        }
+        
+        // init contact list 
+        var contactData = jQuery.map( ractive.get('contacts'), function( n, i ) {
+          return ( { "id": ractive.uri(n), "name": n.fullName } );
+        });
+        $('#curContact').typeahead({
+          items:'all',
+          minLength:0,
+          source:contactData,
+          updater:function(item) {
+            ractive.set('current.customFields.contactId');
+            return item.name;
+          }
+        });
+        $('#curContact').on("click", function (ev) {
+          newEv = $.Event("keydown");
+          newEv.keyCode = newEv.which = 40;
+          $(ev.target).trigger(newEv);
+          return true;
+        });
+        
+        ractive.set('saveObserver', true);
+      }
+    });
   },
   fetchImages: function() { 
     $.getJSON(ractive.getId(ractive.get('current'))+'/images',  function( data ) {
