@@ -1,0 +1,113 @@
+  # MATCH (NOT Search)
+  curl -X POST -H "apitoken: 3ROO6416a69acf07e61194fa2c44fd99a5a0" \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json, text/javascript" \
+      -H "Accept-Encoding: gzip, deflate" \
+      -d '{"Name":"Bureau van Dijk","Country":"United Kingdom","City":"London"}' \
+      https://webservices.bvdep.com/rest/fame/match
+
+2 results
+
+curl -X POST -H "apitoken: 3ROO6416a69acf07e61194fa2c44fd99a5a0" \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json, text/javascript" \
+      -H "Accept-Encoding: gzip, deflate" \
+      -d '{"Name":"Bureau van Dijk","Country":"","City":""}' \
+      https://webservices.bvdep.com/rest/fame/match
+      
+1 result
+
+  curl -X POST -H "apitoken: 3ROO6416a69acf07e61194fa2c44fd99a5a0" \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json, text/javascript" \
+      -H "Accept-Encoding: gzip, deflate" \
+      -d '{"Name":"Bureau","Country":"United Kingdom","City":"London"}' \
+      https://webservices.bvdep.com/rest/fame/match
+
+16 (ish) results
+
+  curl -X POST -H "apitoken: 3ROO6416a69acf07e61194fa2c44fd99a5a0" \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json, text/javascript" \
+      -H "Accept-Encoding: gzip, deflate" \
+      -d '{"Region": "England | South Western"}' \
+      https://webservices.bvdep.com/rest/fame/match
+
+null (not 0 results) 
+
+  curl -X POST -H "apitoken: 3ROO6416a69acf07e61194fa2c44fd99a5a0" \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json, text/javascript" \
+      -H "Accept-Encoding: gzip, deflate" \
+      -d '{"Region": "South Western"}' \
+      https://webservices.bvdep.com/rest/fame/match
+
+null (not 0 results) 
+
+  curl -X POST -H "apitoken: 3ROO6416a69acf07e61194fa2c44fd99a5a0" \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json, text/javascript" \
+      -H "Accept-Encoding: gzip, deflate" \
+      -d '{"Name": "Bio", "Country": "GB"}' \
+      https://webservices.bvdep.com/rest/fame/match
+
+2 results
+
+  curl -X POST -H "apitoken: 3ROO6416a69acf07e61194fa2c44fd99a5a0" \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json, text/javascript" \
+      -H "Accept-Encoding: gzip, deflate" \
+      -d '{"Name": "Food", "Country": "GB"}' \
+      https://webservices.bvdep.com/rest/fame/match
+
+[
+  {
+    "BvDID": "GB02323741",
+    "Score": 0.87,
+    "Hint": 1,
+    "Name": "BUREAU VAN DIJK ELECTRONIC PUBLISHING LIMITED",
+    "NameInLocalAlphabet": null,
+    "Address": "CALDER & CO 16 CHARLES II STREET",
+    "PostCode": "SW1Y 4NW",
+    "City": "LONDON",
+    "Country": "GB",
+    "Region": "England | London Inner",
+    "PhoneOrFax": null,
+    "EMailOrWebsite": "www.bvdinfo.com",
+    "NationalId": "02323741",
+    "Ticker": "Unlisted",
+    "Isin": null,
+    "State": null,
+    "Status": "Active",
+    "BvD9": null
+  },
+  {
+    "BvDID": "GB09769850",
+    "Score": 0.74,
+    "Hint": 2,
+    "Name": "BUREAU VAN BUREN LTD",
+    "NameInLocalAlphabet": null,
+    "Address": "MOTTRAM HOUSE 43 GREEK STREET",
+    "PostCode": "SK3 8AX",
+    "City": "STOCKPORT",
+    "Country": "GB",
+    "Region": "England | North West",
+    "PhoneOrFax": null,
+    "EMailOrWebsite": null,
+    "NationalId": "09769850",
+    "Ticker": "Unlisted",
+    "Isin": null,
+    "State": null,
+    "Status": "Active",
+    "BvD9": null
+  }
+]
+
+  curl -X POST -H "apitoken: 3ROO6416a69acf07e61194fa2c44fd99a5a0" \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json, text/javascript" \
+      -H "Accept-Encoding: gzip, deflate" \
+      -d '{"City":"Swindon"}' \
+      https://webservices.bvdep.com/rest/fame/match
+
+ Returns empty list
