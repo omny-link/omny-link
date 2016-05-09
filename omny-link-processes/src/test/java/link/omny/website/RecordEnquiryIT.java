@@ -18,7 +18,7 @@ import org.junit.Test;
 import com.knowprocess.resource.spi.RestDelete;
 import com.knowprocess.resource.spi.RestPost;
 
-public class RecordEnquiryTest {
+public class RecordEnquiryIT {
 
     private static final String MSG_NAMESPACE = "omny";
 
