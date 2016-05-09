@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 import org.activiti.engine.delegate.DelegateExecution;
@@ -21,62 +22,65 @@ public class RestPost extends RestService implements JavaDelegate {
     @Override
     public void execute(DelegateExecution execution) throws Exception {
         String usr = getUsername(execution);
+        String pwd = getPassword(execution, usr);
         String resource = evalExpr(execution,
                 lookup(execution, usr, globalResource));
+        Map<String, String> requestHeaders = getRequestHeaders(execution);
+        String[] responseHeadersSought = getResponseHeadersSought(execution);
+        String contentType = requestHeaders.get("Content-Type");
+        Map<String, Object> responses;
+        if (contentType == null
+                || "application/x-www-form-urlencoded".equals(contentType)) {
+            responses = postForm(usr, pwd, resource, requestHeaders,
+                    responseHeadersSought,
+                    getFormFields(execution, (String) data.getExpressionText()));
+        } else {
+            responses = post(usr, pwd, resource, requestHeaders,
+                    responseHeadersSought,
+                    getStringFromExpression(data, execution));
+        }
+
+        for (Entry<String, Object> response : responses.entrySet()) {
+            if ("body".equals(response.getKey())) {
+                LOGGER.debug(String.format("Setting %1$s to %2$s",
+                        responseVar.getExpressionText(), response));
+                execution.setVariable(responseVar.getExpressionText(),
+                        response.getValue());
+            } else {
+                LOGGER.debug(String.format("Setting %1$s to %2$s",
+                        response.getKey(), response));
+                execution.setVariable(response.getKey(), response.getValue());
+            }
+        }
+    }
+
+    public Map<String, Object> postForm(String usr, String pwd,
+            String resource, Map<String, String> requestHeaders,
+            String[] responseHeadersSought, Map<String, String> payload)
+            throws Exception {
         LOGGER.info(String.format("POSTing to %1$s as %2$s", resource, usr));
 
-        String response = null;
+        Map<String, Object> responses = new HashMap<String, Object>();
         InputStream is = null;
         try {
-            Map<String, String> requestHeaders = getRequestHeaders(execution);
-            String contentType = requestHeaders.get("Content-Type");
-            if (contentType == null
-                    || "application/x-www-form-urlencoded".equals(contentType)) {
-                is = getUrlResource(usr, getPassword(execution, usr)).getResource(
-                        resource,
-                        "POST",
-                        requestHeaders,
-                        getFormFields(execution,
-                                (String) data.getExpressionText()));
-                // TODO response headers
-            } else {
-                Map<String, List<String>> responseHeaders2 = new HashMap<String, List<String>>();
-                is = getUrlResource(usr, getPassword(execution, usr)).getResource(resource, "POST",
-                        requestHeaders, responseHeaders2,
-                        getStringFromExpression(data, execution));
-                LOGGER.debug(String.format("ResponseHeaders: %1$s",
-                        responseHeaders2));
-                String[] sought = getResponseHeadersSought(execution);
-                for (String s : sought) {
-                    String hdr = s.substring(s.indexOf('=') + 1);
-                    LOGGER.debug("Seeking header: " + hdr);
-                    if (responseHeaders2.containsKey(hdr)) {
-                        LOGGER.debug(String.format(
-                                "  ... setting: %1$s to %2$s",
-                                s.substring(0, s.indexOf('=')),
-                                responseHeaders2.get(hdr).get(0)));
-                        execution.setVariable(s.substring(0, s.indexOf('=')),
-                                responseHeaders2.get(hdr).get(0));
-                    }
-                }
-            }
+
+            is = getUrlResource(usr, pwd).getResource(resource, "POST",
+                    requestHeaders, payload);
+            // TODO response headers
 
             if (responseVar == null) {
                 LOGGER.debug("No response variable requested");
             } else if (is == null) {
                 LOGGER.warn("POST response contains no body, variable will be set to null");
-                execution.setVariable(responseVar.getExpressionText(), null);
+                responses.put("body", null);
             } else {
-                response = new Scanner(is).useDelimiter("\\A").next();
-                execution
-                        .setVariable(responseVar.getExpressionText(), response);
-                LOGGER.debug(String.format("Setting %1$s to %2$s",
-                        responseVar.getExpressionText(), response));
+                responses.put("body", new Scanner(is).useDelimiter("\\A")
+                        .next());
             }
             // setVarsFromResponseHeaders();
         } catch (Exception e) {
-            LOGGER.error(String.format("Exception in %1$s", getClass()
-                    .getName()), e);
+            LOGGER.error(
+                    String.format("Exception in %1$s", getClass().getName()), e);
         } finally {
             try {
                 is.close();
@@ -84,6 +88,57 @@ public class RestPost extends RestService implements JavaDelegate {
                 ;
             }
         }
+        return responses;
+    }
+
+    public Map<String, Object> post(String usr, String pwd, String resource,
+            Map<String, String> requestHeaders, String[] responseHeadersSought,
+            String payload) throws Exception {
+        LOGGER.info(String.format("POSTing to %1$s as %2$s", resource, usr));
+
+        Map<String, Object> responses = new HashMap<String, Object>();
+        InputStream is = null;
+        try {
+
+            Map<String, List<String>> responseHeaders2 = new HashMap<String, List<String>>();
+            is = getUrlResource(usr, pwd).getResource(resource, "POST",
+                    requestHeaders, responseHeaders2, payload);
+            LOGGER.debug(String.format("ResponseHeaders: %1$s",
+                    responseHeaders2));
+
+            for (String s : responseHeadersSought) {
+                String hdr = s.substring(s.indexOf('=') + 1);
+                LOGGER.debug("Seeking header: " + hdr);
+                if (responseHeaders2.containsKey(hdr)) {
+                    LOGGER.debug(String.format("  ... setting: %1$s to %2$s", s
+                            .substring(0, s.indexOf('=')), responseHeaders2
+                            .get(hdr).get(0)));
+                    responses.put(s.substring(0, s.indexOf('=')),
+                            responseHeaders2.get(hdr).get(0));
+                }
+            }
+
+            if (responseVar == null) {
+                LOGGER.debug("No response variable requested");
+            } else if (is == null) {
+                LOGGER.warn("POST response contains no body, variable will be set to null");
+                responses.put("body", null);
+            } else {
+                responses.put("body", new Scanner(is).useDelimiter("\\A")
+                        .next());
+            }
+            // setVarsFromResponseHeaders();
+        } catch (Exception e) {
+            LOGGER.error(
+                    String.format("Exception in %1$s", getClass().getName()), e);
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+                ;
+            }
+        }
+        return responses;
     }
 
     private Map<String, String> getFormFields(DelegateExecution execution,

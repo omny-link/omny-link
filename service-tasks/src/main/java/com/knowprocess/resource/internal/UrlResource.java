@@ -94,7 +94,8 @@ public class UrlResource implements Resource {
         URL url;
         HttpURLConnection connection = null;
         InputStream is = null;
-        Scanner scanner = null; 
+        Scanner scanner = null;
+        int code = -1;
         try {
             // Create connection
             LOGGER.debug("  " + method + ": " + sUrl);
@@ -141,7 +142,7 @@ public class UrlResource implements Resource {
                 wr.close();
             }
 
-            int code = connection.getResponseCode();
+            code = connection.getResponseCode();
             Map<String, List<String>> headerFields = connection
                     .getHeaderFields();
             LOGGER.info(String.format("Response code: %1$d", code));
@@ -157,22 +158,7 @@ public class UrlResource implements Resource {
             }
             is = connection.getInputStream();
         } catch (IOException e) {
-            try {
-                scanner = new Scanner(connection.getErrorStream());
-                String error = scanner.useDelimiter("\\A").next();
-                String msg = "  error stream contains: " + error;
-                LOGGER.error(msg);
-            } catch (Exception e2) {
-                LOGGER.info("Exception thrown but cannot find error stream. "
-                        + e2.getClass().getName() + ":" + e2.getMessage(), e2);
-            } finally {
-                try {
-                    scanner.close();
-                } catch (Exception e3) {
-                    ;
-                }
-            }
-            throw e;
+            throwException(connection, code);
         } catch (Exception e) {
             LOGGER.error(e.getClass().getName() + ": " + e.getMessage(), e);
         } finally {
@@ -186,6 +172,28 @@ public class UrlResource implements Resource {
             }
         }
         return is;
+    }
+
+    protected void throwException(HttpURLConnection connection, int code)
+            throws IOException {
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(connection.getErrorStream());
+            String error = scanner.useDelimiter("\\A").next();
+            String msg = "Response code: " + code + ", details: " + error;
+            LOGGER.error(msg);
+            throw new IOException(msg);
+        } catch (NullPointerException e) {
+            String msg = "Response code: " + code + ", no details";
+            LOGGER.error(msg);
+            throw new IOException(msg);
+        } finally {
+            try {
+                scanner.close();
+            } catch (Exception e) {
+                ;
+            }
+        }
     }
 
     public static URL getUrl(final String sUrl) throws MalformedURLException,

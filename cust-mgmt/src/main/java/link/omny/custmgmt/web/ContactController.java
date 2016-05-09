@@ -24,6 +24,7 @@ import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.custmgmt.repositories.DocumentRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -308,6 +309,23 @@ public class ContactController {
         LOGGER.info(String.format("Found %1$s contacts", list.size()));
 
         return wrap(list);
+    }
+
+    /**
+     * Return just the matching contact.
+     * 
+     * @return contacts for that tenant with the matching tag.
+     * @throws BusinessEntityNotFoundException
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @Transactional
+    public @ResponseBody ShortContact findById(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id)
+            throws BusinessEntityNotFoundException {
+        LOGGER.debug(String.format("Find contact for id %1$s", id));
+
+        return wrap(contactRepo.findOne(Long.parseLong(id)));
     }
 
     /**
@@ -740,6 +758,7 @@ public class ContactController {
     }
 
     @Data
+    @EqualsAndHashCode(callSuper = true)
     public static class ShortContact extends ResourceSupport {
         private String selfRef;
         private String firstName;

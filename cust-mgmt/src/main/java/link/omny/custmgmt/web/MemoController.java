@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import link.omny.custmgmt.model.Memo;
 import link.omny.custmgmt.model.Note;
 import link.omny.custmgmt.repositories.MemoRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 /**
  * REST web service for uploading and accessing a file of JSON Messages (over
@@ -113,6 +117,34 @@ public class MemoController {
     }
 
     /**
+     * Return just the matching memo.
+     * 
+     * @param idOrName
+     *            If a number will be assumed to be the id, otherwise the name.
+     * @return memo for that tenant with the matching name or id.
+     * @throws BusinessEntityNotFoundException
+     */
+    @RequestMapping(value = "/{idOrName}", method = RequestMethod.GET)
+    @Transactional
+    public @ResponseBody ShortMemo findById(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("idOrName") String idOrName)
+            throws BusinessEntityNotFoundException {
+        LOGGER.debug(String.format("Find memo for id %1$s", idOrName));
+
+        Memo memo;
+        try {
+            memo = messageRepo.findOne(Long.parseLong(idOrName));
+        } catch (NumberFormatException e) {
+            memo = messageRepo.findByName(idOrName, tenantId);
+        }
+        if (memo == null) {
+            throw new BusinessEntityNotFoundException("Memo", idOrName);
+        }
+        return wrap(memo);
+    }
+
+    /**
      * Export all contacts for the tenant.
      * 
      * @return contacts for that tenant.
@@ -185,16 +217,21 @@ public class MemoController {
     }
     
     
-    private Link linkTo(Class<? extends CrudRepository> clazz, Long id) {
+    private Link linkTo(
+            @SuppressWarnings("rawtypes") Class<? extends CrudRepository> clazz,
+            Long id) {
         return new Link(clazz.getAnnotation(RepositoryRestResource.class)
                 .path() + "/" + id);
     }
 
     @Data
+    @EqualsAndHashCode(callSuper = true)
     public static class ShortMemo extends ResourceSupport {
         private String selfRef;
         private String name;
         private String title;
+        private String plainContent;
+        private String richContent;
         private String status;
         private String owner;
         private Date created;
