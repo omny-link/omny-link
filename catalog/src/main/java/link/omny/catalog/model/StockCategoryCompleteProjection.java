@@ -37,6 +37,18 @@ interface StockCategoryCompleteProjection {
 
     String getCountry();
 
+    double getLat();
+
+    double getLng();
+
+    String getMapUrl();
+
+    String getDirectionsByRoad();
+
+    String getDirectionsByPublicTransport();
+
+    String getDirectionsByAir();
+
     Date getCreated();
 
     Date getLastUpdated();
