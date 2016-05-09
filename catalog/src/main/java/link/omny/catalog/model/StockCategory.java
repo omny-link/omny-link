@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -60,6 +61,7 @@ public class StockCategory implements Serializable {
     private String name;
 
     @JsonProperty
+    @Lob
     private String description;
 
     @JsonProperty
@@ -92,6 +94,18 @@ public class StockCategory implements Serializable {
 
     @JsonProperty
     private String mapUrl;
+
+    @JsonProperty
+    @Lob
+    private String directionsByRoad;
+
+    @JsonProperty
+    @Lob
+    private String directionsByPublicTransport;
+
+    @JsonProperty
+    @Lob
+    private String directionsByAir;
 
     @JsonProperty
     private String videoCode;

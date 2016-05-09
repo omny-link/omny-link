@@ -46,6 +46,27 @@
       </ul>
     </div>
 
+    <div id="currentDirections" style="clear: both">
+      <h3>Directions</h3>
+
+      <div class="currentBody col-md-12">
+        <ul class="form edit-form">
+          <li class="form-group">
+            <label class="textarea col-md-2">By Road:</label>
+            <textarea class="" id="curDirectionsByRoad" value="{{current.directionsByRoad}}"></textarea>
+          </li>
+          <li class="form-group">
+            <label class="textarea col-md-2">By Public Transport:</label>
+            <textarea class="" id="curDirectionsByPublicTransport" value="{{current.directionsByPublicTransport}}"></textarea>
+          </li>
+          <li class="form-group">
+            <label class="textarea col-md-2">By Air:</label>
+            <textarea class="" id="curDirectionsByAir" value="{{current.directionsByAir}}"></textarea>
+          </li>
+        </ul>
+      </div>
+    </div>
+
     {{#tenant.stockCategoryFields.length>0}}
       <div id="currentStockCategoryExtended" style="clear: both">
         {{>(tenant.id+'StockCategoryExtension')}}
