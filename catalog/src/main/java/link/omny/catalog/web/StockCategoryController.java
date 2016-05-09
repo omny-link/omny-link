@@ -361,6 +361,9 @@ public class StockCategoryController {
         private List<MediaResource> images;
         private String types;
         private String mapUrl;
+        private String directionsByRoad;
+        private String directionsByPublicTransport;
+        private String directionsByAir;
         private String videoCode;
         private Date created;
         private Date lastUpdated;
