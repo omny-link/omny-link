@@ -96,6 +96,7 @@ execution.setVariable('account',account == undefined ? null : account);
           <activiti:expression>${contact}</activiti:expression>
         </activiti:field>
         <activiti:field expression="contactId=Location" name="responseHeaders"/>
+        <activiti:field expression="contact" name="responseVar"/>
       </extensionElements>
       <incoming>_6</incoming>
       <outgoing>_24</outgoing>

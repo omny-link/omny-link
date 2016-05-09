@@ -11,7 +11,6 @@ import org.activiti.bdd.test.mailserver.TestMailServer;
 import org.activiti.engine.IdentityService;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -51,7 +50,6 @@ public class RegisterOmnyContactTest {
     }
 
     @Test
-    @Ignore
     @org.activiti.engine.test.Deployment(resources = {
             "processes/link/omny/website/RegisterOmnyContact.bpmn",
             "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn",

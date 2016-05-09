@@ -48,8 +48,7 @@ public class RestDelete extends RestService implements JavaDelegate {
             int code = connection.getResponseCode();
             LOGGER.debug("Response code = " + code);
             if (code >= HttpURLConnection.HTTP_BAD_REQUEST) {
-                LOGGER.error("Response code: " + code);
-                throw new IOException(String.valueOf(code));
+                throwException(connection, code);
             }
         } catch (IOException e) {
             throw e;

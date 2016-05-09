@@ -3,7 +3,6 @@ package com.knowprocess.resource.spi;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Scanner;
 
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
@@ -40,21 +39,7 @@ public class RestPut extends RestService implements JavaDelegate {
 
             int code = connection.getResponseCode();
             if (code >= HttpURLConnection.HTTP_BAD_REQUEST) {
-                Scanner scanner = null;
-                try {
-                    scanner = new Scanner(connection.getErrorStream());
-                    String error = scanner.useDelimiter("\\A").next();
-                    String msg = "Response code: " + code + ", details: "
-                            + error;
-                    LOGGER.error(msg);
-                    throw new IOException(msg);
-                } finally {
-                    try {
-                        scanner.close();
-                    } catch (Exception e) {
-                        ;
-                    }
-                }
+                throwException(connection, code);
             } else {
                 LOGGER.debug("Response code: " + code);
             }

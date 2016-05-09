@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.Expression;
@@ -189,5 +190,28 @@ public abstract class RestService extends BaseUserAwareTask implements
         }
         return ur;
     }
+
+    protected void throwException(HttpURLConnection connection, int code)
+            throws IOException {
+                Scanner scanner = null;
+                try {
+                    scanner = new Scanner(connection.getErrorStream());
+                    String error = scanner.useDelimiter("\\A").next();
+                    String msg = "Response code: " + code + ", details: "
+                            + error;
+                    LOGGER.error(msg);
+                    throw new IOException(msg);
+                } catch (NullPointerException e) {
+                    String msg = "Response code: " + code + ", no details";
+                    LOGGER.error(msg);
+                    throw new IOException(msg);
+                } finally {
+                    try {
+                        scanner.close();
+                    } catch (Exception e) {
+                        ;
+                    }
+                }
+            }
 
 }
