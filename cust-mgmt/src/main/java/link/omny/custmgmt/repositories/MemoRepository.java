@@ -25,4 +25,8 @@ public interface MemoRepository extends CrudRepository<Memo, Long> {
     @Query("UPDATE #{#entityName} x set x.status = 'deleted' where x.id = ?1")
     @Modifying(clearAutomatically = true)
     void delete(Long id);
+
+    @Query("SELECT m FROM Memo m WHERE m.tenantId = :tenantId AND m.name = :name")
+    Memo findByName(@Param("name") String name,
+            @Param("tenantId") String tenantId);
 }
