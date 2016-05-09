@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.knowprocess.resource.spi.RestDelete;
 
-public class RegisterOmnyContactTest {
+public class RegisterOmnyContactIT {
 
     private static final String MSG_NAMESPACE = "omny";
 
