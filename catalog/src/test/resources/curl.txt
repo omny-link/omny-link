@@ -3,15 +3,18 @@ curl -v -H "Accept:application/json" -u tstephen:tstephen https://api.omny.link/
 
 # Access a single stock item
 curl -v -H "Accept:application/json" -u tstephen:tstephen https://api.omny.link/stock-items/1535
-curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/stock-items/1095
+curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/stock-items/1095
 
 # Location based search
+curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByLocation?q=Corsham
 curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham
 
-curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham
+curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByLocation?q=Corsham&type=Office
+curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham&type=Office
 
 curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation
 
+curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByLocation?type=Office
 curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?type=Office
 
 curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByName?name=Swindon
