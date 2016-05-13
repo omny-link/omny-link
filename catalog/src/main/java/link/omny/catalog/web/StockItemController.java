@@ -49,6 +49,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 /**
  * REST web service for accessing stock items.
@@ -162,12 +163,29 @@ public class StockItemController {
     }
 
     /**
+     * Return just the matching stock item.
+     * 
+     * @return stock item for that tenant with the matching id.
+     * @throws BusinessEntityNotFoundException
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @Transactional
+    public @ResponseBody ShortStockItem findById(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id)
+            throws BusinessEntityNotFoundException {
+        LOGGER.debug(String.format("Find contact for id %1$s", id));
+
+        return wrap(stockItemRepo.findOne(Long.parseLong(id)));
+    }
+
+    /**
      * Return just the matching stockItems (probably will be one in almost every
      * case).
      * 
      * @return stockItems for that tenant.
      */
-    @RequestMapping(value = "/{locationName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/stock-category/{locationName}", method = RequestMethod.GET)
     public @ResponseBody List<ShortStockItem> getForLocationName(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("locationName") String locationName) {
@@ -290,6 +308,13 @@ public class StockItemController {
                     .getName());
         }
         resource.setPrice(stockItem.getPriceString());
+        resource.setMapUrl(stockItem.getStockCategory().getMapUrl());
+        resource.setDirectionsByAir(stockItem.getStockCategory()
+                .getDirectionsByAir());
+        resource.setDirectionsByPublicTransport(stockItem.getStockCategory()
+                .getDirectionsByPublicTransport());
+        resource.setDirectionsByRoad(stockItem.getStockCategory()
+                .getDirectionsByRoad());
 
         Link detail = linkTo(StockItemRepository.class, stockItem.getId())
                 .withSelfRel();
@@ -313,7 +338,12 @@ public class StockItemController {
         private String stockCategoryName;
         private String type;
         private String price;
+        private String mapUrl;
+        private String directionsByRoad;
+        private String directionsByPublicTransport;
+        private String directionsByAir;
         private Date created;
         private Date lastUpdated;
+        private List<MediaResource> images;
     }
 }
