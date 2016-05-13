@@ -46,6 +46,7 @@ public class CatalogCsvImporter {
             // skip header
             if (record.getRecordNumber() > 1) {
                 StockItem stockItem = new StockItem();
+                stockItem.setStockCategory(new StockCategory());
                 for (PropertyDescriptor pd : propertyDescriptors) {
                     LOGGER.debug("  " + pd.getName());
                     if (record.isMapped(pd.getName())) {
@@ -57,8 +58,17 @@ public class CatalogCsvImporter {
                     String name = "stockCategory." + pd.getName();
                     LOGGER.debug("  " + name);
                     if (record.isMapped(name)) {
-                        setField(stockItem.getStockCategory(), pd,
-                                record.get(name).trim());
+                        try {
+                            setField(stockItem.getStockCategory(), pd, record
+                                    .get(name).trim());
+                        } catch (NullPointerException e) {
+                            System.out.println(String.format(
+                                    "Unable to set %1$s on %2$s", name,
+                                    stockItem.getStockCategory()));
+                            LOGGER.error(String.format(
+                                    "Unable to set %1$s on %2$s", name,
+                                    stockItem.getStockCategory()));
+                        }
                     }
                 }
                 stockItem.setTenantId(tenantId);
