@@ -47,12 +47,17 @@ Number.prototype.formatDecimal = function(c, d, t) {
 Number.prototype.sigFigs = function(sig, d, t) {
   if (this == undefined || this == null || this == 0 || sig == undefined) return this;
   var n = Math.abs(this);
-  var mult = Math.pow(10,
-      sig - Math.floor(Math.log(n) / Math.LN10) - 1);
+  var mult = Math.pow(10, sig - Math.floor(Math.log(n) / Math.LN10) - 1);
   d = d == undefined ? "." : d;
   t = t == undefined ? "," : t;
   var s = n < 0 ? "-" : "";
-  var r = Math.round(n * mult) / mult + "";
+  var r = Math.round(n * mult) / mult;
+  // Patch up accidents
+  if (((Math.round(r)-r)+'').indexOf('e')!=-1) {
+    r = Math.round(r)+'';
+  }else{
+    r = r+'';
+  }
   if (r.indexOf(d) == -1) var j =  (j = r.length) > 3 ? j % 3 : 0;
   else var j =  (j = r.substr(0,r.indexOf(d))).length > 3 ? j % 3 : 0;
   if (r.indexOf('0.')==0) return s+r;
