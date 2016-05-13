@@ -182,7 +182,7 @@ public class StockItem implements Serializable {
                 images.add(new MediaResource(getTenantId(), String.format(
                         "/images/%1$s/%2$s/%3$d.jpg", name.toLowerCase()
                                 .replaceAll(" ", "_"), type.toLowerCase()
-                                .replaceAll(" ", "_"), i)));
+                                .replaceAll(" ", "_"), i + 1)));
             }
         }
         return images;
