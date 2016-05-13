@@ -96,7 +96,8 @@ public class StockControllersTest {
     }
 
     protected void update(ShortStockCategory category) {
-        StockItem stockItem = category.getStockItems().get(0);
+        Long itemId = category.getStockItems().get(0).getStockItemId();
+        StockItem stockItem = itemRepo.findOne(itemId);
         assertNotNull(stockItem.getId());
 
         GregorianCalendar cal = new GregorianCalendar();
@@ -141,9 +142,12 @@ public class StockControllersTest {
                 "Office", null, null);
         assertEquals(1, categoryResults.get(0).getStockItems().size());
 
-        // check custom fields
-        assertEquals(1, categoryResults.get(0).getStockItems().get(0)
-                .getCustomFields().size());
+        // check custom fields (needs extra fetch as not all included in search)
+        Long itemId = categoryResults.get(0).getStockItems().get(0)
+                .getStockItemId();
+        StockItem stockItem = itemRepo.findOne(itemId);
+        assertNotNull(stockItem.getId());
+        assertEquals(2, stockItem.getCustomFields().size());
     }
 
     protected ShortStockCategory findByName(StockCategory category,
@@ -269,7 +273,7 @@ public class StockControllersTest {
         String itemJson = "{\"name\":\"trademark\",\"type\":\"Office\","
                 + "\"tenantId\":\"" + TENANT_ID + "\","
                 + "\"firstContact\":null,\"lastUpdated\":null,"
-                + "\"customFields\":{ \"vacant\": true }}";
+                + "\"customFields\":{ \"vacant\": true, \"publishWebsite\": true }}";
 
         StockItem item = objectMapper.readValue(itemJson,
                 new TypeReference<StockItem>() {
@@ -287,6 +291,8 @@ public class StockControllersTest {
     protected StockItem getWarehouseItem() throws IOException {
         StockItem item = new StockItem("Warehouse name", "Warehouse");
         item.setTenantId(TENANT_ID);
+        item.addCustomField(new CustomStockItemField("publishWebsite",
+                Boolean.TRUE.toString()));
 
         assertEquals("Warehouse name", item.getName());
         assertEquals("Warehouse", item.getType());

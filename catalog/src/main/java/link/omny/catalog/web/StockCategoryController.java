@@ -247,7 +247,10 @@ public class StockCategoryController {
     private void filter(final StockCategory stockCategory, final String type) {
         ArrayList<StockItem> filteredItems = new ArrayList<StockItem>();
         for (StockItem item : stockCategory.getStockItems()) {
-            if (type == null || item.getType().equalsIgnoreCase(type)) {
+            if ((type == null || item.getType().equalsIgnoreCase(type))
+            // TODO publish to website needs to become standard attr
+                    && (Boolean.parseBoolean((String) item
+                            .getCustomFieldValue("publishWebsite")))) {
                 filteredItems.add(item);
             }
         }
@@ -330,10 +333,26 @@ public class StockCategoryController {
         // Not set by BeanUtils due to diff type
         resource.setDistance(String.valueOf(Math.round(stockCategory
                 .getDistance())));
+
+        ArrayList<ShortStockItem> items = new ArrayList<ShortStockItem>();
+        for (StockItem item : stockCategory.getStockItems()) {
+            items.add(wrap(item));
+        }
+        resource.setStockItems(items);
+
         Link detail = linkTo(StockCategoryRepository.class,
                 stockCategory.getId()).withSelfRel();
         resource.add(detail);
         resource.setSelfRef(detail.getHref());
+        return resource;
+    }
+
+    private ShortStockItem wrap(StockItem item) {
+        ShortStockItem resource = new ShortStockItem();
+
+        BeanUtils.copyProperties(item, resource);
+        resource.setStockItemId(item.getId());
+
         return resource;
     }
 
@@ -357,7 +376,7 @@ public class StockCategoryController {
         private String postCode;
         private String country;
         private String distance;
-        private List<StockItem> stockItems;
+        private List<ShortStockItem> stockItems;
         private List<MediaResource> images;
         private String types;
         private String mapUrl;
@@ -369,5 +388,19 @@ public class StockCategoryController {
         private String videoCode;
         private Date created;
         private Date lastUpdated;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    public static class ShortStockItem extends ResourceSupport {
+        private Long stockItemId;
+        private String selfRef;
+        private String name;
+        private String description;
+        private String type;
+        private String price;
+        private Date created;
+        private Date lastUpdated;
+        private List<MediaResource> images;
     }
 }
