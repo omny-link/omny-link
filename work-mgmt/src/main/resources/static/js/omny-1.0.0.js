@@ -17,18 +17,25 @@ var $auth = new AuthHelper();
 function AuthHelper() {
   this.getProfile = function(username) {
     console.log('getProfile: '+username);
-    if (username) $.getJSON('/users/'+username, function(profile) {
-      ractive.set('profile',profile);
-      $('.profile-img').empty().append('<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34"/>');
-      if ($auth.hasRole('super_admin')) $('.super-admin').show();
-      $auth.loadTenantConfig(ractive.get('profile.tenant'));
-    })
-    .error(function(){
-      console.warn('Failed to get profile, will rely on Omny default');
-      ractive.set('profile',{tenant:'omny'});
+    if (username) {
+      $.getJSON('/users/'+username, function(profile) {
+        ractive.set('profile',profile);
+        $('.profile-img').empty().append('<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34"/>');
+        if ($auth.hasRole('super_admin')) $('.super-admin').show();
+        $auth.loadTenantConfig(ractive.get('profile.tenant'));
+      })
+      .error(function() {
+        console.warn('Failed to get profile, will rely on default');
+        ractive.set('profile',{tenant:'omny'});
+        $auth.loadTenantConfig(ractive.get('tenant.id'));
+      });
+    } else if (ractive.get('tenant')) {
+      var tenant = ractive.get('tenant.id');
+      console.warn('... page supplied default tenant:'+tenant);
       $auth.loadTenantConfig(ractive.get('tenant.id'));
-    });
-    else this.showError('You are not logged in, some functionality will be unavailable.');
+    } else {
+      ractive.showError('You are not logged in, some functionality will be unavailable.');
+    }
   }
   this.hasRole = function(role) {
     if (ractive && ractive.get('profile')) {
@@ -59,10 +66,12 @@ $(document).ready(function() {
     if (ractive['getProfile'] != undefined) ractive.getProfile();
   });
   
-  if (ractive.tenantCallbacks==undefined) ractive.tenantCallbacks = $.Callbacks();
-  ractive.tenantCallbacks.add(function() {
-    ractive.fetch();
-  });
+  if (typeof ractive['fetch'] == 'function') {
+    if (ractive.tenantCallbacks==undefined) ractive.tenantCallbacks = $.Callbacks();
+    ractive.tenantCallbacks.add(function() {
+      ractive.fetch();
+    });
+  }
   if (ractive.brandingCallbacks==undefined) ractive.brandingCallbacks = $.Callbacks();
   ractive.brandingCallbacks.add(function() {
     ractive.initControls();
