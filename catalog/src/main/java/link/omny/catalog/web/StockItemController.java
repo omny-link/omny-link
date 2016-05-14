@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 
 import link.omny.catalog.internal.CatalogCsvImporter;
 import link.omny.catalog.model.MediaResource;
+import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
 import link.omny.catalog.repositories.MediaResourceRepository;
 import link.omny.catalog.repositories.StockCategoryRepository;
@@ -344,6 +345,7 @@ public class StockItemController {
         private String directionsByAir;
         private Date created;
         private Date lastUpdated;
+        private StockCategory stockCategory;
         private List<MediaResource> images;
     }
 }
