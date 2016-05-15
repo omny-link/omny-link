@@ -369,6 +369,11 @@ var AuthenticatedRactive = Ractive.extend({
       }
     })
   },
+  toggleSection: function(sect) {
+    console.info('toggleSection: '+$(sect).attr('id'));
+    $('#'+$(sect).attr('id')+' div').toggle();
+    $('#'+$(sect).attr('id')+' .ol-collapse').toggleClass('glyphicon-triangle-right').toggleClass('glyphicon-triangle-bottom');
+  },
   toggleSidebar: function() {
     console.info('toggleSidebar');
     $('.omny-bar-left').toggle(EASING_DURATION);

@@ -127,6 +127,9 @@
         <ul class="form edit-form">
           <li><label class="">Source:</label><input class="typeahead form-control" placeholder="Start typing to filter options" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}"></li>
           <li><label class="">Medium:</label><input class="typeahead form-control" placeholder="Start typing to filter options" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}"></li>
+          {{#tenant.show.declaredSource}}
+            <li><label class="">How heard of us?:</label><input class="form-control" id="curSource2" {{ current.source2 ? 'disabled readonly' : '' }} value="{{current.source2}}"></li>
+          {{/}}
         </ul>
       </div>
       <div class="currentBody col-md-6 col-sm-12 col-xs-12">
