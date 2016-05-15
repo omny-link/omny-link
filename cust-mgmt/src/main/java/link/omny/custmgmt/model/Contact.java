@@ -149,10 +149,17 @@ public class Contact implements Serializable {
     private boolean doNotEmail;
 
     /**
-     * Intended to capture the source of the lead from Analytics.
+     * Intended to capture the source of the lead from Analytics or in some
+     * cases the contact will declare the source.
      */
     @JsonProperty
     private String source;
+
+    /**
+     * In order to allow both Analytics source and a client declared one.
+     */
+    @JsonProperty
+    private String source2;
 
     /**
      * Intended to capture the medium of the lead from Analytics.
