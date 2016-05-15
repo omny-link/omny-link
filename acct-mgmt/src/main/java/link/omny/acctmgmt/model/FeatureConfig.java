@@ -10,6 +10,7 @@ public class FeatureConfig {
     private boolean budget = false;
     private boolean companyBackground = false;
     private boolean marketing = false;
+    private boolean declaredSource = false;
     private boolean merge = false;
     private boolean poweredBy = true;
 
@@ -26,6 +27,9 @@ public class FeatureConfig {
             break;
         case "companyBackground":
             setCompanyBackground(b);
+            break;
+        case "declaredSource":
+            setDeclaredSource(b);
             break;
         case "marketing":
             setMarketing(b);
