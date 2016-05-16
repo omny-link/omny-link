@@ -180,9 +180,10 @@ public class StockItem implements Serializable {
             images = new ArrayList<MediaResource>(DEFAULT_IMAGE_COUNT);
             for (int i = 0; i < DEFAULT_IMAGE_COUNT; i++) {
                 images.add(new MediaResource(getTenantId(), String.format(
-                        "/images/%1$s/%2$s/%3$d.jpg", name.toLowerCase()
-                                .replaceAll(" ", "_"), type.toLowerCase()
-                                .replaceAll(" ", "_"), i + 1)));
+                        "/images/%1$s/%2$s/%3$d.jpg", 
+                        getStockCategory().getName().toLowerCase().replaceAll(" ", "_"), 
+                        type.toLowerCase().replaceAll(" ", "_"), 
+                        i + 1)));
             }
         }
         return images;
