@@ -46,7 +46,7 @@
       <extensionElements>
         <activiti:in source="omny_enquiry" target="contact"/>
         <activiti:in sourceExpression="${omny_enquiry.getString('type')}" target="activityType"/>
-        <activiti:in sourceExpression="${omny_enquiry.getString('message')}" target="activityContent"/>
+        <activiti:in sourceExpression="${omny_enquiry.getJsonObject('message') == null ? 'n/a' : omny_enquiry.getString('message')}" target="activityContent"/>
         <activiti:in source="contactId" target="contactId"/>
         <activiti:out source="contactId" target="contactId"/>
         <activiti:out source="activityId" target="activityId"/>

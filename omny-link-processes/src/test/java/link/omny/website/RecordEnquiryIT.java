@@ -91,6 +91,37 @@ public class RecordEnquiryIT {
             "processes/link/omny/custmgmt/AddNoteToContact.bpmn",
             "processes/link/omny/mail/SelectDefaultEnquiryResponse.bpmn",
             "processes/link/omny/mail/SendMemo.bpmn" }, tenantId = TENANT_ID)
+    public void testEnquiryFromNewContactNoMessage() {
+        try {
+            ActivitiSpec spec = new ActivitiSpec(activitiRule,
+                    "testEnquiryFromNewContact")
+                    .whenMsgReceived("", ENQUIRY_MSG,
+                            "/omny.enquiry-no-msg.json", TENANT_ID)
+                    .whenExecuteJobsForTime(5000).collectVar("contactId")
+                    .thenProcessEndedAndInExclusiveEndEvent("endEvent")
+                    .thenExtension(new DumpAuditTrail(activitiRule));
+
+            // Note, this is a hard delete
+            if (((String) spec.getVar("contactId")).startsWith("http")) {
+                delete((String) spec.getVar("contactId"));
+            } else {
+                delete(BASE_URI + spec.getVar("contactId"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
+    @org.activiti.engine.test.Deployment(resources = {
+            "processes/link/omny/website/RecordEnquiry.bpmn",
+            "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn",
+            "processes/link/omny/custmgmt/AddActivityToContact.bpmn",
+            "processes/link/omny/custmgmt/AddNoteToContact.bpmn",
+            "processes/link/omny/mail/SelectDefaultEnquiryResponse.bpmn",
+            "processes/link/omny/mail/SendMemo.bpmn" }, tenantId = TENANT_ID)
     public void testEnquiryFromExistingContact() {
         try {
             preCreateContact();
