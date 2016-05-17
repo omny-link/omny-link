@@ -58,7 +58,7 @@ var ractive = new AuthenticatedRactive({
     hash: function(email) {
       if (email == undefined) return '';
       console.log('hash '+email+' = '+ractive.hash(email));
-      return '<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
+      return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
     help: '<p>The distribution centre allows you to manage notifications across organisations and confirm they are acknowledged.</p>\
       <h2>How can we help you today?</h2>\
