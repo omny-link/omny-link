@@ -96,23 +96,7 @@ var AuthenticatedRactive = Ractive.extend({
   },
   getProfile: function() {
     console.log('getProfile: '+this.get('username'));
-    var ractive = this;
-    if (this && this.get('username')) $.getJSON('/users/'+ractive.get('username'), function(profile) {
-      ractive.set('profile',profile);
-      $('.profile-img').empty().append('<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34"/>');
-      if (ractive.hasRole('super_admin')) $('.super-admin').show();
-      else if (ractive.hasRole('admin')) $('.admin').show();
-      else $('.user').show();
-      // TODO
-      $('.navbar-sticky .tenant').hide();
-      $auth.loadTenantConfig(ractive.get('profile.tenant'));
-    })
-    .error(function(){
-      console.warn('Failed to get profile, will rely on Omny default');
-      ractive.set('profile',{tenant:'omny'});
-      $auth.loadTenantConfig(ractive.get('tenant.id'));
-    });
-    else this.showError('You are not logged in, some functionality will be unavailable.');
+    $auth.getProfile(this.get('username'));
   },
   getServer: function() {
     return ractive.get('server')==undefined ? '' : ractive.get('server');

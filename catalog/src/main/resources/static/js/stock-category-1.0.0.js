@@ -59,7 +59,7 @@ var ractive = new AuthenticatedRactive({
     },
     gravatar: function(email) {
       if (email == undefined) return '';
-      return '<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
+      return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
     hash: function(email) {
       if (email == undefined) return '';

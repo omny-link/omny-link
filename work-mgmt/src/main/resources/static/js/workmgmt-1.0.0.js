@@ -370,9 +370,9 @@ var ractive = new AuthenticatedRactive({
       if (ractive.get('current.processVariables')["initiator"]==undefined || ractive.get('current.processVariables')["initiator"]=='anonymousUser') {
         $('.initiator-img').empty().append('<img class="img-rounded" src="/images/icon/omny-icon.png" width="34"/>');
       } else if (ractive.get('current.processVariables')["initiator"]=='tstephen') {
-        $('.initiator-img').empty().append('<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash('tim@omny.link')+'?s=34"/>');
+        $('.initiator-img').empty().append('<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash('tim@omny.link')+'?s=34"/>');
       } else {
-        $('.initiator-img').empty().append('<img class="img-rounded" src="http://www.gravatar.com/avatar/'+ractive.hash(ractive.get('current.processVariables')["initiator"])+'?s=34"/>');
+        $('.initiator-img').empty().append('<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(ractive.get('current.processVariables')["initiator"])+'?s=34"/>');
       }
 
       ractive.set('saveObserver',true);
