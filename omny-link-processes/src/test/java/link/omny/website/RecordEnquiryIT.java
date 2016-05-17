@@ -58,6 +58,7 @@ public class RecordEnquiryIT {
             "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn",
             "processes/link/omny/custmgmt/AddActivityToContact.bpmn",
             "processes/link/omny/custmgmt/AddNoteToContact.bpmn",
+            "processes/link/omny/mail/SelectDefaultEnquiryResponse.bpmn",
             "processes/link/omny/mail/SendMemo.bpmn" }, tenantId = TENANT_ID)
     public void testEnquiryFromNewContact() {
         try {
@@ -70,7 +71,11 @@ public class RecordEnquiryIT {
                     .thenExtension(new DumpAuditTrail(activitiRule));
 
             // Note, this is a hard delete
-            delete(BASE_URI + spec.getVar("contactId"));
+            if (((String) spec.getVar("contactId")).startsWith("http")) {
+                delete((String) spec.getVar("contactId"));
+            } else {
+                delete(BASE_URI + spec.getVar("contactId"));
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -84,6 +89,7 @@ public class RecordEnquiryIT {
             "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn",
             "processes/link/omny/custmgmt/AddActivityToContact.bpmn",
             "processes/link/omny/custmgmt/AddNoteToContact.bpmn",
+            "processes/link/omny/mail/SelectDefaultEnquiryResponse.bpmn",
             "processes/link/omny/mail/SendMemo.bpmn" }, tenantId = TENANT_ID)
     public void testEnquiryFromExistingContact() {
         try {
@@ -98,7 +104,11 @@ public class RecordEnquiryIT {
                     .thenExtension(new DumpAuditTrail(activitiRule));
 
             // Note, this is a hard delete
-            delete(BASE_URI + spec.getVar("contactId"));
+            if (((String) spec.getVar("contactId")).startsWith("http")) {
+                delete((String) spec.getVar("contactId"));
+            } else {
+                delete(BASE_URI + spec.getVar("contactId"));
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
