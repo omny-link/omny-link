@@ -203,9 +203,11 @@ public class StockCategoryController {
 
         List<StockCategory> tmpList = null;
         if (type == null || type.trim().length() == 0) {
-            tmpList = stockCategoryRepo.findAllForTenant(tenantId);
+            tmpList = stockCategoryRepo.findByStatusForTenant(tenantId,
+                    "Published");
         } else {
-            tmpList = stockCategoryRepo.findByTypeForTenant(tenantId, type);
+            tmpList = stockCategoryRepo.findByTypeAndStatusForTenant(tenantId,
+                    type, "Published");
         }
         for (StockCategory stockCategory : tmpList) {
             try {

@@ -25,6 +25,11 @@
           <input class="form-control" id="curVideoCode" value="{{current.videoCode}}"/>
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This might be either embed code from YouTube, Vimeo etc. or simply a URL but must match API client code.</p>
         </li>
+        <li>
+          <label class="">Status:</label>
+          <input class="form-control typeahead" placeholder="Start typing to filter options" id="curStatus" value="{{current.status}}"/>
+          <p class="col-md-offset-4 help-block">Draft, Ready for review, Published etc.</p>
+        </li>
       </ul>
     </div>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">

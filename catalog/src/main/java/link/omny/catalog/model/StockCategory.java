@@ -111,6 +111,9 @@ public class StockCategory implements Serializable {
     private String videoCode;
 
     @JsonProperty
+    private String status;
+
+    @JsonProperty
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockCategory")
     private List<MediaResource> images;
 
