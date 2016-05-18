@@ -25,4 +25,19 @@ public class StockItemTest {
         assertEquals(field1.getId(), stockItem.getCustomFields().get(0).getId());
     }
 
+    @Test
+    public void testDefaultDescriptionByType() {
+        StockItem stockItem = new StockItem("Widget1", "Widget");
+        assertNull(stockItem.getDescription());
+        stockItem.setTenantId("omny");
+        assertEquals("Default description of Widget",
+                stockItem.getDescription());
+
+        stockItem = new StockItem("Widget2", "Whatchamacallit");
+        assertNull(stockItem.getDescription());
+        stockItem.setTenantId("omny");
+        assertEquals("Default description of Whatchamacallit",
+                stockItem.getDescription());
+    }
+
 }
