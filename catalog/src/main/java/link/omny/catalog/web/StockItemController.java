@@ -336,6 +336,7 @@ public class StockItemController {
     public static class ShortStockItem extends ResourceSupport {
         private String selfRef;
         private String name;
+        private String description;
         private String stockCategoryName;
         private String type;
         private String price;
