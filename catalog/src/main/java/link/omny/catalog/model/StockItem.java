@@ -1,10 +1,14 @@
 package link.omny.catalog.model;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -113,7 +117,39 @@ public class StockItem implements Serializable {
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomStockItemField> customFields;
 
+    private static Map<String, Properties> defaultDescriptions = new HashMap<String, Properties>();
+
     public static final int CURRENCY_SCALE = 2;
+
+    private static Properties getDefaultDescriptions(
+            @NotNull String tenantId) {
+        // if (defaultDescriptions.get(tenantId) == null) {
+            initDefaultDescriptions(tenantId);
+        // }
+        return defaultDescriptions.get(tenantId);
+    }
+
+    private static synchronized void initDefaultDescriptions(String tenantId) {
+        Properties properties = new Properties();
+        defaultDescriptions.put(tenantId, properties);
+        String resource = String.format(
+                "/static/data/%1$s/stock-items/descriptions.properties",
+                tenantId);
+        InputStream is = null;
+        try {
+            is = StockItem.class.getResourceAsStream(resource);
+            properties.load(is);
+        } catch (Exception e) {
+            LOGGER.error(String.format(
+                    "Unable to load default descriptions from %1$s", resource));
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+            }
+        }
+
+    }
 
     public StockItem(String name, String type) {
         setName(name);
@@ -168,8 +204,9 @@ public class StockItem implements Serializable {
     }
 
     public String getDescription() {
-        if (description == null && stockCategory != null) {
-            return stockCategory.getDescription();
+        if ((description == null || description.trim().length() == 0)
+                && tenantId != null) {
+            return getDefaultDescriptions(tenantId).getProperty(type);
         } else {
             return description;
         }
