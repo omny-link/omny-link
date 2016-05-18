@@ -25,7 +25,12 @@ public interface StockCategoryRepository extends
     List<StockCategory> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
-    @Query("SELECT c FROM StockCategory c JOIN c.stockItems i LEFT JOIN i.images m WHERE i.type = :type AND c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
-    List<StockCategory> findByTypeForTenant(@Param("tenantId") String tenantId,
-            @Param("type") String type);
+    @Query("SELECT c FROM StockCategory c WHERE c.status = :status AND c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
+    List<StockCategory> findByStatusForTenant(
+            @Param("tenantId") String tenantId, @Param("status") String status);
+
+    @Query("SELECT c FROM StockCategory c JOIN c.stockItems i LEFT JOIN i.images m WHERE i.type = :type AND c.status = :status AND c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
+    List<StockCategory> findByTypeAndStatusForTenant(
+            @Param("tenantId") String tenantId, @Param("type") String type,
+            @Param("status") String status);
 }
