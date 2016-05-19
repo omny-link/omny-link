@@ -1,5 +1,11 @@
 package com.knowprocess.bpm.web;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -9,10 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +38,8 @@ public class ProcessInstanceController {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(ProcessInstanceController.class);
+
+    private DateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
     @Autowired
     public ProcessEngine processEngine;
@@ -122,6 +132,55 @@ public class ProcessInstanceController {
         resp.setHeader("Location",
                 "/process-instances/" + pi.getProcessInstanceId());
         return pi;
+    }
+
+    @RequestMapping(value = "/archive", method = RequestMethod.GET, headers = "Accept=application/json")
+    @Secured("ROLE_ADMIN")
+    public @ResponseBody List<ProcessInstance> archiveInstances(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam(value = "before", required = false) String before) {
+        Date beforeDate = null;
+        if (before == null) {
+            GregorianCalendar oneMonthAgo = new GregorianCalendar();
+            oneMonthAgo.add(Calendar.MONTH, -1);
+            LOGGER.debug(String.format(
+                    "Archiving messages or %1$s older than %2$s", tenantId,
+                    oneMonthAgo.getTime().toString()));
+            beforeDate = oneMonthAgo.getTime();
+        } else {
+            try {
+                beforeDate = isoFormatter.parse(before);
+            } catch (ParseException e) {
+                throw new IllegalArgumentException(
+                        String.format(
+                                "Parameter 'before' must be an ISO 8601 date, not '%1$s'",
+                                before));
+            }
+        }
+
+        List<HistoricProcessInstance> archivedInstances = processEngine
+                .getHistoryService()
+                .createHistoricProcessInstanceQuery()
+                .processInstanceTenantId(tenantId).finishedBefore(beforeDate)
+                .orderByProcessInstanceEndTime().asc().list();
+        LOGGER.warn(String.format("Found %1$d instances to archive for %1$s",
+                archivedInstances.size(), tenantId));
+        int count = 0;
+        for (HistoricProcessInstance hpi : archivedInstances) {
+            try {
+                processEngine.getHistoryService()
+                        .deleteHistoricProcessInstance(hpi.getId());
+            } catch (Exception e) {
+                LOGGER.error(String.format(
+                        "Unable to archive historic process with id %1$s",
+                        hpi.getId()), e);
+            }
+            count++;
+        }
+        LOGGER.warn(String.format("  successfully archived %1$d instancess",
+                count));
+
+        return ProcessInstance.wrap(archivedInstances);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
