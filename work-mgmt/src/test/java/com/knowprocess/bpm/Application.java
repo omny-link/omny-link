@@ -2,8 +2,6 @@ package com.knowprocess.bpm;
 
 import javax.persistence.EntityManagerFactory;
 
-import link.omny.acctmgmt.AcctMgmtConfig;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.SpringApplication;
@@ -19,7 +17,7 @@ import com.knowprocess.bpm.api.ActivitiApplicationSecurity;
 import com.knowprocess.bpm.impl.JsonManager;
 
 @Configuration
-@Import({ AcctMgmtConfig.class, BpmConfiguration.class, })
+@Import({ BpmConfiguration.class, })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Autowired
