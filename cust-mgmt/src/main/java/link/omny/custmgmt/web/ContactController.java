@@ -2,6 +2,8 @@ package link.omny.custmgmt.web;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -395,6 +397,7 @@ public class ContactController {
      * Create a new contact.
      * 
      * @return
+     * @throws URISyntaxException
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -405,16 +408,34 @@ public class ContactController {
         contact.setTenantId(tenantId);
         contact = contactRepo.save(contact);
 
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(getGlobalUri(contact));
+
+        // TODO migrate to http://host/tenant/contacts/id
+        // headers.setLocation(getTenantBasedUri(tenantId, contact));
+
+        return new ResponseEntity(headers, HttpStatus.CREATED);
+    }
+
+    protected URI getGlobalUri(Contact contact) {
+        try {
+            return new URI(ContactRepository.class.getAnnotation(
+                    RepositoryRestResource.class).path()
+                    + "/" + contact.getId());
+        } catch (URISyntaxException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    protected URI getTenantBasedUri(String tenantId, Contact contact) {
         UriComponentsBuilder builder = MvcUriComponentsBuilder
                 .fromController(getClass());
         HashMap<String, String> vars = new HashMap<String, String>();
         vars.put("tenantId", tenantId);
         vars.put("id", contact.getId().toString());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(builder.path("/{id}").buildAndExpand(vars)
-                .toUri());
-        return new ResponseEntity(headers, HttpStatus.CREATED);
+        return builder.path("/{id}").buildAndExpand(vars).toUri();
     }
 
     /**
