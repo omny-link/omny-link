@@ -1,16 +1,10 @@
 var EASING_DURATION = 500;
 var fadeOutMessages = true;
-// 4. We've got an element in the DOM, we've created a template, and we've
-// loaded the library - now it's time to build our Hello World app.
 var ractive = new AuthenticatedRactive({
-  // The `el` option can be a node, an ID, or a CSS selector.
   el: 'container',
 
-  // We could pass in a string, but for the sake of convenience
-  // we're passing the ID of the <script> tag above.
   template: '#template',
 
-  // partial templates
   partials: {
     defaultCtrl: function() {
       return $('#defaultTemplate').html();
@@ -57,7 +51,6 @@ var ractive = new AuthenticatedRactive({
     }
   },
 
-  // Here, we're passing in some initial data
   data: {
     //server: 'http://api.knowprocess.com',
     age: function(timeString) {
@@ -116,11 +109,49 @@ var ractive = new AuthenticatedRactive({
         return 'default';
       }
     },
+    matchSearch: function(obj) {
+      var searchTerm = ractive.get('searchTerm');
+      //console.info('matchSearch: '+searchTerm);
+      if (searchTerm==undefined || searchTerm.length==0) {
+        return true;
+      } else {
+        return ( (obj.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+          || (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+          || (obj.taskDefinitionKey.toLabel().toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+          || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
+          || (searchTerm.startsWith('created>') && new Date(obj.firstContact)>new Date(ractive.get('searchTerm').substring(8)))
+          || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(ractive.get('searchTerm').substring(8)))
+          || (searchTerm.startsWith('created<') && new Date(obj.firstContact)<new Date(ractive.get('searchTerm').substring(8)))
+        );
+      }
+    },
     renderPriority: function(task) {
       console.log('renderPriority');
       if (ractive.isOverdue(task)) return 'overdue';
       if (ractive.isDue(task)) return 'due';
       return '';
+    },
+    sort: function (array, column, asc) {
+      console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);
+      array = array.slice(); // clone, so we don't modify the underlying data
+
+      return array.sort( function ( a, b ) {
+        if (b[column]==undefined || b[column]==null || b[column]=='') {
+          return (a[column]==undefined || a[column]==null || a[column]=='') ? 0 : -1;
+        } else if (asc) {
+          return a[ column ] < b[ column ] ? -1 : 1;
+        } else {
+          return a[ column ] > b[ column ] ? -1 : 1;
+        }
+      });
+    },
+    sortAsc: false,
+    sortColumn: 'createTime',
+    sorted: function(column) {
+      console.info('sorted');
+      if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
+      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc'
+      else return 'hidden';
     },
     stdPartials: [
       { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
@@ -174,6 +205,7 @@ var ractive = new AuthenticatedRactive({
     $.getJSON('/'+ractive.get('tenant.id')+'/tasks/'+ractive.get('username')+'/', function( data ) {
       ractive.merge('tasks', data);
       if (ractive.hasRole('admin')) $('.admin').show();
+      ractive.set('searchMatched',$('#tasksTable tbody tr:visible').length);
     });
   },
   fetchUserNotes: function () {
@@ -184,6 +216,8 @@ var ractive = new AuthenticatedRactive({
   },
   filter: function(val) { 
     ractive.set('filter', val);
+    ractive.set('searchMatched',$('#tasksTable tbody tr:visible').length);
+    $('input[type="search"]').blur();
   },
   findFormProperty: function(name) { 
     console.log('findFormProperty: '+name);
@@ -495,17 +529,20 @@ var ractive = new AuthenticatedRactive({
   }
 });
 
-//Save on model change
-//done this way rather than with on-* attributes because autocomplete 
-//controls done that way save the oldValue 
-//ractive.observe('current.dueDate current.customFields.*', function(newValue, oldValue, keypath) {
-//  ignored=[];
-//  if (ractive.get('saveObserver') && ignored.indexOf(keypath)==-1) {
-//    console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
-//    ractive.save();
-//  } else { 
-//   console.warn  ('Skipped contact save of '+keypath);
-//   //console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
-//   //console.log('  saveObserver: '+ractive.get('saveObserver'));
-//  }
-//});
+ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
+  console.log('searchTerm changed');
+  ractive.showResults();
+  setTimeout(function() {
+    ractive.set('searchMatched',$('#contactsTable tbody tr').length);
+  }, 500);
+});
+ractive.on( 'filter', function ( event, filter ) {
+  console.info('filter on '+JSON.stringify(event)+','+filter.idx);
+  ractive.filter(filter);
+});
+ractive.on( 'sort', function ( event, column ) {
+  console.info('sort on '+column);
+  // if already sorted by this column reverse order
+  if (this.get('sortColumn')==column) this.set('sortAsc', !this.get('sortAsc'));
+  this.set( 'sortColumn', column );
+});
