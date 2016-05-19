@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import link.omny.custmgmt.Application;
 import link.omny.custmgmt.model.MemoDistribution;
 
 import org.slf4j.Logger;
