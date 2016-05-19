@@ -146,6 +146,16 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>link.omny.custmgmt</groupId>
+      <artifactId>custmgmt</artifactId>
+      <version>${omny-link.version}</version>
+    </dependency>
+    <dependency>
+	    <groupId>com.knowprocess.bpm</groupId>
+	    <artifactId>work-mgmt</artifactId>
+	    <version>${work-mgmt.version}</version>
+    </dependency>
     
     <!-- Web jars -->
     <dependency>

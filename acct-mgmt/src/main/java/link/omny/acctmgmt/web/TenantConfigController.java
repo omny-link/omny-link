@@ -2,9 +2,13 @@ package link.omny.acctmgmt.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import link.omny.acctmgmt.model.BotConfig;
+import link.omny.acctmgmt.model.SystemConfig;
 import link.omny.acctmgmt.model.TenantAction;
 import link.omny.acctmgmt.model.TenantConfig;
 import link.omny.acctmgmt.model.TenantExtension;
@@ -12,6 +16,9 @@ import link.omny.acctmgmt.model.TenantPartial;
 import link.omny.acctmgmt.model.TenantToolbarEntry;
 import link.omny.acctmgmt.model.TenantTypeaheadControl;
 import link.omny.acctmgmt.repositories.TenantConfigRepository;
+import link.omny.custmgmt.repositories.ContactRepository;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.identity.User;
@@ -21,6 +28,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +49,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
-@RequestMapping("/tenants")
+// @RequestMapping("/admin/tenants")
 public class TenantConfigController {
 
     protected static final Logger LOGGER = LoggerFactory
@@ -46,8 +57,11 @@ public class TenantConfigController {
 
     private static final String STATIC_BASE = "/static";
 
-    // @Autowired
-    // private SystemConfig systemConfig;
+    @Autowired
+    private SystemConfig systemConfig;
+
+    @Autowired
+    protected ContactRepository contactRepo;
 
     @Autowired
     protected TenantConfigRepository tenantRepo;
@@ -69,7 +83,7 @@ public class TenantConfigController {
      * Create a new tenant.
      */
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/tenants/{id}", method = RequestMethod.POST)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public @ResponseBody ResponseEntity<?> create(
             @PathVariable("id") String tenantId,
@@ -103,7 +117,47 @@ public class TenantConfigController {
      *            The id of an existing tenant.
      * @return The complete configuration for that tenant.
      */
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/admin/tenants", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody List<TenantSummary> showAllTenants() {
+        LOGGER.info(String.format("showAllTenants"));
+
+        // TODO not currently persisting tenants
+        // Iterable<TenantConfig> list = tenantRepo.findAll();
+        // for (TenantConfig tenant : list) {
+        List<TenantConfig> list = new ArrayList<TenantConfig>();
+        for (String tenantId : systemConfig.getTenants().split(",")) {
+            TenantConfig tenant = new TenantConfig(tenantId);
+
+            tenant.setContacts((long) contactRepo.findAllForTenant(tenantId)
+                    .size());
+
+            tenant.setDefinitions(processEngine.getRepositoryService()
+                    .createProcessDefinitionQuery()
+                    .processDefinitionTenantId(tenant.getId()).count());
+            tenant.setActiveInstances(processEngine.getRuntimeService()
+                    .createProcessInstanceQuery()
+                    .processInstanceTenantId(tenant.getId()).count());
+            tenant.setHistoricInstances(processEngine.getHistoryService()
+                    .createHistoricProcessInstanceQuery()
+                    .processInstanceTenantId(tenant.getId()).count());
+            tenant.setJobs(processEngine.getManagementService()
+                    .createJobQuery().jobId(tenant.getId()).count());
+            tenant.setTasks(processEngine.getTaskService().createTaskQuery()
+                    .taskTenantId(tenant.getId()).count());
+            tenant.setUsers(processEngine.getIdentityService()
+                    .createUserQuery().memberOfGroup(tenant.getId()).count());
+
+            list.add(tenant);
+        }
+        return wrap(list);
+    }
+
+    /**
+     * @param id
+     *            The id of an existing tenant.
+     * @return The complete configuration for that tenant.
+     */
+    @RequestMapping(value = "/tenants/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody TenantConfig showTenant(@PathVariable("id") String id) {
         LOGGER.info(String.format("showTenant"));
 
@@ -219,7 +273,7 @@ public class TenantConfigController {
      * Update an existing tenant.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @RequestMapping(value = "/tenants/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @RequestBody TenantConfig updatedTenant) {
         TenantConfig tenantConfig = tenantRepo.findOne(tenantId);
@@ -234,5 +288,48 @@ public class TenantConfigController {
      */
     public void delete(String tenantId) {
         tenantRepo.delete(tenantId);
+    }
+
+    private List<TenantSummary> wrap(Iterable<TenantConfig> list) {
+        List<TenantSummary> resources = new ArrayList<TenantSummary>();
+        for (TenantConfig contact : list) {
+            resources.add(wrap(contact));
+        }
+        return resources;
+    }
+
+    private TenantSummary wrap(TenantConfig tenant) {
+        TenantSummary resource = new TenantSummary();
+        BeanUtils.copyProperties(tenant, resource);
+        resource.setShortId(tenant.getId());
+        Link detail = linkTo(TenantConfigRepository.class, tenant.getId())
+                .withSelfRel();
+        resource.add(detail);
+        resource.setSelfRef(detail.getHref());
+        return resource;
+    }
+
+    private Link linkTo(
+            @SuppressWarnings("rawtypes") Class<? extends CrudRepository> clazz,
+            String id) {
+        return new Link(clazz.getAnnotation(RepositoryRestResource.class)
+                .path() + "/" + id);
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    public static class TenantSummary extends ResourceSupport {
+        private String shortId;
+        private String selfRef;
+        private String name;
+        private Long contacts;
+        private Long definitions;
+        private Long activeInstances;
+        private Long historicInstances;
+        private Long jobs;
+        private Long tasks;
+        private Long users;
+        private Date lastLogin;
+        private Date lastActivity;
     }
 }

@@ -1,9 +1,12 @@
 <!doctype html>
-<html lang='en'>
+<html lang='en-GB'>
 <head>
+  <meta http-equiv="x-ua-compatible" content="IE=Edge"/> 
+  <!-- as the **very** first line just after head-->  
   <meta charset='utf-8'>
-  <title>Omny Link</title>
+  <title>Profile</title>
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
   <link href="css/omny-1.0.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
@@ -11,43 +14,39 @@
   <div class="clearfix" id="messages"></div>
   <div class="container" id="container"></div>
   <script id='template' type='text/ractive'>
- 
     {{>profileArea}}
-    {{>poweredBy}}
-    {{>sidebar { active: 'index.html' }}}
     {{>titleArea}}
-
+  
     <section>
-      <p>&nbsp;</p>
-      <h2>The next generation of contact management has arrived!</h2>
-      <p>Let's get started right away by introducing the Omny Bar icons:</p>
-      <ul style="list-style:none;">
-        {{#tenant.omnyBar}}
-          <li>
-            <a href="{{url}}">
-              <span class="glyphicon {{classes}}" title="{{title}}"></span>
-              <span>{{title}}</span>
-            </a>
-            <span>{{description}}</span>          
-          </li>
-        {{/}}
-      </ul>
+      {{>userCurrentSect { current: profile }}}
     </section>
 
+    {{>poweredBy}}
+    {{>sidebar { active: 'me.html' }}}
   </script>
-
+  
   <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
   <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="/webjars/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js"></script>
   <script src="/webjars/Bootstrap-3-Typeahead/3.1.1/bootstrap3-typeahead.js"></script>
   <script src="/webjars/ractive/0.7.3/ractive.min.js"></script>
 
   <script src="js/autoNumeric.js"></script>
   <script src="js/md5.min.js"></script>
   <script src="js/activity-1.0.0.js"></script>
+  <script src="js/string-functions-0.1.0.js"></script>
   <script src="js/login-1.0.0.js"></script>
-  <script src="js/i18n.js"></script>
-  <script src="js/cust-mgmt-1.0.0.js"></script>
+  <script src="js/usermgmt-1.0.0.js"></script>
   <script src="js/omny-1.0.0.js"></script>
-  
+  <script type="text/javascript">
+    $(document).ready(function() {
+      ractive.set('title','User Profile');
+      if (ractive.brandingCallbacks==undefined) ractive.brandingCallbacks = $.Callbacks();
+      ractive.brandingCallbacks.add(function() {
+        ractive.edit(ractive.get('profile'));
+        $('#currentSect').css('display','inline').show();
+      });
+    });
+  </script>
 </body>
 </html>

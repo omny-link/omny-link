@@ -40,7 +40,7 @@ public class Metric implements Serializable {
     
     @Id
     @GeneratedValue
-    protected String id;
+    protected Long id;
 
     @NotNull
     @JsonProperty
@@ -48,12 +48,24 @@ public class Metric implements Serializable {
 
     @NotNull
     @JsonProperty
-    protected String  name; 
+    protected String name;
     
+    @NotNull
+    @JsonProperty
+    protected Long value;
+
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
     protected Date occurred;
+
+    public Metric(String tenantId, String name, Long value, Date occurred) {
+        setTenantId(tenantId);
+        setName(name);
+        setValue(value);
+        setOccurred(occurred);
+    }
+
 }
