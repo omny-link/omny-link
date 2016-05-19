@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -118,6 +119,38 @@ public class TenantConfig implements Serializable {
     // targetEntity = TenantAction.class)
     @Transient
     private List<TenantAction> workActions;
+
+    @JsonProperty
+    @Transient
+    public Long contacts;
+
+    @JsonProperty
+    @Transient
+    public Long definitions;
+
+    @JsonProperty
+    @Transient
+    public Long activeInstances;
+
+    @JsonProperty
+    @Transient
+    public Long historicInstances;
+
+    @JsonProperty
+    @Transient
+    public Long jobs;
+
+    @JsonProperty
+    @Transient
+    public Long tasks;
+
+    @JsonProperty
+    @Transient
+    public Long users;
+
+    @JsonProperty
+    @Transient
+    public Date lastLogin;
 
     public TenantConfig(String tenantId) {
         this();

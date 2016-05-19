@@ -1,7 +1,25 @@
-# CREATE
-curl -H "Accept:application/json" -H "Content-Type: application/json" -X POST -d '{ "tenantId":"omny" }' -u tstephen:tstephen http://localhost:8082/tenantConfigs
+#
+# GLOBAL
+#
 
-# LIST 
+# LIST GLOBAL CONFIG
 curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/configuration/
 
-curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/operations/
+# LIST TENANT METRICS (SNAPHOT)
+curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/tenants/
+
+# RECORD TENANT METRICS
+curl -X PUT -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/metrics/
+
+# LIST TENANT METRICS (HISTORIC)
+curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/metrics/
+
+#
+# PER TENANT
+#
+
+# CREATE TENANT
+curl -H "Accept:application/json" -H "Content-Type: application/json" -X POST -d '{ "tenantId":"omny" }' -u tstephen:tstephen http://localhost:8082/tenantConfigs
+
+# 
+curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/tenants/omny

@@ -11,4 +11,8 @@ public class SystemConfig {
 
     @Value("${omny.client.context:}")
     protected String clientContext;
+
+    @Value("${omny.tenants:}")
+    protected String tenants;
+
 }
