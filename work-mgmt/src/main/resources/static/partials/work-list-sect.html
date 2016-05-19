@@ -46,24 +46,19 @@
     <thead>
       <tr>
         <th></th>
-        <th>From / Regarding</th>
-        <th class="col-truncate">Task</th>
-        <th>Created</th>
-        <th>Deferred Until</th>
-        <th>Due</th>
+        <th on-click="sort:businessKey">From / Regarding<span class="sortable {{ sorted('businessKey') }} glyphicon"></th>
+        <th class="col-truncate" on-click="sort:name">Task<span class="sortable {{ sorted('name') }} glyphicon"></th>
+        <th on-click="sort:createTime">Created<span class="sortable {{ sorted('createTime') }} glyphicon"></th>
+        <th on-click="sort:taskLocalVariables['deferUntil'])">Deferred Until<span class="sortable {{ sorted('taskLocalVariables["deferUntil"]') }} glyphicon"></th>
+        <th on-click="sort:dueDate">Due<span class="sortable {{ sorted('dueDate') }} glyphicon"></th>
         <!--th class="col-truncate" style="width: 400px;">Description</th-->
-        <th>Assigned</th>
+        <th on-click="sort:assignee">Assigned<span class="sortable {{ sorted('assignee') }} glyphicon"></th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-<!--
-searchTerm!=undefined && (
-                  (this.name!=undefined && this.name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
-                  || (this.businessKey!=undefined && this.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
--->
-    {{#each tasks:i}}
-      {{# matchFilter(this) }}
+    {{#each sort(tasks,sortColumn,sortAsc):i}}
+      {{# matchSearch(this) && matchFilter(this) }}
       <tr class="{{renderPriority(this)}}" data-href="{{_links.self.href}}">
         <td on-click="edit(this)">{{i+1}}</td>
         <td on-click="edit(this)">{{businessKey}}</td>
