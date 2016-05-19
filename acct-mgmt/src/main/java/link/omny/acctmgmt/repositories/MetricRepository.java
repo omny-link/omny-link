@@ -13,6 +13,9 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(path = "/metrics")
 public interface MetricRepository extends CrudRepository<Metric, String> {
 
+    @Query("SELECT c FROM Metric c WHERE c.occurred >= :since ORDER BY c.occurred DESC")
+    List<Metric> findAllSinceDate(@Param("since") Date date);
+
     @Query("SELECT c FROM Metric c WHERE c.tenantId = :tenantId AND c.occurred >= :since ORDER BY c.occurred DESC")
     List<Metric> findAllSinceDateForTenant(@Param("since") Date date,
             @Param("tenantId") String tenantId);
