@@ -9,7 +9,7 @@ curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/con
 curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/tenants/
 
 # RECORD TENANT METRICS
-curl -X PUT -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/metrics/
+curl -X POST -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/metrics/
 
 # LIST TENANT METRICS (HISTORIC)
 curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/metrics/
