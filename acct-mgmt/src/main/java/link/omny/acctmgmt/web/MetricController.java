@@ -45,7 +45,7 @@ public class MetricController {
      * Take a new recording of metrics for each tenant.
      */
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "/admin/metrics", method = RequestMethod.PUT)
+    @RequestMapping(value = "/admin/metrics", method = RequestMethod.POST)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public @ResponseBody ResponseEntity<?> record() {
         Date now = new Date();
