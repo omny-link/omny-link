@@ -337,9 +337,13 @@ public class StockItemController {
         private String selfRef;
         private String name;
         private String description;
-        private String stockCategoryName;
-        private String type;
+        private String size;
+        private String sizeString;
+        private String unit;
         private String price;
+        private String type;
+        private String tenantId;
+        private String stockCategoryName;
         private String mapUrl;
         private String directionsByRoad;
         private String directionsByPublicTransport;
