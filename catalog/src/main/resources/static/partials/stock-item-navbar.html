@@ -1,0 +1,36 @@
+<a id="stockItemsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the stockItem table"></a>
+<span>{{tenant.strings.stockItems}}</span>
+<a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new stockItem"></a>
+<a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+<input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+<a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching stockItems"></a>
+<a class="clickable dropdown" aria-hidden="true" id="filterBtn" title="Show filters">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
+  </a>
+  <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
+    <li on-click="filter:{idx:1}">Show All</li>
+    <li class="divider"></li>
+    {{#stockLocationTypes:k}}
+      <li on-click="filter:{idx:{{4+stages.length+enquiryTypes.length+k}},field: 'stockLocationType', value: '{{id}}'}">{{name}}</li>
+    {{/stockLocationTypes}}
+  </ul>
+</a>
+<a class="clickable super-admin glyphicon glyphicon-cloud-upload" aria-hidden="true" on-click="showUpload()" style="display:none" title="Upload new stock items"></a>
+  
+<div id="upload" style="display:none">
+  <form action="/{{tenant.id}}/stock-items/uploadcsv" class="well form form-inline" enctype="multipart/form-data" id="uploadForm" method="post">
+    <fieldset>
+      <div class="form-group">
+        <input id="file" multiple="multiple" name="file" style="display: none" type="file" value="{{resourceFiles}}">
+        <input name="tenantId" id="tenantId" type="hidden" value="{{tenant.id}}">
+        <input class="form-control" name="resourceName" id="resourceName" placeholder="none selected" readonly disabled value="{{resourceName}}">
+        <button class="btn btn-primary" on-click="addResource()" type="button">Select Files</button>
+      </div>
+      <div class="pull-right">
+        <button class="btn" on-click="hideUpload()" type="button">Cancel</button>
+        <button class="btn" on-click="upload('uploadForm')" type="button">Upload</button>
+      </div>
+    </fieldset>
+  </form>
+</div>

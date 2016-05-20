@@ -49,6 +49,8 @@ interface StockCategoryCompleteProjection {
 
     String getDirectionsByAir();
 
+    String getStatus();
+
     Date getCreated();
 
     Date getLastUpdated();
