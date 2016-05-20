@@ -16,19 +16,19 @@
     
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li class="form-group">
-          <label class="textarea">Description:</label>
-          <textarea class="" id="curDescription" value="{{current.description}}"></textarea>
+        <li>
+          <label class="">Status:</label>
+          <input class="form-control typeahead" placeholder="Start typing to filter options" id="curStatus" value="{{current.status}}"/>
+          <p class="col-md-offset-4 help-block">Draft, Ready for review, Published etc.</p>
         </li>
         <li>
           <label class="">Video Code:</label>
           <input class="form-control" id="curVideoCode" value="{{current.videoCode}}"/>
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This might be either embed code from YouTube, Vimeo etc. or simply a URL but must match API client code.</p>
         </li>
-        <li>
-          <label class="">Status:</label>
-          <input class="form-control typeahead" placeholder="Start typing to filter options" id="curStatus" value="{{current.status}}"/>
-          <p class="col-md-offset-4 help-block">Draft, Ready for review, Published etc.</p>
+        <li class="form-group">
+          <label class="col-md-2 textarea">Description:</label>
+          <textarea class="col-md-10 form-control" id="curDescription" rows="8" value="{{current.description}}"></textarea>
         </li>
       </ul>
     </div>
@@ -58,15 +58,15 @@
         <ul class="form edit-form">
           <li class="form-group">
             <label class="textarea col-md-2">By Road:</label>
-            <textarea class="" id="curDirectionsByRoad" value="{{current.directionsByRoad}}"></textarea>
+            <textarea class="form-control" id="curDirectionsByRoad" value="{{current.directionsByRoad}}"></textarea>
           </li>
           <li class="form-group">
             <label class="textarea col-md-2">By Public Transport:</label>
-            <textarea class="" id="curDirectionsByPublicTransport" value="{{current.directionsByPublicTransport}}"></textarea>
+            <textarea class="form-control" id="curDirectionsByPublicTransport" value="{{current.directionsByPublicTransport}}"></textarea>
           </li>
           <li class="form-group">
             <label class="textarea col-md-2">By Air:</label>
-            <textarea class="" id="curDirectionsByAir" value="{{current.directionsByAir}}"></textarea>
+            <textarea class="form-control" id="curDirectionsByAir" value="{{current.directionsByAir}}"></textarea>
           </li>
         </ul>
       </div>

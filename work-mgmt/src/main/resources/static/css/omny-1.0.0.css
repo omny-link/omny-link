@@ -93,6 +93,9 @@ select:readonly,
 textarea:readonly {
   background-color: #cbcbcb;
 }
+textarea.form-control {
+  margin-left:5px;
+}
 label.required::after {
   color: red;
   content: '*';
@@ -218,6 +221,9 @@ tfoot th {
 .tenant,
 .user { 
   display: none;
+  font-size: 16px;
+  font-family: Roboto, sans-serif;
+  text-transform: none;
 }
 .ajax-loader {
   position: absolute;
@@ -513,6 +519,7 @@ form#upload {
 }
 .form-inline label,
 .form label {
+  line-height: 1.2em;
   padding-right: 10px;
   text-align: right;
 }
