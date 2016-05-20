@@ -399,10 +399,14 @@ public class StockCategoryController {
         private String selfRef;
         private String name;
         private String description;
-        private String type;
+        private String size;
+        private String sizeString;
+        private String unit;
         private String price;
+        private String type;
         private Date created;
         private Date lastUpdated;
+        private String tenantId;
         private List<MediaResource> images;
     }
 }
