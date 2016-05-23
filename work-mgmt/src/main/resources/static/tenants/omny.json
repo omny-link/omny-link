@@ -18,7 +18,7 @@
   ],
   "toolbar": [
     { "url": "work.html", "icon": "glyphicon-inbox", "description": "View your list of active tasks here", "name": "Work Management" },
-    { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Customer Management" },
+    { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
     { "url": "decisions-ui.html", "icon": "glyphicon-list-alt", "description": "View and manage your decisions here", "name": "Decisions Definer" },
     { "url": "domain.html", "icon": "omny-icon-domain-model", "name": "Domain Model", "description": "Business glossary" },
     { "url": "decisions-dmn.html", "icon": "glyphicon-list-alt", "name": "Decisions Repository", "description": "Home of your Decision Models" },
@@ -40,7 +40,9 @@
   ],
   "processes": [
     { "name": "Catch All", "ref": "CatchAllProcess" },
-    { "name": "Note to self", "ref": "SimpleTodo", "url": "/partials/SimpleTodo.html" }
+    { "name": "Note to self", "ref": "SimpleTodo", "url": "/partials/SimpleTodo.html" },
+    { "name": "Search for companies", "ref": "companyRecord", "url": "/link/omny/companiesHouse/FetchComapnyInfo.bpmn" },
+    { "name": "Fetch company information", "ref": "companySearch", "url": "/link/omny/companiesHouse/SearchForCompany.bpmn" }
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},
