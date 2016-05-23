@@ -9,6 +9,7 @@ import org.activiti.bdd.ActivitiSpec;
 import org.activiti.bdd.ext.DumpAuditTrail;
 import org.activiti.bdd.test.activiti.ExtendedRule;
 import org.activiti.bdd.test.mailserver.TestMailServer;
+import org.activiti.engine.ActivitiException;
 import org.activiti.engine.IdentityService;
 import org.junit.After;
 import org.junit.Before;
@@ -36,6 +37,8 @@ public class RecordEnquiryIT {
     @Rule
     public TestMailServer mailServer = new TestMailServer();
 
+    private String contactId;
+
     @Before
     public void setUp() {
         IdentityService idSvc = activitiRule.getIdentityService();
@@ -46,6 +49,14 @@ public class RecordEnquiryIT {
 
     @After
     public void tearDown() {
+
+        // Note, this is a hard delete
+        try {
+            delete(contactId);
+        } catch (Throwable e) {
+            System.err.println(e.getMessage());
+        }
+
         IdentityService idSvc = activitiRule.getIdentityService();
         idSvc.deleteUser(USERNAME);
 
@@ -59,7 +70,8 @@ public class RecordEnquiryIT {
             "processes/link/omny/custmgmt/AddActivityToContact.bpmn",
             "processes/link/omny/custmgmt/AddNoteToContact.bpmn",
             "processes/link/omny/mail/SelectDefaultEnquiryResponse.bpmn",
-            "processes/link/omny/mail/SendMemo.bpmn" }, tenantId = TENANT_ID)
+            "processes/link/omny/mail/SendMemo.bpmn",
+            "processes/link/omny/notifications/SendNotificationNoOp.bpmn" }, tenantId = TENANT_ID)
     public void testEnquiryFromNewContact() {
         try {
             ActivitiSpec spec = new ActivitiSpec(activitiRule,
@@ -67,15 +79,11 @@ public class RecordEnquiryIT {
                     .whenMsgReceived("", ENQUIRY_MSG, "/omny.enquiry.json",
                             TENANT_ID).whenExecuteJobsForTime(5000)
                     .collectVar("contactId")
-                    .thenProcessEndedAndInExclusiveEndEvent("endEvent")
+                    .thenProcessEndedAndInEndEvents("endInternal",
+                            "endExternal")
                     .thenExtension(new DumpAuditTrail(activitiRule));
 
-            // Note, this is a hard delete
-            if (((String) spec.getVar("contactId")).startsWith("http")) {
-                delete((String) spec.getVar("contactId"));
-            } else {
-                delete(BASE_URI + spec.getVar("contactId"));
-            }
+            setContactId(spec);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -90,7 +98,8 @@ public class RecordEnquiryIT {
             "processes/link/omny/custmgmt/AddActivityToContact.bpmn",
             "processes/link/omny/custmgmt/AddNoteToContact.bpmn",
             "processes/link/omny/mail/SelectDefaultEnquiryResponse.bpmn",
-            "processes/link/omny/mail/SendMemo.bpmn" }, tenantId = TENANT_ID)
+            "processes/link/omny/mail/SendMemo.bpmn",
+            "processes/link/omny/notifications/SendNotificationNoOp.bpmn" }, tenantId = TENANT_ID)
     public void testEnquiryFromNewContactNoMessage() {
         try {
             ActivitiSpec spec = new ActivitiSpec(activitiRule,
@@ -98,19 +107,25 @@ public class RecordEnquiryIT {
                     .whenMsgReceived("", ENQUIRY_MSG,
                             "/omny.enquiry-no-msg.json", TENANT_ID)
                     .whenExecuteJobsForTime(5000).collectVar("contactId")
-                    .thenProcessEndedAndInExclusiveEndEvent("endEvent")
+                    .thenProcessEndedAndInEndEvents("endExternal",
+                            "endInternal")
                     .thenExtension(new DumpAuditTrail(activitiRule));
 
-            // Note, this is a hard delete
-            if (((String) spec.getVar("contactId")).startsWith("http")) {
-                delete((String) spec.getVar("contactId"));
-            } else {
-                delete(BASE_URI + spec.getVar("contactId"));
-            }
-
+            setContactId(spec);
+            fail();
+        } catch (ActivitiException e) {
+            System.err.println("Unfortunately message is mandatory for now.");
         } catch (Exception e) {
             e.printStackTrace();
             fail();
+        }
+    }
+
+    private void setContactId(ActivitiSpec spec) {
+        if (((String) spec.getVar("contactId")).startsWith("http")) {
+            contactId = (String) spec.getVar("contactId");
+        } else {
+            contactId = BASE_URI + spec.getVar("contactId");
         }
     }
 
@@ -121,7 +136,8 @@ public class RecordEnquiryIT {
             "processes/link/omny/custmgmt/AddActivityToContact.bpmn",
             "processes/link/omny/custmgmt/AddNoteToContact.bpmn",
             "processes/link/omny/mail/SelectDefaultEnquiryResponse.bpmn",
-            "processes/link/omny/mail/SendMemo.bpmn" }, tenantId = TENANT_ID)
+            "processes/link/omny/mail/SendMemo.bpmn",
+            "processes/link/omny/notifications/SendNotificationNoOp.bpmn" }, tenantId = TENANT_ID)
     public void testEnquiryFromExistingContact() {
         try {
             preCreateContact();
@@ -131,15 +147,11 @@ public class RecordEnquiryIT {
                     .whenMsgReceived("", ENQUIRY_MSG, "/omny.enquiry.json",
                             TENANT_ID).whenExecuteJobsForTime(5000)
                     .collectVar("contactId")
-                    .thenProcessEndedAndInExclusiveEndEvent("endEvent")
+                    .thenProcessEndedAndInEndEvents("endInternal",
+                            "endExternal")
                     .thenExtension(new DumpAuditTrail(activitiRule));
 
-            // Note, this is a hard delete
-            if (((String) spec.getVar("contactId")).startsWith("http")) {
-                delete((String) spec.getVar("contactId"));
-            } else {
-                delete(BASE_URI + spec.getVar("contactId"));
-            }
+            setContactId(spec);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -154,7 +166,7 @@ public class RecordEnquiryIT {
                     Collections
                             .singletonMap("Content-Type", "application/json"),
                             new String[0],
-                            "{\"firstName\",\"Montgomery Charles\",\"lastName\":\"Burns\",\"email\":\"monty@springfieldpower.com\"}");
+                            "{\"firstName\",\"Homer\",\"lastName\":\"Simpson\",\"email\":\"homer@springfieldpower.com\"}");
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getClass().getName() + ":" + e.getMessage());
