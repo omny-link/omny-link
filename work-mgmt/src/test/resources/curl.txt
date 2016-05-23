@@ -24,7 +24,10 @@ curl -X DELETE -u tstephen:tstephen -H "Accept:application/json" -v \
 
 # archive (to file) process instances
 curl -X GET -u tstephen:tstephen -H "Accept:application/json" -v \
-    http://localhost:8082/operations/carquake/archive
+    http://localhost:8082/carquake/process-instances/archive
+curl -X GET -u tstephen:tstephen -H "Accept:application/json" -v \
+    https://api.omny.link/carquake/process-instances/archive
+
  
 # Reset Password
  curl -X POST -u tstephen:tstephen -H "Accept:application/json" -v \
