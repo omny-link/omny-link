@@ -35,11 +35,9 @@ public class ActivitiApplicationSecurity extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**")
                 .permitAll()
-                .antMatchers("/css/**", "/data/**", "/disclosure.html",
-                        "/finance.html", "/fonts/**", "/images/**",
-                        "/index.html", "/js/**", "/mock/**", "/partials/**",
-                        "/public/**", "/sdu/**", "/sustainability.html",
-                        "/webjars/**")
+                .antMatchers("/*.html", "/css/**", "/data/**", "/fonts/**",
+                             "/images/**", "/js/**", "/msg/**", "/partials/**",
+                             "/public/**", "/sdu/**", "/webjars/**")
                 .permitAll()
                 .antMatchers(/* "/*.html", */"/process-instances/**",
                         "/tasks/**", "/tenants/**", "/users/**")
