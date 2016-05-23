@@ -189,7 +189,7 @@ public class UserRecordController {
         idSvc.saveUser(user);
     }
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
 	public @ResponseBody void delete(
 			@PathVariable("id") String id, HttpServletRequest request) {
 		LOGGER.info(String.format("Deleting profile of %1$s", id));

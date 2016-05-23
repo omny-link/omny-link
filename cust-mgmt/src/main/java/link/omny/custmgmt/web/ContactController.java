@@ -28,6 +28,9 @@ import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import org.activiti.engine.IdentityService;
+import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.identity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -93,6 +96,9 @@ public class ContactController {
 
     // @Value("omny.minsConsideredActive:-60")
     private int minsConsideredActive = -60;
+
+    @Autowired
+    private ProcessEngine processEngine;
 
     /**
      * Imports JSON representation of contacts.
@@ -733,6 +739,30 @@ public class ContactController {
         return "emailConfirmation";
     }
 
+    @RequestMapping(value = "/{uuid}/reset-password", method = RequestMethod.POST, headers = "Accept=application/json")
+    public @ResponseBody void resetPassword(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("uuid") String uuid,
+            @RequestParam(name = "password") String pwd,
+            @RequestParam(name = "password2") String pwd2) {
+        LOGGER.info(String.format("Updating password of %1$s", uuid));
+
+        if (!pwd.equals(pwd2)) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        IdentityService idSvc = processEngine.getIdentityService();
+        List<Contact> contacts = contactRepo.findByUuid(uuid, tenantId);
+        if (contacts.size() > 0) {
+            User user = idSvc.createUserQuery()
+                    .userEmail(contacts.get(0).getEmail()).singleResult();
+            user.setPassword(pwd);
+            idSvc.saveUser(user);
+        } else {
+            throw new BusinessEntityNotFoundException("contact", uuid);
+        }
+    }
+
     /**
      * If value is in fact "value", remove the quotes.
      *
@@ -797,6 +827,7 @@ public class ContactController {
         private String enquiryType;
         private String accountType;
         private String tags;
+        private String uuid;
         private Date firstContact;
         private Date lastUpdated;
     }
