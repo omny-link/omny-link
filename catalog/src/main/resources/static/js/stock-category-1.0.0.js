@@ -275,7 +275,7 @@ var ractive = new AuthenticatedRactive({
   save: function () {
     console.log('save stockCategory: '+ractive.get('current').lastName+'...');
     ractive.set('saveObserver',false);
-    var id = ractive.getId(ractive.get('current'));
+    var id = ractive.uri(ractive.get('current'));
     if (document.getElementById('currentForm')==undefined) { 
       console.debug('still loading, safe to ignore');
     } else if (document.getElementById('currentForm').checkValidity()) {
@@ -291,7 +291,7 @@ var ractive = new AuthenticatedRactive({
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save stockCategory'+JSON.stringify(tmp)+' ...');
       $.ajax({
-        url: id === undefined ? '/'+tmp.tenantId+'/stock-categories/' : id.replace(/stock-categories/,tmp.tenantId+'/stock-categories'),
+        url: id === undefined ? '/'+tmp.tenantId+'/stock-categories/' : id,
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
