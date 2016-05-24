@@ -123,9 +123,9 @@ public class StockItem implements Serializable {
 
     private static Properties getDefaultDescriptions(
             @NotNull String tenantId) {
-        // if (defaultDescriptions.get(tenantId) == null) {
+        if (defaultDescriptions.get(tenantId) == null) {
             initDefaultDescriptions(tenantId);
-        // }
+        }
         return defaultDescriptions.get(tenantId);
     }
 
@@ -206,7 +206,14 @@ public class StockItem implements Serializable {
     public String getDescription() {
         if ((description == null || description.trim().length() == 0)
                 && tenantId != null) {
-            return getDefaultDescriptions(tenantId).getProperty(type);
+            try {
+                return getDefaultDescriptions(tenantId).getProperty(type);
+            } catch (Exception e) {
+                LOGGER.error(String.format(
+                        "Could not find default description of %1$s for %2$s",
+                        type, tenantId));
+                return "";
+            }
         } else {
             return description;
         }
