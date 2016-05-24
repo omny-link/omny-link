@@ -18,6 +18,8 @@ import com.knowprocess.resource.spi.RestDelete;
 
 public class RegisterOmnyContactIT {
 
+    private static final String GRP_USER = "user";
+
     private static final String MSG_NAMESPACE = "omny";
 
     private static final String USERNAME = "tim";
@@ -38,6 +40,8 @@ public class RegisterOmnyContactIT {
         IdentityService idSvc = activitiRule.getIdentityService();
         idSvc.saveUser(idSvc.newUser(USERNAME));
 
+        idSvc.saveGroup(idSvc.newGroup(GRP_USER));
+
         TestCredentials.initBot(idSvc, TENANT_ID);
     }
 
@@ -54,8 +58,6 @@ public class RegisterOmnyContactIT {
             "processes/link/omny/website/RegisterOmnyContact.bpmn",
             "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn",
             "processes/link/omny/custmgmt/AddNoteToContact.bpmn",
-            "processes/link/omny/mail/ConfirmEmail.bpmn",
-            "processes/link/omny/mail/SendAddressConfirmationEmail.bpmn",
             "processes/link/omny/mail/SendWelcomeEmail.bpmn" }, tenantId = TENANT_ID)
     public void testMinimalRegistration() {
         try {
@@ -64,20 +66,12 @@ public class RegisterOmnyContactIT {
                     .whenMsgReceived("", REGISTER_SELF_MSG,
                             "/omny.registration.json", TENANT_ID)
                     .whenExecuteJobsForTime(5000)
-                    // TODO This does not work due to the Activiti ReceiveTask
-                    // implementation
-                    // Consider intermediate msgEvent but then cannot use
-                    // timeout
-//                    .receiveMessage(
-//                            "awaitConfirmation",
-//                            ActivitiSpec.buildMap(ActivitiSpec.newPair(
-//                                    "contactEmail", REGISTRANT_EMAIL)))
-                    // .receiveSignal("awaitConfirmation")
-                    // Note: sub-proc only returns id after msg received
+                    .thenSubProcessCalled("CreateContactAndAccount")
                     .collectVar("contactId")
                     .whenExecuteAllJobs(2000)
-                     .thenProcessEndedAndInExclusiveEndEvent(
-                     "endEvent")
+                    .thenUserExists("smithers@springfieldpower.com", GRP_USER)
+                    .thenSubProcessCalled("SendWelcomeEmail")
+                    .thenProcessEndedAndInExclusiveEndEvent("endEvent")
                     .thenExtension(new DumpAuditTrail(activitiRule));
 
             // Note, this is a hard delete
