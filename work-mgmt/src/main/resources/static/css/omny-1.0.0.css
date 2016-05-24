@@ -55,6 +55,7 @@ img.entity-context {
 }
 input,select,textarea { 
 	border-color: #ccc;
+  line-height:1.4em;
 	padding: 0 10px 0 10px;
 }
 input.field-error:invalid,

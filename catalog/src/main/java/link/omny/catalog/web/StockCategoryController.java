@@ -3,6 +3,7 @@ package link.omny.catalog.web;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -162,7 +163,7 @@ public class StockCategoryController {
         }
 
         if (type != null && type.trim().length() > 0) {
-            filter(category, type);
+            filter(category, expandTypes(type));
         }
 
         ShortStockCategory shortStockCategory = wrap(category);
@@ -201,13 +202,16 @@ public class StockCategoryController {
             }
         }
 
+        // TODO need to make this some kind of extension point
+        List<String> types = expandTypes(type);
+
         List<StockCategory> tmpList = null;
         if (type == null || type.trim().length() == 0) {
             tmpList = stockCategoryRepo.findByStatusForTenant(tenantId,
                     "Published");
         } else {
             tmpList = stockCategoryRepo.findByTypeAndStatusForTenant(tenantId,
-                    type, "Published");
+                    types, "Published");
         }
         for (StockCategory stockCategory : tmpList) {
             try {
@@ -220,7 +224,7 @@ public class StockCategoryController {
                 if (matchQuery(q, qPoint, stockCategory)) {
                     // TODO On the face of it the SQL query does this already,
                     // but something is going wrong
-                    filter(stockCategory, type);
+                    filter(stockCategory, types);
                     list.add(stockCategory);
                 }
             } catch (UnknownHostException e) {
@@ -228,7 +232,7 @@ public class StockCategoryController {
                         .format("Unable to geo locate '%1$s', will return unfiltered list",
                                 stockCategory.getPostCode()));
                 // TODO see above
-                filter(stockCategory, type);
+                filter(stockCategory, types);
                 list.add(stockCategory);
             } catch (Exception e) {
                 LOGGER.error(String.format(
@@ -246,14 +250,29 @@ public class StockCategoryController {
         return wrap(list);
     }
 
-    private void filter(final StockCategory stockCategory, final String type) {
+    private List<String> expandTypes(String type) {
+        List<String> types;
+        if (type.toLowerCase().contains("office")
+                || type.toLowerCase().contains("storage")
+                || type.toLowerCase().contains("workshop")) {
+            types = Arrays.asList("Business Unit", type);
+        } else {
+            types = Arrays.asList(type);
+        }
+        return types;
+    }
+
+    private void filter(final StockCategory stockCategory,
+            final List<String> types) {
         ArrayList<StockItem> filteredItems = new ArrayList<StockItem>();
         for (StockItem item : stockCategory.getStockItems()) {
-            if ((type == null || item.getType().equalsIgnoreCase(type))
-            // TODO publish to website needs to become standard attr
-                    && (Boolean.parseBoolean((String) item
-                            .getCustomFieldValue("publishWebsite")))) {
-                filteredItems.add(item);
+            for (String type : types) {
+                if ((types == null || item.getType().equalsIgnoreCase(type))
+                // TODO publish to website needs to become standard attr
+                        && (Boolean.parseBoolean((String) item
+                                .getCustomFieldValue("publishWebsite")))) {
+                    filteredItems.add(item);
+                }
             }
         }
         stockCategory.setStockItems(filteredItems);
