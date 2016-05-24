@@ -4,7 +4,7 @@
       <span contenteditable id="curName2" on-focus="editField('#curName2','current.name')" on-blur="updateField('#curName2','current.name')" value="{{current.name}}"></span>
     </h2>
     
-    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+    <div class="currentBody col-md-6 col-sm-12">
       <ul class="form edit-form">
         <li>
           <label class="">Category:</label>
@@ -16,13 +16,9 @@
           <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockType" value="{{current.type}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block"></p>
         </li>
-        <li class="form-group">
-          <label class="textarea">Description:</label>
-          <textarea class="" id="curDescription" value="{{current.description}}"></textarea>
-        </li>
       </ul>
     </div>
-    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+    <div class="currentBody col-md-6 col-sm-12">
       <ul class="form edit-form">
         <li>
           <label class="">Price:</label>
@@ -36,6 +32,15 @@
           <label class="">Size:</label>
           <input class="form-control" id="curSize" type="number" value="{{current.size}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block"></p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="currentBody col-md-12">
+      <ul class="form edit-form">
+        <li class="form-group">
+          <label class="textarea col-md-2">Description:</label>
+          <textarea class="" id="curDescription" rows="10" value="{{current.description}}"></textarea>
         </li>
       </ul>
     </div>
