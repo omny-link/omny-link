@@ -71,14 +71,16 @@ public class RecordEnquiryIT {
             "processes/link/omny/custmgmt/AddNoteToContact.bpmn",
             "processes/link/omny/mail/SelectDefaultEnquiryResponse.bpmn",
             "processes/link/omny/mail/SendMemo.bpmn",
-            "processes/link/omny/notifications/SendNotificationNoOp.bpmn" }, tenantId = TENANT_ID)
+            "processes/link/omny/notifications/SendNotificationMemo.bpmn" }, tenantId = TENANT_ID)
     public void testEnquiryFromNewContact() {
         try {
             ActivitiSpec spec = new ActivitiSpec(activitiRule,
                     "testEnquiryFromNewContact")
                     .whenMsgReceived("", ENQUIRY_MSG, "/omny.enquiry.json",
-                            TENANT_ID).whenExecuteJobsForTime(5000)
+                            TENANT_ID)
+                    .whenExecuteJobsForTime(10000)
                     .collectVar("contactId")
+                    .thenExtension(new DumpAuditTrail(activitiRule))
                     .thenProcessEndedAndInEndEvents("endInternal",
                             "endExternal")
                     .thenExtension(new DumpAuditTrail(activitiRule));
