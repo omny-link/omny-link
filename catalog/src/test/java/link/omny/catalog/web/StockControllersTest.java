@@ -126,11 +126,7 @@ public class StockControllersTest {
                 .findByLocation(TENANT_ID, null, null, null, null);
         assertEquals(1, categoryResults.size());
 
-        // check category
-        assertEquals(category.getName(), categoryResults.get(0).getName());
-        assertNotNull(category.getImages());
-        assertEquals(StockCategory.DEFAULT_IMAGE_COUNT, category.getImages()
-                .size());
+        checkCategory(category, categoryResults.get(0));
 
         // check item
         assertNotNull(categoryResults.get(0).getStockItems());
@@ -172,11 +168,7 @@ public class StockControllersTest {
         ShortStockCategory categoryFound = categoryController.findByName(
                 TENANT_ID, CATEGORY_BOREHAMWOOD, null);
 
-        // check category
-        assertEquals(category.getName(), categoryFound.getName());
-        assertNotNull(category.getImages());
-        assertEquals(StockCategory.DEFAULT_IMAGE_COUNT, category.getImages()
-                .size());
+        checkCategory(category, categoryFound);
 
         // check item
         assertNotNull(categoryFound.getStockItems());
@@ -190,6 +182,15 @@ public class StockControllersTest {
         assertEquals(2, categoryFound.getStockItems().size());
 
         return categoryFound;
+    }
+
+    private void checkCategory(StockCategory category,
+            ShortStockCategory categoryFound) {
+        assertEquals(category.getName(), categoryFound.getName());
+        assertEquals("Published", categoryFound.getStatus());
+        assertNotNull(category.getImages());
+        assertEquals(StockCategory.DEFAULT_IMAGE_COUNT, category.getImages()
+                .size());
     }
 
     protected void checkOfficeItem(StockCategory category, StockItem officeItem,

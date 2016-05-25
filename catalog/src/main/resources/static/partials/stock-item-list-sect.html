@@ -15,6 +15,7 @@
         <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
         <th on-click="sort:stockCategoryName">Category<span class="sortable {{ sorted('stockCategoryName') }} glyphicon"></th>
         <th on-click="type">Type<span class="sortable {{ sorted('type') }} glyphicon"></th>
+        <th on-click="sort:status">Status<span class="sortable {{ sorted('status') }} glyphicon "></th>
         <th on-click="type">Unit Price<span class="sortable {{ sorted('unitPrice') }} glyphicon"></th>
         <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon"></th>
         <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
@@ -32,7 +33,8 @@
             <td on-click="edit(this)">{{name}}</td>
             <td on-click="edit(this)">{{stockCategoryName}}</td>
             <td on-click="edit(this)">{{type}}</td>
-            <td on-click="edit(this)">{{unitPrice}}</td>
+            <td on-click="edit(this)">{{status}}</td>
+            <td on-click="edit(this)">{{price}}</td>
             <td on-click="edit(this)">{{formatDate(created)}}</td>
             <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
             <td class="col-actions">

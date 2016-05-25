@@ -13,6 +13,7 @@
       <tr>
         <th></th>
         <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
+        <th on-click="sort:status">Status<span class="sortable {{ sorted('status') }} glyphicon "></th>
         <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon"></th>
         <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
         <th class="col-actions">Actions</th>
@@ -27,6 +28,7 @@
               <td><input class="checkbox" type="checkbox" on-change="selectMultiple(this)"/></td>
             {{/}}
             <td on-click="edit(this)">{{name}}</td>
+            <td on-click="edit(this)">{{this.status}}</td>
             <td on-click="edit(this)">{{formatDate(created)}}</td>
             <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
             <td class="col-actions">
