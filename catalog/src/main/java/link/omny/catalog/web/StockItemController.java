@@ -304,6 +304,7 @@ public class StockItemController {
     private ShortStockItem wrap(StockItem stockItem) {
         ShortStockItem resource = new ShortStockItem();
         BeanUtils.copyProperties(stockItem, resource);
+
         if (stockItem.getStockCategory() != null) {
             resource.setStockCategoryName(stockItem.getStockCategory()
                     .getName());
@@ -348,6 +349,7 @@ public class StockItemController {
         private String directionsByRoad;
         private String directionsByPublicTransport;
         private String directionsByAir;
+        private String status;
         private Date created;
         private Date lastUpdated;
         private StockCategory stockCategory;
