@@ -8,6 +8,7 @@ var ractive = new AuthenticatedRactive({
   template: '#template',
   data: {
     accounts: [],
+    entityPath: '/contacts',
     csrfToken: getCookie(CSRF_COOKIE),
     contacts: [],
     filter: {field: "stage", operator: "!in", value: "cold,complete"},
@@ -410,7 +411,7 @@ var ractive = new AuthenticatedRactive({
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save contact'+JSON.stringify(tmp)+' ...');
       $.ajax({
-        url: id === undefined ? '/'+tmp.tenantId+'/contacts/' : id,
+        url: id === undefined ? '/'+tmp.tenantId+'/contacts/' : ractive.tenantUri(tmp),
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),

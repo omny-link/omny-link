@@ -205,14 +205,8 @@ public class StockCategoryController {
         // TODO need to make this some kind of extension point
         List<String> types = expandTypes(type);
 
-        List<StockCategory> tmpList = null;
-        if (type == null || type.trim().length() == 0) {
-            tmpList = stockCategoryRepo.findByStatusForTenant(tenantId,
-                    "Published");
-        } else {
-            tmpList = stockCategoryRepo.findByTypeAndStatusForTenant(tenantId,
-                    types, "Published");
-        }
+        List<StockCategory> tmpList = stockCategoryRepo.findByStatusForTenant(
+                tenantId, "Published");
         for (StockCategory stockCategory : tmpList) {
             try {
                 if (stockCategory.getLng() == 0.0d) {
@@ -222,8 +216,6 @@ public class StockCategoryController {
                 }
 
                 if (matchQuery(q, qPoint, stockCategory)) {
-                    // TODO On the face of it the SQL query does this already,
-                    // but something is going wrong
                     filter(stockCategory, types);
                     list.add(stockCategory);
                 }
@@ -231,7 +223,6 @@ public class StockCategoryController {
                 LOGGER.error(String
                         .format("Unable to geo locate '%1$s', will return unfiltered list",
                                 stockCategory.getPostCode()));
-                // TODO see above
                 filter(stockCategory, types);
                 list.add(stockCategory);
             } catch (Exception e) {
@@ -245,32 +236,35 @@ public class StockCategoryController {
                         (o1, o2) -> ((int) o1.getDistance())
                                 - ((int) o2.getDistance()));
 
-        LOGGER.info(String.format("Found %1$s stockCategories", list.size()));
+        LOGGER.info(String.format("Found %1$s stock categories", list.size()));
 
         return wrap(list);
     }
 
     private List<String> expandTypes(String type) {
         List<String> types;
-        if (type != null && (type.toLowerCase().contains("office")
+        if (type == null){ 
+            return Collections.emptyList();
+        } else if (type.toLowerCase().contains("office")
                 || type.toLowerCase().contains("storage")
-                || type.toLowerCase().contains("workshop"))) {
+                || type.toLowerCase().contains("workshop")) {
             types = Arrays.asList("Business Unit", type);
         } else {
             types = Arrays.asList(type);
         }
         return types;
     }
-
+    
     private void filter(final StockCategory stockCategory,
             final List<String> types) {
+        if (types == null || types.size() == 0) {
+            return;
+        }
         ArrayList<StockItem> filteredItems = new ArrayList<StockItem>();
         for (StockItem item : stockCategory.getStockItems()) {
             for (String type : types) {
-                if ((types == null || item.getType().equalsIgnoreCase(type))
-                // TODO publish to website needs to become standard attr
-                        && (Boolean.parseBoolean((String) item
-                                .getCustomFieldValue("publishWebsite")))) {
+                if (type == null || (item.getType().equalsIgnoreCase(type)
+                        && "Published".equalsIgnoreCase(item.getStatus()))) {
                     filteredItems.add(item);
                 }
             }
@@ -423,6 +417,7 @@ public class StockCategoryController {
         private String unit;
         private String price;
         private String type;
+        private String status;
         private Date created;
         private Date lastUpdated;
         private String tenantId;

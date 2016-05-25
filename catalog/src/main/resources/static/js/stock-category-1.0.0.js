@@ -8,6 +8,7 @@ var ractive = new AuthenticatedRactive({
   template: '#template',
   data: {
     csrfToken: getCookie(CSRF_COOKIE),
+    entityPath: '/stock-categories',
     stockCategories: [],
     filter: {field: "stage", operator: "!in", value: "cold,complete"},
     //saveObserver:false,
@@ -291,7 +292,7 @@ var ractive = new AuthenticatedRactive({
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save stockCategory'+JSON.stringify(tmp)+' ...');
       $.ajax({
-        url: id === undefined ? '/'+tmp.tenantId+'/stock-categories/' : id,
+        url: id === undefined ? '/'+tmp.tenantId+'/stock-categories/' : ractive.tenantUri(tmp),
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
