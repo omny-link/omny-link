@@ -252,9 +252,9 @@ public class StockCategoryController {
 
     private List<String> expandTypes(String type) {
         List<String> types;
-        if (type.toLowerCase().contains("office")
+        if (type != null && (type.toLowerCase().contains("office")
                 || type.toLowerCase().contains("storage")
-                || type.toLowerCase().contains("workshop")) {
+                || type.toLowerCase().contains("workshop"))) {
             types = Arrays.asList("Business Unit", type);
         } else {
             types = Arrays.asList(type);
