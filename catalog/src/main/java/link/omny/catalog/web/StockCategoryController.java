@@ -400,6 +400,7 @@ public class StockCategoryController {
         private String directionsByPublicTransport;
         private String directionsByAir;
         private String videoCode;
+        private String status;
         private Date created;
         private Date lastUpdated;
     }
