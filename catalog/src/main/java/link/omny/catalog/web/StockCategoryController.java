@@ -142,7 +142,7 @@ public class StockCategoryController {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
             list = stockCategoryRepo.findPageForTenant(tenantId, pageable);
         }
-        LOGGER.info(String.format("Found %1$s stockCategorys", list.size()));
+        LOGGER.info(String.format("Found %1$s stock categories", list.size()));
 
         return wrap(list);
     }
@@ -162,9 +162,7 @@ public class StockCategoryController {
                     "No Stock Category with name %1$s", name));
         }
 
-        if (type != null && type.trim().length() > 0) {
-            filter(category, expandTypes(type));
-        }
+        filter(category, expandTypes(type));
 
         ShortStockCategory shortStockCategory = wrap(category);
         return shortStockCategory;
@@ -257,9 +255,6 @@ public class StockCategoryController {
     
     private void filter(final StockCategory stockCategory,
             final List<String> types) {
-        if (types == null || types.size() == 0) {
-            return;
-        }
         ArrayList<StockItem> filteredItems = new ArrayList<StockItem>();
         for (StockItem item : stockCategory.getStockItems()) {
             for (String type : types) {
@@ -267,6 +262,10 @@ public class StockCategoryController {
                         && "Published".equalsIgnoreCase(item.getStatus()))) {
                     filteredItems.add(item);
                 }
+            }
+            if ((types == null || types.size() == 0)
+                    && "Published".equalsIgnoreCase(item.getStatus())) {
+                filteredItems.add(item);
             }
         }
         stockCategory.setStockItems(filteredItems);

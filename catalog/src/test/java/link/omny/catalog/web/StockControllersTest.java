@@ -85,6 +85,9 @@ public class StockControllersTest {
         StockItem businessUnitItem = createBusinessUnitItem(category);
         addItemToCategory(category, businessUnitItem.getSelfRef());
 
+        StockItem unpublishedItem = createUnpublishedItem(category);
+        addItemToCategory(category, unpublishedItem.getSelfRef());
+
         StockCategory category2 = categoryRepo.findOne(categoryId);
         assertNotNull(category2.getCreated());
         // TODO h2 test db not supporting default?
@@ -295,6 +298,22 @@ public class StockControllersTest {
         return item;
     }
 
+    protected StockItem createUnpublishedItem(StockCategory category)
+            throws IOException {
+        StockItem item = getUnpublishedItem();
+        ResponseEntity<?> itemResp = itemController.create(TENANT_ID, item);
+
+        String itemUri = getLocationUri(itemResp);
+        item.setId(Long.parseLong(itemUri.substring(itemUri.lastIndexOf('/') + 1)));
+
+        // assert derived fields
+        item.setStockCategory(category);
+        assertNotNull(item.getImages());
+        assertEquals(StockItem.DEFAULT_IMAGE_COUNT, item.getImages().size());
+
+        return item;
+    }
+
     private String getLocationUri(ResponseEntity<?> itemResp) {
         assertEquals(HttpStatus.CREATED, itemResp.getStatusCode());
         List<String> locationHdrs = itemResp.getHeaders().get("Location");
@@ -359,6 +378,16 @@ public class StockControllersTest {
 
         assertEquals("Business unit name", item.getName());
         assertEquals("Business unit", item.getType());
+        return item;
+    }
+
+    protected StockItem getUnpublishedItem() throws IOException {
+        StockItem item = new StockItem("Unpublished unit name", "Gym");
+        item.setTenantId(TENANT_ID);
+        item.setStatus("Draft");
+
+        assertEquals("Unpublished unit name", item.getName());
+        assertEquals("Gym", item.getType());
         return item;
     }
 }
