@@ -8,6 +8,7 @@ var ractive = new AuthenticatedRactive({
   template: '#template',
   data: {
     contacts: [],
+    entityPath: '/stock-items',
     stockCategories: [],
     stockItems: [],
     filter: {field: "stage", operator: "!in", value: "cold,complete"},
@@ -360,7 +361,7 @@ var ractive = new AuthenticatedRactive({
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save stockItem'+JSON.stringify(tmp)+' ...');
       $.ajax({
-        url: id === undefined ? '/'+tmp.tenantId+'/stock-items/' : id,
+        url: id === undefined ? '/'+tmp.tenantId+'/stock-items/' : ractive.tenantUri(tmp),
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),

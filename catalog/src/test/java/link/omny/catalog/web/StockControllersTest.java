@@ -40,7 +40,7 @@ public class StockControllersTest {
 
     private static final String CATEGORY_BOREHAMWOOD = "Borehamwood";
 
-    private static final String TENANT_ID = "test";
+    private static final String TENANT_ID = "omny";
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -76,18 +76,24 @@ public class StockControllersTest {
     public void testLifecycle() throws IOException {
         StockCategory category = createCategory();
 
-        StockItem officeItem = createOfficeItem();
+        StockItem officeItem = createOfficeItem(category);
         addItemToCategory(category, officeItem.getSelfRef());
 
-        StockItem warehouseItem = createWarehouseItem();
+        StockItem warehouseItem = createWarehouseItem(category);
         addItemToCategory(category, warehouseItem.getSelfRef());
 
-        findByLocation(category, officeItem, warehouseItem);
+        StockItem businessUnitItem = createBusinessUnitItem(category);
+        addItemToCategory(category, businessUnitItem.getSelfRef());
 
         StockCategory category2 = categoryRepo.findOne(categoryId);
         assertNotNull(category2.getCreated());
         // TODO h2 test db not supporting default?
         // assertNotNull(category2.getLastUpdated());
+
+        findAll(category, officeItem, warehouseItem);
+        findNearReading(category, officeItem);
+        findOffice(category, officeItem);
+        findOfficeNearReading(category, officeItem);
 
         ShortStockCategory category3 = findByName(category, officeItem,
                 warehouseItem);
@@ -111,10 +117,8 @@ public class StockControllersTest {
                 .getCustomFields().size());
     }
 
-    protected void findByLocation(StockCategory category, StockItem officeItem,
-            StockItem warehouseItem)
-            throws IOException {
-        // Find all types
+    protected void findAll(StockCategory category, StockItem officeItem,
+            StockItem warehouseItem) throws IOException {
         List<ShortStockCategory> categoryResults = categoryController
                 .findByLocation(TENANT_ID, null, null, null, null);
         assertEquals(1, categoryResults.size());
@@ -127,29 +131,38 @@ public class StockControllersTest {
 
         // check item
         assertNotNull(categoryResults.get(0).getStockItems());
-        assertEquals(2, categoryResults.get(0).getStockItems().size());
-        assertEquals(officeItem.getName(), categoryResults.get(0)
-                .getStockItems().get(0).getName());
-        // item desc if null should default to category
-        assertEquals(category.getDescription(), categoryResults.get(0)
-                .getStockItems().get(0).getDescription());
-        assertNotNull(category.getImages());
-        assertEquals(StockItem.DEFAULT_IMAGE_COUNT, categoryResults.get(0)
-                .getStockItems().get(0).getImages().size());
+        assertEquals(3, categoryResults.get(0).getStockItems().size());
 
-        // Find just Office types
-        categoryResults = categoryController.findByLocation(TENANT_ID, null,
-                "Office", null, null);
-        assertEquals(1, categoryResults.get(0).getStockItems().size());
-
-        // check custom fields (needs extra fetch as not all included in search)
-        Long itemId = categoryResults.get(0).getStockItems().get(0)
-                .getStockItemId();
-        StockItem stockItem = itemRepo.findOne(itemId);
-        assertNotNull(stockItem.getId());
-        assertEquals(2, stockItem.getCustomFields().size());
+        checkOfficeItem(category, officeItem, categoryResults.get(0));
     }
 
+    protected void findOffice(StockCategory category, StockItem officeItem)
+            throws IOException {
+        List<ShortStockCategory> categoryResults = categoryController
+                .findByLocation(TENANT_ID, null,
+                "Office", null, null);
+        assertEquals(2, categoryResults.get(0).getStockItems().size());
+
+        checkOfficeItem(category, officeItem, categoryResults.get(0));
+    }
+
+    protected void findNearReading(StockCategory category, StockItem officeItem)
+            throws IOException {
+        List<ShortStockCategory> categoryResults = categoryController
+                .findByLocation(TENANT_ID, "Reading", null, null, null);
+        assertEquals(3, categoryResults.get(0).getStockItems().size());
+
+        checkOfficeItem(category, officeItem, categoryResults.get(0));
+    }
+
+    protected void findOfficeNearReading(StockCategory category,
+            StockItem officeItem) throws IOException {
+        List<ShortStockCategory> categoryResults = categoryController
+                .findByLocation(TENANT_ID, "Reading", "Office", null, null);
+        assertEquals(2, categoryResults.get(0).getStockItems().size());
+
+        checkOfficeItem(category, officeItem, categoryResults.get(0));
+    }
     protected ShortStockCategory findByName(StockCategory category,
             StockItem officeItem,
             StockItem warehouseItem) throws IOException {
@@ -164,22 +177,37 @@ public class StockControllersTest {
 
         // check item
         assertNotNull(categoryFound.getStockItems());
+        assertEquals(3, categoryFound.getStockItems().size());
+        
+        checkOfficeItem(category, officeItem, categoryFound);
+
+        // Find just Office types
+        categoryFound = categoryController.findByName(TENANT_ID, CATEGORY_BOREHAMWOOD,
+                "Office");
         assertEquals(2, categoryFound.getStockItems().size());
+
+        return categoryFound;
+    }
+
+    protected void checkOfficeItem(StockCategory category, StockItem officeItem,
+            ShortStockCategory categoryFound) {
         assertEquals(officeItem.getName(), categoryFound.getStockItems().get(0)
                 .getName());
-        // item desc if null should default to category
-        assertEquals(category.getDescription(), categoryFound.getStockItems()
+        assertEquals("Published", officeItem.getStatus());
+
+        // item desc if null should default to props file value
+        assertEquals("A fantastic working space", categoryFound.getStockItems()
                 .get(0).getDescription());
         assertNotNull(category.getImages());
         assertEquals(StockItem.DEFAULT_IMAGE_COUNT, categoryFound
                 .getStockItems().get(0).getImages().size());
 
-        // Find just Office types
-        categoryFound = categoryController.findByName(TENANT_ID, CATEGORY_BOREHAMWOOD,
-                "Office");
-        assertEquals(1, categoryFound.getStockItems().size());
-
-        return categoryFound;
+        // check custom fields (needs extra fetch as not all included in search)
+        Long itemId = categoryFound.getStockItems().get(0).getStockItemId();
+        StockItem stockItem = itemRepo.findOne(itemId);
+        assertNotNull(stockItem.getId());
+        assertEquals(officeItem.getCustomFields().size(), stockItem
+                .getCustomFields().size());
     }
 
     protected void addItemToCategory(StockCategory category, String itemUri) {
@@ -213,7 +241,8 @@ public class StockControllersTest {
         return category;
     }
 
-    protected StockItem createOfficeItem() throws IOException {
+    protected StockItem createOfficeItem(StockCategory category)
+            throws IOException {
         StockItem item = getOfficeItem();
         ResponseEntity<?> itemResp = itemController.create(TENANT_ID, item);
 
@@ -227,13 +256,15 @@ public class StockControllersTest {
         assertEquals("true", item.getCustomFieldValue("vacant"));
 
         // assert derived fields
+        item.setStockCategory(category);
         assertNotNull(item.getImages());
         assertEquals(StockItem.DEFAULT_IMAGE_COUNT, item.getImages().size());
 
         return item;
     }
 
-    protected StockItem createWarehouseItem() throws IOException {
+    protected StockItem createWarehouseItem(StockCategory category)
+            throws IOException {
         StockItem item = getWarehouseItem();
         ResponseEntity<?> itemResp = itemController.create(TENANT_ID, item);
 
@@ -241,6 +272,23 @@ public class StockControllersTest {
         item.setId(Long.parseLong(itemUri.substring(itemUri.lastIndexOf('/') + 1)));
 
         // assert derived fields
+        item.setStockCategory(category);
+        assertNotNull(item.getImages());
+        assertEquals(StockItem.DEFAULT_IMAGE_COUNT, item.getImages().size());
+
+        return item;
+    }
+
+    protected StockItem createBusinessUnitItem(StockCategory category)
+            throws IOException {
+        StockItem item = getBusinessUnitItem();
+        ResponseEntity<?> itemResp = itemController.create(TENANT_ID, item);
+
+        String itemUri = getLocationUri(itemResp);
+        item.setId(Long.parseLong(itemUri.substring(itemUri.lastIndexOf('/') + 1)));
+
+        // assert derived fields
+        item.setStockCategory(category);
         assertNotNull(item.getImages());
         assertEquals(StockItem.DEFAULT_IMAGE_COUNT, item.getImages().size());
 
@@ -257,7 +305,7 @@ public class StockControllersTest {
     }
 
     protected StockCategory getCategory() throws IOException {
-        String categoryJson = "{\"name\":\"Borehamwood\",\"description\":\"A very fine property\",\"postCode\":\"WD6 1RN\"}";
+        String categoryJson = "{\"name\":\"Borehamwood\",\"description\":\"A very fine property\",\"postCode\":\"WD6 1RN\",\"status\":\"Published\",\"type\":\"Office\"}";
 
         StockCategory category = objectMapper.readValue(categoryJson,
                 new TypeReference<StockCategory>() {
@@ -273,6 +321,7 @@ public class StockControllersTest {
         String itemJson = "{\"name\":\"trademark\",\"type\":\"Office\","
                 + "\"tenantId\":\"" + TENANT_ID + "\","
                 + "\"firstContact\":null,\"lastUpdated\":null,"
+                + "\"status\": \"Published\","
                 + "\"customFields\":{ \"vacant\": true, \"publishWebsite\": true }}";
 
         StockItem item = objectMapper.readValue(itemJson,
@@ -281,6 +330,7 @@ public class StockControllersTest {
         assertNotNull(item);
         assertEquals("trademark", item.getName());
         assertEquals("Office", item.getType());
+        assertEquals("Published", item.getStatus());
         assertEquals("vacant", item.getCustomFields().get(0).getName());
         assertEquals("true", item.getCustomFields().get(0).getValue());
         assertEquals("true", item.getCustomFieldValue("vacant"));
@@ -291,11 +341,24 @@ public class StockControllersTest {
     protected StockItem getWarehouseItem() throws IOException {
         StockItem item = new StockItem("Warehouse name", "Warehouse");
         item.setTenantId(TENANT_ID);
+        item.setStatus("Published");
         item.addCustomField(new CustomStockItemField("publishWebsite",
                 Boolean.TRUE.toString()));
 
         assertEquals("Warehouse name", item.getName());
         assertEquals("Warehouse", item.getType());
+        return item;
+    }
+
+    protected StockItem getBusinessUnitItem() throws IOException {
+        StockItem item = new StockItem("Business unit name", "Business unit");
+        item.setTenantId(TENANT_ID);
+        item.setStatus("Published");
+        item.addCustomField(new CustomStockItemField("publishWebsite",
+                Boolean.TRUE.toString()));
+
+        assertEquals("Business unit name", item.getName());
+        assertEquals("Business unit", item.getType());
         return item;
     }
 }

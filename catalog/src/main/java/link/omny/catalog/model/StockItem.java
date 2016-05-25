@@ -91,6 +91,9 @@ public class StockItem implements Serializable {
     // @NotNull
     private String type;
 
+    @JsonProperty
+    private String status;
+
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
@@ -311,10 +314,10 @@ public class StockItem implements Serializable {
                 return false;
         } else if (!size.equals(other.size))
             return false;
-        if (stockCategory == null) {
-            if (other.stockCategory != null)
+        if (status == null) {
+            if (other.status != null)
                 return false;
-        } else if (!stockCategory.equals(other.stockCategory))
+        } else if (!status.equals(other.status))
             return false;
         if (tenantId == null) {
             if (other.tenantId != null)
@@ -350,8 +353,7 @@ public class StockItem implements Serializable {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((price == null) ? 0 : price.hashCode());
         result = prime * result + ((size == null) ? 0 : size.hashCode());
-        result = prime * result
-                + ((stockCategory == null) ? 0 : stockCategory.hashCode());
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime * result
                 + ((tenantId == null) ? 0 : tenantId.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());

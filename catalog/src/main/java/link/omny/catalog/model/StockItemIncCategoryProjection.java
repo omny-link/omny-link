@@ -32,6 +32,8 @@ interface StockItemIncCategoryProjection {
 
     String getType();
 
+    String getStatus();
+
     Date getCreated();
 
     Date getLastUpdated();

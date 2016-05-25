@@ -8,13 +8,18 @@
       <ul class="form edit-form">
         <li>
           <label class="">Category:</label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockCategory" value="{{current.stockCategory.name}}">
+          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.stockCategory.name}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block"></p>
         </li>
         <li>
           <label class="">Type:</label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockType" value="{{current.type}}">
+          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockType" required value="{{current.type}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block"></p>
+        </li>
+        <li>
+          <label class="">Status:</label>
+          <input class="form-control typeahead" placeholder="Start typing to filter options" id="curStatus" value="{{current.status}}"/>
+          <p class="col-md-offset-4 help-block">Draft, Ready for review, Published etc.</p>
         </li>
       </ul>
     </div>
