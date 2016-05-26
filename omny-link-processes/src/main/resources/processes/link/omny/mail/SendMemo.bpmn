@@ -68,7 +68,7 @@ execution.setVariable('contactId',contactId);]]></script>
           <activiti:expression>${contact.getString('email')}</activiti:expression>
         </activiti:field>
         <activiti:field name="bcc">
-          <activiti:expression>tim@trakeo.com</activiti:expression>
+          <activiti:expression>tim@omny.link</activiti:expression>
         </activiti:field>
         <activiti:field name="subject">
           <activiti:expression><![CDATA[${memo.getString('title')}]]></activiti:expression>

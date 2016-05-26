@@ -24,11 +24,15 @@ var ractive = new AuthenticatedRactive({
 //      if (ractive.hasRole('admin')) $('.admin').show();
 //    });
   },
+  getProfile: function() {
+    console.log('getProfile skipped on reset password page');
+  },
   initControls: function() { 
     console.log('initControls');
   },
   oninit: function() {
     this.loadStandardPartials(this.get('stdPartials'));
+    this.set('server',document.location.href.substring(0,document.location.href.indexOf('/',document.location.href.indexOf('//')+2)));
   },
   reset: function() {
     console.info('reset');
@@ -37,7 +41,7 @@ var ractive = new AuthenticatedRactive({
       $('#loginSect').slideDown();
       var addr = $('#email').val();
       $.ajax({
-        url: '/msg/omny/omny.resetPassword.json',
+        url: ractive.getServer()+'/msg/omny/omny.resetPassword.json',
         type: 'POST',
         data: { json: JSON.stringify({ email: addr }) },
         dataType: 'text',
@@ -66,7 +70,7 @@ var ractive = new AuthenticatedRactive({
     $('#userPwdForm').slideUp();
     
     $.ajax({
-      url: '/'+ractive.get('current.tenantId')+'/messages/omny.resetPassword/'+ractive.get('current.instanceId'),
+      url: ractive.getServer()+'/'+ractive.get('current.tenantId')+'/messages/omny.resetPassword/'+ractive.get('current.instanceId'),
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(ractive.get('current')),
