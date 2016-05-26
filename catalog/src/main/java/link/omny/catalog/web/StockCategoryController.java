@@ -206,6 +206,8 @@ public class StockCategoryController {
         List<StockCategory> tmpList = stockCategoryRepo.findByStatusForTenant(
                 tenantId, "Published");
         for (StockCategory stockCategory : tmpList) {
+            // Capture types now before filtering
+            String allTypesAvail = stockCategory.getTypes();
             try {
                 if (stockCategory.getLng() == 0.0d) {
                     stockCategory.setGeoPoint(geo.locate(stockCategory
@@ -228,6 +230,8 @@ public class StockCategoryController {
                         "Exception calculating distance of %1$s from %2$s",
                         stockCategory.getName(), q), e);
             }
+            // set unfiltered type list
+            stockCategory.setTypes(allTypesAvail);
         }
         Collections
                 .sort(list,
