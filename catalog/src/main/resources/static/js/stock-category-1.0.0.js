@@ -114,6 +114,7 @@ var ractive = new AuthenticatedRactive({
         return true;
       } else {
         return ( (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+          || (obj.status!=undefined && obj.status.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
           || (searchTerm.startsWith('created>') && new Date(obj.firstStockCategory)>new Date(ractive.get('searchTerm').substring(8)))
           || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(ractive.get('searchTerm').substring(8)))

@@ -155,8 +155,14 @@ public class StockItem implements Serializable {
     }
 
     public StockItem(String name, String type) {
+        this();
         setName(name);
         setType(type);
+    }
+
+    public StockItem(String name, String type, String status) {
+        this(name, type);
+        setStatus(status);
     }
 
     public String getSelfRef() {
@@ -249,6 +255,10 @@ public class StockItem implements Serializable {
             return price.setScale(CURRENCY_SCALE, BigDecimal.ROUND_HALF_DOWN)
                     .toPlainString();
         }
+    }
+
+    public boolean isPublished() {
+        return "Published".equalsIgnoreCase(status);
     }
 
     @PreUpdate
