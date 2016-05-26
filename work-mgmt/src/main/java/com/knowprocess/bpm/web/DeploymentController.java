@@ -1,13 +1,11 @@
 package com.knowprocess.bpm.web;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Scanner;
 
 import javax.xml.transform.TransformerConfigurationException;
 
@@ -80,10 +78,35 @@ public class DeploymentController {
         return deployment;
     }
 
+    @RequestMapping(value = "/{resource}/", method = RequestMethod.POST, headers = "Accept=application/json")
+    public final @ResponseBody org.activiti.engine.repository.Deployment deployFromClasspath(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("resource") String resource,
+            @RequestParam(required = false) String deploymentName)
+            throws UnsupportedEncodingException, IOException,
+            UnsupportedBpmnException {
+
+        org.activiti.engine.repository.Deployment deployment = null;
+
+        LOGGER.debug(String.format("Deploy %1$s with name %2$s", resource,
+                deploymentName));
+        resource = resource.replace('.', '/') + ".bpmn";
+
+        DeploymentBuilder builder = processEngine.getRepositoryService()
+                .createDeployment();
+        builder.tenantId(tenantId);
+        if (deploymentName != null) {
+            builder.name(deploymentName);
+        }
+        builder.addClasspathResource(resource);
+        builder.deploy();
+
+        return deployment;
+    }
+
     @RequestMapping(method = RequestMethod.POST, consumes = "multipart/form-data", headers = "Accept=application/json")
     public final @ResponseBody org.activiti.engine.repository.Deployment uploadMultipleFiles(
-            UriComponentsBuilder uriBuilder,
-            @RequestParam String tenantId,
+            UriComponentsBuilder uriBuilder, @RequestParam String tenantId,
             @RequestParam(required = false) String deploymentName,
             @RequestParam MultipartFile... resourceFile)
             throws UnsupportedEncodingException, IOException,
@@ -240,20 +263,6 @@ public class DeploymentController {
 
     protected ProcessModel createModel(ProcessModel model) {
         return processModelRepo.save(model);
-    }
-
-    private String readString(InputStream is) {
-        try {
-            return new Scanner(is).useDelimiter("\\A").next();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        } finally {
-            try {
-                is.close();
-            } catch (Exception e) {
-            }
-        }
     }
 
 }
