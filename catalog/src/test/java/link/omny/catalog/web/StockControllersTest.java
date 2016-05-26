@@ -142,6 +142,7 @@ public class StockControllersTest {
                 "Office", null, null);
         assertEquals(2, categoryResults.get(0).getStockItems().size());
 
+        checkCategory(category, categoryResults.get(0));
         checkOfficeItem(category, officeItem, categoryResults.get(0));
     }
 
@@ -151,6 +152,7 @@ public class StockControllersTest {
                 .findByLocation(TENANT_ID, "Reading", null, null, null);
         assertEquals(3, categoryResults.get(0).getStockItems().size());
 
+        checkCategory(category, categoryResults.get(0));
         checkOfficeItem(category, officeItem, categoryResults.get(0));
     }
 
@@ -188,6 +190,7 @@ public class StockControllersTest {
             ShortStockCategory categoryFound) {
         assertEquals(category.getName(), categoryFound.getName());
         assertEquals("Published", categoryFound.getStatus());
+        assertEquals("Business unit,Office,Warehouse", categoryFound.getTypes());
         assertNotNull(category.getImages());
         assertEquals(StockCategory.DEFAULT_IMAGE_COUNT, category.getImages()
                 .size());
