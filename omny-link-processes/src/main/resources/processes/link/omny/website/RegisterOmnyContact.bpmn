@@ -21,16 +21,11 @@
       <outgoing>_3</outgoing>
     </callActivity>
     <sequenceFlow id="_13" sourceRef="startFromOmnyRegistrationMsg" targetRef="_11"/>
-    <callActivity calledElement="SendWelcomeEmail" completionQuantity="1" id="_4" isForCompensation="false" name="Send welcome to&#10; subscriber" startQuantity="1">
+    <callActivity calledElement="SendMemo" completionQuantity="1" id="_4" isForCompensation="false" name="Send welcome to&#10; subscriber" startQuantity="1">
       <extensionElements>
-        <activiti:in sourceExpression="Welcome!" target="subject"/>
-        <activiti:in source="contactEmail" target="contactEmail"/>
-        <activiti:in sourceExpression="${contact.getString('firstName')}" target="contactFirstName"/>
-        <activiti:in sourceExpression="http://api.omny.link:8082/" target="baseUrl"/>
-        <activiti:in sourceExpression="The Omny Link Team" target="signOff"/>
-        <activiti:in sourceExpression="omny" target="tenantId"/>
+        <activiti:in sourceExpression="WelcomeNewUser" target="memoName"/>
+        <activiti:in sourceExpression="${omny_registration.getString('tenantId')}" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
-        <activiti:in source="contact" target="contact"/>
       </extensionElements>
       <incoming>_6</incoming>
       <outgoing>_8</outgoing>
@@ -49,7 +44,10 @@
       <incoming>_3</incoming>
       <outgoing>_6</outgoing>
       <script><![CDATA[var userId = execution.getVariable('contactEmail');
+var contact = execution.getVariable('contact');
 var user = execution.getEngineServices().getIdentityService().newUser(userId);
+user.setFirstName(contact.getString('firstName'));
+user.setLastName(contact.getString('lastName'));
 execution.getEngineServices().getIdentityService().saveUser(user);
 
 execution.getEngineServices().getIdentityService().createMembership(userId, 'user');]]></script>

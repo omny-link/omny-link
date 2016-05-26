@@ -80,7 +80,10 @@ public class RecordEnquiryIT {
                             TENANT_ID)
                     .whenExecuteJobsForTime(10000)
                     .collectVar("contactId")
-                    .thenExtension(new DumpAuditTrail(activitiRule))
+                    .thenSubProcessCalled("CreateContactAndAccount")
+                    .thenSubProcessCalled("AddActivityToContact")
+                    .thenSubProcessCalled("SendNotification")
+                    .thenSubProcessCalled("SendMemo")
                     .thenProcessEndedAndInEndEvents("endInternal",
                             "endExternal")
                     .thenExtension(new DumpAuditTrail(activitiRule));

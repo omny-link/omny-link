@@ -57,20 +57,21 @@ public class RegisterOmnyContactIT {
     @org.activiti.engine.test.Deployment(resources = {
             "processes/link/omny/website/RegisterOmnyContact.bpmn",
             "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn",
+            "processes/link/omny/custmgmt/AddActivityToContact.bpmn",
             "processes/link/omny/custmgmt/AddNoteToContact.bpmn",
-            "processes/link/omny/mail/SendWelcomeEmail.bpmn" }, tenantId = TENANT_ID)
+            "processes/link/omny/mail/SendMemo.bpmn" }, tenantId = TENANT_ID)
     public void testMinimalRegistration() {
         try {
             ActivitiSpec spec = new ActivitiSpec(activitiRule,
                     "testMinimalRegistration")
                     .whenMsgReceived("", REGISTER_SELF_MSG,
                             "/omny.registration.json", TENANT_ID)
-                    .whenExecuteJobsForTime(5000)
+                    .whenExecuteJobsForTime(3000)
                     .thenSubProcessCalled("CreateContactAndAccount")
                     .collectVar("contactId")
                     .whenExecuteAllJobs(2000)
                     .thenUserExists("smithers@springfieldpower.com", GRP_USER)
-                    .thenSubProcessCalled("SendWelcomeEmail")
+                    .thenSubProcessCalled("SendMemo")
                     .thenProcessEndedAndInExclusiveEndEvent("endEvent")
                     .thenExtension(new DumpAuditTrail(activitiRule));
 
