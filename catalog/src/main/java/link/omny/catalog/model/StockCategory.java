@@ -2,6 +2,7 @@ package link.omny.catalog.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -142,6 +143,11 @@ public class StockCategory implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockCategory", targetEntity = StockItem.class)
     private List<StockItem> stockItems;
 
+    public StockCategory(String name) {
+        this();
+        setName(name);
+    }
+
     public List<CustomStockCategoryField> getCustomFields() {
         if (customFields == null) {
             customFields = new ArrayList<CustomStockCategoryField>();
@@ -197,16 +203,35 @@ public class StockCategory implements Serializable {
         return images;
     }
 
+    public List<StockItem> getStockItems() {
+        if (stockItems == null) {
+            stockItems = new ArrayList<StockItem>();
+        }
+        return stockItems;
+    }
+
+    public StockCategory addStockItem(StockItem item) {
+        getStockItems().add(item);
+        return this;
+    }
+
     public String getTypes() {
+        if (types != null) {
+            return types;
+        }
         if (stockItems == null) {
             return null;
         }
         List<String> types = new ArrayList<String>();
         for (StockItem stockItem : stockItems) {
-            if (stockItem != null && !types.contains(stockItem.getType())) {
+            if (stockItem != null && stockItem.isPublished()
+                    && !types.contains(stockItem.getType())) {
                 types.add(stockItem.getType());
             }
         }
+
+        Collections.sort(types, (o1, o2) -> o1.compareToIgnoreCase(o2));
+
         StringBuilder sb = new StringBuilder();
         for (String stockItem : types) {
             sb.append(stockItem).append(",");
