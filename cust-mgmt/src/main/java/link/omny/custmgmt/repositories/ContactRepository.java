@@ -63,31 +63,31 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
             @Param("lastName") String lastName,
             @Param("accountName") String accountName);
 
-    @Query("SELECT c FROM Contact c WHERE c.email = :email AND c.tenantId = :tenantId")
+    @Query("SELECT c FROM Contact c WHERE c.email = :email AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId")
     List<Contact> findByEmail(@Param("email") String email,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c WHERE c.tags LIKE :tag AND c.tenantId = :tenantId")
+    @Query("SELECT c FROM Contact c WHERE c.tags LIKE :tag AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId")
     List<Contact> findByTag(@Param("tag") String tag,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c.stage, COUNT(c) FROM Contact c WHERE c.tenantId = :tenantId GROUP BY c.stage")
+    @Query("SELECT c.stage, COUNT(c) FROM Contact c WHERE (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId GROUP BY c.stage")
     List<Object[]> findAllForTenantGroupByStage(
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.tenantId = :tenantId")
+    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId")
     List<Contact> findByUuid(@Param("uuid") String uuid,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.email IS NOT NULL AND c.tenantId = :tenantId")
+    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.email IS NOT NULL AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId")
     List<Contact> findKnownByUuid(@Param("uuid") String uuid,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.firstName IS NULL AND c.lastName IS NULL AND c.tenantId = :tenantId")
+    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.firstName IS NULL AND c.lastName IS NULL AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId")
     List<Contact> findAnonByUuid(@Param("uuid") String uuid,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c INNER JOIN c.activity a WHERE a.occurred > :sinceDate AND c.tenantId = :tenantId ORDER BY a.occurred DESC")
+    @Query("SELECT c FROM Contact c INNER JOIN c.activity a WHERE a.occurred > :sinceDate AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId ORDER BY a.occurred DESC")
     List<Contact> findActiveForTenant(@Param("sinceDate") Date sinceDate,
             @Param("tenantId") String tenantId);
 

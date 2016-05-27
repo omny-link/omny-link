@@ -1,8 +1,10 @@
 package link.omny.support;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,9 +28,9 @@ public class ResetPasswordIT {
 
     private static final String MSG_NAMESPACE = "omny";
 
-    private static final String USERNAME = "tim";
-
     private static final String USER_EMAIL = "tim@omny.link";
+
+    private static final String USERNAME = USER_EMAIL;
 
     private static final String TENANT_ID = MSG_NAMESPACE;
 
@@ -94,28 +96,33 @@ public class ResetPasswordIT {
     public void testResetPasswordSuccessfully() {
         try {
             createContact();
+            String newPwd = URLEncoder.encode(NEW_PWD, "UTF-8");
             String json = String.format(
                     "{\"password\":\"%1$s\", \"password2\":\"%2$s\",\"tenantId\":\"%3$s\"}",
-                    NEW_PWD, NEW_PWD, TENANT_ID);
+                            newPwd, newPwd, TENANT_ID);
 
             ActivitiSpec spec = new ActivitiSpec(activitiRule,
                     "testResetPasswordSuccessfully")
                     .whenMsgReceived("Password reset request", MSG_RESET,
                             "/omny.passwordResetRequest.knownUser.json",
                             TENANT_ID)
+                    .whenExecuteJobsForTime(2000)
                     .collectVar("uuid")
-                    .thenSubProcessCalled("SendMemo")
+                    .collectVar("tenantId")
                     .collectVar("contactId")
-                    .thenExtension(new DumpAuditTrail(activitiRule))
-                    .whenExecuteJobsForTime(5000)
-                    .whenFollowUpMsgReceived("User sets new password",
-                            MSG_NEW_PASSWORD, json, TENANT_ID)
-                    // .thenProcessEndedAndInExclusiveEndEvent("endEvent")
+                    .thenSubProcessCalled("SendMemo")
                     .thenExtension(new DumpAuditTrail(activitiRule));
 
             System.out.println("  UUID: " + spec.getVar("uuid"));
 
             setContactId(spec);
+
+            spec.whenFollowUpMsgReceived("User sets new password",
+                            MSG_NEW_PASSWORD, json, TENANT_ID)
+                    .whenExecuteJobsForTime(2000)
+                    // .thenUserAuthenticated(USER_EMAIL, NEW_PWD)
+                    .thenProcessEndedAndInExclusiveEndEvent("endEvent")
+                    .thenExtension(new DumpAuditTrail(activitiRule));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,13 +138,14 @@ public class ResetPasswordIT {
         } else {
             contactId = BASE_URI + spec.getVar("contactId");
         }
+        assertNotNull("No contact id found", contactId);
     }
 
     private void createContact() throws Exception {
         Map<String, String> requestHeaders = new HashMap<String, String>();
         requestHeaders.put("Content-Type", "application/json");
         String payload = String
-                .format("{\"firstName\":\"%1$s\", \"lastName\":\"Stephenson\",\"email\":\"$2$s\",\"tenantId\":\"$3$s\"}",
+                .format("{\"firstName\":\"%1$s\", \"lastName\":\"Stephenson\",\"email\":\"%2$s\",\"tenantId\":\"%3$s\"}",
                         USERNAME, USER_EMAIL, TENANT_ID);
 
         new RestPost().post(TestCredentials.BOT_USERNAME,

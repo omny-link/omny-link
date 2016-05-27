@@ -119,5 +119,6 @@
   <script src="js/activity-1.0.0.js"></script>
   <script src="js/login-1.0.0.js"></script>
   <script src="js/login-ui-1.0.0.js"></script>
+  <script src="js/omny-1.0.0.js"></script>
 </body>
 </html>
