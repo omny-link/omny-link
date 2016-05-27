@@ -1,5 +1,8 @@
 package link.omny.acctmgmt;
 
+import io.onedecision.engine.OneDecisionConfig;
+import link.omny.custmgmt.CustMgmtConfig;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 @Configuration
 @ComponentScan
-@Import({ AcctMgmtConfig.class })
+@Import({ AcctMgmtConfig.class, CustMgmtConfig.class, OneDecisionConfig.class })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Override
