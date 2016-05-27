@@ -739,6 +739,7 @@ public class ContactController {
         return "emailConfirmation";
     }
 
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{uuid}/reset-password", method = RequestMethod.POST, headers = "Accept=application/json")
     public @ResponseBody void resetPassword(
             @PathVariable("tenantId") String tenantId,
@@ -754,10 +755,24 @@ public class ContactController {
         IdentityService idSvc = processEngine.getIdentityService();
         List<Contact> contacts = contactRepo.findByUuid(uuid, tenantId);
         if (contacts.size() > 0) {
-            User user = idSvc.createUserQuery()
-                    .userEmail(contacts.get(0).getEmail()).singleResult();
-            user.setPassword(pwd);
-            idSvc.saveUser(user);
+            try {
+                User user = idSvc.createUserQuery()
+                        .userEmail(contacts.get(0).getEmail())
+                        .memberOfGroup("user").singleResult();
+                user.setPassword(pwd);
+                idSvc.saveUser(user);
+            } catch (NullPointerException e) {
+                LOGGER.error(String.format("No user found with email %1$s",
+                        contacts.get(0).getEmail()), e);
+                throw new BusinessEntityNotFoundException("user", contacts.get(
+                        0).getEmail());
+            } catch (Exception e) {
+                LOGGER.error(String.format(
+                        "Email %1$s does not resolve to a unique user",
+                        contacts.get(0).getEmail()), e);
+                throw new BusinessEntityNotFoundException("user", contacts.get(
+                        0).getEmail());
+            }
         } else {
             throw new BusinessEntityNotFoundException("contact", uuid);
         }
@@ -828,6 +843,7 @@ public class ContactController {
         private String accountType;
         private String tags;
         private String uuid;
+        private String tenantId;
         private Date firstContact;
         private Date lastUpdated;
     }

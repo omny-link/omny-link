@@ -356,13 +356,6 @@ public class Contact implements Serializable {
         }
     }
 
-    public String getUuid() {
-        if (uuid == null) {
-            uuid = UUID.randomUUID().toString();
-        }
-        return uuid;
-    }
-
     @PrePersist
     public void prePersist() {
         if (LOGGER.isWarnEnabled() && firstContact != null) {
@@ -370,6 +363,10 @@ public class Contact implements Serializable {
                     "Overwriting create date %1$s with 'now'.", firstContact));
         }
         firstContact = new Date();
+
+        if (uuid == null) {
+            uuid = UUID.randomUUID().toString();
+        }
     }
 
     @PreUpdate
