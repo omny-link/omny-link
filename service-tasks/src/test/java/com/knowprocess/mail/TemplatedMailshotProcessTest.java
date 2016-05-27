@@ -25,7 +25,7 @@ public class TemplatedMailshotProcessTest {
     public static final String MSG_NAME = "messageName";
     public static final String MSG_MAILSHOT = "com.knowprocess.mail.MailData";
     private static final String TEST_SUBJECT = "Test mail";
-    private static final String TEST_TEMPLATE_BASE = "http://www.knowprocess.com/firmgains/emails";
+    private static final String TEST_TEMPLATE_BASE = "http://knowprocess.com/firmgains/emails";
     private static final String TEST_TEMPLATE = "/new-registration";
 
     @Rule
