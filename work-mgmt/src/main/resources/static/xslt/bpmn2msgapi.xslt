@@ -87,7 +87,7 @@
         </tr>
         <tr>
           <th>Endpoint: </th>
-          <td><xsl:value-of select="$baseUrl"/><xsl:value-of select="$tenantId"/>/messages/<xsl:value-of select="@id"/></td>
+          <td><xsl:value-of select="$baseUrl"/>/messages/<xsl:value-of select="@id"/></td>
         </tr>
         <tr>
           <th>Method: </th>

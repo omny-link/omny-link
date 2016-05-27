@@ -37,3 +37,11 @@ var ractive = new AuthenticatedRactive({
     $('#resetSect').slideDown();
   }
 });
+
+$(document).ready(function() {
+  if (Object.keys(getSearchParameters()).indexOf('error')!=-1) {
+    ractive.showError('The username and password provided do not match a valid account');
+  } else if (Object.keys(getSearchParameters()).indexOf('logout')!=-1) {
+    ractive.showMessage('You have been successfully logged out');
+  }
+})

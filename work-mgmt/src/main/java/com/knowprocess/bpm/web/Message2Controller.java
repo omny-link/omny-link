@@ -56,8 +56,12 @@ public class Message2Controller {
     @Autowired
     protected MessageController messageController;
 
+    @Autowired
+    protected TenantlessMessageController tenantlessMessageController;
+
     private TransformTask renderer;
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequestMapping(method = RequestMethod.POST, value = "/{msgId}", headers = {
             "Accept=application/json", "Content-Type=application/json" })
     @ResponseBody
@@ -105,22 +109,9 @@ public class Message2Controller {
             @PathVariable("msgId") String msgId,
             @PathVariable("instanceId") String instanceId,
             @RequestBody JsonNode json) {
-        long start = System.currentTimeMillis();
-        LOGGER.info("handleMessage: " + msgId + ", json:" + json);
 
-        if (LOGGER.isDebugEnabled()) {
-            List<String> activeActivityIds = processEngine.getRuntimeService()
-                    .getActiveActivityIds(instanceId);
-            LOGGER.debug("Active ids: " + activeActivityIds);
-        }
-        Map<String, Object> vars = new HashMap<String, Object>();
-        String s = json.toString();
-        vars.put(messageController.getMessageVarName(msgId), s);
-        processEngine.getRuntimeService().messageEventReceived(msgId,
-                instanceId, vars);
-
-        LOGGER.debug(String.format("handleMessage took: %1$s ms",
-                (System.currentTimeMillis() - start)));
+        tenantlessMessageController.handleMessage(msgId, instanceId,
+                json);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{msgId}", headers = "Accept=application/json", produces = "application/json")
@@ -159,18 +150,19 @@ public class Message2Controller {
     }
 
     // TODO Unreliable?!
-    private List<com.knowprocess.bpm.model.ProcessInstance> findNativelyProcessInstancesWhereExecutionIn(
-            List<Execution> list) {
-        StringBuffer sb = new StringBuffer();
-        for (Execution execution : list) {
-            sb.append(execution.getId()).append(",");
-        }
-        sb = sb.deleteCharAt(sb.length() - 1);
-        return com.knowprocess.bpm.model.ProcessInstance.wrap(processEngine
-                .getRuntimeService().createNativeExecutionQuery()
-                .sql("SELECT * FROM ACT_RU_EXECUTION WHERE id_ IN (#{ids})")
-                .parameter("ids", sb.toString()).list());
-    }
+    // private List<com.knowprocess.bpm.model.ProcessInstance>
+    // findNativelyProcessInstancesWhereExecutionIn(
+    // List<Execution> list) {
+    // StringBuffer sb = new StringBuffer();
+    // for (Execution execution : list) {
+    // sb.append(execution.getId()).append(",");
+    // }
+    // sb = sb.deleteCharAt(sb.length() - 1);
+    // return com.knowprocess.bpm.model.ProcessInstance.wrap(processEngine
+    // .getRuntimeService().createNativeExecutionQuery()
+    // .sql("SELECT * FROM ACT_RU_EXECUTION WHERE id_ IN (#{ids})")
+    // .parameter("ids", sb.toString()).list());
+    // }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{msgId}.html", headers = "Accept=text/html", produces = "text/html")
     public @ResponseBody byte[] showMsgApiDoc(

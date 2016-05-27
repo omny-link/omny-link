@@ -297,7 +297,7 @@
   <!-- 
     Convert unsupported service tasks into user tasks.
   -->
-  <xsl:template match="semantic:receiveTask|receiveTask|semantic:sendTask|sendTask|semantic:serviceTask|serviceTask">
+  <xsl:template match="semantic:sendTask|sendTask|semantic:serviceTask|serviceTask">
     <xsl:comment>
       <xsl:value-of select="local-name(.)"/>
       <xsl:text> converted to user task.</xsl:text>

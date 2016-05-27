@@ -11,14 +11,6 @@ var ractive = new AuthenticatedRactive({
   fetch: function () {
     console.log('fetch...');
     
-    if (getSearchParameters()['uuid']==undefined) {
-      ractive.showMessage('This reset code is invalid, please request another', 'alert-warning');
-    } else {
-      ractive.set('current.uuid', getSearchParameters()['uuid']);
-      ractive.set('current.instanceId', getSearchParameters()['instanceId']);
-      ractive.set('current.tenantId', getSearchParameters()['tenantId']);
-    }
-    
 //    $.getJSON("/users/",  function( data ) {
 //      ractive.merge('users', data);
 //      if (ractive.hasRole('admin')) $('.admin').show();
@@ -69,8 +61,16 @@ var ractive = new AuthenticatedRactive({
     
     $('#userPwdForm').slideUp();
     
+    if (getSearchParameters()['uuid']==undefined) {
+      ractive.showMessage('This reset code is invalid, please request another', 'alert-warning');
+    } else {
+      ractive.set('current.uuid', getSearchParameters()['uuid']);
+      ractive.set('current.instanceId', getSearchParameters()['instanceId']);
+      ractive.set('current.tenantId', getSearchParameters()['tenantId']);
+    }
+
     $.ajax({
-      url: ractive.getServer()+'/'+ractive.get('current.tenantId')+'/messages/omny.resetPassword/'+ractive.get('current.instanceId'),
+      url: ractive.getServer()+'/messages/omny.newPassword/'+ractive.get('current.instanceId'),
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(ractive.get('current')),
