@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
 
 import link.omny.acctmgmt.model.BotConfig;
 import link.omny.acctmgmt.model.SystemConfig;
@@ -20,6 +23,7 @@ import link.omny.custmgmt.repositories.ContactRepository;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.Deployment;
@@ -40,6 +44,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
@@ -47,6 +52,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knowprocess.bpm.api.ReportableException;
 
 @Controller
 // @RequestMapping("/admin/tenants")
@@ -108,6 +114,56 @@ public class TenantConfigController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(builder.path("/{id}").buildAndExpand(vars).toUri());
+
+        return new ResponseEntity(headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Create a new tenant.
+     */
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @RequestMapping(value = "/tenants/{id}/bot", method = RequestMethod.POST)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public @ResponseBody ResponseEntity<?> createBot(
+           @PathVariable("id") String tenantId, @RequestParam(value="force", required=false) boolean force, HttpServletRequest request) {
+
+        IdentityService idSvc = processEngine.getIdentityService();
+
+        List<User> users = idSvc.createUserQuery().userFirstName(tenantId)
+                .userLastName("Bot").list();
+        if (users.size() >= 1 && !force) {
+            throw new ReportableException(
+                    String.format(
+                            "A bot user already exists for tenant %1$s. If you're sure you want to recreate it supply the parameter 'force'",
+                            tenantId));
+        } else if (force) {
+            for (User user : users) {
+                idSvc.deleteUser(user.getId());
+            }
+        }
+
+        User botUser = idSvc.newUser(UUID.randomUUID().toString());
+        botUser.setFirstName(tenantId);
+        botUser.setLastName("Bot");
+        botUser.setPassword(UUID.randomUUID().toString());
+        idSvc.saveUser(botUser);
+
+        String url = request.getRequestURL().toString();
+        idSvc.setUserInfo(botUser.getId(), "cust-mgmt-url",
+                url.substring(0, url.indexOf("/tenants")));
+        idSvc.setUserInfo(botUser.getId(), "cust-mgmt-secret",
+                botUser.getPassword());
+
+        idSvc.createMembership(botUser.getId(), "bot");
+
+        UriComponentsBuilder builder = MvcUriComponentsBuilder
+                .fromController(getClass());
+        HashMap<String, String> vars = new HashMap<String, String>();
+        vars.put("tenantId", tenantId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(builder.path("/{tenantId}/bot")
+                .buildAndExpand(vars).toUri());
 
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }

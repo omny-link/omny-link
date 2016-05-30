@@ -103,14 +103,15 @@ var ractive = new AuthenticatedRactive({
   createBot: function () {
     console.log('createBot...');
     $.ajax({
-      url: '/'+ractive.get('tenant.id')+'/process-instances/',
+      url: ractive.getServer()+'/tenants/'+ractive.get('tenant.id')+'/bot',
       type: 'POST',
       contentType: 'application/json',
-      data: JSON.stringify(ractive.get('instanceToStart')),
+      data: JSON.stringify(ractive.get('plan')),
       success: completeHandler = function(data, textStatus, jqXHR) {
         console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
-        ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
-        $('#customActionModal').modal('hide');
+        $('#curBotInvalid,#curBotCreate').hide();
+        ractive.showMessage('Created bot user');
+        ractive.fetch();
       },
     });
   },

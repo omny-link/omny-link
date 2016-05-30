@@ -56,11 +56,11 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          <th>API Key</th>
-          <th>API Secret</th>
-          <th>Contact Mgmt URL</th>
-          <th>Contact Mgmt Secret</th>
-          <th>Status</th>
+          <th class="col-md-3">API Key</th>
+          <th class="col-md-3">API Secret</th>
+          <th class="col-md-2">Contact Mgmt URL</th>
+          <th class="col-md-3">Contact Mgmt Secret</th>
+          <th class="col-md-">Status</th>
         </tr>
       </thead>
       <tbody>
@@ -71,10 +71,10 @@
           <td>{{current.bot.custMgmtSecret}}</td>
           <td>
             {{# current.bot.valid==true}}
-              <span class="glyphicon glyphicon-ok-sign glyphicon-success" title="Deployed and ready"></span>
+              <span class="glyphicon glyphicon-ok-sign glyphicon-success" id="curBotValid" title="Deployed and ready"></span>
             {{else}}
-              <span class="glyphicon glyphicon-remove-sign glyphicon-danger" title="Missing or out of date"></span>
-              <!--span class="glyphicon glyphicon-repeat" on-click="createBot()" title="Create the missing bot user"></span-->
+              <span class="glyphicon glyphicon-remove-sign glyphicon-danger" id="curBotInvalid" title="Missing or out of date"></span>
+              <span class="glyphicon glyphicon-repeat" id="curBotCreate" on-click="createBot()" title="Create the missing bot user"></span>
             {{/}}
           </td>
         </tr>
@@ -82,10 +82,12 @@
     </table>
   </div>
 
-  <div id="currentActions" style="clear: both">
-    <h2>Actions</h2>
-    {{>statusTable { property: 'actions' }}}
-  </div>
+  {{#contactActions}}
+    <div id="currentActions" style="clear: both">
+      <h2>Actions</h2>
+      {{>statusTable { property: 'contactActions' }}}
+    </div>
+  {{/}}
 
   <div id="currentProcesses" style="clear: both">
     <h2>Processes</h2>

@@ -23,3 +23,9 @@ curl -H "Accept:application/json" -H "Content-Type: application/json" -X POST -d
 
 # 
 curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/tenants/omny
+
+# CREATE TENANT BOT 
+curl -H "Accept:application/json" -X POST -u tstephen:tstephen http://localhost:8083/tenants/sdu/bot
+
+# FORCE RECREATE BOT
+ curl -v -H "Accept:application/json" -X POST -u tstephen:tstephen http://localhost:8083/tenants/sdu/bot?force=true
