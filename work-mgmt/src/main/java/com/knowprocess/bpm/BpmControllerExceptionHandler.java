@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.knowprocess.bpm.api.BadJsonMessageException;
+import com.knowprocess.bpm.api.ReportableException;
 import com.knowprocess.bpm.web.ProcessInstanceController;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
@@ -39,6 +40,12 @@ public class BpmControllerExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(ActivitiException.class)
     public void handleInternalServerError(Exception e) {
+        LOGGER.error(e.getMessage(), e);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ReportableException.class)
+    public void handleReportableException(ReportableException e) {
         LOGGER.error(e.getMessage(), e);
     }
 
