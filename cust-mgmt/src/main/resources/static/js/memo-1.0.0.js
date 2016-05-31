@@ -7,10 +7,10 @@ var ractive = new AuthenticatedRactive({
   lazy: true,
   template: '#template',
   data: {
-    //server: 'http://api.knowprocess.com:8082',
     memos: [],
     filter: undefined,
     //saveObserver:false,
+    entityPath: '/memos',
     username: localStorage['username'],
     age: function(timeString) {
       return i18n.getAgeString(new Date(timeString))
@@ -228,9 +228,7 @@ var ractive = new AuthenticatedRactive({
   save: function () {
     console.log('save message: '+ractive.get('current').lastName+'...');
     ractive.set('saveObserver',false);
-    var id = ractive.get('current')._links === undefined ? undefined : (
-        ractive.get('current')._links.self.href.indexOf('?') == -1 ? ractive.get('current')._links.self.href : ractive.get('current')._links.self.href.substr(0,ractive.get('current')._links.self.href.indexOf('?')-1)
-    );
+    var id = ractive.uri(ractive.get('current'));
     ractive.set('saveObserver',true);
     if (document.getElementById('currentForm')==undefined) {
       // loading... ignore
@@ -242,7 +240,7 @@ var ractive = new AuthenticatedRactive({
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save message'+JSON.stringify(tmp)+' ...');
       $.ajax({
-        url: id === undefined ? '/memos' : id,
+        url: id === undefined ? ractive.getServer()+'/memos/' : ractive.uri(tmp),
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),

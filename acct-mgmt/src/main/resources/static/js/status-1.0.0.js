@@ -118,7 +118,7 @@ var ractive = new AuthenticatedRactive({
   deployProcess: function(process) {
     console.log('deployProcess...'+JSON.stringify(process));
     $.ajax({
-      url: '/'+ractive.get('tenant.id')+'/deployments/'+ractive.encode(process.url)+'/',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/deployments/'+ractive.encode(process.url)+'/',
       type: 'POST',
       contentType: 'application/json',
       dataType: 'text',
