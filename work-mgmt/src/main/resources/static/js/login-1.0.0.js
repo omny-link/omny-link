@@ -238,7 +238,7 @@ var AuthenticatedRactive = Ractive.extend({
   login: function() {
     console.info('login');
     if (!document.forms['loginForm'].checkValidity()) {
-      // TODO message
+      ractive.showMessage('Please provide both username and password');
       return false;
     }
     localStorage['username'] = $('#username').val();
@@ -400,6 +400,9 @@ var AuthenticatedRactive = Ractive.extend({
       });
     } else if (entity['_links']!=undefined) {
       uri = ractive.stripProjection(entity._links.self.href);
+    }
+    if (uri != undefined && ractive.get('context')!=undefined) {
+      uri = uri.replace('/'+ractive.get('entityPath'),ractive.get('context')+'/'+ractive.get('entityPath'));
     }
     return uri;
   }

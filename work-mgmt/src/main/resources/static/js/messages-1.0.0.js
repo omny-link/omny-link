@@ -45,7 +45,7 @@ var ractive = new AuthenticatedRactive({
   },
   fetch: function () {
     console.log('fetch...');
-    $.getJSON('/'+ractive.get('tenant.id')+'/process-definitions', function( data ) {
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions', function( data ) {
       ractive.merge('definitions', data);
     });
   },

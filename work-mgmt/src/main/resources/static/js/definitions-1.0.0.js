@@ -92,7 +92,7 @@ var ractive = new AuthenticatedRactive({
   activate: function(key) {
     console.log('activate: '+key);
     $.ajax({
-      url: '/'+ractive.get('tenant.id')+'/process-definitions/'+key+'/activate',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+key+'/activate',
       type: 'GET',
       contentType: 'application/json',
       success: completeHandler = function(data,textStatus,jqXHR) {
@@ -119,7 +119,7 @@ var ractive = new AuthenticatedRactive({
   delete: function (deploymentId) {
     console.log('delete '+deploymentId+'...');
     $.ajax({
-        url: '/'+ractive.get('tenant.id')+'/deployments/'+deploymentId,
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/deployments/'+deploymentId,
         type: 'DELETE',
         success: completeHandler = function(data) {
           ractive.fetch();
@@ -131,7 +131,7 @@ var ractive = new AuthenticatedRactive({
   deleteInstance: function (instance,idx) {
     console.log('deleteInstance '+instance.id+'...');
     $.ajax({
-        url: '/'+ractive.get('tenant.id')+'/process-instances/'+instance.id,
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/'+instance.id,
         type: 'DELETE',
         success: completeHandler = function(data) {
           console.log('  Success, received: '+data);
@@ -142,13 +142,13 @@ var ractive = new AuthenticatedRactive({
   },
   fetch: function () {
     console.log('fetch...');
-    $.getJSON('/'+ractive.get('tenant.id')+'/process-definitions', function( data ) {
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions', function( data ) {
       ractive.merge('definitions', data);
     });
   },
   fetchImage: function(definition) {
     console.info('fetchImage');
-    $.get('/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'.svg', function( data ) {
+    $.get(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'.svg', function( data ) {
       console.log('found image');
       ractive.set('current.image',data);
       $('.userTask').on('click',ractive.showSelection);
@@ -158,7 +158,7 @@ var ractive = new AuthenticatedRactive({
   },
   fetchInstances: function(definition) {
     console.log('fetch instances');
-    $.getJSON('/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'/instances', function( data ) {
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'/instances', function( data ) {
       console.log('found instances '+data.length);
       definition.instances = data;
       ractive.set('current.instances',data);
@@ -166,7 +166,7 @@ var ractive = new AuthenticatedRactive({
   },
   fetchIssues: function(definition) {
     console.log('fetch issues');
-    $.getJSON('/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'/issues', function( data ) {
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'/issues', function( data ) {
       console.log('found issues '+data.length);
       ractive.set('current.issues',data);
     });
@@ -182,7 +182,7 @@ var ractive = new AuthenticatedRactive({
   select: function(definition) {
     ractive.set('current', definition);
 //    ractive.set('saveObserver',false);
-    $.getJSON('/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id, function( data ) {
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id, function( data ) {
       console.log('found definition '+JSON.stringify(data));
       ractive.set('current',data);
       ractive.toggleResults();
@@ -251,7 +251,7 @@ var ractive = new AuthenticatedRactive({
   startInstance: function(key, label, bizKey) {
     console.log('startInstance: '+key+' for '+bizKey);
     $.ajax({
-      url: '/'+ractive.get('tenant.id')+'/process-instances/',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify({
@@ -268,7 +268,7 @@ var ractive = new AuthenticatedRactive({
   suspend: function(key) {
     console.log('suspend: '+key);
     $.ajax({
-      url: '/'+ractive.get('tenant.id')+'/process-definitions/'+key+'/suspend',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+key+'/suspend',
       type: 'GET',
       contentType: 'application/json',
       success: completeHandler = function(data,textStatus,jqXHR) {
@@ -309,7 +309,7 @@ var ractive = new AuthenticatedRactive({
     var formData = new FormData(formElement);
     return $.ajax({
         type: 'POST',
-        url: '/'+ractive.get('tenant.id')+'/deployments',
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/deployments',
         data: formData,
         cache: false,
         contentType: false,
