@@ -24,7 +24,7 @@ function AuthHelper() {
         if ($auth.hasRole('super_admin')) $('.super-admin').show();
         $auth.loadTenantConfig(ractive.get('profile.tenant'));
       })
-      .error(function() {
+      .error(function(jqXHR, textStatus, errorThrown) {
         console.warn('Failed to get profile, will rely on default');
         ractive.set('profile',{tenant:'omny'});
         $auth.loadTenantConfig(ractive.get('tenant.id'));

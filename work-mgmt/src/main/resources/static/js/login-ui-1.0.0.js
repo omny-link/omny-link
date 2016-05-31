@@ -20,7 +20,7 @@ var ractive = new AuthenticatedRactive({
       $('#loginSect').slideDown();
       var addr = $('#email').val();
       $.ajax({
-        url: '/msg/omny/omny.passwordResetRequest.json',
+        url: ractive.getServer()+'/msg/omny/omny.passwordResetRequest.json',
         type: 'POST',
         data: { json: JSON.stringify({ email: addr, tenantId: 'omny' }) },
         dataType: 'text',

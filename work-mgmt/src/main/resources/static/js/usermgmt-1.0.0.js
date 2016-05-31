@@ -24,7 +24,7 @@ var ractive = new AuthenticatedRactive({
     $('#curNewGroup').slideUp();
 
     $.ajax({
-        url: '/users/'+ractive.get('current.id')+'/groups/'+newGroup,
+        url: ractive.getServer()+'/users/'+ractive.get('current.id')+'/groups/'+newGroup,
         type: 'POST',
         contentType: 'application/json',
         success: completeHandler = function() {
@@ -63,14 +63,14 @@ var ractive = new AuthenticatedRactive({
   },
   fetch: function () {
     console.log('fetch...');
-    $.getJSON("/users/",  function( data ) {
+    $.getJSON(ractive.getServer()+'/users/',  function( data ) {
       ractive.merge('users', data);
       if (ractive.hasRole('admin')) $('.admin').show();
     });
   },
   fetchUserGroups: function () {
     console.log('fetchUserGroups...');
-    $.getJSON("/users/"+ractive.get('current.id')+'/groups',  function( data ) {
+    $.getJSON(ractive.getServer()+"/users/"+ractive.get('current.id')+'/groups',  function( data ) {
       ractive.merge('currentGroups', data);
     });
   },
@@ -112,7 +112,7 @@ var ractive = new AuthenticatedRactive({
     }
     
     $.ajax({
-      url: '/users/'+(ractive.get('currentAction') == 'CREATE' ? '' : ractive.get('current.id')),
+      url: ractive.getServer()+'/users/'+(ractive.get('currentAction') == 'CREATE' ? '' : ractive.get('current.id')),
       type: ractive.get('currentAction') == 'CREATE' ? 'POST' : 'PUT',
       contentType: 'application/json',
       data: JSON.stringify(ractive.get('current')),
@@ -127,7 +127,7 @@ var ractive = new AuthenticatedRactive({
   select: function(user) {
     if (user!=undefined && user['id']!=undefined) {
       ractive.set('saveObserver',false);
-      $.getJSON('/users/'+user.id, function( data ) {
+      $.getJSON(ractive.getServer()+'/users/'+user.id, function( data ) {
         console.log('found user '+JSON.stringify(data));
         ractive.set('current', data);
         $('#userPwdForm input[type="password"]').on('blur', function(ev) {
@@ -178,7 +178,7 @@ var ractive = new AuthenticatedRactive({
     
     $('.pwdField').slideUp();
     $.ajax({
-      url: '/users/'+ractive.get('current.id')+'/reset-password',
+      url: ractive.getServer()+'/users/'+ractive.get('current.id')+'/reset-password',
       type: 'POST',
       data: { password: $('#curPassword').val(), password2:$('#curPassword2').val() },
       success: completeHandler = function(data) {

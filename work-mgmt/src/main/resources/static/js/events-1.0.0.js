@@ -30,7 +30,7 @@ var ractive = new AuthenticatedRactive({
   },
   fetch: function () {
     console.log('fetch...');
-    $.getJSON('/'+ractive.get('tenant.id')+'/events?limit=50', function( data ) {
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/events?limit=50', function( data ) {
       ractive.merge('events', data);
     });
   },
@@ -41,7 +41,7 @@ var ractive = new AuthenticatedRactive({
   select: function(event) {
     ractive.set('current', event);
 //    ractive.set('saveObserver',false);
-    $.getJSON('/'+ractive.get('tenant.id')+'/process-instances/'+event.processInstanceId, function( data ) {
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/'+event.processInstanceId, function( data ) {
       console.log('found process instance '+JSON.stringify(data));
       event.processInstance = data;
       ractive.set('current',event);

@@ -8,6 +8,7 @@ var ractive = new AuthenticatedRactive({
   template: '#template',
   data: {
     contacts: [],
+    entityPath: '/memo-distributions',
     testMode: false,
     memoDistributions: [],
     memos: [],
@@ -327,7 +328,7 @@ var ractive = new AuthenticatedRactive({
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save distribution'+JSON.stringify(tmp)+' ...');
       $.ajax({
-        url: id === undefined ? '/memo-distributions' : id,
+        url: id === undefined ? ractive.getServer()+'/memo-distributions' : ractive.uri(tmp),
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
