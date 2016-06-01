@@ -3,14 +3,20 @@ package link.omny.acctmgmt.model;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @DiscriminatorValue("toolbarEntry")
 @NoArgsConstructor
 public class TenantToolbarEntry extends TenantExtension {
 
     private static final long serialVersionUID = -8327456294072464761L;
+
+    private String role;
 
     public TenantToolbarEntry(String name, String url, String icon,
             String description) {
