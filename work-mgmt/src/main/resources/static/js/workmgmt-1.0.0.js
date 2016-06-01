@@ -202,7 +202,7 @@ var ractive = new AuthenticatedRactive({
   },
   fetch: function () {
     console.log('fetch...');
-    $.getJSON('/'+ractive.get('tenant.id')+'/tasks/'+ractive.get('username')+'/', function( data ) {
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/tasks/'+ractive.get('username')+'/', function( data ) {
       ractive.merge('tasks', data);
       if (ractive.hasRole('admin')) $('.admin').show();
       ractive.set('searchMatched',$('#tasksTable tbody tr:visible').length);
@@ -210,7 +210,7 @@ var ractive = new AuthenticatedRactive({
   },
   fetchUserNotes: function () {
     console.log('fetchUserNotes...');
-    $.getJSON("/tasks/"+ractive.get('current.id')+'/notes',  function( data ) {
+    $.getJSON(ractive.getServer()+'/tasks/'+ractive.get('current.id')+'/notes',  function( data ) {
       ractive.merge('currentNotes', data);
     });
   },
@@ -313,7 +313,7 @@ var ractive = new AuthenticatedRactive({
       var t = ractive.get('current');
       t.tenantId = ractive.get('tenant.id');
       $.ajax({
-        url: '/task/'+id,
+        url: ractive.getServer()+'/task/'+id,
         type: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(t),
@@ -382,7 +382,7 @@ var ractive = new AuthenticatedRactive({
   },
   select: function(task) { 
     ractive.set('saveObserver',false);
-    $.getJSON('/task/'+task.id+'/', function( data ) {
+    $.getJSON(ractive.getServer()+'/task/'+task.id+'/', function( data ) {
       console.log('found task '+JSON.stringify(data));
       data.taskLocalVarNames = Object.keys(data.taskLocalVariables);
       data.processVarNames = Object.keys(data.processVariables);
@@ -422,7 +422,7 @@ var ractive = new AuthenticatedRactive({
     console.log('d: '+d);
     //var d['businessDescription']=ractive.get('message.bizKey');
     $.ajax({
-      url: '/msg/'+ractive.get('tenant.id')+'/'+ractive.get('message.name')+'/',
+      url: ractive.getServer()+'/msg/'+ractive.get('tenant.id')+'/'+ractive.get('message.name')+'/',
       type: type,
       data: d,
       dataType: 'text',
@@ -470,7 +470,7 @@ var ractive = new AuthenticatedRactive({
   submitCustomAction: function(key, bizKey) {
     console.info('submitCustomAction');
     $.ajax({
-      url: '/'+ractive.get('tenant.id')+'/process-instances/',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(ractive.get('instanceToStart')),
@@ -492,7 +492,7 @@ var ractive = new AuthenticatedRactive({
     var t = ractive.get('current');
     t.tenantId = ractive.get('tenant.id');
     $.ajax({
-      url: '/task/'+id+'?'+action,
+      url: ractive.getServer()+'/task/'+id+'?'+action,
       type: 'PUT',
       contentType: 'application/json',
       data: JSON.stringify(t),
