@@ -249,8 +249,8 @@ var AuthenticatedRactive = Ractive.extend({
     document.forms['loginForm'].submit();
   },
   logout: function() {
-    localStorage['username'] = null;
-    localStorage['password'] = null;
+    delete localStorage['username'];
+    delete localStorage['password'];
     document.cookie = this.CSRF_COOKIE+'=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     document.forms['logoutForm'].submit();
   },

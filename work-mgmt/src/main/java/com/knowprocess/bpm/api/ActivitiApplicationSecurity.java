@@ -3,6 +3,7 @@ package com.knowprocess.bpm.api;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
@@ -17,6 +18,12 @@ import com.knowprocess.bpm.impl.CorsFilter;
 
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class ActivitiApplicationSecurity extends WebSecurityConfigurerAdapter {
+
+    @Value("${omny.security.loginPage:/login}")
+    protected String loginPage;
+
+    @Value("${omny.security.loginFailureUrl:/login?error}")
+    protected String loginFailureUrl;
 
     @Autowired
     private DataSource dataSource;
@@ -34,21 +41,23 @@ public class ActivitiApplicationSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**")
-                .permitAll()
+                        .permitAll()
+                .antMatchers(HttpMethod.GET, "/tenants/*.json")
+                        .permitAll()
                 .antMatchers("/*.html", "/css/**", "/data/**", "/fonts/**",
-                             "/images/**", "/js/**", "/msg/**", "/partials/**",
-                             "/public/**", "/sdu/**", "/webjars/**")
-                .permitAll()
+                        "/images/**", "/js/**", "/msg/**", "/partials/**",
+                        "/public/**", "/sdu/**", "/webjars/**")
+                        .permitAll()
                 .antMatchers(/* "/*.html", */"/process-instances/**",
                         "/tasks/**", "/tenants/**", "/users/**")
-                .hasRole("user")
+                        .hasRole("user")
                 .antMatchers("/admin.html", "/deployments/**",
                         "/process-definitions/**")
-                .hasRole("admin")
+                        .hasRole("admin")
                 .antMatchers("/admin/**")
-                .hasRole("super_admin")
+                        .hasRole("super_admin")
                 .anyRequest().authenticated().and()
-                .formLogin().loginPage("/login").failureUrl("/login?error")
+                .formLogin().loginPage(loginPage).failureUrl(loginFailureUrl)
                 .successHandler(getSuccessHandler()).permitAll().and().csrf()
                 .disable().httpBasic();
 
