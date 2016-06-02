@@ -46,11 +46,11 @@ Number.prototype.formatDecimal = function(c, d, t) {
 
 Number.prototype.sigFigs = function(sig, d, t) {
   if (this == undefined || this == null || this == 0 || sig == undefined) return this;
+  var s = this < 0 ? "-" : "";
   var n = Math.abs(this);
   var mult = Math.pow(10, sig - Math.floor(Math.log(n) / Math.LN10) - 1);
   d = d == undefined ? "." : d;
   t = t == undefined ? "," : t;
-  var s = n < 0 ? "-" : "";
   var r = Math.round(n * mult) / mult;
   // Patch up accidents
   if (((Math.round(r)-r)+'').indexOf('e')!=-1) {
