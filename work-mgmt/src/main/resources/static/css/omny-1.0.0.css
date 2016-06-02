@@ -223,8 +223,6 @@ tfoot th {
 .user { 
   display: none;
   font-size: 16px;
-  font-family: Roboto, sans-serif;
-  text-transform: none;
 }
 #ajax-loader img.ajax-loader {
   position: fixed;
@@ -367,15 +365,18 @@ h2 a.glyphicon:hover {
 }
 .navbar-sticky {
   background-color: white;
+  padding-left: 0;
   position: fixed;
-  width: 90%;
   left: auto;
   right: auto;
   top: 0;
   z-index: 100;
 }
 .navbar-sticky h2 { 
-	margin-top:0;
+  margin-top:0;
+}
+.navbar-sticky h2 span.profile-img {
+  font-size: 16px;
 }
 
 .search {
