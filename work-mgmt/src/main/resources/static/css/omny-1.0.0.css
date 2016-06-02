@@ -226,11 +226,19 @@ tfoot th {
   font-family: Roboto, sans-serif;
   text-transform: none;
 }
-.ajax-loader {
-  position: absolute;
-  left: 45%;
-  top: 300px;
+#ajax-loader img.ajax-loader {
+  position: fixed;
+  left: 55%;
+  top: 44%;
+  width: 80px;
   z-index: 200; 
+}
+#ajax-loader span {
+	font-size: 3.5em;
+  left: 39%;
+  position: fixed;
+  top: 45%;
+  z-index: 200;
 }
 .beta {
   border: solid 1px #ff6c06;
