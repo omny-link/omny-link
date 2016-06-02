@@ -2,7 +2,7 @@
   <form name="logoutForm" action="/logout" method="POST">
     <span id="tenantId" class="replaceable super-admin tenant" contenteditable="true" onblur="ractive.switchToTenant($('#tenantId').text())" name="tenantId" value="{{#tenant}}{{tenant.id}}{{else}}Click to set{{/}}"></span>
     <a href="/me.html" title="To set your profile picture, please visit gravatar.com">
-      <span class="profile-img">Logged in as: {{username}}</span>
+      <span class="profile-img">{{username}}</span>
     </a>
     <a class="clickable glyphicon glyphicon-log-out" aria-hidden="true" on-click="logout()"></a>
     <a class="clickable glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="modal" data-target="#helpModal"></a>
