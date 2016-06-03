@@ -1,0 +1,19 @@
+curl -X POST \
+  -H 'Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' \
+  -H 'Accept-Encoding:gzip, deflate, sdch' \
+  -H 'Accept-Language:en-GB,en;q=0.8,pt-BR;q=0.6,pt;q=0.4,fr;q=0.2,en-US;q=0.2' \
+  -H 'Cache-Control:no-cache' \
+  -H 'Cookie:chcookie=194.126.76.233.1460104398236269; ch_beta_message=true; ch_session=7aeb6fcf44a883449789d6ae5da38364913e9779a2d7df51ef7bd84d2a3fabe8cda526a9' \
+  -d 'cname=A' \
+  -d 'cnumb=' \
+  -d 'live=on' \
+  -d 'stype=A' \
+  -d 'cosearch.x=21' \
+  -d 'search.y=7' \
+  -d 'search=1' \
+  -d 'disp=1' \
+  -d 'frfsh=1460468504' \
+  --location \
+  --user-agent 'User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36' \
+  --referer 'Referer:http://wck2.companieshouse.gov.uk//wcframe?name=accessCompanyInfo' \
+  -u tim@omny.link:6Zy969T7l http://wck2.companieshouse.gov.uk/companysearch

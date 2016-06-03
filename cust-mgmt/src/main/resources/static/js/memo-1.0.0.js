@@ -123,16 +123,13 @@ var ractive = new AuthenticatedRactive({
   },
   delete: function (obj) {
     console.log('delete '+obj+'...');
-    var url = obj.links != undefined
-        ? obj.links.filter(function(d) { console.log('this:'+d);if (d['rel']=='self') return d;})[0].href
-        : obj._links.self.href;
     $.ajax({
-        url: url,
-        type: 'DELETE',
-        success: completeHandler = function(data) {
-          ractive.fetch();
-          ractive.toggleResults();
-        }
+      url: ractive.getServer()+ractive.uri(obj),
+      type: 'DELETE',
+      success: completeHandler = function(data) {
+        ractive.fetch();
+        ractive.toggleResults();
+      }
     });
     return false; // cancel bubbling to prevent edit as well as delete
   },
@@ -191,7 +188,7 @@ var ractive = new AuthenticatedRactive({
   initEditor: function(enabled) {
     ractive.editor = new wysihtml5.Editor("curRichContent", {
       toolbar:     "wysihtml5-editor-toolbar",
-      stylesheets: ["http://yui.yahooapis.com/2.9.0/build/reset/reset-min.css", "/css/wysihtml5/editor.css"],
+      stylesheets: ["//yui.yahooapis.com/2.9.0/build/reset/reset-min.css", "/css/wysihtml5/editor.css"],
       parserRules: wysihtml5ParserRules
     });
     

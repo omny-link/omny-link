@@ -241,18 +241,11 @@ var ractive = new AuthenticatedRactive({
   },*/
   delete: function (obj) {
     console.log('delete '+obj+'...');
-    var url = obj.links != undefined
-        ? obj.links.filter(function(d) { console.log('this:'+d);if (d['rel']=='self') return d;})[0].href
-        : obj._links.self.href;
     $.ajax({
-        url: url,
+        url: ractive.getServer()+ractive.uri(obj),
         type: 'DELETE',
         success: completeHandler = function(data) {
           ractive.fetch();
-        },
-        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-          console.error('XX: '+errorThrown);
-          ractive.handleError(jqXHR,textStatus,errorThrown);
         }
     });
     return false; // cancel bubbling to prevent edit as well as delete
