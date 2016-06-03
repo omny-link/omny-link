@@ -2,6 +2,7 @@ package com.knowprocess.core.internal;
 
 import javax.annotation.Nonnull;
 
+import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.Expression;
@@ -9,6 +10,8 @@ import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.identity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.knowprocess.exceptions.UserInfoNotFoundException;
 
 /**
  * Base class capable of looking up user settings such as for external accounts.
@@ -22,21 +25,32 @@ public abstract class BaseUserAwareTask implements JavaDelegate {
     protected Expression resourcePassword;
 
     protected String lookup(DelegateExecution execution, @Nonnull String usr, @Nonnull Expression expr) {
-        String s = (String) expr.getValue(execution);
-        if (s.startsWith("userInfo('")) {
-            String key = s.substring("userInfo(".length(), s.indexOf(')'));
-            if (key.startsWith("'") || key.startsWith("\"")) {
-                key = key.substring(1, key.length() - 1);
+        try {
+            String s = (String) expr.getValue(execution);
+            if (s.startsWith("userInfo('")) {
+                String key = s.substring("userInfo(".length(), s.indexOf(')'));
+                if (key.startsWith("'") || key.startsWith("\"")) {
+                    key = key.substring(1, key.length() - 1);
+                }
+                String val = execution.getEngineServices().getIdentityService()
+                        .getUserInfo(usr, key);
+                if (val == null) {
+                    throw new ActivitiObjectNotFoundException(
+                            String.format(
+                                    "No user setting '%1$s' found for '%2$s'",
+                                    key, usr));
+                }
+                s = val + s.substring(s.indexOf(')') + 1);
             }
-            String val = execution.getEngineServices().getIdentityService()
-                    .getUserInfo(usr, key);
-            if (val == null) {
-                throw new ActivitiObjectNotFoundException(String.format(
-                        "No user setting '%1$s' found for '%2$s'", key, usr));
-            }
-            s = val + s.substring(s.indexOf(')') + 1);
+            return s;
+        } catch (ActivitiException e) {
+            String msg = String.format(
+                    "Problem whilst looking up '%1$s' for '%2$s', check with your administrator.",
+                    expr, usr);
+            LOGGER.error(msg + " " + e.getClass().getName() + ":"
+                    + e.getMessage());
+            throw new UserInfoNotFoundException(msg);
         }
-        return s;
     }
 
     protected String getPassword(DelegateExecution execution, String usr) {

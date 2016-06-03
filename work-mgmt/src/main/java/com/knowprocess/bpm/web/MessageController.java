@@ -282,7 +282,8 @@ public class MessageController {
                 throw e;
             }
         } catch (ActivitiException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error(String.format("%1$s: %2$s", e.getClass().getName(),
+                    e.getMessage()));
             ReportableException e2 = null;
 
             ConstraintViolationException cve = (ConstraintViolationException) isCausedBy(
@@ -380,7 +381,7 @@ public class MessageController {
         } else if (e.getCause() != null) {
             return isCausedBy(e.getCause(), className);
         } else {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage());
             return null;
         }
     }
