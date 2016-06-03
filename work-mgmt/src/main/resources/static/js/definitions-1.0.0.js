@@ -188,12 +188,13 @@ var ractive = new AuthenticatedRactive({
       ractive.toggleResults();
       ractive.fetchImage(ractive.get('current'));
       //      ractive.set('saveObserver',true);
+      if (ractive.get('current').deploymentId==null) {
+        ractive.fetchIssues(ractive.get('current'));
+      } else {
+        ractive.fetchInstances(ractive.get('current'));
+      }
     });
-    if (ractive.get('current').deploymentId==null) {
-      ractive.fetchIssues(ractive.get('current'));
-    } else {
-      ractive.fetchInstances(ractive.get('current'));
-    }
+    
     $('#currentSect').slideDown();
   },
   showIssues: function() {

@@ -54,21 +54,23 @@
     {{#each current.instances:i}}
       <section style="margin-bottom: 2px;">
         <span class="a-primary-label control-label">Name: </span>
-        <span class="a-primary-data">{{current.instances[i].businessKey == undefined ? 'N/A' : current.instances[i].businessKey}}</span>
+        <span class="a-primary-data">
+          {{#businessKey}} N/A {{else}} {{businessKey}} {{/}}
+        </span>
         {{#if hasRole('admin') }}
           <span class="a-secondary-label control-label">Id: </span>
-          <span class="a-secondary-data">{{current.instances[i].id}};</span>
+          <span class="a-secondary-data">{{id}};</span>
         {{/if}}
         <span class="a-secondary-label control-label">Complete?: </span>
-        <span class="a-secondary-data">{{current.instances[i].ended ? 'Yes' : 'No'}};</span>
-        {{# !current.instances[i].ended}}
+        <span class="a-secondary-data">{{..ended ? 'Yes' : 'No'}};</span>
+        {{#if .!=undefined && !..ended}}
           <span class="a-secondary-label control-label">Current task: </span>
-          <span class="a-secondary-data">{{current.instances[i].activityId.toLabel()}};</span>
-        {{/}}
+          <span class="a-secondary-data">{{activityId.toLabel()}};</span>
+        {{/if}}
         <button class="btn btn-details" on-click="toggleAuditTrail(current.instances[i],i)" type="button">View Details</button>
         <button class="btn btn-details" on-click="deleteInstance(current.instances[i],i)" type="button">Delete</button>
-        <section data-instanceId="{{current.instances[i].id}}" style="clear:both;display:none">
-          <h4> {{current.instances[i].businessKey == undefined ? 'Instance '+current.instances[i].id : current.instances[i].businessKey+' ('+current.instances[i].id+')' }}</h4>
+        <section data-instanceId="{{id}}" style="clear:both;display:none">
+          <h4> {{#businessKey}} 'Instance '+id {{else}} {{businessKey}} ({{id}}) }}{{/}}</h4>
           <h5>Latest Data</h5>
           <table class="table table-striped">
             <thead>
@@ -79,11 +81,11 @@
               </tr>
             </thead>
             <tbody>
-              {{#each current.instances[i].processVariableNames:j}}
+              {{#each processVariableNames:j}}
                 <tr data-href="{{_links.self.href}}">
                   <td>{{j+1}}</td>
-                  <td>{{current.instances[i].processVariableNames[j]}}</td>
-                  <td>{{(JSON.stringify(current.instances[i].processVariables[current.instances[i].processVariableNames[j]]))}}</td>
+                  <td>{{processVariableNames[j]}}</td>
+                  <td>{{(JSON.stringify(processVariables[processVariableNames[j]]))}}</td>
                 </tr>
               {{/each}}
             </tbody>
@@ -102,7 +104,7 @@
               </tr>
             </thead>
             <tbody>
-              {{#each current.instances[i].auditTrail:j}}
+              {{#each auditTrail:j}}
                 <tr data-href="{{_links.self.href}}">
                   <td>{{j+1}}</td>
                   <td><span class="{{renderBpmnIcon(activityType)}}" style="font-size:24px"></span></td>
