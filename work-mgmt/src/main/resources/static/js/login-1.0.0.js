@@ -59,12 +59,12 @@ var AuthenticatedRactive = Ractive.extend({
   },
   entityName: function(entity) {
     console.info('entityName');
-    var id = ractive.getId(entity);
+    var id = ractive.uri(entity);
     var lastSlash = id.lastIndexOf('/');
     return id.substring(id.lastIndexOf('/', lastSlash-1)+1, lastSlash);
   },
   fetchDocs: function() {
-    $.getJSON(ractive.getId(ractive.get('current'))+'/documents',  function( data ) {
+    $.getJSON(ractive.uri(ractive.get('current'))+'/documents',  function( data ) {
       if (data['_embedded'] != undefined) {
         console.log('found docs '+data);
         ractive.merge('current.documents', data['_embedded'].documents);
@@ -75,7 +75,7 @@ var AuthenticatedRactive = Ractive.extend({
     });
   },
   fetchNotes: function() {
-    $.getJSON(ractive.getId(ractive.get('current'))+'/notes',  function( data ) {
+    $.getJSON(ractive.uri(ractive.get('current'))+'/notes',  function( data ) {
       if (data['_embedded'] != undefined) {
         console.log('found notes '+data);
         ractive.merge('current.notes', data['_embedded'].notes);
@@ -151,7 +151,7 @@ var AuthenticatedRactive = Ractive.extend({
   id: function(entity) {
     // TODO switch to modular vsn
     console.log('id: '+entity);
-    var id = ractive.getId(entity);
+    var id = ractive.uri(entity);
     return id.substring(id.lastIndexOf('/')+1);
   },
   initAutoComplete: function() {
@@ -260,7 +260,7 @@ var AuthenticatedRactive = Ractive.extend({
     console.log('saveDoc '+JSON.stringify(ractive.get('current.doc'))+' ...');
     var n = ractive.get('current.doc');
     n.url = $('#doc').val();
-    var url = ractive.getId(ractive.get('current'))+'/documents';
+    var url = ractive.uri(ractive.get('current'))+'/documents';
     url = url.replace(ractive.entityName(ractive.get('current')),ractive.get('tenant.id')+'/'+ractive.entityName(ractive.get('current')));
     if (n.url.trim().length > 0) {
       $('#docsTable tr:nth-child(1)').slideUp();
@@ -283,7 +283,7 @@ var AuthenticatedRactive = Ractive.extend({
     console.info('saveNote '+JSON.stringify(ractive.get('current.note'))+' ...');
     var n = ractive.get('current.note');
     n.content = $('#note').val();
-    var url = ractive.getId(ractive.get('current'))+'/notes';
+    var url = ractive.uri(ractive.get('current'))+'/notes';
     url = url.replace(ractive.entityName(ractive.get('current')),ractive.get('tenant.id')+'/'+ractive.entityName(ractive.get('current')));
     console.log('  url:'+url);
     if (n.content.trim().length > 0) {
@@ -349,7 +349,7 @@ var AuthenticatedRactive = Ractive.extend({
     console.log('switchToTenant: '+tenant);
     $.ajax({
       method: 'PUT',
-      url: "/admin/tenant/"+ractive.get('username')+'/'+tenant,
+      url: ractive.getServer()+"/admin/tenant/"+ractive.get('username')+'/'+tenant,
       success: function() {
         window.location.reload();
       }
@@ -403,9 +403,13 @@ var AuthenticatedRactive = Ractive.extend({
     } else if (entity['_links']!=undefined) {
       uri = ractive.stripProjection(entity._links.self.href);
     }
-    if (uri != undefined && ractive.get('context')!=undefined) {
-      uri = uri.replace('/'+ractive.get('entityPath'),ractive.get('context')+'/'+ractive.get('entityPath'));
+    // work around for sub-dir running
+    if (uri != undefined && uri.indexOf(ractive.getServer())==-1 && uri.indexOf('//')!=-1) {
+      uri = ractive.getServer() + uri.substring(uri.indexOf('/', uri.indexOf('//')+2));
+    } else if (uri != undefined && uri.indexOf('//')==-1) {
+      uri = ractive.getServer()+uri;
     }
+
     return uri;
   }
 });

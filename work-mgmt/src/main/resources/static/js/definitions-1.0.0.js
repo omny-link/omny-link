@@ -286,7 +286,7 @@ var ractive = new AuthenticatedRactive({
       $('section[data-instanceid="'+instance.id+'"]').hide();
       $($('.btn-details')[idx]).empty().append('View Details');
     } else {
-      $.getJSON('/'+ractive.get('tenant.id')+'/process-instances/'+instance.id, function( data ) {
+      $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/'+instance.id, function( data ) {
         console.log('found audit trail: '+data.auditTrail.length);
         data.auditTrail.sort(function(a,b) { return new Date(b.startTime)-new Date(a.startTime); });
         ractive.set('current.instances.'+idx+'.auditTrail',data.auditTrail);

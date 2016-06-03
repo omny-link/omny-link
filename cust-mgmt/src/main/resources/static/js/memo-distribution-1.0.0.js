@@ -365,7 +365,11 @@ var ractive = new AuthenticatedRactive({
       });
 	  }
 	  if (distribution._links != undefined) {
-	    var url = distribution._links.self.href.indexOf('?')==-1 ? distribution._links.self.href : distribution._links.self.href.substr(0,distribution._links.self.href.indexOf('?')-1);
+      var url = ractive.uri(distribution); // includes getServer
+      if (url == undefined) {
+        ractive.showError('No distribution selected, please check link');
+        return;
+      }
 	    console.log('loading detail for '+url);
 	    $.getJSON(ractive.getServer()+url,  function( data ) {
         console.log('found distribution '+data);
