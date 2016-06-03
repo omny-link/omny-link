@@ -275,9 +275,13 @@ var ractive = new AuthenticatedRactive({
       });
 	  }
 	  if (message._links != undefined) {
-	    var url = message._links.self.href.indexOf('?')==-1 ? message._links.self.href : message._links.self.href.substr(0,message._links.self.href.indexOf('?')-1);
+	    var url = ractive.uri(message); // includes getServer
+      if (url == undefined) {
+        ractive.showError('No memo selected, please check link');
+        return;
+      }
 	    console.log('loading detail for '+url);
-	    $.getJSON(ractive.getServer()+url+'?projection=complete',  function( data ) {
+	    $.getJSON(url+'?projection=complete',  function( data ) {
         console.log('found message '+data);
         ractive.set('current', data);
         ractive.initControls();

@@ -537,13 +537,13 @@ var ractive = new AuthenticatedRactive({
       });
 	  }
 	  if (contact._links != undefined) {
-	    var url = ractive.uri(contact);
+	    var url = ractive.uri(contact); // includes getServer
 	    if (url == undefined) {
 	      ractive.showError('No contact selected, please check link');
 	      return;
 	    }
 	    console.log('loading detail for '+url);
-	    $.getJSON(ractive.getServer()+url+'?projection=complete', function( data ) {
+	    $.getJSON(url+'?projection=complete', function( data ) {
         console.log('found contact '+data);
         ractive.set('current', data);
         ractive.initControls();
