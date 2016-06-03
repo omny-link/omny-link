@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.activiti.engine.ActivitiException;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.knowprocess.exceptions.UserInfoNotFoundException;
 import com.knowprocess.resource.internal.UrlResource;
 
 // Initially supports Twilio URL Encoded POST but some prelim. support for Form 
@@ -54,14 +56,34 @@ public class RestPut extends RestService implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
-        String usr = getUsername(execution);
-        String resource = evalExpr(execution,
-                lookup(execution, usr, globalResource));
-        String pwd = getPassword(execution, usr);
+        String usr = null;
+        String resource = null;
+        try {
+            usr = getUsername(execution);
+            resource = evalExpr(execution,
+                    lookup(execution, usr, globalResource));
+            String pwd = getPassword(execution, usr);
 
-        String headerStr = (String) headers.getValue(execution);
-        Object payload = data.getValue(execution);
+            String headerStr = (String) headers.getValue(execution);
+            Object payload = data.getValue(execution);
 
-        execute(usr, pwd, resource, headerStr, payload);
+            execute(usr, pwd, resource, headerStr, payload);
+        } catch (UserInfoNotFoundException e) {
+            // should already be logged
+            throw e;
+        } catch (ActivitiException e) {
+            String msg = String
+                    .format("Problem whilst PUTting '%1$s' for '%2$s', check with your administrator.",
+                            resource, usr);
+            LOGGER.error(String.format("%1$s %2$s - %3$s", msg, e.getClass()
+                    .getName(), e.getMessage()));
+            if (e.getCause() != null) {
+                LOGGER.error(String.format("  caused by:%1s - %2$s", e
+                        .getCause().getClass().getName(), e.getCause()
+                        .getMessage()));
+            }
+            throw new ActivitiException(msg);
+
+        }
     }
 }

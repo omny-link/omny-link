@@ -110,11 +110,11 @@ public class RestPost extends RestService implements JavaDelegate {
                 String hdr = s.substring(s.indexOf('=') + 1);
                 LOGGER.debug("Seeking header: " + hdr);
                 if (responseHeaders2.containsKey(hdr)) {
-                    LOGGER.debug(String.format("  ... setting: %1$s to %2$s", s
-                            .substring(0, s.indexOf('=')), responseHeaders2
-                            .get(hdr).get(0)));
-                    responses.put(s.substring(0, s.indexOf('=')),
-                            responseHeaders2.get(hdr).get(0));
+                    String hdrVal = s.indexOf('=') != -1 ? s.substring(0,
+                            s.indexOf('=')) : s;
+                    LOGGER.debug(String.format("  ... setting: %1$s to %2$s",
+                            hdrVal, responseHeaders2.get(hdr).get(0)));
+                    responses.put(hdrVal, responseHeaders2.get(hdr).get(0));
                 }
             }
 
