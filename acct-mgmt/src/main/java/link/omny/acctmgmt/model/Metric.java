@@ -54,6 +54,12 @@ public class Metric implements Serializable {
     @JsonProperty
     protected Long value;
 
+    @JsonProperty
+    protected String category1;
+
+    @JsonProperty
+    protected String category2;
+
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
