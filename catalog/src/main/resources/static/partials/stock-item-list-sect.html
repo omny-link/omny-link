@@ -34,7 +34,7 @@
             <td on-click="edit(this)">{{stockCategoryName}}</td>
             <td on-click="edit(this)">{{type}}</td>
             <td on-click="edit(this)">{{status}}</td>
-            <td on-click="edit(this)">{{price}}</td>
+            <td on-click="edit(this)">{{#price == 0}}P.O.A.{{else}}{{price}}{{/}}</td>
             <td on-click="edit(this)">{{formatDate(created)}}</td>
             <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
             <td class="col-actions">
