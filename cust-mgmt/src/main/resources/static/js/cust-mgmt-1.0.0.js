@@ -31,6 +31,20 @@ var ractive = new AuthenticatedRactive({
         return val; 
       }
     },
+    fields: ["id", "country", "owner", "fullName", "title", "customFields",
+              "tenantId", "lastUpdated", "firstName", "lastName", "tags",
+              "source", "email", "postCode", "account", "uuid", "phone1",
+              "stage", "doNotCall", "doNotEmail", "firstContact", "accountId",
+              "phone2", "address1", "address2", "town", "countyOrCity",
+              "postCode", "country",
+              "enquiryType", "accountType", "medium", "campaign", "keyword",
+              "emailConfirmed", "account.name", "account.businessWebsite",
+              "account.companyNumber", "account.incorporationYear",
+              "account.sic"],
+    fieldValidators: {
+      "phone1": "^\\+?[0-9, \\-()]{0,15}$",
+      "phone2": "^\\+?[0-9, \\-()]{0,15}$"
+    },
     formatAge: function(timeString) {
       console.log('formatAge: '+timeString);
       return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
@@ -348,6 +362,16 @@ var ractive = new AuthenticatedRactive({
     });
     return c;
   },
+  importComplete: function(imported, failed) {
+    console.log('inferComplete');
+    ractive.showMessage('Import complete added '+imported+' records '+' with '+failed+' failures');
+    if (failed==0) {
+      ractive.fetch();
+      $("#pasteSect").animate({width:'toggle'},EASING_DURATION*2, function() {
+        $("#contactsSect").slideDown(EASING_DURATION*2);
+      });
+    }
+  },
   inferDomainName: function() {
     console.info('inferDomainName');
     var email = ractive.get('current.email');
@@ -359,6 +383,7 @@ var ractive = new AuthenticatedRactive({
     case 'googlemail.com':
     case 'hotmail.co.uk':
     case 'hotmail.com':
+    case 'live.com':
     case 'mac.com':
     case 'outlook.com':
     case 'yahoo.com':
@@ -382,6 +407,123 @@ var ractive = new AuthenticatedRactive({
     console.log('oninit');
     this.ajaxSetup();
     this.loadStandardPartials(this.get('stdPartials'));
+  },
+  pasteInit: function() {
+    ractive.set('pasteData',undefined);
+    $("#contactsSect").slideUp(EASING_DURATION*2, function() {
+      $("#pasteSect").animate({width:'toggle'},EASING_DURATION*2);
+    });
+
+    document.addEventListener('paste', function(e){
+      console.error('  '+e.clipboardData.types);
+      if(e.clipboardData.types.indexOf('text/plain') > -1){
+        ractive.pastePreview(e.clipboardData.getData('text/plain'));
+        e.preventDefault(); // We are already handling the data from the clipboard, we do not want it inserted into the document
+      }
+    });
+  },
+  pasteDataToObjects: function() {
+    console.info('pasteDataToObjects');
+
+    var list = [];
+    $.each(ractive.get('pasteData.rows'), function(i,d) {
+      var obj = {};
+      $.each(ractive.get('pasteData.headers'), function(j,e) {
+        console.log('  '+i+':'+d);
+        if (ractive.get('fields').indexOf(e)!=-1) {
+          if (e.indexOf('.')==-1) {
+            obj[e] = d[j];
+          } else {
+            var orig = obj;
+            var elements = e.split('.');
+            for (var idx in elements) {
+              if (idx==elements.length-1) {
+                obj[elements[idx]] = d[j];
+              } else {
+                if (obj[elements[idx]]==undefined) obj[elements[idx]] = {};
+                obj = obj[elements[idx]];
+              }
+            }
+            obj = orig;
+          }
+        }
+      });
+      if (obj['firstName']==undefined) obj['firstName'] = 'Ann';
+      if (obj['lastName']==undefined) obj['lastName'] = 'Other';
+      if (obj['email']==undefined) obj['email'] = 'info@omny.link';
+      if (obj['enquiryType']==undefined) obj['enquiryType'] = 'User Import';
+
+      obj['tenantId'] = ractive.get('tenant.id');
+      if (obj['account']!=undefined) obj.account['tenantId'] = ractive.get('tenant.id');
+
+      list.push(obj);
+    });
+    ractive.set('list',list);
+    return list;
+  },
+  pasteImport: function() {
+    console.info('pasteImport');
+
+    var list = ractive.pasteDataToObjects();
+    var imported = 0;
+    var failed = 0;
+
+    for(var idx in list) {
+      ractive.sendMessage({
+        name:"omny.importedContact",
+        body:JSON.stringify(list[idx]),
+        callback:function(results) {
+          console.log('  sendMessage callback...')
+          imported++;
+          if (imported+failed==list.length) ractive.importComplete(imported, failed);
+        },
+        pattern:"inOnly"
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        var msg = "Unable to import record "+idx;
+        console.warn('msg:'+msg);
+        failed++;
+        if (imported+failed==list.length) ractive.importComplete(imported, failed);
+      });
+    }
+  },
+  pastePreview: function(data) {
+    var rows = data.split("\n");
+
+    for(var y in rows) {
+      var cells = rows[y].trim().split("\t");
+      if (y==0){
+        ractive.set('pasteData.headers',cells);
+      }else{
+        ractive.set('pasteData.rows.'+(y-1),cells);  
+      }
+    }
+
+    ractive.pasteValidate();
+
+    $("#pasteZone").animate({width:'toggle'},EASING_DURATION*2);
+  },
+  pasteValidate: function(data) {
+    var valid = true;
+    $.each(ractive.get('pasteData.headers'), function(i,d) {
+      console.log('  '+i+':'+d);
+      if (d.indexOf('customFields')!=-1) { 
+        console.debug('assume this field is ok:'+d);
+      } else if (ractive.get('fields').indexOf(d)==-1) {
+        $('#pastePreview th[data-name="'+d+'"] .glyphicon').show();
+        valid = false;
+      }
+
+      var v = ractive.get('fieldValidators');
+      $.each(ractive.get('pasteData.rows'), function(j,e) {
+        console.log(j+':'+e[i]);
+        if (v[d]!=undefined && e[i].search(v[d])==-1) {
+          //console.error('gotcha!');
+          $('#pastePreview tbody tr[data-row="'+j+'"] td[data-col="'+i+'"] .glyphicon').show();
+        }
+      });
+    });
+    if (!valid) ractive.showWarning('There are problems with the proposed import, please modify and try again');
   },
   save: function () {
     console.log('save contact: '+ractive.get('current').lastName+'...');
@@ -476,6 +618,11 @@ var ractive = new AuthenticatedRactive({
             ractive.set('saveObserver',true);
           }
           ractive.set('contacts.'+ractive.get('currentIdx')+'.accountName',ractive.get('current.account.name'));
+        }
+        .fail = function(jqXHR, textStatus, errorThrown) {
+          var msg = "Unable to lookup company data at the moment. Please try later.";
+          console.warn('msg:'+msg);
+          ractive.showMessage(msg,'alert-warning');
         }
       });
     } else if ($('#currentAccountForm:visible').length!=0) {

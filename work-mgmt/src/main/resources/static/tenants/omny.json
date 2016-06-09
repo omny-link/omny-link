@@ -2,11 +2,6 @@
   "id": "omny", 
   "name": "Omny Link",
   "show": { "account":true, "activityAnalysis":true, "budget":true, "companyBackground":false, "marketing":true, "merge":true },
-  "contactFields": [ 
-    { "name": "Job Title", "ref": "jobTitle"},
-    { "name": "Next Steps", "ref": "nextSteps"},
-    { "name": "Been Demo'ed", "ref": "isDemoed"}
-  ],
   "accountFields": [ 
     { "name": "Sector", "ref": "sector"},
     { "name": "Lead Office", "ref": "leadOffice"},
@@ -33,6 +28,7 @@
   "partials": [
     { "name": "omnyContactExtension", "url": "/partials/contact-extension.html"},
     { "name": "omnyAccountExtension", "url": "/partials/account-extension.html"},
+    { "name": "omnyCustomerExtension", "url": "/partials/omny/customer-extension.html"},
     { "name": "omnyAddReminder", "url": "/partials/add-reminder.html"},
     { "name": "omnySimpleTodo", "url": "/partials/simple-todo.html"},
     { "name": "omnySendMemo", "url": "/partials/pick-memo.html"},
@@ -42,6 +38,7 @@
     { "name": "Add Activity To Contact", "ref": "AddActivityToContact", "url": "processes/link/omny/custmgmt/AddActivityToContact.bpmn" },
     { "name": "Add Note To Contact", "ref": "AddNoteToContact", "url": "processes/link/omny/custmgmt/AddNoteToContact.bpmn" },
     { "name": "Create Contact and Account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
+    { "name": "Import Contact", "ref": "ImportContact", "url": "processes/link/omny/website/ImportContact.bpmn" },
     { "name": "Record an enquiry", "ref": "RecordEnquiry", "url": "processes/link/omny/website/RecordEnquiry.bpmn" },
     { "name": "Register an Omny user", "ref": "RegisterOmnyContact", "url": "processes/link/omny/website/RegisterOmnyContact.bpmn" },
     { "name": "Reset user's password", "ref": "ResetPassword", "url": "processes/link/omny/support/ResetPassword.bpmn" },

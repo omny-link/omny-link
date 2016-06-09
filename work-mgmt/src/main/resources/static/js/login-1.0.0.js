@@ -323,6 +323,9 @@ var AuthenticatedRactive = Ractive.extend({
     }, EASING_DURATION*10);
     else $('#messages').append('<span class="text-danger pull-right glyphicon glyphicon-remove" onclick="ractive.hideMessage()"></span>');
   },
+  showWarning: function(msg) {
+    this.showMessage(msg, 'alert-warning');
+  },
   showUpload: function () {
     console.log('showUpload...');
     $('#upload').slideDown();

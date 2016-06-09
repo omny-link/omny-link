@@ -61,18 +61,32 @@ public class Account implements Serializable {
 
     /**
      * <ul>
-     * <li>UK company numbers are 8 digits.
+     * <li>UK company numbers are 7 or 8 digits (Companies House has started
+     * left zero padding).
+     * <li>Scottish company numbers are SC then 6 digits.
      * <li>UK LLP numbers are OC then 6 digits.
      */
-    @Pattern(regexp = "[0-9OS][0-9C][0-9]{6}")
+    @Pattern(regexp = "[0-9OS][0-9C][0-9]{5,6}")
     @JsonProperty
     private String companyNumber;
+
+    @JsonProperty
+    private String sic;
 
     @JsonProperty
     private String aliases;
 
     @JsonProperty
     private String businessWebsite;
+
+    @JsonProperty
+    private String twitter;
+
+    @JsonProperty
+    private String facebook;
+
+    @JsonProperty
+    private String linkedIn;
 
     /**
      */
@@ -166,6 +180,14 @@ public class Account implements Serializable {
             newField.setAccount(this);
             getCustomFields().add(newField);
         }
+    }
+
+    public String getCompanyNumber() {
+        if (companyNumber != null && companyNumber.length() < 8) {
+            companyNumber = String.format("%08d",
+                    Integer.parseInt(companyNumber));
+        }
+        return companyNumber;
     }
 
     @PreUpdate

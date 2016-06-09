@@ -148,6 +148,15 @@ public class Contact implements Serializable {
     @JsonProperty
     private boolean doNotEmail;
 
+    @JsonProperty
+    private String twitter;
+
+    @JsonProperty
+    private String facebook;
+
+    @JsonProperty
+    private String linkedIn;
+
     /**
      * Intended to capture the source of the lead from Analytics or in some
      * cases the contact will declare the source.
