@@ -53,37 +53,7 @@
     
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li>
-          <label class=" required">Email:</label>
-          <input class="form-control" id="curEmail" required type="email" value="{{current.email}}">
-        </li>
-        <li>
-          <label class="">Confirmed?:</label>
-          <input class="" id="curEmailConfirmed" type="checkbox" checked="{{current.emailConfirmed}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Has this email been confirmed valid?</p>
-        </li>
-        <li>
-          <label class="">Do Not Email:</label>
-          <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"> Owner preference
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Check this if the user should not receive automated emails, for example during sensitive negotiations</p>  
-        </li>
-        <li>
-          <label class="">Opt out:</label>
-          <input class="" id="curOptOut" type="checkbox" checked="{{current.optOut}}"> User preference
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This will be checked if the user has opted-out of / unsubscribed from marketing emails</p>
-        </li>
-        <li>
-          <label class="">Preferred Phone:</label>
-          <input class="form-control" id="curPhone1" pattern="\+?[0-9, \-()]{0,15}" value="{{current.phone1}}">
-        </li>
-        <li>
-          <label class="">Alternate Phone:</label>
-          <input class="form-control" id="curPhone2" pattern="\+?[0-9, \-()]{0,15}" value="{{current.phone2}}">
-        </li>
-        <li>
-          <label class="">Do Not Call:</label>
-          <input class="" id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}">
-        </li>
+
         <li>
           <label class="">Owner: </label>
           <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}">
@@ -103,6 +73,91 @@
     </div>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
+        <li>
+          <label class="">Enquiry Type:</label>
+          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">The nature of the initial contact</p>
+        </li>
+        <li>
+          <label class="">Account Type:</label>
+          <input class="typeahead form-control" placeholder="Start typing to filter options" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Defines the nature of the relationship with this contact</p>
+        </li>
+        <li>
+          <label class="" style="margin-right:5px">Tags:</label>
+          <input class="tag-ctrl form-control" id="curTags" data-bind="current.tags"/>
+        </li>
+      </ul>
+    </div>
+
+    <h3 style="clear:both">Contact Information</h3>
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+      <ul class="form edit-form">
+        <li>
+          <label class=" required">Email:</label>
+          <input class="form-control" id="curEmail" required type="email" value="{{current.email}}">
+        </li>
+        <li>
+          <label class="">Confirmed?:</label>
+          <input class="" id="curEmailConfirmed" type="checkbox" checked="{{current.emailConfirmed}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Has this email been confirmed valid?</p>
+        </li>
+        <li>
+          <label class="">Do Not Email:</label>
+          <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"> Owner preference
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Check this if the user should not receive automated emails, for example during sensitive negotiations</p>  
+        </li>
+        <li>
+          <label class="">Opt out:</label>
+          <input class="" id="curOptOut" type="checkbox" checked="{{current.optOut}}"> User preference
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This will be checked if the user has opted-out of / unsubscribed from marketing emails</p>
+        </li>
+        <li class="form-group">
+          <label class="col-md-4">Twitter:</label>
+          <div class="input-group">
+            <input class="form-control" id="curTwitter" pattern="@[a-z0-9_]{1,15}" type="text" value="{{current.twitter}}"/>
+            <span class="input-group-addon">
+              <a href="https://twitter.com/{{current.twitter}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+            </span>
+          </div>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include @</p>
+        </li>
+        <li class="form-group">
+          <label class="col-md-4">Facebook:</label>
+          <div class="input-group">
+            <input class="form-control" id="curFacebook" type="url" value="{{current.facebook}}"/>
+            <span class="input-group-addon">
+              <a href="{{current.facebook}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+            </span>
+          </div>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
+        </li>
+        <li class="form-group">
+          <label class="col-md-4">LinkedIn:</label>
+          <div class="input-group">
+            <input class="form-control" id="curLinkedIn" type="url" value="{{current.linkedIn}}"/>
+            <span class="input-group-addon">
+              <a href="{{current.linkedIn}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+            </span>
+          </div>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
+        </li>
+      </ul>
+    </div>
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+      <ul class="form edit-form">
+        <li>
+          <label class="">Preferred Phone:</label>
+          <input class="form-control" id="curPhone1" pattern="\+?[0-9, \-()]{0,15}" value="{{current.phone1}}">
+        </li>
+        <li>
+          <label class="">Alternate Phone:</label>
+          <input class="form-control" id="curPhone2" pattern="\+?[0-9, \-()]{0,15}" value="{{current.phone2}}">
+        </li>
+        <li>
+          <label class="">Do Not Call:</label>
+          <input class="" id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}">
+        </li>
         <li>
           <label class="">Address:</label>
           <input class="form-control" id="curAddress1" value="{{current.address1}}"/>
@@ -141,20 +196,6 @@
             </li>
           {{/}}
         {{/}}
-        <li>
-          <label class="">Enquiry Type:</label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">The nature of the initial contact</p>
-        </li>
-        <li>
-          <label class="">Account Type:</label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Defines the nature of the relationship with this contact</p>
-        </li>
-        <li>
-          <label class="" style="margin-right:5px">Tags:</label>
-          <input class="tag-ctrl form-control" id="curTags" data-bind="current.tags"/>     
-        </li>
       </ul>
     </div>
 
@@ -234,16 +275,6 @@
               <input autocomplete="off" class="typeahead form-control" id="curAccountName" required value="{{current.account.name}}">
             </li>
             <li class="form-group">
-              <label class="col-md-4">Website:</label>
-              <input class="form-control" id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}">
-              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
-            </li>
-            <!--<li><label class="">Also known as:</label><input class="form-control" id="curAliases" value="{{current.account.aliases}}"></li>-->
-          </ul>
-        </div>
-        <div class="currentBody col-md-6 col-sm-12 col-xs-12">
-          <ul class="edit-form">
-            <li class="form-group">
               <label class="col-md-4">Company Number:</label>
               <input autocomplete="off" class="typeahead form-control" id="curCompanyNumber" pattern="[OCS0-9]{2}[0-9]{6}" placeholder="Start typing to filter options" type="text" value="{{current.account.companyNumber}}">
             </li>
@@ -265,6 +296,59 @@
                  <option value="500-999">500-999</option>
                  <option value="1000+">over 1000</option>
                </select>
+            </li>
+            <li class="form-group">
+              <label class="col-md-4">Founded:</label>
+              <input autocomplete="off" class="form-control" id="curIncorporationYear" pattern="[0-9]{4}" placeholder="yyyy" type="text" value="{{current.account.incorporationYear}}">
+            </li>
+            <li class="form-group">
+              <label class="col-md-4">SIC:</label>
+              <input autocomplete="off" class="typeahead form-control" id="curSic" type="text" value="{{current.account.sic}}">
+              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Standard industrial classification of economic activities (SIC)</p>
+            </li>
+          </ul>
+        </div>
+        <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+          <ul class="form edit-form">
+            <li class="form-group">
+              <label class="col-md-4">Website:</label>
+              <div class="input-group">
+                <input class="form-control" id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"/>
+                <span class="input-group-addon">
+                  <a href="{{current.account.businessWebsite}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+                </span>
+              </div>
+              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
+            </li>
+            <li class="form-group">
+              <label class="col-md-4">Twitter:</label>
+              <div class="input-group">
+                <input class="form-control" id="curBusinessTwitter" pattern="@[a-z0-9_]{1,15}" type="text" value="{{current.account.twitter}}"/>
+                <span class="input-group-addon">
+                  <a href="https://twitter.com/{{current.account.twitter}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+                </span>
+              </div>
+              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include @</p>
+            </li>
+            <li class="form-group">
+              <label class="col-md-4">Facebook:</label>
+              <div class="input-group">
+                <input class="form-control" id="curBusinessFacebook" type="url" value="{{current.account.facebook}}"/>
+                <span class="input-group-addon">
+                  <a href="{{current.account.facebook}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+                </span>
+              </div>
+              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
+            </li>
+            <li class="form-group">
+              <label class="col-md-4">LinkedIn:</label>
+              <div class="input-group">
+                <input class="form-control" id="curBusinessLinkedIn" type="url" value="{{current.account.linkedIn}}"/>
+                <span class="input-group-addon">
+                  <a href="{{current.account.linkedIn}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+                </span>
+              </div>
+              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
             </li>
           </ul>
         </div>
