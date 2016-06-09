@@ -72,6 +72,12 @@ public interface ContactCompleteProjection {
 
     String getTags();
 
+    String getTwitter();
+
+    String getFacebook();
+
+    String getLinkedIn();
+
     Date getFirstContact();
 
     Date getLastUpdated();
