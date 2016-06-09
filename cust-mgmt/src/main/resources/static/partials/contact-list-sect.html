@@ -4,21 +4,50 @@
     {{>profileArea}}
   </h2>
 </section>
+
+<section id="pasteSect" style="display:none">
+  <h2>
+    Import
+    <a class="glyphicon glyphicon-import super-admin pull-right upload" aria-hidden="true" on-click="pasteImport()" title="Import data from file"></a>
+  </h2>
+  <div id="pasteZone" class="col-md-12 pasteZone">
+    <span class="target" style="border: #666 solid 1px">Paste your data here</span>
+  </div>
+
+  <div id="pastePreview" style="clear:both">
+    <table class="contacts table table-striped">
+      <thead>
+        {{#each pasteData.headers:idx}}
+          <th data-name="{{.}}" >
+            <span>{{.}}</span>
+            <span class="alert-warning glyphicon glyphicon-warning-sign" style="display:none" title="field '{{.}}' is not recognised"></span>
+          </th>
+        {{/each}}
+      </thead>
+      <tbody>
+        {{#each pasteData.rows:idx}}
+          <tr data-row="{{idx}}">
+            {{#each pasteData.rows[idx]:colIdx}}
+              <td data-col="{{colIdx}}">
+                <span>{{.}}</span>
+                <span class="alert-warning glyphicon glyphicon-warning-sign" style="display:none" title="'{{.}}' is not a valid value"></span>
+              </td>
+            {{/each}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
 <section id="contactsSect">
   <h2 class="navbar-top">
     {{>navbar}}
 
-    <form id="upload" class="super-admin pull-right upload">
-      <a class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')" title="Import data from file"></a>
-      <input type="file" class="form-control file pull-right" name="file" placeholder="Select file">
-      <select class="form-control entity pull-right" name="entity">
-        <option value="contacts">Contacts</option>
-        <option value="accounts">Accounts</option>
-        <option value="activities">Activities</option>
-        <option value="notes">Notes</option>
-      </select>
-    </form>
+    <a class="glyphicon glyphicon-import super-admin pull-right upload" aria-hidden="true" on-click="pasteInit()" title="Import data from file"></a>
   </h2>
+
   <table id="contactsTable" class="contacts table table-striped">
     <thead>
       <tr>

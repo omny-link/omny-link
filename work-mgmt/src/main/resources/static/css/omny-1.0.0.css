@@ -166,14 +166,18 @@ section h2 .file {
   margin-top: -5px;
   width: 110px;
 }
-section h2 .glyphicon-import {
-	border-bottom-left-radius: 0;
-	border-top-left-radius: 0;
-	font-size: 20px;
-	margin-left: 0px;
-	position: relative;
-	left: -1px;
-	top: 5px;
+section .pasteZone {
+  background-color:#efefef;
+  border: #666 dashed 3px;
+  height:10em;
+}
+section .pasteZone .target {
+  border: #666 solid 1px;
+  position: relative;
+  top: 42%;
+  left: 42%;
+  padding: 1em;
+  border-radius: 5px;
 }
 section h3 {
   border-bottom: solid 1px #ff6c06;
@@ -226,9 +230,8 @@ tfoot th {
 }
 #ajax-loader img.ajax-loader {
   position: fixed;
-  left: 55%;
+  left: 50%;
   top: 44%;
-  width: 80px;
   z-index: 200; 
 }
 #ajax-loader span {
