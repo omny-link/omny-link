@@ -102,7 +102,7 @@
     { "selector": "#curOwner", "url": "/data/firmgains/owners.json"},
     { "selector": "#who", "url": "/data/firmgains/owners.json"},
     { "selector": "#curPartnersContacted", "url": "/data/firmgains/partners.json"},
-    { "selector": "#curRegion", "url": "/data/firmgains/regions.json"},
+    { "selector": "#curRegion", "url": "/data/regions.json"},
     { "selector": "#curSector", "url": "/data/firmgains/sectors.json"},
     { "name": "stages", "selector": "#curStage", "url": "/data/firmgains/stages.json"},
     { "selector": "#curPreferredTiming", "url": "/data/firmgains/timings.json"}
