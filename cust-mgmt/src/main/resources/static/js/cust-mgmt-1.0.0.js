@@ -278,6 +278,7 @@ var ractive = new AuthenticatedRactive({
           ractive.merge('contacts', data['_embedded'].contacts);
         }
         if (ractive.hasRole('admin')) $('.admin').show();
+        if (ractive.hasRole('power-user')) $('.power-user').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
         ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
         ractive.set('saveObserver', true);
@@ -321,6 +322,7 @@ var ractive = new AuthenticatedRactive({
     });
   },
   fetchCompaniesHouseInfo: function() { 
+    if (ractive.get('tenant.features.companyBackground')==undefined || ractive.get('tenant.features.companyBackground')==false) return;
     console.info('fetchCompaniesHouseInfo for '+ractive.get('current.account.companyNumber'));
     ractive.sendMessage({
       name:"omny.companyRecord",
@@ -619,11 +621,6 @@ var ractive = new AuthenticatedRactive({
           }
           ractive.set('contacts.'+ractive.get('currentIdx')+'.accountName',ractive.get('current.account.name'));
         }
-        .fail = function(jqXHR, textStatus, errorThrown) {
-          var msg = "Unable to lookup company data at the moment. Please try later.";
-          console.warn('msg:'+msg);
-          ractive.showMessage(msg,'alert-warning');
-        }
       });
     } else if ($('#currentAccountForm:visible').length!=0) {
       var msg = 'Cannot save yet as account is invalid';
@@ -634,6 +631,7 @@ var ractive = new AuthenticatedRactive({
     }
   },
   searchCompaniesHouse: function() {
+    if (ractive.get('tenant.features.companyBackground')==undefined || ractive.get('tenant.features.companyBackground')==false) return;
     console.info('searchCompaniesHouse');
     var q = ractive.get('current.account.name');
     ractive.sendMessage({

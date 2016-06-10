@@ -1,7 +1,7 @@
 { 
   "id": "omny", 
   "name": "Omny Link",
-  "show": { "account":true, "activityAnalysis":true, "budget":true, "companyBackground":false, "marketing":true, "merge":true },
+  "show": { "account":true, "activityAnalysis":true, "budget":true, "companyBackground":true, "marketing":true, "merge":true },
   "accountFields": [ 
     { "name": "Sector", "ref": "sector"},
     { "name": "Lead Office", "ref": "leadOffice"},
