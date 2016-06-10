@@ -25,8 +25,8 @@ public abstract class BaseUserAwareTask implements JavaDelegate {
     protected Expression resourcePassword;
 
     protected String lookup(DelegateExecution execution, @Nonnull String usr, @Nonnull Expression expr) {
+        String s = (String) expr.getValue(execution);
         try {
-            String s = (String) expr.getValue(execution);
             if (s.startsWith("userInfo('")) {
                 String key = s.substring("userInfo(".length(), s.indexOf(')'));
                 if (key.startsWith("'") || key.startsWith("\"")) {
