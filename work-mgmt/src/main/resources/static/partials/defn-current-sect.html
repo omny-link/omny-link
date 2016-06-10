@@ -11,7 +11,7 @@
         {{/}}
         <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" onclick="ractive.fetchInstances()" title="Refresh instance list"></a>
       {{/}}
-      <a class="glyphicon glyphicon-cloud-download" href="{{context}}/{{tenant.id}}/process-definitions/{{current.id}}.bpmn" target="_newtab" title="Download the BPMN representation of the process"></a>
+      <a class="glyphicon glyphicon-cloud-download" href="{{context}}/{{tenant.id}}/process-definitions/{{current.id}}.bpmn" target="bpmn" title="Download the BPMN representation of the process"></a>
       {{#current.deploymentId}}
         <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete({{current.deploymentId}})" title="Delete this definition"></a>
       {{/}}
