@@ -1,5 +1,6 @@
 [
-  {  "id": "Customer", "name": "Customer"  },
-  {  "id": "Other", "name": "Other"  },
-  {  "id": "Partner", "name": "Partner"  }
+  {  "name": "Customer"  },
+  {  "name": "Other"  },
+  {  "name": "Partner"  },
+  {  "name": "Staff"  }
 ]
