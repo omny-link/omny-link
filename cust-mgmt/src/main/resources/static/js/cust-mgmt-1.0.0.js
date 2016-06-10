@@ -51,7 +51,10 @@ var ractive = new AuthenticatedRactive({
     },
     formatDate: function(timeString) {
       if (timeString==undefined) return 'n/a';
-      return new Date(timeString).toLocaleDateString(navigator.languages);
+      var d = new Date(timeString);
+      // IE strikes again
+      if (d == 'Invalid Date') d = parseDateIEPolyFill(timeString);
+      return d.toLocaleDateString(navigator.languages);
     },
     formatJson: function(json) { 
       console.log('formatJson: '+json);
@@ -897,3 +900,13 @@ ractive.on( 'sort', function ( event, column ) {
   this.set( 'sortColumn', column );
 });
 
+function parseDateIEPolyFill(timeString) {
+  var start = timeString.substring(0,timeString.indexOf('.'));
+  var offset;
+  if (timeString.indexOf('-',timeString.indexOf('T'))!=-1) {
+    offset = timeString.substr(timeString.indexOf('-',timeString.indexOf('T')),3)+':'+timeString.substr(timeString.indexOf('-',timeString.indexOf('T'))+3,2);
+  } else if (timeString.indexOf('+')!=-1) {
+    offset = timeString.substr(timeString.indexOf('+'),3)+':'+timeString.substr(timeString.indexOf('+')+3,2);
+  }
+  return new Date(Date.parse(start+offset));
+}
