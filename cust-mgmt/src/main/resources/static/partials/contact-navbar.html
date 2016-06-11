@@ -17,11 +17,11 @@
     {{/stages}}
     <li class="divider"></li>
     {{#enquiryTypes:j}}
-      <li on-click="filter:{idx:{{4+stages.length+j}},field: 'enquiryType', value: '{{id}}'}">{{name}}</li>
+      <li on-click="filter:{idx:{{5+stages.length+j}},field: 'enquiryType', value: '{{id}}'}">{{name}}</li>
     {{/}}
     <li class="divider"></li>
     {{#accountTypes:k}}
-      <li on-click="filter:{idx:{{4+stages.length+enquiryTypes.length+k}},field: 'accountType', value: '{{id}}'}">{{name}}</li>
+      <li on-click="filter:{idx:{{6+stages.length+enquiryTypes.length+k}},field: 'accountType', value: '{{id}}'}">{{name}}</li>
     {{/accountTypes}}
   </ul>
 </a>
