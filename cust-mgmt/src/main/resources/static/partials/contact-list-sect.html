@@ -59,6 +59,7 @@
         {{#tenant.show.account}}<th on-click="sort:accountName">Business Name<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
         <th on-click="sort:stage">Stage<span class="sortable {{ sorted('stage') }} glyphicon"></th>
         <th on-click="sort:enquiryType">Enquiry Type<span class="sortable {{ sorted('enquiryType') }} glyphicon"></th>
+        <th on-click="sort:accountType">Account Type<span class="sortable {{ sorted('accountType') }} glyphicon"></th>
         <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon"></th>
         <th on-click="sort:firstContact">First Contact<span class="sortable {{ sorted('firstContact') }} glyphicon"></th>
         <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
@@ -80,6 +81,7 @@
             {{/}}
             <td on-click="edit(this)">{{stage}}</td>
             <td on-click="edit(this)">{{enquiryType}}</td>
+            <td on-click="edit(this)">{{accountType}}</td>
             <td on-click="edit(this)">{{{gravatar(owner)}}}</td>
             <td on-click="edit(this)">{{formatDate(firstContact)}}</td>
             <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
