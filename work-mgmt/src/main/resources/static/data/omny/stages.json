@@ -1,9 +1,9 @@
 [
-  {  "idx": 0,    "name": "Enquiry"  },
-  {  "idx": 1,    "name": "Appointment"  },
-  {  "idx": 2,    "name": "Proposal"  },
-  {  "idx": 3,    "name": "Order"  },
-  {  "idx": 4,    "name": "Complete"  },
-  {  "idx": -1,   "name": "On hold"  },
-  {  "idx": -1,   "name": "Cold"  }
+  {  "idx": 0, "id": "Enquiry", "name": "Enquiry"  },
+  {  "idx": 1, "id": "Appointment", "name": "Appointment"  },
+  {  "idx": 2, "id": "Proposal", "name": "Proposal"  },
+  {  "idx": 3, "id": "Order", "name": "Order"  },
+  {  "idx": 4, "id": "Complete", "name": "Complete"  },
+  {  "idx": -1, "id": "On hold", "name": "On hold"  },
+  {  "idx": -1, "id": "Cold", "name": "Cold"  }
 ]
