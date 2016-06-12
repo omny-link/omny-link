@@ -1,9 +1,0 @@
-[
-  {  "id": "Interior Designer", "name": "Interior Designer"  },
-  {  "id": "Retailer/Stockist", "name": "Retailer/Stockist"  },
-  {  "id": "Contractor / Specifier ", "name": "Contractor / Specifier"  },
-  {  "id": "Corporation", "name": "Corporation"  },
-  {  "id": "Public Body", "name": "Public Body"  },
-  {  "id": "Householder", "name": "Householder"  },
-  {  "id": "Other", "name": "Other"  }
-]
