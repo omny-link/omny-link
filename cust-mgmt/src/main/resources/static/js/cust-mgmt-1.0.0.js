@@ -540,6 +540,7 @@ var ractive = new AuthenticatedRactive({
       // cannot save contact and account in one (grrhh), this will clone...
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       //console.log('account: '+JSON.stringify(tmp.account));
+      delete tmp.fullName;
       delete tmp.notes;
       delete tmp.documents;
       if (id != undefined && tmp.account != undefined && Object.keys(tmp.account).length > 0 && tmp.account.id != undefined) {
