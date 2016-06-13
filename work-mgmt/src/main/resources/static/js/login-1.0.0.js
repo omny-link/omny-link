@@ -39,7 +39,7 @@ var AuthenticatedRactive = Ractive.extend({
       $('.navbar-brand').empty().append('<img src="/images/'+tenant+'-logo.png" alt="logo"/>');
       // ajax loader 
       $( "#ajax-loader" ).remove();
-      $('body').append('<div id="ajax-loader"><img class="ajax-loader" src="/images/'+tenant+'-ajax-loader.gif" alt="Loading..."/></div>');
+      $('body').append('<div id="ajax-loader"><img class="ajax-loader" src="/images/omny-ajax-loader.gif" style="width:10%" alt="Loading..."/></div>');
       $( document ).ajaxStart(function() {
         $( "#ajax-loader" ).show();
       });

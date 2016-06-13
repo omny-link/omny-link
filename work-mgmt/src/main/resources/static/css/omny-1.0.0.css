@@ -28,7 +28,7 @@ h1, h2, h3, h4, h5, h6 {
 /* START BOOTSTRAP OVERRIDES */
 
 body {
-  color: #646669;
+  color: #404040;
   font-family: Roboto/*CalibriRegular*/;
   font-size: 16px;
 }
@@ -230,7 +230,7 @@ tfoot th {
 }
 #ajax-loader img.ajax-loader {
   position: fixed;
-  left: 50%;
+  left: 43%;
   top: 44%;
   z-index: 200; 
 }
