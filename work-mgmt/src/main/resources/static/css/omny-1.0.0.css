@@ -22,13 +22,15 @@ h1, h2, h3, h4, h5, h6 {
  *   orange:    ff6c06;
  *   blue:      0e9acd;
  *   pale blue: 59C4ED
- *   grey:      949699;
+ *   grey 1:    6f6f71 
+ *   grey 2:    6f6f71
+ *   grey 3:    939598;
  */
 
 /* START BOOTSTRAP OVERRIDES */
 
 body {
-  color: #404040;
+  color: #6f6f71;
   font-family: Roboto/*CalibriRegular*/;
   font-size: 16px;
 }
@@ -43,11 +45,11 @@ h3 {
 }
 h4 { 
   font-size: 20px;
-  border-bottom: 3px double #949699;
+  border-bottom: 3px double #939598;
 }
 h5,
 legend {
-  border-bottom: 1px solid #949699;
+  border-bottom: 1px solid #939598;
   font-size:16px;
 }
 img.entity-context {
@@ -309,7 +311,7 @@ a.glyphicon,
 a.glyphicon:visited,
 h2 a.glyphicon,
 h2 a.glyphicon:visited {
-  color: #949699;
+  color: #939598;
   text-decoration: none;
 }
 .input-group-addon .glyphicon {
