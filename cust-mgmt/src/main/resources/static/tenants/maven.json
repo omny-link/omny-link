@@ -12,7 +12,7 @@
       "stage5": "Complete"
     }
   },
-  "customerActions": [
+  "contactActions": [
     { "label": "Send email", "key": "SendMemo", "form": true  }
   ],
   "omnyBar": [

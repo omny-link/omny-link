@@ -36,7 +36,7 @@
     { "label": "Previous Turnover", "key": "previousTurnover"},
     { "label": "Previous Profit", "key": "previousProfit"}
   ],
-  "actions": [
+  "contactActions": [
     { "name": "Send email", "ref": "SendMemo", "url": true  },
     { "name": "Recommend follow up (no mail sent)", "ref": "RecommendFollowUp" },
     { "name": "Run email follow up", "ref": "FollowUpOneContact" },

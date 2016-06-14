@@ -10,7 +10,7 @@
     }
   },
   "contactFields": [ ],
-  "customerActions": [
+  "contactActions": [
     { "label": "Send email", "key": "SendMemo", "form": true  },
     { "label": "Add reminder", "key": "AddReminder", "form": "/partials/add-reminder.html" }    
   ],
