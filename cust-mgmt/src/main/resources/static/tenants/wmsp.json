@@ -13,7 +13,7 @@
       "stage5": "Complete"
     }
   },
-  "customerActions": [
+  "contactActions": [
     { "label": "Add reminder", "key": "AddReminder", "form": "/partials/add-reminder.html" },
     { "label": "Send email", "key": "SendMemo", "form": true  }
   ],

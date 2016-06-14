@@ -9,7 +9,7 @@
     { "label": "Installation Date", "key": "installationDate"},
     { "label": "Pre-Migration", "key": "preMigration", "type":"boolean"}
   ],
-  "customerActions": [
+  "contactActions": [
     { "label": "Add reminder", "key": "AddReminder", "form": "/partials/add-reminder.html" },
     { "label": "Receive order", "key": "GardenaticsDelivery", "form": "/partials/gardenatics/ReceiveOrder.html" },
     { "label": "Start enquiry process", "key": "StartEnquiry", "form": "/partials/gardenatics/ReceiveEnquiry.html" }        
