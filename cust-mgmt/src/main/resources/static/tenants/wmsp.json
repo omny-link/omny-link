@@ -14,7 +14,7 @@
     }
   },
   "contactActions": [
-    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/add-reminder.html" },
+    { "label": "Add reminder", "key": "AddReminder", "form": true },
     { "label": "Send email", "key": "SendMemo", "form": true  }
   ],
   "omnyBar": [
@@ -31,7 +31,6 @@
   "partials": [
     { "name": "wmspContactExtension", "url": "/partials/contact-extension.html"},
     { "name": "wmspAccountExtension", "url": "/partials/account-extension.html"},
-    { "name": "wmspAddReminder", "url": "/partials/add-reminder.html"},
     { "name": "wmspSimpleTodo", "url": "/partials/simple-todo.html"},
     { "name": "wmspSendMemo", "url": "/partials/pick-memo.html"}
   ],

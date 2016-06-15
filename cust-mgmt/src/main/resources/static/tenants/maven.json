@@ -25,7 +25,6 @@
   "partials": [
     { "name": "mavenContactExtension", "url": "/partials/contact-extension.html"},
     { "name": "mavenAccountExtension", "url": "/partials/account-extension.html"},
-    { "name": "mavenAddReminder", "url": "/partials/add-reminder.html"},
     { "name": "mavenSimpleTodo", "url": "/partials/simple-todo.html"},
     { "name": "mavenSendMemo", "url": "/partials/pick-memo.html"}
   ],

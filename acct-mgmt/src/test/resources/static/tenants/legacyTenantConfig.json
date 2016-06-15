@@ -63,8 +63,7 @@
     { "name": "firmgainsPartnerExtension", "url": "/partials/firmgains/broker-extension.html"},
     { "name": "firmgainsSellingExtension", "url": "/partials/firmgains/customer-extension.html"},
     { "name": "firmgainsSendContactEmail", "url": "/partials/firmgains/PickMail.html"},
-    { "name": "firmgainsSendMemo", "url": "/partials/pick-memo.html"},
-    { "name": "firmgainsAddReminder", "url": "/partials/add-reminder.html"}
+    { "name": "firmgainsSendMemo", "url": "/partials/pick-memo.html"}
   ],
   "standardOperatingProcedures": [
     { "name": "Dummy Process", "ref": "Dummy1" }
