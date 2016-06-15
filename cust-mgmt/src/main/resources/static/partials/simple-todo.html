@@ -1,16 +1,26 @@
 <div class="form-group">
-  <label for="when">When</label>
+  <label for="when">When?</label>
   <input type="date" class="form-control" id="when" placeholder="Pick when to be reminded" required value="{{instanceToStart.processVariables['when']}}">
   <p class="help-block field-hint field-error">Please pick when to be reminded.</p>
 </div>
 <div class="form-group">
-  <label for="what">What</label>
-  <textarea class="form-control" id="what" placeholder="Type yourself a reminder of what to do here if you like." value="{{instanceToStart.processVariables['what']}}"></textarea>
+  <label for="what">What?</label>
+  <textarea class="form-control" id="what" placeholder="Type yourself a reminder of what to do" value="{{instanceToStart.processVariables['what']}}"></textarea>
   <p class="help-block field-hint field-error"></p>
 </div>
 <div class="form-group">
-  <label for="who">Who</label>
+  <label for="who">Who will do it?</label>
   <input class="form-control typeahead" id="who" placeholder="Start typing to filter options" value="{{instanceToStart.processVariables['who']}}"/>
+  <p class="help-block field-hint field-error"></p>
+</div>
+<div class="form-group">
+  <label for="notify">Who should be kept informed?</label>
+  <input class="form-control typeahead" id="notify" placeholder="Start typing to filter options" value="{{instanceToStart.processVariables['notify']}}"/>
+  <p class="help-block field-hint field-error"></p>
+</div>
+<div class="form-group">
+  <label for="where">Where?</label>
+  <input class="form-control" id="where" placeholder="" value="{{instanceToStart.processVariables['where']}}"/>
   <p class="help-block field-hint field-error"></p>
 </div>
 <script>
