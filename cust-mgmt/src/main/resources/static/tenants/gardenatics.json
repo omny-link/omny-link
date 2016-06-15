@@ -10,9 +10,9 @@
     { "label": "Pre-Migration", "key": "preMigration", "type":"boolean"}
   ],
   "contactActions": [
-    { "label": "Add reminder", "key": "AddReminder", "form": "/partials/add-reminder.html" },
-    { "label": "Receive order", "key": "GardenaticsDelivery", "form": "/partials/gardenatics/ReceiveOrder.html" },
-    { "label": "Start enquiry process", "key": "StartEnquiry", "form": "/partials/gardenatics/ReceiveEnquiry.html" }        
+    { "name": "Receive order", "ref": "GardenaticsDelivery", "url": true },
+    { "name": "Start enquiry process", "ref": "StartEnquiry", "url": true },
+    { "name": "Send email", "ref": "SendMemo", "url": true  }
   ],
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
@@ -24,8 +24,7 @@
     { "name": "gardenaticsContactExtension", "url": "/partials/gardenatics/ContactExtension.html"},
     { "name": "gardenaticsStartEnquiry", "url": "/partials/gardenatics/ReceiveEnquiry.html"},
     { "name": "gardenaticsGardenaticsDelivery", "url": "/partials/gardenatics/ReceiveOrder.html"},
-    { "name": "gardenaticsAddReminder", "url": "/partials/add-reminder.html"},
-    { "name": "omnySimpleTodo", "url": "/partials/simple-todo.html"}
+    { "name": "gardenaticsSimpleTodo", "url": "/partials/simple-todo.html"}
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/account-types.json"},

@@ -8,7 +8,7 @@
     { "name": "Current Site Capability", "ref": "currentSiteCapability"}
   ],
   "contactActions": [
-    { "name": "Add reminder", "ref": "AddReminder", "url": "/partials/add-reminder.html" },
+    { "name": "Add task", "ref": "SimpleToDo", "url": true },
     { "name": "Send email", "ref": "SendMemo", "url": true  }
   ],
   "toolbar": [
@@ -29,24 +29,23 @@
     { "name": "omnyContactExtension", "url": "/partials/contact-extension.html"},
     { "name": "omnyAccountExtension", "url": "/partials/account-extension.html"},
     { "name": "omnyCustomerExtension", "url": "/partials/omny/customer-extension.html"},
-    { "name": "omnyAddReminder", "url": "/partials/add-reminder.html"},
-    { "name": "omnySimpleTodo", "url": "/partials/simple-todo.html"},
+    { "name": "omnySimpleToDo", "url": "/partials/simple-todo.html"},
     { "name": "omnySendMemo", "url": "/partials/pick-memo.html"},
     { "name": "omnyWorkflowWizard", "url": "/partials/workflow-wizard.html"}
   ],
   "processes": [
-    { "name": "Add Activity To Contact", "ref": "AddActivityToContact", "url": "processes/link/omny/custmgmt/AddActivityToContact.bpmn" },
-    { "name": "Add Note To Contact", "ref": "AddNoteToContact", "url": "processes/link/omny/custmgmt/AddNoteToContact.bpmn" },
-    { "name": "Create Contact and Account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
-    { "name": "Import Contact", "ref": "ImportContact", "url": "processes/link/omny/website/ImportContact.bpmn" },
+    { "name": "Add activity to contact", "ref": "AddActivityToContact", "url": "processes/link/omny/custmgmt/AddActivityToContact.bpmn" },
+    { "name": "Add note to contact", "ref": "AddNoteToContact", "url": "processes/link/omny/custmgmt/AddNoteToContact.bpmn" },
+    { "name": "Create contact and account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
+    { "name": "Import contact", "ref": "ImportContact", "url": "processes/link/omny/website/ImportContact.bpmn" },
     { "name": "Record an enquiry", "ref": "RecordEnquiry", "url": "processes/link/omny/website/RecordEnquiry.bpmn" },
-    { "name": "Register an Omny user", "ref": "RegisterOmnyContact", "url": "processes/link/omny/website/RegisterOmnyContact.bpmn" },
+    { "name": "Register a user", "ref": "RegisterOmnyContact", "url": "processes/link/omny/website/RegisterOmnyContact.bpmn" },
     { "name": "Reset user's password", "ref": "ResetPassword", "url": "processes/link/omny/support/ResetPassword.bpmn" },
     { "name": "Select enquiry response", "ref": "SelectEnquiryResponse", "url": "processes/link/omny/mail/SelectDefaultEnquiryResponse.bpmn" },
     { "name": "Send Memo", "ref": "SendMemo", "url": "processes/link/omny/mail/SendMemo.bpmn" },
     { "name": "Send notification", "ref": "SendNotification", "url": "processes/link/omny/notifications/SendNotificationMemo.bpmn" },
-    { "name": "Catch All", "ref": "CatchAllProcess", "url": "processes/link/omny/support/CatchAllProcessPostToSlack.bpmn" },
-    { "name": "Note to self", "ref": "SimpleTodo", "url": "/partials/SimpleTodo.html" },
+    { "name": "Catch all", "ref": "CatchAllProcess", "url": "processes/link/omny/support/CatchAllProcessPostToSlack.bpmn" },
+    { "name": "Add task", "ref": "SimpleTodo", "url": "processes/link/omny/casemgmt/SimpleTodo.bpmn" },
     { "name": "Search for companies", "ref": "companyRecord", "url": "/link/omny/companiesHouse/FetchComapnyInfo.bpmn" },
     { "name": "Fetch company information", "ref": "companySearch", "url": "/link/omny/companiesHouse/SearchForCompany.bpmn" }
   ],
@@ -64,6 +63,6 @@
     { "name": "status", "ref": "#curStatus", "url": "/data/status.json"}
   ],
   "workActions": [
-    { "name": "Note to self", "ref": "SimpleTodo", "url": "/partials/SimpleTodo.html" }
+    { "name": "Note to self", "ref": "SimpleTodo", "url": "/partials/simple-todo.html" }
   ]
 }
