@@ -562,7 +562,8 @@ form#upload {
 	width:10%;
 }
 .form input,
-.form select {
+.form select,
+.form textarea {
 	width: 60%;
 }
 .form input[type='checkbox'],
