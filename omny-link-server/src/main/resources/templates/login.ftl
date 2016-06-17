@@ -24,10 +24,6 @@
       border-width: 1px;
       line-height: 2.5em;
     }
-    input#email {
-      margin-right:2px;
-      width: 400px;
-    }
     section#main {
       margin: auto;
     }
@@ -98,7 +94,8 @@
     <div id="resetSect" class="col-md-offset-6 col-md-6 col-sm-12" style="display:none">
       <form id="resetForm" class="form-inline" name="resetForm" action="/reset" method="POST">
         <fieldset>
-          <input class="form-control input-lg" id="email" name="email" placeholder="Registered email address" required/>
+          <input class="form-control input-lg" id="email" name="email" placeholder="Email address" required/>
+          <input class="form-control input-lg" id="tenantId" name="tenantId" placeholder="Tenant id" required/>
           <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
           <input type="hidden" id="redirect" name="redirect" value="index.html" />
           <input class="btn" type="button" id="reset" on-click="reset()" value="Reset Password"/>
