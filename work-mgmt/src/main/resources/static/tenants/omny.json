@@ -11,6 +11,10 @@
     { "name": "Add task", "ref": "SimpleToDo", "url": true },
     { "name": "Send email", "ref": "SendMemo", "url": true  }
   ],
+  "contactFields": [ 
+    { "label": "Job Title", "key": "jobTitle"},
+    { "label": "Decision Making Role", "key": "decisionMakingRole"}
+  ],
   "toolbar": [
     { "url": "work.html", "icon": "glyphicon-inbox", "description": "View your list of active tasks here", "name": "Work Management" },
     { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
@@ -26,7 +30,7 @@
     { "url": "api.html", "icon": "glyphicon-wrench", "name": "API Documentation" }
   ],
   "partials": [
-    { "name": "omnyContactExtension", "url": "/partials/contact-extension.html"},
+    { "name": "omnyContactExtension", "url": "/partials/omny/contact-extension.html"},
     { "name": "omnyAccountExtension", "url": "/partials/account-extension.html"},
     { "name": "omnyCustomerExtension", "url": "/partials/omny/customer-extension.html"},
     { "name": "omnySimpleToDo", "url": "/partials/simple-todo.html"},
@@ -53,6 +57,7 @@
     { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},
     { "name": "countries", "ref": "#curCountry", "url": "/data/countries.json"},
     { "name": "currentSiteCapability", "ref": "#curCurrentSiteCapability", "url": "/data/omny/current-site-capabilities.json"},
+    { "name": "decisionMakingRole", "ref": "#curDecisionMakingRole", "url": "/data/omny/decision-making-roles.json"},
     { "name": "enquiryTypes", "ref": "#curEnquiryType", "url": "/data/omny/enquiry-types.json"},
     { "name": "owners", "ref": "#curOwner", "url": "/data/omny/owners.json"},
     { "name": "who", "ref": "#who", "url": "/data/omny/owners.json"},
