@@ -895,36 +895,6 @@
           <xsl:value-of select="@y"/>
         </xsl:for-each>
 
-        <!-- Determine end point according to join side -->
-        <xsl:choose>
-          <xsl:when test="$srcElement/dc:Bounds/@x = $trgtElement/dc:Bounds/@x"><!-- JOIN RIGHT -->
-            <xsl:text> L </xsl:text>
-            <xsl:value-of select="$trgtElement/dc:Bounds/@x+($trgtElement/dc:Bounds/@width div 2)"/>
-            <xsl:text> </xsl:text>
-            <xsl:value-of select="$trgtElement/dc:Bounds/@y"/>
-          </xsl:when>
-          <xsl:when test="false"><!-- JOIN TOP -->
-            <xsl:text> L </xsl:text>
-            <xsl:value-of select="$trgtElement/dc:Bounds/@x+($trgtElement/dc:Bounds/@width div 2)"/>
-            <xsl:text> </xsl:text>
-            <xsl:value-of select="$trgtElement/dc:Bounds/@y"/>
-          </xsl:when>
-          <!-- JOIN BOTTOM -->
-          <xsl:when test="($srcElement/dc:Bounds/@x = $trgtElement/dc:Bounds/@x) and ($srcElement/dc:Bounds/@y &lt; $trgtElement/dc:Bounds/@y)">
-            <xsl:text> L </xsl:text>
-            <!--xsl:value-of select="$trgtElement/dc:Bounds/@x+($trgtElement/dc:Bounds/@width div 2)"/-->
-            <xsl:value-of select="$trgtElement/dc:Bounds/@x"/>
-            <xsl:text> </xsl:text>
-            <!--xsl:value-of select="$trgtElement/dc:Bounds/@y+($trgtElement/dc:Bounds/@height div 2)"/-->
-            <xsl:value-of select="$trgtElement/dc:Bounds/@y"/>
-          </xsl:when>
-          <xsl:otherwise><!-- JOIN LEFT -->
-		        <xsl:text> L </xsl:text>
-		        <xsl:value-of select="$trgtElement/dc:Bounds/@x"/>
-		        <xsl:text> </xsl:text>
-		        <xsl:value-of select="$trgtElement/dc:Bounds/@y+($trgtElement/dc:Bounds/@height div 2)"/>
-          </xsl:otherwise>          
-        </xsl:choose>
       </xsl:attribute>
       <xsl:attribute name="fill">transparent</xsl:attribute>
       <xsl:attribute name="stroke">#666</xsl:attribute>
