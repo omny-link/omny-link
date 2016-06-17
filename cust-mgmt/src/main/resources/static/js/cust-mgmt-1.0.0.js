@@ -566,6 +566,7 @@ var ractive = new AuthenticatedRactive({
             ractive.set('current.fullName',ractive.get('current.firstName')+' '+ractive.get('current.lastName'));
             var currentIdx = ractive.get('contacts').push(ractive.get('current'))-1;
             ractive.set('currentIdx',currentIdx);
+            if (ractive.uri(ractive.get('current.account'))==undefined) ractive.saveAccount();
             break;
           case 204: 
             ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
@@ -584,6 +585,10 @@ var ractive = new AuthenticatedRactive({
   },
   saveAccount: function () {
     if (ractive.get('current.account')==undefined) return;
+    if (ractive.uri(ractive.get('current'))==undefined) {
+      ractive.showMessage('You must have created your contact before adding account details');
+      return;
+    }
     console.log('saveAccount '+ractive.get('current.account.name')+' ...');
     var id = ractive.get('current.accountId');
     console.log(' id: '+id);
@@ -599,7 +604,7 @@ var ractive = new AuthenticatedRactive({
         success: completeHandler = function(data, textStatus, jqXHR) {
           var location = jqXHR.getResponseHeader('Location');
           if (location != undefined) ractive.set('current.account.id',location.substring(location.lastIndexOf('/')+1));
-          var contactAccountLink = ractive.stripProjection(ractive.get('current')._links.self.href);
+          var contactAccountLink = ractive.uri(ractive.get('current'));
           contactAccountLink+='/account';
           console.log(' attempt to link account: '+location+' to '+contactAccountLink);
           if (jqXHR.status == 201) { 
