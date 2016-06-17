@@ -1,4 +1,6 @@
 [
+  {  "id": "Unqualified Prospect", "name": "Unqualified Prospect"  },
+  {  "id": "Prospect", "name": "Prospect"  },
   {  "id": "Customer", "name": "Customer"  },
   {  "id": "Other", "name": "Other"  },
   {  "id": "Partner", "name": "Partner"  },
