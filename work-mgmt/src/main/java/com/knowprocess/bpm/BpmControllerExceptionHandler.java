@@ -14,13 +14,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.knowprocess.bpm.api.BadJsonMessageException;
 import com.knowprocess.bpm.api.ReportableException;
-import com.knowprocess.bpm.web.ProcessInstanceController;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 @ControllerAdvice
 public class BpmControllerExceptionHandler {
     protected static final Logger LOGGER = LoggerFactory
-            .getLogger(ProcessInstanceController.class);
+            .getLogger(BpmControllerExceptionHandler.class);
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(ActivitiObjectNotFoundException.class)
