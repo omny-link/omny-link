@@ -139,6 +139,8 @@ public class MemoController {
             memo = messageRepo.findByName(idOrName, tenantId);
         }
         if (memo == null) {
+            LOGGER.error(String.format("Unable to find memo from %1$s",
+                    idOrName));
             throw new BusinessEntityNotFoundException("Memo", idOrName);
         }
         return wrap(memo);
