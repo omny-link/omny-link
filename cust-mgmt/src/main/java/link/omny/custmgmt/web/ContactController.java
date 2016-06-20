@@ -283,7 +283,7 @@ public class ContactController {
      * Return just the matching contacts (probably will be one in almost every
      * case).
      * 
-     * @return contacts for that tenant.
+     * @return contacts for that tenant with the specified email address.
      */
     @RequestMapping(value = "/searchByEmail", method = RequestMethod.GET, params = { "email" })
     public @ResponseBody List<ShortContact> searchByEmail(
