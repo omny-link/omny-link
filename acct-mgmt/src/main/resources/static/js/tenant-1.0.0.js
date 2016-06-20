@@ -115,11 +115,11 @@ var ractive = new AuthenticatedRactive({
       { "name": "navbar", "url": "/partials/tenant-navbar.html"}
     ],
   },
-  archive: function () {
-    console.log('archive');
+  archive: function (tenantId) {
+    console.log('archive: '+tenantId);
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/admin/process-instances/archive',
+      url: ractive.getServer()+'/'+tenantId+'/process-instances/archive',
       crossDomain: true,
       success: function( data ) {
         ractive.set('tenants', data);

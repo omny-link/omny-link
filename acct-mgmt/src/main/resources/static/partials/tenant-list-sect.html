@@ -39,7 +39,7 @@
             <td on-click="edit(this)">{{users}}</td>
             <!-- <td on-click="edit(this)">{{lastActivity}}</td>-->
             <td class="col-actions">
-              <a class="clickable glyphicon glyphicon-compressed" aria-hidden="true" on-click="archive(this)" title="Remove historic instances, downloading for archiving if necessary"></a>
+              <a class="clickable glyphicon glyphicon-compressed" aria-hidden="true" onclick="ractive.archive('{{shortId}}')" title="Remove historic instances, downloading for archiving if necessary"></a>
               <!-- <a class="clickable admin glyphicon glyphicon-new-window" aria-hidden="true" href="/status.html?tenantId={{shortId}}" title="Open the tenant status page in a new window"></a>-->
             </td>
           </tr>
