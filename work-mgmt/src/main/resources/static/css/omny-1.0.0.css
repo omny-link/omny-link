@@ -60,6 +60,10 @@ input,select,textarea {
   line-height:1.4em;
 	padding: 0 10px 0 10px;
 }
+textarea.rich-content {
+	height: 10em;
+	margin: 0 -10px;
+}
 input.field-error:invalid,
 select.field-error:invalid,
 textarea.field-error:invalid {
