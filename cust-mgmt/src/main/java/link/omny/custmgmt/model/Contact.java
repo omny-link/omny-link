@@ -48,6 +48,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @NoArgsConstructor
 public class Contact implements Serializable {
 
+    private static final String DEFAULT_FIRST_NAME = "Unknown";
+
     private static final long serialVersionUID = -6080589981067789428L;
 
     protected static final Logger LOGGER = LoggerFactory
@@ -321,11 +323,19 @@ public class Contact implements Serializable {
     }
 
     public String getFirstName() {
-        return firstName == null ? "Unknown" : firstName;
+        return firstName == null ? DEFAULT_FIRST_NAME : firstName;
+    }
+
+    public boolean isFirstNameDefault() {
+        return firstName == null;
     }
 
     public String getLastName() {
         return lastName == null ? uuid : lastName;
+    }
+
+    public boolean isLastNameDefault() {
+        return lastName == null;
     }
 
     public void setFullName(String name) {

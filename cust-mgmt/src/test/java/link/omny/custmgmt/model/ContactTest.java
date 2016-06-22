@@ -179,4 +179,22 @@ public class ContactTest {
         assertEquals(1, contact.getCustomFields().size());
         assertEquals(field1.getId(), contact.getCustomFields().get(0).getId());
     }
+
+    @Test
+    public void testIsLastNameDefault() {
+        Contact contact = new Contact();
+        assertTrue(contact.isLastNameDefault());
+
+        contact.setLastName("Simpson");
+        assertTrue(!contact.isLastNameDefault());
+    }
+
+    @Test
+    public void testIsFirstNameDefault() {
+        Contact contact = new Contact();
+        assertTrue(contact.isFirstNameDefault());
+
+        contact.setFirstName("Bart");
+        assertTrue(!contact.isFirstNameDefault());
+    }
 }
