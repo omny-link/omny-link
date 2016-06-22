@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import link.omny.custmgmt.internal.CsvImporter;
+import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.model.Contact;
@@ -453,7 +454,18 @@ public class ContactController {
             @PathVariable("id") Long contactId,
             @RequestBody Contact updatedContact) {
         Contact contact = contactRepo.findOne(contactId);
-        BeanUtils.copyProperties(updatedContact, contact, "id", "account");
+
+        LOGGER.debug(String.format("  contact: %1$s", contact));
+        LOGGER.debug(String.format("  updated contact: %1$s", updatedContact));
+
+        if (updatedContact.isFirstNameDefault()) {
+            updatedContact.setFirstName(contact.getFirstName());
+        }
+        if (updatedContact.isLastNameDefault()) {
+            updatedContact.setLastName(contact.getLastName());
+        }
+        NullAwareBeanUtils.copyNonNullProperties(updatedContact, contact, "id",
+                "account");
         contact.setTenantId(tenantId);
         contactRepo.save(contact);
 
@@ -462,12 +474,13 @@ public class ContactController {
         if (updatedContact.getAccount() != null) {
             Account account = accountRepo.findOne(updatedContact.getAccount()
                     .getId());
-            BeanUtils
-                    .copyProperties(updatedContact.getAccount(), account, "id");
+            NullAwareBeanUtils.copyNonNullProperties(
+                    updatedContact.getAccount(), account, "id");
             account.setTenantId(tenantId);
             accountRepo.save(account);
         }
     }
+
 
     /**
      * Link anonymous contact to a known one.
