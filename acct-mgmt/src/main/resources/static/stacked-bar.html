@@ -6,55 +6,24 @@
   <title>Customer Management</title>
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
-  <link href="css/jquery.tagit.css" rel="stylesheet" type="text/css">
-  <link href="css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
   
   <link href="css/omny-1.0.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
   <style>
-    .axis path {
+    .axis path,
+    .axis line {
       fill: none;
-      stroke: #777;
+      stroke: #000;
       shape-rendering: crispEdges;
     }
-    .axis text {
-      font-size: 13px;
+    
+    .x.axis path {
+      display: none;
     }
-    .legend {
-      font-size: 14px;
-      font-leads: bold;
-    }
-    text.y1 {
-      fill: red;
-    }
-    path.y1 {
-      stroke: red;
-      fill: none;
-      stroke-width: 1px;
-    }
-    text.y2 {
-      fill: green;
-    }
-    path.y2 {
-      stroke: green;
-      fill: none;
-      stroke-width: 1px;
-    }
-    text.y3 {
-      fill: orange;
-    }
-    path.y3 {
-      stroke: orange;
-      fill: none;
-      stroke-width: 1px;
-    }
-    text.y4 {
-      fill: blue;
-    }
-    path.y4 {
-      stroke: blue;
-      fill: none;
-      stroke-width: 1px;
+    
+    .legend line {
+      stroke: #000;
+      shape-rendering: crispEdges;
     }
   </style>
 </head>
@@ -66,10 +35,9 @@
     {{>titleArea}}
 
     <section id="visualisation" class="container"></section>
-    {{>metricListSect}}
 
     {{>poweredBy}}
-    {{>sidebar { active: 'window.html' }}}
+    {{>sidebar { active: 'stacked-bar.html' }}}
   </script>
 
   <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
@@ -81,8 +49,14 @@
   <script src="js/md5.min.js"></script>
   <script src="js/login-1.0.0.js"></script>
   <script src="js/i18n.js"></script>
-  <script src="js/window-1.0.0.js"></script>
-  <script src="js/window-ui-1.0.0.js"></script>
+  <script src="js/stacked-bar-1.0.0.js"></script>
+  <script src="js/stacked-bar-ui-1.0.0.js"></script>
   <script src="js/omny-1.0.0.js"></script>
+
+  <script>
+  
+
+  
+  </script>
 </body>
 </html>
