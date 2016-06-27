@@ -97,7 +97,7 @@ public class MetricController {
     public @ResponseBody Iterable<Metric> showAllForTenantJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "window", required = false) Integer window) {
-        LOGGER.info(String.format("showAllJson"));
+        LOGGER.info(String.format("showAllForTenantJson"));
 
         if (window == null) {
             window = 90;
