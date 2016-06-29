@@ -547,8 +547,10 @@ form#upload {
 }
 .form-inline label,
 .form label {
+	line-height: 1.2em;
   padding-right: 10px;
   text-align: right;
+  vertical-align: baseline;
 }
 .form .col-md-6 label {
 	margin-bottom: 0;
