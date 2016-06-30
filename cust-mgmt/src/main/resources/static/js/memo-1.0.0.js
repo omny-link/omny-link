@@ -61,6 +61,15 @@ var ractive = new AuthenticatedRactive({
       if (ractive.get('filter')==undefined) return true;
       else return ractive.get('filter').value.toLowerCase()==obj[ractive.get('filter').field].toLowerCase();
     },
+    matchRole: function(role) {
+      console.info('matchRole: '+role)
+      if (role==undefined || ractive.hasRole(role)) {
+        $('.'+role).show();
+        return true;
+      } else {
+        return false;
+      }
+    },
     saveObserver: false,
     stdPartials: [
       { "name": "poweredBy", "url": "/partials/powered-by.html"},

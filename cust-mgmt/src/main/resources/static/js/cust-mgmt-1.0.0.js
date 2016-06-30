@@ -135,6 +135,15 @@ var ractive = new AuthenticatedRactive({
         }
       }
     },
+    matchRole: function(role) {
+      console.info('matchRole: '+role)
+      if (role==undefined || ractive.hasRole(role)) {
+        $('.'+role).show();
+        return true;
+      } else {
+        return false;
+      }
+    },
     matchSearch: function(obj) {
       var searchTerm = ractive.get('searchTerm');
       //console.info('matchSearch: '+searchTerm);
@@ -683,21 +692,21 @@ var ractive = new AuthenticatedRactive({
     if (contact.account == undefined || contact.account == '') contact.account = new Object();
     // default owner to current user
     if (contact.owner == undefined || contact.owner == '') contact.owner = ractive.get('username');
-	  // adapt between Spring Hateos and Spring Data Rest
-	  if (contact._links == undefined && contact.links != undefined) { 
-	    contact._links = contact.links;
-	    $.each(contact.links, function(i,d) { 
+    // adapt between Spring Hateos and Spring Data Rest
+    if (contact._links == undefined && contact.links != undefined) {
+      contact._links = contact.links;
+      $.each(contact.links, function(i,d) {
         if (d.rel == 'self') contact._links.self = { href:d.href };
       });
-	  }
-	  if (contact._links != undefined) {
-	    var url = ractive.uri(contact); // includes getServer
-	    if (url == undefined) {
-	      ractive.showError('No contact selected, please check link');
-	      return;
-	    }
-	    console.log('loading detail for '+url);
-	    $.getJSON(url+'?projection=complete', function( data ) {
+    }
+    if (contact._links != undefined) {
+      var url = ractive.uri(contact); // includes getServer
+      if (url == undefined) {
+        ractive.showError('No contact selected, please check link');
+        return;
+      }
+      console.log('loading detail for '+url);
+      $.getJSON(url+'?projection=complete', function( data ) {
         console.log('found contact '+data);
         ractive.set('current', data);
         ractive.initControls();
@@ -717,8 +726,8 @@ var ractive = new AuthenticatedRactive({
       ractive.set('current', contact);
       ractive.set('saveObserver',true);
     }
-	  ractive.toggleResults();
-	  $('#currentSect').slideDown();
+    ractive.toggleResults();
+    $('#currentSect').slideDown();
   },
   selectMultiple: function(contact) {
     console.info('selectMultiple: '+contact.selfRef);
