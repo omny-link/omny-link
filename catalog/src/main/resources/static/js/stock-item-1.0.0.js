@@ -109,6 +109,15 @@ var ractive = new AuthenticatedRactive({
         }
       }
     },
+    matchRole: function(role) {
+      console.info('matchRole: '+role)
+      if (role==undefined || ractive.hasRole(role)) {
+        $('.'+role).show();
+        return true;
+      } else {
+        return false;
+      }
+    },
     matchSearch: function(obj) {
       var searchTerm = ractive.get('searchTerm');
       //console.info('matchSearch: '+searchTerm);

@@ -103,7 +103,7 @@
       </form>
     </div>
     <div class="pull-right" style="margin-right:20px">
-      <a href="#" on-click="showReset()">Forgot your password?</a>
+      <a href="#" on-click="showReset()">Reset your password</a>
       <a href="http://omny.link/contact-us/">Or click here to sign-up for a trial</a>
     </div>
   </script>

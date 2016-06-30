@@ -19,6 +19,15 @@ var ractive = new AuthenticatedRactive({
       //console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
+    matchRole: function(role) {
+      console.info('matchRole: '+role)
+      if (role==undefined || ractive.hasRole(role)) {
+        $('.'+role).show();
+        return true;
+      } else {
+        return false;
+      }
+    },
     sort: function (array, column, asc) {
       console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);
       array = array.slice(); // clone, so we don't modify the underlying data

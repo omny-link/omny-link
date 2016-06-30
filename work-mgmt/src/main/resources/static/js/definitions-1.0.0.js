@@ -74,6 +74,15 @@ var ractive = new AuthenticatedRactive({
         console.error('Unable to render '+activityType);
       }
     },
+    matchRole: function(role) {
+      console.info('matchRole: '+role)
+      if (role==undefined || ractive.hasRole(role)) {
+        $('.'+role).show();
+        return true;
+      } else {
+        return false;
+      }
+    },
     stdPartials: [
       { "name": "defnCurrentSect", "url": "/partials/defn-current-sect.html"},
       { "name": "defnListSect", "url": "/partials/defn-list-sect.html"},

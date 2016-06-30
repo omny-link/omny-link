@@ -97,6 +97,15 @@ var ractive = new AuthenticatedRactive({
       else if (ractive.get('filter').indexOf('deferred')!=-1 && ractive.isDeferred(obj)) return false;
       else return true;
     },
+    matchRole: function(role) {
+      console.info('matchRole: '+role)
+      if (role==undefined || ractive.hasRole(role)) {
+        $('.'+role).show();
+        return true;
+      } else {
+        return false;
+      }
+    },
     renderAs: function(formProp) {
       console.log('renderAs: '+formProp.name);
       if (typeof formProp.value == 'string' && formProp.value.substring(0,4)=='http') {
