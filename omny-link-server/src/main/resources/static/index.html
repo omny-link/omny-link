@@ -23,14 +23,16 @@
       <h2>The next generation of contact management has arrived!</h2>
       <p>Let's get started right away by introducing the Omny Bar icons:</p>
       <ul style="list-style:none;">
-        {{#tenant.omnyBar}}
-          <li>
-            <a href="{{url}}">
-              <span class="glyphicon {{classes}}" title="{{title}}"></span>
-              <span>{{title}}</span>
-            </a>
-            <span>{{description}}</span>          
-          </li>
+        {{#tenant.toolbar}}
+          {{#if matchRole(role) }}
+            <li>
+              <a href="{{context}}{{url}}">
+                <span class="glyphicon {{role}} {{icon}}" style="display:inline-block" title="{{title}}"></span>
+                <span>{{title}}</span>
+              </a>
+              <span>{{description}}</span>
+            </li>
+          {{/if}}
         {{/}}
       </ul>
     </section>
