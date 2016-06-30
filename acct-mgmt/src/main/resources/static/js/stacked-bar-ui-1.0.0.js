@@ -10,6 +10,15 @@ var ractive = new AuthenticatedRactive({
       //console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
+    matchRole: function(role) {
+      console.info('matchRole: '+role)
+      if (role==undefined || ractive.hasRole(role)) {
+        $('.'+role).show();
+        return true;
+      } else {
+        return false;
+      }
+    },
     stdPartials: [
       { "name": "metricListSect", "url": "/partials/metric-list-sect.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},

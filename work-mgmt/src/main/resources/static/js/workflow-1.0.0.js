@@ -13,6 +13,15 @@ var ractive = new AuthenticatedRactive({
       return i18n.getAgeString(new Date(timeString))
     },
     events: [],
+    matchRole: function(role) {
+      console.info('matchRole: '+role)
+      if (role==undefined || ractive.hasRole(role)) {
+        $('.'+role).show();
+        return true;
+      } else {
+        return false;
+      }
+    },
     stdPartials: [
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
