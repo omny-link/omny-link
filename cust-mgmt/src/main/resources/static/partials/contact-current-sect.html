@@ -18,15 +18,16 @@
         {{#if (current.phone1 != undefined || current.phone2 != undefined) && (current.phone1 != '' || current.phone2 != '')}}
           {{#if (current.phone1 != undefined && current.phone1 != '')}}
             <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1}}" title="Click to call"></a>
-            <span>{{current.phone1}}</span>
+            <span class="hidden-sm hidden-xs">{{current.phone1}}</span>
           {{/if}}
           {{#if (current.phone2 != undefined && current.phone2 != '')}}
             <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone2}}" title="Click to call"></a>
-            <span> {{current.phone2}}</span>
+            <span class="hidden-sm hidden-xs"> {{current.phone2}}</span>
           {{/if}}
         {{/if}}
         {{#if current.email != undefined && current.email != ''}}
           <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
+          <span class="hidden-sm hidden-xs">{{current.email}}</span>
         {{/if}}
         <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
         <span class="pull-right">
@@ -457,7 +458,7 @@
     </h2>
     <table id="notesTable" class="table table-striped"><tbody>
       <tr style="display:none;">
-        <td colspan="3">
+        <td colspan="4">
           <textarea id="note" on-blur="saveNote()" placeholder="Type your note here" required style="width:100%;"></textarea>
           <br/>
           <a onclick="$('#notesTable tr:nth-child(1)').slideUp();">Cancel</a>
@@ -467,7 +468,22 @@
         <tr>
           <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
           <td class="field-author">{{{gravatar(author)}}}</td>
-          <td class="field-text">{{{content}}}</td>
+          {{#created}}
+            <td class="field-text" {{# lessThan24hAgo(created)}}notyetcontenteditable{{/}}>{{{formatContent(content)}}}</td>
+          {{else}}
+	          <td class="field-text">
+	            <textarea id="note" on-blur="saveNote(this)" placeholder="Type your note here" required style="width:100%;" value={{content}}></textarea>
+		          <br/>
+		          <a onclick="$('#notesTable tr:nth-child(1)').slideUp();">Cancel</a>
+	          </td>
+          {{/}}
+          <td class="pull-right field-favorite" on-click="toggleFavorite(j)">
+            {{#favorite}}
+              <span class="glyphicon glyphicon-star"></span>
+            {{else}}
+              <span class="glyphicon glyphicon-star-empty"></span>
+            {{/}}
+          </td>
         </tr>
       {{/each}}
       {{^ current.notes }}

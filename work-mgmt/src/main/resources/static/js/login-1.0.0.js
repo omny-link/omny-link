@@ -279,18 +279,20 @@ var AuthenticatedRactive = Ractive.extend({
       });
     }
   },
-  saveNote: function () {
+  saveNote: function(n) {
     console.info('saveNote '+JSON.stringify(ractive.get('current.note'))+' ...');
-    var n = ractive.get('current.note');
-    n.content = $('#note').val();
+    /// TODO this is temporary for backwards compatiblity with older workflow forms
+    if (n == undefined) {
+      n = ractive.get('current.note');
+      n.content = $('#note').val();
+    }
+    n.contact = ractive.uri(ractive.get('current'));
     var url = ractive.uri(ractive.get('current'))+'/notes';
     url = url.replace(ractive.entityName(ractive.get('current')),ractive.get('tenant.id')+'/'+ractive.entityName(ractive.get('current')));
     console.log('  url:'+url);
-    if (n.content.trim().length > 0) {
-      $('#notesTable tr:nth-child(1)').slideUp();
+    if (n.content != undefined && n.content.trim().length > 0) {
+//      $('#notesTable tr:nth-child(1)').slideUp();
       $.ajax({
-        /*url: '/notes',
-        contentType: 'application/json',*/
         url: url,
         type: 'POST',
         data: n,
@@ -329,6 +331,19 @@ var AuthenticatedRactive = Ractive.extend({
   showUpload: function () {
     console.log('showUpload...');
     $('#upload').slideDown();
+  },
+  sortChildren: function(childArray, sortBy, asc) {
+    console.info('sortChildren');
+    ractive.get('current.'+childArray).sort(function(a,b) {
+      if (a[sortBy] > b[sortBy]) {
+        return asc ? 1 : -1;
+      }
+      if (a[sortBy] < b[sortBy]) {
+        return asc ? -1 : 1;
+      }
+      // a must be equal to b
+      return 0;
+    });
   },
   stripProjection: function(link) {
     // TODO switch to modularized version

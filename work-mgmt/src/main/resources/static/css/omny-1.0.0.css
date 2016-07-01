@@ -25,6 +25,7 @@ h1, h2, h3, h4, h5, h6 {
  *   grey 1:    6f6f71 
  *   grey 2:    6f6f71
  *   grey 3:    939598;
+ *   grey 4:    b7b7b7
  */
 
 /* START BOOTSTRAP OVERRIDES */
@@ -278,12 +279,13 @@ tfoot th {
   text-overflow: ellipsis;
 }
 .field-age { 
-	width:15%
+	width:20%
 }
-.field-author { 
-  width:50px;
+.field-author, .field-favorite {
+  width:3em;
 }
-.field-text { 
+.field-text {
+	width:80%;
 }
 .form-control {
   border-radius: 0;
