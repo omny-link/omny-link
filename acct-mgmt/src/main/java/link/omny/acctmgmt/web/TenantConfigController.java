@@ -153,6 +153,7 @@ public class TenantConfigController {
                 url.substring(0, url.indexOf("/tenants")));
         idSvc.setUserInfo(botUser.getId(), "cust-mgmt-secret",
                 botUser.getPassword());
+        idSvc.setUserInfo(botUser.getId(), "tenant",tenantId);
 
         idSvc.createMembership(botUser.getId(), "bot");
 
