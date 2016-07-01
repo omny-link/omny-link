@@ -88,6 +88,15 @@ var ractive = new AuthenticatedRactive({
           <li>...</li>\
         </ul>\
       </ul>',
+    matchRole: function(role) {
+      console.info('matchRole: '+role)
+      if (role==undefined || ractive.hasRole(role)) {
+        $('.'+role).show();
+        return true;
+      } else {
+        return false;
+      }
+    },
     stdPartials: [
       { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
