@@ -16,6 +16,7 @@ var ractive = new AuthenticatedRactive({
     title: 'Contact Management',
     username: localStorage['username'],
     age: function(timeString) {
+      if (timeString==undefined) return;
       return i18n.getAgeString(new Date(timeString))
     },
     customField: function(obj, name) {
@@ -48,6 +49,12 @@ var ractive = new AuthenticatedRactive({
     formatAge: function(timeString) {
       console.log('formatAge: '+timeString);
       return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
+    },
+    formatContent: function(content) {
+      console.info('formatContent');
+      content = content.replace(/\n/g,'<br/>');
+      content = Autolinker.link(content);
+      return content;
     },
     formatDate: function(timeString) {
       if (timeString==undefined) return 'n/a';
@@ -112,6 +119,12 @@ var ractive = new AuthenticatedRactive({
           <li>...</li>\
         </ul>\
       </ul>',
+    lessThan24hAgo: function(isoDateTime) {
+      if (isoDateTime == undefined || (new Date().getTime()-new Date(isoDateTime).getTime()) < 1000*60*60*24) {
+        return true;
+      }
+      return false;
+    },
     matchFilter: function(obj) {
       var filter = ractive.get('filter');
       //console.info('matchFilter: '+JSON.stringify(filter));
@@ -219,12 +232,16 @@ var ractive = new AuthenticatedRactive({
   },
   addNote: function (contact) {
     console.log('addNote '+contact+' ...');
+    ractive.set('saveObserver', false);
     if (contact==undefined || contact == '') {
       ractive.showMessage('You must have created your contact before adding notes');
       return;
     }
-    ractive.set('current.note', { author:ractive.get('username'), contact: ractive.stripProjection(contact), content: undefined});
-    $('#notesTable tr:nth-child(1)').slideDown();
+    ractive.get('current.notes').splice(0, 0, { 
+      author:ractive.get('username'), contact: ractive.uri(ractive.get('current')), content: undefined,favorite: true
+    });
+    ractive.set('saveObserver', true);
+    //$('#notesTable tr:nth-child(1)').slideDown();
   },
   addSector: function () {
     console.log('addSector ...');
@@ -713,11 +730,12 @@ var ractive = new AuthenticatedRactive({
         ractive.initTags();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
+//        ractive.sortChildren('notes','created',false);
+//        ractive.sortChildren('documents','created',false);
         ractive.fetchNotes();
         ractive.fetchDocs();
         if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
-        // sort most recent first
-        ractive.get('current.activities').sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
+        ractive.sortChildren('activities','occurred',false);
         if (ractive.get('current.account')!=undefined &&
             (ractive.get('current.account.businessWebsite')==undefined || ractive.get('current.account.businessWebsite')=='')) ractive.inferDomainName(); 
       });
@@ -813,8 +831,25 @@ var ractive = new AuthenticatedRactive({
       },
     });
   },
+  toggleFavorite: function(idx) {
+    console.info('toggleFavorite: '+idx);
+    ractive.set('current.notes.'+idx+'.favorite',!ractive.get('current.notes.'+idx+'.favorite'));
+    var n = ractive.get('current.notes.'+idx);
+    var url = ractive.uri(n)+'/favorite';
+    url = url.replace(ractive.entityName(n),ractive.get('tenant.id')+'/'+ractive.entityName(n));
+
+    $.ajax({
+      url: url,
+      type: 'POST',
+      data: { favorite: n.favorite },
+      success: completeHandler = function(data) {
+        console.log('response: '+ data);
+        ractive.showMessage('Note favorited');
+      }
+    });
+  },
   toggleResults: function() {
-    console.log('toggleResults');
+    console.info('toggleResults');
     $('#contactsTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
     $('#contactsTable').slideToggle();
   },

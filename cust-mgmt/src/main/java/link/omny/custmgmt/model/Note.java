@@ -58,6 +58,10 @@ public class Note implements Serializable {
     @JsonProperty
     private String content;
 
+    @JsonProperty
+    private boolean favorite;
+
+
     // This advises to avoid back reference in a composition relationship
     // http://stackoverflow.com/questions/25311978/posting-a-onetomany-sub-resource-association-in-spring-data-rest/25451662#25451662
     // However doing so means we are trapped in the POST sub-entity + PUT
