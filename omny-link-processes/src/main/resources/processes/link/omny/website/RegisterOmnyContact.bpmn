@@ -10,7 +10,7 @@
     <callActivity calledElement="CreateContactAndAccount" completionQuantity="1" id="_11" isForCompensation="false" name="Create Contact and &#10;Account in CRM" startQuantity="1">
       <extensionElements>
         <activiti:in source="omny_registration" target="json"/>
-        <activiti:in sourceExpression="omny" target="tenantId"/>
+        <activiti:in sourceExpression="${omny_registration.getString('tenantId')}" target="tenantId"/>
         <activiti:out source="contactId" target="contactId"/>
         <activiti:out source="contactEmail" target="contactEmail"/>
         <activiti:out source="contactPwd" target="contactPwd"/>
@@ -26,6 +26,7 @@
         <activiti:in sourceExpression="WelcomeNewUser" target="memoName"/>
         <activiti:in sourceExpression="${omny_registration.getString('tenantId')}" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
+        <activiti:in source="pwd" target="pwd"/>
       </extensionElements>
       <incoming>_6</incoming>
       <outgoing>_8</outgoing>
@@ -48,10 +49,13 @@ var contact = execution.getVariable('contact');
 var user = execution.getEngineServices().getIdentityService().newUser(userId);
 user.setFirstName(contact.getString('firstName'));
 user.setLastName(contact.getString('lastName'));
+user.setPassword(org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(12));
 execution.getEngineServices().getIdentityService().saveUser(user);
 
 execution.getEngineServices().getIdentityService().createMembership(userId, 'user');
+execution.getEngineServices().getIdentityService().setUserInfo(userId, 'tenant', contact.getString('tenantId'));
 
+execution.setVariable('pwd',user.getPassword());
 execution.setVariable('Location',execution.getVariable('contactId'));]]></script>
     </scriptTask>
     <sequenceFlow id="_3" sourceRef="_11" targetRef="_2"/>
