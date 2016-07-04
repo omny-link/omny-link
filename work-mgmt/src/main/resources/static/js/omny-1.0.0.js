@@ -26,15 +26,23 @@ function AuthHelper() {
       })
       .error(function(jqXHR, textStatus, errorThrown) {
         console.warn('Failed to get profile, will rely on default');
-        ractive.set('profile',{tenant:'omny'});
-        $auth.loadTenantConfig(ractive.get('tenant.id'));
+        switch (jqXHR.status) {
+        case 401:
+        case 403:
+        case 405: /* Could also be a bug but in production we'll assume a timeout */
+          $auth.redirectToLogin();
+          break;
+        default:
+          ractive.set('profile',{tenant:'omny'});
+          $auth.loadTenantConfig(ractive.get('tenant.id'));
+        }
       });
-    } else if (ractive.get('tenant')) {
+    } else if (ractive.get('tenant') && $auth.isPublic(window.location.href)) {
       var tenant = ractive.get('tenant.id');
       console.warn('... page supplied default tenant:'+tenant);
       $auth.loadTenantConfig(ractive.get('tenant.id'));
     } else {
-      ractive.showError('You are not logged in, some functionality will be unavailable.');
+      $auth.redirectToLogin();
     }
   }
   this.hasRole = function(role) {
@@ -44,7 +52,12 @@ function AuthHelper() {
     }
     return false;
   }
+  this.isPublic = function(url) {
+    if (url.indexOf('public')==-1 && url.indexOf('login')==-1) return false;
+    else return true;
+  }
   this.loadTenantConfig = function(tenant) {
+    if (tenant==undefined || tenant=='undefined') $auth.redirectToLogin();
     console.info('loadTenantConfig:'+tenant);
     $.getJSON(ractive.getServer()+'/tenants/'+tenant+'.json', function(response) {
       //console.log('... response: '+JSON.stringify(response));
@@ -55,9 +68,11 @@ function AuthHelper() {
       if (ractive.tenantCallbacks!=undefined) ractive.tenantCallbacks.fire();
     });
   }
+  this.redirectToLogin = function() {
+    ractive.showError('Please login to access this page.');
+    setTimeout(function() { window.location.href='/'; }, 1000);
+  }
 }
-
-
 
 $(document).ready(function() {
   ractive.set('saveObserver',false);

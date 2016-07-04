@@ -96,7 +96,15 @@ var AuthenticatedRactive = Ractive.extend({
   },
   getProfile: function() {
     console.log('getProfile: '+this.get('username'));
-    $auth.getProfile(this.get('username'));
+    if ($auth.isPublic(window.location.href) && ractive.get('tenant')!=undefined) {
+      var tenant = ractive.get('tenant.id');
+      console.warn('... page supplied default tenant:'+tenant);
+      $auth.loadTenantConfig(ractive.get('tenant.id'));
+    } else if ($auth.isPublic(window.location.href)) {
+      console.error('Page must supply default tenant if intended for public use');
+    } else {
+      $auth.getProfile(this.get('username'));
+    }
   },
   getServer: function() {
     return ractive.get('server')==undefined ? '' : ractive.get('server');
