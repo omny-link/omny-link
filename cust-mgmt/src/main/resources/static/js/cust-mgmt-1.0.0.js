@@ -63,6 +63,10 @@ var ractive = new AuthenticatedRactive({
       if (d == 'Invalid Date') d = parseDateIEPolyFill(timeString);
       return d.toLocaleDateString(navigator.languages);
     },
+    formatFavorite: function(obj) {
+      if (obj['favorite']) return 'glyphicon-star';
+      else return 'glyphicon-star-empty';
+    },
     formatJson: function(json) { 
       console.log('formatJson: '+json);
       try {
@@ -238,7 +242,7 @@ var ractive = new AuthenticatedRactive({
       return;
     }
     ractive.get('current.notes').splice(0, 0, { 
-      author:ractive.get('username'), contact: ractive.uri(ractive.get('current')), content: undefined,favorite: true
+      author:ractive.get('username'), contact: ractive.uri(ractive.get('current')), content: '', favorite: true
     });
     ractive.set('saveObserver', true);
     //$('#notesTable tr:nth-child(1)').slideDown();
@@ -247,6 +251,10 @@ var ractive = new AuthenticatedRactive({
     console.log('addSector ...');
     ractive.showError('Not yet implemented');
     //$('#curPartnerSectors').append($('#sectorTemplate').html());
+  },
+  cancelNote: function() {
+    console.info('cancelNote');
+    ractive.get('current.notes').splice(0, 1);
   },
   edit: function (contact) {
     console.log('edit'+contact+'...');
@@ -730,14 +738,13 @@ var ractive = new AuthenticatedRactive({
         ractive.initTags();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
-//        ractive.sortChildren('notes','created',false);
-//        ractive.sortChildren('documents','created',false);
-        ractive.fetchNotes();
-        ractive.fetchDocs();
+        ractive.sortChildren('notes','created',false);
+        ractive.sortChildren('documents','created',false);
         if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
         ractive.sortChildren('activities','occurred',false);
         if (ractive.get('current.account')!=undefined &&
             (ractive.get('current.account.businessWebsite')==undefined || ractive.get('current.account.businessWebsite')=='')) ractive.inferDomainName(); 
+        ractive.set('saveObserver',true);
       });
     } else { 
       console.log('Skipping load as no _links.'+contact.lastName);
@@ -830,6 +837,11 @@ var ractive = new AuthenticatedRactive({
         $('#customActionModal').modal('hide');
       },
     });
+  },
+  toggleAllNotes: function(btn) {
+    console.info('toggleAllNotes');
+    $('#notesTable tr.unfavorite').slideToggle();
+    $(btn).toggleClass('glyphicon-star glyphicon-star-empty');
   },
   toggleFavorite: function(idx) {
     console.info('toggleFavorite: '+idx);
