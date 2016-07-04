@@ -2,29 +2,37 @@ package link.omny.custmgmt.internal;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.Scanner;
+
+import javax.validation.constraints.NotNull;
 
 import lombok.NoArgsConstructor;
 
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 @NoArgsConstructor
 public class ContactAvatarService {
 
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(ContactAvatarService.class);
+    
     private PNGTranscoder t = new PNGTranscoder();
 
     private String template;
 
     private File outputDir;
 
-    public ContactAvatarService(String outputDir) {
+    public ContactAvatarService(@NotNull String outputDir) {
         this.outputDir = new File(outputDir);
         this.outputDir.mkdirs();
     }
@@ -48,12 +56,12 @@ public class ContactAvatarService {
     }
 
     public File create(String initials) throws Exception {
-        File file = new File(initials.toLowerCase() + ".png");
+        File file = new File(outputDir, initials==null?"unknown.png":initials.toLowerCase() + ".png");
         create(initials, new FileOutputStream(file));
         return file;
     }
 
-    public void create(String initials, OutputStream os) throws Exception {
+    public void create(@NotNull String initials, @NotNull OutputStream os) {
         TranscoderInput input;
         try {
 
@@ -71,10 +79,17 @@ public class ContactAvatarService {
 
             t.transcode(input, output);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(String.format("Unable to generate gravatar for %1$s", initials));
+            try {
+                create("??", os);
+            } catch (Exception e1) {
+                LOGGER.error("Unable to create default avatar", e);
+            }
         } finally {
-            os.flush();
-            os.close();
+            try {
+                os.close();
+            } catch (Exception e) {
+            }
         }
     }
 }
