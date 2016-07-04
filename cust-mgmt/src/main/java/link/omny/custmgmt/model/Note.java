@@ -83,16 +83,16 @@ public class Note implements Serializable {
         setAuthor(author);
         setContent(content);
     }
+    
+    public Note(String author, String content, boolean favorite) {
+        this(author, content);
+        setFavorite(favorite);
+    }
 
     @Override
     public String toString() {
-        System.out.println("toString");
-        System.out.println("  id:" + id);
-        System.out.println("  author:" + author);
-        System.out.println("  created: " + created);
-        System.out.println("  content: " + content);
-        return String.format("Note [id=%s, author=%s, created=%s, content=%s]",
-                id, author, created, content);
+        return String.format("Note [id=%s, author=%s, created=%s, favorite=%b, content=%s]",
+                id, author, created, favorite, content);
     }
 
 }

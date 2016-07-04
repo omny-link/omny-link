@@ -455,17 +455,11 @@
     <h2 id="notes">
       <span>Notes</span>
       <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')" title="Add a new note"></span>
+      <span class="clickable glyphicon glyphicon-star-empty" aria-hidden="true" onclick="ractive.toggleAllNotes(this)" title="Toggle showing all notes or just the favorites"></span>
     </h2>
     <table id="notesTable" class="table table-striped"><tbody>
-      <tr style="display:none;">
-        <td colspan="4">
-          <textarea id="note" on-blur="saveNote()" placeholder="Type your note here" required style="width:100%;"></textarea>
-          <br/>
-          <a onclick="$('#notesTable tr:nth-child(1)').slideUp();">Cancel</a>
-        </td>
-      </tr>
       {{#each current.notes:j}}
-        <tr>
+        <tr class="{{#if favorite}}favorite{{else}}unfavorite{{/if}}">
           <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
           <td class="field-author">{{{gravatar(author)}}}</td>
           {{#created}}
@@ -474,15 +468,11 @@
 	          <td class="field-text">
 	            <textarea id="note" on-blur="saveNote(this)" placeholder="Type your note here" required style="width:100%;" value={{content}}></textarea>
 		          <br/>
-		          <a onclick="$('#notesTable tr:nth-child(1)').slideUp();">Cancel</a>
+		          <a onclick="ractive.cancelNote()">Cancel</a>
 	          </td>
           {{/}}
           <td class="pull-right field-favorite" on-click="toggleFavorite(j)">
-            {{#favorite}}
-              <span class="glyphicon glyphicon-star"></span>
-            {{else}}
-              <span class="glyphicon glyphicon-star-empty"></span>
-            {{/}}
+            <span class="glyphicon {{formatFavorite(this)}}"></span>
           </td>
         </tr>
       {{/each}}
