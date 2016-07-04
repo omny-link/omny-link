@@ -2,17 +2,17 @@
   <h2>Summary</h2>
   <section id="funnelCriteriaSect">
     <div>
-      <div class="col-sm-12 col-md-6">
+      <!-- <div class="col-sm-12 col-md-6">
         <ul class="form edit-form">
           <li class="form-group"><label class="col-md-4">Period:</label>
           <input class="typeahead form-control" disabled="disabled" id="rptPeriod" value="All time"></li>
         </ul>
-      </div>
+      </div>-->
       <div class="col-sm-12 col-md-6">
         <ul class="form edit-form">
           <li class="form-group">
             <label class="col-md-4">Sales Person:</label>
-            <input class="typeahead form-control" disabled="disabled" id="rptPeriod" value="Whole team">
+            <input class="typeahead form-control" id="curOwner" placeholder="Whole team" value="{{filter.value2}}">
           </li>
         </ul>
       </div>
@@ -35,4 +35,10 @@
       {{/}}
     </div>
   </section>
+
+  <div style="clear:both;"></div>
+  <section id="funnelResultTableSect" class="">
+    {{>contactListTable}}
+  </section>
+
 </section>

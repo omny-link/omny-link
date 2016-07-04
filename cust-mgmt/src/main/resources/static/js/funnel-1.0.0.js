@@ -13,6 +13,8 @@ var ractive = new AuthenticatedRactive({
   data: {
     title: 'Sales Funnel',
     username: localStorage['username'],
+    contacts:[],
+    filter: { field2: 'owner' },
     funnel: {
       options: {
         chart: {
@@ -38,7 +40,10 @@ var ractive = new AuthenticatedRactive({
         events: {
           click: {
             block: function(d) {
-              alert('<' + d.label.raw + '> selected.');
+              console.log('<' + d.label.raw + '> selected.');
+              ractive.set('filter.field','stage');
+              ractive.set('filter.value',d.label.raw);
+              ractive.filter(ractive.get('filter'));
             },
           },
         }
@@ -50,6 +55,25 @@ var ractive = new AuthenticatedRactive({
       //console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
+    matchFilter: function(obj) {
+      var filter = ractive.get('filter');
+      //console.info('matchFilter: '+JSON.stringify(filter));
+      if (filter==undefined || obj[filter.field]==undefined) {
+        return false;
+      } else {
+        try {
+          if (filter.operator==undefined) filter.operator='==';
+          var matchField = true;
+          if (filter['value']!=undefined) matchField = eval("'"+filter.value.toLowerCase()+"'"+filter.operator+"'"+obj[filter.field].toLowerCase()+"'");
+          var matchField2 = true;
+          if (filter['value2']!=undefined&& filter.value2!='') matchField2 = eval("'"+filter.value2.toLowerCase()+"'"+filter.operator+"'"+obj[filter.field2].toLowerCase()+"'");
+          return matchField && matchField2;
+        } catch (e) {
+          console.error('Exception during filter');
+          return true;
+        }
+      }
+    },
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {
@@ -59,12 +83,38 @@ var ractive = new AuthenticatedRactive({
         return false;
       }
     },
+    matchSearch: function(obj) {
+        return true;
+    },
+    sort: function (array, column, asc) {
+      console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);
+      array = array.slice(); // clone, so we don't modify the underlying data
+
+      return array.sort( function ( a, b ) {
+        if (b[column]==undefined || b[column]==null || b[column]=='') {
+          return (a[column]==undefined || a[column]==null || a[column]=='') ? 0 : -1;
+        } else if (asc) {
+          return a[ column ] < b[ column ] ? -1 : 1;
+        } else {
+          return a[ column ] > b[ column ] ? -1 : 1;
+        }
+      });
+    },
+    sortAsc: false,
+    sortColumn: 'lastUpdated',
+    sorted: function(column) {
+      console.info('sorted');
+      if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
+      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc'
+      else return 'hidden';
+    },
     stdPartials: [
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
-      { "name": "contactFunnelSect", "url": "/partials/contact-funnel-sect.html"}
+      { "name": "contactFunnelSect", "url": "/partials/contact-funnel-sect.html"},
+      { "name": "contactListTable", "url": "/partials/contact-list-table.html"}
     ],
   },
   activeStages: function() {
@@ -90,9 +140,38 @@ var ractive = new AuthenticatedRactive({
         } else {
           ractive.renderChart();
         }
-      }      
+        ractive.fetchContacts();
+      }
     });
 
+  },
+  fetchContacts: function () {
+    console.info('fetchContacts...');
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/contacts/?projection=complete',
+      crossDomain: true,
+      success: function( data ) {
+        if (data['_embedded'] == undefined) {
+          ractive.merge('contacts', data);
+        } else {
+          ractive.merge('contacts', data['_embedded'].contacts);
+        }
+        if (ractive.hasRole('admin')) $('.admin').show();
+        if (ractive.hasRole('power-user')) $('.power-user').show();
+        if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
+        ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
+        ractive.set('saveObserver', true);
+      }
+    });
+  },
+  filter: function(filter) {
+    console.log('filter: '+JSON.stringify(filter));
+    ractive.set('filter',filter);
+    ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
+    $('.col-actions .glyphicon-pencil').hide();
+    $('.col-actions .glyphicon-new-window').show();
   },
   inactiveStages: function() {
     console.info('inactiveStages');
@@ -106,6 +185,10 @@ var ractive = new AuthenticatedRactive({
     console.log('oninit');
     this.ajaxSetup();
     this.loadStandardPartials(this.get('stdPartials'));
+  },
+  openInNewWindow: function(obj) {
+    console.info('openInNewWindow');
+    window.open('/contacts.html?id='+ractive.uri(obj));
   },
   renderChart: function() {
     console.info('renderChart');
@@ -134,6 +217,13 @@ var ractive = new AuthenticatedRactive({
 ractive.observe('stages', function(newValue, oldValue, keypath) {
   console.log('stages loaded');
   if (newValue!=undefined && ractive.get('funnel')!=undefined) ractive.renderChart();
+});
+
+ractive.on( 'sort', function ( event, column ) {
+  console.info('sort on '+column);
+  // if already sorted by this column reverse order
+  if (this.get('sortColumn')==column) this.set('sortAsc', !this.get('sortAsc'));
+  this.set( 'sortColumn', column );
 });
 
 // FROM http://www.sitepoint.com/javascript-generate-lighter-darker-color/

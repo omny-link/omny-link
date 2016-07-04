@@ -1,0 +1,52 @@
+<table id="contactsTable" class="contacts table table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      {{#tenant.show.merge}}
+        <th><input class="checkbox" type="checkbox"/></th>
+      {{/}}
+      <th on-click="sort:fullName">Full Name<span class="sortable {{ sorted('fullName') }} glyphicon "></th>
+      {{#tenant.show.account}}<th on-click="sort:accountName">Business Name<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
+      <th on-click="sort:stage">Stage<span class="sortable {{ sorted('stage') }} glyphicon"></th>
+      <th on-click="sort:enquiryType">Enquiry Type<span class="sortable {{ sorted('enquiryType') }} glyphicon"></th>
+      <th on-click="sort:accountType">Account Type<span class="sortable {{ sorted('accountType') }} glyphicon"></th>
+      <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon"></th>
+      <th on-click="sort:firstContact">First Contact<span class="sortable {{ sorted('firstContact') }} glyphicon"></th>
+      <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
+      <th>Tags</th>
+      <th class="col-actions">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each sort(contacts,sortColumn,sortAsc):i}}
+      {{# matchSearch(this) && matchFilter(this) }}
+        <tr class="{{stage}}" data-href="{{selfRef}}">
+          <td on-click="edit(this)">{{i+1}}</td>
+          {{#tenant.show.merge}}
+            <td><input class="checkbox" type="checkbox" on-change="selectMultiple(this)"/></td>
+          {{/}}
+          <td on-click="edit(this)">{{fullName}}</td>
+          {{#tenant.show.account}}
+            <td on-click="edit(this)">{{account == undefined ? accountName : account.name}}</td>
+          {{/}}
+          <td on-click="edit(this)">{{stage}}</td>
+          <td on-click="edit(this)">{{enquiryType}}</td>
+          <td on-click="edit(this)">{{accountType}}</td>
+          <td on-click="edit(this)">{{{gravatar(owner)}}}</td>
+          <td on-click="edit(this)">{{formatDate(firstContact)}}</td>
+          <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
+          <td on-click="edit(this)">{{{formatTags(tags)}}}</td>
+          <td class="col-actions">
+            <a class="clickable glyphicon glyphicon-transfer" aria-hidden="true" on-click="mergeContacts(this)" style="display:none;" title="Merge two records"></a>
+            <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+            <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)" title="View or edit this contact"></a>
+            <a class="clickable glyphicon glyphicon-new-window" aria-hidden="true" on-click="openInNewWindow(this)" style="display:none" title="View or edit this contact"></a>
+          </td>
+        </tr>
+      {{/}}
+    {{/each}}
+  </tbody>
+  <tfoot>
+    <tr><th colspan="12">{{searchMatched == 0 ? 'No' : searchMatched}} matching contact{{searchMatched==1 ? '' : 's'}}</th></tr>
+  </tfoot>
+</table>
