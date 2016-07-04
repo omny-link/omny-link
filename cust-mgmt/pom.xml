@@ -137,6 +137,18 @@
         <artifactId>springfox-swagger-ui</artifactId>
         <version>2.0.0</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/batik/batik-transcoder -->
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-transcoder</artifactId>
+      <version>1.6-1</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>xalan</artifactId>
+          <groupId>xalan</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <!-- Web jars -->
     <dependency>
       <groupId>org.webjars</groupId>
