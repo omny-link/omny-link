@@ -67,6 +67,9 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     List<Contact> findByEmail(@Param("email") String email,
             @Param("tenantId") String tenantId);
 
+    @Query("SELECT c FROM Contact c WHERE c.emailHash = :emailHash AND c.tenantId = :tenantId")
+    List<Contact>  findByEmailHash(@Param("emailHash") String emailHash, @Param("tenantId") String tenantId);
+
     @Query("SELECT c FROM Contact c WHERE c.tags LIKE :tag AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId")
     List<Contact> findByTag(@Param("tag") String tag,
             @Param("tenantId") String tenantId);

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import link.omny.custmgmt.repositories.ContactRepository;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,7 @@ public class AnalyticsController {
     }
 
     @Data
+    @EqualsAndHashCode(callSuper = true)
     public static class FunnelReport extends ResourceSupport {
         @JsonProperty
         private Map<String, Number> stages;

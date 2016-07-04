@@ -92,7 +92,7 @@ var ractive = new AuthenticatedRactive({
     },
     gravatar: function(email) {
       if (email == undefined) return '';
-      return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
+      return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36&d=https%3A%2F%2Fapi.omny.link%2Fgravatars%2F'+ractive.hash(email)+'"/>'
     },
     hash: function(email) {
       if (email == undefined) return '';

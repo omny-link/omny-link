@@ -1,6 +1,8 @@
 package link.omny.custmgmt.model;
 
 import java.io.Serializable;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -94,6 +96,9 @@ public class Contact implements Serializable {
 
     @JsonProperty
     private boolean emailConfirmed;
+
+    @JsonProperty
+    private String emailHash;
 
     /**
      * A code to identify contact before registration and to be quoted in a
@@ -284,7 +289,7 @@ public class Contact implements Serializable {
     // does not support them
     // at
     // com.fasterxml.jackson.databind.JsonDeserializer.findBackReference(JsonDeserializer.java:310)
-    //@JsonManagedReference
+    // @JsonManagedReference
     private Account account;
 
     @JsonProperty
@@ -375,6 +380,11 @@ public class Contact implements Serializable {
         }
     }
 
+    public String initials() {
+        return String.format("%1$c%2$c", getFirstName().charAt(0),
+                getLastName().charAt(0));
+    }
+
     @PrePersist
     public void prePersist() {
         if (LOGGER.isWarnEnabled() && firstContact != null) {
@@ -386,6 +396,25 @@ public class Contact implements Serializable {
         if (uuid == null) {
             uuid = UUID.randomUUID().toString();
         }
+
+        initEmailHash();
+    }
+
+    private void initEmailHash() {
+        try {
+            byte[] bytes = MessageDigest.getInstance("MD5").digest(email.getBytes());
+
+          //convert the byte to hex format method 1
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < bytes.length; i++) {
+              sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            emailHash=sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            // JDK required to support MD5
+            // http://docs.oracle.com/javase/8/docs/api/java/security/MessageDigest.html
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 
     @PreUpdate
@@ -395,6 +424,8 @@ public class Contact implements Serializable {
                     "Overwriting update date %1$s with 'now'.", lastUpdated));
         }
         lastUpdated = new Date();
+
+        initEmailHash();
     }
 
     private Date getNow() {
@@ -412,9 +443,10 @@ public class Contact implements Serializable {
             time = lastEmail == null ? -1 : getNow().getTime()
                     - lastEmail.getOccurred().getTime();
         } catch (Throwable e) {
-            LOGGER.warn(String.format(
+            LOGGER.warn(
+                    String.format(
                             "Exception in getTimeSinceLast('%1$s'), assume no such activity",
-                    type), e);
+                            type), e);
         }
         LOGGER.info(String.format("determined time since %1$s: %2$d", type,
                 time));
@@ -523,7 +555,6 @@ public class Contact implements Serializable {
         return firstAct;
     }
 
-
     public String getEmailConfirmationCode() {
         if (uuid == null) {
             setUuid(UUID.randomUUID().toString());
@@ -546,10 +577,10 @@ public class Contact implements Serializable {
         return String
                 .format("Contact [id=%s, firstName=%s, lastName=%s, title=%s, email=%s, emailConfirmed=%s, emailConfirmationCode=%s, phone1=%s, phone2=%s, address1=%s, address2=%s, town=%s, countyOrCity=%s, postCode=%s, country=%s, stage=%s, enquiryType=%s, accountType=%s, owner=%s, doNotCall=%s, doNotEmail=%s, source=%s, medium=%s, campaign=%s, keyword=%s, tags=%s, firstContact=%s, lastUpdated=%s, tenantId=%s, customFields=%s, account=%d]",
                         id, firstName, lastName, title, email, emailConfirmed,
-                        uuid, phone1, phone2, address1,
-                        address2, town, countyOrCity, postCode, country, stage,
-                        enquiryType, accountType, owner, doNotCall, doNotEmail,
-                        source, medium, campaign, keyword, tags, firstContact,
+                        uuid, phone1, phone2, address1, address2, town,
+                        countyOrCity, postCode, country, stage, enquiryType,
+                        accountType, owner, doNotCall, doNotEmail, source,
+                        medium, campaign, keyword, tags, firstContact,
                         lastUpdated, tenantId, customFields,
                         account == null ? null : account.getId());
     }
