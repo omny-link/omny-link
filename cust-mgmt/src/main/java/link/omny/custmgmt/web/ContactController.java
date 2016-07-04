@@ -639,8 +639,9 @@ public class ContactController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam("author") String author,
+            @RequestParam("favorite") boolean favorite,
             @RequestParam("content") String content) {
-        addNote(tenantId, contactId, new Note(author, content));
+        addNote(tenantId, contactId, new Note(author, content, favorite));
     }
 
     /**
