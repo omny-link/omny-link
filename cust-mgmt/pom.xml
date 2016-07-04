@@ -95,16 +95,16 @@
       <version>1.14.8</version>
       <scope>provided</scope>
     </dependency>
-		<dependency>
-		  <groupId>commons-io</groupId>
-		  <artifactId>commons-io</artifactId>
-		  <version>2.4</version>
-		</dependency>
     <dependency>
-	    <groupId>org.apache.commons</groupId>
-	    <artifactId>commons-csv</artifactId>
-	    <version>1.2</version>
-	  </dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>1.2</version>
+    </dependency>
     <dependency>
       <groupId>org.subethamail</groupId>
       <artifactId>subethasmtp-wiser</artifactId>
@@ -147,6 +147,10 @@
           <artifactId>xalan</artifactId>
           <groupId>xalan</groupId>
         </exclusion>
+        <exclusion>
+          <artifactId>xmlParserAPIs</artifactId>
+          <groupId>xml-apis</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <!-- Web jars -->
@@ -171,10 +175,10 @@
       <version>1.11.4</version>
     </dependency>
     <dependency>
-	    <groupId>org.webjars.bower</groupId>
-	    <artifactId>chosen</artifactId>
-	    <version>1.4.2</version>
-		</dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>chosen</artifactId>
+      <version>1.4.2</version>
+    </dependency>
     <dependency>
       <groupId>link.omny</groupId>
       <artifactId>fonts</artifactId>
