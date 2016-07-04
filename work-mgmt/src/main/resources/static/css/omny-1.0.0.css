@@ -284,6 +284,9 @@ tfoot th {
 .field-author, .field-favorite {
   width:3em;
 }
+.unfavorite {
+	display:none;
+}
 .field-text {
 	width:80%;
 }

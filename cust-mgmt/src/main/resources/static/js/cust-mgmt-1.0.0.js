@@ -212,6 +212,7 @@ var ractive = new AuthenticatedRactive({
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "contactListSect", "url": "/partials/contact-list-sect.html"},
+      { "name": "contactListTable", "url": "/partials/contact-list-table.html"},
       { "name": "mergeModal", "url": "/partials/contact-merge-sect.html"},
       { "name": "navbar", "url": "/partials/contact-navbar.html"},
       { "name": "currentContactSect", "url": "/partials/contact-current-sect.html"},
