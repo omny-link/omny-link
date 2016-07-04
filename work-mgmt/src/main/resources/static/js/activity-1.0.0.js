@@ -62,6 +62,7 @@ function UserActivity() {
     var d = {
         "type":type,
         "content":content===undefined ? '' : content,
+        "stage": "On hold",
         "uuid":ua.getId(),
         "tenantId":ua.tenantId
       };
