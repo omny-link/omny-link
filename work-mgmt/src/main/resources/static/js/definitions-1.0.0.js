@@ -83,10 +83,23 @@ var ractive = new AuthenticatedRactive({
         return false;
       }
     },
+    matchSearch: function(obj) {
+      var searchTerm = ractive.get('searchTerm');
+      //console.info('matchSearch: '+searchTerm);
+      if (searchTerm==undefined || searchTerm.length==0) {
+        return true;
+      } else {
+        return ( (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+          || (obj.description!=undefined && obj.description.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+          || (obj.id.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+        );
+      }
+    },
     stdPartials: [
       { "name": "defnCurrentSect", "url": "/partials/defn-current-sect.html"},
       { "name": "defnListSect", "url": "/partials/defn-list-sect.html"},
       { "name": "defnPropSect", "url": "/partials/defn-property-sect.html"},
+      { "name": "navbar", "url": "/partials/defn-navbar.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
