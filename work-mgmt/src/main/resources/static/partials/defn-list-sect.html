@@ -1,11 +1,13 @@
-<section id="definitionSect">
+<section class="container navbar-sticky">
   <h2>
-    <a id="definitionsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the definition table"></a>
-    <span>Definitions</span>
-    <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
-    <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()"></a>
-    <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-    <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
+    {{>navbar}}
+    {{>profileArea}}
+  </h2>
+</section>
+<section id="definitionSect">
+  <h2 class="navbar-top">
+    {{>navbar}}
+    <a class="clickable glyphicon glyphicon-cloud-upload pull-right" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
   </h2>
   <div id="upload" style="display:none">
     <form action="/{{tenant.id}}/deployments" class="well form form-inline" enctype="multipart/form-data" id="uploadForm" method="post">
@@ -38,10 +40,7 @@
     </thead>
     <tbody>
       {{#each definitions:i}}
-        {{# searchTerm!=undefined && (
-              (name!=undefined && name.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-              || (description!=undefined && description.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
-            ) }}
+        {{# matchSearch(this) }}
         <tr data-href="{{_links.self.href}}">
           <td on-click="select(this)">{{i+1}}</td>
           <td on-click="select(this)">{{name}} {{#key}}({{key}}){{/}}</td>
