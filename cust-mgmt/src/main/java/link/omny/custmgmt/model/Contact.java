@@ -401,6 +401,10 @@ public class Contact implements Serializable {
     }
 
     private void initEmailHash() {
+        // Can happen in the event of anon contacts
+        if (email==null) {
+            return;
+        }
         try {
             byte[] bytes = MessageDigest.getInstance("MD5").digest(email.getBytes());
 
