@@ -70,26 +70,7 @@
         <button class="btn btn-details" on-click="toggleAuditTrail(current.instances[i],i)" type="button">View Details</button>
         <button class="btn btn-details" on-click="deleteInstance(current.instances[i],i)" type="button">Delete</button>
         <section data-instanceId="{{id}}" style="clear:both;display:none">
-          <h4> {{#businessKey}} 'Instance '+id {{else}} {{businessKey}} ({{id}}) }}{{/}}</h4>
-          <h5>Latest Data</h5>
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th></th>
-                <th class="col-truncate">Name</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each processVariableNames:j}}
-                <tr data-href="{{_links.self.href}}">
-                  <td>{{j+1}}</td>
-                  <td>{{processVariableNames[j]}}</td>
-                  <td>{{(JSON.stringify(processVariables[processVariableNames[j]]))}}</td>
-                </tr>
-              {{/each}}
-            </tbody>
-          </table> 
+          <h4> {{#businessKey}} Instance {{id}} {{else}} {{businessKey}} ({{id}}) }}{{/}}</h4>
           <h5>History</h5> 
           <table class="table table-striped">
             <thead>
@@ -114,15 +95,34 @@
                   <td>{{endTime == undefined ? '' : duration(durationInMillis)}}</td>
                   <td>
                     {{#allocations}}
-                      {{#type=='candidate'}}Offered to:{{/}} {{groupId}} {{userId}}
+                      {{#type=='candidate'}}Offered to:{{/}} {{groupId}}{{userId}}<br/>
                     {{/}}
                   </td>
                 </tr>
               {{/each}}
             </tbody>
           </table>
+          <h5>Latest Data</h5>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th></th>
+                <th class="col-truncate">Name</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each processVariableNames:j}}
+                <tr data-href="{{_links.self.href}}">
+                  <td>{{j+1}}</td>
+                  <td>{{processVariableNames[j]}}</td>
+                  <td>{{(JSON.stringify(processVariables[processVariableNames[j]]))}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table> 
         </section>
-      </section><!-- /List of events -->
+      </section>
     {{/each}}
   {{/}}
   {{^current.deploymentId}}
