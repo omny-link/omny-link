@@ -176,6 +176,12 @@ var ractive = new AuthenticatedRactive({
       $('.userTask').on('click',ractive.showSelection);
       $('.sequenceFlow').on('mouseover',ractive.showSeqFlowPropertySect);
       $('.userTask').on('mouseover',ractive.showUserTaskPropertySect);
+      $('[data-calledElement]').click(function(ev) {
+        window.ev = ev;
+        console.log('selected: '+JSON.stringify($(ev.target)));
+        console.log('selected: '+ev.target.attributes['data-calledelement'].value);
+        ractive.select(ractive.find(ev.target.attributes['data-calledelement'].value));
+      });
     }, 'text');
   },
   fetchInstances: function(definition) {
@@ -192,6 +198,17 @@ var ractive = new AuthenticatedRactive({
       console.log('found issues '+data.length);
       ractive.set('current.issues',data);
     });
+  },
+  find: function(defnKey) {
+    console.info('find');
+    var found, foundIdx = -1;
+    $.each(ractive.get('definitions'), function(i,d) {
+      if (d.key==defnKey && (found==undefined || d.id > found.id)) {
+        found = d;
+        foundIdx = i;
+      }
+    });
+    return found;
   },
   hidePropertySect: function() {
     console.info('hidePropertySect');

@@ -622,6 +622,7 @@
 	      <xsl:choose>
 		      <xsl:when test="local-name(.)='callActivity'">
 		        <xsl:attribute name="stroke-width">3px</xsl:attribute>
+		        <xsl:attribute name="data-calledElement"><xsl:value-of select="@calledElement"/></xsl:attribute>
 		      </xsl:when>
 		      <xsl:otherwise>
             <xsl:attribute name="stroke-width">1px</xsl:attribute>
