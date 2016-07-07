@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.knowprocess.bpm.model.Deployment;
 import com.knowprocess.bpm.model.ModelIssue;
 import com.knowprocess.bpm.model.ProcessDefinition;
 import com.knowprocess.bpm.model.ProcessInstance;
@@ -82,6 +83,14 @@ public class ProcessDefinitionController {
                     pd.addMessageName(name);
                 }
             }
+
+            pd.setMd5Hash(Md5HashUtils.getHash(bpmn));
+
+            pd.setDeployment(new Deployment(processEngine
+                    .getRepositoryService().createDeploymentQuery()
+                    .deploymentId(pd.getDeploymentId().toString())
+                    .singleResult()));
+
         } catch (NullPointerException e) {
             // assume this is an incomplete model....
             pd = new ProcessDefinition(processModelRepo.findOne(id));
