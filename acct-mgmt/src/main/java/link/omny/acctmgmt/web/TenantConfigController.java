@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +54,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpm.api.ReportableException;
+import com.knowprocess.bpm.web.Md5HashUtils;
 
 @Controller
 // @RequestMapping("/admin/tenants")
@@ -272,8 +274,30 @@ public class TenantConfigController {
                     .processDefinitionTenantId(id).latestVersion()
                     .singleResult();
             if (pd != null) {
-                process.setValid(true);
-                process.setDescription(pd.getDescription());
+                InputStream is = null;
+                try {
+                    is = processEngine.getRepositoryService().getProcessModel(
+                            pd.getId());
+                    @SuppressWarnings("resource")
+                    String latestDeployedBpmn = new Scanner(is).useDelimiter(
+                            "\\A").next();
+                    boolean identical = Md5HashUtils.isIdentical(
+                            com.knowprocess.bpm.model.ProcessDefinition
+                                    .readFromClasspath("/" + process.getUrl()),
+                            latestDeployedBpmn);
+
+                    if (identical) {
+                        process.setValid(true);
+                        process.setDescription(pd.getDescription());
+                    }
+
+                } finally {
+                     try {
+                         is.close();
+                     } catch (Exception e) {
+                         ;
+                     }
+                }
             }
         }
 

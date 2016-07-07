@@ -49,9 +49,9 @@
     { "name": "Send memo", "ref": "SendMemo", "url": "processes/link/omny/mail/SendMemo.bpmn" },
     { "name": "Send alert", "ref": "SendAlert", "url": "processes/link/omny/alerts/SendAlertMemo.bpmn" },
     { "name": "Catch all", "ref": "CatchAllProcess", "url": "processes/link/omny/support/CatchAllProcessPostToSlack.bpmn" },
-    { "name": "Add task", "ref": "SimpleTodo", "url": "processes/link/omny/casemgmt/SimpleTodo.bpmn" },
-    { "name": "Search for companies", "ref": "companyRecord", "url": "/link/omny/companiesHouse/FetchComapnyInfo.bpmn" },
-    { "name": "Fetch company information", "ref": "companySearch", "url": "/link/omny/companiesHouse/SearchForCompany.bpmn" }
+    { "name": "Add task", "ref": "SimpleTodo", "url": "processes/link/omny/casemgmt/SimpleToDo.bpmn" },
+    { "name": "Search for companies", "ref": "companyRecord", "url": "processes/link/omny/companiesHouse/FetchCompanyInfo.bpmn" },
+    { "name": "Fetch company information", "ref": "companySearch", "url": "processes/link/omny/companiesHouse/SearchForCompany.bpmn" }
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},

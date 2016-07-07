@@ -215,6 +215,7 @@ var ractive = new AuthenticatedRactive({
       } else {
         ractive.fetchInstances(ractive.get('current'));
       }
+      if (ractive.hasRole('admin')) $('.admin').show();
     });
     
     $('#currentSect').slideDown();
