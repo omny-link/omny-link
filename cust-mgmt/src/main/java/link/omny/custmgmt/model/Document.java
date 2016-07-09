@@ -48,6 +48,9 @@ public class Document implements Serializable {
     private Date created;
 
     @JsonProperty
+    private String name;
+
+    @JsonProperty
     private String url;
 
     @RestResource(rel = "documentContact")
@@ -67,7 +70,8 @@ public class Document implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Document [id=%s, author=%s, created=%s, url=%s]",
-                id, author, created, url);
+        return String.format(
+                "Document [id=%s, author=%s, created=%s, name=%s, url=%s]", id,
+                author, created, name, url);
     }
 }
