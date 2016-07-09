@@ -403,6 +403,11 @@ var ractive = new AuthenticatedRactive({
     });
     return c;
   },
+  hideResults: function() {
+    $('#contactsTableToggle').removeClass('glyphicon-triangle-bottom').addClass('glyphicon-triangle-right');
+    $('#contactsTable').slideUp();
+    $('#currentSect').slideDown({ queue: true });
+  },
   importComplete: function(imported, failed) {
     console.log('inferComplete');
     ractive.showMessage('Import complete added '+imported+' records '+' with '+failed+' failures');
@@ -753,8 +758,7 @@ var ractive = new AuthenticatedRactive({
       ractive.set('current', contact);
       ractive.set('saveObserver',true);
     }
-    ractive.toggleResults();
-    $('#currentSect').slideDown();
+    ractive.hideResults();
   },
   selectMultiple: function(contact) {
     console.info('selectMultiple: '+contact.selfRef);
@@ -837,6 +841,7 @@ var ractive = new AuthenticatedRactive({
         console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
         ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
         $('#customActionModal').modal('hide');
+        ractive.select(ractive.get('current'));// refresh
       },
     });
   },
