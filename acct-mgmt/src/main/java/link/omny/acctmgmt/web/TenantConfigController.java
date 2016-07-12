@@ -281,12 +281,12 @@ public class TenantConfigController {
                     @SuppressWarnings("resource")
                     String latestDeployedBpmn = new Scanner(is).useDelimiter(
                             "\\A").next();
-                    boolean identical = Md5HashUtils.isIdentical(
+
+                    if (process.getUrl() != null
+                            && Md5HashUtils.isIdentical(
                             com.knowprocess.bpm.model.ProcessDefinition
                                     .readFromClasspath("/" + process.getUrl()),
-                            latestDeployedBpmn);
-
-                    if (identical) {
+                            latestDeployedBpmn)) {
                         process.setValid(true);
                         process.setDescription(pd.getDescription());
                     }
