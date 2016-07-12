@@ -787,7 +787,7 @@ var ractive = new AuthenticatedRactive({
     console.log('d: '+d);
     //var d['businessDescription']=ractive.get('message.bizKey');
     return $.ajax({
-      url: '/msg/'+ractive.get('tenant.id')+'/'+msg.name+'/',
+      url: ractive.getServer()+'/msg/'+ractive.get('tenant.id')+'/'+msg.name+'/',
       type: type,
       data: d,
       dataType: 'text',
@@ -833,7 +833,7 @@ var ractive = new AuthenticatedRactive({
   submitCustomAction: function() {
     console.info('submitCustomAction');
     $.ajax({
-      url: '/'+ractive.get('tenant.id')+'/process-instances/',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(ractive.get('instanceToStart')),
@@ -892,7 +892,7 @@ var ractive = new AuthenticatedRactive({
     var fileExt = fileName.substring(fileName.lastIndexOf('.')+1);
     return $.ajax({
         type: 'POST',
-        url: '/'+ractive.get('tenant.id')+'/'+entity+'/upload'+fileExt.toLowerCase(),
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/'+entity+'/upload'+fileExt.toLowerCase(),
         data: formData,
         cache: false,
         contentType: false,
