@@ -15,6 +15,32 @@ var ractive = new AuthenticatedRactive({
     username: localStorage['username'],
     contacts:[],
     filter: { field2: 'owner' },
+    formatAge: function(timeString) {
+      console.log('formatAge: '+timeString);
+      return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
+    },
+    formatContent: function(content) {
+      console.info('formatContent');
+      content = content.replace(/\n/g,'<br/>');
+      content = Autolinker.link(content);
+      return content;
+    },
+    formatDate: function(timeString) {
+      if (timeString==undefined) return 'n/a';
+      var d = new Date(timeString);
+      // IE strikes again
+      if (d == 'Invalid Date') d = parseDateIEPolyFill(timeString);
+      return d.toLocaleDateString(navigator.languages);
+    },
+    formatTags: function(tags) {
+      var html = '';
+      if (tags==undefined) return html;
+      var tagArr = tags.split(',');
+      $.each(tagArr, function(i,d) {
+        html += '<span class="img-rounded" style="background-color:'+d+'">&nbsp;&nbsp;</span>';
+      });
+      return html;
+    },
     funnel: {
       options: {
         chart: {
@@ -49,6 +75,10 @@ var ractive = new AuthenticatedRactive({
         }
       },
       data: []
+    },
+    gravatar: function(email) {
+      if (email == undefined) return '';
+      return '<img class="img-rounded" style="width:36px" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36&d=https%3A%2F%2Fapi.omny.link%2F'+ractive.get('tenant.id')+'%2Fgravatars%2F'+ractive.hash(email)+'.png"/>'
     },
     hash: function(email) {
       if (email == undefined) return '';
