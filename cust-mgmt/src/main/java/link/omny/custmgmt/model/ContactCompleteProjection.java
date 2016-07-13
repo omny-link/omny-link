@@ -56,6 +56,10 @@ public interface ContactCompleteProjection {
 
     String getStage();
 
+    String getStageReason();
+
+    Date getStageDate();
+
     String getOwner();
 
     String getSource();

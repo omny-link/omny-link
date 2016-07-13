@@ -141,6 +141,12 @@ public class Contact implements Serializable {
     private String stage;
 
     @JsonProperty
+    private String stageReason;
+
+    @JsonProperty
+    private Date stageDate;
+
+    @JsonProperty
     private String enquiryType;
 
     @JsonProperty
