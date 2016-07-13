@@ -100,6 +100,7 @@ var ractive = new AuthenticatedRactive({
     },
     haveStageReasons: function() {
       console.info('haveStageReasons?');
+      if (ractive.get('current.stage')!='Cold') return false;
       return ractive.get('tenant.typeaheadControls').filter(function(d) {
         return d.name=='stageReasons';
       }).length > 0;
@@ -930,6 +931,21 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
     console.warn  ('Skipped contact save of '+keypath);
     //console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
     //console.log('  saveObserver: '+ractive.get('saveObserver'));
+  }
+});
+
+ractive.observe('current.stage', function(newValue, oldValue, keypath) {
+  console.log('stage changing from '+oldValue+' to '+newValue);
+  if (newValue=='Cold' && ractive.get('current.stageDate')==undefined) {
+    ractive.set('current.stageDate',new Date());
+    $('#curStageReason').typeahead({
+      items:'all',
+      minLength:0,
+      source:ractive.get('stageReasons'),
+      updater:function(item) {
+        return item.id;
+      }
+    });
   }
 });
 
