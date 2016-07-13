@@ -64,6 +64,9 @@ public abstract class BaseUserAwareTask implements JavaDelegate {
         } else if (resourceUsername.getExpressionText().equals(
                 "userInfo('tenant-bot')")) {
             return lookupBotName(execution);
+        } else if (resourceUsername.getExpressionText()
+                .startsWith("userInfo('")) {
+            return lookup(execution, lookupBotName(execution), resourceUsername);
         } else {
             return (String) resourceUsername.getValue(execution);
         }
