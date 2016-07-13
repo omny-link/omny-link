@@ -44,17 +44,26 @@ public class TaskController {
     protected DateFormat isoDateParser = new SimpleDateFormat("yyyy-MM-dd");
 
     @RequestMapping(value = "/task/{taskId}/", method = RequestMethod.GET)
-    public @ResponseBody Task getTask(
-            @PathVariable("taskId") String taskId) {
+    public @ResponseBody Task getTask(@PathVariable("taskId") String taskId) {
         LOGGER.info(String.format("getTask %1$s", taskId));
         Task t = Task.findTask(taskId);
+        setCustomTaskName(t);
         return t;
+    }
+
+    protected void setCustomTaskName(Task t) {
+        if (processEngine.getRuntimeService().hasVariable(
+                t.getProcessInstanceId(), "what")) {
+            t.setName((String) processEngine.getRuntimeService().getVariable(
+                    t.getProcessInstanceId(), "what"));
+        }
     }
 
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.PUT)
     public @ResponseBody Task updateTask(
-            @PathVariable("taskId") String taskId, @RequestBody Task t,
-            @RequestParam(required = false, value = "complete") String complete, 
+            @PathVariable("taskId") String taskId,
+            @RequestBody Task t,
+            @RequestParam(required = false, value = "complete") String complete,
             @RequestParam(required = false, value = "defer") String defer) {
         LOGGER.info(String.format("updateTask %1$s", taskId));
 
@@ -84,7 +93,7 @@ public class TaskController {
         return t;
     }
 
-	protected Date getRelativeDate(String defer) {
+    protected Date getRelativeDate(String defer) {
         defer = defer.toUpperCase();
         Calendar cal = new GregorianCalendar();
         if (defer.startsWith("P")) {
@@ -107,7 +116,7 @@ public class TaskController {
             throw new IllegalArgumentException(String.format(
                     "Cannot find relative date from %1$s", defer));
         }
-	}
+    }
 
     @RequestMapping(value = "/{tenantId}/tasks/{username}", produces = {
             MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
@@ -123,8 +132,13 @@ public class TaskController {
         if (page != null || size != null) {
             throw new IllegalStateException("No paging implemented yet");
         } else {
-            return Task.findAllTasks(tenantId, username, sortFieldName,
+            List<Task> tasks = Task.findAllTasks(tenantId, username,
+                    sortFieldName,
                     sortOrder);
+            for (Task task : tasks) {
+                setCustomTaskName(task);
+            }
+            return tasks;
         }
     }
 
