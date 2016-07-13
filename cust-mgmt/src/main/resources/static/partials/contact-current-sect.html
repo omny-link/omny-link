@@ -65,8 +65,14 @@
         </li>
         {{# haveStageReasons() }}
           <li>
-            <label class="">Reason:</label>
-            <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStageReason" value="{{current.stageReason}}">
+            <label class="">Loss Reason:</label>
+            <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStageReason" {{# current.stage=='Cold' }} required{{/}} value="{{current.stageReason}}">
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+          </li>
+          <li>
+            <label class="">Loss Date:</label>
+            <input class="form-control" id="curStageDate" readonly value="{{formatDate(current.stageDate)}}">
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
           </li>
         {{/}}
       </ul>
