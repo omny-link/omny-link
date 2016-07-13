@@ -67,6 +67,7 @@ var ractive = new AuthenticatedRactive({
           click: {
             block: function(d) {
               console.log('<' + d.label.raw + '> selected.');
+              if (ractive.get('contacts').length==0) ractive.fetchContacts();
               ractive.set('filter.field','stage');
               ractive.set('filter.value',d.label.raw);
               ractive.filter(ractive.get('filter'));
