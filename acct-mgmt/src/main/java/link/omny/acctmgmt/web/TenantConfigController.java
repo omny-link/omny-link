@@ -290,7 +290,10 @@ public class TenantConfigController {
                         process.setValid(true);
                         process.setDescription(pd.getDescription());
                     }
-
+                } catch (Throwable t) {
+                    LOGGER.error(String
+                            .format("Problem loading process from %1$s, check configuration",
+                                    process.getUrl()));
                 } finally {
                      try {
                          is.close();
