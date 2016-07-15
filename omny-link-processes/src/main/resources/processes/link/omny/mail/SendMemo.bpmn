@@ -3,6 +3,10 @@
   <process id="SendMemo" isClosed="false" isExecutable="true" name="Send a memo to the contact specified" processType="None">
     <documentation id="SendMemo_D_1" textFormat="text/plain"><![CDATA[Send a memo to the specified contact]]></documentation>
     <extensionElements>
+      <activiti:executionListener class="com.knowprocess.bpm.listeners.FieldInjectionListener" event="start">
+        <activiti:field name="varName" stringValue="toEmail"/>
+        <activiti:field expression="${''}" name="dynamicValue"/>
+      </activiti:executionListener>
       <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
     </extensionElements>
@@ -115,13 +119,17 @@ execution.setVariable('contactId',contactId);]]></script>
     <textAnnotation id="_7" textFormat="text/plain">
       <text>Send memo to a single contact</text>
     </textAnnotation>
+    <textAnnotation id="_15" textFormat="text/plain">
+      <text>Optional. If not supplied, contact's email will be used instead</text>
+    </textAnnotation>
+    <association associationDirection="None" id="_17" sourceRef="_6" targetRef="_15"/>
   </process>
   <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-SendMemo" name="Untitled Diagram" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="SendMemo">
       <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
         <dc:Bounds height="32.0" width="32.0" x="46.863636363636424" y="212.27272727272728"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="69.0" x="28.36363636363643" y="253.56764914772725"/>
+          <dc:Bounds height="18.8046875" width="69.0" x="28.36363636363643" y="253.66530539772725"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7">
@@ -131,9 +139,9 @@ execution.setVariable('contactId',contactId);]]></script>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_8" id="Yaoqiang-_8">
-        <dc:Bounds height="38.0" width="29.0" x="48.363636363636424" y="397.7121212121212"/>
+        <dc:Bounds height="38.0" width="29.0" x="48.363636363636424" y="377.7121212121212"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="57.0" x="34.363636363636424" y="437.71212121212125"/>
+          <dc:Bounds height="18.8046875" width="57.0" x="34.363636363636424" y="417.71212121212125"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_3" id="Yaoqiang-_3">
@@ -155,9 +163,9 @@ execution.setVariable('contactId',contactId);]]></script>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_10" id="Yaoqiang-_10">
-        <dc:Bounds height="38.0" width="29.0" x="48.363636363636424" y="332.3181818181818"/>
+        <dc:Bounds height="38.0" width="29.0" x="48.363636363636424" y="302.3181818181818"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="75.0" x="25.363636363636424" y="372.31818181818176"/>
+          <dc:Bounds height="18.8046875" width="75.0" x="25.363636363636424" y="342.31818181818176"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="addActivityToContact" id="Yaoqiang-addActivityToContact" isExpanded="false">
@@ -181,13 +189,19 @@ execution.setVariable('contactId',contactId);]]></script>
       <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
         <dc:Bounds height="32.0" width="32.0" x="841.5000000000003" y="212.27272727272728"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="111.0" x="802.0000000000003" y="252.91530539772725"/>
+          <dc:Bounds height="18.8046875" width="111.0" x="802.0000000000003" y="253.01296164772725"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6">
-        <dc:Bounds height="38.0" width="29.0" x="48.363636363636424" y="463.10606060606057"/>
+        <dc:Bounds height="38.0" width="29.0" x="48.363636363636424" y="453.10606060606057"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="48.0" x="38.863636363636424" y="503.1060606060605"/>
+          <dc:Bounds height="18.8046875" width="48.0" x="38.863636363636424" y="493.1060606060605"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_15" id="Yaoqiang-_15">
+        <dc:Bounds height="45.0" width="436.0" x="132.0" y="449.60606060606057"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="354.0" x="132.0" y="464.7037168560605"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9">
@@ -230,6 +244,13 @@ execution.setVariable('contactId',contactId);]]></script>
         <di:waypoint x="672.0714285714286" y="228.27272727272725"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.8046875" width="6.0" x="655.5714285714286" y="218.87038352272725"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_17" id="Yaoqiang-_17">
+        <di:waypoint x="77.07142857142856" y="472.4124791326784"/>
+        <di:waypoint x="132.07142857142856" y="472.08050342904505"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="101.57142857142856" y="462.84414753086173"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
