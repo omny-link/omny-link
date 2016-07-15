@@ -493,36 +493,37 @@
    </div>
   </form>
 
-  <form id="documentForm">
-   <div id="documentSect" style="clear: both">
-    <h2>
-      <span>Documents</span>
-      <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')" title="Add a new Document"></span>
-    </h2>
-    <table id="docsTable" class="table table-striped"><tbody>
-      <tr style="display:none;width:100%;">
-        <!-- <td colspan="2">
-          <input class="form-control" id="docName" placeholder="Name or title of document" required style=""/>
-        </td> -->
-        <td colspan="4">
-          <input class="form-control" id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required style=""/>
-          <br/>
-          <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
-        </td>
-      </tr>
-      {{#each current.documents:k}}
-        <tr>
-          <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
-          <td class="field-author">{{{gravatar(author)}}}</td>
-          <td class="field-text">{{name}}</td>
-          <td class="field-url"><a href="{{url}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a></td>
+  {{#if tenant.show.documents}}
+    <form id="documentForm">
+     <div id="documentSect" style="clear: both">
+      <h2>
+        <span>Documents</span>
+        <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')" title="Add a new Document"></span>
+      </h2>
+      <table id="docsTable" class="table table-striped"><tbody>
+        <tr style="display:none;width:100%;">
+          <!-- <td colspan="2">
+            <input class="form-control" id="docName" placeholder="Name or title of document" required style=""/>
+          </td> -->
+          <td colspan="4">
+            <input class="form-control" id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required style=""/>
+            <br/>
+            <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
+          </td>
         </tr>
-      {{/each}}
-      {{^ current.documents }}
-        <tr><td>None</td></tr>
-      {{/ current.documents }}
-    </tbody></table>
-   </div>
-  </form>
-
+        {{#each current.documents:k}}
+          <tr>
+            <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
+            <td class="field-author">{{{gravatar(author)}}}</td>
+            <td class="field-text">{{name}}</td>
+            <td class="field-url"><a href="{{url}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a></td>
+          </tr>
+        {{/each}}
+        {{^ current.documents }}
+          <tr><td>None</td></tr>
+        {{/ current.documents }}
+      </tbody></table>
+     </div>
+    </form>
+  {{/if}}
 </section>
