@@ -1,5 +1,5 @@
 [
-  {  "idx": 0, "id": "Pre-qualified", "name": "Pre-qualified"  },
+  {  "idx": 0, "id": "Unqualified", "name": "Unqualified"  },
   {  "idx": 1, "id": "Enquiry", "name": "Enquiry"  },
   {  "idx": 2, "id": "Appointment", "name": "Appointment"  },
   {  "idx": 3, "id": "Proposal", "name": "Proposal"  },
