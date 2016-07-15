@@ -18,7 +18,7 @@ public class CustomErrorController implements ErrorController {
         String message = (String) request
                 .getAttribute("javax.servlet.error.message");
         // return "forward:/";
-        return String.format("redirect:index.html?statusCode=%1$d&msg=%2$s",
+        return String.format("redirect:/index.html?statusCode=%1$d&msg=%2$s",
                 statusCode, message);
     }
 
