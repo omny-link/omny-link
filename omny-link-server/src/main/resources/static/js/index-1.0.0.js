@@ -7,7 +7,9 @@ var ractive = new AuthenticatedRactive({
   lazy: true,
   template: '#template',
   data: {
+    intro: "Let's get started right away by introducing the Omny Bar icons:",
     title: 'Omny Link',
+    title2: 'The next generation of contact management has arrived!',
     username: localStorage['username'],
     gravatar: function(email) {
       if (email == undefined) return '';
@@ -82,4 +84,26 @@ var ractive = new AuthenticatedRactive({
     document.body.style.cursor='progress';
     this.showMessage(msg, addClass);
   },
+});
+
+$(document).ready(function() {
+  var statusCode = parseInt(getSearchParameters()['statusCode']);
+  var msg = getSearchParameters()['msg'];
+  if (statusCode!=undefined && !isNaN(statusCode)) {
+    switch (statusCode) {
+    case 401:
+      msg = "You're not authorised to see that page";
+      break;
+    case 404:
+      msg = "We can't find that page";
+      break;
+    case 500:
+      msg = '';
+      break;
+    default:
+      console.warn('statusCode: '+statusCode);
+    }
+    ractive.set('title2', 'Ooops! Something went wrong... '+msg);
+    ractive.set('intro', 'Please continue by clicking one of the icons below:');
+  }
 });
