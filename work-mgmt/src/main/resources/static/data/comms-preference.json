@@ -1,4 +1,4 @@
 [
-  {  "id": "email_sms", "name": "Email and SMS"  },
-  {  "id": "email", "name": "Email Only"  }
+  {  "id": "Email and SMS", "name": "Email and SMS"  },
+  {  "id": "Email only", "name": "Email only"  }
 ]

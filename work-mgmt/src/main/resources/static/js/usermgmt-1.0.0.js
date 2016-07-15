@@ -44,7 +44,7 @@ var ractive = new AuthenticatedRactive({
   addUser: function (user) {
     console.log('addUser '+user+' ...');
     ractive.set('currentAction', 'CREATE');
-    ractive.set('current', { });
+    ractive.set('current', { groups: [] });
     $('.create-field').show();
     $('.no-update-field').removeProp('readonly');
     ractive.select(ractive.get('current'));
@@ -129,7 +129,7 @@ var ractive = new AuthenticatedRactive({
         console.log('data: '+ data);
         ractive.showMessage('User has been saved successfully');
         ractive.fetch();
-        setTimeout(function() { $('#currentSect').slideUp(); }, EASING_DURATION*4);
+        ractive.set('currentAction', 'UPDATE');
       }
     });
   },
