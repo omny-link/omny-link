@@ -120,6 +120,7 @@ var ractive = new AuthenticatedRactive({
       ractive.showFormError('userForm','Please correct the highlighted fields');
       return ;
     }
+    $('#curUsername').val($('#curUsername').val().toLowerCase());
     
     $.ajax({
       url: ractive.getServer()+'/users/'+(ractive.get('currentAction') == 'CREATE' ? '' : ractive.get('current.id')),
