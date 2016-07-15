@@ -22,7 +22,7 @@ import com.knowprocess.bpm.api.ActivitiApplicationSecurity;
 @Import({ OneDecisionConfig.class, AcctMgmtConfig.class,
         BpmConfiguration.class, CustMgmtConfig.class, CatalogConfig.class })
 @ComponentScan(basePackages = { "link.omny.acctmgmt", "link.omny.catalog",
-        "link.omny.custmgmt", "io.onedecision.engine" })
+        "link.omny.custmgmt", "link.omny.server", "io.onedecision.engine" })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Bean
@@ -32,10 +32,8 @@ public class Application extends WebMvcConfigurerAdapter {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        // Allegedly sets welcome page though does not appear to be working
         registry.addViewController("/").setViewName("index");
         registry.addViewController("/login").setViewName("login");
-        // registry.addViewController("/loginError").setViewName("loginError");
     }
 
     @Bean
