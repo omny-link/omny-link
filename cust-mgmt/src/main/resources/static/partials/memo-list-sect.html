@@ -1,19 +1,12 @@
-<section id="memosSect">
+<section class="container navbar-sticky">
   <h2>
-    <a id="memosTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the memo table"></a>
-    <span>Templates</span>
-    <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new memo"></a>
-    <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
-    <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-    <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching templates"></a>
-    
-    <form id="upload" class="super-admin pull-right upload">
-      <a class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')" title="Import data from file"></a>
-      <input type="file" class="form-control file pull-right" name="file" placeholder="Select file">
-      <select class="form-control entity pull-right" name="entity">
-        <option value="memos">Templates</option>
-      </select>
-    </form>
+    {{>navbar}}
+    {{>profileArea}}
+  </h2>
+</section>
+<section id="memosSect">
+  <h2 class="navbar-top">
+    {{>navbar}}
   </h2>
   <table id="memosTable" class="table table-striped">
     <thead>

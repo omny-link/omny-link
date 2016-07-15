@@ -72,6 +72,7 @@ var ractive = new AuthenticatedRactive({
     },
     saveObserver: false,
     stdPartials: [
+      { "name": "navbar", "url": "/partials/memo-navbar.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},

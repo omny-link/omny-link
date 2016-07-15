@@ -1,26 +1,19 @@
+<section class="container navbar-sticky">
+  <h2>
+    {{>navbar}}
+    {{>profileArea}}
+  </h2>
+</section>
 <section id="memoDistributionsSect">
-        <h2>
-          <a id="memoDistributionsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the memo distribution table"></a>
-          <span>Distributions</span>
-          <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new memo distribution"></a>
-          <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
-          <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-          <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching memo distributions"></a>
-          
-          <form id="upload" class="super-admin pull-right upload">
-            <a class="glyphicon glyphicon-import pull-right" aria-hidden="true" on-click="upload('upload')" title="Import data from file"></a>
-            <input type="file" class="form-control file pull-right" name="file" placeholder="Select file">
-            <select class="form-control entity pull-right" name="entity">
-              <option value="memoDistributions">memo distributions</option>
-            </select>
-          </form>
-        </h2>
-        <table id="memoDistributionsTable" class="table table-striped">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <!--th>Memo</th-->
+  <h2 class="navbar-top">
+    {{>navbar}}
+  </h2>
+  <table id="memoDistributionsTable" class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <!--th>Memo</th-->
         <th>Owned by</th>
         <th>Status</th>
         <th>Created</th>

@@ -17,6 +17,7 @@ var ractive = new AuthenticatedRactive({
     stdPartials: [
       { "name": "eventCurrentSect", "url": "/partials/event-current-sect.html"},
       { "name": "eventListSect", "url": "/partials/event-list-sect.html"},
+      { "name": "navbar", "url": "/partials/event-navbar.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
