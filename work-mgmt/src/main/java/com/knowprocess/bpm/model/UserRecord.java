@@ -193,7 +193,7 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
                         UserInfoKeys.TENANT.toString()));
             } else {
                 wrappedUser.getInfo().add(
-                        new UserInfo(wrappedUser, key, svc.getUserInfo(
+                        new UserInfo(key, svc.getUserInfo(
                                 username, key)));
             }
         }
