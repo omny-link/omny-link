@@ -11,7 +11,7 @@ var ractive = new AuthenticatedRactive({
     entityPath: '/contacts',
     csrfToken: getCookie(CSRF_COOKIE),
     contacts: [],
-    filter: {field: "stage", operator: "!in", value: "cold,complete,on hold"},
+    filter: {field: "stage", operator: "!in", value: "cold,complete,on hold,unqualified"},
     //saveObserver:false,
     title: 'Contact Management',
     username: localStorage['username'],

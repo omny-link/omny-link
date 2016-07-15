@@ -1,7 +1,7 @@
 { 
   "id": "omny", 
   "name": "Omny Link",
-  "show": { "account":true, "activityAnalysis":true, "budget":true, "companyBackground":true, "marketing":true, "merge":true },
+  "show": { "account":true, "activityAnalysis":true, "budget":true, "companyBackground":true, "documents": true, "marketing":true, "merge":true },
   "accountFields": [ 
     { "name": "Sector", "ref": "sector"},
     { "name": "Lead Office", "ref": "leadOffice"},
@@ -26,8 +26,7 @@
     { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View recent activity", "name": "Funnel" },
     { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },    
     { "url": "users.html", "icon": "omny-icon-user", "name": "User Management" },
-    { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status" },
-    { "url": "api.html", "icon": "glyphicon-wrench", "name": "API Documentation" }
+    { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status" }
   ],
   "partials": [
     { "name": "omnyContactExtension", "url": "/partials/omny/contact-extension.html"},
