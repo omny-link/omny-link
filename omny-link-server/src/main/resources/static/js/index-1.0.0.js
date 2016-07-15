@@ -88,7 +88,7 @@ var ractive = new AuthenticatedRactive({
 
 $(document).ready(function() {
   var statusCode = parseInt(getSearchParameters()['statusCode']);
-  var msg = getSearchParameters()['msg'];
+  var msg = decodeURIComponent(getSearchParameters()['msg']);
   if (statusCode!=undefined && !isNaN(statusCode)) {
     switch (statusCode) {
     case 401:
