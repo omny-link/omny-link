@@ -2,7 +2,6 @@ package link.omny.custmgmt.internal;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -66,8 +65,8 @@ public class ContactAvatarService {
         try {
 
             String s = String.format("#%02x%02x%02x",
-                    (int) (Math.random() * 200), (int) (Math.random() * 200),
-                    (int) (Math.random() * 200));
+                    (int) (Math.random() * 150), (int) (Math.random() * 150),
+                    (int) (Math.random() * 150));
 
             String text = String.format(getTemplate(), initials.toUpperCase(),
                     s, "#b7b7b7");
