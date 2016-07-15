@@ -1,11 +1,12 @@
-<section id="userSect">
+<section class="container navbar-sticky">
   <h2>
-    <span id="usersTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the users table"></span>
-    <span>Users</span>
-    <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addUser()" title="Add a new user"></span>
-    <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></span>
-    <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-    <span class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching users"></span>
+    {{>navbar}}
+    {{>profileArea}}
+  </h2>
+</section>
+<section id="userSect">
+  <h2 class="navbar-top">
+    {{>navbar}}
   </h2>
   <table id="usersTable" class="table table-striped">
     <thead>
