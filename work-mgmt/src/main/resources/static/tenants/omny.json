@@ -25,7 +25,7 @@
     { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates"  },
     { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View recent activity", "name": "Funnel" },
     { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },    
-    { "url": "users.html", "icon": "omny-icon-user", "name": "User Management" },
+    { "url": "admin/users.html", "icon": "omny-icon-user", "name": "User Management", "role": "super_admin" },
     { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status" }
   ],
   "partials": [
@@ -54,6 +54,7 @@
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},
+    { "name": "commsPreference", "ref": "#curCommsPreference", "url": "/data/comms-preference.json"},
     { "name": "countries", "ref": "#curCountry", "url": "/data/countries.json"},
     { "name": "currentSiteCapability", "ref": "#curCurrentSiteCapability", "url": "/data/omny/current-site-capabilities.json"},
     { "name": "decisionMakingRole", "ref": "#curDecisionMakingRole", "url": "/data/omny/decision-making-roles.json"},
@@ -64,7 +65,8 @@
     { "name": "sectors", "ref": "#curSector", "url": "/data/omny/sectors.json"},
     { "name": "sources", "ref": "#curSource", "url": "/data/sources.json"},
     { "name": "stages", "ref": "#curStage", "url": "/data/omny/stages.json"},
-    { "name": "status", "ref": "#curStatus", "url": "/data/status.json"}
+    { "name": "status", "ref": "#curStatus", "url": "/data/status.json"},
+    { "name": "tenants", "ref": "#curTenant", "url": "/data/tenants.json"}
   ],
   "workActions": [
     { "name": "Note to self", "ref": "SimpleTodo", "url": "/partials/simple-todo.html" }

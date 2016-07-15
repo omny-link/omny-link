@@ -1,47 +1,46 @@
 <section id="currentSect" style="display:none">
-  <div class="clearfix" id="messages"><p></p></div>
   <h2>
     {{#current.id == profile.id}}Welcome!{{else}}User:{{/}} 
     {{current.firstName}} {{current.lastName}} ({{current.id}})
   </h2>
- 
+  <div class="form col-md-12 col-sm-12">
   <div class="currentBody col-md-6 col-sm-12">
     <form id="userForm">
       <ul class="form edit-form">
         <li class="create-field">
-          <label class="required col-md-3 col-sm-6">Username:</label>
+          <label class="required">Username:</label>
           <input class="form-control" id="curUsername" on-blur="save()" required value="{{current.id}}">
-          <p class="help-block">No update allowed</p>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
         <li>
-          <label class="required col-md-3 col-sm-6">First Name:</label>
+          <label class="required">First Name:</label>
           <input class="no-update-field form-control" id="curFirstName" on-blur="save()" required value="{{current.firstName}}">
-          <p class="help-block">No update allowed</p>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
         <li>
-          <label class="required col-md-3 col-sm-6">Last Name:</label>
+          <label class="required">Last Name:</label>
           <input class="no-update-field form-control" id="curLastName" on-blur="save()" required value="{{current.lastName}}">
-          <p class="help-block">No update allowed</p>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
         <li>
-          <label class="required col-md-3 col-sm-6">Email:</label>
+          <label class="required">Email:</label>
           <input class="no-update-field form-control" id="curEmail" on-blur="save()" required type="email" value="{{current.email}}">
-          <p class="help-block">No update allowed</p>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
         <li>
-          <label class="required col-md-3 col-sm-6">Phone:</label>
-          <input class="no-update-field form-control" id="curPhone" on-blur="save()" pattern="\+?[0-9, ]{8,13}" required type="tel" value="{{current.phone}}">
-          <p class="help-block">No update allowed</p>
+          <label class="">Phone:</label>
+          <input class="form-control" id="curPhone" on-blur="save()" pattern="\+?[0-9, ]{8,13}" type="tel" value="{{current.phone}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
         </li>
         <li>
-          <label class="required col-md-3 col-sm-6">Preferred:</label>
-          <input class="no-update-field typeahead form-control" id="curCommsPreference" on-blur="save()" required value="{{current.commsPreference}}">
-          <p class="help-block">No update allowed</p>
+          <label class="required">Preferred:</label>
+          <input class="typeahead form-control" id="curCommsPreference" on-blur="save()" required value="{{current.commsPreference}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
         </li>
         <li>
-          <label class="required col-md-3 col-sm-6">Tenant:</label>
-          <input class="no-update-field form-control" id="curTenant" on-blur="save()" required type="text" value="{{current.tenant}}">
-          <p class="help-block">No update allowed</p>
+          <label class="required">Tenant:</label>
+          <input class="no-update-field typeahead form-control" id="curTenant" on-blur="save()" required type="text" value="{{current.tenant}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
       </ul>
     </form>
@@ -72,4 +71,5 @@
       </form>
     </div>
   {{/}}
+  </div>
 </section>
