@@ -502,12 +502,13 @@
       </h2>
       <table id="docsTable" class="table table-striped"><tbody>
         <tr style="display:none;width:100%;">
-          <!-- <td colspan="2">
-            <input class="form-control" id="docName" placeholder="Name or title of document" required style=""/>
-          </td> -->
-          <td colspan="4">
-            <input class="form-control" id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required style=""/>
-            <br/>
+          <td colspan="1">
+            <input class="form-control" id="docName" placeholder="Name or title" required value="{{current.doc.name}}"/>
+          </td>
+          <td colspan="2">
+            <input class="form-control" id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required value="{{current.doc.url}}"/>
+          </td>
+          <td colspan="1">
             <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
           </td>
         </tr>

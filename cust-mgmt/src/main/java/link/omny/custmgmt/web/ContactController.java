@@ -608,9 +608,10 @@ public class ContactController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam("author") String author,
+            @RequestParam("name") String name,
             @RequestParam("url") String url) {
 
-        addDocument(tenantId, contactId, new Document(author, url));
+        addDocument(tenantId, contactId, new Document(author, name, url));
     }
 
     /**

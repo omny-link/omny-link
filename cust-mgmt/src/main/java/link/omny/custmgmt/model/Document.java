@@ -63,6 +63,12 @@ public class Document implements Serializable {
         setUrl(url);
     }
 
+    public Document(String author, String name, String url) {
+        setAuthor(author);
+        setName(name);
+        setUrl(url);
+    }
+
     @PrePersist
     void preInsert() {
         created = new Date();
