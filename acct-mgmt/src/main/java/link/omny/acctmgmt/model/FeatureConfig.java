@@ -11,6 +11,7 @@ public class FeatureConfig {
     private boolean companyBackground = false;
     private boolean marketing = false;
     private boolean declaredSource = false;
+    private boolean documents = false;
     private boolean merge = false;
     private boolean poweredBy = true;
 
@@ -29,6 +30,9 @@ public class FeatureConfig {
             setCompanyBackground(b);
             break;
         case "declaredSource":
+            setDeclaredSource(b);
+            break;
+        case "documents":
             setDeclaredSource(b);
             break;
         case "marketing":
