@@ -268,8 +268,6 @@ var AuthenticatedRactive = Ractive.extend({
   saveDoc: function () {
     console.log('saveDoc '+JSON.stringify(ractive.get('current.doc'))+' ...');
     var n = ractive.get('current.doc');
-    //n.name = $('#docName').val();
-    n.url = $('#doc').val();
     var url = ractive.uri(ractive.get('current'))+'/documents';
     url = url.replace(ractive.entityName(ractive.get('current')),ractive.get('tenant.id')+'/'+ractive.entityName(ractive.get('current')));
     if (n.url.trim().length > 0) {
