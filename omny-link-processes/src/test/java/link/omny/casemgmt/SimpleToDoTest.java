@@ -1,6 +1,8 @@
 package link.omny.casemgmt;
 
-import static org.junit.Assert.fail;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.activiti.bdd.ActivitiSpec;
 import org.activiti.bdd.ext.DumpAuditTrail;
@@ -49,64 +51,124 @@ public class SimpleToDoTest {
     @SuppressWarnings("unchecked")
     @Test
     @org.activiti.engine.test.Deployment(resources = {
-            "processes/link/omny/casemgmt/SimpleToDoProcess.bpmn",
-            "processes/link/omny/notifications/SendNotificationNoOp.bpmn", }, 
+            "processes/link/omny/casemgmt/SimpleToDo.bpmn",
+            "processes/link/omny/alerts/SendAlertNoOp.bpmn", },
             tenantId = TENANT_ID)
-    public void testSimpleTodoSelf() {
-        try {
-            new ActivitiSpec(activitiRule, "testSimpleTodoSelf")
-                    .whenEventOccurs(
-                            "Task created",
-                            TODO_KEY,
-                            ActivitiSpec.emptySet(),
-                            ActivitiSpec.buildMap(
-                                    ActivitiSpec.newPair("tenantId", TENANT_ID),
-                                    ActivitiSpec.newPair("where", LOCATION),
-                                    ActivitiSpec.newPair("who", USERNAME),
-                                    ActivitiSpec.newPair("when", null)),
-                            TENANT_ID)
-                    .thenSubProcessCalled("SendNotification")
-                    .thenUserTask("doSomething", ActivitiSpec.emptySet(),
-                            ActivitiSpec.buildMap())
-                    .thenSubProcessCalled("SendNotification")
-                    .thenProcessEndedAndInExclusiveEndEvent("endEvent")
-                    .thenExtension(new DumpAuditTrail(activitiRule));
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
+    public void testSimpleToDoSelfDueImmediately() throws Exception {
+        new ActivitiSpec(activitiRule, "testSimpleToDoSelfDueImmediately")
+                .whenEventOccurs(
+                        "Task created",
+                        TODO_KEY,
+                        ActivitiSpec.emptySet(),
+                        ActivitiSpec.buildMap(
+                                ActivitiSpec.newPair("tenantId", TENANT_ID),
+                                ActivitiSpec.newPair("where", LOCATION),
+                                ActivitiSpec.newPair("who", USERNAME),
+                                ActivitiSpec.newPair("when", "2000-01-01")),
+                        TENANT_ID)
+                .whenExecuteJobsForTime(2000)
+                // escalation timer remains
+                .thenSubProcessCalled("SendAlert")
+                .thenUserTask("doSomething", ActivitiSpec.emptySet(),
+                        ActivitiSpec.buildMap())
+                .thenSubProcessCalled("SendAlert")
+                .thenProcessEndedAndInExclusiveEndEvent("endEvent")
+                .thenExtension(new DumpAuditTrail(activitiRule));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     @org.activiti.engine.test.Deployment(resources = {
-            "processes/link/omny/casemgmt/SimpleToDoProcess.bpmn",
-            "processes/link/omny/notifications/SendNotificationNoOp.bpmn", }, tenantId = TENANT_ID)
-    public void testSimpleTodoDelegate() {
-        try {
-            new ActivitiSpec(activitiRule, "testSimpleTodoDelegate")
-                    .whenEventOccurs(
-                            "Task created",
-                            TODO_KEY,
-                            ActivitiSpec.emptySet(),
-                            ActivitiSpec.buildMap(
-                                    ActivitiSpec.newPair("tenantId", TENANT_ID),
-                                    ActivitiSpec.newPair("where", LOCATION),
-                                    ActivitiSpec.newPair("when", null),
-                                    ActivitiSpec.newPair("who", null)),
-                            TENANT_ID)
-                    .thenUserTask("acceptTask", ActivitiSpec.emptySet(),
-                            ActivitiSpec.buildMap(
-                                    ActivitiSpec.newPair("who", DELEGATE)))
-                    .thenSubProcessCalled("SendNotification")
-                    .thenUserTask("doSomething", ActivitiSpec.emptySet(),
-                            ActivitiSpec.buildMap())
-                    .thenSubProcessCalled("SendNotification")
-                    .thenProcessEndedAndInExclusiveEndEvent("endEvent")
-                    .thenExtension(new DumpAuditTrail(activitiRule));
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
+            "processes/link/omny/casemgmt/SimpleToDo.bpmn",
+            "processes/link/omny/alerts/SendAlertNoOp.bpmn", }, tenantId = TENANT_ID)
+    public void testSimpleToDoSelfDueTomorrow() throws Exception {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.add(Calendar.HOUR, 24);
+        Date tomorrow = cal.getTime();
+        new ActivitiSpec(activitiRule, "testSimpleToDoSelfDueTomorrow")
+                .whenEventOccurs(
+                        "Task created",
+                        TODO_KEY,
+                        ActivitiSpec.emptySet(),
+                        ActivitiSpec.buildMap(
+                                ActivitiSpec.newPair("tenantId", TENANT_ID),
+                                ActivitiSpec.newPair("where", LOCATION),
+                                ActivitiSpec.newPair("who", USERNAME),
+                                ActivitiSpec.newPair("when", tomorrow)),
+                        TENANT_ID)
+                .whenProcessTimePassed(Calendar.HOUR, 25)
+                .whenExecuteJobsForTime(5000)
+                // escalation timer remains
+                .thenExtension(new DumpAuditTrail(activitiRule))
+                .thenSubProcessCalled("SendAlert")
+                .thenUserTask("doSomething", ActivitiSpec.emptySet(),
+                        ActivitiSpec.buildMap())
+                .thenSubProcessCalled("SendAlert")
+                .thenProcessEndedAndInExclusiveEndEvent("endEvent")
+                .thenExtension(new DumpAuditTrail(activitiRule));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    @org.activiti.engine.test.Deployment(resources = {
+            "processes/link/omny/casemgmt/SimpleToDo.bpmn",
+            "processes/link/omny/alerts/SendAlertNoOp.bpmn", }, tenantId = TENANT_ID)
+    public void testSimpleTodoDelegateDueImmediately() throws Exception {
+        new ActivitiSpec(activitiRule, "testSimpleTodoDelegateDueImmediately")
+                .whenEventOccurs(
+                        "Task created",
+                        TODO_KEY,
+                        ActivitiSpec.emptySet(),
+                        ActivitiSpec.buildMap(
+                                ActivitiSpec.newPair("tenantId", TENANT_ID),
+                                ActivitiSpec.newPair("where", LOCATION),
+                                ActivitiSpec.newPair("when", "2000-01-01"),
+                                ActivitiSpec.newPair("who", null)), TENANT_ID)
+                .thenUserTask(
+                        "assignTask",
+                        ActivitiSpec.emptySet(),
+                        ActivitiSpec.buildMap(ActivitiSpec.newPair("who",
+                                DELEGATE)))
+                .whenExecuteJobsForTime(2000)
+                // escalation timer remains
+                .thenSubProcessCalled("SendAlert")
+                .thenUserTask("doSomething", ActivitiSpec.emptySet(),
+                        ActivitiSpec.buildMap())
+                .thenSubProcessCalled("SendAlert")
+                .thenProcessEndedAndInExclusiveEndEvent("endEvent")
+                .thenExtension(new DumpAuditTrail(activitiRule));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    @org.activiti.engine.test.Deployment(resources = {
+            "processes/link/omny/casemgmt/SimpleToDo.bpmn",
+            "processes/link/omny/alerts/SendAlertNoOp.bpmn", }, tenantId = TENANT_ID)
+    public void testSimpleTodoDelegateDueImmediatelyButNeedsEscalation()
+            throws Exception {
+        new ActivitiSpec(activitiRule,
+                "testSimpleTodoDelegateDueImmediatelyButNeedsEscalation")
+                .whenEventOccurs(
+                        "Task created",
+                        TODO_KEY,
+                        ActivitiSpec.emptySet(),
+                        ActivitiSpec.buildMap(
+                                ActivitiSpec.newPair("tenantId", TENANT_ID),
+                                ActivitiSpec.newPair("where", LOCATION),
+                                ActivitiSpec.newPair("who", USERNAME),
+                                ActivitiSpec.newPair("when", "2000-01-01")),
+                        TENANT_ID)
+                .whenExecuteJobsForTime(2000)
+                // .thenTimerExpired("dueTimer")
+                .thenSubProcessCalled("SendAlert") // task arrival
+                .whenProcessTimePassed(Calendar.HOUR, 25)
+                .whenExecuteJobsForTime(2000)
+                // .thenTimerExpired("escalateAfter24h")
+                .thenSubProcessCalled("SendAlert") // task escalation
+                .thenUserTask("doSomething", ActivitiSpec.emptySet(),
+                        ActivitiSpec.buildMap())
+                .thenSubProcessCalled("SendAlert")
+                .thenProcessEndedAndInExclusiveEndEvent("endEvent")
+                .thenExtension(new DumpAuditTrail(activitiRule));
     }
 }
