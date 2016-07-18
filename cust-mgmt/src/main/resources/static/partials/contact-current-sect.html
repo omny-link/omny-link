@@ -389,6 +389,10 @@
             </ul>
         </div>
 
+        {{#tenant.show.financials}}
+          {{>('accountFinancials')}}
+        {{/}}
+
         <div id="currentAccountTypeExtended" style="clear: both">
           {{>(tenant.id+current.accountType+'Extension')}}
         </div>
