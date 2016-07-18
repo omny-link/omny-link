@@ -25,4 +25,32 @@ public class AccountTest {
         assertEquals(field1.getId(), Account.getCustomFields().get(0).getId());
     }
 
+    @Test
+    public void testConvertExponentForm() {
+        Account Account = new Account();
+        CustomAccountField field1 = new CustomAccountField("exponentValue",
+                "1.12415E7");
+        field1.setId(1l);
+        Account.addCustomField(field1);
+
+        Account.setCustomFields(Collections.singletonList(field1));
+
+        assertEquals(1, Account.getCustomFields().size());
+        assertEquals("11241500.00", Account.getCustomFields().get(0)
+                .getValue());
+    }
+
+    @Test
+    public void testExponentFormNotAffectStrings() {
+        Account Account = new Account();
+        CustomAccountField field1 = new CustomAccountField("exponentValue",
+                "N/A");
+        field1.setId(1l);
+        Account.addCustomField(field1);
+
+        Account.setCustomFields(Collections.singletonList(field1));
+
+        assertEquals(1, Account.getCustomFields().size());
+        assertEquals("N/A", Account.getCustomFields().get(0).getValue());
+    }
 }

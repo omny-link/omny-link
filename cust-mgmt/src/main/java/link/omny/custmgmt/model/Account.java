@@ -1,6 +1,7 @@
 package link.omny.custmgmt.model;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +47,8 @@ public class Account implements Serializable {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(Account.class);
+
+    protected static DecimalFormat decimalFormat = new DecimalFormat("#.00");
 
     @Id
     @Column(name = "id")
@@ -168,6 +171,13 @@ public class Account implements Serializable {
     }
 
     protected void setCustomField(CustomAccountField newField) {
+        try {
+            double d = Double.parseDouble(newField.getValue());
+            newField.setValue(decimalFormat.format(d));
+        } catch (NumberFormatException e) {
+            // that's ok, continue as string
+        }
+
         boolean found = false;
         for (CustomAccountField field : getCustomFields()) {
             if (field.getName().equals(newField.getName())) {
