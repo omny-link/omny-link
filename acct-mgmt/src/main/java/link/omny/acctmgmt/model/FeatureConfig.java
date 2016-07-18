@@ -9,6 +9,7 @@ public class FeatureConfig {
     private boolean activityAnalysis = false;
     private boolean budget = false;
     private boolean companyBackground = false;
+    private boolean financials = false;
     private boolean marketing = false;
     private boolean declaredSource = false;
     private boolean documents = false;
@@ -33,6 +34,9 @@ public class FeatureConfig {
             setDeclaredSource(b);
             break;
         case "documents":
+            setDeclaredSource(b);
+            break;
+        case "financials":
             setDeclaredSource(b);
             break;
         case "marketing":

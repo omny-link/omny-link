@@ -1,0 +1,44 @@
+<section id="currentAccountFinancialSect" style="clear: both">
+	<h3>
+	  <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+    <span>Financials</span>
+  </h3> 
+	<div id="currentAccountFinancials" style="display:none">
+	  <table>
+	    <thead>
+	      <tr>
+	        <th class="col-offset-md-2 col-md-2">&nbsp;</th>
+					<th><input class="form-control year col-md-2 autoNumeric" data-a-sep="" data-m-dec="0" id="curCurrentFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" value="{{current.account.customFields['currentFinancialYear']}}"/></th>
+					<th><input class="form-control year col-md-2 autoNumeric" data-a-sep="" data-m-dec="0" id="curLastFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" value="{{current.account.customFields['lastFinancialYear']}}"/></th>
+					<th><input class="form-control year col-md-2 autoNumeric" data-a-sep="" data-m-dec="0" id="curPreviousFinancialYear" pattern="[0-9]{4}" placeholder="yyyy" value="{{current.account.customFields['previousFinancialYear']}}"/></th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      <tr>
+		      <th class="col-offset-md-2 col-md-2"><label class="pull-right">Cash:</label></th>
+		      <td><input class="form-control autoNumeric col-md-2" id="curCurrentCash" data-a-sign="£ "value="{{current.account.customFields['currentCash']}}"/></td>
+		      <td><input class="form-control autoNumeric col-md-2" id="curLastCash" data-a-sign="£ "value="{{current.account.customFields['lastCash']}}"/></td>
+		      <td><input class="form-control autoNumeric col-md-2" id="curPreviousCash" data-a-sign="£ "value="{{current.account.customFields['previousCash']}}"/></td>
+	      </tr>
+        <tr>
+	        <th class="col-offset-md-2 col-md-2"><label class="pull-right">NetWorth:</label></th>
+	        <td><input class="form-control autoNumeric col-md-2" id="curCurrentNetWorth" data-a-sign="£ "value="{{current.account.customFields['currentNetWorth']}}"/></td>
+	        <td><input class="form-control autoNumeric col-md-2" id="curLastNetWorth" data-a-sign="£ "value="{{current.account.customFields['lastNetWorth']}}"/></td>
+	        <td><input class="form-control autoNumeric col-md-2" id="curPreviousNetWorth" data-a-sign="£ "value="{{current.account.customFields['previousNetWorth']}}"/></td>
+        </tr>
+        <tr>
+	        <th class="col-offset-md-2 col-md-2"><label class="pull-right">Assets:</label></th>
+	        <td><input class="form-control autoNumeric col-md-2" id="curCurrentAssets" data-a-sign="£ "value="{{current.account.customFields['currentAssets']}}"/></td>
+	        <td><input class="form-control autoNumeric col-md-2" id="curLastAssets" data-a-sign="£ "value="{{current.account.customFields['lastAssets']}}"/></td>
+	        <td><input class="form-control autoNumeric col-md-2" id="curPreviousAssets" data-a-sign="£ "value="{{current.account.customFields['previousAssets']}}"/></td>
+	      </tr>
+        <tr>
+	        <th class="col-offset-md-2 col-md-2"><label class="pull-right">Liabilities:</label></th>
+	        <td><input class="form-control autoNumeric col-md-2" id="curCurrentLiabilities" data-a-sign="£ "value="{{current.account.customFields['currentLiabilities']}}"/></td>
+          <td><input class="form-control autoNumeric col-md-2" id="curLastLiabilities" data-a-sign="£ "value="{{current.account.customFields['lastLiabilities']}}"/></td>
+          <td><input class="form-control autoNumeric col-md-2" id="curPreviousLiabilities" data-a-sign="£ "value="{{current.account.customFields['previousLiabilities']}}"/></td>
+        </tr>
+	    </tbody>
+	  </table>
+	</div>
+</section>
