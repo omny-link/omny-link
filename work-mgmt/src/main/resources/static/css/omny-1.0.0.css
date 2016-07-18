@@ -190,6 +190,12 @@ section h3 {
   border-bottom: solid 1px #ff6c06;
   padding-left: 20px;
 }
+.alert-counter {
+	border-radius: 1.75em;
+	padding: 0.13em 0.25em;
+	border-width: 1px;
+	border-style: solid;
+}
 .table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
   vertical-align: middle;
 }
