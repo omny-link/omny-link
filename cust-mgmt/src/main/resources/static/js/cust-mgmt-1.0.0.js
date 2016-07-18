@@ -206,6 +206,7 @@ var ractive = new AuthenticatedRactive({
       else return 'hidden';
     },
     stdPartials: [
+      { "name": "accountFinancials", "url": "/partials/account-financials.html"},
       { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
       { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
@@ -320,6 +321,7 @@ var ractive = new AuthenticatedRactive({
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.hasRole('power-user')) $('.power-user').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
+        //ractive.fetchAccounts();
         ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
         ractive.set('saveObserver', true);
       }
@@ -330,33 +332,18 @@ var ractive = new AuthenticatedRactive({
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/accounts/',
+      url: ractive.getServer()+'/accounts/?projection=typeahead',
       crossDomain: true,
       success: function( data ) {
-        if (data['_embedded'] == undefined) {
-          ractive.merge('accounts', data);
-        } else {
-          ractive.merge('accounts', data['_embedded'].accounts);
+        if (data['_embedded'] != undefined) {
+          data = data['_embedded'].accounts;
         }
-        // set up account typeahead
-        var accData = jQuery.map( ractive.get('accounts'), function( n, i ) {
+        ractive.set('tmpAccts',data);
+        console.log('fetched '+data.length+' accounts for typeahead');
+        var accData = jQuery.map( data, function( n, i ) {
           return ( {  "id": ractive.getId(n), "name": n.name } );
         });
-        ractive.set('accountsDropDown',accData);
-//        $('#curAccountName').typeahead({
-//          items:'all',
-//          minLength:0,
-//          source:accData,
-////          updater:function(item) {
-////            return item.id;
-////          }
-//        });
-//        $('#curCompanyName').on("click", function (ev) {
-//          newEv = $.Event("keydown");
-//          newEv.keyCode = newEv.which = 40;
-//          $(ev.target).trigger(newEv);
-//          return true;
-//        });
+        ractive.set('accountsTypeahead',accData);
         ractive.set('saveObserver', true);
       }
     });
@@ -441,6 +428,25 @@ var ractive = new AuthenticatedRactive({
       ractive.set('current.account.businessWebsite','http://'+emailDomain);
     }
     console.log('  emailDomain: '+emailDomain);
+  },
+  initAccountTypeahead: function() {
+    console.info();
+    //if (ractive.get('accountsTypeahead')==undefined) ractive.fetchAccounts();
+ // set up account typeahead
+    $('#curAccountName').typeahead({
+      items:'all',
+      minLength:0,
+      source:ractive.get('accountsTypeahead'),
+//      updater:function(item) {
+//        return item.id;
+//      }
+    });
+    $('#curAccountName').on("click", function (ev) {
+      newEv = $.Event("keydown");
+      newEv.keyCode = newEv.which = 40;
+      $(ev.target).trigger(newEv);
+      return true;
+    });
   },
   mergeContacts: function() {
     console.info('mergeContacts');
@@ -750,8 +756,11 @@ var ractive = new AuthenticatedRactive({
         ractive.sortChildren('documents','created',false);
         if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
         ractive.sortChildren('activities','occurred',false);
-        if (ractive.get('current.account')!=undefined &&
-            (ractive.get('current.account.businessWebsite')==undefined || ractive.get('current.account.businessWebsite')=='')) ractive.inferDomainName(); 
+        if (ractive.get('current.account')==undefined || ractive.get('current.account.name')==undefined) {
+          //ractive.initAccountTypeahead();
+        } else if (ractive.get('current.account.businessWebsite')==undefined || ractive.get('current.account.businessWebsite')=='') {
+          ractive.inferDomainName();
+        }
         ractive.set('saveObserver',true);
       });
     } else { 
