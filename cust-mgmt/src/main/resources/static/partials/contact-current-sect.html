@@ -104,6 +104,7 @@
       <h3>
         <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
         <span> Contact Information</span>
+        {{#alerts['connections']}}<span class="alert-counter alert-danger"> {{alerts['connections']}}</span>{{/}}
       </h3>
       <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
         <ul class="form edit-form">
@@ -262,6 +263,7 @@
         <h3>
           <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
           <span>Budget</span>
+          {{#alerts['budget']}}<span class="alert-counter alert-danger"> {{alerts['budget']}}</span>{{/}}
         </h3>
         <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
           <ul class="form edit-form">
@@ -287,10 +289,11 @@
     <form id="currentAccountForm" class="form">
       <section id="currentAccount" style="clear: both">
         <h2 title="Account details">
-          <span class="ol-collapse glyphicon glyphicon-triangle-bottom" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+          <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
           <span>Account</span>
+          {{#alerts['account']}}<span class="alert-counter alert-danger"> {{alerts['account']}}</span>{{/}}
         </h2>
-        <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+        <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
           <ul class="form edit-form">
             <li class="form-group">
               <label class="col-md-4 required">Company Name:</label>
@@ -335,7 +338,7 @@
             </li>
           </ul>
         </div>
-        <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+        <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
           <ul class="form edit-form">
             <li class="form-group">
               <label class="col-md-4">Website:</label>
@@ -380,7 +383,7 @@
           </ul>
         </div>
 
-        <div id="currentAccountDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12">
+        <div id="currentAccountDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12" style="display:none">
             <ul class="form edit-form">
               <li class="form-group">
                 <label class="textarea col-md-2">Description:</label>
@@ -443,7 +446,7 @@
     <section id="activitySect" style="clear: both">
       <h2 title="Activities are added automatically by the workflows">
         <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
-        <span>Activities ({{current.activities.length}})</span>
+        {{#alerts['activities']}}<span class="alert-counter alert-danger"> {{alerts['activities']}}</span>{{/}}
       </h2>
       <div style="display:none">
         <table id="activitiesTable" class="table table-striped"><tbody>
@@ -470,6 +473,7 @@
       <span>Notes</span>
       <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')" title="Add a new note"></span>
       <span class="clickable glyphicon glyphicon-star-empty" aria-hidden="true" onclick="ractive.toggleAllNotes(this)" title="Toggle showing all notes or just the favorites"></span>
+      {{#alerts['notes']}}<span class="alert-counter alert-danger"> {{alerts['notes']}}</span>{{/}}
     </h2>
     <table id="notesTable" class="table table-striped"><tbody>
       {{#each current.notes:j}}
@@ -503,30 +507,34 @@
       <h2>
         <span>Documents</span>
         <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')" title="Add a new Document"></span>
+        {{#alerts['documents']}}<span class="alert-counter alert-danger"> {{alerts['documents']}}</span>{{/}}
       </h2>
-      <table id="docsTable" class="table table-striped"><tbody>
-        <tr style="display:none;width:100%;">
-          <td colspan="1">
-            <input class="form-control" id="docName" placeholder="Name or title" required value="{{current.doc.name}}"/>
-          </td>
-          <td colspan="2">
-            <input class="form-control" id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required value="{{current.doc.url}}"/>
-          </td>
-          <td colspan="1">
-            <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
-          </td>
-        </tr>
-        {{#each current.documents:k}}
-          <tr>
-            <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
-            <td class="field-author">{{{gravatar(author)}}}</td>
-            <td class="field-text">{{name}}</td>
-            <td class="field-url"><a href="{{url}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a></td>
-          </tr>
-        {{/each}}
-        {{^ current.documents }}
-          <tr><td>None</td></tr>
-        {{/ current.documents }}
+      <table id="docsTable" class="table table-striped">
+        <thead>
+	        <tr style="display:none;width:100%;">
+	          <td colspan="1">
+	            <input class="form-control" id="docName" placeholder="Name or title" required value="{{current.doc.name}}"/>
+	          </td>
+	          <td colspan="2">
+	            <input class="form-control" id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required value="{{current.doc.url}}"/>
+	          </td>
+	          <td colspan="1">
+	            <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
+	          </td>
+	        </tr>
+        </thead>
+        <tbody>
+	        {{#each current.documents:k}}
+	          <tr>
+	            <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
+	            <td class="field-author">{{{gravatar(author)}}}</td>
+	            <td class="field-text">{{name}}</td>
+	            <td class="field-url"><a href="{{url}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a></td>
+	          </tr>
+	        {{/each}}
+	        {{^ current.documents }}
+	          <tr><td>None</td></tr>
+	        {{/ current.documents }}
       </tbody></table>
      </div>
     </form>

@@ -10,7 +10,7 @@
   </a>
   <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
     <li on-click="filter:{idx:1}">Show All</li>
-    <li on-click="filter:{idx:2,field: 'stage', operator: '!in', value: 'cold,complete,on hold,unqualified'}">Show Active</li>
+    <li on-click="filter:{idx:2,field: 'stage', operator: '!in', value: {{inactiveStages()}}}">Show Active</li>
     <li class="divider"></li>
     {{#stages:i}}
       <li on-click="filter:{idx:{{4+i}},field: 'stage', value: '{{id}}'}">{{name}}</li>

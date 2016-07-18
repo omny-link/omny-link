@@ -1,6 +1,7 @@
 var EASING_DURATION = 500;
 fadeOutMessages = true;
 var newLineRegEx = /\n/g;
+var DEFAULT_INACTIVE_STAGES = 'cold,complete,on hold,unqualified,waiting list';
 
 var ractive = new AuthenticatedRactive({
   el: 'container',
@@ -11,13 +12,17 @@ var ractive = new AuthenticatedRactive({
     entityPath: '/contacts',
     csrfToken: getCookie(CSRF_COOKIE),
     contacts: [],
-    filter: {field: "stage", operator: "!in", value: "cold,complete,on hold,unqualified"},
+    filter: {field: "stage", operator: "!in", value: DEFAULT_INACTIVE_STAGES},
     //saveObserver:false,
     title: 'Contact Management',
     username: localStorage['username'],
     age: function(timeString) {
       if (timeString==undefined) return;
       return i18n.getAgeString(new Date(timeString))
+    },
+    alerts: function(selector) {
+      console.log('alerts for '+selector);
+      return $(selector+' :invalid').length;
     },
     customField: function(obj, name) {
       if (obj['customFields']==undefined) {
@@ -124,6 +129,11 @@ var ractive = new AuthenticatedRactive({
           <li>...</li>\
         </ul>\
       </ul>',
+    inactiveStages: function() {
+      return ractive.get('tenant.serviceLevel.inactiveStages')==undefined
+          ? DEFAULT_INACTIVE_STAGES
+          : ractive.get('tenant.serviceLevel.inactiveStages').join();
+    },
     lessThan24hAgo: function(isoDateTime) {
       if (isoDateTime == undefined || (new Date().getTime()-new Date(isoDateTime).getTime()) < 1000*60*60*24) {
         return true;
@@ -255,6 +265,25 @@ var ractive = new AuthenticatedRactive({
     console.log('addSector ...');
     ractive.showError('Not yet implemented');
     //$('#curPartnerSectors').append($('#sectorTemplate').html());
+  },
+  addServiceLevelAlerts: function () {
+    $('#curStage').removeClass('alert-danger');
+    $('#notesTable tr:nth-child(1)').removeClass('alert-danger');
+    var msgs;
+    if (ractive.get('tenant.serviceLevel.initialResponseThreshold')!=undefined) {
+      if ('enquiry'==ractive.get('current.stage').toLowerCase() && new Date().getTime()-new Date(ractive.get('current.firstContact')).getTime()>(1000*60*60*24*ractive.get('tenant.serviceLevel.initialResponseThreshold'))) {
+        $('#curStage').addClass('alert-danger');
+        msgs = 'An initial response is expected within '+ractive.get('tenant.serviceLevel.initialResponseThreshold')+' day(s) after which please update the stage.';
+      }
+    }
+    if (ractive.get('inactiveStages')().indexOf(ractive.get('current.stage').toLowerCase())==-1 && ractive.get('tenant.serviceLevel.inactivityThreshold')!=undefined) {
+      if (new Date().getTime()-new Date(ractive.get('current.notes.0.created')).getTime()>(1000*60*60*24*ractive.get('tenant.serviceLevel.inactivityThreshold'))) {
+        $('#notesTable tr:nth-child(1)').addClass('alert-danger');
+        if (msgs != undefined) msgs += '<br/>'; else msgs = '';
+        msgs += 'An updated note is expected every '+ractive.get('tenant.serviceLevel.inactivityThreshold')+' day(s) unless the lead is set inactive.';
+      }
+    }
+    if (msgs != undefined) ractive.showError(msgs);
   },
   cancelNote: function() {
     console.info('cancelNote');
@@ -621,6 +650,7 @@ var ractive = new AuthenticatedRactive({
             break;
           }
           ractive.showMessage('Contact saved');
+          ractive.addServiceLevelAlerts();
           ractive.set('saveObserver',true);
         }
       });
@@ -753,6 +783,7 @@ var ractive = new AuthenticatedRactive({
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
         ractive.sortChildren('notes','created',false);
+        ractive.addServiceLevelAlerts();
         ractive.sortChildren('documents','created',false);
         if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
         ractive.sortChildren('activities','occurred',false);
@@ -810,6 +841,16 @@ var ractive = new AuthenticatedRactive({
   showActivityIndicator: function(msg, addClass) {
     document.body.style.cursor='progress';
     this.showMessage(msg, addClass);
+  },
+  showAlertCounters: function() {
+    console.info('showAlertCounters');
+    var alerts = {
+      account:$('#accountSect :invalid').length,
+      budget:$('#budgetSect :invalid').length,
+      connections:$('#connectionsSect :invalid').length,
+      notes:$('#notesTable .alert-danger').length,
+    }
+    ractive.set('alerts',alerts);
   },
   showResults: function() {
     $('#contactsTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
@@ -931,6 +972,7 @@ ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
 // done this way rather than with on-* attributes because autocomplete 
 // controls done that way save the oldValue 
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
+  if (ractive.get('current')!=undefined) ractive.showAlertCounters();
   ignored=['current.account.companiesHouseInfo','current.documents','current.doc','current.notes','current.note'];
   if (ractive.get('saveObserver') && ignored.indexOf(keypath)==-1) {
     console.log('current prop change: '+newValue +','+oldValue+' '+keypath);

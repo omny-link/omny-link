@@ -65,6 +65,9 @@ public class TenantConfig implements Serializable {
     @Embedded
     private FeatureConfig features;
 
+    @Embedded
+    private ServiceLevelConfig serviceLevel;
+
     @Transient
     private BotConfig bot;
 
