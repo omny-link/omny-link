@@ -1,7 +1,7 @@
 { 
   "id": "acme", 
   "name": "Acme Inc.",
-  "show": { "account":true, "activityAnalysis":true, "budget":true, "companyBackground":true, "declaredSource":true, "documents": true, "marketing":true, "merge":true },
+  "show": { "account":true, "activityAnalysis":true, "budget":true, "companyBackground":true, "declaredSource":true, "documents": true, "financials":true, "marketing":true, "merge":true },
   "accountFields": [ 
     { "name": "Sector", "ref": "sector"},
     { "name": "Lead Office", "ref": "leadOffice"},
@@ -33,7 +33,6 @@
   "partials": [
     { "name": "omnyContactExtension", "url": "/partials/omny/contact-extension.html"},
     { "name": "omnyAccountExtension", "url": "/partials/account-extension.html"},
-    { "name": "omnyCustomerExtension", "url": "/partials/omny/customer-extension.html"},
     { "name": "omnySimpleToDo", "url": "/partials/simple-todo.html"},
     { "name": "omnySendMemo", "url": "/partials/pick-memo.html"},
     { "name": "omnyWorkflowWizard", "url": "/partials/workflow-wizard.html"}
