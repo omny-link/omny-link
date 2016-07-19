@@ -1,10 +1,10 @@
 <div class="form-group">
-  <label for="what">What needs to be done?</label>
+  <label class="required" for="what">What needs to be done?</label>
   <textarea class="form-control" id="what" placeholder="Type yourself a reminder of what to do" required value="{{instanceToStart.processVariables['what']}}"></textarea>
   <p class="help-block field-hint field-error">Type yourself a reminder of what to do</p>
 </div>
 <div class="form-group">
-  <label for="when">When is it expected?</label>
+  <label class="required" for="when">When is it expected?</label>
   <input type="date" class="form-control" id="when" placeholder="yyyy-mm-dd" required value="{{instanceToStart.processVariables['when']}}">
   <p class="help-block field-hint field-error">Please pick when to be reminded.</p>
 </div>
@@ -14,7 +14,7 @@
   <p class="help-block field-hint field-error"></p>
 </div>
 <div class="form-group">
-  <label for="notify">Who should be kept informed?</label>
+  <label for="notify">Who should be kept informed (comma separated email addresses not limited to Omny users)?</label>
   <input class="form-control typeahead" id="notify" placeholder="Start typing to filter options" value="{{instanceToStart.processVariables['notify']}}"/>
   <p class="help-block field-hint field-error"></p>
 </div>
