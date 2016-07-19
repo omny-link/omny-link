@@ -267,6 +267,7 @@ var ractive = new AuthenticatedRactive({
     //$('#curPartnerSectors').append($('#sectorTemplate').html());
   },
   addServiceLevelAlerts: function () {
+    if (ractive.get('current.stage')==undefined) return;
     $('#curStage').removeClass('alert-danger');
     $('#notesTable tr:nth-child(1)').removeClass('alert-danger');
     var msgs;
