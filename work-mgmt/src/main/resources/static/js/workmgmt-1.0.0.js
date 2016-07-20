@@ -455,9 +455,9 @@ var ractive = new AuthenticatedRactive({
     $('#tasksTable').slideDown({ queue: true });
   },
   startCustomAction: function(key, label, form) {
-    console.log('startCustomAction: '+key);
+    console.log('startCustomAction: '+key+' using form '+form);
     var instanceToStart = {
-        businessKey: label+' at '+new Date(),
+        businessKey: label,
         processDefinitionId: key,
         label: label,
         processVariables: {
