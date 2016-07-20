@@ -111,6 +111,10 @@ var AuthenticatedRactive = Ractive.extend({
   },
   handleError: function(jqXHR, textStatus, errorThrown) {
     switch (jqXHR.status) {
+    case 0:
+      var msg = 'Unable to connect, retrying...';
+      ractive.showMessage(msg, 'alert-warning');
+      break; 
     case 400:
       var msg = jqXHR.responseJSON == null ? textStatus+': '+errorThrown : errorThrown+': '+jqXHR.responseJSON.message;
       ractive.showError(msg);
@@ -438,6 +442,16 @@ var AuthenticatedRactive = Ractive.extend({
 
     return uri;
   }
+});
+
+$( document ).ajaxError(function( event, request, settings ) {
+  // retry indefinitely
+//  if(!settings.secondExec) {
+//    settings.secondExec = true;
+    setTimeout(function() {
+      $.ajax(settings); 
+    }, EASING_DURATION*5);
+//  }
 });
 
 $( document ).bind('keypress', function(e) {
