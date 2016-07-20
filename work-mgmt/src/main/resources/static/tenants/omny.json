@@ -1,7 +1,10 @@
 { 
   "id": "omny", 
   "name": "Omny Link",
-  "show": { "account":true, "activityAnalysis":true, "budget":true, "companyBackground":true, "documents": true, "financials":true, "marketing":true, "merge":true },
+  "show": { 
+      "account":true, "activityAnalysis":true, "budget":true, "companyBackground":true, 
+      "documents": true, "financials":true, "marketing":true, "merge":true 
+  },
   "accountFields": [ 
     { "name": "Sector", "ref": "sector"},
     { "name": "Lead Office", "ref": "leadOffice"},
@@ -38,6 +41,7 @@
   "processes": [
     { "name": "Add activity to contact", "ref": "AddActivityToContact", "url": "processes/link/omny/custmgmt/AddActivityToContact.bpmn" },
     { "name": "Add note to contact", "ref": "AddNoteToContact", "url": "processes/link/omny/custmgmt/AddNoteToContact.bpmn" },
+    { "name": "Ad-Hoc Task from external", "ref": "HandleAdHocTask", "url": "processes/link/omny/casemgmt/HandleAdHocTask.bpmn" },
     { "name": "Create contact and account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
     { "name": "Import contact", "ref": "ImportContact", "url": "processes/link/omny/website/ImportContact.bpmn" },
     { "name": "Record an enquiry", "ref": "RecordEnquiry", "url": "processes/link/omny/website/RecordEnquiry.bpmn" },
@@ -69,6 +73,6 @@
     { "name": "tenants", "ref": "#curTenant", "url": "/data/tenants.json"}
   ],
   "workActions": [
-    { "name": "Note to self", "ref": "SimpleTodo", "url": "/partials/simple-todo.html" }
+    { "name": "Add task", "ref": "SimpleToDo", "url": true }
   ]
 }

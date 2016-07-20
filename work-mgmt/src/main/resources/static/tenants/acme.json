@@ -40,6 +40,7 @@
   "processes": [
     { "name": "Add activity to contact", "ref": "AddActivityToContact", "url": "processes/link/omny/custmgmt/AddActivityToContact.bpmn" },
     { "name": "Add note to contact", "ref": "AddNoteToContact", "url": "processes/link/omny/custmgmt/AddNoteToContact.bpmn" },
+    { "name": "Ad-Hoc Task from external", "ref": "HandleAdHocTask", "url": "processes/link/omny/casemgmt/HandleAdHocTask.bpmn" },
     { "name": "Create contact and account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
     { "name": "Import contact", "ref": "ImportContact", "url": "processes/link/omny/website/ImportContact.bpmn" },
     { "name": "Record an enquiry", "ref": "RecordEnquiry", "url": "processes/link/omny/website/RecordEnquiry.bpmn" },
@@ -55,6 +56,7 @@
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},
+    { "name": "commsPreference", "ref": "#curCommsPreference", "url": "/data/comms-preference.json"},
     { "name": "countries", "ref": "#curCountry", "url": "/data/countries.json"},
     { "name": "currentSiteCapability", "ref": "#curCurrentSiteCapability", "url": "/data/omny/current-site-capabilities.json"},
     { "name": "decisionMakingRole", "ref": "#curDecisionMakingRole", "url": "/data/omny/decision-making-roles.json"},
@@ -66,9 +68,10 @@
     { "name": "sectors", "ref": "#curSector", "url": "/data/omny/sectors.json"},
     { "name": "sources", "ref": "#curSource", "url": "/data/sources.json"},
     { "name": "stages", "ref": "#curStage", "url": "/data/omny/stages.json"},
-    { "name": "status", "ref": "#curStatus", "url": "/data/status.json"}
+    { "name": "status", "ref": "#curStatus", "url": "/data/status.json"},
+    { "name": "tenants", "ref": "#curTenant", "url": "/data/tenants.json"}
   ],
   "workActions": [
-    { "name": "Note to self", "ref": "SimpleTodo", "url": "/partials/simple-todo.html" }
+    { "name": "Add task", "ref": "SimpleToDo", "url": true }
   ]
 }
