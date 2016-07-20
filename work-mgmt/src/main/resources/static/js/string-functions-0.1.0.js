@@ -3,13 +3,19 @@ String.prototype.toLabel = function() {
 };
 
 String.prototype.toLeadingCaps = function() {
-  if (this == undefined) return this
+  if (this == undefined) return this;
   return this.replace(/(&)?([a-z])([a-z]{2,})(;)?/ig, function(all, prefix, letter, word, suffix) {
     if (prefix && suffix) {
       return all;
     }
     return letter.toUpperCase() + word.toLowerCase();
   });
+}
+
+
+String.prototype.toSlug: function() {
+  if (this == undefined) return this;
+  else return this.toLowerCase().replace(/ /g,'-').replace(/[^\w-]+/g,'');
 }
 
 String.prototype.formatNumber = function(thousandsSeparator) {

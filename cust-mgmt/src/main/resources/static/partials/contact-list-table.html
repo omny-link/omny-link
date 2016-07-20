@@ -20,7 +20,7 @@
   <tbody>
     {{#each sort(contacts,sortColumn,sortAsc):i}}
       {{# matchSearch(this) && matchFilter(this) }}
-        <tr class="{{stage}}" data-href="{{selfRef}}">
+        <tr class="{{stage.toSlug()}}" data-href="{{selfRef}}">
           <td on-click="edit(this)">{{i+1}}</td>
           {{#tenant.show.merge}}
             <td><input class="checkbox" type="checkbox" on-change="selectMultiple(this)"/></td>
