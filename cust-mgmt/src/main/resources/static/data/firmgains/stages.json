@@ -1,8 +1,0 @@
-[
-  {  "idx": 0, "id": "Enquiry", "name": "Enquiry"  },
-  {  "idx": 1, "id": "Lead", "name": "Lead"  },
-  {  "idx": 2, "id": "Placed", "name": "Placed"  },
-  {  "idx": 6, "id": "Complete", "name": "Complete"  },
-  {  "idx": -1, "id": "On hold", "name": "On hold"  },
-  {  "idx": -1, "id": "Cold", "name": "Cold"  }
-]
