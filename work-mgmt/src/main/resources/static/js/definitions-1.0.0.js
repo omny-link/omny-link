@@ -150,8 +150,18 @@ var ractive = new AuthenticatedRactive({
     });
     return false; // cancel bubbling to prevent edit as well as delete
   },
+  deleteSelectedInstances: function() {
+    console.info('deleteSelectedInstances');
+    $.each(ractive.get('current.instances'), function(i,d) {
+      if (d.selected) {
+        console.log('delete:  '+d.processInstanceId);
+        ractive.deleteInstance(d,i);
+      }
+    });
+    ractive.fetchInstances();
+  },
   deleteInstance: function (instance,idx) {
-    console.log('deleteInstance '+instance.id+'...');
+    console.info('deleteInstance '+instance.id+'...');
     $.ajax({
         url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/'+instance.id,
         type: 'DELETE',
@@ -184,11 +194,10 @@ var ractive = new AuthenticatedRactive({
       });
     }, 'text');
   },
-  fetchInstances: function(definition) {
+  fetchInstances: function() {
     console.log('fetch instances');
-    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'/instances', function( data ) {
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+ractive.get('current.id')+'/instances', function( data ) {
       console.log('found instances '+data.length);
-      definition.instances = data;
       ractive.set('current.instances',data);
     });
   },
@@ -230,7 +239,7 @@ var ractive = new AuthenticatedRactive({
       if (ractive.get('current').deploymentId==null) {
         ractive.fetchIssues(ractive.get('current'));
       } else {
-        ractive.fetchInstances(ractive.get('current'));
+        ractive.fetchInstances();
       }
       if (ractive.hasRole('admin')) $('.admin').show();
     });
@@ -301,7 +310,7 @@ var ractive = new AuthenticatedRactive({
       }),
       success: completeHandler = function(data,textStatus,jqXHR) {
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
-        ractive.fetchInstances(ractive.get('current'));
+        ractive.fetchInstances();
         ractive.showMessage('Started workflow "'+label+'" for '+bizKey);
       },
     });

@@ -13,7 +13,7 @@ String.prototype.toLeadingCaps = function() {
 }
 
 
-String.prototype.toSlug: function() {
+String.prototype.toSlug = function() {
   if (this == undefined) return this;
   else return this.toLowerCase().replace(/ /g,'-').replace(/[^\w-]+/g,'');
 }

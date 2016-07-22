@@ -54,80 +54,109 @@
     <div id="curImage">{{{current.image}}}</div>
   {{/if current.id}}
   {{#current.deploymentId}}
-    <h3>Instances</h3>
-    {{#each current.instances:i}}
-      <section style="margin-bottom: 2px;">
-        <span class="a-primary-label control-label">Name: </span>
-        <span class="a-primary-data">
-          {{#businessKey}} {{businessKey}} {{else}} N/A {{/}}
-        </span>
-        {{#if hasRole('admin') }}
-          <span class="a-secondary-label control-label">Id: </span>
-          <span class="a-secondary-data">{{id}};</span>
-        {{/if}}
-        <span class="a-secondary-label control-label">Complete?: </span>
-        <span class="a-secondary-data">{{..ended ? 'Yes' : 'No'}};</span>
-        {{#if .!=undefined && !..ended}}
-          <span class="a-secondary-label control-label">Current task: </span>
-          <span class="a-secondary-data">{{activityId.toLabel()}};</span>
-        {{/if}}
-        <button class="btn btn-details" on-click="toggleAuditTrail(current.instances[i],i)" type="button">View Details</button>
-        <button class="btn btn-details" on-click="deleteInstance(current.instances[i],i)" type="button">Delete</button>
-        <section data-instanceId="{{id}}" style="clear:both;display:none">
-          <h4> {{#businessKey}} Instance {{id}} {{else}} {{businessKey}} ({{id}}) }}{{/}}</h4>
-          <h5>History</h5> 
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Type</th>
-                <th class="col-truncate">Event</th>
-                <th>Started</th>
-                <th>Ended</th>
-                <th>Duration</th>
-                <th>Actioned by</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each auditTrail:j}}
-                <tr data-href="{{_links.self.href}}">
-                  <td>{{j+1}}</td>
-                  <td><span class="{{renderBpmnIcon(activityType)}}" style="font-size:24px"></span></td>
-                  <td>{{activityName}}</td>
-                  <td>{{formatDateTime(startTime)}}</td>
-                  <td>{{formatDateTime(endTime)}}</td>
-                  <td>{{endTime == undefined ? '' : duration(durationInMillis)}}</td>
-                  <td>
-                    {{#allocations}}
-                      {{#type=='candidate'}}Offered to:{{/}} {{groupId}}{{userId}}<br/>
-                    {{/}}
-                  </td>
-                </tr>
-              {{/each}}
-            </tbody>
-          </table>
-          <h5>Latest Data</h5>
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th></th>
-                <th class="col-truncate">Name</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each processVariableNames:j}}
-                <tr data-href="{{_links.self.href}}">
-                  <td>{{j+1}}</td>
-                  <td>{{processVariableNames[j]}}</td>
-                  <td>{{(JSON.stringify(processVariables[processVariableNames[j]]))}}</td>
-                </tr>
-              {{/each}}
-            </tbody>
-          </table> 
-        </section>
-      </section>
-    {{/each}}
+    <h3>
+      <span>Instances</span>
+      <span class="clickable glyphicon glyphicon-remove pull-right" on-click="deleteSelectedInstances()" style="top: -15px;"></span>
+    </h3>
+    <table id="instancesTable" style="width:100%">
+      <thead>
+        <tr>
+          {{#if hasRole('admin') }}
+            <td><input class="checkbox" type="checkbox" onchange="$('#instancesTable>tbody>tr>td>.checkbox').click();"/></td>
+          {{/if}}
+          <th class="a-secondary-label control-label">Name</th>
+          {{#if hasRole('admin') }}<th>Id</th>{{/if}}
+          <th class="a-secondary-label control-label">Complete?</th>
+          {{#if .!=undefined && !..ended}}
+	          <th class="a-secondary-label control-label">Current task</th>
+	        {{/if}}
+	        <th>Actions</th>
+        </tr>
+      </thead>
+		    {{#each current.instances:i}}
+		      <tbody>
+		        <tr>
+		          {{#if hasRole('admin') }}
+                <td><input class="checkbox" type="checkbox" checked="{{..selected}}"/></td>
+              {{/if}}
+			        <td>
+			          {{#businessKey}} {{businessKey}} {{else}} N/A {{/}}
+			        </td>
+			        {{#if hasRole('admin') }}<td>{{id}}&nbsp;</td>{{/if}}
+			        <td class="a-secondary-data">{{..ended ? 'Yes' : 'No'}}</td>
+			        {{#if .!=undefined && !..ended}}
+			          <td class="a-secondary-data">{{activityId.toLabel()}}</td>
+			        {{else}}
+			          <td>&nbsp;</td>
+			        {{/if}}
+			        <td>
+			          <span class="clickable glyphicon glyphicon-eye-open" on-click="toggleAuditTrail(current.instances[i],i)"></span>
+			          <span class="clickable glyphicon glyphicon-remove" on-click="deleteInstance(current.instances[i],i)"></span>
+			        </td>
+			      </tr>
+			      <tr>
+			        <td colspan="5">
+				        <section data-instanceId="{{id}}" style="clear:both;display:none">
+				          <h4> {{#businessKey}} Instance {{id}} {{else}} {{businessKey}} ({{id}}) }}{{/}}</h4>
+				          <h5>History</h5> 
+				          <table class="table table-striped">
+				            <thead>
+				              <tr>
+				                <th></th>
+				                <th>Type</th>
+				                <th class="col-truncate">Event</th>
+				                <th>Started</th>
+				                <th>Ended</th>
+				                <th>Duration</th>
+				                <th>Actioned by</th>
+				              </tr>
+				            </thead>
+				            <tbody>
+				              {{#each auditTrail:j}}
+				                <tr data-href="{{_links.self.href}}">
+				                  <td>{{j+1}}</td>
+				                  <td><span class="{{renderBpmnIcon(activityType)}}" style="font-size:24px"></span></td>
+				                  <td>{{activityName}}</td>
+				                  <td>{{formatDateTime(startTime)}}</td>
+				                  <td>{{formatDateTime(endTime)}}</td>
+				                  <td>{{endTime == undefined ? '' : duration(durationInMillis)}}</td>
+				                  <td>
+				                    {{#allocations}}
+				                      {{#type=='candidate'}}Offered to:{{/}} {{groupId}}{{userId}}<br/>
+				                    {{/}}
+				                  </td>
+				                </tr>
+				              {{/each}}
+				            </tbody>
+				          </table>
+				          <h5>Latest Data</h5>
+				          <table class="table table-striped">
+				            <thead>
+				              <tr>
+				                <th></th>
+				                <th class="col-truncate">Name</th>
+				                <th>Value</th>
+				              </tr>
+				            </thead>
+				            <tbody>
+				              {{#each processVariableNames:j}}
+				                <tr data-href="{{_links.self.href}}">
+				                  <td>{{j+1}}</td>
+				                  <td>{{processVariableNames[j]}}</td>
+				                  <td>{{(JSON.stringify(processVariables[processVariableNames[j]]))}}</td>
+				                </tr>
+				              {{/each}}
+				            </tbody>
+				          </table> 
+			          </section>
+			        </td>
+			      </tr>
+			    </tbody>
+		    {{/each}}
+	    <tfoot>
+	      <tr><th colspan="5">Total of {{current.instances.length}} instances</th></tr>
+	    </tfoot>
+    </table>
   {{/}}
   {{^current.deploymentId}}
     <section style="margin-bottom: 2px;">
