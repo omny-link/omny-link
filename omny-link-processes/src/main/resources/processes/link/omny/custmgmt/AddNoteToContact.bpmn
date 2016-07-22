@@ -32,7 +32,7 @@
       <incoming>_3</incoming>
       <outgoing>_10</outgoing>
     </serviceTask>
-    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPut" completionQuantity="1" id="_9" implementation="##WebService" isForCompensation="false" name="PUT contact to account link" startQuantity="1">
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPut" completionQuantity="1" id="_9" implementation="##WebService" isForCompensation="false" name="PUT association&#10; from note to contact" startQuantity="1">
       <extensionElements>
         <activiti:field name="resourceUsername">
           <activiti:string>userInfo('tenant-bot')</activiti:string>
