@@ -42,14 +42,13 @@
       <outputSet/>
       <messageEventDefinition id="_2_ED_1" messageRef="omny.enquiry"/>
     </startEvent>
-    <callActivity calledElement="AddActivityToContact" completionQuantity="1" id="addActivityToContact" isForCompensation="false" name="Add enquiry &#10;to contact" startQuantity="1">
+    <callActivity calledElement="AddNoteToContact" completionQuantity="1" id="addActivityToContact" isForCompensation="false" name="Add enquiry &#10;to contact" startQuantity="1">
       <extensionElements>
         <activiti:in source="omny_enquiry" target="contact"/>
-        <activiti:in sourceExpression="${omny_enquiry.getString('type')}" target="activityType"/>
-        <activiti:in sourceExpression="${omny_enquiry.getString('message')}" target="activityContent"/>
+        <activiti:in sourceExpression="${omny_enquiry.getString('message')}" target="noteContent"/>
         <activiti:in source="contactId" target="contactId"/>
         <activiti:out source="contactId" target="contactId"/>
-        <activiti:out source="activityId" target="activityId"/>
+        <activiti:out source="noteId" target="noteId"/>
       </extensionElements>
       <incoming>_17</incoming>
       <outgoing>_20</outgoing>
