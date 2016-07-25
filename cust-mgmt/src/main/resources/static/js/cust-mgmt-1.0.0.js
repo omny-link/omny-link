@@ -327,7 +327,7 @@ var ractive = new AuthenticatedRactive({
   delete: function (obj) {
     console.log('delete '+obj+'...');
     $.ajax({
-        url: ractive.getServer()+ractive.uri(obj),
+        url: ractive.getServer()+'/contacts/'+ractive.id(obj),
         type: 'DELETE',
         success: completeHandler = function(data) {
           ractive.fetch();
