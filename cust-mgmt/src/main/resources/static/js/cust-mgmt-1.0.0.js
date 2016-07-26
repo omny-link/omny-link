@@ -18,7 +18,7 @@ var ractive = new AuthenticatedRactive({
     username: localStorage['username'],
     age: function(timeString) {
       if (timeString==undefined) return;
-      return i18n.getAgeString(new Date(timeString))
+      return i18n.getAgeString(ractive.parseDate(timeString))
     },
     alerts: function(selector) {
       console.log('alerts for '+selector);
@@ -63,9 +63,7 @@ var ractive = new AuthenticatedRactive({
     },
     formatDate: function(timeString) {
       if (timeString==undefined) return 'n/a';
-      var d = new Date(timeString);
-      // IE strikes again
-      if (d == 'Invalid Date') d = parseDateIEPolyFill(timeString);
+      var d = ractive.parseDate(timeString);
       return d.toLocaleDateString(navigator.languages);
     },
     formatFavorite: function(obj) {
@@ -1036,14 +1034,3 @@ ractive.on( 'sort', function ( event, column ) {
   if (this.get('sortColumn')==column) this.set('sortAsc', !this.get('sortAsc'));
   this.set( 'sortColumn', column );
 });
-
-function parseDateIEPolyFill(timeString) {
-  var start = timeString.substring(0,timeString.indexOf('.'));
-  var offset;
-  if (timeString.indexOf('-',timeString.indexOf('T'))!=-1) {
-    offset = timeString.substr(timeString.indexOf('-',timeString.indexOf('T')),3)+':'+timeString.substr(timeString.indexOf('-',timeString.indexOf('T'))+3,2);
-  } else if (timeString.indexOf('+')!=-1) {
-    offset = timeString.substr(timeString.indexOf('+'),3)+':'+timeString.substr(timeString.indexOf('+')+3,2);
-  }
-  return new Date(Date.parse(start+offset));
-}

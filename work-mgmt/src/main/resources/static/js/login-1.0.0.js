@@ -269,6 +269,12 @@ var AuthenticatedRactive = Ractive.extend({
     if (document.forms['logoutForm'].length>1) document.forms['logoutForm'][0].submit();
     else document.forms['logoutForm'].submit();
   },
+  parseDate: function(timeString) {
+    var d = new Date(timeString);
+    // IE strikes again
+    if (d == 'Invalid Date') d = parseDateIEPolyFill(timeString);
+    return d;
+  },
   saveDoc: function () {
     console.log('saveDoc '+JSON.stringify(ractive.get('current.doc'))+' ...');
     var n = ractive.get('current.doc');
@@ -495,4 +501,15 @@ if (!String.prototype.endsWith) {
       var lastIndex = subjectString.indexOf(searchString, position);
       return lastIndex !== -1 && lastIndex === position;
   };
+}
+
+function parseDateIEPolyFill(timeString) {
+  var start = timeString.substring(0,timeString.indexOf('.'));
+  var offset;
+  if (timeString.indexOf('-',timeString.indexOf('T'))!=-1) {
+    offset = timeString.substr(timeString.indexOf('-',timeString.indexOf('T')),3)+':'+timeString.substr(timeString.indexOf('-',timeString.indexOf('T'))+3,2);
+  } else if (timeString.indexOf('+')!=-1) {
+    offset = timeString.substr(timeString.indexOf('+'),3)+':'+timeString.substr(timeString.indexOf('+')+3,2);
+  }
+  return new Date(Date.parse(start+offset));
 }
