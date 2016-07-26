@@ -57,10 +57,15 @@ legend {
 img.entity-context {
   width: 90%;	
 }
-input,select,textarea { 
+input,select,textarea {
+	border: solid 1px;
 	border-color: #ccc;
+	box-shadow: inset 0px 1px 1px rgba(0,0,0,0.075), 0px 0px 8px rgba(102,175,233,0.6);
   line-height:1.4em;
 	padding: 0 10px 0 10px;
+}
+input:active,select:active,textarea:active {
+  border-color: #66afe9;
 }
 textarea.rich-content {
 	height: 10em;
