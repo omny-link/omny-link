@@ -17,10 +17,13 @@ import link.omny.acctmgmt.model.TenantAction;
 import link.omny.acctmgmt.model.TenantConfig;
 import link.omny.acctmgmt.model.TenantExtension;
 import link.omny.acctmgmt.model.TenantPartial;
+import link.omny.acctmgmt.model.TenantTemplate;
 import link.omny.acctmgmt.model.TenantToolbarEntry;
 import link.omny.acctmgmt.model.TenantTypeaheadControl;
 import link.omny.acctmgmt.repositories.TenantConfigRepository;
+import link.omny.custmgmt.model.Memo;
 import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.repositories.MemoRepository;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -73,6 +76,9 @@ public class TenantConfigController {
 
     @Autowired
     protected TenantConfigRepository tenantRepo;
+
+    @Autowired
+    protected MemoRepository memoRepo;
 
     @Autowired
     private ProcessEngine processEngine;
@@ -325,6 +331,20 @@ public class TenantConfigController {
 
         for (TenantPartial partial : tenantConfig.getPartials()) {
             partial.setValid(resourceExists(STATIC_BASE + partial.getUrl()));
+        }
+
+        for (TenantTemplate template : tenantConfig.getTemplates()) {
+            try {
+                Memo memo = memoRepo.findByName(template.getName(), id);
+                if (memo != null) {
+                    template.setValid(true);
+                    template.setDescription(String.format("Subject: %1$s",
+                            memo.getTitle()));
+                }
+            } catch (Exception e) {
+                LOGGER.error(String.format("Missing template named %1$s",
+                        template.getName()));
+            }
         }
 
         for (TenantTypeaheadControl control : tenantConfig

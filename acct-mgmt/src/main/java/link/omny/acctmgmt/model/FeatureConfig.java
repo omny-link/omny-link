@@ -15,6 +15,7 @@ public class FeatureConfig {
     private boolean documents = false;
     private boolean merge = false;
     private boolean poweredBy = true;
+    private boolean supportBar = true;
 
     public void set(String name, boolean b) {
         switch (name) {
@@ -47,6 +48,9 @@ public class FeatureConfig {
             break;
         case "poweredBy":
             setPoweredBy(b);
+            break;
+        case "supportBar":
+            setSupportBar(b);
             break;
         default:
             System.err.println("Unsupported feature: " + name);
