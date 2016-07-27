@@ -71,7 +71,6 @@
       <groupId>com.google.oauth-client</groupId>
       <artifactId>google-oauth-client-jetty</artifactId>
       <version>${google.oauth.version}</version>
-      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>org.mortbay.jetty</groupId>

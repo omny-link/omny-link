@@ -2,8 +2,8 @@
   "id": "omny", 
   "name": "Omny Link",
   "show": { 
-      "account":true, "activityAnalysis":true, "budget":true, "companyBackground":true, 
-      "documents": true, "financials":true, "marketing":true, "merge":true 
+    "account":true, "activityAnalysis":true, "budget":true, "companyBackground":true,
+    "documents": true, "financials":true, "marketing":true, "merge":true, "supportBar": true
   },
   "accountFields": [ 
     { "name": "Sector", "ref": "sector"},
@@ -54,6 +54,14 @@
     { "name": "Add task", "ref": "SimpleToDo", "url": "processes/link/omny/casemgmt/SimpleToDo.bpmn" },
     { "name": "Fetch company information", "ref": "companyRecord", "url": "processes/link/omny/companiesHouse/FetchCompanyInfo.bpmn" },
     { "name": "Search for companies", "ref": "companySearch", "url": "processes/link/omny/companiesHouse/SearchForCompany.bpmn" }
+  ],
+  "templates": [
+    { "name": "ContactAlert", "ref": "ContactAlert" },
+    { "name": "NotifyEnquiry", "ref": "NotifyEnquiry" },
+    { "name": "NotifyToDo", "ref": "NotifyToDo" },
+    { "name": "ResetPassword", "ref": "ResetPassword" },
+    { "name": "ThankYouForEnquiry", "ref": "ThankYouForEnquiry" },
+    { "name": "WelcomeNewUser", "ref": "WelcomeNewUser" }
   ],
   "typeaheadControls": [
     { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},
