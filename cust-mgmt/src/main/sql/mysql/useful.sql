@@ -108,3 +108,27 @@ update ol_account_custom set value = cast(value as decimal(38,2))
 where id in (select id from ol_account_custom_ids);
 
   drop table ol_account_custom_ids
+  
+-- copy memo templates between tenants
+insert into ol_memo (
+  `created`,
+  `last_updated`,
+  `owner`,
+  `plain_content`,
+  `rich_content`,
+  `status`,
+  `tenant_id`,
+  `title`,
+  `name`
+)
+select 
+  `created`,
+  `last_updated`,
+  `owner`,
+  `plain_content`,
+  `rich_content`,
+  `status`,
+  "omny",
+  `title`,
+  `name`
+from ol_memo where tenant_id = 'acme';

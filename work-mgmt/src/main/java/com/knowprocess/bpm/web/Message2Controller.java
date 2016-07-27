@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -66,11 +67,13 @@ public class Message2Controller {
             "Accept=application/json", "Content-Type=application/json" })
     @ResponseBody
     public ResponseEntity<String> handleMessageStart(
-            UriComponentsBuilder uriBuilder,
             @PathVariable("tenantId") String tenantId,
             @PathVariable("msgId") String msgId,
             @RequestParam(required = false, value = "businessDescription") String bizDesc,
             @RequestBody String json) {
+
+        UriComponentsBuilder uriBuilder = MvcUriComponentsBuilder
+                .fromController(getClass());
 
         Map<String, Object> vars = new HashMap<String, Object>();
         HttpHeaders headers = null;

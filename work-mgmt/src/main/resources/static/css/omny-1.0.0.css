@@ -506,6 +506,25 @@ h2 a.glyphicon:hover {
 
 /* END OMNY BAR */
 
+/* SUPPORT BAR */
+.support-bar {
+	background-color: #ff6c06;
+  border-bottom-left-radius: 1em;
+	border-top-left-radius: 1em;
+  height: 3.5em;
+	position: fixed;
+  right: 0;
+  top: 49%;
+	width: 3.5em;
+}
+.support-bar .glyphicon {
+  border:none;
+  color: #59C4ED; /* pale blue */ /* b7b7b7 grey*/
+  font-size: 2.5em;
+  padding-top: .1em;
+}
+/* END SUPPORT BAR */
+
 .clickable:active,
 .clickable:focus,
 .clickable:hover {
