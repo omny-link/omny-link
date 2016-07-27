@@ -108,6 +108,9 @@ public class TenantConfig implements Serializable {
     @Transient
     private List<TenantPartial> partials;
 
+    @Transient
+    private List<TenantTemplate> templates;
+
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
     // targetEntity = TenantTypeaheadControl.class)
     @Transient
@@ -277,6 +280,18 @@ public class TenantConfig implements Serializable {
     public void addToolbarEntry(TenantToolbarEntry tenantExtension) {
         tenantExtension.setTenant(this);
         getToolbar().add(tenantExtension);
+    }
+
+    public List<TenantTemplate> getTemplates() {
+        if (templates == null) {
+            templates = new ArrayList<TenantTemplate>();
+        }
+        return templates;
+    }
+
+    public void addTemplate(TenantTemplate template) {
+        template.setTenant(this);
+        getTemplates().add(template);
     }
 
     public List<TenantTypeaheadControl> getTypeaheadControls() {

@@ -19,7 +19,6 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.media.MediaHttpDownloader;
 import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
-import com.google.api.client.http.FileContent;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.InputStreamContent;
@@ -31,44 +30,19 @@ import com.google.api.services.drive.Drive.Files;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import com.google.api.services.drive.model.ParentReference;
 import com.knowprocess.resource.spi.Repository;
 
 /**
- * Store resource to Google Drive.
+ * Store resource in Google Drive.
  * 
- * @author tstephen
+ * @author Tim Stephenson
  * 
  */
 public class GDriveRepository implements Repository,
         MediaHttpUploaderProgressListener {
 
-    private static final String ACCESS_TOKEN = "ya29.AHES6ZSbw6v2SauVXGY5Gt2dJxJewejDhC70lWcpaPOUjy8";
-    private static final String REFRESH_TOKEN = "1/uyYRa3NWjAEOwqTk801XGWkvwS9mnsNjXFY4uIRS0UE";
-    /**
-   * 
-   */
-    private static final String SERVICE_ACCOUNT_EMAIL = "262870947719@developer.gserviceaccount.com";
-
-    /**
-   * 
-   */
-    private static final String SERVICE_ACCOUNT_PKCS12_FILE_PATH = "/home/tstephen/workspace/cloudcast/src/main/resources/50e5345d47fd186d1dc9e23f45beba514b01a72a-privatekey.p12";
-
-    /**
-     * Be sure to specify the name of your application. If the application name
-     * is {@code null} or blank, the application will log a warning. Suggested
-     * format is "MyCompany-ProductName/1.0".
-     */
-    private static final String APPLICATION_NAME = "knowprocess-cloudcast/1.0";
-
-    private static final String UPLOAD_FILE_PATH = "/home/tstephen/workspace/cloudcast/src/main/resources/ic_mailboxes_accounts.png";
-    private static final String DIR_FOR_DOWNLOADS = "downloads";
-    private static final java.io.File UPLOAD_FILE = new java.io.File(
-            UPLOAD_FILE_PATH);
-
     /** Global instance of the HTTP transport. */
-    private static HttpTransport HTTP_TRANSPORT; // = new NetHttpTransport();
+    private static HttpTransport HTTP_TRANSPORT;
 
     /** Global instance of the JSON factory. */
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -87,7 +61,7 @@ public class GDriveRepository implements Repository,
         // load client secrets
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
                 JSON_FACTORY, GDriveRepository.class
-                        .getResourceAsStream("/client_secrets.json"));
+                        .getResourceAsStream("/client_secret.json"));
         if (clientSecrets.getDetails().getClientId().startsWith("Enter")
                 || clientSecrets.getDetails().getClientSecret()
                         .startsWith("Enter ")) {
@@ -129,34 +103,6 @@ public class GDriveRepository implements Repository,
         }
         System.out.println("initialisation took: "
                 + (new Date().getTime() - start));
-    }
-
-    /** Uploads a file using either resumable or direct media upload. */
-    private File uploadFile(boolean useDirectUpload) throws IOException {
-        long start = new Date().getTime();
-
-        File fileMetadata = new File();
-        fileMetadata.setTitle(UPLOAD_FILE.getName());
-
-        FileContent mediaContent = new FileContent("image/jpeg", UPLOAD_FILE);
-
-        Drive.Files.Insert insert = drive.files().insert(fileMetadata,
-                mediaContent);
-        MediaHttpUploader uploader = insert.getMediaHttpUploader();
-        uploader.setDirectUploadEnabled(useDirectUpload);
-        // uploader.setProgressListener(new FileUploadProgressListener());
-        File f = insert.execute();
-        System.out.println("upload took: " + (new Date().getTime() - start));
-        return f;
-    }
-
-    /** Updates the name of the uploaded file to have a "drivetest-" prefix. */
-    private File updateFileWithTestSuffix(String id) throws IOException {
-        File fileMetadata = new File();
-        fileMetadata.setTitle("drivetest-" + UPLOAD_FILE.getName());
-
-        Drive.Files.Update update = drive.files().update(id, fileMetadata);
-        return update.execute();
     }
 
     /** Downloads a file using either resumable or direct media download. */
@@ -207,7 +153,7 @@ public class GDriveRepository implements Repository,
         if (created != null) {
             metadata.setCreatedDate(new DateTime(created));
         }
-        List<ParentReference> parents = new ArrayList<ParentReference>();
+        // List<ParentReference> parents = new ArrayList<ParentReference>();
         // ParentReference ref = new ParentReference();
         // ref.setKind("drive#fileLink");
         // ref.setId("");
