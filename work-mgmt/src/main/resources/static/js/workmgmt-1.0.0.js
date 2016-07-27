@@ -168,6 +168,7 @@ var ractive = new AuthenticatedRactive({
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "workCurrentSect", "url": "/partials/work-current-sect.html"},
       { "name": "workListSect", "url": "/partials/work-list-sect.html"}

@@ -79,3 +79,10 @@ h1.navbar-top span {
 .omny-bar-left li span:not(.active):not(:active):not(:hover) {
   border-bottom-color: #b11c0c;
 }
+
+.support-bar {
+  background-color: #b11c0c;
+}
+.support-bar .glyphicon {
+  color: #e3ce02; /* gold */
+}
