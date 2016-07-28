@@ -16,8 +16,6 @@ public class TenantToolbarEntry extends TenantExtension {
 
     private static final long serialVersionUID = -8327456294072464761L;
 
-    private String role;
-
     public TenantToolbarEntry(String name, String url, String icon,
             String description) {
         super(name, url, description);
