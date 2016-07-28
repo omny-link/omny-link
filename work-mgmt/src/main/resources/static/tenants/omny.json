@@ -21,15 +21,15 @@
   "toolbar": [
     { "url": "work.html", "icon": "glyphicon-inbox", "description": "View your list of active tasks here", "name": "Work Management" },
     { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
-    { "url": "decisions-ui.html", "icon": "glyphicon-list-alt", "description": "View and manage your decisions here", "name": "Decisions Definer" },
-    { "url": "domain.html", "icon": "omny-icon-domain-model", "name": "Domain Model", "description": "Business glossary" },
-    { "url": "decisions-dmn.html", "icon": "glyphicon-list-alt", "name": "Decisions Repository", "description": "Home of your Decision Models" },
-    { "url": "memo-distribution.html", "icon": "glyphicon-send", "name": "Distribution Centre", "description": "Send messages to groups of contacts" },
-    { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates"  },
+    { "url": "decisions-ui.html", "icon": "glyphicon-list-alt", "description": "View and manage your decisions here", "name": "Decisions Definer", "role": "super_admin" },
+    { "url": "domain.html", "icon": "omny-icon-domain-model", "name": "Domain Model", "description": "Business glossary", "role": "super_admin" },
+    { "url": "decisions-dmn.html", "icon": "glyphicon-list-alt", "name": "Decisions Repository", "description": "Home of your Decision Models", "role": "super_admin" },
+    { "url": "memo-distribution.html", "icon": "glyphicon-send", "name": "Distribution Centre", "description": "Send messages to groups of contacts", "role": "admin" },
+    { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates", "role": "admin"  },
     { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View your sales funnel", "name": "Funnel" },
     { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },    
-    { "url": "admin/users.html", "icon": "omny-icon-user", "name": "User Management", "role": "super_admin" },
-    { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status" }
+    { "url": "admin/users.html", "icon": "omny-icon-user", "name": "User Management", "description": "Manage users", "role": "super_admin" },
+    { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status", "description": "Check various aspects of the tenant's configuration", "role": "admin" }
   ],
   "partials": [
     { "name": "omnyContactExtension", "url": "/partials/omny/contact-extension.html"},
