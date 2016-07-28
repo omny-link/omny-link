@@ -26,6 +26,8 @@ public interface ContactCompleteProjection {
 
     String getTitle();
 
+    String getJobTitle();
+
     String getEmail();
 
     boolean getEmailConfirmed();
