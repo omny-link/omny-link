@@ -3,7 +3,8 @@
     <tr>
       <th></th>
       <th class="col-md-2">Name</th>
-      <th class="col-md-8">Description</th>
+      <th class="col-md-2">Role</th>
+      <th class="col-md-6">Description</th>
       <!-- th>Version</td-->
       <th class="col-md-2">Status</th>
     </tr>
@@ -13,7 +14,8 @@
       <tr data-href="{{_links.self.href}}">
         <td>{{i+1}}</td>
         <td class="col-md-2">{{name}}</td>
-        <td class="col-md-9">{{description}}</td>
+        <td class="col-md-2">{{#role==undefined || role==''}}any{{else}}{{role}}{{/}}</td>
+        <td class="col-md-6">{{description}}</td>
         <!-- td>{{version}}</td-->
         <td>
           {{# valid==true}}

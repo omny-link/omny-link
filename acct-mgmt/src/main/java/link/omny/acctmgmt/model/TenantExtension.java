@@ -51,6 +51,9 @@ public class TenantExtension implements Serializable {
     private String icon;
 
     @JsonProperty
+    private String role;
+
+    @JsonProperty
     private String description;
 
     @JsonProperty
@@ -82,8 +85,9 @@ public class TenantExtension implements Serializable {
     @Override
     public String toString() {
         return String
-                .format("TenantExtension [id=%s, name=%s, icon=%s, description=%s, url=%s, ref=%s, tenant=%s]",
-                        id, name, icon, description, url, ref, tenant.getId());
+                .format("TenantExtension [id=%s, name=%s, icon=%s, role=%s, description=%s, url=%s, ref=%s, tenant=%s]",
+                        id, name, icon, role, description, url, ref,
+                        tenant.getId());
     }
 
 }
