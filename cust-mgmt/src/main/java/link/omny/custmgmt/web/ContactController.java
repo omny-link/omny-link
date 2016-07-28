@@ -849,6 +849,7 @@ public class ContactController {
         private String countyOrCity;
         private String country;
         private String email;
+        private String jobTitle;
         private String phone1;
         private String phone2;
         private String accountName;
