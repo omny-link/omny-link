@@ -108,6 +108,11 @@
       </h3>
       <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
         <ul class="form edit-form">
+          <li class="form-group">
+	          <label class="col-md-4">Job Title:</label>
+	          <input class="form-control typeahead" id="curJobTitle" value="{{current.jobTitle}}"/>
+	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+	        </li>
           <li>
             <label class="required">Email:</label>
             <input class="form-control" id="curEmail" required type="email" value="{{current.email}}">
