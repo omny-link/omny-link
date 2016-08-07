@@ -963,7 +963,7 @@
             <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@x"/>
           </xsl:attribute>
           <xsl:attribute name="y">
-            <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@y+(2*$fontSize)"/>
+            <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@y+(2.2*$fontSize)"/>
           </xsl:attribute>
           <xsl:choose>
             <xsl:when test="$cutBefore &lt; $cutAfter and $lenBefore &lt; $lenAfter">
@@ -978,6 +978,32 @@
           </xsl:choose>
         </xsl:element>
 		  </xsl:when>
+		  <xsl:when test="contains(@name,'&#10;')">
+        <xsl:element name="text">
+          <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
+          <xsl:attribute name="stroke">#fff</xsl:attribute>
+          <xsl:attribute name="transform">rotate(<xsl:value-of select="$r"/>) translate(<xsl:value-of select="$tx"/>,<xsl:value-of select="$ty"/>)</xsl:attribute>
+          <xsl:attribute name="x">
+            <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@x"/>
+          </xsl:attribute>
+          <xsl:attribute name="y">
+            <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@y+$fontSize"/>
+          </xsl:attribute>
+          <xsl:value-of select="substring-before(@name,'&#10;')"/>
+        </xsl:element>
+        <xsl:element name="text">
+          <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
+          <xsl:attribute name="stroke">#fff</xsl:attribute>
+          <xsl:attribute name="transform">rotate(<xsl:value-of select="$r"/>) translate(<xsl:value-of select="$tx"/>,<xsl:value-of select="$ty"/>)</xsl:attribute>
+          <xsl:attribute name="x">
+            <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@x"/>
+          </xsl:attribute>
+          <xsl:attribute name="y">
+            <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@y+(2.2*$fontSize)"/>
+          </xsl:attribute>
+          <xsl:value-of select="substring-after(@name,'&#10;')"/>
+        </xsl:element>
+      </xsl:when>
 		  <xsl:otherwise>
 		    <xsl:element name="text">
           <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
