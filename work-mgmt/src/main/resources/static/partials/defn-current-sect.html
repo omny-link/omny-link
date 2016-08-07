@@ -9,7 +9,6 @@
           <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{current.key}}', '{{current.name}}', '{{username}}')" title="Start instance"></a>
           <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.suspend('{{current.key}}')" title="Suspend"></a>
         {{/}}
-        <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" onclick="ractive.fetchInstances()" title="Refresh instance list"></a>
       {{/}}
       <a class="glyphicon glyphicon-cloud-download" href="{{context}}/{{tenant.id}}/process-definitions/{{current.id}}.bpmn" target="bpmn" title="Download the BPMN representation of the process"></a>
       {{#current.deploymentId}}
@@ -56,7 +55,10 @@
   {{#current.deploymentId}}
     <h3>
       <span>Instances</span>
-      <span class="clickable glyphicon glyphicon-remove pull-right" on-click="deleteSelectedInstances()" style="top: -15px;"></span>
+      <span class="pull-right">
+	      <span class="clickable glyphicon glyphicon-refresh" aria-hidden="true" onclick="ractive.fetchInstances()" style="top: -15px;" title="Refresh instance list"></span>
+	      <span class="clickable glyphicon glyphicon-remove" on-click="deleteSelectedInstances()" style="top: -15px;" title="Delete selected instances"></span>
+	    </span>
     </h3>
     <table id="instancesTable" style="width:100%">
       <thead>
