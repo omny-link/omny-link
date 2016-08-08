@@ -103,7 +103,6 @@ public class TenantConfigController {
             @PathVariable("id") String tenantId,
             @RequestBody TenantConfig tenantConfig) {
         tenantConfig.setId(tenantId);
-        tenantRepo.save(tenantConfig);
 
         for (TenantExtension process : tenantConfig.getProcesses()) {
             Deployment deployment = processEngine.getRepositoryService()
@@ -113,6 +112,8 @@ public class TenantConfigController {
                     "Deployed process from %1$s, deployment id: %2$s",
                     process.getUrl(), deployment.getId()));
         }
+
+        tenantRepo.save(tenantConfig);
 
         UriComponentsBuilder builder = MvcUriComponentsBuilder
                 .fromController(getClass());
@@ -350,6 +351,14 @@ public class TenantConfigController {
         for (TenantTypeaheadControl control : tenantConfig
                 .getTypeaheadControls()) {
             control.setValid(resourceExists(STATIC_BASE + control.getUrl()));
+            if (control.getUrl().indexOf(id) == -1) {
+                control.setStatus("warning");
+                control.setValid(false);
+                if (control.getDescription() == null) {
+                    control.setDescription("NOTE: relying on Omny Link defaults");
+                }
+            }
+
         }
 
         return tenantConfig;

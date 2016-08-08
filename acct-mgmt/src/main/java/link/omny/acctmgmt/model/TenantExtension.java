@@ -66,6 +66,10 @@ public class TenantExtension implements Serializable {
     @JsonProperty
     private boolean valid;
 
+    @Transient
+    @JsonProperty
+    private String status;
+
     @ManyToOne(optional = false, targetEntity = TenantConfig.class)
     @JsonIgnore
     public TenantConfig tenant;
@@ -80,6 +84,14 @@ public class TenantExtension implements Serializable {
         this(name, url);
         setIcon(icon);
         setDescription(description);
+    }
+
+    public String getStatus() {
+        if (status == null) {
+            return Boolean.toString(valid);
+        } else {
+            return status;
+        }
     }
 
     @Override
