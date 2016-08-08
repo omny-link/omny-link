@@ -132,3 +132,15 @@ select
   `title`,
   `name`
 from ol_memo where tenant_id = 'acme';
+
+-- find duplicate accounts. Fix by manual review
+select name from ol_account group by name having count(id)>1;
+select id, name, tenant_id from ol_account where name in (
+  select name from ol_account group by name having count(id)>1
+);
+select id, first_name, last_name, stage, account_id, tenant_id from ol_contact
+where account_id in (
+  select id from ol_account where name in (
+    select name from ol_account group by name having count(id)>1
+  )
+);
