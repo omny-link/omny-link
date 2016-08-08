@@ -349,7 +349,7 @@ var ractive = new AuthenticatedRactive({
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.hasRole('power-user')) $('.power-user').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
-        //ractive.fetchAccounts();
+        ractive.fetchAccounts();
         ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
         ractive.set('saveObserver', true);
       }
@@ -366,12 +366,13 @@ var ractive = new AuthenticatedRactive({
         if (data['_embedded'] != undefined) {
           data = data['_embedded'].accounts;
         }
-        ractive.set('tmpAccts',data);
+        ractive.set('accounts',data);
         console.log('fetched '+data.length+' accounts for typeahead');
         var accData = jQuery.map( data, function( n, i ) {
           return ( {  "id": ractive.getId(n), "name": n.name } );
         });
         ractive.set('accountsTypeahead',accData);
+        ractive.initAccountTypeahead();
         ractive.set('saveObserver', true);
       }
     });
@@ -441,6 +442,7 @@ var ractive = new AuthenticatedRactive({
     var emailDomain = email.substring(email.indexOf('@')+1);
     switch (emailDomain) {
     case 'aol.com':
+    case 'btinternet.com':
     case 'gmail.com':
     case 'googlemail.com':
     case 'hotmail.co.uk':
@@ -465,9 +467,16 @@ var ractive = new AuthenticatedRactive({
       items:'all',
       minLength:0,
       source:ractive.get('accountsTypeahead'),
-//      updater:function(item) {
-//        return item.id;
-//      }
+      updater:function(item) {
+        ractive.set('current.accountId', item.id);
+        var shortId = item.id.substring(item.id.lastIndexOf('/')+1);
+        $.each(ractive.get('accounts'), function(i,d) {
+          if (d.id == shortId) {
+            ractive.saveAccountLink(ractive.uri(ractive.get('current'))+'/account', item.id);
+          }
+        });
+        return item.name;
+      }
     });
     $('#curAccountName').on("click", function (ev) {
       newEv = $.Event("keydown");
@@ -685,19 +694,7 @@ var ractive = new AuthenticatedRactive({
           contactAccountLink+='/account';
           console.log(' attempt to link account: '+location+' to '+contactAccountLink);
           if (jqXHR.status == 201) { 
-            $.ajax({
-              url: contactAccountLink,
-              type: 'PUT',
-              contentType: 'text/uri-list',
-              data: location,
-              success: completeHandler = function(data, textStatus, jqXHR) {
-                ractive.set('saveObserver',false);
-                console.log('linked account: '+location+' to '+contactAccountLink);
-                ractive.merge('contacts', ractive.get('current'));
-                ractive.showMessage('Account saved');
-                ractive.set('saveObserver',true);
-              }
-            });
+            ractive.saveAccountLink(contactAccountLink,location);
           } else if (jqXHR.status == 204) {
             ractive.set('saveObserver',false);
             var currentIdx =ractive.get('currentIdx');
@@ -715,6 +712,22 @@ var ractive = new AuthenticatedRactive({
       ractive.showMessage(msg);
       ractive.set('saveObserver',true);
     }
+  },
+  saveAccountLink: function(contactAccountLink, location) {
+    console.info('saveAccountLink: '+contactAccountLink+' to '+location);
+    $.ajax({
+      url: contactAccountLink,
+      type: 'PUT',
+      contentType: 'text/uri-list',
+      data: location,
+      success: completeHandler = function(data, textStatus, jqXHR) {
+        ractive.set('saveObserver',false);
+        console.log('linked account: '+location+' to '+contactAccountLink);
+        ractive.select(ractive.get('current'));
+        ractive.showMessage('Contact added to Account');
+        ractive.set('saveObserver',true);
+      }
+    });
   },
   searchCompaniesHouse: function() {
     if (ractive.get('tenant.features.companyBackground')==undefined || ractive.get('tenant.features.companyBackground')==false) return;
