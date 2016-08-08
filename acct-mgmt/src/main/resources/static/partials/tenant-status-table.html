@@ -15,13 +15,17 @@
         <td>{{i+1}}</td>
         <td class="col-md-2">{{name}}</td>
         <td class="col-md-2">{{#role==undefined || role==''}}any{{else}}{{role}}{{/}}</td>
-        <td class="col-md-6">{{description}}</td>
+        <td class="col-md-6">{{{description}}}</td>
         <!-- td>{{version}}</td-->
         <td>
-          {{# valid==true}}
-            <span class="glyphicon glyphicon-ok-sign glyphicon-success" title="Deployed and ready"></span>
+          {{# status=='true'}}
+            <span class="glyphicon glyphicon-ok-sign alert-success" title="Deployed and ready"></span>
           {{else}}
-            <span class="glyphicon glyphicon-remove-sign glyphicon-danger" title="Missing or out of date"></span>
+            {{#if status=='warning'}}
+              <span class="glyphicon glyphicon-warning-sign alert-warning" title="Warning"></span>
+            {{else}}
+              <span class="glyphicon glyphicon-remove-sign alert-danger" title="Missing or out of date"></span>
+            {{/if}}
           {{/}}
           {{#if property == 'processes'}}
             <span class="glyphicon glyphicon-repeat" on-click="deployProcess(this)" title="(Re)Deploy the process"></span>
