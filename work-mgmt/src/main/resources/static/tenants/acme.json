@@ -59,6 +59,11 @@
     { "name": "Fetch company information", "ref": "companyRecord", "url": "processes/link/omny/companiesHouse/FetchCompanyInfo.bpmn" },
     { "name": "Search for companies", "ref": "companySearch", "url": "processes/link/omny/companiesHouse/SearchForCompany.bpmn" }
   ],
+  "serviceLevel": {
+    "inactiveStages":["discovery","review"],
+    "inactivityThreshold":2,
+    "initialResponseThreshold":1
+  },
   "templates": [
     { "name": "ContactAlert", "ref": "ContactAlert" },
     { "name": "NotifyEnquiry", "ref": "NotifyEnquiry" },
@@ -80,7 +85,7 @@
     { "name": "media", "ref": "#curMedium", "url": "/data/media.json"},
     { "name": "sectors", "ref": "#curSector", "url": "/data/omny/sectors.json"},
     { "name": "sources", "ref": "#curSource", "url": "/data/sources.json"},
-    { "name": "stages", "ref": "#curStage", "url": "/data/omny/stages.json"},
+    { "name": "stages", "ref": "#curStage", "url": "/data/stages.json"},
     { "name": "status", "ref": "#curStatus", "url": "/data/status.json"},
     { "name": "tenants", "ref": "#curTenant", "url": "/data/tenants.json"}
   ],

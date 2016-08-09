@@ -1,9 +1,11 @@
 [
-  {  "idx": 0, "id": "Enquiry", "name": "Enquiry"  },
-  {  "idx": 1, "id": "Appointment", "name": "Appointment"  },
-  {  "idx": 2, "id": "Proposal", "name": "Proposal"  },
-  {  "idx": 3, "id": "Order", "name": "Order"  },
-  {  "idx": 4, "id": "Complete", "name": "Complete"  },
-  {  "idx": -1, "id": "On hold", "name": "On hold"  },
-  {  "idx": -1, "id": "Cold", "name": "Cold"  }
+  {  "idx": -1, "id": "Discover", "name": "Discover"  },
+  {  "idx": 0, "id": "Create opportunity", "name": "Create opportunity"  },
+  {  "idx": 1, "id": "Qualify needs", "name": "Qualify needs"  },
+  {  "idx": 2, "id": "Define Solution", "name": "Define Solution"  },
+  {  "idx": 3, "id": "Propose", "name": "Propose"  },
+  {  "idx": 4, "id": "Close", "name": "Close"  },
+  {  "idx": 5, "id": "Implement", "name": "Implement"  },
+  {  "idx": 6, "id": "Measure value", "name": "Measure value"  },
+  {  "idx": -1, "id": "Review", "name": "Review"  }
 ]

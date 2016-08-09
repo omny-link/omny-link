@@ -57,6 +57,11 @@
     { "name": "Fetch company information", "ref": "companyRecord", "url": "processes/link/omny/companiesHouse/FetchCompanyInfo.bpmn" },
     { "name": "Search for companies", "ref": "companySearch", "url": "processes/link/omny/companiesHouse/SearchForCompany.bpmn" }
   ],
+  "serviceLevel": {
+    "inactiveStages":["discovery","review"],
+    "inactivityThreshold":2,
+    "initialResponseThreshold":1
+  },
   "templates": [
     { "name": "ContactAlert", "ref": "ContactAlert" },
     { "name": "NotifyEnquiry", "ref": "NotifyEnquiry" },
