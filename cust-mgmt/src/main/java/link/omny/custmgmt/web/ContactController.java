@@ -819,6 +819,7 @@ public class ContactController {
     private ShortContact wrap(Contact contact) {
         ShortContact resource = new ShortContact();
         BeanUtils.copyProperties(contact, resource);
+        resource.setAlerts(contact.getAlertsAsList());
         Link detail = linkTo(ContactRepository.class, contact.getId())
                 .withSelfRel();
         resource.add(detail);
@@ -857,6 +858,7 @@ public class ContactController {
         private String stage;
         private String enquiryType;
         private String accountType;
+        private List<String> alerts;
         private String tags;
         private String uuid;
         private String tenantId;

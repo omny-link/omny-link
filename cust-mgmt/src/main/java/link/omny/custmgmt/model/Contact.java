@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -205,7 +207,13 @@ public class Contact implements Serializable {
     private String keyword;
 
     /**
-     * Comma-separated set of arbitrary tags for the contact
+     * Comma-separated set of alerts for the contact.
+     */
+    @JsonProperty
+    private String alerts;
+
+    /**
+     * Comma-separated set of arbitrary tags for the contact.
      */
     @JsonProperty
     private String tags;
@@ -386,6 +394,14 @@ public class Contact implements Serializable {
             LOGGER.debug("  have firstName: " + fn);
             LOGGER.debug("  have lastName: " + ln);
             return String.format("%1$s %2$s", fn, ln).trim();
+        }
+    }
+
+    public List<String> getAlertsAsList() {
+        if (alerts == null) {
+            return Collections.emptyList();
+        } else {
+            return Arrays.asList(alerts.split(","));
         }
     }
 
@@ -588,12 +604,13 @@ public class Contact implements Serializable {
     @Override
     public String toString() {
         return String
-                .format("Contact [id=%s, firstName=%s, lastName=%s, title=%s, jobTitle=%s, email=%s, emailConfirmed=%s, emailConfirmationCode=%s, phone1=%s, phone2=%s, address1=%s, address2=%s, town=%s, countyOrCity=%s, postCode=%s, country=%s, stage=%s, enquiryType=%s, accountType=%s, owner=%s, doNotCall=%s, doNotEmail=%s, source=%s, medium=%s, campaign=%s, keyword=%s, tags=%s, firstContact=%s, lastUpdated=%s, tenantId=%s, customFields=%s, account=%d]",
+                .format("Contact [id=%s, firstName=%s, lastName=%s, title=%s, jobTitle=%s, email=%s, emailConfirmed=%s, emailConfirmationCode=%s, phone1=%s, phone2=%s, address1=%s, address2=%s, town=%s, countyOrCity=%s, postCode=%s, country=%s, stage=%s, enquiryType=%s, accountType=%s, owner=%s, doNotCall=%s, doNotEmail=%s, source=%s, medium=%s, campaign=%s, keyword=%s, alerts=%s, tags=%s, firstContact=%s, lastUpdated=%s, tenantId=%s, customFields=%s, account=%d]",
                         id, firstName, lastName, title, jobTitle, email,
                         emailConfirmed, uuid, phone1, phone2, address1,
                         address2, town, countyOrCity, postCode, country, stage,
                         enquiryType, accountType, owner, doNotCall, doNotEmail,
-                        source, medium, campaign, keyword, tags, firstContact,
+                        source, medium, campaign, keyword, alerts, tags,
+                        firstContact,
                         lastUpdated, tenantId, customFields,
                         account == null ? null : account.getId());
     }
