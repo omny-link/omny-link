@@ -857,9 +857,12 @@ var ractive = new AuthenticatedRactive({
   showAlertCounters: function() {
     console.info('showAlertCounters');
     var alerts = {
-      account:$('#accountSect :invalid').length,
+      account:$('#currentAccount :invalid').length,
+      activities:$('#activitySect :invalid').length,
+      activityAnalysis:$('#activityAnalysisSect :invalid').length,
       budget:$('#budgetSect :invalid').length,
       connections:$('#connectionsSect :invalid').length,
+      documents:$('#documentsTable .alert-danger').length,
       notes:$('#notesTable .alert-danger').length,
     }
     ractive.set('alerts',alerts);
