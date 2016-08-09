@@ -49,7 +49,7 @@ public class TenantConfigTest {
         assertEquals(2, config.getContactFields().size());
         assertEquals(32, config.getAccountFields().size());
         assertEquals(7, config.getToolbar().size());
-        assertEquals(9, config.getPartials().size());
+        assertEquals(8, config.getPartials().size());
         assertEquals(5, config.getContactActions().size());
         assertEquals(1, config.getProcesses().size());
         assertEquals(12, config.getTypeaheadControls().size());
