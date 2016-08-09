@@ -1,0 +1,87 @@
+server.port = 8082
+# session timeout in seconds 5mins: 300; 1h:3600; 8h: 28000
+server.session-timeout=28000
+
+# See http://stackoverflow.com/questions/24415947/spring-boot-jpa-connection-validation-not-working
+# and https://github.com/brettwooldridge/HikariCP/wiki/Bad-Behavior:-Handling-Database-Down
+spring.datasource.url=jdbc:mysql://localhost/cust_db?autoreconnect=true
+spring.datasource.username=USR
+spring.datasource.password=PWD
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.test-on-borrow=true
+spring.datasource.test-while-idle=true
+spring.datasource.validation-query=SELECT 1;
+
+spring.jackson.date-format=yyyy-MM-dd'T'HH:mm
+spring.jackson.joda-date-time-format=yyyy-MM-dd'T'HH:mm
+
+# Hibernate property values are: none, validate, update, create, create-drop
+hibernate.hbm2ddl.auto=create
+spring.jpa.generate-ddl=true
+spring.jpa.show-sql=false
+
+spring.freemarker.cache=false
+multipart.maxFileSize=10Mb
+
+#debug: true
+#spring.thymeleaf.cache: false
+#security.basic.enabled: false
+#security.user.password=password
+
+#
+# LOGGING PROPERTIES
+#
+
+#logging.level.org.springframework.security: INFO
+#logging.config=/Users/tstephen/git/platform/omny-link-server/log4j.properties
+logging.file=/var/tmp/omny-link.log
+
+logging.level.com.zaxxer.hikari=WARN
+logging.level.com.knowprocess=WARN
+logging.level.com.knowprocess.beans=WARN
+logging.level.com.knowprocess.bpm=WARN
+logging.level.com.knowprocess.resource=DEBUG
+logging.level.HikariPool=WARN
+logging.level.io.onedecision=WARN
+logging.level.link.omny=INFO
+logging.level.link.omny.custmgmt=WARN
+logging.level.org.activiti.engine=WARN
+logging.level.org.activiti.engine.impl.bpmn.parser.BpmnParse=ERROR
+logging.level.org.activiti.spring=WARN
+logging.level.org.apache=WARN
+logging.level.org.hibernate=WARN
+logging.level.org.hibernate.SQL=WARN
+logging.level.org.openid4java=WARN
+logging.level.org.springframework=WARN
+logging.level.org.springframework.boot=WARN
+logging.level.org.subethamail.smtp=WARN
+logging.level.springfox.documentation=WARN
+
+#
+# ACTIVITI PROPERTIES
+#
+
+spring.activiti.multiTenant.servers.omny.mailServerDefaultFrom=USER@DOMAIN
+spring.activiti.multiTenant.servers.omny.mailServerHost=HOST
+spring.activiti.multiTenant.servers.omny.mailServerPort=PORT
+spring.activiti.multiTenant.servers.omny.mailServerUseTLS=false|true
+spring.activiti.multiTenant.servers.omny.mailServerUseSSL=false|true    
+spring.activiti.multiTenant.servers.omny.mailServerUsername=MAIL_USR
+spring.activiti.multiTenant.servers.omny.mailServerPassword=MAIL_PWD
+
+#
+# OMNY PROPERTIES
+#
+
+# disable the repository populators 
+omny.populator.skip=true
+# Comma separated list of tenants
+omny.tenants=omny
+# disable mock SMTP server (useful for local development)
+omny.mock.smtp=false
+
+twitter.consumerKey=KEY
+twitter.consumerSecret=SECRET
+
+cors.allowedOrigins=null,https?://localhost.*,https?://.*omny.link.*,chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm
+
