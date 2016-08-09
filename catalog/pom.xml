@@ -33,53 +33,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>spring-boot-starter-logging</artifactId>
-          <groupId>org.springframework.boot</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>tomcat-jdbc</artifactId>
-          <groupId>org.apache.tomcat</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.zaxxer</groupId>
-      <!-- drop -java6 suffix for Java 8 compiled version -->
-      <artifactId>HikariCP-java6</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-rest</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-security</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-freemarker</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- <dependency>
-      <groupId>org.eclipse.persistence</groupId>
-      <artifactId>eclipselink</artifactId>
-      <version>2.5.0</version>
-    </dependency>-->
-    <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
     </dependency>
@@ -113,11 +66,6 @@
       <groupId>com.knowprocess.bpm</groupId>
       <artifactId>work-mgmt</artifactId>
       <version>${work-mgmt.version}</version>
-    </dependency>
-    <!-- Compiles against SLF4J but this is the implementation of choice -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-log4j</artifactId>
     </dependency>
     <dependency>
       <groupId>io.onedecision</groupId>
