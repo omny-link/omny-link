@@ -3,6 +3,10 @@
   <process id="UpdateContactWithDecisionLogic" isClosed="false" isExecutable="true" name="Update Contact" processType="None">
     <documentation id="UpdateContact_D_1" textFormat="text/plain"><![CDATA[Update an existing contact in the CRM with the results of a decision table]]></documentation>
     <extensionElements>
+      <activiti:executionListener class="com.knowprocess.bpm.listeners.FieldInjectionListener" event="start">
+        <activiti:field name="varName" stringValue="decisionName"/>
+        <activiti:field expression="${''}" name="dynamicValue"/>
+      </activiti:executionListener>
       <yaoqiang:pageFormat height="841.8897637795276" imageableHeight="831.8897637795276" imageableWidth="588.1102362204724" imageableX="5.0" imageableY="5.0" orientation="0" width="598.1102362204724"/>
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
       <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
@@ -59,7 +63,7 @@
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>${contactId}?projection=complete</activiti:expression>
+          <activiti:expression>${contactId}?projection=base</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Accept:application/json</activiti:string>
@@ -69,206 +73,29 @@
       <incoming>_11</incoming>
       <outgoing>_12</outgoing>
     </serviceTask>
-    <scriptTask completionQuantity="1" id="_8" isForCompensation="false" name="Run decision logic" scriptFormat="JavaScript" startQuantity="1">
+    <sequenceFlow id="_10" sourceRef="_13" targetRef="updateContact"/>
+    <sequenceFlow id="_11" sourceRef="startEvent" targetRef="readContact"/>
+    <sequenceFlow id="_12" sourceRef="readContact" targetRef="_13"/>
+    <callActivity calledElement="RunDecisionLogicOnContact" completionQuantity="1" id="_13" isForCompensation="false" name="Run decision logic" startQuantity="1">
+      <extensionElements>
+        <activiti:in source="tenantId" target="tenantId"/>
+        <activiti:in source="decisionName" target="decisionName"/>
+        <activiti:in source="contact" target="contact"/>
+        <activiti:out source="contact" target="contact"/>
+      </extensionElements>
       <incoming>_12</incoming>
       <outgoing>_10</outgoing>
-      <script><![CDATA[var contact = JSON.parse(execution.getVariable('contact').toString());
-var System=java.lang.System;
-contact.account.id = contact.accountId;
-
-// TODO testing only 
-contact.account.customFields['questionnaireSubmitted']='2015-12-15';
-
-// AIR
-// qualitative?: fleetType
-if (contact.account.customFields['consolidatedDeliveries']=='true') {
-  contact.account.customFields['airQualityScore'] = 5;
-} else if (contact.account.customFields['noIdlingPledge']=='true') {
-  contact.account.customFields['airQualityScore'] = 2;
-} else {
-  contact.account.customFields['airQualityScore'] = 0;
-}
-System.out.println('  airQualityScore: '+ contact.account.customFields['airQualityScore']);
-
-// CARBON
-// qualitative: continuousEnergyPerformanceImprovement
-if (contact.account.customFields['co2Account']=='true') {
-  contact.account.customFields['carbonScore'] = 1;
-} else {
-  contact.account.customFields['carbonScore'] = 0;
-}
-if (contact.account.customFields['co2ProductFootprint']=='true') {
-  contact.account.customFields['carbonScore'] += 2;
-}
-if (contact.account.customFields['memberCdp']=='true') {
-  contact.account.customFields['carbonScore'] += 2;
-}
-// Carbon Trust or similar
-if (contact.account.customFields['carbonCertified']=='true') {
-  contact.account.customFields['carbonScore'] += 1;
-}
-if (contact.account.customFields['carbonScore']>5) {
-  contact.account.customFields['carbonScore'] = 5;
-}
-System.out.println('  carbonScore: '+ contact.account.customFields['carbonScore']);
-
-// FOOD 
-contact.account.customFields['foodScore'] = 0;
-if (contact.account.customFields['farmAssuredPercent'] != undefined) contact.account.customFields['foodScore'] += 1;
-if (contact.account.customFields['integratedProductionPercent'] != undefined) contact.account.customFields['foodScore'] += 1;
-if (contact.account.customFields['certifiedOrganicPercent'] != undefined) contact.account.customFields['foodScore'] += 0.5;
-if (contact.account.customFields['foodSafety'] != undefined) contact.account.customFields['foodScore'] += 0.5;
-if (contact.account.customFields['primaryAuthority'] != undefined) contact.account.customFields['foodScore'] += 0.5;
-if (contact.account.customFields['foodHygieneRisk'] != undefined) contact.account.customFields['foodScore'] += 0.5;
-if (contact.account.customFields['foodService'] != undefined) contact.account.customFields['foodScore'] += 0.5;
-if (contact.account.customFields['foodCulturalAwareness'] != undefined) contact.account.customFields['foodScore'] += 0.5;
-System.out.println('  foodScore: '+ contact.account.customFields['foodScore']);
-
-// LEADERSHIP
-contact.account.customFields['leadershipScore'] = 0;
-if (contact.account.customFields['sustainabilityVisionStatement']=='true') {
-  contact.account.customFields['leadershipScore'] += 2;
-}
-if (contact.account.customFields['memberTradeAssoc']=='true') {
-  contact.account.customFields['leadershipScore'] += 1;
-}
-if (contact.account.customFields['certified']=='true') {
-  contact.account.customFields['leadershipScore'] += 2;
-}
-System.out.println('  leadershipScore: '+ contact.account.customFields['leadershipScore']);
-
-// LOCALISM
-// If any evidence assume 3/5 then adjust manually based on evidence
-if (contact.account.customFields['employmentOpportunities'] != undefined) contact.account.customFields['localismScore'] = 3;
-System.out.println('  localismScore: '+ contact.account.customFields['localismScore']);
-
-// SOCIAL INCLUSION
-// TODO insufficient questions
-contact.account.customFields['socialInclusionScore'] = 0;
-if (contact.account.customFields['equality']=='true') {
-  contact.account.customFields['socialInclusionScore'] += 2;
-}
-if (contact.account.customFields['livingWage']=='true') {
-  contact.account.customFields['socialInclusionScore'] += 2;
-}
-System.out.println('  socialInclusionScore: '+ contact.account.customFields['socialInclusionScore']);
-
-// SUPPLY CHAIN
-contact.account.customFields['supplyChainScore'] = 0;
-if (contact.account.customFields['codeOfConduct']=='true') {
-  contact.account.customFields['supplyChainScore'] += 1;
-}
-if (contact.account.customFields['useSpotContracts']==false) {
-  contact.account.customFields['supplyChainScore'] += 1;
-}
-if (contact.account.customFields['useSubcontractors']==false) {
-  contact.account.customFields['supplyChainScore'] += 1;
-}
-// TODO check against Corruption Perception Index manually but for now assume any answer is good
-if (contact.account.customFields['productionCountry'] != undefined) {
-  contact.account.customFields['supplyChainScore'] += 1;
-}
-// TODO manual check but for now assume any answer is good
-if (contact.account.customFields['ethicalSupplyChain'] != undefined) {
-  contact.account.customFields['supplyChainScore'] += 1;
-}
-System.out.println('  supplyChainScore: '+ contact.account.customFields['supplyChainScore']);
-
-// TAX
-contact.account.customFields['taxScore'] = 0;
-if (contact.account.customFields['taxAvoidanceSchemes']=='true') {
-  contact.account.customFields['taxScore'] -= 1;
-}
-if (contact.account.customFields['taxHavens']=='true') {
-  contact.account.customFields['taxScore'] -= 3;
-}
-if (contact.account.customFields['countryByCountryReporting']==false) {
-  contact.account.customFields['taxScore'] -= 1;
-}
-System.out.println('  taxScore: '+ contact.account.customFields['taxScore']);
-
-// WASTE
-contact.account.customFields['wasteScore'] = 0;
-// TODO bolster with additional questions
-if (contact.account.customFields['wasteManagementPolicy']=='true') {
-  contact.account.customFields['wasteScore'] += 1;
-}
-if (contact.account.customFields['minimisingWasteActions']=='true') {
-  contact.account.customFields['wasteScore'] += 1;
-}
-System.out.println('  wasteScore: '+ contact.account.customFields['wasteScore']);
-
-// WATER
-contact.account.customFields['waterScore'] = 0;
-// TODO bolster with additional questions
-if (contact.account.customFields['waterAccount']=='true') {
-  System.out.println('    credit given for waterAccount');
-  contact.account.customFields['waterScore'] += 1;
-}
-if (contact.account.customFields['waterEfficiency']!=undefined) {
-  System.out.println('    credit given for waterEfficiency');
-  contact.account.customFields['waterScore'] += 1;
-}
-System.out.println('  waterScore: '+ contact.account.customFields['waterScore']);
-
-// AIR + CARBON + WASTE + WATER
-contact.account.customFields['environmentScore']
-    = (parseInt(contact.account.customFields['airQualityScore'])
-    + parseInt(contact.account.customFields['carbonScore'])
-    + parseInt(contact.account.customFields['waterScore'])
-    + parseInt(contact.account.customFields['wasteScore'])) *2;
-System.out.println('  environmentScore: '+ contact.account.customFields['environmentScore']);
-    
-// FOOD + LOCAL + SOCIAL INCLUSION
-contact.account.customFields['socialScore']
-    = (parseInt(contact.account.customFields['foodScore'])
-    + parseInt(contact.account.customFields['localismScore'])
-    + parseInt(contact.account.customFields['socialInclusionScore'])) *2;
-System.out.println('  socialScore: '+ contact.account.customFields['socialScore']);
-    
-// LEADERSHIP + SUPPLY CHAIN + TAX 
-contact.account.customFields['governanceScore']
-    = (parseInt(contact.account.customFields['leadershipScore'])
-    + parseInt(contact.account.customFields['supplyChainScore'])
-    + parseInt(contact.account.customFields['taxScore'])) *2;
-System.out.println('  governanceScore: '+ contact.account.customFields['governanceScore']);
-    
-contact.account.customFields['remainingScore']
-    = 100
-    - parseInt(contact.account.customFields['environmentScore'])
-    - parseInt(contact.account.customFields['socialScore'])
-    - parseInt(contact.account.customFields['governanceScore']);
-System.out.println('  remainingScore: '+ contact.account.customFields['remainingScore']);
-
-// TODO use Brian's spreadsheet
-contact.account.customFields.carbonIntensity = 0.32;
-contact.account.customFields.sectorCarbonIntensity = 0.35;
-
-// TODO no source data!
-contact.account.customFields.scope1tCO2e = 0;
-contact.account.customFields.scope2tCO2e = 0;
-contact.account.customFields.scope3tCO2e = 0;
-                          
-System.out.println('after update: '+ JSON.stringify(contact));
-execution.setVariable('contact', JSON.stringify(contact));]]></script>
-    </scriptTask>
-    <sequenceFlow id="_10" sourceRef="_8" targetRef="updateContact"/>
-    <sequenceFlow id="_11" sourceRef="startEvent" targetRef="readContact"/>
-    <sequenceFlow id="_12" sourceRef="readContact" targetRef="_8"/>
+    </callActivity>
     <textAnnotation id="_2" textFormat="text/plain">
       <text>UPDATE CONTACT BY RUNNING DECISION LOGIC OVER IT</text>
     </textAnnotation>
-    <textAnnotation id="_4" textFormat="text/plain">
-      <text>TODO currently assumes scorecard decision</text>
-    </textAnnotation>
-    <association associationDirection="None" id="_9" sourceRef="_4" targetRef="_6"/>
   </process>
   <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-UpdateContactWithDecisionLogic" name="New Diagram" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="UpdateContactWithDecisionLogic">
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
         <dc:Bounds height="32.0" width="32.0" x="62.000000000000014" y="254.99999999999994"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="69.0" x="43.499999999999986" y="296.6640624999999"/>
+          <dc:Bounds height="18.8046875" width="69.0" x="43.499999999999986" y="296.859375"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="updateContact" id="Yaoqiang-updateContact">
@@ -280,7 +107,7 @@ execution.setVariable('contact', JSON.stringify(contact));]]></script>
       <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
         <dc:Bounds height="32.0" width="32.0" x="690.576923076923" y="254.99999999999994"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="62.0" x="675.576923076923" y="296.6640624999999"/>
+          <dc:Bounds height="18.8046875" width="62.0" x="675.576923076923" y="296.859375"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
@@ -313,51 +140,38 @@ execution.setVariable('contact', JSON.stringify(contact));]]></script>
           <dc:Bounds height="32.8046875" width="49.0" x="210.64423076923077" y="256.59765624999994"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_8" id="Yaoqiang-_8">
+      <bpmndi:BPMNShape bpmnElement="_13" id="Yaoqiang-_13" isExpanded="false">
         <dc:Bounds height="81.0" width="116.0" x="334.28846153846155" y="230.49999999999994"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="32.8046875" width="78.0" x="353.28846153846155" y="256.59765624999994"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4">
-        <dc:Bounds height="43.0" width="367.0" x="182.0" y="486.0"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="262.0" x="182.0" y="500.09765625"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
-        <di:waypoint x="293.07142857142856" y="270.99999999999994"/>
-        <di:waypoint x="334.07142857142856" y="270.99999999999994"/>
+        <di:waypoint x="292.7857142857142" y="270.99999999999994"/>
+        <di:waypoint x="334.7857142857142" y="270.99999999999994"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="6.0" x="310.57142857142856" y="261.59765624999994"/>
+          <dc:Bounds height="18.8046875" width="6.0" x="310.7857142857142" y="261.59765624999994"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_11" id="Yaoqiang-_11">
-        <di:waypoint x="94.06361416314803" y="270.99999999999994"/>
-        <di:waypoint x="177.07142857142856" y="270.99999999999994"/>
+        <di:waypoint x="93.78427927238265" y="270.99999999999994"/>
+        <di:waypoint x="176.78571428571422" y="270.99999999999994"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="6.0" x="132.5675213672883" y="261.59765624999994"/>
+          <dc:Bounds height="18.8046875" width="6.0" x="132.28499677904844" y="261.59765624999994"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_10" id="Yaoqiang-_10">
-        <di:waypoint x="450.07142857142856" y="270.99999999999994"/>
-        <di:waypoint x="491.07142857142856" y="270.99999999999994"/>
+        <di:waypoint x="450.7857142857142" y="270.99999999999994"/>
+        <di:waypoint x="491.7857142857142" y="270.99999999999994"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="6.0" x="467.57142857142856" y="261.59765624999994"/>
+          <dc:Bounds height="18.8046875" width="6.0" x="468.2857142857142" y="261.59765624999994"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
-        <di:waypoint x="607.0714285714286" y="270.99999999999994"/>
-        <di:waypoint x="691.0792429797091" y="270.99999999999994"/>
+        <di:waypoint x="607.7857142857142" y="270.99999999999994"/>
+        <di:waypoint x="690.7871492990458" y="270.99999999999994"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="6.0" x="646.0753357755688" y="261.59765624999994"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9">
-        <di:waypoint x="182.07142857142856" y="508.93563553015827"/>
-        <di:waypoint x="91.07142857142856" y="509.3996291718171"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="6.0" x="133.57142857142856" y="499.7652886009877"/>
+          <dc:Bounds height="18.8046875" width="6.0" x="646.28643179238" y="261.59765624999994"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
