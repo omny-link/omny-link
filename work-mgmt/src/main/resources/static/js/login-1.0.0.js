@@ -109,6 +109,14 @@ var AuthenticatedRactive = Ractive.extend({
   getServer: function() {
     return ractive.get('server')==undefined ? '' : ractive.get('server');
   },
+  getStageName: function(idx) {
+    console.log('getStageName: '+idx);
+    var rtn = '';
+    $.each(ractive.get('stages'), function(i,d) {
+      if (parseInt(d['idx'])==idx) rtn = d.name;
+    });
+    return rtn;
+  },
   handleError: function(jqXHR, textStatus, errorThrown) {
     switch (jqXHR.status) {
     case 0:
