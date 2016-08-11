@@ -666,6 +666,14 @@ h4 a.glyphicon-remove {
 a.glyphicon-remove {
   padding: 4px 6px;
 }
+ul.json {
+	list-style: none;
+  position: relative;
+  left: -40px;
+}
+ul.json li label {
+	width: 30%;
+}
 .powered-by { 
   display:none;
   float: left;

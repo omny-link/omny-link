@@ -1,5 +1,6 @@
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:activiti="http://activiti.org/bpmn" 
   xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" 
   xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" 
   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
@@ -618,6 +619,23 @@
 	    <xsl:element name="rect">
 	      <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
 	      <xsl:attribute name="class">task <xsl:value-of select="local-name(.)"/></xsl:attribute>
+	      <xsl:attribute name="data-name"><xsl:value-of select="@name"/></xsl:attribute>
+	      <xsl:if test="local-name(.)='userTask'">
+		      <xsl:choose>
+			      <xsl:when test="@activiti:candidateUsers">
+			        <xsl:attribute name="data-resource"><xsl:value-of select="@activiti:candidateUsers"/></xsl:attribute>
+			      </xsl:when>
+	          <xsl:when test="bpmn:potentialOwner/bpmn:resourceAssignmentExpression/bpmn:formalExpression/text()">
+	            <xsl:attribute name="data-resource">
+	              <xsl:value-of select="bpmn:potentialOwner/bpmn:resourceAssignmentExpression/bpmn:formalExpression/text()"/>
+	            </xsl:attribute>
+	          </xsl:when>
+			      <xsl:otherwise>
+			        <xsl:attribute name="data-resource">n/a</xsl:attribute>
+			      </xsl:otherwise>
+			    </xsl:choose>
+			  </xsl:if>
+	      <xsl:attribute name="data-type"><xsl:value-of select="local-name(.)"/></xsl:attribute>
         <xsl:attribute name="stroke">#000</xsl:attribute>
 	      <xsl:choose>
 		      <xsl:when test="local-name(.)='callActivity'">

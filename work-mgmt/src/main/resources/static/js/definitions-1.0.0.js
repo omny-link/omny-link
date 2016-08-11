@@ -23,9 +23,15 @@ var ractive = new AuthenticatedRactive({
       console.log('formatJson: '+json);
       try {
         var obj = JSON.parse(json);
-        var html = '';
+        var html = '<ul class="json">';
         $.each(Object.keys(obj), function(i,d) {
-          html += (typeof obj[d] == 'object' ? '' : '<b>'+d+'</b>: '+obj[d]+'<br/>');
+          if (typeof obj[d] == 'object' && obj[d]['string'] != undefined) {
+            html += '<li><label>'+d.toLabel()+':</label><span>'+obj[d]['string']+'</span>';
+          } else if (typeof obj[d] == 'object') {
+            // currently ignore keys without value, may change that?
+          } else {
+            html += '<label>'+d+':</label><span>'+obj[d]+'</span>';
+          }
         });
         return html;
       } catch (e) {
@@ -277,6 +283,12 @@ var ractive = new AuthenticatedRactive({
         $('.selected').attr('class', $('.selected').attr('class').replace(/selected/,''))
     $('#'+ev.target.id).attr('class',$('#'+ev.target.id).attr('class')+' selected');
     ractive.set('selected',ev.target.id);
+    ractive.set('selectedBpmnObject', { 
+      id: ev.target.id, 
+      name: $('#'+ev.target.id).data('name'), 
+      type: $('#'+ev.target.id).data('type')==undefined ? '' : $('#'+ev.target.id).data('type').toLabel(), 
+      resource: $('#'+ev.target.id).data('resource') 
+    });
   },
 //  showUserTaskPropertySect: function(ev) {
 //    console.info('showUserTaskPropertySect at x,y:'+ev.clientX+','+ev.clientY);
