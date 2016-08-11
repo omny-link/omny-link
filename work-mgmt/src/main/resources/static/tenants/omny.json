@@ -59,8 +59,7 @@
   ],
   "serviceLevel": {
     "inactiveStages":["discovery","review"],
-    "inactivityThreshold":2,
-    "initialResponseThreshold":1
+    "initialResponseThreshold":7
   },
   "templates": [
     { "name": "ContactAlert", "ref": "ContactAlert" },

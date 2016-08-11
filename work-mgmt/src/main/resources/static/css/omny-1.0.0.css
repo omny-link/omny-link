@@ -713,12 +713,16 @@ ul.json li label {
   padding: 5px 15px;
   margin-right: 50px;
 }
+#messages,
+.messages {
+	line-height: 2em;
+	padding: 0 10px 0 10px;
+}
 #messages { 
   position: fixed;
   top: 45px;
   margin-left: 25%;
   margin-right: 25%;
-  padding: 0 10px 0 10px;
   width: 50%;
   z-index: 500;
 }
