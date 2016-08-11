@@ -51,6 +51,29 @@
   {{/}}
   {{#if current.id}}
     <div id="curImage">{{{current.image}}}</div>
+    <h3>
+      <span>Properties</span>
+    </h3>
+    <table id="propertiesTable" style="width:100%">
+      <thead>
+        <tr>
+          {{#if hasRole('admin') }}<th class="a-secondary-label control-label">Id</th>{{/if}}
+          <th class="a-secondary-label control-label">Name</th>
+          <th class="a-secondary-label control-label">Type</th>
+          <th class="a-secondary-label control-label">Resource</th>
+          <!--th>Actions</th-->
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {{#if hasRole('admin') }}<td>{{selectedBpmnObject.id}}</td>{{/if}}
+          <td>{{selectedBpmnObject.name}}</td>
+          <td>{{selectedBpmnObject.type}}</td>
+          <td>{{selectedBpmnObject.resource}}</td>
+          <!--td>&nbsp;</td-->
+        </tr>
+      </tbody>
+    </table>
   {{/if current.id}}
   {{#current.deploymentId}}
     <h3>
@@ -144,8 +167,14 @@
 				              {{#each processVariableNames:j}}
 				                <tr data-href="{{_links.self.href}}">
 				                  <td>{{j+1}}</td>
-				                  <td>{{processVariableNames[j]}}</td>
-				                  <td>{{(JSON.stringify(processVariables[processVariableNames[j]]))}}</td>
+				                  <td>{{ processVariableNames[j] }}</td>
+				                  <td>
+				                    {{# typeof processVariables[processVariableNames[j]] == 'object' }}
+				                      {{{ formatJson(JSON.stringify(processVariables[processVariableNames[j]])) }}}
+				                    {{else}}
+				                      {{{ processVariables[processVariableNames[j]] }}}
+				                    {{/}}
+				                  </td>
 				                </tr>
 				              {{/each}}
 				            </tbody>
