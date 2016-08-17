@@ -12,16 +12,17 @@
     <thead>
       <tr>
         <th></th>
-        <th>Name</th>
-        <th>Status</th>
-        <th>Owned by</th>
-        <th>Created</th>
-        <th>Last Updated</th>
+        <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
+        <!--th>Memo</th-->
+        <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon "></th>
+        <th on-click="sort:status">Status<span class="sortable {{ sorted('status') }} glyphicon "></th>
+        <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon "></th>
+        <th on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon "></th>        
         <th class="col-actions">Actions</th>
       </tr>
     </thead>
     <tbody>
-    {{#each memos:i}}
+    {{#each sort(memos,sortColumn,sortAsc):i}}
       {{# matchFilter(this) }}
         <tr data-href="{{links[rel=='self'].href}}" on-click="edit(i,this)">
           <td>{{i+1}}</td>

@@ -89,6 +89,28 @@ var ractive = new AuthenticatedRactive({
       }
     },
     saveObserver: false,
+    sort: function (array, column, asc) {
+      console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);
+      array = array.slice(); // clone, so we don't modify the underlying data
+
+      return array.sort( function ( a, b ) {
+        if (b[column]==undefined || b[column]==null || b[column]=='') {
+          return (a[column]==undefined || a[column]==null || a[column]=='') ? 0 : -1;
+        } else if (asc) {
+          return a[ column ] < b[ column ] ? -1 : 1;
+        } else {
+          return a[ column ] > b[ column ] ? -1 : 1;
+        }
+      });
+    },
+    sortAsc: true,
+    sortColumn: 'name',
+    sorted: function(column) {
+      console.info('sorted');
+      if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
+      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc'
+      else return 'hidden';
+    },
     stdPartials: [
       { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "navbar", "url": "/partials/memo-dist-navbar.html"},
