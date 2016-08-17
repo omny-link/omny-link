@@ -29,9 +29,7 @@ public class FetcherTest {
 
     private Fetcher svc;
     private String resourceUrl = "http://farm4.staticflickr.com/3140/3094868910_41c19ce2a3_b_d.jpg";
-    private String resourceUrl2 = "http://farm4.staticflickr.com/3025/3094867738_1300826ed5_q_d.jpg";
     private String repoUri = "https://docs.google.com/tux-collage.jpg";
-    private String repoUri2 = "https://docs.google.com/sub-folder/java-collage.jpg";
 
     @Before
     public void setUp() throws Exception {
@@ -102,13 +100,14 @@ public class FetcherTest {
 
     @Test
     public void testFetchResourcePart() {
-        String resource = "http://www.jemsudan.org/meet-the-leadership-jem-chairman-dr-gibril-ibrahim/";
+        String resource = "http://omny.link/user-help/contacts";
         try {
             Map<String, String> headers = new HashMap<String, String>();
-            String result = svc.fetchToString(resource, headers , ".inner-content");
+            String result = svc.fetchToString(resource, headers,
+                    ".main_omny_tools");
             System.out.println("Result found: \n" + result);
             assertNotNull(result);
-            assertTrue(result.contains("inner-content"));
+            assertTrue(result.contains("omny_tools"));
             assertTrue(!result.contains("<head>"));
         } catch (IOException e) {
             e.printStackTrace();
