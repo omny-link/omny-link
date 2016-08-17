@@ -89,16 +89,17 @@
           {{#if hasRole('admin') }}
             <td><input class="checkbox" type="checkbox" onchange="$('#instancesTable>tbody>tr>td>.checkbox').click();"/></td>
           {{/if}}
-          <th class="a-secondary-label control-label">Name</th>
-          {{#if hasRole('admin') }}<th>Id</th>{{/if}}
-          <th class="a-secondary-label control-label">Complete?</th>
+          <th class="a-secondary-label control-label" on-click="sortInstances:businessKey">Name<span class="sortable {{ sortedInstance('businessKey') }} glyphicon"></th>
+          {{#if hasRole('admin') }}<th on-click="sortInstances:id">Id<span class="sortable {{ sorted('id') }} glyphicon"></th>{{/if}}
+          <th class="a-secondary-label control-label" on-click="sortInstances:startTime">Started<span class="sortable {{ sortedInstance('startTime') }} glyphicon"></th>
+          <th class="a-secondary-label control-label" on-click="sortInstances:endTime">Completed<span class="sortable {{ sortedInstance('endTime') }} glyphicon"></th>
           {{#if .!=undefined && !..ended}}
-	          <th class="a-secondary-label control-label">Current task</th>
+	          <th class="a-secondary-label control-label" on-click="sortInstances:activityId">Current task<span class="sortable {{ sortedInstance('activityId') }} glyphicon"></th>
 	        {{/if}}
 	        <th>Actions</th>
         </tr>
       </thead>
-		    {{#each current.instances:i}}
+		    {{#each sort(current.instances,sortInstanceColumn,sortInstanceAsc):i}}
 		      <tbody>
 		        <tr>
 		          {{#if hasRole('admin') }}
@@ -108,11 +109,12 @@
 			          {{#businessKey}} {{businessKey}} {{else}} N/A {{/}}
 			        </td>
 			        {{#if hasRole('admin') }}<td>{{id}}&nbsp;</td>{{/if}}
-			        <td class="a-secondary-data">{{..ended ? 'Yes' : 'No'}}</td>
-			        {{#if .!=undefined && !..ended}}
+			        <td class="a-secondary-data">{{formatDateTime(startTime)}}</td>
+			        <td class="a-secondary-data">{{ended ? formatDateTime(endTime) : 'n/a'}}</td>
+			        {{#if .!=undefined && !..ended && activityId!=undefined}}
 			          <td class="a-secondary-data">{{activityId.toLabel()}}</td>
 			        {{else}}
-			          <td>&nbsp;</td>
+			          <td>None</td>
 			        {{/if}}
 			        <td>
 			          <span class="clickable glyphicon glyphicon-eye-open" on-click="toggleAuditTrail(current.instances[i],i)"></span>
@@ -120,7 +122,7 @@
 			        </td>
 			      </tr>
 			      <tr>
-			        <td colspan="5">
+			        <td colspan="7">
 				        <section data-instanceId="{{id}}" style="clear:both;display:none">
 				          <h4> {{#businessKey}} Instance {{id}} {{else}} {{businessKey}} ({{id}}) }}{{/}}</h4>
 				          <h5>History</h5> 

@@ -118,7 +118,7 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
     }
 
     public static List<UserRecord> findAllUserRecords() {
-        return wrap(processEngine.getIdentityService().createUserQuery().list());
+        return findAllUserRecords("id", "asc");
     }
 
     public static UserRecord findUserRecord(String id) {
@@ -216,8 +216,17 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
 
     public static List<UserRecord> findAllUserRecords(String sortFieldName,
             String sortOrder) {
+
+        // TODO would be nice to have groups here too but makes order of
+        // magnitude slower and I've found no way to extract membership even if
+        // SQL retrieves it
         // TODO honour sort order
-        return wrap(processEngine.getIdentityService().createUserQuery().list());
+        List<UserRecord> users = wrap(processEngine.getIdentityService()
+                .createNativeUserQuery()
+                .sql("SELECT * FROM ACT_ID_USER u ORDER BY id_;")
+                .list());
+
+        return users;
     }
 
     private static List<UserRecord> wrap(

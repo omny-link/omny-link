@@ -7,6 +7,7 @@ public class FeatureConfig {
 
     private boolean account = false;
     private boolean activityAnalysis = false;
+    private boolean activityTracker = false;
     private boolean budget = false;
     private boolean companyBackground = false;
     private boolean financials = false;
@@ -24,6 +25,9 @@ public class FeatureConfig {
             break;
         case "activityAnalysis":
             setActivityAnalysis(b);
+            break;
+        case "activityTracker":
+            setActivityTracker(b);
             break;
         case "budget":
             setBudget(b);

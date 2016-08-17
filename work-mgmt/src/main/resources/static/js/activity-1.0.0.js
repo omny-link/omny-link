@@ -6,6 +6,7 @@ var ua = new UserActivity();
 ua.init();
 
 function UserActivity() {
+  this.enabled = false;
   this.server = 'https://api.omny.link';
   // default only, user will override
   this.tenantId = 'omny'; 
@@ -15,6 +16,7 @@ function UserActivity() {
     else return tmp;
   };
   this.init = function() {
+    if (!ua.enabled) return;
     if (document.cookie.indexOf('ua') >= 0) {
       // user has been here before.
       ua.record('visit',document.location.href);
@@ -35,6 +37,7 @@ function UserActivity() {
 //    });
   };
   this.linkToKnownContact = function(username) {
+    if (!ua.enabled) return;
     console.info('UA:linkToUser: '+username);
     var d = {
         "uuid":ua.getId(),
@@ -53,11 +56,13 @@ function UserActivity() {
     });
   };
   this.login = function(username) {
+    if (!ua.enabled) return;
     console.info('UA:login:'+username);
 //    ua.record('login',username);
     ua.linkToKnownContact(username);
   };
   this.record = function(type,content) {
+    if (!ua.enabled) return;
     console.info('UA:record: '+type+' '+ua.getId()+(content===undefined ? '' : ': '+content));
     var d = {
         "type":type,
