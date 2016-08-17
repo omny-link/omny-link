@@ -30,16 +30,16 @@
     <thead>
       <tr>
         <th></th>
-        <th colspan="1">Name</th>
-        <th class="col-md-5">Description</th>
+        <th colspan="1" on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
+        <th class="col-md-5" on-click="sort:description">Description<span class="sortable {{ sorted('description') }} glyphicon "></th>
         <!--<th>Tenant</th> -->
-        <th>Deployment Bundle</th>
-        <th>Version</th>
+        <th on-click="sort:deploymentId">Deployment Bundle<span class="sortable {{ sorted('deploymentId') }} glyphicon "></th>
+        <th on-click="sort:version">Version<span class="sortable {{ sorted('version') }} glyphicon "></th>
         <th class="col-md-4">Actions</th>
       </tr>
     </thead>
     <tbody>
-      {{#each definitions:i}}
+      {{#each sort(definitions,sortColumn,sortAsc):i}}
         {{# matchSearch(this) }}
         <tr data-href="{{_links.self.href}}">
           <td on-click="select(this)">{{i+1}}</td>
