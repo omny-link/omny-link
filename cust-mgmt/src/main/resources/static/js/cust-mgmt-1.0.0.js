@@ -153,7 +153,7 @@ var ractive = new AuthenticatedRactive({
             return values.indexOf(obj[filter.field].toLowerCase())==-1;
           } else {
             if (filter.operator==undefined) filter.operator='==';
-            return eval("'"+filter.value.toLowerCase()+"'"+filter.operator+"'"+obj[filter.field].toLowerCase()+"'");
+            return eval("'"+filter.value.toLowerCase()+"'"+filter.operator+"'"+(obj[filter.field]==undefined ? '' : obj[filter.field]).toLowerCase()+"'");
           }
         } catch (e) {
           //console.debug('Exception during filter, probably means record does not have a value for the filtered field');
@@ -973,6 +973,11 @@ var ractive = new AuthenticatedRactive({
         }
       });
   }
+});
+
+ractive.observe('profile', function(newValue, oldValue, keypath) {
+  console.log('profile changed');
+  ractive.filter( {field: 'owner', idx: 3, value: ractive.get('profile.id')} );
 });
 
 ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
