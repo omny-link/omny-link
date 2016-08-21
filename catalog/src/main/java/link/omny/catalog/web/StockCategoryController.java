@@ -182,6 +182,7 @@ public class StockCategoryController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "q", required = false) String q,
             @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "offers", required = false) Boolean offers,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit)
             throws IOException {
@@ -203,8 +204,7 @@ public class StockCategoryController {
         // TODO need to make this some kind of extension point
         List<String> types = expandTypes(type);
 
-        List<StockCategory> tmpList = stockCategoryRepo.findByStatusForTenant(
-                tenantId, "Published");
+        List<StockCategory> tmpList = findStockCategories(tenantId, offers);
         for (StockCategory stockCategory : tmpList) {
             // Capture types now before filtering
             String allTypesAvail = stockCategory.getTypes();
@@ -241,6 +241,17 @@ public class StockCategoryController {
         LOGGER.info(String.format("Found %1$s stock categories", list.size()));
 
         return wrap(list);
+    }
+
+    private List<StockCategory> findStockCategories(String tenantId,
+            boolean offers) {
+        if (offers) {
+            return stockCategoryRepo.findByStatusAndOffersForTenant(tenantId,
+                    "Published", "Published");
+        } else {
+            return stockCategoryRepo.findByStatusForTenant(tenantId,
+                    "Published");
+        }
     }
 
     private List<String> expandTypes(String type) {
@@ -405,6 +416,11 @@ public class StockCategoryController {
         private String directionsByAir;
         private String videoCode;
         private String status;
+        private String offerStatus;
+        private String offerTitle;
+        private String offerDescription;
+        private String offerCallToAction;
+        private String offerUrl;
         private Date created;
         private Date lastUpdated;
     }
@@ -422,6 +438,7 @@ public class StockCategoryController {
         private String price;
         private String type;
         private String status;
+        private StockCategory stockCategory;
         private Date created;
         private Date lastUpdated;
         private String tenantId;

@@ -51,6 +51,16 @@ interface StockCategoryCompleteProjection {
 
     String getStatus();
 
+    String getOfferStatus();
+
+    String getOfferTitle();
+
+    String getOfferDescription();
+
+    String getOfferCallToAction();
+
+    String getOfferUrl();
+
     Date getCreated();
 
     Date getLastUpdated();

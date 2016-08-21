@@ -18,3 +18,7 @@ curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/
 curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?type=Office
 
 curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByName?name=Swindon
+
+# Search for offers
+curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByLocation?q=Corsham&offers=true
+curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham&offers=true
