@@ -11,17 +11,18 @@
   <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
     <li on-click="filter:{idx:1}">Show All</li>
     <li on-click="filter:{idx:2,field: 'stage', operator: '!in', value: {{inactiveStages()}}}">Show Active</li>
+    <li on-click="filter:{idx:3,field: 'owner', value: {{profile.id}}}">Show Mine</li>
     <li class="divider"></li>
     {{#stages:i}}
-      <li on-click="filter:{idx:{{4+i}},field: 'stage', value: '{{id}}'}">{{name}}</li>
+      <li on-click="filter:{idx:{{5+i}},field: 'stage', value: '{{id}}'}">{{name}}</li>
     {{/stages}}
     <li class="divider"></li>
     {{#enquiryTypes:j}}
-      <li on-click="filter:{idx:{{5+stages.length+j}},field: 'enquiryType', value: '{{id}}'}">{{name}}</li>
+      <li on-click="filter:{idx:{{6+stages.length+j}},field: 'enquiryType', value: '{{id}}'}">{{name}}</li>
     {{/}}
     <li class="divider"></li>
     {{#accountTypes:k}}
-      <li on-click="filter:{idx:{{6+stages.length+enquiryTypes.length+k}},field: 'accountType', value: '{{id}}'}">{{name}}</li>
+      <li on-click="filter:{idx:{{7+stages.length+enquiryTypes.length+k}},field: 'accountType', value: '{{id}}'}">{{name}}</li>
     {{/accountTypes}}
   </ul>
 </a>
