@@ -2,7 +2,7 @@
   "id": "acme", 
   "name": "Acme Inc.",
   "show": { 
-    "account":true, "activityAnalysis":true, "budget":true, "companyBackground":true, "declaredSource":true,
+    "account":true, "activityAnalysis":true, "activityTracker":true, "budget":true, "companyBackground":true, "declaredSource":true,
     "documents": true, "financials":true, "marketing":true, "merge":true, "supportBar": true
   },
   "accountFields": [ 
