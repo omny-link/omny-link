@@ -99,10 +99,6 @@
           <groupId>xml-apis</groupId>
         </exclusion>
         <exclusion>
-        	<artifactId>xercesImpl</artifactId>
-        	<groupId>xerces</groupId>
-        </exclusion>
-        <exclusion>
         	<artifactId>xml-apis</artifactId>
         	<groupId>xml-apis</groupId>
         </exclusion>
