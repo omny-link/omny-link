@@ -41,16 +41,9 @@ public class RestPost extends RestService implements JavaDelegate {
         }
 
         for (Entry<String, Object> response : responses.entrySet()) {
-            if ("body".equals(response.getKey())) {
-                LOGGER.debug(String.format("Setting %1$s to %2$s",
-                        responseVar.getExpressionText(), response));
-                execution.setVariable(responseVar.getExpressionText(),
-                        response.getValue());
-            } else {
-                LOGGER.debug(String.format("Setting %1$s to %2$s",
-                        response.getKey(), response));
-                execution.setVariable(response.getKey(), response.getValue());
-            }
+            LOGGER.debug(String.format("Setting %1$s to %2$s",
+                    response.getKey(), response));
+            execution.setVariable(response.getKey(), response.getValue());
         }
     }
 
@@ -94,6 +87,13 @@ public class RestPost extends RestService implements JavaDelegate {
     public Map<String, Object> post(String usr, String pwd, String resource,
             Map<String, String> requestHeaders, String[] responseHeadersSought,
             String payload) throws Exception {
+        return post(usr, pwd, resource, requestHeaders, responseHeadersSought,
+                payload, false);
+    }
+
+    public Map<String, Object> post(String usr, String pwd, String resource,
+            Map<String, String> requestHeaders, String[] responseHeadersSought,
+            String payload, boolean useSSL) throws Exception {
         LOGGER.info(String.format("POSTing to %1$s as %2$s", resource, usr));
 
         Map<String, Object> responses = new HashMap<String, Object>();
@@ -102,7 +102,7 @@ public class RestPost extends RestService implements JavaDelegate {
 
             Map<String, List<String>> responseHeaders2 = new HashMap<String, List<String>>();
             is = getUrlResource(usr, pwd).getResource(resource, "POST",
-                    requestHeaders, responseHeaders2, payload);
+                    requestHeaders, responseHeaders2, payload/* , useSSL */);
             LOGGER.debug(String.format("ResponseHeaders: %1$s",
                     responseHeaders2));
 
@@ -120,7 +120,8 @@ public class RestPost extends RestService implements JavaDelegate {
 
             if (responseVar == null) {
                 LOGGER.debug("No response variable requested");
-            } else if (is == null) {
+            }
+            if (is == null) {
                 LOGGER.warn("POST response contains no body, variable will be set to null");
                 responses.put("body", null);
             } else {
