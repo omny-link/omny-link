@@ -12,13 +12,13 @@
     <thead>
       <tr>
         <th></th>
-        <th>Username</th>
-        <th>Full Name</th>
+        <th on-click="sort:id">Username<span class="sortable {{ sorted('id') }} glyphicon "></th>
+        <th on-click="sort:fullName">Full Name<span class="sortable {{ sorted('fullName') }} glyphicon "></th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-    {{#each users:i}}
+    {{#each sort(users,sortColumn,sortAsc):i}}
       {{# searchTerm!=undefined && (
             (this.firstName!=undefined && this.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0 
             || (this.lastName!=undefined && this.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
@@ -28,7 +28,7 @@
       <tr data-href="{{_links.self.href}}">
         <td on-click="edit(this)">{{i+1}}</td>
         <td on-click="edit(this)">{{id}}</td>
-        <td on-click="edit(this)">{{firstName}} {{lastName}}</td>
+        <td on-click="edit(this)">{{fullName}}</td>
         <td>
           <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('/users/{{id}}')"></span>
           <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>

@@ -142,11 +142,22 @@ public class ProcessInstance extends Execution
                 .getHistoryService().createHistoricProcessInstanceQuery()
                 .processDefinitionId(procDefId).list();
         for (HistoricProcessInstance instance : historicInstances) {
-            if (instance.getEndTime() != null) {
+            if (instance.getEndTime() == null) {
+                merge(instances, instance);
+            } else {
                 instances.add(new ProcessInstance(instance));
             }
         }
         return instances;
+    }
+
+    private static void merge(List<ProcessInstance> instances,
+            HistoricProcessInstance instance) {
+        for (ProcessInstance pi : instances) {
+            if (instance.getId().equals(pi.getId())) {
+                pi.setStartTime(instance.getStartTime());
+            }
+        }
     }
 
     public static ProcessInstance findProcessInstance(String id) {

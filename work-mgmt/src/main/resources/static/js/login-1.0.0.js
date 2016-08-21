@@ -37,6 +37,7 @@ var AuthenticatedRactive = Ractive.extend({
       $('link[rel="icon"]').attr('href',$('link[rel="icon"]').attr('href').replace('omny',tenant));
       $('head').append('<link href="/css/'+tenant+'-1.0.0.css" rel="stylesheet">');
       $('.navbar-brand').empty().append('<img src="/images/'+tenant+'-logo.png" alt="logo"/>');
+      if (ractive.get('tenant.show.activityTracker') && ua!=undefined) ua.enabled = true;
       // ajax loader 
       $( "#ajax-loader" ).remove();
       $('body').append('<div id="ajax-loader"><img class="ajax-loader" src="/images/omny-ajax-loader.gif" style="width:10%" alt="Loading..."/></div>');
@@ -480,6 +481,14 @@ $( document ).bind('keypress', function(e) {
   }
 });
 
+$(document).ready(function() {
+  ractive.on( 'sort', function ( event, column ) {
+    console.info('sort on '+column);
+    // if already sorted by this column reverse order
+    if (this.get('sortColumn')==column) this.set('sortAsc', !this.get('sortAsc'));
+    this.set( 'sortColumn', column );
+  });
+});
 
 // TODO remove the redundancy of having this in AuthenticatedRactive and here
 function getCookie(name) {

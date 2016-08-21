@@ -39,21 +39,21 @@ public class UserRecordController {
     @Autowired(required = true)
     ProcessEngine processEngine;
 
-	@RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
-	public @ResponseBody List<UserRecord> showAllJson() {
-		LOGGER.info("showAllJson");
+    @RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody List<UserRecord> showAllJson() {
+        LOGGER.info("showAllJson");
 
-		// HttpHeaders headers = new HttpHeaders();
-		// headers.add("Content-Type", "application/json; charset=utf-8");
+        // HttpHeaders headers = new HttpHeaders();
+        // headers.add("Content-Type", "application/json; charset=utf-8");
 
         List<UserRecord> users = UserRecord.findAllUserRecords();
         LOGGER.info("Users: " + users.size());
         return users;
-	}
+    }
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
-	public @ResponseBody UserRecord showJson(@PathVariable("id") String id,
-			HttpServletRequest request) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody UserRecord showJson(@PathVariable("id") String id,
+            HttpServletRequest request) {
         LOGGER.info(String
                 .format("%1$s %2$s/%3$s", RequestMethod.GET, PATH, id));
         // Since id will end .com (or similar TLE) need to get id from request
@@ -65,9 +65,9 @@ public class UserRecordController {
     }
 
     protected @ResponseBody UserRecord showJson(@PathVariable("id") String id) {
-		LOGGER.info("Find user with id: " + id);
-		// HttpHeaders headers = new HttpHeaders();
-		// headers.add("Content-Type", "application/json; charset=utf-8");
+        LOGGER.info("Find user with id: " + id);
+        // HttpHeaders headers = new HttpHeaders();
+        // headers.add("Content-Type", "application/json; charset=utf-8");
         UserRecord userRecord;
         if (id.indexOf(' ') == -1) {
             userRecord = UserRecord.findUserRecord(id);
@@ -85,35 +85,35 @@ public class UserRecordController {
         return userRecord;
     }
 
-	@RequestMapping(value = "/", method = RequestMethod.POST, headers = "Accept=application/json")
-	public @ResponseBody UserRecord registerFromJson(
-			@RequestBody UserRecord userRecord) {
-		LOGGER.info(String.format("Creating profile of %1$s",
-				userRecord.getEmail()));
+    @RequestMapping(value = "/", method = RequestMethod.POST, headers = "Accept=application/json")
+    public @ResponseBody UserRecord registerFromJson(
+            @RequestBody UserRecord userRecord) {
+        LOGGER.info(String.format("Creating profile of %1$s",
+                userRecord.getEmail()));
 
-		if (!userRecord.isPasswordSetOk()) {
-			throw new IllegalArgumentException(
-					"Password must be either null or match the confirmPassword field on registration");
-		}
-		IdentityService idSvc = processEngine.getIdentityService();
-		User user = idSvc.newUser(userRecord.getId());
-		idSvc.saveUser(user);
-		return updateFromJson(userRecord, userRecord.getId());
-	}
+        if (!userRecord.isPasswordSetOk()) {
+            throw new IllegalArgumentException(
+                    "Password must be either null or match the confirmPassword field on registration");
+        }
+        IdentityService idSvc = processEngine.getIdentityService();
+        User user = idSvc.newUser(userRecord.getId());
+        idSvc.saveUser(user);
+        return updateFromJson(userRecord, userRecord.getId());
+    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
-	public @ResponseBody UserRecord updateFromJson(
-			@RequestBody UserRecord userRecord, @PathVariable("id") String id) {
+    public @ResponseBody UserRecord updateFromJson(
+            @RequestBody UserRecord userRecord, @PathVariable("id") String id) {
         LOGGER.info(String.format("Updating profile of %1$s", id));
 
-		// Since id will end .com (or similar TLE) need to get id from request
-		// directly as Spring will truncate the extension.
-		id = userRecord.getId();
+        // Since id will end .com (or similar TLE) need to get id from request
+        // directly as Spring will truncate the extension.
+        id = userRecord.getId();
 
-		// UserRecord user = UserRecord.findUserRecord(id);
-		IdentityService idSvc = processEngine.getIdentityService();
-		User user = idSvc.createUserQuery().userId(id).singleResult();
-		LOGGER.info("Found user to update: " + user);
+        // UserRecord user = UserRecord.findUserRecord(id);
+        IdentityService idSvc = processEngine.getIdentityService();
+        User user = idSvc.createUserQuery().userId(id).singleResult();
+        LOGGER.info("Found user to update: " + user);
         if (userRecord.getEmail() != null
                 && userRecord.getEmail().trim().length() > 0) {
             user.setEmail(userRecord.getEmail());
@@ -126,13 +126,13 @@ public class UserRecordController {
                 && userRecord.getLastName().trim().length() > 0) {
             user.setLastName(userRecord.getLastName());
         }
-		// IdentityService idSvc = processEngine.getIdentityService();
+        // IdentityService idSvc = processEngine.getIdentityService();
         LOGGER.debug(String.format("Updating user record for %1$s...", id));
         try {
             idSvc.saveUser(user);
         } catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-			// TODO saveUser is supposed to be proof against this (see JavaDoc
+            LOGGER.error(e.getMessage(), e);
+            // TODO saveUser is supposed to be proof against this (see JavaDoc
             // 'Saves the user. If the user already existed, the user is
             // updated.')
             LOGGER.warn("Error saving user, hope this means it's already there. NOTE that this will lose any updates to the user itself");
@@ -190,17 +190,17 @@ public class UserRecordController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-	public @ResponseBody void delete(
-			@PathVariable("id") String id, HttpServletRequest request) {
-		LOGGER.info(String.format("Deleting profile of %1$s", id));
+    public @ResponseBody void delete(@PathVariable("id") String id,
+            HttpServletRequest request) {
+        LOGGER.info(String.format("Deleting profile of %1$s", id));
 
-		// Since id will end .com (or similar TLE) need to get id from request
-		// directly as Spring will truncate the extension.
-		id = request.getServletPath().substring(
-				request.getServletPath().lastIndexOf('/') + 1);
+        // Since id will end .com (or similar TLE) need to get id from request
+        // directly as Spring will truncate the extension.
+        id = request.getServletPath().substring(
+                request.getServletPath().lastIndexOf('/') + 1);
 
         delete(id);
-	}
+    }
 
     public @ResponseBody void delete(@PathVariable("id") String id) {
         LOGGER.info(String.format("Deleting profile of %1$s", id));
@@ -209,28 +209,28 @@ public class UserRecordController {
         idSvc.deleteUser(id);
     }
 
-	@RequestMapping(value = "/{id}/groups", method = RequestMethod.GET, headers = "Accept=application/json")
-	public @ResponseBody List<UserGroup> listGroups(
-			@PathVariable("id") String id) {
-		LOGGER.info(String.format("List groups for %1$s", id));
+    @RequestMapping(value = "/{id}/groups", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody List<UserGroup> listGroups(
+            @PathVariable("id") String id) {
+        LOGGER.info(String.format("List groups for %1$s", id));
 
-		IdentityService idSvc = processEngine.getIdentityService();
-		return UserGroup.wrap(idSvc.createGroupQuery().groupMember(id).list());
-	}
+        IdentityService idSvc = processEngine.getIdentityService();
+        return UserGroup.wrap(idSvc.createGroupQuery().groupMember(id).list());
+    }
 
-	@RequestMapping(value = "/{id}/groups/{group}", method = RequestMethod.POST, headers = "Accept=application/json")
-	public @ResponseBody void addGroupMembership(@PathVariable("id") String id,
-			@PathVariable("group") String group) {
-		LOGGER.info(String.format("Add group %2$s to profile of %1$s", id,
-				group));
+    @RequestMapping(value = "/{id}/groups/{group}", method = RequestMethod.POST, headers = "Accept=application/json")
+    public @ResponseBody void addGroupMembership(@PathVariable("id") String id,
+            @PathVariable("group") String group) {
+        LOGGER.info(String.format("Add group %2$s to profile of %1$s", id,
+                group));
 
-		IdentityService idSvc = processEngine.getIdentityService();
+        IdentityService idSvc = processEngine.getIdentityService();
         if (idSvc.createGroupQuery().groupId(group.toLowerCase()).count() == 0) {
-			LOGGER.info(String.format("Creating new group %1$s ", group));
+            LOGGER.info(String.format("Creating new group %1$s ", group));
             Group grp = idSvc.newGroup(group.toLowerCase());
             grp.setName(group);
             idSvc.saveGroup(grp);
-		}
+        }
         idSvc.createMembership(id, group.toLowerCase());
-	}
+    }
 }
