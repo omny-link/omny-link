@@ -21,6 +21,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import link.omny.catalog.json.JsonCustomStockCategoryFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
@@ -112,7 +113,31 @@ public class StockCategory implements Serializable {
     private String videoCode;
 
     @JsonProperty
+    @Size(max = 20)
     private String status;
+
+    @JsonProperty
+    @Size(max = 20)
+    private String offerStatus;
+
+    @JsonProperty
+    @Size(max = 25)
+    private String offerTitle;
+
+    @JsonProperty
+    @Size(max = 60)
+    private String offerDescription;
+
+    @JsonProperty
+    @Size(max = 20)
+    private String offerCallToAction;
+
+    /**
+     * A relative or absolute URL associated with the offer, i.e. where it goes
+     * to on click.
+     */
+    @JsonProperty
+    private String offerUrl;
 
     @JsonProperty
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockCategory")

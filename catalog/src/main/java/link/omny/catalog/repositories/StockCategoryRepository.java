@@ -28,4 +28,9 @@ public interface StockCategoryRepository extends
     @Query("SELECT c FROM StockCategory c WHERE c.status IN :status AND c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
     List<StockCategory> findByStatusForTenant(
             @Param("tenantId") String tenantId, @Param("status") String status);
+
+    @Query("SELECT c FROM StockCategory c WHERE c.status IN :status AND c.tenantId = :tenantId AND c.offerStatus = :offerStatus ORDER BY c.lastUpdated DESC")
+    List<StockCategory> findByStatusAndOffersForTenant(
+            @Param("tenantId") String tenantId, @Param("status") String status,
+            @Param("offerStatus") String offerStatus);
 }

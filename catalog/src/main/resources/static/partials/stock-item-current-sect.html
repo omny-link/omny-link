@@ -2,6 +2,25 @@
   <form class="inline-form form" id="currentForm">
     <h2 class="">
       <span contenteditable id="curName2" on-focus="editField('#curName2','current.name')" on-blur="updateField('#curName2','current.name')" value="{{current.name}}"></span>
+      <span class="pull-right">
+        <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+        {{#if tenant.contactActions!=undefined && tenant.contactActions.length>0 }}
+          <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
+              <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+            </a>
+            <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+              {{#each tenant.stockItemActions }}
+                {{#name}}
+                  <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}})">{{name}}</li>
+                {{else}}
+                  <li class="divider"></li>
+                {{/}}
+              {{/each}}
+            </ul>
+          </span>
+        {{/if}}
+      </span>
     </h2>
     
     <div class="currentBody col-md-6 col-sm-12">
