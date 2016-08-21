@@ -97,6 +97,7 @@ public class StockControllersTest {
         findNearReading(category, officeItem);
         findOffice(category, officeItem);
         findOfficeNearReading(category, officeItem);
+        findOffersNearReading(category, officeItem);
 
         ShortStockCategory category3 = findByName(category, officeItem,
                 warehouseItem);
@@ -123,7 +124,7 @@ public class StockControllersTest {
     protected void findAll(StockCategory category, StockItem officeItem,
             StockItem warehouseItem) throws IOException {
         List<ShortStockCategory> categoryResults = categoryController
-                .findByLocation(TENANT_ID, null, null, null, null);
+                .findByLocation(TENANT_ID, null, null, false, null, null);
         assertEquals(1, categoryResults.size());
 
         checkCategory(category, categoryResults.get(0));
@@ -138,8 +139,7 @@ public class StockControllersTest {
     protected void findOffice(StockCategory category, StockItem officeItem)
             throws IOException {
         List<ShortStockCategory> categoryResults = categoryController
-                .findByLocation(TENANT_ID, null,
-                "Office", null, null);
+                .findByLocation(TENANT_ID, null, "Office", false, null, null);
         assertEquals(2, categoryResults.get(0).getStockItems().size());
 
         checkCategory(category, categoryResults.get(0));
@@ -149,7 +149,7 @@ public class StockControllersTest {
     protected void findNearReading(StockCategory category, StockItem officeItem)
             throws IOException {
         List<ShortStockCategory> categoryResults = categoryController
-                .findByLocation(TENANT_ID, "Reading", null, null, null);
+                .findByLocation(TENANT_ID, "Reading", null, false, null, null);
         assertEquals(3, categoryResults.get(0).getStockItems().size());
 
         checkCategory(category, categoryResults.get(0));
@@ -159,11 +159,23 @@ public class StockControllersTest {
     protected void findOfficeNearReading(StockCategory category,
             StockItem officeItem) throws IOException {
         List<ShortStockCategory> categoryResults = categoryController
-                .findByLocation(TENANT_ID, "Reading", "Office", null, null);
+                .findByLocation(TENANT_ID, "Reading", "Office", false, null,
+                        null);
         assertEquals(2, categoryResults.get(0).getStockItems().size());
 
         checkOfficeItem(category, officeItem, categoryResults.get(0));
     }
+
+    protected void findOffersNearReading(StockCategory category,
+            StockItem officeItem) throws IOException {
+        List<ShortStockCategory> categoryResults = categoryController
+                .findByLocation(TENANT_ID, "Reading", null, true, null,
+                        null);
+        assertEquals(3, categoryResults.get(0).getStockItems().size());
+
+        checkOfficeItem(category, officeItem, categoryResults.get(0));
+    }
+
     protected ShortStockCategory findByName(StockCategory category,
             StockItem officeItem,
             StockItem warehouseItem) throws IOException {
@@ -179,8 +191,8 @@ public class StockControllersTest {
         checkOfficeItem(category, officeItem, categoryFound);
 
         // Find just Office types
-        categoryFound = categoryController.findByName(TENANT_ID, CATEGORY_BOREHAMWOOD,
-                "Office");
+        categoryFound = categoryController.findByName(TENANT_ID,
+                CATEGORY_BOREHAMWOOD, "Office");
         assertEquals(2, categoryFound.getStockItems().size());
 
         return categoryFound;
@@ -328,7 +340,16 @@ public class StockControllersTest {
     }
 
     protected StockCategory getCategory() throws IOException {
-        String categoryJson = "{\"name\":\"Borehamwood\",\"description\":\"A very fine property\",\"postCode\":\"WD6 1RN\",\"status\":\"Published\",\"type\":\"Office\"}";
+        String categoryJson = "{\"name\":\"Borehamwood\","
+                + "\"description\":\"A very fine property\","
+                + "\"postCode\":\"WD6 1RN\"," 
+                + "\"status\":\"Published\","
+                + "\"type\":\"Office\","
+                + "\"offerStatus\":\"Published\","
+                + "\"offerTitle\":\"Summer Special\","
+                + "\"offerCallToAction\":\"Apply Now\","
+                + "\"offerDescription\":\"It's great!\","
+                + "\"offerUrl\":\"http://omny.link/offers\"}";
 
         StockCategory category = objectMapper.readValue(categoryJson,
                 new TypeReference<StockCategory>() {
