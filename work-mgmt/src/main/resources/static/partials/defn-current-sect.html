@@ -101,7 +101,7 @@
       </thead>
 		    {{#each sort(current.instances,sortInstanceColumn,sortInstanceAsc):i}}
 		      <tbody>
-		        <tr>
+		        <tr data-instance-id="{{id}}">
 		          {{#if hasRole('admin') }}
                 <td><input class="checkbox" type="checkbox" checked="{{..selected}}"/></td>
               {{/if}}
@@ -117,13 +117,13 @@
 			          <td>None</td>
 			        {{/if}}
 			        <td>
-			          <span class="clickable glyphicon glyphicon-eye-open" on-click="toggleAuditTrail(current.instances[i],i)"></span>
-			          <span class="clickable glyphicon glyphicon-remove" on-click="deleteInstance(current.instances[i],i)"></span>
+			          <span class="clickable glyphicon glyphicon-eye-open" on-click="toggleAuditTrail(this,i)"></span>
+			          <span class="clickable glyphicon glyphicon-remove" on-click="deleteInstance(this,i)"></span>
 			        </td>
 			      </tr>
 			      <tr>
 			        <td colspan="7">
-				        <section data-instanceId="{{id}}" style="clear:both;display:none">
+				        <section class="instanceSect" data-instance-id="{{id}}" style="clear:both;display:none">
 				          <h4> {{#businessKey}} Instance {{id}} {{else}} {{businessKey}} ({{id}}) }}{{/}}</h4>
 				          <h5>History</h5> 
 				          <table class="table table-striped">
