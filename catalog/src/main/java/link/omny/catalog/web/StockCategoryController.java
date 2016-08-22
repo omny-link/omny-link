@@ -85,7 +85,7 @@ public class StockCategoryController {
     }
 
     /**
-     * Imports JSON representation of stockCategorys.
+     * Imports JSON representation of stock categories.
      *
      * <p>
      * This is a handy link: http://shancarter.github.io/mr-data-converter/
@@ -101,7 +101,7 @@ public class StockCategoryController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
             throws IOException {
-        LOGGER.info(String.format("Uploading CSV stockCategorys for: %1$s",
+        LOGGER.info(String.format("Uploading CSV stockCategories for: %1$s",
                 tenantId));
 
         throw new RuntimeException("Not yet implemented");
@@ -123,16 +123,16 @@ public class StockCategoryController {
     }
 
     /**
-     * Return just the stockCategorys for a specific tenant.
+     * Return just the stock categories for a specific tenant.
      * 
-     * @return stockCategorys for that tenant.
+     * @return stockCategories for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public @ResponseBody List<ShortStockCategory> listForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info(String.format("List stockCategorys for tenant %1$s",
+        LOGGER.info(String.format("List stockCategories for tenant %1$s",
                 tenantId));
 
         List<StockCategory> list;
@@ -182,12 +182,13 @@ public class StockCategoryController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "q", required = false) String q,
             @RequestParam(value = "type", required = false) String type,
-            @RequestParam(value = "offers", required = false) Boolean offers,
+            @RequestParam(value = "offers", required = false) boolean offers,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit)
             throws IOException {
-        LOGGER.info(String.format("List stockCategories for tenant %1$s",
-                tenantId));
+        LOGGER.info(String
+                .format("List stockCategories for tenant: %1$s, q: %2$s, type: %3$s, offers: %4$B",
+                        tenantId, q, type, offers));
 
         List<StockCategory> list = new ArrayList<StockCategory>();
         GeoPoint qPoint = null;
