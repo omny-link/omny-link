@@ -14,9 +14,11 @@ var ractive = new AuthenticatedRactive({
       if (timeString==undefined) return '';
     return new Date(timeString).toLocaleString(navigator.languages);
     },
+    helpUrl: 'http://omny.link/user-help/events/#the_title',
     stdPartials: [
       { "name": "eventCurrentSect", "url": "/partials/event-current-sect.html"},
       { "name": "eventListSect", "url": "/partials/event-list-sect.html"},
+      { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "navbar", "url": "/partials/event-navbar.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
