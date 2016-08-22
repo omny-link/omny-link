@@ -373,20 +373,21 @@ var ractive = new AuthenticatedRactive({
   },
   toggleAuditTrail: function(instance, idx) {
     console.log('toggleAuditTrail for: '+instance.id);
-    if ($('section[data-instanceid="'+instance.id+'"]').is(':visible')) {
-      $('section[data-instanceid="'+instance.id+'"]').hide();
-      $($('.btn-details')[idx]).empty().append('View Details');
+    if ($('section.instanceSect[data-instanceid="'+instance.id+'"]').is(':visible')) {
+      $('section.instanceSect[data-instanceid="'+instance.id+'"]').hide();
     } else {
       $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/'+instance.id, function( data ) {
         console.log('found audit trail: '+data.auditTrail.length);
         data.auditTrail.sort(function(a,b) { return new Date(b.startTime)-new Date(a.startTime); });
         ractive.set('current.instances.'+idx+'.auditTrail',data.auditTrail);
-        
+        instance.auditTrail = data.auditTrail;
+
         console.log('found processVariables: '+data.processVariables);
-        ractive.set('current.instances.'+idx+'.processVariables',data.processVariables);
         ractive.set('current.instances.'+idx+'.processVariableNames',Object.keys(data.processVariables));
-        $('[data-instanceId='+instance.id+']').slideDown();
-        $($('.btn-details')[idx]).empty().append('Hide Details');
+        instance.processVariableNames = Object.keys(data.processVariables);
+        ractive.set('current.instances.'+idx+'.processVariables',data.processVariables);
+        instance.processVariables = data.processVariables;
+        $('.instanceSect[data-instance-id='+instance.id+']').slideDown();
       });
     }
   },
