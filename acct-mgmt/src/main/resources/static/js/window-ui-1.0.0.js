@@ -19,6 +19,7 @@ var ractive = new AuthenticatedRactive({
       //console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
+    helpUrl: 'http://omny.link/user-help/window/#the_title',
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {
@@ -51,6 +52,7 @@ var ractive = new AuthenticatedRactive({
       else return 'hidden';
     },
     stdPartials: [
+      { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "metricListSect", "url": "/partials/metric-list-sect.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
