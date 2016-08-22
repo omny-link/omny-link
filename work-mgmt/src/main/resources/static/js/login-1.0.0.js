@@ -477,6 +477,7 @@ $( document ).bind('keypress', function(e) {
   case 63:   // ?
     console.log('help requested');
     $('#helpModal').modal({});
+    $('iframe.helpContent').prop('height', window.innerHeight*0.8);
     break;
   }
 });

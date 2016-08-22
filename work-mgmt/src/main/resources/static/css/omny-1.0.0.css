@@ -737,6 +737,11 @@ ul.json li label {
 	height: 80%;
 }
 
+.modal-dialog .helpContent {
+  border: solid 1px;
+  width: 100%;
+}
+
 /* SVG DIAGRAMS */
 
 text {

@@ -69,25 +69,7 @@ var ractive = new AuthenticatedRactive({
       if (email == undefined) return '';
       return ractive.hash(email);
     },
-    help: '<p>The tenant management page is the central hub from which to manage all your prospects, partners, customers; in fact every person or organisation you may ever need to talk to!</p>\
-      <h2>Key concepts</h2>\
-      <ul>\
-        <li>\
-          <h3 id="tenantList">Your tenant list</h3>\
-          <p>This contains all of your tenants, by default only the active ones will be displayed. You can search and filter in any number of ways.</p>\
-        </li>\
-        <li>\
-          <h3 id="currentTenant">A one-page view of your tenant</h3>\
-          <p>Clicking on a row in the tenant list will open it up to show the full details including:</p>\
-          <ul>\
-            <li>Tenant details</li>\
-            <li>Details of the organisation the tenant belongs to</li>\
-            <li>A list of activities performed by or in relation to this tenant</li>\
-            <li>A most-recent-first list of notes about your interactions with this tenant</li>\
-            <li>Links to any documents that relate to this tenant</li>\
-          <li>...</li>\
-        </ul>\
-      </ul>',
+    helpUrl: 'http://omny.link/user-help/status/#the_title',
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {

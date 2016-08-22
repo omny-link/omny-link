@@ -88,6 +88,7 @@ var ractive = new AuthenticatedRactive({
     formatLabel: function(str) {
       return str.toLabel();
     },
+    helpUrl: 'http://omny.link/user-help/work/#the_title',
     keys: function(obj) {
       return Object.keys(obj);
     },
@@ -164,6 +165,7 @@ var ractive = new AuthenticatedRactive({
     },
     stdPartials: [
       { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
+      { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "navbar", "url": "/partials/work-navbar.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
