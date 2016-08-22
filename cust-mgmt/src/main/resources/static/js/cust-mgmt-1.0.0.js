@@ -12,7 +12,6 @@ var ractive = new AuthenticatedRactive({
     entityPath: '/contacts',
     csrfToken: getCookie(CSRF_COOKIE),
     contacts: [],
-    filter: {field: "stage", operator: "!in", value: DEFAULT_INACTIVE_STAGES},
     //saveObserver:false,
     title: 'Contact Management',
     username: localStorage['username'],
@@ -108,25 +107,7 @@ var ractive = new AuthenticatedRactive({
         return d.name=='stageReasons';
       }).length > 0;
     },
-    help: '<p>The contact management page is the central hub from which to manage all your prospects, partners, customers; in fact every person or organisation you may ever need to talk to!</p>\
-      <h2>Key concepts</h2>\
-      <ul>\
-        <li>\
-          <h3 id="contactList">Your contact list</h3>\
-          <p>This contains all of your contacts, by default only the active ones will be displayed. You can search and filter in any number of ways.</p>\
-        </li>\
-        <li>\
-          <h3 id="currentContact">A one-page view of your contact</h3>\
-          <p>Clicking on a row in the contact list will open it up to show the full details including:</p>\
-          <ul>\
-            <li>Contact details</li>\
-            <li>Details of the organisation the contact belongs to</li>\
-            <li>A list of activities performed by or in relation to this contact</li>\
-            <li>A most-recent-first list of notes about your interactions with this contact</li>\
-            <li>Links to any documents that relate to this contact</li>\
-          <li>...</li>\
-        </ul>\
-      </ul>',
+    helpUrl: 'http://omny.link/user-help/contacts/#the_title',
     inactiveStages: function() {
       return ractive.get('tenant.serviceLevel.inactiveStages')==undefined
           ? DEFAULT_INACTIVE_STAGES
@@ -805,6 +786,7 @@ var ractive = new AuthenticatedRactive({
         } else if (ractive.get('current.account.businessWebsite')==undefined || ractive.get('current.account.businessWebsite')=='') {
           ractive.inferDomainName();
         }
+        if (ractive.hasRole('admin')) $('.admin').show();
         ractive.set('saveObserver',true);
       });
     } else { 
