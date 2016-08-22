@@ -67,25 +67,7 @@ var ractive = new AuthenticatedRactive({
       if (email == undefined) return '';
       return ractive.hash(email);
     },
-    help: '<p>The stockItem management page is the central hub from which to manage all your prospects, partners, customers; in fact every person or organisation you may ever need to talk to!</p>\
-      <h2>Key concepts</h2>\
-      <ul>\
-        <li>\
-          <h3 id="stockItemList">Your stockItem list</h3>\
-          <p>This contains all of your stockItems, by default only the active ones will be displayed. You can search and filter in any number of ways.</p>\
-        </li>\
-        <li>\
-          <h3 id="currentStockItem">A one-page view of your stockItem</h3>\
-          <p>Clicking on a row in the stockItem list will open it up to show the full details including:</p>\
-          <ul>\
-            <li>StockItem details</li>\
-            <li>Details of the organisation the stockItem belongs to</li>\
-            <li>A list of activities performed by or in relation to this stockItem</li>\
-            <li>A most-recent-first list of notes about your interactions with this stockItem</li>\
-            <li>Links to any documents that relate to this stockItem</li>\
-          <li>...</li>\
-        </ul>\
-      </ul>',
+    helpUrl: 'http://omny.link/user-help/stock-items/#the_title',
     matchFilter: function(obj) {
       var filter = ractive.get('filter');
       //console.info('matchFilter: '+JSON.stringify(filter));
