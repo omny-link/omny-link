@@ -31,7 +31,9 @@
         {{/if}}
         <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
         <span class="pull-right">
-          <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+          {{#matchRole('admin')}}
+            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+          {{/}}
           {{#if tenant.contactActions!=undefined && tenant.contactActions.length>0 }}
             <span class="clickable dropdown" aria-hidden="true" title="Start Process">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
