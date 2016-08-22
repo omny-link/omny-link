@@ -1,5 +1,7 @@
 package link.omny.acctmgmt.model;
 
+import javax.persistence.Column;
+
 import lombok.Data;
 
 @Data
@@ -16,6 +18,8 @@ public class FeatureConfig {
     private boolean documents = false;
     private boolean merge = false;
     private boolean poweredBy = true;
+    @Column(name = "REFS")
+    private boolean references = false;
     private boolean supportBar = true;
 
     public void set(String name, boolean b) {
@@ -52,6 +56,9 @@ public class FeatureConfig {
             break;
         case "poweredBy":
             setPoweredBy(b);
+            break;
+        case "references":
+            setReferences(b);
             break;
         case "supportBar":
             setSupportBar(b);
