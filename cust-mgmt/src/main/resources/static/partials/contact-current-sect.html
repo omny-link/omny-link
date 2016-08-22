@@ -56,6 +56,12 @@
     
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
+        {{#if tenant.show.references || matchRole('admin') || matchRole('super-admin')}}
+          <li>
+	          <label class="">Ref: </label>
+	          <input class="form-control" id="curId" readonly disabled value="{{current.id}}">
+	        </li>
+	      {{/if}}
         <li>
           <label class="">Owner: </label>
           <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}">
