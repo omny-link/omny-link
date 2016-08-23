@@ -58,27 +58,32 @@
       <ul class="form edit-form">
         {{#if tenant.show.references || matchRole('admin') || matchRole('super-admin')}}
           <li>
-	          <label class="">Ref: </label>
-	          <input class="form-control" id="curId" readonly disabled value="{{current.id}}">
+            <label class="col-md-4">Ref: </label>
+            <div class="input-group">
+              <input class="form-control" id="curId" readonly disabled value="{{current.id}}"/>
+              <span class="input-group-addon">
+                <a href="contacts.html?id=/contacts/{{current.id}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+              </span>
+            </div>
 	        </li>
 	      {{/if}}
-        <li>
-          <label class="">Owner: </label>
+        <li style="clear:left">
+          <label class="col-md-4">Owner: </label>
           <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}">
         </li>
-        <li>
-          <label class="">Stage:</label>
+        <li style="clear:left">
+          <label class="col-md-4">Stage:</label>
           <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">How far through the sales pipeline are you with this contact?</p>
         </li>
         {{# haveStageReasons() }}
-          <li>
-            <label class="">Loss Reason:</label>
+          <li style="clear:left">
+            <label class="col-md-4">Loss Reason:</label>
             <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStageReason" {{# current.stage=='Cold' }} required{{/}} value="{{current.stageReason}}">
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
           </li>
-          <li>
-            <label class="">Loss Date:</label>
+          <li style="clear:left">
+            <label class="col-md-4">Loss Date:</label>
             <input class="form-control" id="curStageDate" readonly value="{{formatDate(current.stageDate)}}">
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
           </li>
