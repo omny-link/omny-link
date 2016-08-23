@@ -25,7 +25,7 @@
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/?limit=10</activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Accept:application/json</activiti:string>
@@ -43,7 +43,7 @@
     <sequenceFlow id="_6" sourceRef="startEvent" targetRef="_5"/>
     <callActivity activiti:async="true" calledElement="UpdateContactWithDecisionLogic" completionQuantity="1" id="runDecisionOnContact" isForCompensation="false" name="Run decision on contact" startQuantity="1">
       <extensionElements>
-        <activiti:in sourceExpression="http://localhost:8082${contact.selfRef.string}" target="contactId"/>
+        <activiti:in sourceExpression="${contact.selfRef.string}" target="contactId"/>
         <activiti:in source="decisionName" target="decisionName"/>
         <activiti:in source="tenantId" target="tenantId"/>
       </extensionElements>

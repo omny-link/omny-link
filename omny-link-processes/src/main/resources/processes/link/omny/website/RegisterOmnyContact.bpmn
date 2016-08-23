@@ -21,7 +21,7 @@
       <outgoing>_3</outgoing>
     </callActivity>
     <sequenceFlow id="_13" sourceRef="startFromOmnyRegistrationMsg" targetRef="_11"/>
-    <callActivity calledElement="SendMemo" completionQuantity="1" id="_4" isForCompensation="false" name="Send welcome to&#10; subscriber" startQuantity="1">
+    <callActivity activiti:async="true" calledElement="SendMemo" completionQuantity="1" id="_4" isForCompensation="false" name="Send welcome to&#10; subscriber" startQuantity="1">
       <extensionElements>
         <activiti:in sourceExpression="WelcomeNewUser" target="memoName"/>
         <activiti:in sourceExpression="${omny_registration.getString('tenantId')}" target="tenantId"/>
