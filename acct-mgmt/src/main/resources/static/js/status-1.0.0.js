@@ -84,11 +84,10 @@ var ractive = new AuthenticatedRactive({
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
-      { "name": "statusTable", "url": "/partials/tenant-status-table.html"},
+      { "name": "navbar", "url": "/partials/status-navbar.html"},
+      { "name": "statusTable", "url": "/partials/status-table.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
-      { "name": "tenantListSect", "url": "/partials/tenant-list-sect.html"},
-      { "name": "navbar", "url": "/partials/tenant-navbar.html"},
-      { "name": "currentTenantSect", "url": "/partials/tenant-current-sect.html"}
+      { "name": "currentTenantSect", "url": "/partials/status-current-sect.html"}
     ],
   },
   createBot: function () {

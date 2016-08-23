@@ -132,6 +132,10 @@ public class TenantConfig implements Serializable {
 
     @JsonProperty
     @Transient
+    public Long contactAlerts;
+
+    @JsonProperty
+    @Transient
     public Long definitions;
 
     @JsonProperty
