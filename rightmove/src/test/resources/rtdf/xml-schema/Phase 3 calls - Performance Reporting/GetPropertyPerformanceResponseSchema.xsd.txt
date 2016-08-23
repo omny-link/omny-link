@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="getPropertyPerformanceResponse">
+		<xs:annotation>
+			<xs:documentation>Rightmove Realtime Datafeed XML Schema for GetPropertyPerformance response
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="request_id">
+					<xs:simpleType >
+						<xs:annotation>
+							<xs:documentation>
+								The unique ID of the request which this response is associated with
+							</xs:documentation>
+						</xs:annotation>
+						<xs:restriction base="xs:string"/>
+					</xs:simpleType>
+				</xs:element>
+
+				<xs:element name="message">
+					<xs:simpleType >
+						<xs:annotation>
+							<xs:documentation>
+								The message content for the response
+							</xs:documentation>
+						</xs:annotation>
+						<xs:restriction base="xs:string"/>
+					</xs:simpleType>
+				</xs:element>
+
+				<xs:element name="success">
+					<xs:simpleType >
+						<xs:annotation>
+							<xs:documentation>
+								Indicates whether or not the request was successful
+							</xs:documentation>
+						</xs:annotation>
+						<xs:restriction base="xs:boolean"/>
+					</xs:simpleType>
+				</xs:element>
+
+				<xs:element name="request_timestamp">
+					<xs:simpleType >
+						<xs:annotation>
+							<xs:documentation>
+								The time at which the request was received in the format: dd-MM-yyyy HH:mm:ss
+							</xs:documentation>
+						</xs:annotation>
+						<xs:restriction base="xs:string"/>
+					</xs:simpleType>
+				</xs:element>
+
+				<xs:element name="response_timestamp">
+					<xs:simpleType >
+						<xs:annotation>
+							<xs:documentation>
+								The time at which the response was sent in the format: dd-MM-yyyy HH:mm:ss
+							</xs:documentation>
+						</xs:annotation>
+						<xs:restriction base="xs:string"/>
+					</xs:simpleType>
+				</xs:element>
+
+				<xs:element name="replication_lag" minOccurs="0">
+					<xs:simpleType >
+						<xs:annotation>
+							<xs:documentation>
+								The current lag time for replicating between the three Rightmove data centres in minutes
+							</xs:documentation>
+						</xs:annotation>
+						<xs:restriction base="xs:integer"/>
+					</xs:simpleType>
+				</xs:element>
+
+				<xs:element name="export_period" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>
+                            The period for which property performance metrics are being exported
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="start_date">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											The start date for the export period in the format: dd-MM-yyyy - this cannot be more than 28 days ago
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="end_date">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											The end date for the export period in the format: dd-MM-yyyy - this cannot be more than 28 days ago
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+				<xs:element name="branch" minOccurs="0" >
+					<xs:annotation>
+						<xs:documentation>
+                            Information about the branch for which the metrics are being generated
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="branch_id">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Unique Rightmove ID for the branch for which the performance metrics are being generated
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int"/>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+                <xs:element name="property" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Details of the property which the performance metrics are being generated
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="agent_ref">
+                                <xs:simpleType >
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            Agent's unique reference for the property
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                    <xs:restriction base="xs:string"/>
+                                </xs:simpleType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+				<xs:element name="property_views_daily" minOccurs="0"  maxOccurs="28">
+					<xs:annotation>
+						<xs:documentation>
+                            The total number of times a property has been viewed on Rightmove on the dates specified
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+
+                            <xs:element name="date">
+                                <xs:simpleType >
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            The date property performance metrics have been requested for
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                    <xs:restriction base="xs:string"/>
+                                </xs:simpleType>
+                            </xs:element>
+
+                            <xs:element name="featured_property">
+                                <xs:simpleType >
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            Y/N - was the property a featured property on this date?
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                    <xs:restriction base="xs:boolean"/>
+                                </xs:simpleType>
+                            </xs:element>
+
+                            <xs:element name="premium_listing">
+                                <xs:simpleType >
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            Y/N - was the property a premium listing on this date?
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                    <xs:restriction base="xs:boolean"/>
+                                </xs:simpleType>
+                            </xs:element>
+
+                            <xs:element name="summary_views" minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Information on a property's summary views on Rightmove on the date specified
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="total_summary_views">
+                                            <xs:simpleType >
+                                                <xs:annotation>
+                                                    <xs:documentation>
+                                                        The total number of times the property has appeared in a summary view on the requested date
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                                <xs:restriction base="xs:int"/>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="desktop_summary_views">
+                                            <xs:simpleType >
+                                                <xs:annotation>
+                                                    <xs:documentation>
+                                                        The total number of times the property has appeared in a summary view on the requested date, when viewed from a desktop PC
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                                <xs:restriction base="xs:int"/>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="mobile_summary_views">
+                                            <xs:simpleType >
+                                                <xs:annotation>
+                                                    <xs:documentation>
+                                                        The total number of times the property has appeared in a summary view on the requested date, when viewed from a mobile device
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                                <xs:restriction base="xs:int"/>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <xs:element name="detail_views" minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>
+                                        Information on a property's detail views on Rightmove on the date specified
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="total_detail_views">
+                                            <xs:simpleType >
+                                                <xs:annotation>
+                                                    <xs:documentation>
+                                                        The total number of detail views of the property on the requested date
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                                <xs:restriction base="xs:int"/>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="desktop_detail_views">
+                                            <xs:simpleType >
+                                                <xs:annotation>
+                                                    <xs:documentation>
+                                                        The total number of detail views of the property on the requested date, when viewed from a desktop PC
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                                <xs:restriction base="xs:int"/>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="mobile_detail_views">
+                                            <xs:simpleType >
+                                                <xs:annotation>
+                                                    <xs:documentation>
+                                                        The total number of detail views of the property on the requested date, when viewed from a mobile device
+                                                    </xs:documentation>
+                                                </xs:annotation>
+                                                <xs:restriction base="xs:int"/>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+				<xs:element name="errors" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>
+							The errors causing the request to fail
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="error_code" minOccurs="1" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											The unique Rightmove code for the error causing the request to fail
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="error_description" minOccurs="1" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											The full description of the error associated with the error code which has been generated
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="error_value" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											The value that caused this error
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+				<xs:element name="warnings" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>
+							The warning generated by the request
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="warning_code" minOccurs="1" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											The unique Rightmove warning code generated due to failure to pass all of the business rules
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="warning_description" minOccurs="1" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											The full description of the warning associated with the warning code which has been generated
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="warning_value" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											The value that caused this warning
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

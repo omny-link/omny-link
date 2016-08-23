@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="getBranchPerformanceForm">
+		<xs:annotation>
+			<xs:documentation>
+				Rightmove Realtime Datafeed XML Schema for the get branch performance request
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="network">
+					<xs:annotation>
+						<xs:documentation>
+							Information about the network calling the API
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="network_id">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Unique Rightmove reference for this network
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int"/>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="branch">
+					<xs:annotation>
+						<xs:documentation>Details about which branch's performance metrics are being retrieved
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="branch_id">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Unique Rightmove reference for this branch
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int"/>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="export_date">
+					<xs:simpleType >
+						<xs:annotation>
+							<xs:documentation>
+								The date for the export period - this cannot be more than 28 days ago, and can only be for a single date, in the format: dd-MM-yyyy
+							</xs:documentation>
+						</xs:annotation>
+						<xs:restriction base="xs:string"/>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<getBranchPropertyListForm>
+                <network>
+                                <network_id>0</network_id>
+                </network>
+                <branch>
+                                <branch_id>12345</branch_id>
+                                <channel>1</channel>
+                </branch>
+</getBranchPropertyListForm>

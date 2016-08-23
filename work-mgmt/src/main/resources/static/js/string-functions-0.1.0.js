@@ -1,3 +1,16 @@
+String.prototype.singular = function() {
+  if (this == undefined) return this;
+  if (this.endsWith('ies')) return this.substring(0, this.length-3)+'y';
+  else if (this.endsWith('s')) return this.substring(0, this.length-1);
+  else return this;
+}
+
+String.prototype.toCamelCase = function() {
+  if (this == undefined) return this;
+  var leadingCaps = this.toLeadingCaps().replace(/-/g, '');
+  return leadingCaps.substring(0,1).toLowerCase()+leadingCaps.substring(1);
+}
+
 String.prototype.toLabel = function() {
   return this.replace(/([A-Z])/, function(v) { return '_'+v; }).replace(/_/g, ' ').toLeadingCaps();
 };

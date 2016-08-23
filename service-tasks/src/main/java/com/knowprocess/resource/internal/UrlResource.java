@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +103,15 @@ public class UrlResource implements Resource {
             // Create connection
             LOGGER.debug("  " + method + ": " + sUrl);
             url = getUrl(sUrl);
+            // connection = (HttpURLConnection) url.openConnection();
+
+            url = new URL(sUrl);
             connection = (HttpURLConnection) url.openConnection();
+            if (sUrl.startsWith("https://")) {
+                ((HttpsURLConnection) connection)
+                        .setSSLSocketFactory((SSLSocketFactory) SSLSocketFactory
+                                .getDefault());
+            }
             connection.setRequestMethod(method);
             String contentType = headers.get(HEADER_CONTENT_TYPE);
             if ("multipart/form-data".equals(contentType)) {

@@ -10,6 +10,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import link.omny.catalog.internal.CatalogCsvImporter;
+import link.omny.catalog.model.CustomStockItemField;
 import link.omny.catalog.model.MediaResource;
 import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
@@ -232,6 +233,22 @@ public class StockItemController {
         StockItem stockItem = stockItemRepo.findOne(stockItemId);
 
         BeanUtils.copyProperties(updatedStockItem, stockItem, "id");
+        stockItem.setTenantId(tenantId);
+        stockItemRepo.save(stockItem);
+    }
+
+    /**
+     * Update a single custom field of the specified stockItem.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = { "application/x-www-form-urlencoded" })
+    public @ResponseBody void updateCustomField(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long stockItemId,
+            @RequestParam("fieldName") String fieldName,
+            @RequestParam("fieldValue") String fieldVal) {
+        StockItem stockItem = stockItemRepo.findOne(stockItemId);
+        stockItem.addCustomField(new CustomStockItemField(fieldName, fieldVal));
         stockItem.setTenantId(tenantId);
         stockItemRepo.save(stockItem);
     }

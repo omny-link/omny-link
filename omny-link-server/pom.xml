@@ -97,6 +97,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>link.omny.rightmove</groupId>
+      <artifactId>rightmove</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.knowprocess.bpm</groupId>
       <artifactId>work-mgmt</artifactId>
       <version>${work-mgmt.version}</version>

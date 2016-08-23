@@ -1,0 +1,14 @@
+{
+               "network":{
+                               "network_id": 9398
+               },
+               "branch":{
+                               "branch_id": 90511,
+                               "channel": 1
+               },
+               "property":{
+                               "agent_ref": "02072013_0406",
+                               "removal_reason": 7,
+                               "transaction_date": "02-07-2013 00:00:00"
+                              }
+}
