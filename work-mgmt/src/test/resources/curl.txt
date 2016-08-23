@@ -34,3 +34,9 @@ curl -X GET -u tstephen:tstephen -H "Accept:application/json" -v \
    -d'password=foo' -d'password2=foo' \
    http://localhost:8083/users/jdoe/reset-password
  
+# Run decision for all contacts
+curl -X POST -u tstephen:tstephen -H "Accept:application/json" \
+    -H "Content-Type:application/json" \
+    -d '{ "decisionName":"CheckServiceLevels" }' \
+    http://localhost:8082/circom/messages/omny.decisionInvocation.json
+    

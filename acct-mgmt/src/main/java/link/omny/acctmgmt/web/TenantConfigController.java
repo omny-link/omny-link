@@ -194,8 +194,8 @@ public class TenantConfigController {
         for (String tenantId : systemConfig.getTenants().split(",")) {
             TenantConfig tenant = new TenantConfig(tenantId);
 
-            tenant.setContacts((long) contactRepo.findAllForTenant(tenantId)
-                    .size());
+            tenant.setContacts(contactRepo.countForTenant(tenantId));
+            tenant.setContactAlerts(contactRepo.countAlertsForTenant(tenantId));
 
             tenant.setDefinitions(processEngine.getRepositoryService()
                     .createProcessDefinitionQuery()
@@ -436,6 +436,8 @@ public class TenantConfigController {
         private String selfRef;
         private String name;
         private Long contacts;
+        private Long contactActions;
+        private Long contactAlerts;
         private Long definitions;
         private Long activeInstances;
         private Long historicInstances;
