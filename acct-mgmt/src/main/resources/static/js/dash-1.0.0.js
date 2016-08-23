@@ -102,8 +102,8 @@ var ractive = new AuthenticatedRactive({
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
-      { "name": "tenantListSect", "url": "/partials/tenant-list-sect.html"},
-      { "name": "navbar", "url": "/partials/tenant-navbar.html"}
+      { "name": "tenantListSect", "url": "/partials/dash-list-sect.html"},
+      { "name": "navbar", "url": "/partials/dash-navbar.html"}
     ],
   },
   archive: function (tenantId) {
@@ -118,6 +118,20 @@ var ractive = new AuthenticatedRactive({
         ractive.fetch();
         ractive.set('saveObserver', true);
       }
+    });
+  },
+  checkServiceLevels: function(tenantId) {
+    console.info('checkServiceLevels:'+tenantId);
+    $.ajax({
+      url: ractive.getServer()+'/'+tenantId+'/messages/omny.decisionInvocation.json',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify( { "decisionName":"CheckServiceLevels" } ),
+      success: completeHandler = function(data, textStatus, jqXHR) {
+        console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
+        ractive.showMessage('Started workflow to check service levels of all contacts and raise alerts accordingly');
+        setTimeout(function() { ractive.fetch(); }, EASING_DURATION*4)
+      },
     });
   },
   fetch: function () {

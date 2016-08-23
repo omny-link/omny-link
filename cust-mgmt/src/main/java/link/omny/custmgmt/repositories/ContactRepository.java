@@ -19,6 +19,12 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (stage IS NULL OR stage != 'deleted') ORDER BY c.lastUpdated DESC")
     List<Contact> findAllForTenant(@Param("tenantId") String tenantId);
 
+    @Query("SELECT COUNT(c) FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (stage IS NULL OR stage != 'deleted')")
+    long countForTenant(@Param("tenantId") String tenantId);
+
+    @Query("SELECT COUNT(c) FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (stage IS NULL OR stage != 'deleted') AND alerts IS NOT NULL")
+    long countAlertsForTenant(@Param("tenantId") String tenantId);
+
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (stage IS NULL OR stage != 'deleted') AND (owner = :userId) ORDER BY c.lastUpdated DESC")
     List<Contact> findAllForTenantOwnedByUser(
             @Param("tenantId") String tenantId, @Param("userId") String userId);

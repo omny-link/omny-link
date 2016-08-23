@@ -1,11 +1,20 @@
+<section class="container navbar-sticky">
+  <h2>
+    {{>navbar}}
+    {{>profileArea}}
+  </h2>
+</section>
+
 <section id="currentSect">
+  <h2 class="navbar-top">
+    {{>navbar}}  
+  </h2>
   <form class="inline-form form" id="currentForm">
-    <h2 class="edit-form">
-      <span>Features enabled for </span>
-      <span contenteditable id="curName" on-focus="editField('#curName','current.name')" on-blur="updateField('#curName','current.name')">{{current.name}}</span>
-      <span id="curId" >({{current.id}})</span>
+    <h2 id="features">
+	    <span>Features enabled for </span>
+			<span contenteditable id="curName" on-focus="editField('#curName','current.name')" on-blur="updateField('#curName','current.name')">{{current.name}}</span>
+			<span id="curId" >({{current.id}})</span>
     </h2>
-    
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         <li>
@@ -14,9 +23,19 @@
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Enable if contacts need to be associated with a company or other organisation.</p>
         </li>
         <li>
+          <label class="">Account Financials:</label>
+          <input class="" id="curFinancials" type="checkbox" checked="{{current.features.financials}}"> {{#current.features.financials==true}}Enabled{{/}}
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Additional account fields.</p>
+        </li>
+        <li>
           <label class="">Activity Analysis:</label>
           <input id="curFeatureActivity" type="checkbox" checked="{{current.features.activityAnalysis}}"> {{#current.features.activityAnalysis==true}}Enabled{{/}}
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Displays recent activity information such as last login.</p>  
+        </li>
+        <li>
+          <label class="">Activity Tracker:</label>
+          <input id="curFeatureActivityTracker" type="checkbox" checked="{{current.features.activityTracker}}"> {{#current.features.activityTracker==true}}Enabled{{/}}
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block"><em>Experimental!</em> Record actions of the user, such as login etc.</p>  
         </li>
         <li>
           <label class="">Budget:</label>
@@ -33,6 +52,11 @@
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Displays research information about the company.</p>
         </li>
         <li>
+          <label class="">Documents:</label>
+          <input class="" id="curDocuments" type="checkbox" checked="{{current.features.documents}}"> {{#current.features.documents==true}}Enabled{{/}}
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Allow documents links to be added to contacts.</p>  
+        </li>
+        <li>
           <label class="">Marketing:</label>
           <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.features.marketing}}"> {{#current.features.marketing==true}}Enabled{{/}}
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Display marketing information about the source of the lead.</p>  
@@ -40,19 +64,24 @@
         <li>
           <label class="">Merge:</label>
           <input class="" id="curOptOut" type="checkbox" checked="{{current.features.merge}}"> {{#current.features.merge==true}}Enabled{{/}}
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Enable the experimental merge functionality.</p>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block"><em>Experimental!</em> Enable the experimental contact merge functionality.</p>
+        </li>
+        <li>
+          <label class="">Support Bar:</label>
+          <input class="" id="curSupportBar" type="checkbox" checked="{{current.features.supportBar}}"> {{#current.features.supportBar==true}}Enabled{{/}}
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Display the tool to raise a support call</p>  
         </li>
       </ul>
     </div>
   </form>
 
   <div id="currentToolbar" style="clear: both">
-    <h2>Toolbar entries</h2>
+    <h2 id="toolbar">Toolbar entries</h2>
     {{>statusTable { property: 'toolbar' }}}
   </div>
 
   <div id="currentBot" style="clear: both">
-    <h2>Bot settings</h2>
+    <h2 id="bot">Bot settings</h2>
     <table class="table table-striped">
       <thead>
         <tr>
@@ -84,28 +113,40 @@
 
   {{#contactActions}}
     <div id="currentActions" style="clear: both">
-      <h2>Actions</h2>
+      <h2 id="contactActions">Actions</h2>
       {{>statusTable { property: 'contactActions' }}}
     </div>
   {{/}}
 
   <div id="currentProcesses" style="clear: both">
-    <h2>Processes</h2>
+    <h2 id="processes">Processes</h2>
     {{>statusTable { property: 'processes' }}}
   </div>
 
   <div id="currentPartials" style="clear: both">
-    <h2>Partials</h2>
+    <h2 id="partials">Partials</h2>
     {{>statusTable { property: 'partials' }}}
   </div>
     
+  <div id="currentSLAs" style="clear: both">
+    <h2 id="slas">Service Level Alerts</h2>
+    <table class="table table-striped">
+      <thead>
+	      <tr><th>Name</th><th>Value (days)</th></tr>
+      </thead>
+      <tbody>
+	      <tr><td>Inactivity Threshold</td><td>{{current.serviceLevel.inactivityThreshold}}</td></tr>
+	      <tr><td>Initial Response Threshold</td><td>{{current.serviceLevel.initialResponseThreshold}}</td></tr>
+	    </tbody>
+    </table>
+  </div>
   <div id="currentTemplates" style="clear: both">
-    <h2>Templates</h2>
+    <h2 id="templates">Templates</h2>
     {{>statusTable { property: 'templates' }}}
   </div>
       
   <div id="currentTypeaheadControls" style="clear: both">
-    <h2>Typeahead controls</h2>
+    <h2 id="typeaheads">Typeahead controls</h2>
     {{>statusTable { property: 'typeaheadControls' }}}
   </div>
 
