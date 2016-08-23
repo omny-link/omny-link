@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="removePropertyForm">
+		<xs:annotation>
+			<xs:documentation>Rightmove Realtime Datafeed Xml Schema for remove property request
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="network">
+					<xs:annotation>
+						<xs:documentation>Information about the network calling the API
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="network_id">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Unique Rightmove reference for this network
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int"/>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+				<xs:element name="branch">
+					<xs:annotation>
+						<xs:documentation>Information about the branch loading this property
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="branch_id">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Unique Rightmove reference for this branch
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="channel">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Defines whether this is the sales or lettings channel for a branch: 1 Sales 2 Lettings
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int">
+										<xs:enumeration value="1"/>
+										<xs:enumeration value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+				<xs:element name="property">
+					<xs:annotation>
+						<xs:documentation>Information about the property being sent
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="agent_ref">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Agent's unique reference for this property
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string">
+										<xs:minLength  value="1"/>
+										<xs:maxLength  value="80"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="removal_reason" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											The agent's reason for removing this property from the site: 7 Sold by Us - 8 Sold by Another Agent - 9 Withdrawn from Market - 10 Lost Instruction - 11 Removed - 12 Let by Us
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int">
+										<xs:enumeration value="7"/>
+										<xs:enumeration value="8"/>
+										<xs:enumeration value="9"/>
+										<xs:enumeration value="10"/>
+										<xs:enumeration value="11"/>
+										<xs:enumeration value="12"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="transaction_date" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											The date the transaction was completed (if applicable) - in the format: dd-MM-yyyy HH:mm:ss
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:element>
+
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

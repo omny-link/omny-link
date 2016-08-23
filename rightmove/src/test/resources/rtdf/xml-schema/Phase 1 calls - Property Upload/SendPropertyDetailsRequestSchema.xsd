@@ -1,0 +1,1446 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="addUpdatePropertyForm">
+		<xs:annotation>
+			<xs:documentation>Rightmove Realtime Datafeed XML Schema for send property request
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="network">
+					<xs:annotation>
+						<xs:documentation>Information about the network calling the API
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="network_id">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Unique Rightmove reference for this network
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int"/>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+				<xs:element name="branch">
+					<xs:annotation>
+						<xs:documentation>Information about the branch loading this property
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="branch_id">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Unique Rightmove reference for this branch
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="channel">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Defines whether this is the sales or lettings channel for a branch: 1 Sales 2 Lettings
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int">
+										<xs:enumeration value="1"/>
+										<xs:enumeration value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="overseas"  minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Flag to identify whether a property is UK or Overseas
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:boolean"/>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+				<xs:element name="property">
+					<xs:annotation>
+						<xs:documentation>Information about the property being sent
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="agent_ref">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Agent's unique reference for this property
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string">
+										<xs:minLength  value="1"/>
+										<xs:maxLength  value="80"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="published">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Defines whether this property should be visible on Rightmove
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:boolean"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="property_type">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											<![CDATA[The type of the property being sent in this message: 0 Not Specified, 1 Terraced House, 2 End of terrace house, 3 Semi-detached house, 4 Detached house, 5 Mews house, 6 Cluster house, 7 Ground floor flat, 8 Flat, 9 Studio flat, 10 Ground floor maisonette, 11 Maisonette, 12 Bungalow, 13 Terraced bungalow, 14 Semi-detached bungalow, 15 Detached bungalow, 16 Mobile home, 20 Land (Residential), 21 Link detached house, 22 Town house, 23 Cottage, 24 Chalet, 25 Character Property, 26 House (unspecified), 27 Villa, 28 Apartment, 29 Penthouse, 30 Finca, 43 Barn Conversion, 44 Serviced apartment, 45 Parking, 46 Sheltered Housing, 47 Reteirment property, 48 House share, 49 Flat share, 50 Park home, 51 Garages, 52 Farm House, 53 Equestrian facility, 56 Duplex, 59 Triplex, 62 Longere, 65 Gite, 68 Barn, 71 Trulli, 74 Mill, 77 Ruins, 80 Restaurant, 83 Cafe, 86 Mill, 92 Castle, 95 Village House, 101 Cave House, 104 Cortijo, 107 Farm Land, 110 Plot, 113 Country House, 116 Stone House, 117 Caravan, 118 Lodge, 119 Log Cabin, 120 Manor House, 121 Stately Home, 125 Off-Plan, 128 Semi-detached Villa, 131 Detached Villa, 134 Bar/Nightclub, 137 Shop, 140 Riad, 141 House Boat, 142 Hotel Room, 143 Block of Apartments, 144 Private Halls, 178 Office, 181 Business Park, 184 Serviced Office, 187 Retail Property (High Street), 190 Retail Property (Out of Town), 193 Convenience Store, 196 Garages, 199 Hairdresser/Barber Shop, 202 Hotel, 205 Petrol Station, 208 Post Office, 211 Pub, 214 Workshop & Retail Space, 217 Distribution Warehouse, 220 Factory, 223 Heavy Industrial, 226 Industrial Park, 229 Light Industrial, 232 Storage, 235 Showroom, 238 Warehouse, 241 Land (Commercial), 244 Commercial Development, 247 Industrial Development, 250 Residential Development, 253 Commercial Property, 256 Data Centre, 259 Farm, 262 Healthcare Facility, 265 Marine Property, 268 Mixed Use, 271 Research & Development Facility, 274 Science Park, 277 Guest House, 280 Hospitality, 283 Leisure Facility, 298 Takeaway, 301 Childcare Facility, 304 Smallholding, 307 Place of Worship, 310 Trade Counter, 511 Coach House, 512 House of Multiple Occupation, 535 Sports facilities, 538 Spa, 541 Campsite & Holiday Village]]>
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int">
+										<xs:enumeration value="0"/>
+										<xs:enumeration value="1"/>
+										<xs:enumeration value="2"/>
+										<xs:enumeration value="3"/>
+										<xs:enumeration value="4"/>
+										<xs:enumeration value="5"/>
+										<xs:enumeration value="6"/>
+										<xs:enumeration value="7"/>
+										<xs:enumeration value="8"/>
+										<xs:enumeration value="9"/>
+										<xs:enumeration value="10"/>
+										<xs:enumeration value="11"/>
+										<xs:enumeration value="12"/>
+										<xs:enumeration value="13"/>
+										<xs:enumeration value="14"/>
+										<xs:enumeration value="15"/>
+										<xs:enumeration value="16"/>
+										<xs:enumeration value="20"/>
+										<xs:enumeration value="21"/>
+										<xs:enumeration value="22"/>
+										<xs:enumeration value="23"/>
+										<xs:enumeration value="24"/>
+                                        <xs:enumeration value="25"/>
+                                        <xs:enumeration value="26"/>
+										<xs:enumeration value="27"/>
+										<xs:enumeration value="28"/>
+										<xs:enumeration value="29"/>
+										<xs:enumeration value="30"/>
+										<xs:enumeration value="43"/>
+										<xs:enumeration value="44"/>
+										<xs:enumeration value="45"/>
+										<xs:enumeration value="46"/>
+										<xs:enumeration value="47"/>
+										<xs:enumeration value="48"/>
+										<xs:enumeration value="49"/>
+										<xs:enumeration value="50"/>
+										<xs:enumeration value="51"/>
+										<xs:enumeration value="52"/>
+										<xs:enumeration value="53"/>
+										<xs:enumeration value="56"/>
+										<xs:enumeration value="59"/>
+										<xs:enumeration value="62"/>
+										<xs:enumeration value="65"/>
+										<xs:enumeration value="68"/>
+										<xs:enumeration value="71"/>
+										<xs:enumeration value="74"/>
+										<xs:enumeration value="77"/>
+										<xs:enumeration value="80"/>
+										<xs:enumeration value="83"/>
+										<xs:enumeration value="86"/>
+										<xs:enumeration value="92"/>
+										<xs:enumeration value="95"/>
+										<xs:enumeration value="101"/>
+										<xs:enumeration value="104"/>
+										<xs:enumeration value="107"/>
+										<xs:enumeration value="110"/>
+										<xs:enumeration value="113"/>
+										<xs:enumeration value="116"/>
+										<xs:enumeration value="117"/>
+										<xs:enumeration value="118"/>
+										<xs:enumeration value="119"/>
+										<xs:enumeration value="120"/>
+										<xs:enumeration value="121"/>
+										<xs:enumeration value="125"/>
+										<xs:enumeration value="128"/>
+										<xs:enumeration value="131"/>
+										<xs:enumeration value="134"/>
+										<xs:enumeration value="137"/>
+										<xs:enumeration value="140"/>
+										<xs:enumeration value="141"/>
+										<xs:enumeration value="142"/>
+										<xs:enumeration value="143"/>
+										<xs:enumeration value="144"/>
+										<xs:enumeration value="178"/>
+										<xs:enumeration value="181"/>
+										<xs:enumeration value="184"/>
+										<xs:enumeration value="187"/>
+										<xs:enumeration value="190"/>
+										<xs:enumeration value="193"/>
+										<xs:enumeration value="196"/>
+										<xs:enumeration value="199"/>
+										<xs:enumeration value="202"/>
+										<xs:enumeration value="205"/>
+										<xs:enumeration value="208"/>
+										<xs:enumeration value="211"/>
+										<xs:enumeration value="214"/>
+										<xs:enumeration value="217"/>
+										<xs:enumeration value="220"/>
+										<xs:enumeration value="223"/>
+										<xs:enumeration value="226"/>
+										<xs:enumeration value="229"/>
+										<xs:enumeration value="232"/>
+										<xs:enumeration value="235"/>
+										<xs:enumeration value="238"/>
+										<xs:enumeration value="241"/>
+										<xs:enumeration value="244"/>
+										<xs:enumeration value="247"/>
+										<xs:enumeration value="250"/>
+										<xs:enumeration value="253"/>
+										<xs:enumeration value="256"/>
+										<xs:enumeration value="259"/>
+										<xs:enumeration value="262"/>
+										<xs:enumeration value="265"/>
+										<xs:enumeration value="268"/>
+										<xs:enumeration value="271"/>
+										<xs:enumeration value="274"/>
+										<xs:enumeration value="277"/>
+										<xs:enumeration value="280"/>
+										<xs:enumeration value="283"/>
+                                        <xs:enumeration value="298"/>
+                                        <xs:enumeration value="301"/>
+                                        <xs:enumeration value="304"/>
+                                        <xs:enumeration value="307"/>
+                                        <xs:enumeration value="310"/>
+                                        <xs:enumeration value="511"/>
+										<xs:enumeration value="512"/>
+										<xs:enumeration value="535"/>
+										<xs:enumeration value="538"/>
+										<xs:enumeration value="541"/>
+
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="status">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											The current transaction status for this property: 1 Available, 2 SSTC (sales only), 3 SSTCM (Scottish sales only), 4 Under Offer (sales only), 5 Reserved (sales only), 6 Let Agreed (lettings only)
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int">
+										<xs:enumeration value="1"/>
+										<xs:enumeration value="2"/>
+										<xs:enumeration value="3"/>
+										<xs:enumeration value="4"/>
+										<xs:enumeration value="5"/>
+										<xs:enumeration value="6"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="new_home" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Defines whether this property is a new build
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:boolean"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="student_property" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Defines whether this property is available for student lettings
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:boolean"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="house_flat_share" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Defines whether this advert is for a house/flat share
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:boolean"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="create_date" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Date this property was created in the format: dd-MM-yyyy HH:mm:ss
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="update_date" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Date this property was last updated in the feed provider's software, in the format: dd-MM-yyyy HH:mm:ss
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="date_available" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Date a rental property is available in the format: dd-MM-yyyy
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="contract_months" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Length of rental contract in months
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="minimum_term" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											Minimum term for the rental contract in months
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="let_type" minOccurs="0" maxOccurs="1">
+								<xs:simpleType >
+									<xs:annotation>
+										<xs:documentation>
+											The type of rental contract available for this property: 1 Long term, 2 Short term, 4 Commercial, 0 Not specified
+										</xs:documentation>
+									</xs:annotation>
+									<xs:restriction base="xs:int">
+										<xs:enumeration value="1"/>
+										<xs:enumeration value="2"/>
+										<xs:enumeration value="4"/>
+										<xs:enumeration value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="address">
+								<xs:annotation>
+									<xs:documentation>
+										Information about the address of the property being sent
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="house_name_number">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The first line of the address including the property name or number
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:minLength  value="1"/>
+													<xs:maxLength  value="60"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="address_2" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The second line of the address for this property
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength  value="60"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="address_3" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The third line of the address for this property
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength  value="60"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="address_4" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The fourth line of the address for this property
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength  value="60"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="town">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The town in which the property is located
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:minLength  value="1"/>
+													<xs:maxLength  value="60"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="postcode_1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The first half of the post code for the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:minLength  value="1"/>
+													<xs:maxLength  value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="postcode_2">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The second half of the post code for the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:minLength  value="1"/>
+													<xs:maxLength  value="3"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="display_address">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The address which should be displayed for the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:minLength  value="1"/>
+													<xs:maxLength  value="120"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="latitude" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The exact latitude of the property
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:decimal">
+													<xs:minInclusive value="-90"/>
+													<xs:maxInclusive value="90"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="longitude" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The exact longitude of the property
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:decimal">
+													<xs:minInclusive value="-180"/>
+													<xs:maxInclusive value="180"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="pov_latitude" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The latitude for the google streetview camera
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:decimal">
+													<xs:minInclusive value="-90"/>
+													<xs:maxInclusive value="90"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="pov_longitude" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The longitude for the google streetview camera
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:decimal">
+													<xs:minInclusive value="-180"/>
+													<xs:maxInclusive value="180"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="pov_pitch" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The pitch for the google streetview camera
+													</xs:documentation>
+												</xs:annotation>
+                                                <xs:restriction base="xs:decimal">
+                                                    <xs:minInclusive value="-180"/>
+                                                    <xs:maxInclusive value="180"/>
+                                                </xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="pov_heading" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The heading for the google streetview camera
+													</xs:documentation>
+												</xs:annotation>
+                                                <xs:restriction base="xs:decimal">
+                                                    <xs:minInclusive value="-360"/>
+                                                    <xs:maxInclusive value="360"/>
+                                                </xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="pov_zoom" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The zoom level for the google streetview camera
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int"/>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+
+							<xs:element name="price_information">
+								<xs:annotation>
+									<xs:documentation>
+										Information about the price of the property being sent
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="price">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The price of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:decimal">
+													<xs:minInclusive value="1"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="price_qualifier" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The qualifier on the advertised price of the property being sent: 0 Default, 1 POA, 2 Guide Price, 3 Fixed Price, 4 Offers in excess of, 5 OIRO, 6 Sale by Tender, 7 From, 9 Shared Ownership, 10 Offers over, 11 Part Buy, Part Rent, 12 Shared Equity, 16 Coming Soon
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="0"/>
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="2"/>
+													<xs:enumeration value="3"/>
+													<xs:enumeration value="4"/>
+													<xs:enumeration value="5"/>
+													<xs:enumeration value="6"/>
+													<xs:enumeration value="7"/>
+													<xs:enumeration value="9"/>
+													<xs:enumeration value="10"/>
+													<xs:enumeration value="11"/>
+													<xs:enumeration value="12"/>
+                                                    <xs:enumeration value="16"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="deposit" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The deposit required for rental of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:minInclusive value="0"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="administration_fee" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The admin fee required for the rental contract of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength  value="4000"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="rent_frequency" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The frequency of rental payments for the property being sent: 1 Yearly, 4 Quarterly, 12 Monthly, 52 Weekly, 365 Daily
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="4"/>
+													<xs:enumeration value="12"/>
+													<xs:enumeration value="52"/>
+													<xs:enumeration value="365"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="tenure_type" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The tenure type for the sale of the property being sent: 1 Freehold, 2 Leasehold, 3 Feudal, 4 Commonhold, 5 Share of Freehold
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="2"/>
+													<xs:enumeration value="3"/>
+													<xs:enumeration value="4"/>
+													<xs:enumeration value="5"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="auction" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Indicates if this property is being sold at auction
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="tenure_unexpired_years" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The number of years left on the tenure of this property
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:minInclusive value="0"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="price_per_unit_area" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The price per unit area of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:decimal">
+													<xs:minInclusive value="0"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+
+							<xs:element name="details">
+								<xs:annotation>
+									<xs:documentation>
+										The details about the property being sent
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="summary">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The summary description of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:minLength  value="1"/>
+													<xs:maxLength  value="1000"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="description">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The full description of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:minLength  value="1"/>
+													<xs:maxLength  value="32000"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="features" minOccurs="0" maxOccurs="10">
+											<xs:annotation>
+												<xs:documentation>
+													Features of the property being sent
+												</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType >
+												<xs:restriction base="xs:string">
+													<xs:minLength  value="1"/>
+													<xs:maxLength  value="200"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="bedrooms">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The number of bedrooms for the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:minInclusive value="0"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="bathrooms" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The number of bathrooms for the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:minInclusive value="0"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="reception_rooms" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The number of reception rooms for the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:minInclusive value="0"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="parking" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>
+													Parking options available for the property being sent: 13 Allocated, 14 Communal, 15 Covered, 16 Garage, 17 Driveway, 18 Gated, 19 Off Street, 20 On Street, 21 Rear, 22 Permit, 23 Private, 24 Residents
+												</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType >
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="13"/>
+													<xs:enumeration value="14"/>
+													<xs:enumeration value="15"/>
+													<xs:enumeration value="16"/>
+													<xs:enumeration value="17"/>
+													<xs:enumeration value="18"/>
+													<xs:enumeration value="19"/>
+													<xs:enumeration value="20"/>
+													<xs:enumeration value="21"/>
+													<xs:enumeration value="22"/>
+													<xs:enumeration value="23"/>
+													<xs:enumeration value="24"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+
+										<xs:element name="outside_space" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>
+													Outside spaces associated with the property being sent: 29 Back Garden, 30 Communal Garden, 31 Enclosed Garden, 32 Front Garden, 33 Private Garden, 34 Rear Garden, 35 Terrace, 36 Patio
+												</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType >
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="29"/>
+													<xs:enumeration value="30"/>
+													<xs:enumeration value="31"/>
+													<xs:enumeration value="32"/>
+													<xs:enumeration value="33"/>
+													<xs:enumeration value="34"/>
+													<xs:enumeration value="35"/>
+													<xs:enumeration value="36"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+
+										<xs:element name="year_built" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The year in which the property being sent was built
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:minInclusive value="0"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="internal_area" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Total internal area of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:decimal">
+													<xs:minInclusive value="0"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="internal_area_unit" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Units which the internal area is sent in: 1 sq ft 2 sq m 3 acre 4 hectares
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="2"/>
+													<xs:enumeration value="3"/>
+													<xs:enumeration value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="land_area" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Total land area of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:decimal">
+													<xs:minInclusive value="0"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="land_area_unit" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Units which the land area is sent in: 1 sq ft 2 sq m 3 acre 4 hectares
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="2"/>
+													<xs:enumeration value="3"/>
+													<xs:enumeration value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="floors" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Number of floors in the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:minInclusive value="0"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="entrance_floor" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Floor which the entrance to the property being sent is on: 1 Basement, 2 Ground Floor, 3 1st Floor, 4 2nd Floor, 5 Higher than 2nd floor (no lift), 6 Higher than 2nd floor (with lift)
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="2"/>
+													<xs:enumeration value="3"/>
+													<xs:enumeration value="4"/>
+													<xs:enumeration value="5"/>
+													<xs:enumeration value="6"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="condition" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Condition of the property being sent: 1 Good, 2 Some work needed, 3 Work required throughout, 4 Major renovation required
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="2"/>
+													<xs:enumeration value="3"/>
+													<xs:enumeration value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+
+										<xs:element name="accessibility" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>
+													Accessibility measures in place in the property being sent: 42 Not suitable for wheelchair users, 37 Level access, 38 Lift access, 39 Ramped access, 40 Wet room, 41 Wide doorways
+												</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType >
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="42"/>
+													<xs:enumeration value="37"/>
+													<xs:enumeration value="38"/>
+													<xs:enumeration value="39"/>
+													<xs:enumeration value="40"/>
+													<xs:enumeration value="41"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+
+										<xs:element name="heating" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>
+													Heating related features of the property being sent: 1 Air Conditioning, 2 Central, 3 Double Glazing, 4 Eco-Friendly, 5 Electric, 6 Gas, 7 Gas Central, 8 Night Storage, 9 Oil, 10 Solar, 11 Solar Water, 12 Under Floor
+												</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType >
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="2"/>
+													<xs:enumeration value="3"/>
+													<xs:enumeration value="4"/>
+													<xs:enumeration value="5"/>
+													<xs:enumeration value="6"/>
+													<xs:enumeration value="7"/>
+													<xs:enumeration value="8"/>
+													<xs:enumeration value="9"/>
+													<xs:enumeration value="10"/>
+													<xs:enumeration value="11"/>
+													<xs:enumeration value="12"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+
+										<xs:element name="furnished_type" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is furnishing included in the rental of the property being sent: 0 Furnished, 1 Part-furnished, 2 Unfurnished, 4 Furnished/Unfurnished
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="0"/>
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="2"/>
+													<xs:enumeration value="4"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="pets_allowed" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Are pets permitted in the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="smokers_considered" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Are smokers considered for the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="housing_benefit_considered" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Are people on housing benefit considered for the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="sharers_considered" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Are sharers considered for the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="burglar_alarm" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is there a burglar alarm in the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="washing_machine" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is there a washing machine in the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="dishwasher" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is there a dishwasher in the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="all_bills_inc" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Are bills included in the rental price of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="water_bill_inc" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is the water bill included in the rental price of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="gas_bill_inc" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is the gas bill included in the rental price of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="electricity_bill_inc" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is the electricity bill included in the rental price of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="oil_bill_inc" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is the oil bill included in the rental price of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="council_tax_inc" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is council tax included in the rental price of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="tv_licence_inc" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is the tv licence included in the rental price of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="sat_cable_tv_bill_inc" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is satellite or cable TV included in the rental price of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="internet_bill_inc" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is the internet bill included in the rental price of the property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="business_for_sale" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Is there a business for sale with the commercial property being sent
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+
+										<xs:element name="comm_use_class" minOccurs="0" maxOccurs="6">
+											<xs:annotation>
+												<xs:documentation>
+													The commercial use class(es) of the property being sent: 1 A1 Shops, 4 A2 Financial and Professional Services, 7 A3 Restaurants and Cafes, 10 A4 Drinking Establishments, 13 A5 Hot Food Take away, 16 B1 Business, 19 B2 General Industrial, 22 B8 Storage and Distribution, 25 C1 Hotels, 28 C2 Residential Institutions, 31 C2A Secure Residential Institution, 34 C3 Dwelling Houses, 37 D1 Non-Residential Institutions, 40 D2 Assembly and Leisure, 43 Sui_generis_1, 46 Sui_generis_2
+												</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType >
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="4"/>
+													<xs:enumeration value="7"/>
+													<xs:enumeration value="10"/>
+													<xs:enumeration value="13"/>
+													<xs:enumeration value="16"/>
+													<xs:enumeration value="19"/>
+													<xs:enumeration value="22"/>
+													<xs:enumeration value="25"/>
+													<xs:enumeration value="28"/>
+													<xs:enumeration value="31"/>
+													<xs:enumeration value="34"/>
+													<xs:enumeration value="37"/>
+													<xs:enumeration value="40"/>
+													<xs:enumeration value="43"/>
+													<xs:enumeration value="46"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+
+										<xs:element name="rooms" minOccurs="0" maxOccurs="99">
+											<xs:annotation>
+												<xs:documentation>
+													Room data for the property being sent
+												</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="room_name" minOccurs="1" maxOccurs="1">
+														<xs:simpleType >
+															<xs:annotation>
+																<xs:documentation>
+																	The name of the room
+																</xs:documentation>
+															</xs:annotation>
+															<xs:restriction base="xs:string">
+																<xs:minLength  value="1"/>
+																<xs:maxLength  value="120"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="room_description" minOccurs="0" maxOccurs="1">
+														<xs:simpleType >
+															<xs:annotation>
+																<xs:documentation>
+																	The specific description of that room
+																</xs:documentation>
+															</xs:annotation>
+															<xs:restriction base="xs:string">
+																<xs:maxLength  value="1000"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="room_length" minOccurs="0" maxOccurs="1">
+														<xs:simpleType >
+															<xs:annotation>
+																<xs:documentation>
+																	The length of the room
+																</xs:documentation>
+															</xs:annotation>
+															<xs:restriction base="xs:decimal">
+																<xs:minInclusive value="0"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="room_width" minOccurs="0" maxOccurs="1">
+														<xs:simpleType >
+															<xs:annotation>
+																<xs:documentation>
+																	The width of the room
+																</xs:documentation>
+															</xs:annotation>
+															<xs:restriction base="xs:decimal">
+																<xs:minInclusive value="0"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="room_dimension_unit" minOccurs="0" maxOccurs="1">
+														<xs:simpleType >
+															<xs:annotation>
+																<xs:documentation>
+																	The units which the length and width of the room have been provided in: 5 Metres, 6 Centimetres, 7 Millimetres, 8 Feet, 9 Inches
+																</xs:documentation>
+															</xs:annotation>
+															<xs:restriction base="xs:int">
+																<xs:enumeration value="5"/>
+																<xs:enumeration value="6"/>
+																<xs:enumeration value="7"/>
+																<xs:enumeration value="8"/>
+																<xs:enumeration value="9"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="room_dimension_text" minOccurs="0" maxOccurs="1">
+														<xs:simpleType >
+															<xs:annotation>
+																<xs:documentation>
+																	Any additional description or clarification of the room dimensions
+																</xs:documentation>
+															</xs:annotation>
+															<xs:restriction base="xs:string">
+																<xs:minLength  value="1"/>
+																<xs:maxLength  value="120"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="room_photo_urls" minOccurs="0" maxOccurs="10">
+														<xs:simpleType >
+															<xs:annotation>
+																<xs:documentation>
+																	The URLs of images which should be associated with this room
+																</xs:documentation>
+															</xs:annotation>
+															<xs:restriction base="xs:string">
+																<xs:maxLength  value="250"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+											<xs:unique name="room_photo_urls_unique">
+												<xs:selector xpath="room_photo_urls" />
+												<xs:field xpath="." />
+											</xs:unique>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+								<xs:unique name="features_unique">
+									<xs:selector xpath="features" />
+									<xs:field xpath="." />
+								</xs:unique>
+								<xs:unique name="parking_unique">
+									<xs:selector xpath="parking" />
+									<xs:field xpath="." />
+								</xs:unique>
+								<xs:unique name="outside_space_unique">
+									<xs:selector xpath="outside_space" />
+									<xs:field xpath="." />
+								</xs:unique>
+								<xs:unique name="accessibility_unique">
+									<xs:selector xpath="accessibility" />
+									<xs:field xpath="." />
+								</xs:unique>
+								<xs:unique name="heating_unique">
+									<xs:selector xpath="heating" />
+									<xs:field xpath="." />
+								</xs:unique>
+								<xs:unique name="comm_use_class_unique">
+									<xs:selector xpath="comm_use_class" />
+									<xs:field xpath="." />
+								</xs:unique>
+							</xs:element>
+
+							<xs:element name="media" minOccurs="0" maxOccurs="999">
+								<xs:annotation>
+									<xs:documentation>
+										The media for the property being sent
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="media_type" minOccurs="1" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The type of media which is being sent: 1 Image, 2 Floorplan, 3 Brochure, 4 Virtual Tour, 5 Audio Tour, 6 EPC, 7 EPC Graph
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:enumeration value="1"/>
+													<xs:enumeration value="2"/>
+													<xs:enumeration value="3"/>
+													<xs:enumeration value="4"/>
+													<xs:enumeration value="5"/>
+													<xs:enumeration value="6"/>
+													<xs:enumeration value="7"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="media_url" minOccurs="1" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The URL to retrieve this piece of media from
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:minLength  value="1"/>
+													<xs:maxLength  value="250"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="caption" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The caption to be displayed for this piece of media
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength  value="50"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="sort_order" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The display order for this piece of media
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:int">
+													<xs:minInclusive value="0"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="media_update_date" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The date the media at this URL was last updated in the format: dd-MM-yyyy HH:mm:ss
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string"/>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+
+							<xs:element name="principal" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:documentation>
+										Details of the principal for the property being sent
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="principal_email_address" minOccurs="1" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														The email address for the principal for this property
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:minLength  value="6"/>
+													<xs:maxLength  value="200"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="auto_email_when_live" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Should the principal be emailed when this property is live on Rightmove
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="auto_email_updates" minOccurs="0" maxOccurs="1">
+											<xs:simpleType >
+												<xs:annotation>
+													<xs:documentation>
+														Should the principal be emailed when this property is updated on Rightmove
+													</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:boolean"/>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
