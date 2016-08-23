@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addUpdatePropertyForm>
+                <network>
+                                <network_id>0</network_id>
+                </network>
+                <branch>
+                                <branch_id>12345</branch_id>
+                                <channel>2</channel>
+                                <overseas>false</overseas>
+                </branch>
+                <property>
+                                <agent_ref>test_property_1</agent_ref>
+                                <published>true</published>
+                                <property_type>1</property_type>
+                                <status>1</status>
+                                <new_home>false</new_home>
+                                <student_property>false</student_property>
+                                <create_date>02-07-2013 00:00:00</create_date>
+                                <update_date>02-07-2013 00:00:00</update_date>
+                                <date_available>07-07-2013 00:00:00</date_available>
+                                <contract_months>12</contract_months>
+                                <minimum_term>12</minimum_term>
+                                <let_type>1</let_type>
+
+                                <address>
+                                                <house_name_number>33</house_name_number>
+                                                <address_2>Rightmove</address_2>
+                                                <address_3>4th Floor</address_3>
+                                                <address_4>Soho Square</address_4>
+                                                <town>London</town>
+                                                <postcode_1>W1D</postcode_1>
+                                                <postcode_2>3QU</postcode_2>
+                                                <display_address>Soho Square</display_address>
+                                                <latitude>51.514899</latitude>
+                                                <longitude>-0.132587</longitude>
+                                                <pov_latitude>51.51482</pov_latitude>
+                                                <pov_longitude>-0.13249</pov_longitude>
+                                                <pov_pitch>-16.78</pov_pitch>
+                                                <pov_heading>235.75</pov_heading>
+                                                <pov_zoom>0</pov_zoom>
+                                </address>
+                                <price_information>
+                                                <price>1500</price>
+                                                <price_qualifier>0</price_qualifier>
+                                                <deposit>1000</deposit>
+                                                <administration_fee>500</administration_fee>
+                                                <rent_frequency>52</rent_frequency>
+                                                <tenure_type>5</tenure_type>
+                                                <auction>false</auction>
+                                                <tenure_unexpired_years>999</tenure_unexpired_years>
+                                                <price_per_unit_area>100</price_per_unit_area>
+                                </price_information>
+                                <details>
+                                                <summary>10 bedroom flat </summary>
+                                                <description>10 bedroom flat in a converted office space - formerly the office of the Rightmove development team. This property has been specially converted for testing purposes.</description>
+                                                <features>Brand New</features>
+                                                <features>Private Patio</features>
+                                                <features>Panoramic Views</features>
+                                                <features>Garage</features>
+                                                <features>Fully fitted Kitchen</features>
+                                                <features>Carport</features>
+                                                <features>Swimming pool and outside shower</features>
+                                                <features>Lift Access</features>
+                                                <features>Study</features>
+                                                <features>Luxury Master Bathroom</features>
+                                                <bedrooms>10</bedrooms>
+                                                <bathrooms>6</bathrooms>
+                                                <reception_rooms>6</reception_rooms>
+                                                <parking>13</parking>
+                                                <parking>14</parking>
+                                                <outside_space>29</outside_space>
+                                                <outside_space>30</outside_space>
+                                                <year_built>2013</year_built>
+                                                <internal_area>5000</internal_area>
+                                                <internal_area_unit>1</internal_area_unit>
+                                                <land_area>1000</land_area>
+                                                <land_area_unit>1</land_area_unit>
+                                                <floors>2</floors>
+                                                <entrance_floor>6</entrance_floor>
+                                                <condition>1</condition>
+                                                <accessibility>42</accessibility>
+                                                <accessibility>37</accessibility>
+                                                <heating>11</heating>
+                                                <heating>12</heating>
+                                                <furnished_type>1</furnished_type>
+                                                <pets_allowed>true</pets_allowed>
+                                                <smokers_considered>true</smokers_considered>
+                                                <housing_benefit_considered>true</housing_benefit_considered>
+                                                <sharers_considered>true</sharers_considered>
+                                                <burglar_alarm>true</burglar_alarm>
+                                                <washing_machine>true</washing_machine>
+                                                <dishwasher>true</dishwasher>
+                                                <all_bills_inc>false</all_bills_inc>
+                                                <water_bill_inc>true</water_bill_inc>
+                                                <gas_bill_inc>true</gas_bill_inc>
+                                                <electricity_bill_inc>true</electricity_bill_inc>
+                                                <tv_licence_inc>true</tv_licence_inc>
+                                                <sat_cable_tv_bill_inc>false</sat_cable_tv_bill_inc>
+                                                <internet_bill_inc>true</internet_bill_inc>
+                                                <business_for_sale>true</business_for_sale>
+                                                <comm_use_class>1</comm_use_class>
+                                                <comm_use_class>4</comm_use_class>
+                                                <rooms>
+                                                                <room_name>Master Bedroom</room_name>
+                                                                <room_description>A spacious master bedroom with a delightful view out over the Soho Square. The room has it's own en suite featuring a bath with a power shower over it. The room features a delightful modern chandelier fitting and there is also independent control over the air conditioning and heating specifically for this room.</room_description>
+                                                                <room_length>51</room_length>
+                                                                <room_width>42</room_width>
+                                                                <room_dimension_unit>5</room_dimension_unit>
+                                                                <room_photo_urls>http://www.rightmove.co.uk/image1</room_photo_urls>
+                                                </rooms>
+                                </details>
+                                <media>
+                                                <media_type>1</media_type>
+                                                <media_url>http://www.rightmove.co.uk/image1</media_url>
+                                                <caption>This is an image</caption>
+                                                <sort_order>1</sort_order>
+                                                <media_update_date>02-07-2013 00:00:00</media_update_date>
+                                </media>
+                                <principal>
+                                                <principal_email_address>principal@email.com</principal_email_address>
+                                                <auto_email_when_live>true</auto_email_when_live>
+                                                <auto_email_updates>true</auto_email_updates>
+                                </principal>
+                </property>
+</addUpdatePropertyForm>
