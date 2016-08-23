@@ -157,7 +157,8 @@ var ractive = new AuthenticatedRactive({
       if (searchTerm==undefined || searchTerm.length==0) {
         return true;
       } else {
-        return ( (obj.firstName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+        return ( (obj.selfRef.indexOf(searchTerm)>=0)
+          || (obj.firstName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.lastName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.email.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.phone1!=undefined && obj.phone1.indexOf(searchTerm)>=0)
