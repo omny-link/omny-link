@@ -332,6 +332,9 @@ var AuthenticatedRactive = Ractive.extend({
       });
     }
   },
+  shortId: function(uri) {
+    return uri.substring(uri.lastIndexOf('/')+1);
+  },
   showError: function(msg) {
     this.showMessage(msg, 'bg-danger text-danger');
   },
@@ -370,6 +373,46 @@ var AuthenticatedRactive = Ractive.extend({
       }
       // a must be equal to b
       return 0;
+    });
+  },
+  startCustomAction: function(key, label, object, form) {
+    console.log('startCustomAction: '+key+' for '+object.id);
+    var singularEntityName = ractive.entityName(object).toCamelCase().singular();
+    var instanceToStart = {
+        processDefinitionId: key,
+        businessKey: label,
+        label: label,
+        processVariables: {
+          initiator: ractive.get('username'),
+          tenantId: ractive.get('tenant.id')
+        }
+      };
+    instanceToStart.processVariables[singularEntityName+'Id'] = ractive.uri(object);
+    instanceToStart.processVariables[singularEntityName+'ShortId'] = ractive.shortId(ractive.uri(object));
+    console.log(JSON.stringify(instanceToStart));
+    // save what we know so far...
+    ractive.set('instanceToStart',instanceToStart);
+    if (form == undefined) {
+      // ... and submit
+      ractive.submitCustomAction();
+    } else {
+      // ... or display form
+      $('#customActionModal').modal('show');
+    }
+  },
+  submitCustomAction: function() {
+    console.info('submitCustomAction');
+    $.ajax({
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(ractive.get('instanceToStart')),
+      success: completeHandler = function(data, textStatus, jqXHR) {
+        console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
+        ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
+        $('#customActionModal').modal('hide');
+        ractive.select(ractive.get('current'));// refresh
+      },
     });
   },
   stripProjection: function(link) {

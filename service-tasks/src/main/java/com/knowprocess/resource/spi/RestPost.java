@@ -87,13 +87,6 @@ public class RestPost extends RestService implements JavaDelegate {
     public Map<String, Object> post(String usr, String pwd, String resource,
             Map<String, String> requestHeaders, String[] responseHeadersSought,
             String payload) throws Exception {
-        return post(usr, pwd, resource, requestHeaders, responseHeadersSought,
-                payload, false);
-    }
-
-    public Map<String, Object> post(String usr, String pwd, String resource,
-            Map<String, String> requestHeaders, String[] responseHeadersSought,
-            String payload, boolean useSSL) throws Exception {
         LOGGER.info(String.format("POSTing to %1$s as %2$s", resource, usr));
 
         Map<String, Object> responses = new HashMap<String, Object>();
@@ -102,7 +95,7 @@ public class RestPost extends RestService implements JavaDelegate {
 
             Map<String, List<String>> responseHeaders2 = new HashMap<String, List<String>>();
             is = getUrlResource(usr, pwd).getResource(resource, "POST",
-                    requestHeaders, responseHeaders2, payload/* , useSSL */);
+                    requestHeaders, responseHeaders2, payload);
             LOGGER.debug(String.format("ResponseHeaders: %1$s",
                     responseHeaders2));
 

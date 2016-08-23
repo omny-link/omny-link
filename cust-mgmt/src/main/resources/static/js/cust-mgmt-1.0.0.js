@@ -856,45 +856,6 @@ var ractive = new AuthenticatedRactive({
     $('#currentSect').slideUp();
     $('#contactsTable').slideDown({ queue: true });
   },
-  startCustomAction: function(key, label, contact, form) {
-    console.log('startCustomAction: '+key+' for '+contact.id);
-    var instanceToStart = {
-        processDefinitionId: key,
-        businessKey: contact.firstName+' '+contact.lastName,
-        label: label,
-        processVariables: { 
-            contactId: ractive.getId(contact), 
-            contactShortId: ractive.stripProjection(ractive.getId(contact).substring(ractive.getId(contact).indexOf('/contacts')+10)), 
-            initiator: ractive.get('username'),
-            tenantId: ractive.get('tenant.id')
-        }
-      };
-    console.log(JSON.stringify(instanceToStart));
-    // save what we know so far...
-    ractive.set('instanceToStart',instanceToStart);
-    if (form == undefined) {
-      // ... and submit 
-      ractive.submitCustomAction();
-    } else {
-      // ... or display form 
-      $('#customActionModal').modal('show');
-    }
-  },
-  submitCustomAction: function() {
-    console.info('submitCustomAction');
-    $.ajax({
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(ractive.get('instanceToStart')),
-      success: completeHandler = function(data, textStatus, jqXHR) {
-        console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
-        ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
-        $('#customActionModal').modal('hide');
-        ractive.select(ractive.get('current'));// refresh
-      },
-    });
-  },
   toggleAllNotes: function(btn) {
     console.info('toggleAllNotes');
     $('#notesTable tr.unfavorite').slideToggle();

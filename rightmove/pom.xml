@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>link.omny.rightmove</groupId>
+  <artifactId>rightmove</artifactId>
+  <packaging>jar</packaging>
+  <name>RightMove client</name>
+
+  <parent>
+    <groupId>link.omny</groupId>
+    <artifactId>omny-link-root</artifactId>
+    <version>1.0.0.0</version>
+    <relativePath>..</relativePath>
+  </parent>
+  
+  <properties>
+    <work-mgmt.version>2.0.0.0</work-mgmt.version>
+  </properties>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>com.knowprocess.activiti</groupId>
+  		<artifactId>service-tasks</artifactId>
+  		<version>${work-mgmt.version}</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  		<scope>test</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-api</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-log4j12</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>log4j</groupId>
+  		<artifactId>log4j</artifactId>
+  	</dependency>
+  </dependencies>
+
+</project>
