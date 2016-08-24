@@ -121,15 +121,15 @@ public class StockCategory implements Serializable {
     private String offerStatus;
 
     @JsonProperty
-    @Size(max = 25)
+    @Size(max = 35)
     private String offerTitle;
 
     @JsonProperty
-    @Size(max = 60)
+    @Size(max = 80)
     private String offerDescription;
 
     @JsonProperty
-    @Size(max = 20)
+    @Size(max = 30)
     private String offerCallToAction;
 
     /**
