@@ -113,14 +113,21 @@
     <!--  END core dependencies -->
     <!-- Generates REST documentation -->
     <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger2</artifactId>
-        <version>2.0.0</version>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger2</artifactId>
+      <version>2.0.0</version>
     </dependency>
     <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger-ui</artifactId>
-        <version>2.0.0</version>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger-ui</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+    <!-- swagger ui requires but does not include 2.5 dependency -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
     </dependency>
     <!-- END REST documentation -->
     <!--  START testing dependencies -->
