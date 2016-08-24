@@ -6,8 +6,8 @@ import lombok.Data;
 public class ServiceLevelConfig {
 
     private String[] inactiveStages = { "cold", "complete" };
-    private int inactivityThreshold;
-    private int initialResponseThreshold;
+    private Integer inactivityThreshold;
+    private Integer initialResponseThreshold;
 
     public void set(String name, Object obj) {
         switch (name) {

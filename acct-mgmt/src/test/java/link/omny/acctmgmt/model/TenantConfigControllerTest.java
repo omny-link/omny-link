@@ -126,6 +126,8 @@ public class TenantConfigControllerTest {
                 PARTIAL_EXTENSION));
         tenantConfig.addProcess(new TenantProcess("Dummy Process",
                 PROCESS_DUMMY_1, "Dummy1"));
+        ServiceLevelConfig serviceLevelConfig = new ServiceLevelConfig();
+        tenantConfig.setServiceLevel(serviceLevelConfig);
         tenantConfig.addToolbarEntry(new TenantToolbarEntry("90 Moving Window",
                 TOOLBAR_ENTRY_WINDOW, "omny-icon-dashboard",
                 "View your 90 day moving window report here"));
