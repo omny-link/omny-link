@@ -87,7 +87,7 @@ function AuthHelper() {
     });
   }
   this.redirectToLogin = function() {
-    ractive.showError('Please login to access this page.');
+    ractive.showWarning('Please login to access this page');
     setTimeout(function() { window.location.href='/'; }, 1000);
   }
 }

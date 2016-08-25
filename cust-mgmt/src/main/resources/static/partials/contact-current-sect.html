@@ -321,7 +321,7 @@
             </li>
             <li class="form-group">
               <label class="col-md-4">Company No:</label>
-              <input autocomplete="off" class="typeahead form-control" id="curCompanyNumber" pattern="[OCS0-9]{2}[0-9]{6}" placeholder="Start typing to filter options" type="text" value="{{current.account.companyNumber}}">
+              <input autocomplete="off" class="typeahead form-control" id="curCompanyNumber" pattern="[OCS0-9]{2}[0-9]{6}" {{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.account.companyNumber}}">
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
             </li>
             {{# false && current.account.companyNumber}}
