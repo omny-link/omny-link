@@ -12,31 +12,32 @@ import org.junit.Test;
 
 public class DeferTest {
 
-	private static TaskController svc;
+    private static TaskController svc;
 
-	@BeforeClass
-	public static void setUpClass() {
-		svc = new TaskController();
-	}
+    @BeforeClass
+    public static void setUpClass() {
+        svc = new TaskController();
+    }
 
-	@Test
-	public void testDeferUntilTomorrow() {
-		GregorianCalendar now = new GregorianCalendar();
-		Date relativeDate = svc.getRelativeDate("PT24H"); 
-		assertEquals(now.getTimeInMillis() + (24 * 60 * 60 * 1000),
-				relativeDate.getTime());
+    @Test
+    public void testDeferUntilTomorrow() {
+        GregorianCalendar now = new GregorianCalendar();
+        Date relativeDate = svc.getRelativeDate("PT24H");
+        assertApproxEqual(now.getTimeInMillis() + (24 * 60 * 60 * 1000),
+                relativeDate.getTime(), 50);
 
-		relativeDate = svc.getRelativeDate("P1D");
-		System.out.println("diff: "
-				+ (now.getTimeInMillis() + (24 * 60 * 60 * 1000) - relativeDate
-						.getTime()));
-		// A 'good enough' assertion since execution time may be interferring
-		// and days are not in fact 24 h exactly
-        assertTrue(now.getTimeInMillis() + (24 * 60 * 60 * 1000) - 150 < relativeDate
-				.getTime());
-        assertTrue(now.getTimeInMillis() + (24 * 60 * 61 * 1000) + 150 > relativeDate
-				.getTime());
-	}
+        relativeDate = svc.getRelativeDate("P1D");
+
+        assertApproxEqual(now.getTimeInMillis() + (24 * 60 * 60 * 1000),
+                relativeDate.getTime(), 50);
+    }
+
+    // A 'good enough' assertion since execution time may be interfering
+    private void assertApproxEqual(long l, long m, int leeway) {
+        System.out.println("diff: " + (l - m));
+        assertTrue(l - leeway < m);
+        assertTrue(l + leeway > m);
+    }
 
     @Test
     public void testDeferUntilNextMonday() {
