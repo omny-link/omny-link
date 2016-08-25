@@ -2,7 +2,7 @@
   "id": "omny", 
   "name": "Omny Link",
   "show": { 
-    "account":true, "activityAnalysis":true, "activityTracker":true, "budget":true, "companyBackground":true,
+    "account":true, "activityAnalysis":true, "activityTracker":true, "budget":true, "companyBackground":false,
     "documents": true, "financials":true, "marketing":true, "merge":true, "supportBar": true
   },
   "accountFields": [ 
