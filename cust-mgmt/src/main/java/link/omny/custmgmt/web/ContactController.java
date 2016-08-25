@@ -427,8 +427,11 @@ public class ContactController {
 
     protected URI getGlobalUri(Contact contact) {
         try {
-            return new URI(ContactRepository.class.getAnnotation(
-                    RepositoryRestResource.class).path()
+            UriComponentsBuilder builder = MvcUriComponentsBuilder
+                    .fromController(getClass());
+            String uri = builder.build().toUriString()
+                    .replace("{tenantId}/", "");
+            return new URI(uri
                     + "/" + contact.getId());
         } catch (URISyntaxException e) {
             LOGGER.error(e.getMessage(), e);
@@ -820,8 +823,7 @@ public class ContactController {
         ShortContact resource = new ShortContact();
         BeanUtils.copyProperties(contact, resource);
         resource.setAlerts(contact.getAlertsAsList());
-        Link detail = linkTo(ContactRepository.class, contact.getId())
-                .withSelfRel();
+        Link detail = new Link(getGlobalUri(contact).toString());
         resource.add(detail);
         resource.setSelfRef(detail.getHref());
         if (contact.getAccount() != null) {
@@ -832,6 +834,7 @@ public class ContactController {
         return resource;
     }
 
+    // TODO this produces relative URIs (no host) i.e. a chocolate teapot
     private Link linkTo(
             @SuppressWarnings("rawtypes") Class<? extends CrudRepository> clazz,
             Long id) {
