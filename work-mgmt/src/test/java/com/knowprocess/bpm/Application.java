@@ -17,7 +17,7 @@ import com.knowprocess.bpm.api.ActivitiApplicationSecurity;
 import com.knowprocess.bpm.impl.JsonManager;
 
 @Configuration
-@Import({ BpmConfiguration.class, })
+@Import({ BpmConfiguration.class })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Autowired
