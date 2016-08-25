@@ -90,7 +90,7 @@
           </li>
           <li class="form-group">
             <label class="">Title:</label>
-            <input class="form-control" id="curOfferTitle" maxlength="25" value="{{current.offerTitle}}"/>
+            <input class="form-control" id="curOfferTitle" maxlength="35" value="{{current.offerTitle}}"/>
             <p class="col-md-offset-4 help-block">The top line of the offer.</p>
           </li>
         </ul>
@@ -100,7 +100,7 @@
         <ul class="form edit-form">
           <li class="form-group">
             <label class="">Call To Action:</label>
-            <input class="form-control" id="curOfferCallToAction" maxlength="20" value="{{current.offerCallToAction}}"/>
+            <input class="form-control" id="curOfferCallToAction" maxlength="30" value="{{current.offerCallToAction}}"/>
             <p class="col-md-offset-4 help-block">Call to action is typically used as button text.</p>
           </li>
           <li class="form-group">
@@ -114,8 +114,8 @@
       <div class="currentBody col-md-12" style="display:none">
         <ul class="form edit-form">
           <li class="form-group">
-            <label class="textarea col-md-2" maxlength="60">Description:</label>
-            <textarea class="form-control" id="curOfferDescription" value="{{current.offerDescription}}"></textarea>
+            <label class="textarea col-md-2">Description:</label>
+            <textarea class="form-control" id="curOfferDescription" maxlength="80" value="{{current.offerDescription}}"></textarea>
           </li>
         </ul>
       </div>
