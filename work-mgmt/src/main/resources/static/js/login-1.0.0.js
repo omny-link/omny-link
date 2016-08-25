@@ -121,8 +121,7 @@ var AuthenticatedRactive = Ractive.extend({
   handleError: function(jqXHR, textStatus, errorThrown) {
     switch (jqXHR.status) {
     case 0:
-      var msg = 'Unable to connect, retrying...';
-      ractive.showMessage(msg, 'alert-warning');
+      // server unavailable, retry will kick in
       break; 
     case 400:
       var msg = jqXHR.responseJSON == null ? textStatus+': '+errorThrown : errorThrown+': '+jqXHR.responseJSON.message;
@@ -131,7 +130,7 @@ var AuthenticatedRactive = Ractive.extend({
     case 401:
     case 403: 
     case 405: /* Could also be a bug but in production we'll assume a timeout */ 
-      ractive.showError("Session expired, please login again");
+      ractive.showMessage("Session expired, please login again");
       window.location.href='/login';
       break; 
     case 404: 
@@ -335,8 +334,13 @@ var AuthenticatedRactive = Ractive.extend({
   shortId: function(uri) {
     return uri.substring(uri.lastIndexOf('/')+1);
   },
+  showDisconnected: function(msg) {
+    console.log('showDisconnected: '+msg);
+    $('#connectivityMessages').remove();
+    $('body').append('<div id="connectivityMessages" class="alert-warning">'+msg+'</div>').show();
+  },
   showError: function(msg) {
-    this.showMessage(msg, 'bg-danger text-danger');
+    this.showMessage(msg, 'alert-danger');
   },
   showFormError: function(formId, msg) {
     this.showError(msg);
@@ -346,14 +350,17 @@ var AuthenticatedRactive = Ractive.extend({
   },
   showMessage: function(msg, additionalClass) {
     console.log('showMessage: '+msg);
-    if (additionalClass == undefined) additionalClass = 'bg-info text-info';
+    if (additionalClass == undefined) additionalClass = 'alert-info';
     if (msg === undefined) msg = 'Working...';
     $('#messages').empty().append(msg).removeClass().addClass(additionalClass).show();
 //    document.getElementById('messages').scrollIntoView();
-    if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
-      $('#messages').fadeOut();
-    }, EASING_DURATION*10);
-    else $('#messages').append('<span class="text-danger pull-right glyphicon glyphicon-remove" onclick="ractive.hideMessage()"></span>');
+    if (fadeOutMessages && additionalClass!='alert-danger' && additionalClass!='alert-warning') {
+      setTimeout(function() {
+        $('#messages').fadeOut();
+      }, EASING_DURATION*10);
+    } else {
+      $('#messages').append('<span class="text-danger pull-right glyphicon glyphicon-remove" onclick="ractive.hideMessage()"></span>');
+    }
   },
   showWarning: function(msg) {
     this.showMessage(msg, 'alert-warning');
@@ -503,13 +510,13 @@ var AuthenticatedRactive = Ractive.extend({
 });
 
 $( document ).ajaxError(function( event, request, settings ) {
-  // retry indefinitely
-//  if(!settings.secondExec) {
-//    settings.secondExec = true;
-    setTimeout(function() {
-      $.ajax(settings); 
-    }, EASING_DURATION*5);
-//  }
+  if (settings['retryIn']==undefined) settings.retryIn = 4000;
+  else settings.retryIn = settings.retryIn * 2;
+  var msg = 'Unable to connect, retrying in '+(settings.retryIn/1000)+' secs ...';
+  ractive.showDisconnected(msg);
+  setTimeout(function() {
+    $.ajax(settings);
+  }, settings.retryIn);
 });
 
 $( document ).bind('keypress', function(e) {
