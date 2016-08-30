@@ -99,6 +99,7 @@
       <xsl:apply-templates select="//bpmn:dataStoreReference"/>
       
       <!-- TEXT ANNOTATIONS -->
+      <xsl:apply-templates select="//bpmn:association"/>
       <xsl:apply-templates select="//bpmn:textAnnotation"/>
 
     </xsl:element>
@@ -234,6 +235,7 @@
     <xsl:call-template name="flowOrAssociation">
       <xsl:with-param name="this" select="."/>
       <xsl:with-param name="id" select="$id"/>
+      <xsl:with-param name="baseType">association</xsl:with-param>
       <xsl:with-param name="sourceRef" select="$sourceRef"/>
       <xsl:with-param name="targetRef" select="$targetRef"/>
       <xsl:with-param name="bpmnElement" select="$bpmnElement"/>
@@ -255,6 +257,7 @@
     <xsl:call-template name="flowOrAssociation">
       <xsl:with-param name="this" select="."/>
       <xsl:with-param name="id" select="$id"/>
+      <xsl:with-param name="baseType">association</xsl:with-param>
       <xsl:with-param name="sourceRef" select="$sourceRef"/>
       <xsl:with-param name="targetRef" select="$targetRef"/>
       <xsl:with-param name="bpmnElement" select="$bpmnElement"/>
@@ -272,9 +275,15 @@
     <xsl:apply-templates select="bpmn:dataOutputAssociation"/>
 
     <xsl:element name="circle">
+      <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
       <xsl:attribute name="class">
+        <xsl:text>event </xsl:text>
         <xsl:value-of select="local-name(.)"/>
       </xsl:attribute>
+      <xsl:attribute name="data-type">
+        <xsl:value-of select="local-name(.)"/>
+      </xsl:attribute>
+
       <xsl:attribute name="cx">
         <xsl:value-of select="$bpmnElement/dc:Bounds/@x+($bpmnElement/dc:Bounds/@width div 2)"/>
       </xsl:attribute>
@@ -312,6 +321,24 @@
       <xsl:if test="@cancelActivity='false'">
         <xsl:attribute name="stroke-dasharray">5,3</xsl:attribute>
       </xsl:if>
+      
+      <xsl:choose>
+        <xsl:when test="timerEventDefinition/bpmn:timeCycle">
+          <xsl:attribute name="data-timer-cycle">
+            <xsl:value-of select="bpmn:timerEventDefinition/bpmn:timeCycle"/>
+          </xsl:attribute>
+        </xsl:when>
+        <xsl:when test="bpmn:timerEventDefinition/bpmn:timeDate">
+          <xsl:attribute name="data-timer-date">
+            <xsl:value-of select="bpmn:timerEventDefinition/bpmn:timeDate"/>
+          </xsl:attribute>
+        </xsl:when>
+        <xsl:when test="bpmn:timerEventDefinition/bpmn:timeDuration">
+          <xsl:attribute name="data-timer-duration">
+            <xsl:value-of select="bpmn:timerEventDefinition/bpmn:timeDuration"/>
+          </xsl:attribute>
+        </xsl:when>
+      </xsl:choose>
     </xsl:element>
 
     <xsl:if test="local-name(.)='boundaryEvent' or local-name(.)='intermediateCatchEvent' or local-name(.)='intermediateThrowEvent'">
@@ -414,6 +441,7 @@
     <xsl:call-template name="flowOrAssociation">
       <xsl:with-param name="this" select="."/>
       <xsl:with-param name="id" select="$id"/>
+      <xsl:with-param name="baseType">flow</xsl:with-param>
       <xsl:with-param name="sourceRef" select="$sourceRef"/>
       <xsl:with-param name="targetRef" select="$targetRef"/>
       <xsl:with-param name="bpmnElement" select="$bpmnElement"/>
@@ -437,6 +465,10 @@
     <xsl:element name="path">
       <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
       <xsl:attribute name="class">
+        <xsl:text>gateway </xsl:text>
+        <xsl:value-of select="local-name(.)"/>
+      </xsl:attribute>
+      <xsl:attribute name="data-type">
         <xsl:value-of select="local-name(.)"/>
       </xsl:attribute>
       <xsl:attribute name="d">
@@ -635,12 +667,21 @@
 			      </xsl:otherwise>
 			    </xsl:choose>
 			  </xsl:if>
+			  <xsl:if test="bpmn:script">
+          <xsl:attribute name="data-script"><xsl:value-of select="bpmn:script"/></xsl:attribute>
+        </xsl:if>
+	      <xsl:if test="script">
+          <xsl:attribute name="data-script"><xsl:value-of select="script"/></xsl:attribute>
+        </xsl:if>
+        <xsl:if test="@activiti:class">
+	        <xsl:attribute name="data-service-type"><xsl:value-of select="@activiti:class"/></xsl:attribute>
+	      </xsl:if>
 	      <xsl:attribute name="data-type"><xsl:value-of select="local-name(.)"/></xsl:attribute>
         <xsl:attribute name="stroke">#000</xsl:attribute>
 	      <xsl:choose>
 		      <xsl:when test="local-name(.)='callActivity'">
 		        <xsl:attribute name="stroke-width">3px</xsl:attribute>
-		        <xsl:attribute name="data-calledElement"><xsl:value-of select="@calledElement"/></xsl:attribute>
+		        <xsl:attribute name="data-called-element"><xsl:value-of select="@calledElement"/></xsl:attribute>
 		      </xsl:when>
 		      <xsl:otherwise>
             <xsl:attribute name="stroke-width">1px</xsl:attribute>
@@ -665,6 +706,7 @@
 
       <xsl:element name="path">
         <xsl:attribute name="class">icon <xsl:value-of select="local-name(.)"/></xsl:attribute>
+        <xsl:attribute name="data-called-element"><xsl:value-of select="@calledElement"/></xsl:attribute>
         
         <xsl:choose>
           <xsl:when test="//bpmndi:BPMNShape[@bpmnElement=$id]/@isExpanded!='true' and (local-name(.)='callActivity' or local-name(.)='subProcess')">
@@ -761,6 +803,28 @@
   </xsl:template>
 
   <!-- TEXT ANNOTATIONS -->
+  <xsl:template match="bpmn:association">
+    <xsl:variable name="id" select="@id"/>
+    <xsl:variable name="sourceRef" select="@sourceRef"/>
+    <xsl:variable name="targetRef" select="@targetRef"/>
+    <xsl:variable name="bpmnElement" select="//bpmndi:BPMNEdge[@bpmnElement=$id]"/>
+
+    <xsl:variable name="srcElement" select="//bpmndi:BPMNShape[@bpmnElement=$sourceRef]"/>
+    <xsl:variable name="trgtRef" select="//*[@id=$targetRef]/../../@id"/>
+    <xsl:variable name="trgtElement" select="//bpmndi:BPMNShape[@bpmnElement=$trgtRef]"/>
+
+    <xsl:call-template name="flowOrAssociation">
+      <xsl:with-param name="this" select="."/>
+      <xsl:with-param name="id" select="$id"/>
+      <xsl:with-param name="baseType">association</xsl:with-param>
+      <xsl:with-param name="sourceRef" select="$sourceRef"/>
+      <xsl:with-param name="targetRef" select="$targetRef"/>
+      <xsl:with-param name="bpmnElement" select="$bpmnElement"/>
+      <xsl:with-param name="srcElement" select="$srcElement"/>
+      <xsl:with-param name="trgtElement" select="$trgtElement"/>
+    </xsl:call-template>
+  </xsl:template>
+
   <xsl:template match="bpmn:textAnnotation">
     <xsl:variable name="id" select="@id"/>
     <xsl:variable name="bpmnElement" select="//bpmndi:BPMNShape[@bpmnElement=$id]"/>
@@ -853,13 +917,14 @@
   <xsl:template name="flowOrAssociation">
     <xsl:param name="this"/>
     <xsl:param name="id"/>
+    <xsl:param name="baseType"/>
     <xsl:param name="sourceRef"/>
     <xsl:param name="targetRef"/>
     <xsl:param name="bpmnElement"/>
     <xsl:param name="srcElement"/>
     <xsl:param name="trgtElement"/>
     
-    <xsl:comment>FLOW OR ASSOC</xsl:comment>
+    <xsl:comment>FLOW OR ASSOC <xsl:value-of select="$id"/><xsl:value-of select="$sourceRef/@id"/></xsl:comment>
     <xsl:choose>
       <xsl:when test="$srcElement/dc:Bounds/@x = $trgtElement/dc:Bounds/@x">
         <xsl:comment>JOIN TOP</xsl:comment>
@@ -877,7 +942,12 @@
   
     <xsl:element name="path">
       <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-      <xsl:attribute name="class"><xsl:value-of select="local-name($this)"/></xsl:attribute>
+      <xsl:attribute name="class">
+        <xsl:value-of select="$baseType"/>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="local-name($this)"/>
+      </xsl:attribute>
+      <xsl:attribute name="data-type"><xsl:value-of select="local-name($this)"/></xsl:attribute>
       <xsl:attribute name="d">
         <xsl:text>M </xsl:text>
         <!-- Determine start point according to departure side -->
@@ -918,7 +988,10 @@
       <xsl:attribute name="fill">transparent</xsl:attribute>
       <xsl:attribute name="stroke">#666</xsl:attribute>
       <xsl:attribute name="stroke-width">2.0</xsl:attribute>
-      <xsl:attribute name="style">marker-end:url(#arrow)</xsl:attribute>
+      <xsl:if test="$baseType='flow'">
+        <xsl:attribute name="style">marker-end:url(#arrow)</xsl:attribute>
+      </xsl:if>
+      
       <xsl:choose>
         <xsl:when test="local-name(.)='dataInputAssociation'">
           <xsl:attribute name="stroke-dasharray">3,10</xsl:attribute>
@@ -928,6 +1001,18 @@
         </xsl:when>
         <xsl:when test="local-name(.)='messageFlow'">
           <xsl:attribute name="stroke-dasharray">10,5</xsl:attribute>
+        </xsl:when>
+        <xsl:when test="local-name(.)='association'">
+          <xsl:attribute name="stroke-dasharray">3,3</xsl:attribute>
+        </xsl:when>
+      </xsl:choose>
+      
+      <xsl:choose>
+        <xsl:when test="conditionExpression|bpmn:conditionExpression">
+          <xsl:attribute name="data-condition">
+            <xsl:value-of select="conditionExpression"/>
+            <xsl:value-of select="bpmn:conditionExpression"/>
+          </xsl:attribute>
         </xsl:when>
       </xsl:choose>
     </xsl:element>
