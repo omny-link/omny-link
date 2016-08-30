@@ -192,7 +192,7 @@ var ractive = new AuthenticatedRactive({
     console.info('deleteSelectedInstances');
     $.each(ractive.get('current.instances'), function(i,d) {
       if (d.selected) {
-        console.log('delete:  '+d.processInstanceId);
+        console.log('delete:  '+d.processs);
         ractive.deleteInstance(d,i);
       }
     });
@@ -221,14 +221,16 @@ var ractive = new AuthenticatedRactive({
     $.get(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'.svg', function( data ) {
       console.log('found image');
       ractive.set('current.image',data);
-      $('.userTask').on('click',ractive.showSelection);
-      $('.sequenceFlow').on('mouseover',ractive.showSeqFlowPropertySect);
-      $('.userTask').on('mouseover',ractive.showUserTaskPropertySect);
-      $('[data-calledElement]').click(function(ev) {
-        window.ev = ev;
+      $('.event').on('mouseover',ractive.showSelection);
+      $('.gateway').on('mouseover',ractive.showSelection);
+      $('.flow').on('mouseover',ractive.showSelection);
+      $('.task').on('mouseover',ractive.showSelection);
+      $('[data-called-element]').attr('class',$('[data-called-element]').attr('class')+' clickable');
+      $('[data-called-element]').click(function(ev) {
+        console.log('drill down to call activity');
         console.log('selected: '+JSON.stringify($(ev.target)));
-        console.log('selected: '+ev.target.attributes['data-calledelement'].value);
-        ractive.select(ractive.find(ev.target.attributes['data-calledelement'].value));
+        console.log('selected: '+ev.target.attributes['data-called-element'].value);
+        ractive.select(ractive.find(ev.target.attributes['data-called-element'].value));
       });
     }, 'text');
   },
@@ -319,7 +321,15 @@ var ractive = new AuthenticatedRactive({
       id: ev.target.id, 
       name: $('#'+ev.target.id).data('name'), 
       type: $('#'+ev.target.id).data('type')==undefined ? '' : $('#'+ev.target.id).data('type').toLabel(), 
-      resource: $('#'+ev.target.id).data('resource') 
+
+      calledElement: $('#'+ev.target.id).data('called-element'),
+      condition: $('#'+ev.target.id).data('condition'),
+      resource: $('#'+ev.target.id).data('resource'),
+      script: $('#'+ev.target.id).data('script'),
+      serviceType: $('#'+ev.target.id).data('service-type'),
+      timerCycle: $('#'+ev.target.id).data('timer-cycle'),
+      timerDate: $('#'+ev.target.id).data('timer-date'),
+      timerDuration: $('#'+ev.target.id).data('timer-duration')
     });
   },
 //  showUserTaskPropertySect: function(ev) {
@@ -375,8 +385,8 @@ var ractive = new AuthenticatedRactive({
   },
   toggleAuditTrail: function(instance, idx) {
     console.log('toggleAuditTrail for: '+instance.id);
-    if ($('section.instanceSect[data-instanceid="'+instance.id+'"]').is(':visible')) {
-      $('section.instanceSect[data-instanceid="'+instance.id+'"]').hide();
+    if ($('section.instanceSect[data-instance-id="'+instance.id+'"]').is(':visible')) {
+      $('section.instanceSect[data-instance-id="'+instance.id+'"]').hide();
     } else {
       $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/'+instance.id, function( data ) {
         console.log('found audit trail: '+data.auditTrail.length);
@@ -384,11 +394,10 @@ var ractive = new AuthenticatedRactive({
         ractive.set('current.instances.'+idx+'.auditTrail',data.auditTrail);
         instance.auditTrail = data.auditTrail;
 
-        console.log('found processVariables: '+data.processVariables);
-        ractive.set('current.instances.'+idx+'.processVariableNames',Object.keys(data.processVariables));
+        console.log('found processVariables: '+data.processVariables.length);
         instance.processVariableNames = Object.keys(data.processVariables);
-        ractive.set('current.instances.'+idx+'.processVariables',data.processVariables);
         instance.processVariables = data.processVariables;
+        ractive.set('current.instances.'+idx,instance);
         $('.instanceSect[data-instance-id='+instance.id+']').slideDown();
       });
     }
