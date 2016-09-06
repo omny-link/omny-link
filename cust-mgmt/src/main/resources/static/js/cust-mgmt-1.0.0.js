@@ -249,7 +249,7 @@ var ractive = new AuthenticatedRactive({
   addServiceLevelAlerts: function () {
     if (ractive.get('current.stage')==undefined) return;
     $('#curStage').removeClass('alert-danger');
-    $('#notesTable tr:nth-child(1)').removeClass('alert-danger');
+    $('#notes ~ .messages').remove();
     var msgs;
     if (ractive.get('tenant.serviceLevel.initialResponseThreshold')!=0) {
       if (ractive.getStageName(0)==ractive.get('current.stage') && new Date().getTime()-new Date(ractive.get('current.firstContact')).getTime()>(1000*60*60*24*ractive.get('tenant.serviceLevel.initialResponseThreshold'))) {
