@@ -20,30 +20,28 @@
     </div>          
   </h2>
   <p>{{current.description}}</p>
-  <p>
-    {{#current.deployment.name}}
-      <span class="a-primary-label control-label">{{current.deployment.name}}: </span>
-    {{/}}
-    <span class="a-primary-data control-label">{{activityType.toLabel()}}</span>
-    <span class="a-secondary-label control-label">Id: </span> {{current.id}};
-    {{#current.deployment.deploymentTime}} 
-      <span class="a-secondary-label control-label">Deployed: </span> {{formatDateTime(current.deployment.deploymentTime)}};
-    {{/}}
-  </p>
-  <p>
-    <span class="admin">
-      <span class="a-secondary-label control-label">Hash: </span> {{current.md5Hash}};
-    </span>
-    {{#current.deploymentId}}
-      <span class="a-secondary-label control-label">Deployment Id: </span> {{current.deploymentId}};
-    {{/}}
-    {{^current.deploymentId}}
-      <span class="a-secondary-label control-label">Incomplete model cannot be run</span>
-    {{/}}
-    {{#if current.deployment.category}}
-      <span class="a-secondary-label control-label">Category: </span> {{current.deployment.category}};
-    {{/if current.deployment.category}}
-  </p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Id</th>
+        {{#current.category}}<th>Category</th>{{/}}
+        <th>Deployed At</th>
+        <th>Hash</th>
+        <th>Deployment Id</th>
+        {{#current.deployment.name}}<th>Deployment</th>{{/}}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{current.id}}</td>
+        {{#current.category}}<td>{{current.category}}</td>{{/}}
+        {{#current.deployment.deploymentTime}}<td>{{formatDateTime(current.deployment.deploymentTime)}}</td>{{/}}
+        <td>{{current.md5Hash}};</td>
+        {{#current.deploymentId}}<td>{{current.deploymentId}}</td>{{else}}Incomplete model cannot be run{{/}}
+        {{#current.deployment.name}}<td>{{current.deployment.name}}</td>{{/}}
+      </tr>
+    </tbody>
+  </table>
   {{#current.messageNames}}
     <ul>
       <li><a href="{{context}}/{{tenant.id}}/messages/{{.}}.html">API for {{.}}</a></li>
