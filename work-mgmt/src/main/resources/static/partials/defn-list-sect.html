@@ -30,9 +30,9 @@
     <thead>
       <tr>
         <th></th>
-        <th colspan="1" on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
-        <th class="col-md-5" on-click="sort:description">Description<span class="sortable {{ sorted('description') }} glyphicon "></th>
-        <!--<th>Tenant</th> -->
+        <th class="col-md-2" on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
+        <th class="col-md-2" on-click="sort:description">Description<span class="sortable {{ sorted('description') }} glyphicon "></th>
+        <th class="col-md-2" on-click="sort:category">Category<span class="sortable {{ sorted('category') }} glyphicon "></th>
         <th on-click="sort:deploymentId">Deployment Bundle<span class="sortable {{ sorted('deploymentId') }} glyphicon "></th>
         <th on-click="sort:version">Version<span class="sortable {{ sorted('version') }} glyphicon "></th>
         <th class="col-md-4">Actions</th>
@@ -48,7 +48,7 @@
             <img class="col-md-1" src="/{{tenant.id}}/process-definitions/{{id}}.svg"/>
           </td>-->
           <td class="col-md-5" on-click="select(this)">{{description}}</td>
-          <!-- <td on-click="select(this)">{{tenantId}}</td> -->
+          <td on-click="select(this)">{{category}}</td>
           <td on-click="select(this)">{{deploymentId}}</td>
           <td on-click="select(this)">{{version}}</td>
           <td>
