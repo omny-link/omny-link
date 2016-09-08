@@ -73,9 +73,6 @@ execution.setVariable('contactId',contactId);]]></script>
         <activiti:field name="to">
           <activiti:expression>${empty toEmail ? contact.getString('email') : toEmail}</activiti:expression>
         </activiti:field>
-        <activiti:field name="bcc">
-          <activiti:expression>tim@omny.link</activiti:expression>
-        </activiti:field>
         <activiti:field name="subject">
           <activiti:expression><![CDATA[${memo.getString('title')}]]></activiti:expression>
         </activiti:field>
