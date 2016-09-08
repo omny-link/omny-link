@@ -15,6 +15,7 @@
   xmlns:yaoqiang="http://bpmn.sourceforge.net">
 
   <xsl:variable name="fontSize">12</xsl:variable>
+  <xsl:variable name="lineSpacing">3</xsl:variable>
   <xsl:variable name="showBounds">false</xsl:variable>
 
   <xsl:template match="/">
@@ -857,17 +858,17 @@
       <xsl:attribute name="y"><xsl:value-of select="$bpmnElement/dc:Bounds/@y"/></xsl:attribute>
     </xsl:element>
 
-    <xsl:element name="text">
-      <xsl:attribute name="class">textAnnotation</xsl:attribute>
-      <xsl:attribute name="stroke">#666</xsl:attribute>
-      <xsl:attribute name="x">
+    <xsl:call-template name="multiLineText">
+      <xsl:with-param name="text" select="bpmn:text/text()"></xsl:with-param>
+      <xsl:with-param name="class">textAnnotation</xsl:with-param>
+      <xsl:with-param name="stroke">#666</xsl:with-param>
+      <xsl:with-param name="x">
         <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x+($fontSize div 2)"/>
-      </xsl:attribute>
-      <xsl:attribute name="y">
+      </xsl:with-param>
+      <xsl:with-param name="y">
         <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@y+$fontSize+($fontSize div 2)"/>
-      </xsl:attribute>
-      <xsl:value-of select="bpmn:text/text()"/>
-    </xsl:element>
+      </xsl:with-param>
+    </xsl:call-template>
 
     <xsl:apply-templates />
   </xsl:template>
@@ -1036,28 +1037,30 @@
       <xsl:with-param name="fill">#5F5</xsl:with-param>
     </xsl:apply-templates>
 
+    <!-- 
+      Strategy here is to honour line breaks and otherwise try a crude split into 2 lines. 
+      The latter covers many cases so is judged 'good enough' -->
     <xsl:choose>
-      <xsl:when test="$cutBefore!=0 and $cutAfter!=0 and number($diElement/dc:Bounds/@height) &gt;= (2.75*$fontSize)">
-        <xsl:comment>SPLIT</xsl:comment>
-		    <xsl:element name="text">
-		      <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
-		      <xsl:attribute name="stroke">#fff</xsl:attribute>
-		      <xsl:attribute name="transform">rotate(<xsl:value-of select="$r"/>) translate(<xsl:value-of select="$tx"/>,<xsl:value-of select="$ty"/>)</xsl:attribute>
-		      <xsl:attribute name="x">
-		        <xsl:value-of select="$diElement/bpmndi:BPMNLabel/dc:Bounds/@x"/>
-		      </xsl:attribute>
-		      <xsl:attribute name="y">
-		        <xsl:value-of select="$diElement/bpmndi:BPMNLabel/dc:Bounds/@y+$fontSize"/>
-		      </xsl:attribute>
+      <xsl:when test="not(contains(@name,'&#10;')) and $cutBefore!=0 and $cutAfter!=0 and number($diElement/dc:Bounds/@height) &gt;= (2.75*$fontSize)">
+        <xsl:element name="text">
+          <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
+          <xsl:attribute name="stroke">#fff</xsl:attribute>
+          <xsl:attribute name="transform">rotate(<xsl:value-of select="$r"/>) translate(<xsl:value-of select="$tx"/>,<xsl:value-of select="$ty"/>)</xsl:attribute>
+          <xsl:attribute name="x">
+            <xsl:value-of select="$diElement/bpmndi:BPMNLabel/dc:Bounds/@x"/>
+          </xsl:attribute>
+          <xsl:attribute name="y">
+            <xsl:value-of select="$diElement/bpmndi:BPMNLabel/dc:Bounds/@y+$fontSize"/>
+          </xsl:attribute>
           <xsl:choose>
-		        <xsl:when test="$cutBefore &lt; $cutAfter"> 
-		          <xsl:value-of select="substring(@name,0,($len div 2) - $cutBefore)"/>
-		        </xsl:when>
-		        <xsl:otherwise>
-		          <xsl:value-of select="substring(@name,0,($len div 2) + $cutAfter)"/>
-		        </xsl:otherwise>
-		      </xsl:choose>
-		    </xsl:element>
+            <xsl:when test="$cutBefore &lt; $cutAfter"> 
+              <xsl:value-of select="substring(@name,0,($len div 2) - $cutBefore)"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="substring(@name,0,($len div 2) + $cutAfter)"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:element>
         <xsl:element name="text">
           <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
           <xsl:attribute name="stroke">#fff</xsl:attribute>
@@ -1073,55 +1076,70 @@
               <xsl:value-of select="substring(@name,($len div 2) + $cutAfter)"/>
             </xsl:when>
             <xsl:when test="$cutBefore &lt; $cutAfter"> 
-	            <xsl:value-of select="substring(@name,($len div 2) - $cutBefore)"/>
+              <xsl:value-of select="substring(@name,($len div 2) - $cutBefore)"/>
             </xsl:when>
             <xsl:otherwise>
               <xsl:value-of select="substring(@name,($len div 2) + $cutAfter)"/>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:element>
-		  </xsl:when>
-		  <xsl:when test="contains(@name,'&#10;')">
-        <xsl:element name="text">
-          <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
-          <xsl:attribute name="stroke">#fff</xsl:attribute>
-          <xsl:attribute name="transform">rotate(<xsl:value-of select="$r"/>) translate(<xsl:value-of select="$tx"/>,<xsl:value-of select="$ty"/>)</xsl:attribute>
-          <xsl:attribute name="x">
-            <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@x"/>
-          </xsl:attribute>
-          <xsl:attribute name="y">
-            <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@y+$fontSize"/>
-          </xsl:attribute>
-          <xsl:value-of select="substring-before(@name,'&#10;')"/>
-        </xsl:element>
-        <xsl:element name="text">
-          <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
-          <xsl:attribute name="stroke">#fff</xsl:attribute>
-          <xsl:attribute name="transform">rotate(<xsl:value-of select="$r"/>) translate(<xsl:value-of select="$tx"/>,<xsl:value-of select="$ty"/>)</xsl:attribute>
-          <xsl:attribute name="x">
-            <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@x"/>
-          </xsl:attribute>
-          <xsl:attribute name="y">
-            <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@y+(2.2*$fontSize)"/>
-          </xsl:attribute>
-          <xsl:value-of select="substring-after(@name,'&#10;')"/>
-        </xsl:element>
       </xsl:when>
-		  <xsl:otherwise>
-		    <xsl:element name="text">
-          <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
-          <xsl:attribute name="stroke">#fff</xsl:attribute>
-          <xsl:attribute name="transform">rotate(<xsl:value-of select="$r"/>) translate(<xsl:value-of select="$tx"/>,<xsl:value-of select="$ty"/>)</xsl:attribute>
-          <xsl:attribute name="x">
-            <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@x"/>
-          </xsl:attribute>
-          <xsl:attribute name="y">
-            <xsl:value-of select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@y+$fontSize"/>
-          </xsl:attribute>
-          <xsl:value-of select="@name"/>
+      <xsl:otherwise>
+	      <xsl:call-template name="multiLineText">
+		      <xsl:with-param name="class">label <xsl:value-of select="local-name(.)"/></xsl:with-param>
+		      <xsl:with-param name="depth" select="0"/>
+		      <xsl:with-param name="stroke">#fff</xsl:with-param>
+		      <xsl:with-param name="text">
+		        <xsl:value-of select="@name"/>
+		      </xsl:with-param>
+		      <xsl:with-param name="x" select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@x"/>
+		      <xsl:with-param name="y" select="$diElement/bpmndi:BPMNLabel /dc:Bounds/@y+$fontSize"/>
+		    </xsl:call-template>
+	    </xsl:otherwise>   
+    </xsl:choose>   
+  </xsl:template>
+
+  <xsl:template name="multiLineText">
+    <xsl:param name="class"/>
+    <xsl:param name="depth">0</xsl:param>
+    <xsl:param name="stroke"/>
+    <xsl:param name="text"/>
+    <xsl:param name="x"/>
+    <xsl:param name="y"/>
+
+    <xsl:choose>
+      <xsl:when test="contains($text,'&#10;')">
+        <xsl:element name="text">
+          <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+          <xsl:attribute name="stroke"><xsl:value-of select="$stroke"/></xsl:attribute>
+          <xsl:attribute name="transform">translate(0, <xsl:value-of select="$depth*($fontSize+$lineSpacing)"/>)</xsl:attribute>
+          <xsl:attribute name="x"><xsl:value-of select="$x"/></xsl:attribute>
+          <xsl:attribute name="y"><xsl:value-of select="$y"/></xsl:attribute>
+          <xsl:value-of select="substring-before($text,'&#10;')"/>
         </xsl:element>
-		  </xsl:otherwise>
-	  </xsl:choose>
+
+        <xsl:call-template name="multiLineText">
+          <xsl:with-param name="class" select="$class"/>
+          <xsl:with-param name="depth" select="$depth+1"/>
+          <xsl:with-param name="stroke" select="$stroke"/>
+          <xsl:with-param name="text">
+            <xsl:value-of select="substring-after($text,'&#10;')"/>
+          </xsl:with-param>
+          <xsl:with-param name="x" select="$x"/>
+          <xsl:with-param name="y" select="$y"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:element name="text">
+          <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+          <xsl:attribute name="stroke"><xsl:value-of select="$stroke"/></xsl:attribute>
+          <xsl:attribute name="transform">translate(0, <xsl:value-of select="$depth*($fontSize+$lineSpacing)"/>)</xsl:attribute>
+          <xsl:attribute name="x"><xsl:value-of select="$x"/></xsl:attribute>
+          <xsl:attribute name="y"><xsl:value-of select="$y"/></xsl:attribute>
+          <xsl:value-of select="$text"/>
+        </xsl:element>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template name="eventIcon">
