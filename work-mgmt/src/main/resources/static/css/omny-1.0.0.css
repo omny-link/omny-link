@@ -778,6 +778,11 @@ text.userTask {
   fill: #fff;
   stroke-width: 0px;
 }
+text.textAnnotation {
+	fill: #666;
+  font-size: 75%;
+  stroke-width: 0px;
+}
 
 #funnel text {
 	fill: #ff6c06 !important;
