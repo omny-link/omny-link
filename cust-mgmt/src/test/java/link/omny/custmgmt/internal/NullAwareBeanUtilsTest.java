@@ -53,4 +53,17 @@ public class NullAwareBeanUtilsTest {
         assertEquals(FIRST_NAME_2, trgtBean.getFirstName());
         assertEquals(LAST_NAME_2, trgtBean.getLastName());
     }
+
+    @Test
+    public void testTrimStringProperties() {
+        Contact srcBean = new Contact();
+        srcBean.setId(1l);
+        srcBean.setFirstName(FIRST_NAME + " ");
+        srcBean.setLastName(" " + LAST_NAME);
+
+        NullAwareBeanUtils.trimStringProperties(srcBean);
+
+        assertEquals(FIRST_NAME, srcBean.getFirstName());
+        assertEquals(LAST_NAME, srcBean.getLastName());
+    }
 }
