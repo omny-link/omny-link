@@ -119,10 +119,17 @@ var AuthenticatedRactive = Ractive.extend({
     return rtn;
   },
   handleError: function(jqXHR, textStatus, errorThrown) {
+    if (jqXHR.status==200 && textStatus=='parsererror') {
+      ractive.showReconnected();
+      ractive.showMessage("Session expired, please login again");
+      window.location.href='/login';
+    }
     switch (jqXHR.status) {
     case 0:
       // server unavailable, retry will kick in
-      break; 
+      break;
+    case 200:
+      break;  
     case 400:
       var msg = jqXHR.responseJSON == null ? textStatus+': '+errorThrown : errorThrown+': '+jqXHR.responseJSON.message;
       ractive.showError(msg);
@@ -130,6 +137,7 @@ var AuthenticatedRactive = Ractive.extend({
     case 401:
     case 403: 
     case 405: /* Could also be a bug but in production we'll assume a timeout */ 
+      ractive.showReconnected();
       ractive.showMessage("Session expired, please login again");
       window.location.href='/login';
       break; 
@@ -336,8 +344,12 @@ var AuthenticatedRactive = Ractive.extend({
   },
   showDisconnected: function(msg) {
     console.log('showDisconnected: '+msg);
-    $('#connectivityMessages').remove();
-    $('body').append('<div id="connectivityMessages" class="alert-warning">'+msg+'</div>').show();
+    if ($('#connectivityMessages.alert-info').length>0) {
+      ; // Due to ordering of methods, actually reconnected now
+    } else {
+      $('#connectivityMessages').remove();
+      $('body').append('<div id="connectivityMessages" class="alert-warning">'+msg+'</div>').show();
+    }
   },
   showError: function(msg) {
     this.showMessage(msg, 'alert-danger');
@@ -360,6 +372,16 @@ var AuthenticatedRactive = Ractive.extend({
       }, EASING_DURATION*10);
     } else {
       $('#messages').append('<span class="text-danger pull-right glyphicon glyphicon-remove" onclick="ractive.hideMessage()"></span>');
+    }
+  },
+  showReconnected: function() {
+    console.log('showReconnected');
+    if ($('#connectivityMessages:visible').length>0) {
+      $('#connectivityMessages').remove();
+      $('body').append('<div id="connectivityMessages" class="alert-info">Reconnected</div>').show();
+      setTimeout(function() {
+        $('#connectivityMessages').fadeOut();
+      }, EASING_DURATION*10);
     }
   },
   showWarning: function(msg) {
@@ -517,6 +539,9 @@ $( document ).ajaxError(function( event, request, settings ) {
   setTimeout(function() {
     $.ajax(settings);
   }, settings.retryIn);
+});
+$( document ).ajaxSuccess(function( event, request, settings ) {
+  ractive.showReconnected();
 });
 
 $( document ).bind('keypress', function(e) {
