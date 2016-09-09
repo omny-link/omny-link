@@ -144,7 +144,7 @@ public class TenantConfigControllerTest {
         System.out.println("Writing tenant file to:"
                 + jsonFolder.getAbsolutePath());
         jsonFolder.mkdirs();
-        File jsonFile = new File(sb.toString(), TENANT_ID + ".json");
+        File jsonFile = new File(sb.toString(), TENANT_ID + ".debug.json");
         objectWriter.writeValue(jsonFile, tenantConfig);
         assertTrue(jsonFile.exists());
 

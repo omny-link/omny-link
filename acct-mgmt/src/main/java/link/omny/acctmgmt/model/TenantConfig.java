@@ -10,9 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -93,27 +96,19 @@ public class TenantConfig implements Serializable {
     @Transient
     private Map<String, String> strings;
 
-    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
-    // targetEntity = TenantToolbarEntry.class)
-    @Transient
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = TenantToolbarEntry.class)
     private List<TenantToolbarEntry> toolbar;
 
-    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
-    // targetEntity = TenantProcess.class)
-    @Transient
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = TenantProcess.class)
     private List<TenantProcess> processes;
 
-    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
-    // targetEntity = TenantPartial.class)
-    @Transient
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = TenantPartial.class)
     private List<TenantPartial> partials;
 
     @Transient
     private List<TenantTemplate> templates;
 
-    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
-    // targetEntity = TenantTypeaheadControl.class)
-    @Transient
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = TenantTypeaheadControl.class)
     private List<TenantTypeaheadControl> typeaheadControls;
 
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
