@@ -17,6 +17,7 @@ import link.omny.acctmgmt.model.TenantAction;
 import link.omny.acctmgmt.model.TenantConfig;
 import link.omny.acctmgmt.model.TenantExtension;
 import link.omny.acctmgmt.model.TenantPartial;
+import link.omny.acctmgmt.model.TenantProcess;
 import link.omny.acctmgmt.model.TenantTemplate;
 import link.omny.acctmgmt.model.TenantToolbarEntry;
 import link.omny.acctmgmt.model.TenantTypeaheadControl;
@@ -446,5 +447,6 @@ public class TenantConfigController {
         private Long users;
         private Date lastLogin;
         private Date lastActivity;
+        private List<TenantProcess> processes;
     }
 }

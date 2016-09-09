@@ -320,7 +320,7 @@ public class Contact implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     private List<Note> notes;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact", fetch = FetchType.EAGER)
     private List<Activity> activity;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
