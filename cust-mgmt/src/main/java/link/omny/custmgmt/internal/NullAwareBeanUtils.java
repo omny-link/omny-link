@@ -44,4 +44,18 @@ public class NullAwareBeanUtils {
 				ignoreNames.toArray(ignoreProperties));
 	}
 
+    public static void trimStringProperties(Object srcBean) {
+        final BeanWrapper src = new BeanWrapperImpl(srcBean);
+        PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        for (PropertyDescriptor pd : pds) {
+            if (pd.getPropertyType().equals(String.class)
+                    && pd.getWriteMethod() != null
+                    && pd.getReadMethod() != null
+                    && src.getPropertyValue(pd.getName()) != null) {
+                src.setPropertyValue(pd.getName(),
+                        ((String) src.getPropertyValue(pd.getName())).trim());
+            }
+        }
+    }
 }

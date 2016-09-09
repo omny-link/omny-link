@@ -28,6 +28,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import lombok.AllArgsConstructor;
@@ -423,6 +424,7 @@ public class Contact implements Serializable {
         }
 
         initEmailHash();
+        NullAwareBeanUtils.trimStringProperties(this);
     }
 
     private void initEmailHash() {
@@ -455,6 +457,7 @@ public class Contact implements Serializable {
         lastUpdated = new Date();
 
         initEmailHash();
+        NullAwareBeanUtils.trimStringProperties(this);
     }
 
     private Date getNow() {
