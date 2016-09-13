@@ -38,7 +38,7 @@ function AuthHelper() {
     if (username) {
       $.getJSON(ractive.getServer()+'/users/'+username, function(profile) {
         ractive.set('profile',profile);
-        $('.profile-img').empty().append('<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34"/>');
+        $('.profile-img').empty().append('<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34" title="'+ractive.get('profile.email')+'"/>');
         if ($auth.hasRole('super_admin')) $('.super-admin').show();
         $auth.loadTenantConfig(ractive.get('profile.tenant'));
       })
