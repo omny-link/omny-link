@@ -56,7 +56,7 @@ var ractive = new AuthenticatedRactive({
       return i18n.getAgeString(new Date(timeString))
     },
     events: [],
-    filter: 'deferred',
+    filter: {idx:8, field: 'taskLocalVariables.deferUntil', func: 'isActive'},
     formatJson: function(formProp) { 
       console.log('formatJson: '+formProp);
       console.log('formatJson: '+formProp.name+','+formProp.value);
@@ -91,11 +91,18 @@ var ractive = new AuthenticatedRactive({
     keys: function(obj) {
       return Object.keys(obj);
     },
-    matchFilter: function(obj) {
-      console.log("matchFilter: "+obj+'('+JSON.stringify(obj.taskLocalVariables)+')');
-      if (ractive.get('filter')==undefined) return true; 
-      else if (ractive.get('filter').indexOf('deferred')!=-1 && ractive.isDeferred(obj)) return false;
-      else return true;
+    matchFilter: function(obj,i) {
+      console.log("matchFilter: "+i+':'+obj+'('+JSON.stringify(obj.taskLocalVariables)+')');
+      var f = ractive.get('filter');
+      if (f.operator==undefined) f.operator='==';
+
+      if (f.func=='isDueToday') return ractive.isDueToday(obj);
+      else if (f.func=='isDueTodayTomorrow') return ractive.isDueTodayTomorrow(obj);
+      else if (f.func=='isDueThisWeek') return ractive.isDueThisWeek(obj);
+      else if (f.func=='isDueThisMonth') return ractive.isDueThisMonth(obj);
+      else if (f.func=='isActive') return !ractive.isDeferred(obj);
+      else if (f.func=='isDeferred') return ractive.isDeferred(obj);
+      else return eval('obj["'+f.field+'"]'+f.operator+f.value);
     },
     matchRole: function(role) {
       console.info('matchRole: '+role)
@@ -225,8 +232,11 @@ var ractive = new AuthenticatedRactive({
       ractive.merge('currentNotes', data);
     });
   },
-  filter: function(val) { 
-    ractive.set('filter', val);
+  filter: function(filter) {
+    console.log('filter: '+JSON.stringify(filter));
+    ractive.set('filter',filter);
+    $('.omny-dropdown.dropdown-menu li').removeClass('selected')
+    $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
     ractive.set('searchMatched',$('#tasksTable tbody tr:visible').length);
     $('input[type="search"]').blur();
   },
@@ -257,6 +267,39 @@ var ractive = new AuthenticatedRactive({
     } else { 
       return false;
     }
+  },
+  isDueBefore: function(task, when) {
+    if (when != undefined && task.dueDate!=undefined && new Date(task.dueDate).getTime() <= when.getTime()) {
+      return true;
+    } else {
+      return false;
+    }
+  },
+  isDueToday: function(task) {
+    var deadline = new Date();
+    deadline = new Date(deadline.setDate(deadline.getDate()+1)); // add 1 day
+    deadline = new Date(deadline.setHours(18)); // set close of business to 18:00
+    deadline = new Date(deadline.setMinutes(0));
+    return ractive.isDueBefore(task, deadline);
+  },
+  isDueTodayTomorrow: function(task) {
+    var deadline = new Date();
+    deadline = new Date(deadline.setDate(deadline.getDate()+2)); // add 2 days
+    deadline = new Date(deadline.setHours(18)); // set close of business to 18:00
+    deadline = new Date(deadline.setMinutes(0));
+    return ractive.isDueBefore(task, deadline);
+  },
+  isDueThisWeek: function(task) {
+    var deadline = new Date();
+    deadline = new Date(deadline.setDate(deadline.getDate()+(5-deadline.getDay()))); // set to Friday
+    deadline = new Date(deadline.setHours(18)); // set close of business to 18:00
+    deadline = new Date(deadline.setMinutes(0));
+    return ractive.isDueBefore(task, deadline);
+  },
+  isDueThisMonth: function(task) {
+    var now  = new Date();
+    var deadline = new Date(now.getFullYear(), now.getMonth()+1, 0, 18, 0);
+    return ractive.isDueBefore(task, deadline);
   },
   isOverdue: function(task) {
     if (task.dueDate!=undefined && new Date(task.dueDate).getTime() <= new Date().getTime()) { 
@@ -519,7 +562,7 @@ ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
   console.log('searchTerm changed');
   ractive.showResults();
   setTimeout(function() {
-    ractive.set('searchMatched',$('#contactsTable tbody tr').length);
+    ractive.set('searchMatched',$('#tasksTable tbody tr').length);
   }, 500);
 });
 ractive.on( 'filter', function ( event, filter ) {
