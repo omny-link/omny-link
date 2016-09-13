@@ -18,13 +18,13 @@
     </div>
     <div class="col-md-6">
       <ul class="form edit-form">
-        <li class="form-group">
+        <li class="form-group initiator">
           <label class="col-md-4">Started By:</label>
-          {{#current.processVariables['initiator']==undefined || current.processVariables['initiator']=='anonymousUser'}}
+          {{#if current.processVariables['initiator']==undefined || current.processVariables['initiator']=='anonymousUser'}}
             <span class="initiator-img" title="Omny Link"></span>
           {{else}}
             <span class="initiator-img" title="{{current.processVariables['initiator']}}"></span>
-          {{/}}
+          {{/if}}
         </li>
         <li class="form-group">
           <label class="col-md-4">Created:</label>
