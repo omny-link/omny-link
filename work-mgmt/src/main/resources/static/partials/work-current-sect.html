@@ -12,7 +12,12 @@
       <ul class="form edit-form">
         <li class="form-group">
           <label class="col-md-4">Due:</label>
-          <input class="nodatepicker form-control" id="curDueDate" on-blur="save()" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="dd/mm/yyyy" value="{{formatDateIfPresent(current.dueDate)}}">
+          <div class="input-group date"  data-provide="datepicker" data-date-format="dd/mm/yyyy" data-date="{{current.dueDate}}" data-date-autoclose="true" data-date-start-date="1d">
+	          <input class="form-control" id="curDueDate" placeholder="dd/mm/yyyy" {{#current.processVariables.initiator!=profile.email}}readonly disabled{{/}}>
+	          <div class="input-group-addon">
+	            <span class="glyphicon glyphicon-th"></span>
+				    </div>
+			    </div>
         </li>
       </ul>
     </div>
