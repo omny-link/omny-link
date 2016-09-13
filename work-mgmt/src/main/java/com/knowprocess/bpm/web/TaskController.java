@@ -84,9 +84,13 @@ public class TaskController {
         } else {
             org.activiti.engine.task.Task dest = processEngine.getTaskService()
                     .createTaskQuery().taskId(taskId).singleResult();
-            // BeanUtils.copyProperties(t, dest, new String[] {
-            // "delegationState",
-            // "revision" });
+
+            // convert date to store in UTC
+            GregorianCalendar cal = new GregorianCalendar();
+            cal.setTime(t.getDueDate());
+            cal.add(Calendar.MILLISECOND,
+                    cal.getTimeZone().getOffset(t.getDueDate().getTime()));
+            dest.setDueDate(cal.getTime());
 
             processEngine.getTaskService().saveTask(dest);
         }

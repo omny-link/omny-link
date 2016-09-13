@@ -33,7 +33,6 @@ var ractive = new AuthenticatedRactive({
       if (form == '/partials/simpleTodoFormExtension.html') form = '/partials/generic-form.html';
       // catch all form
       if (form == undefined) form = '/partials/generic-form.html';
-      console.error('loading form: '+form);
       $.get(form, function (partial) {
         if (ractive != undefined) ractive.resetPartial('userForm',partial);
         ractive.initControls();
@@ -243,39 +242,6 @@ var ractive = new AuthenticatedRactive({
     });
     return rtn;
   },
-  initAutoComplete: function() {
-    console.log('initAutoComplete');
-    var typeaheads = ractive.get('tenant.typeaheadControls'); 
-    if (typeaheads==undefined) return; 
-    $.each(typeaheads, function(i,d) {
-      console.log('binding ' +d.url+' to typeahead control: '+d.selector);
-      $.get(d.url, function(data){
-        $(d.selector).typeahead({ minLength:0,source:data });
-        $(d.selector).on("click", function (ev) {
-          newEv = $.Event("keydown");
-          newEv.keyCode = newEv.which = 40;
-          $(ev.target).trigger(newEv);
-          return true;
-       });
-      },'json');
-    });
-  },
-  initAutoNumeric: function() { 
-    $('.autoNumeric').autoNumeric('init', {});
-  },
-  initControls: function() { 
-    console.log('initControls');
-    ractive.initAutoComplete();
-    ractive.initAutoNumeric();
-    ractive.initDatepicker();
-  },
-  initDatepicker: function() { 
-    $('.datepicker').datepicker({
-      format: "dd/mm/yyyy",
-      autoclose: true,
-      todayHighlight: true
-    });
-  },
   isDeferred: function(task) {
     if (task.taskLocalVariables.length==0 || task.taskLocalVariables['deferUntil']==undefined || new Date(task.taskLocalVariables['deferUntil']).getTime() <= new Date().getTime()) { 
       return false;
@@ -421,8 +387,15 @@ var ractive = new AuthenticatedRactive({
       } else {
         $('.initiator-img').empty().append('<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(ractive.get('current.processVariables')["initiator"])+'?s=34"/>');
       }
-
       ractive.set('saveObserver',true);
+      // due date handling
+      if ($('#curDueDate').datepicker()!=undefined) $('#curDueDate').datepicker('destroy');
+      $('#curDueDate').datepicker('update',new Date(ractive.get('current.dueDate')));
+      $('#curDueDate').datepicker().on('changeDate', function(e) {
+        console.log('date changed:'+JSON.stringify(e));
+        ractive.set('current.dueDate', $('#curDueDate').datepicker('getDate'));
+        ractive.save();
+      });
     });
 //    ractive.fetchUserNotes();
     ractive.toggleResults();
