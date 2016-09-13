@@ -9,9 +9,15 @@
     <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
   </a>
   <ul class="omny-dropdown dropdown-menu" role="menu">
-    <li on-click="filter()">Clear filter</li>
+    <li on-click="filter:{idx:1}">Show all</li>
     <li class="divider"></li>
-    <li onclick="ractive.filter('deferred')">Hide Deferred Tasks</li>
+    <li on-click="filter:{idx:3, field: 'dueDate', func: 'isDueToday'}">Show due today</li>
+    <li on-click="filter:{idx:4, field: 'dueDate', func: 'isDueTodayTomorrow'}">Show due by tomorrow</li>
+    <li on-click="filter:{idx:5, field: 'dueDate', func: 'isDueThisWeek'}">Show due this week</li>
+    <li on-click="filter:{idx:6, field: 'dueDate', func: 'isDueThisMonth'}">Show due this month</li>
+    <li class="divider"></li>
+    <li on-click="filter:{idx:8, field: 'taskLocalVariables.deferUntil', func: 'isActive'}">Show active</li>
+    <li on-click="filter:{idx:9, field: 'taskLocalVariables.deferUntil', func: 'isDeferred'}">Show deferred</li>
   </ul>
 </a>
 {{#tenant.workActions}}

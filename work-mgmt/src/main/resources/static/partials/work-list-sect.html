@@ -58,7 +58,7 @@
     </thead>
     <tbody>
     {{#each sort(tasks,sortColumn,sortAsc):i}}
-      {{# matchSearch(this) && matchFilter(this) }}
+      {{# matchSearch(this) && matchFilter(this,i) }}
       <tr class="{{renderPriority(this)}}" data-href="{{_links.self.href}}">
         <td on-click="edit(this)">{{i+1}}</td>
         <td on-click="edit(this)">{{businessKey}}</td>
