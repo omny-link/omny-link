@@ -4,11 +4,17 @@ import java.beans.PropertyDescriptor;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.InvalidPropertyException;
 
 public class NullAwareBeanUtils {
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(NullAwareBeanUtils.class);
 
 	public static Set<String> getNullPropertyNames(Object source) {
 		final BeanWrapper src = new BeanWrapperImpl(source);
@@ -16,9 +22,19 @@ public class NullAwareBeanUtils {
 	
 		Set<String> emptyNames = new HashSet<String>();
 		for (PropertyDescriptor pd : pds) {
-            if (pd.getReadMethod() == null
-                    || src.getPropertyValue(pd.getName()) == null) {
-				emptyNames.add(pd.getName());
+            try {
+                if (pd.getReadMethod() == null
+                        || src.getPropertyValue(pd.getName()) == null) {
+                    emptyNames.add(pd.getName());
+                }
+            } catch (InvalidPropertyException e) {
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(String
+                            .format("Unable to read property %1$s, assume null. Cause: %2$s: %3$s",
+                                    pd.getName(), e.getClass().getName(),
+                                    e.getMessage()));
+                }
+                emptyNames.add(pd.getName());
             }
 		}
 		return emptyNames;

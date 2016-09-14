@@ -320,7 +320,7 @@ public class Contact implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     private List<Note> notes;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     private List<Activity> activity;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
@@ -474,7 +474,7 @@ public class Contact implements Serializable {
             Activity lastEmail = getLastActivityOfType(type);
             time = lastEmail == null ? -1 : getNow().getTime()
                     - lastEmail.getOccurred().getTime();
-        } catch (Throwable e) {
+        } catch (NullPointerException e) {
             LOGGER.warn(
                     String.format(
                             "Exception in getTimeSinceLast('%1$s'), assume no such activity",
@@ -491,8 +491,11 @@ public class Contact implements Serializable {
             Activity lastEmail = getFirstActivityOfType(type);
             time = lastEmail == null ? -1 : getNow().getTime()
                     - lastEmail.getOccurred().getTime();
-        } catch (Throwable e) {
-            LOGGER.error(e.getMessage(), e);
+        } catch (NullPointerException e) {
+            LOGGER.warn(
+                    String.format(
+                            "Exception in getTimeSinceLast('%1$s'), assume no such activity",
+                            type), e);
         }
         LOGGER.info(String.format("determined time since %1$s: %2$d", type,
                 time));
@@ -539,7 +542,6 @@ public class Contact implements Serializable {
         return false;
     }
 
-    @JsonProperty
     public boolean notYetSentEmail(String emailName) {
         return !haveSentEmail(emailName);
     }
