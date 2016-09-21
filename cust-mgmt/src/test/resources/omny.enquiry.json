@@ -1,0 +1,16 @@
+{
+  "customFields": {
+    "type":"A Custom Field"
+  },
+  "firstName":"Bart",
+  "lastName":"Simpson",
+  "email":"Jjtoms85@gmail.com",
+  "phone1":"07752429862",
+  "tenantId":"springfield",
+  "utm_source":"google",
+  "utm_medium":"cpc",
+  "utm_campaign":"liverpool",
+  "accountType":"Customer",
+  "enquiryType":"Dont Miss Out",
+  "stage":"Enquiry"
+}
