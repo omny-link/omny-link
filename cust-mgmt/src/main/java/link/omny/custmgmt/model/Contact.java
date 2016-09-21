@@ -606,6 +606,26 @@ public class Contact implements Serializable {
         }
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    public void setUtm_source(String source) {
+        setSource(source);
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    public void setUtm_medium(String medium) {
+        setMedium(medium);
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    public void setUtm_campaign(String campaign) {
+        setCampaign(campaign);
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    public void setUtm_keyword(String keyword) {
+        setKeyword(keyword);
+    }
+
     @Override
     public String toString() {
         return String

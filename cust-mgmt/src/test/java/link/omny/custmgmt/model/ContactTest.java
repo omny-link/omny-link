@@ -6,7 +6,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
+import java.util.Scanner;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -16,6 +19,9 @@ import javax.validation.ValidatorFactory;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knowprocess.bpm.model.ProcessDefinition;
 
 public class ContactTest {
 
@@ -196,5 +202,57 @@ public class ContactTest {
 
         contact.setFirstName("Bart");
         assertTrue(!contact.isFirstNameDefault());
+    }
+
+    @Test
+    public void testSetUtmFields() {
+        Contact contact = new Contact();
+
+        assertNull(contact.getSource());
+        assertNull(contact.getMedium());
+        assertNull(contact.getCampaign());
+        assertNull(contact.getKeyword());
+
+        contact.setUtm_source("Google");
+        contact.setUtm_medium("CPC");
+        contact.setUtm_campaign("Find a business");
+        contact.setUtm_keyword("Self-employment");
+
+        assertEquals("Google", contact.getSource());
+        assertEquals("CPC", contact.getMedium());
+        assertEquals("Find a business", contact.getCampaign());
+        assertEquals("Self-employment", contact.getKeyword());
+    }
+
+    @Test
+    public void testParseJsonContact() {
+        String jsonInString = readFromClasspath("/omny.enquiry.json");
+        assertNotNull(jsonInString);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            Contact contact = mapper.readValue(jsonInString, Contact.class);
+
+            assertNotNull(contact);
+            assertEquals("Bart", contact.getFirstName());
+            assertEquals("Simpson", contact.getLastName());
+            assertEquals("google", contact.getSource());
+            assertEquals("google", contact.getSource());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Unable to parse JSON");
+        }
+    }
+
+    private static String readFromClasspath(String resourceName) {
+        InputStream is = null;
+        try {
+            is = ProcessDefinition.class.getResourceAsStream(resourceName);
+            return new Scanner(is).useDelimiter("\\A").next();
+        } catch (Exception e) {
+            throw e;
+        }
     }
 }
