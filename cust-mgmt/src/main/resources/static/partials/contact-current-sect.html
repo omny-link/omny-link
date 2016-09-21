@@ -426,6 +426,10 @@
     </form>
   {{/}}
 
+  {{#if tenant.show.orders}}
+    {{>(tenant.id+'OrderExtension')}}
+  {{/if}}
+
   {{#if tenant.show.activityAnalysis}}
     <section id="activityAnalysisSect" style="clear:both">
       <h2>
