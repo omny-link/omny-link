@@ -16,10 +16,12 @@ public class FeatureConfig {
     private boolean marketing = false;
     private boolean declaredSource = false;
     private boolean documents = false;
+    private boolean orders = false;
     private boolean merge = false;
     private boolean poweredBy = true;
     @Column(name = "REFS")
     private boolean references = false;
+    private boolean stockCategory = false;
     private boolean supportBar = true;
 
     public void set(String name, boolean b) {
@@ -54,11 +56,17 @@ public class FeatureConfig {
         case "merge":
             setMerge(b);
             break;
+        case "orders":
+            setOrders(b);
+            break;
         case "poweredBy":
             setPoweredBy(b);
             break;
         case "references":
             setReferences(b);
+            break;
+        case "stockCategory":
+            setStockCategory(b);
             break;
         case "supportBar":
             setSupportBar(b);

@@ -22,3 +22,12 @@ curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/
 # Search for offers
 curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByLocation?q=Corsham&offers=true
 curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham&offers=true
+
+# List orders for tenant
+curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/
+
+# List orders for contact
+curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/25
+
+# Create Order
+curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" -d '{ "orderItems": [{"date":"21/09/2016","time":"09:00-10:00","group":"Y2","type":"Health"},{"date":"21/09/2016","time":"10:00-11:00","group":"Y3","type":"Health"},{"date":"21/09/2016","time":"11:00-12:00","group":"Y4","type":"Health"}]}' -u tstephen:tstephen http://localhost:8082/alife/orders/

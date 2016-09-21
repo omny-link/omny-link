@@ -333,6 +333,7 @@ var ractive = new AuthenticatedRactive({
         if (ractive.hasRole('power-user')) $('.power-user').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
         ractive.fetchAccounts();
+        ractive.fetchOrders();
         ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
         ractive.set('saveObserver', true);
       }
@@ -383,6 +384,24 @@ var ractive = new AuthenticatedRactive({
         $('#fhTable').addClass('table-striped');
       },
       pattern:"inOut"
+    });
+  },
+  fetchOrders: function () {
+    console.info('fetchOrders...');
+    if (ractive.get('tenant.show.orders')!=true) return;
+
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/',
+      crossDomain: true,
+      success: function( data ) {
+        if (data['_embedded'] != undefined) {
+          data = data['_embedded'].accounts;
+        }
+        ractive.set('orders',data);
+        console.log('fetched '+data.length+' orders');
+      }
     });
   },
   filter: function(filter) {
