@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/catalog" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="CreateOrderProcess" name="Create Order" targetNamespace="http://omny.link/catalog" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <process id="CreateOrder" isClosed="false" isExecutable="true" name="Create an order" processType="Public">
+    <documentation id="CreateOrder_D_1" textFormat="text/plain"><![CDATA[Create a new contact and account in the CRM back-end without any de-duplication logic.]]></documentation>
+    <extensionElements>
+      <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <ioSpecification>
+      <dataInput id="_3" isCollection="false" name="order"/>
+      <dataInput id="_6" isCollection="false" name="tenantId"/>
+      <inputSet>
+        <dataInputRefs>_3</dataInputRefs>
+        <dataInputRefs>_6</dataInputRefs>
+      </inputSet>
+      <outputSet/>
+    </ioSpecification>
+    <startEvent activiti:initiator="initiator" id="startFromOrder" isInterrupting="true" name="Start Event" parallelMultiple="false">
+      <outgoing>_5</outgoing>
+      <outputSet/>
+    </startEvent>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="postOrder" implementation="##WebService" isForCompensation="false" name="POST order" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername">
+          <activiti:string>userInfo('tenant-bot')</activiti:string>
+        </activiti:field>
+        <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="globalResource">
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/orders/</activiti:expression>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field name="data">
+          <activiti:expression>${order}</activiti:expression>
+        </activiti:field>
+        <activiti:field expression="contactId=Location" name="responseHeaders"/>
+        <activiti:field expression="contact" name="responseVar"/>
+      </extensionElements>
+      <incoming>_5</incoming>
+      <outgoing>_7</outgoing>
+    </serviceTask>
+    <sequenceFlow id="_5" sourceRef="startFromOrder" targetRef="postOrder"/>
+    <endEvent id="endEvent" name="End Event">
+      <incoming>_7</incoming>
+      <inputSet/>
+    </endEvent>
+    <sequenceFlow id="_7" sourceRef="postOrder" targetRef="endEvent"/>
+    <textAnnotation id="_12" textFormat="text/plain">
+      <text>RECORD AN ORDER FOR A CONTACT</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-CreateOrder" name="Untitled Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="CreateOrder">
+      <bpmndi:BPMNShape bpmnElement="startFromOrder" id="Yaoqiang-startFromOrder">
+        <dc:Bounds height="32.0" width="32.0" x="74.32352941176467" y="218.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="69.0" x="55.82352941176467" y="260.05859375000006"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_12" id="Yaoqiang-_12">
+        <dc:Bounds height="29.0" width="255.0" x="74.32352941176467" y="65.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="208.0" x="74.32352941176467" y="72.09765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="postOrder" id="Yaoqiang-postOrder">
+        <dc:Bounds height="89.0" width="117.0" x="207.66176470588232" y="190.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="72.0" x="230.16176470588232" y="227.09765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
+        <dc:Bounds height="32.0" width="32.0" x="426.0" y="218.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="62.0" x="410.9999999999999" y="260.05859375000006"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_3" id="Yaoqiang-_3">
+        <dc:Bounds height="38.0" width="29.0" x="74.32352941176467" y="354.6176470588235"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="37.0" x="70.32352941176467" y="394.6176470588235"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6">
+        <dc:Bounds height="38.0" width="29.0" x="74.32352941176467" y="428.1470588235294"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="52.0" x="62.82352941176467" y="468.1470588235294"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_7" id="Yaoqiang-_7">
+        <di:waypoint x="324.32352941176464" y="234.5"/>
+        <di:waypoint x="426.3274226189869" y="234.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="372.3254760153758" y="225.09765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
+        <di:waypoint x="106.31963620454242" y="234.5"/>
+        <di:waypoint x="207.32352941176464" y="234.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="153.82158280815352" y="225.09765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

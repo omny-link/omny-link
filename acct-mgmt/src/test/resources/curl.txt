@@ -32,3 +32,6 @@ curl -H "Accept:application/json" -X POST -u tstephen:tstephen http://localhost:
 
 # FORCE RECREATE BOT
  curl -v -H "Accept:application/json" -X POST -u tstephen:tstephen http://localhost:8083/tenants/sdu/bot?force=true
+ 
+# LIST tenant config
+curl -H "Accept:application/json" -X GET -u tstephen:tstephen http://localhost:8082/tenants/omny.json
