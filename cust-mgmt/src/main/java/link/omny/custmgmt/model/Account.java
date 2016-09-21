@@ -13,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -98,6 +99,7 @@ public class Account implements Serializable {
     private String shortDesc;
 
     @JsonProperty
+    @Lob
     private String description;
 
     /**
