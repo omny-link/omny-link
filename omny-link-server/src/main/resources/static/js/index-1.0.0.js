@@ -9,7 +9,7 @@ var ractive = new AuthenticatedRactive({
   data: {
     intro: "Let's get started right away by introducing the Omny Bar icons:",
     title: 'Omny Link',
-    title2: 'The next generation of contact management has arrived!',
+    title2: 'Next generation contact management is here!',
     username: localStorage['username'],
     gravatar: function(email) {
       if (email == undefined) return '';

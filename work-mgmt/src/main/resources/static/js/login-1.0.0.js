@@ -404,12 +404,12 @@ var AuthenticatedRactive = Ractive.extend({
       return 0;
     });
   },
-  startCustomAction: function(key, label, object, form) {
+  startCustomAction: function(key, label, object, form, businessKey) {
     console.log('startCustomAction: '+key+' for '+object.id);
     var singularEntityName = ractive.entityName(object).toCamelCase().singular();
     var instanceToStart = {
         processDefinitionId: key,
-        businessKey: label,
+        businessKey: businessKey == undefined ? label : businessKey,
         label: label,
         processVariables: {
           initiator: ractive.get('username'),

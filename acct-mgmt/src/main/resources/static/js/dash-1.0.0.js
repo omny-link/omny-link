@@ -32,7 +32,7 @@ var ractive = new AuthenticatedRactive({
       if (email == undefined) return '';
       return ractive.hash(email);
     },
-    helpUrl: 'http://omny.link/user-help/tenant/#the_title',
+    helpUrl: '//omny.link/user-help/tenant/#the_title',
     matchFilter: function(obj) {
       var filter = ractive.get('filter');
       //console.info('matchFilter: '+JSON.stringify(filter));

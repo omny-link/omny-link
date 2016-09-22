@@ -69,7 +69,7 @@ var ractive = new AuthenticatedRactive({
       if (email == undefined) return '';
       return ractive.hash(email);
     },
-    helpUrl: 'http://omny.link/user-help/status/#the_title',
+    helpUrl: '//omny.link/user-help/status/#the_title',
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {

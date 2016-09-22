@@ -87,7 +87,7 @@ var ractive = new AuthenticatedRactive({
     formatLabel: function(str) {
       return str.toLabel();
     },
-    helpUrl: 'http://omny.link/user-help/work/#the_title',
+    helpUrl: '//omny.link/user-help/work/#the_title',
     keys: function(obj) {
       return Object.keys(obj);
     },

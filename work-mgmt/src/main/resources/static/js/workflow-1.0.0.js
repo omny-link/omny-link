@@ -13,7 +13,7 @@ var ractive = new AuthenticatedRactive({
       return i18n.getAgeString(new Date(timeString))
     },
     events: [],
-    helpUrl: 'http://omny.link/user-help/workflow/#the_title',
+    helpUrl: '//omny.link/user-help/workflow/#the_title',
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {
