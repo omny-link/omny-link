@@ -57,7 +57,7 @@ var ractive = new AuthenticatedRactive({
       console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
-    helpUrl: 'http://omny.link/user-help/memo/#the_title',
+    helpUrl: '//omny.link/user-help/memo/#the_title',
     matchFilter: function(obj) {
       if (ractive.get('filter')==undefined) return true;
       else return ractive.get('filter').value.toLowerCase()==obj[ractive.get('filter').field].toLowerCase();
