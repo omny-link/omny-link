@@ -9,23 +9,26 @@
 
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li><label class="col-md-4">Owner: </label><input class="form-control typeahead" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}"></li>
+        <li><label class="col-md-4 col-sm-4">Owner: </label><input class="col-md-8 col-sm-8 form-control typeahead" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}"></li>
       </ul>
     </div>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li><label class="col-md-4">Status: </label><input class="form-control typeahead" placeholder="Start typing to filter options" id="curStatus" value="{{current.status}}"></li>
-        <p class="col-md-offset-4 help-block">Draft, Ready for review, Published etc.</p>
+        <li>
+          <label class="col-md-4 col-sm-4">Status: </label>
+          <input class="col-md-8 col-sm-8 form-control typeahead" placeholder="Start typing to filter options" id="curStatus" value="{{current.status}}">
+          <p class="col-md-offset-4 hidden-sm help-block">Draft, Ready for review, Published etc.</p>
+        </li>
       </ul>
     </div>
     <div class="col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li><label class="col-md-4">Name:</label><input class="form-control" id="curName" required type="text" value="{{current.name}}"></li>
+        <li><label class="col-md-4 col-sm-4">Name:</label><input class="col-md-8 col-sm-8 form-control" id="curName" required type="text" value="{{current.name}}"></li>
       </ul>
     </div>
     <div class="col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li><label class="col-md-4">Subject:</label><input class="form-control" id="curSubject" required type="text" value="{{current.title}}"></li>
+        <li><label class="col-md-4 col-sm-4">Subject:</label><input class="col-md-8 col-sm-8 form-control" id="curSubject" required type="text" value="{{current.title}}"></li>
       </ul>
     </div>
     <div style="clear: both" class="col-md-12 col-sm-12 col-xs-12">
@@ -79,7 +82,7 @@
             </div>
             
             <div>
-              <textarea class="rich-content" id="curRichContent" placeholder="Enter something ..." rows="10" spellcheck="false" style="width:86%;border-style:solid" value="{{current.richContent}}" wrap="off"></textarea>
+              <textarea class="rich-content" id="curRichContent" placeholder="Enter something ..." rows="30" spellcheck="false" style="width:86%;border-style:solid" value="{{current.richContent}}" wrap="off"></textarea>
             </div>
             <p class="help-block">A plain text version of this template will be derived automatically and displayed automatically in less capable mail clients.</p>
           </div>
