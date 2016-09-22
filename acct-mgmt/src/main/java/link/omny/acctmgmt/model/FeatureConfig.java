@@ -22,6 +22,7 @@ public class FeatureConfig {
     @Column(name = "REFS")
     private boolean references = false;
     private boolean stockCategory = false;
+    private boolean stockLocation = false;
     private boolean supportBar = true;
 
     public void set(String name, boolean b) {
@@ -67,6 +68,9 @@ public class FeatureConfig {
             break;
         case "stockCategory":
             setStockCategory(b);
+            break;
+        case "stockLocation":
+            setStockLocation(b);
             break;
         case "supportBar":
             setSupportBar(b);

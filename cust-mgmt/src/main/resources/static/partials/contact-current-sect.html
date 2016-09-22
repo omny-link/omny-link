@@ -42,7 +42,7 @@
               <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
                 {{#each tenant.contactActions }}
                   {{#name}}
-                    <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}})">{{name}}</li>
+                    <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{current.fullName}}')">{{name}}</li>
                   {{else}}
                     <li class="divider"></li>
                   {{/}}
@@ -58,9 +58,9 @@
       <ul class="form edit-form">
         {{#if tenant.show.references || matchRole('admin') || matchRole('super-admin')}}
           <li>
-            <label class="col-md-4">Ref: </label>
+            <label class="col-md-4 col-sm-4">Ref: </label>
             <div class="input-group">
-              <input class="form-control" id="curId" readonly disabled value="{{current.id}}"/>
+              <input class="col-md-8 col-sm-8 form-control" id="curId" readonly disabled value="{{current.id}}"/>
               <span class="input-group-addon">
                 <a href="contacts.html?id=/contacts/{{current.id}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
               </span>
@@ -113,7 +113,7 @@
       {{>(tenant.id+'ContactExtension')}}
     </div>
     
-    <section id="connectionsSect" style="clear:both;">
+    <section id="connectionsSect">
       <h3>
         <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
         <span> Contact Information</span>
@@ -146,9 +146,9 @@
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This will be checked if the user has opted-out of / unsubscribed from marketing emails</p>
           </li>
           <li class="form-group">
-            <label class="col-md-4">Twitter:</label>
+            <label class="col-md-4 col-sm-4">Twitter:</label>
             <div class="input-group">
-              <input class="form-control" id="curTwitter" pattern="@[a-zA-Z0-9_]{1,16}" type="text" value="{{current.twitter}}"/>
+              <input class="col-md-8 col-sm-8 form-control" id="curTwitter" pattern="@[a-zA-Z0-9_]{1,16}" type="text" value="{{current.twitter}}"/>
               <span class="input-group-addon">
                 <a href="https://twitter.com/{{current.twitter}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
               </span>
@@ -156,9 +156,9 @@
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include @</p>
           </li>
           <li class="form-group">
-            <label class="col-md-4">Facebook:</label>
+            <label class="col-md-4 col-sm-4">Facebook:</label>
             <div class="input-group">
-              <input class="form-control" id="curFacebook" type="url" value="{{current.facebook}}"/>
+              <input class="col-md-8 col-sm-8 form-control" id="curFacebook" type="url" value="{{current.facebook}}"/>
               <span class="input-group-addon">
                 <a href="{{current.facebook}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
               </span>
@@ -166,9 +166,9 @@
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
           </li>
           <li class="form-group">
-            <label class="col-md-4">LinkedIn:</label>
+            <label class="col-md-4 col-sm-4">LinkedIn:</label>
             <div class="input-group">
-              <input class="form-control" id="curLinkedIn" type="url" value="{{current.linkedIn}}"/>
+              <input class="col-md-8 col-sm-8 form-control" id="curLinkedIn" type="url" value="{{current.linkedIn}}"/>
               <span class="input-group-addon">
                 <a href="{{current.linkedIn}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
               </span>
@@ -301,7 +301,7 @@
           </ul>
         </div>
       </section>
-    {{/tenant.show.account}}
+    {{/}}
   </form>
 
   {{#tenant.show.account}}
@@ -332,8 +332,8 @@
               </li>
             {{/}}
             <li class="form-group">
-              <label class="col-md-4" style="line-height: 1.2em">No. of employees:</label>
-              <select class="form-control" id="curNoOfEmployees" placeholder="Please choose the number of employees you have">
+              <label class="col-md-4 col-sm-4" style="line-height: 1.2em">No. of staff:</label>
+              <select class="col-md-8 col-sm-8 form-control" id="curNoOfEmployees" placeholder="Please choose the number of employees you have">
                  <option value="Please select" selected="">Please select</option>
                  <option value="under10">less than 10</option> 
                  <option value="10-49">10-49</option> 
@@ -360,9 +360,9 @@
         <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
           <ul class="form edit-form">
             <li class="form-group">
-              <label class="col-md-4">Website:</label>
+              <label class="col-md-4 col-sm-4">Website:</label>
               <div class="input-group">
-                <input class="form-control" id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"/>
+                <input class="col-md-8 col-sm-8 form-control" id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"/>
                 <span class="input-group-addon">
                   <a href="{{current.account.businessWebsite}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
                 </span>
@@ -370,9 +370,9 @@
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
             </li>
             <li class="form-group">
-              <label class="col-md-4">Twitter:</label>
+              <label class="col-md-4 col-sm-4">Twitter:</label>
               <div class="input-group">
-                <input class="form-control" id="curBusinessTwitter" pattern="@[a-zA-Z0-9_]{1,16}" type="text" value="{{current.account.twitter}}"/>
+                <input class="col-md-8 col-sm-8 form-control" id="curBusinessTwitter" pattern="@[a-zA-Z0-9_]{1,16}" type="text" value="{{current.account.twitter}}"/>
                 <span class="input-group-addon">
                   <a href="https://twitter.com/{{current.account.twitter}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
                 </span>
@@ -380,9 +380,9 @@
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include @</p>
             </li>
             <li class="form-group">
-              <label class="col-md-4">Facebook:</label>
+              <label class="col-md-4 col-sm-4">Facebook:</label>
               <div class="input-group">
-                <input class="form-control" id="curBusinessFacebook" type="url" value="{{current.account.facebook}}"/>
+                <input class="col-md-8 col-sm-8 form-control" id="curBusinessFacebook" type="url" value="{{current.account.facebook}}"/>
                 <span class="input-group-addon">
                   <a href="{{current.account.facebook}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
                 </span>
@@ -390,9 +390,9 @@
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
             </li>
             <li class="form-group">
-              <label class="col-md-4">LinkedIn:</label>
+              <label class="col-md-4 col-sm-4">LinkedIn:</label>
               <div class="input-group">
-                <input class="form-control" id="curBusinessLinkedIn" type="url" value="{{current.account.linkedIn}}"/>
+                <input class="col-md-8 col-sm-8 form-control" id="curBusinessLinkedIn" type="url" value="{{current.account.linkedIn}}"/>
                 <span class="input-group-addon">
                   <a href="{{current.account.linkedIn}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
                 </span>
@@ -405,8 +405,8 @@
         <div id="currentAccountDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12" style="display:none">
             <ul class="form edit-form">
               <li class="form-group">
-                <label class="textarea col-md-2">Description:</label>
-                <textarea class="col-md-10 form-control" id="curDescription" cols="80" value="{{current.account.description}}"></textarea>
+                <label class="textarea col-md-2 col-sm-4">Description:</label>
+                <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" value="{{current.account.description}}"></textarea>
               </li>
             </ul>
         </div>
@@ -415,6 +415,8 @@
           {{>('accountFinancials')}}
         {{/}}
 
+      </section>
+      
         <div id="currentAccountTypeExtended" style="clear: both">
           {{>(tenant.id+current.accountType+'Extension')}}
         </div>
@@ -422,7 +424,6 @@
         {{#tenant.show.companyBackground}}
           {{>currentCompanyBackground}}
         {{/}}
-      </section>
     </form>
   {{/}}
 
@@ -439,18 +440,18 @@
       </h2>
       <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
         <ul class="form edit-form">
-          <li class="form-group">
-            <label class="col-md-4">Since login:</label>
-            <input class="form-control" id="curTimeSinceLogin" disabled readonly value="{{formatAge(current.timeSinceLogin)}}">
+                    <li class="form-group">
+            <label class="col-md-4 col-sm-4">Since email:</label>
+            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceEmail" disabled readonly value="{{formatAge(current.timeSinceEmail)}}">
           </li>
           <li class="form-group">
-            <label class="col-md-4">Since registration:</label>
-            <input class="form-control" id="curTimeSinceRegistration" disabled readonly value="{{formatAge(current.timeSinceRegistered)}}">
+            <label class="col-md-4 col-sm-4">Mails sent:</label>
+            <input class="col-md-8 col-sm-8 form-control" id="curEmailsSent" disabled readonly value="{{current.emailsSent}}">
           </li>
           {{#tenant.id == 'firmgains'}}
 	          <li class="form-group">
 	            <label class="col-md-4">Since valuation:</label>
-	            <input class="form-control" id="curTimeSinceValuation" disabled readonly value="{{formatAge(current.timeSinceValuation)}}">
+	            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceValuation" disabled readonly value="{{formatAge(current.timeSinceValuation)}}">
 	          </li>
 	        {{/}}
         </ul>
@@ -458,12 +459,12 @@
       <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
         <ul class="form edit-form">
           <li class="form-group">
-            <label class="col-md-4">Since email:</label>
-            <input class="form-control" id="curTimeSinceEmail" disabled readonly value="{{formatAge(current.timeSinceEmail)}}">
+            <label class="col-md-4 col-sm-4">Since login:</label>
+            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceLogin" disabled readonly value="{{formatAge(current.timeSinceLogin)}}">
           </li>
           <li class="form-group">
-            <label class="col-md-4">Mails sent:</label>
-            <input class="form-control" id="curEmailsSent" disabled readonly value="{{current.emailsSent}}">
+            <label class="col-md-4 col-sm-4">Since registration:</label>
+            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceRegistration" disabled readonly value="{{formatAge(current.timeSinceRegistered)}}">
           </li>
         </ul>
       </div>

@@ -6,7 +6,7 @@
         <th><input class="checkbox" type="checkbox"/></th>
       {{/}}
       <th on-click="sort:fullName">Full Name<span class="sortable {{ sorted('fullName') }} glyphicon "></th>
-      {{#tenant.show.account}}<th on-click="sort:accountName">Business Name<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
+      {{#tenant.show.account}}<th on-click="sort:accountName">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
       <th on-click="sort:stage">Stage<span class="sortable {{ sorted('stage') }} glyphicon"></th>
       <th on-click="sort:enquiryType">Enquiry Type<span class="sortable {{ sorted('enquiryType') }} glyphicon"></th>
       <th on-click="sort:accountType">Account Type<span class="sortable {{ sorted('accountType') }} glyphicon"></th>
