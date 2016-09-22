@@ -14,7 +14,7 @@ var ractive = new AuthenticatedRactive({
       if (timeString==undefined) return '';
     return new Date(timeString).toLocaleString(navigator.languages);
     },
-    helpUrl: 'http://omny.link/user-help/events/#the_title',
+    helpUrl: '//omny.link/user-help/events/#the_title',
     stdPartials: [
       { "name": "eventCurrentSect", "url": "/partials/event-current-sect.html"},
       { "name": "eventListSect", "url": "/partials/event-list-sect.html"},

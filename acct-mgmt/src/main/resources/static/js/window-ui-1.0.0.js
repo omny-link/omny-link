@@ -19,7 +19,7 @@ var ractive = new AuthenticatedRactive({
       //console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
-    helpUrl: 'http://omny.link/user-help/window/#the_title',
+    helpUrl: '//omny.link/user-help/window/#the_title',
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {

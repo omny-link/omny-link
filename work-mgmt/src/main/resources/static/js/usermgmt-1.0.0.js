@@ -2,7 +2,7 @@ var ractive = new AuthenticatedRactive({
   el: 'container',
   template: '#template',
   data: {
-    helpUrl: 'http://omny.link/user-help/users/#the_title',
+    helpUrl: '//omny.link/user-help/users/#the_title',
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {

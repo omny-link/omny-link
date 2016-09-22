@@ -42,7 +42,7 @@ var ractive = new AuthenticatedRactive({
     hasRole: function(role) {
       return ractive.hasRole(role);
     },
-    helpUrl: 'http://omny.link/user-help/definitions/#the_title',
+    helpUrl: '//omny.link/user-help/definitions/#the_title',
     renderBpmnIcon: function(activityType) {
       switch(activityType) {
       case 'boundaryError':
