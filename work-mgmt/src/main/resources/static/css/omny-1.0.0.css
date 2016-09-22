@@ -68,7 +68,7 @@ input:active,select:active,textarea:active {
   border-color: #66afe9;
 }
 textarea.rich-content {
-	height: 10em;
+	height: 30em;
 	margin: 0 -10px;
 }
 input.field-error:invalid,
@@ -113,6 +113,9 @@ textarea.form-control {
 label.required::after {
   color: red;
   content: '*';
+}
+section {
+	clear: both;
 }
 section .active {
 	display: inline;
@@ -305,6 +308,9 @@ tfoot th {
 .form-control {
   border-radius: 0;
 }
+.form-group {
+	clear: both;
+}
 input[type="checkbox"].form-control:focus {
   -webkit-box-shadow: 0px 0px 0px 0px rgba(255,255,255,1);
   -moz-box-shadow: 0px 0px 0px 0px rgba(255,255,255,1);
@@ -362,13 +368,14 @@ h2 a.glyphicon:hover {
 .sort-desc::after {
   content: '\e252';
 }
-.help-block { 
+.help-block {
+  clear: both;
   font-size: 0.65em;
   font-style: italic;
-	line-height: 1em;
-	margin-bottom: 0.1em;
-	margin-top: 0.3em;
-	padding-left: 5px;
+  line-height: 1em;
+  margin-bottom: 0.1em;
+  margin-top: 0.3em;
+  padding-left: 5px;
 }
 .help-block-lg {
   line-height: 1.2em;
@@ -648,12 +655,6 @@ h2.form.create-form {
 }
 .form .tagit input {
 	font-size: 0.85em;
-}
-.form .col-md-12 textarea {
-  width: 80%;	
-}
-.form .col-md-6 textarea {
-  width: 60%; 
 }
 ul.form,
 .form ul {
