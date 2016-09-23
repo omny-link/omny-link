@@ -35,6 +35,7 @@
   "partials": [
     { "name": "omnyContactExtension", "url": "/partials/omny/contact-extension.html"},
     { "name": "omnyAccountExtension", "url": "/partials/account-extension.html"},
+    { "name": "omnyRegisterOmnyContact", "url": "/partials/register-user.html"},
     { "name": "omnySimpleToDo", "url": "/partials/simple-todo.html"},
     { "name": "omnySendMemo", "url": "/partials/pick-memo.html"},
     { "name": "omnyWorkflowWizard", "url": "/partials/workflow-wizard.html"}
@@ -90,6 +91,7 @@
     { "name": "tenants", "ref": "#curTenant", "url": "/data/tenants.json"}
   ],
   "workActions": [
-    { "name": "Add task", "ref": "SimpleToDo", "url": true }
+    { "name": "Add task", "ref": "SimpleToDo", "url": true },
+    { "name": "Register user", "ref": "RegisterOmnyContact", "url": true }
   ]
 }

@@ -406,7 +406,6 @@ var AuthenticatedRactive = Ractive.extend({
   },
   startCustomAction: function(key, label, object, form, businessKey) {
     console.log('startCustomAction: '+key+' for '+object.id);
-    var singularEntityName = ractive.entityName(object).toCamelCase().singular();
     var instanceToStart = {
         processDefinitionId: key,
         businessKey: businessKey == undefined ? label : businessKey,
@@ -416,6 +415,7 @@ var AuthenticatedRactive = Ractive.extend({
           tenantId: ractive.get('tenant.id')
         }
       };
+    var singularEntityName = ractive.entityName(object).toCamelCase().singular();
     instanceToStart.processVariables[singularEntityName+'Id'] = ractive.uri(object);
     instanceToStart.processVariables[singularEntityName+'ShortId'] = ractive.shortId(ractive.uri(object));
     console.log(JSON.stringify(instanceToStart));
@@ -426,7 +426,7 @@ var AuthenticatedRactive = Ractive.extend({
       ractive.submitCustomAction();
     } else {
       // ... or display form
-      $('#customActionModal').modal('show');
+      $('#customActionModalSect').modal('show');
     }
   },
   submitCustomAction: function() {
@@ -439,8 +439,12 @@ var AuthenticatedRactive = Ractive.extend({
       success: completeHandler = function(data, textStatus, jqXHR) {
         console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
         ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
-        $('#customActionModal').modal('hide');
-        ractive.select(ractive.get('current'));// refresh
+        $('#customActionModalSect').modal('hide');
+        if (document.location.href.endsWith('contacts.html')) {
+          ractive.select(ractive.get('current'));// refresh individual record
+        } else {
+          ractive.fetch(); // refresh list
+        }
       },
     });
   },

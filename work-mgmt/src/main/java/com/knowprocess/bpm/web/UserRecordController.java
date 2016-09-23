@@ -1,8 +1,14 @@
 package com.knowprocess.bpm.web;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.IdentityService;
@@ -11,7 +17,9 @@ import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.knowprocess.bpm.model.UserGroup;
 import com.knowprocess.bpm.model.UserInfo;
@@ -61,7 +71,7 @@ public class UserRecordController {
         id = request.getServletPath().substring(
                 request.getServletPath().lastIndexOf('/') + 1);
 
-        return showJson(id);
+        return wrap(showJson(id));
     }
 
     protected @ResponseBody UserRecord showJson(@PathVariable("id") String id) {
@@ -232,5 +242,44 @@ public class UserRecordController {
             idSvc.saveGroup(grp);
         }
         idSvc.createMembership(id, group.toLowerCase());
+    }
+
+    private UserRecordResource wrap(UserRecord user) {
+        UserRecordResource resource = new UserRecordResource();
+        BeanUtils.copyProperties(user, resource);
+        Link detail = new Link(getGlobalUri(user).toString());
+        resource.add(detail);
+        resource.setSelfRef(detail.getHref());
+        return resource;
+    }
+
+    protected URI getGlobalUri(UserRecord user) {
+        try {
+            UriComponentsBuilder builder = MvcUriComponentsBuilder
+                    .fromController(getClass());
+            String uri = builder.build().toUriString()
+                    .replace("{tenantId}/", "");
+            return new URI(uri + "/" + user.getId());
+        } catch (URISyntaxException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    public static class UserRecordResource extends UserRecord
+    /* implements Identifiable <Link> */
+    {
+        private static final long serialVersionUID = -7032898225954476512L;
+        private String selfRef;
+        private List<Link> links;
+
+        public void add(Link link) {
+            if (links == null) {
+                links = new ArrayList<Link>();
+            }
+            links.add(link);
+        }
     }
 }

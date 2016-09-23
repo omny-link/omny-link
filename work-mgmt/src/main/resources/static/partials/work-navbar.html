@@ -20,7 +20,7 @@
     <li on-click="filter:{idx:9, field: 'taskLocalVariables.deferUntil', func: 'isDeferred'}">Show deferred</li>
   </ul>
 </a>
-{{#tenant.workActions}}
+{{#if tenant.workActions}}
   <span class="clickable dropdown" aria-hidden="true" title="Start Process">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
       <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
@@ -28,8 +28,8 @@
     
     <ul class="omny-dropdown dropdown-menu" role="menu">
       {{#each tenant.workActions }}
-        <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', '{{url}}')">{{name}}</li>
+        <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('profile'){{#url}}, '{{url}}'{{/url}})">{{name}}</li>
       {{/each}}
     </ul>
   </span>
-{{/}}
+{{/if}}
