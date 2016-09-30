@@ -8,7 +8,7 @@ var ractive = new AuthenticatedRactive({
   template: '#template',
   data: {
     metrics:[],
-    title: '30 Day Moving Window',
+    title: 'Moving Window',
     username: localStorage['username'],
     formatDate: function(date) {
       if (date==undefined) return 'n/a';
@@ -54,22 +54,24 @@ var ractive = new AuthenticatedRactive({
     stdPartials: [
       { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "metricListSect", "url": "/partials/metric-list-sect.html"},
+      { "name": "navbar", "url": "/partials/metric-navbar.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"}
     ],
+    windowDays: 90
   },
   fetch: function () {
     console.info('fetch...');
     ractive.set('saveObserver', false);
 
     var format = d3.time.format("%Y-%m-%dT%H:%M:%S.%L%Z").parse;
-    var url = ractive.getServer()+'/flexspace/metrics/';
+    var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/metrics/?window='+ractive.get('windowDays');
     $.getJSON(url, function(json) {
       ractive.set('rawMetrics', json);
       var data = {
-        labels: ['impressions', 'clicks', 'leads', 'enquiries'],
+        labels: ['impressions', 'sessions', 'visitors', 'enquiries'],
         x: [],
         y1: [],
         y2: [],
@@ -78,18 +80,19 @@ var ractive = new AuthenticatedRactive({
       }
       
       var seen = [];
-      $.each(json, function(i,d) {
+      for (i in json) {
+        var d = json[i];
         if (data.labels.indexOf(d.name) != -1) {
           if (seen.indexOf(d.occurred) == -1) {
             seen.push(d.occurred);
             data['x'].push(format(d.occurred));
           }
           if (d.name=='impressions') data.y1.push(d.value);
-          if (d.name=='clicks') data.y2.push(d.value);
-          if (d.name=='leads') data.y3.push(d.value);
+          if (d.name=='sessions') data.y2.push(d.value);
+          if (d.name=='visitors') data.y3.push(d.value);
           if (d.name=='enquiries') data.y4.push(d.value);
         }
-      });
+      }
       ractive.set('metrics', data);
       mw.displayDataSet('#visualisation', data);
     });
@@ -99,4 +102,10 @@ var ractive = new AuthenticatedRactive({
     this.ajaxSetup();
     this.loadStandardPartials(this.get('stdPartials'));
   }
+});
+ractive.observe('windowDays', function(newValue, oldValue, keypath) {
+  if (newValue==undefined) ractive.set('title', 'Moving Window');
+  else ractive.set('title', newValue + ' Day Moving Window');
+
+  if (oldValue!=undefined && newValue!=oldValue) ractive.fetch();
 });
