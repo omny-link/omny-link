@@ -95,8 +95,9 @@ function MovingWindow() {
         .y(y2)
         .scaleExtent([1, 10]);
 
+    d3.select(selector+' svg').remove();
     // Add an SVG element with the desired dimensions and margin.
-    mw.graph = d3.select("#visualisation").append("svg:svg")
+    mw.graph = d3.select(selector).append("svg:svg")
         .attr("width", w + mw.options.margin.right + mw.options.margin.left)
         .attr("height", h + mw.options.margin.top + mw.options.margin.bottom)
         .call(mw.zoom)
@@ -127,7 +128,7 @@ function MovingWindow() {
       class:'axis y1'
     })
     .attr('transform','rotate(-90),translate(-150,-90)')
-    .text(data.labels[0]+' »');
+    .text(data.labels[0].toLabel()+' »');
 
     // create leftLeft yAxis
     yAxisLeft = d3.svg.axis().scale(y1).ticks(10).orient("left");
@@ -145,7 +146,7 @@ function MovingWindow() {
       class:'axis y2'
     })
     .attr('transform','rotate(-90),translate(-150,-90)')
-    .text(data.labels[1]+' »');
+    .text(data.labels[1].toLabel()+' »');
 
     // create right yAxis
     yAxisRight = d3.svg.axis().scale(y3).ticks(10).orient("left");
@@ -163,7 +164,7 @@ function MovingWindow() {
       class:'axis y3'
     })
     .attr('transform','rotate(-90),translate(-150,-90)')
-    .text(data.labels[2]+' »');
+    .text(data.labels[2].toLabel()+' »');
 
     // create rightRight yAxis
     if (data.labels.length > 3) {
@@ -182,7 +183,7 @@ function MovingWindow() {
           class:'axis y4'
         })
         .attr('transform','rotate(-90),translate(-150,-90)')
-        .text(data.labels[3]+' »');
+        .text(data.labels[3].toLabel()+' »');
     }
 
     // add lines
@@ -193,14 +194,14 @@ function MovingWindow() {
     mw.graph.append("svg:path").attr("d", line4(data['y4'])).attr("class", "y4");
   }
 
-  this.makeXAxis = function () {
+  this.makeXAxis = function() {
     return d3.svg.axis()
         .scale(x)
         .orient("bottom")
         .ticks(5);
   };
 
-  this.makeYAxis = function () {
+  this.makeYAxis = function() {
     return d3.svg.axis()
         .scale(y1)
         .orient("left")
@@ -211,24 +212,24 @@ function MovingWindow() {
     mw.zoomRight.scale(mw.zoom.scale()).translate(mw.zoom.translate());
     mw.zoomLeftLeft.scale(mw.zoom.scale()).translate(mw.zoom.translate());
 
-    mw.graph.select(".x.axis").call(mw.xAxis);
-    mw.graph.select(".y.axisLeft").call(mw.yAxisLeft);
-    mw.graph.select(".y.axisLeftLeft").call(mw.yAxisLeftLeft);
-    mw.graph.select(".y.axisRight").call(mw.yAxisRight);
-    mw.graph.select(".y.axisRightRight").call(mw.yAxisRightRight);
-    mw.graph.select(".x.grid")
-        .call(mw.makeXAxis()
-        .tickFormat(""));
-    mw.graph.select(".y.axis")
-        .call(mw.makeYAxis()
-            .tickSize(5, 0, 0));
-    mw.graph.selectAll(".y1")
-        .attr("d", line1(data['y1']));
-    mw.graph.selectAll(".y2")
-        .attr("d", line2(data['y2']));
-    mw.graph.selectAll(".y3")
-        .attr("d", line3(data['y3']));
-    mw.graph.selectAll(".y4")
-        .attr("d", line4(data['y4']));
+//    mw.graph.select(".x.axis").call(mw.xAxis);
+//    mw.graph.select(".y.axisLeft").call(mw.yAxisLeft);
+//    mw.graph.select(".y.axisLeftLeft").call(mw.yAxisLeftLeft);
+//    mw.graph.select(".y.axisRight").call(mw.yAxisRight);
+//    mw.graph.select(".y.axisRightRight").call(mw.yAxisRightRight);
+//    mw.graph.select(".x.grid")
+//        .call(mw.makeXAxis()
+//        .tickFormat(""));
+//    mw.graph.select(".y.axis")
+//        .call(mw.makeYAxis()
+//            .tickSize(5, 0, 0));
+//    mw.graph.selectAll(".y1")
+//        .attr("d", line1(data['y1']));
+//    mw.graph.selectAll(".y2")
+//        .attr("d", line2(data['y2']));
+//    mw.graph.selectAll(".y3")
+//        .attr("d", line3(data['y3']));
+//    mw.graph.selectAll(".y4")
+//        .attr("d", line4(data['y4']));
   };
 }
