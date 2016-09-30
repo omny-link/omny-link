@@ -1,4 +1,4 @@
-<div class="modal fade" id="customActionModal" tabindex="-1" role="dialog" aria-labelledby="customActionModalLabel">
+<div class="modal fade" id="customActionModalSect" tabindex="-1" role="dialog" aria-labelledby="customActionModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -7,7 +7,9 @@
       </div>
       <div class="modal-body">
         <form id="customActionForm">
-          {{>tenant.id+instanceToStart.processDefinitionId}}
+          {{#if instanceToStart!=undefined}}
+            {{>tenant.id+instanceToStart.processDefinitionId}}
+          {{/if}}
         </form>
       </div>
       <div class="modal-footer">

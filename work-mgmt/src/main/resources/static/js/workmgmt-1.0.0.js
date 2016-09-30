@@ -474,44 +474,6 @@ var ractive = new AuthenticatedRactive({
     $('#currentSect').slideUp();
     $('#tasksTable').slideDown({ queue: true });
   },
-  startCustomAction: function(key, label, form) {
-    console.log('startCustomAction: '+key+' using form '+form);
-    var instanceToStart = {
-        businessKey: label,
-        processDefinitionId: key,
-        label: label,
-        processVariables: {
-          initiator: ractive.get('username'),
-          tenantId: ractive.get('tenant.id')
-        }
-      };
-    console.log(JSON.stringify(instanceToStart));
-    // save what we know so far...
-    ractive.set('instanceToStart',instanceToStart);
-    if (form == undefined) {
-      // ... and submit
-      ractive.submitCustomAction();
-    } else {
-      // ... or display form
-      $('#customActionModal').modal('show');
-    }
-  },
-  submitCustomAction: function(key, bizKey) {
-    console.info('submitCustomAction');
-    $.ajax({
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(ractive.get('instanceToStart')),
-      success: completeHandler = function(data, textStatus, jqXHR) {
-        console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
-        var msg = 'Started workflow "'+ractive.get('instanceToStart.label')+'"';
-        if (ractive.get('instanceToStart.businessKey')!=undefined) msg+=(' for '+ractive.get('instanceToStart.businessKey'));
-        ractive.showMessage(msg);
-        $('#customActionModal').modal('hide');
-      }
-    });
-  },
   submitTask: function(action) {
     console.log('submitTask '+JSON.stringify(ractive.get('current'))+' ...');
     ractive.set('saveObserver',false);
