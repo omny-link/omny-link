@@ -12,23 +12,23 @@
     <thead>
       <tr>
         <th></th>
-        <th>Date</th>
+        <th>Month to date</th>
         {{#each metrics.labels : i}}
-          <th on-click="sort:contacts">{{.}}</th>
+          <th on-click="sort:metrics">{{..toLabel()}}</th>
         {{/each}}
       </tr>
     </thead>
     <tbody>
-    {{#each metrics.x :i}}
-          <tr data-href="{{selfRef}}">
-            <td>{{i+1}}</td>
-            <td>{{formatDate(.)}}</td>
-            <td>{{metrics.y1[i]}}</td>
-            <td>{{metrics.y2[i]}}</td>
-            <td>{{metrics.y3[i]}}</td>
-            <td>{{metrics.y4[i]}}</td>
-          </tr>
-    {{/each}}
+	    {{#each metrics.x :i}}
+	      <tr data-href="{{selfRef}}">
+	        <td>{{i+1}}</td>
+	        <td>{{formatDate(.)}}</td>
+	        <td>{{metrics.y1[i]}}</td>
+	        <td>{{metrics.y2[i]}}</td>
+	        <td>{{metrics.y3[i]}}</td>
+	        <td>{{metrics.y4[i]}}</td>
+	      </tr>
+	    {{/each}}
     </tbody>
   </table>
 </section>
