@@ -29,11 +29,11 @@
           <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
           <span class="hidden-sm hidden-xs">{{current.email}}</span>
         {{/if}}
-        <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
         <span class="pull-right">
           {{#matchRole('admin')}}
-            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" style="top: -1px;" title="Delete this record"></a>
           {{/}}
+          <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
           {{#if tenant.contactActions!=undefined && tenant.contactActions.length>0 }}
             <span class="clickable dropdown" aria-hidden="true" title="Start Process">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
@@ -51,6 +51,19 @@
             </span>
           {{/if}}
         </span>
+        <span class="clearfix">
+         {{#if tenant.show.addressAccount && (current.account.name != undefined && current.account.name != '')}}
+           <span>{{current.account.name}}{{#if current.account.town}}, {{current.account.town}}{{/if}}{{#if current.account.countyOrCity}}, {{current.account.countyOrCity}}{{/if}}{{#if current.account.postCode}}, {{current.account.postCode}}{{/if}}</span>
+             {{#current.account.postCode}}
+					      <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.account.postCode}}" target="_blank"></a>
+					   {{/}}
+					   {{^current.account.postCode}}
+					     {{#current.account.town || current.account.address1 || current.account.address2 || current.account.countyOrCity}}
+					       <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.account.address1}}+{{current.account.address2}}+{{current.account.town}}+{{current.account.countyOrCity}}" target="_blank"></a>
+					     {{/}}
+             {{/}}
+          {{/if}}
+        </span>
       </h2>
     {{/}}
     
@@ -58,9 +71,9 @@
       <ul class="form edit-form">
         {{#if tenant.show.references || matchRole('admin') || matchRole('super-admin')}}
           <li>
-            <label class="col-md-4 col-sm-4">Ref: </label>
+            <label class="col-md-4 col-sm-4 col-xs-4">Ref: </label>
             <div class="input-group">
-              <input class="col-md-8 col-sm-8 form-control" id="curId" readonly disabled value="{{current.id}}"/>
+              <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curId" readonly disabled value="{{current.id}}"/>
               <span class="input-group-addon">
                 <a href="contacts.html?id=/contacts/{{current.id}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
               </span>
@@ -68,43 +81,52 @@
 	        </li>
 	      {{/if}}
         <li style="clear:left">
-          <label class="col-md-4">Owner: </label>
+          <label class="col-md-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
           <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}">
         </li>
-        <li style="clear:left">
-          <label class="col-md-4">Stage:</label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">How far through the sales pipeline are you with this contact?</p>
-        </li>
-        {{# haveStageReasons() }}
-          <li style="clear:left">
-            <label class="col-md-4">Loss Reason:</label>
-            <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStageReason" {{# current.stage=='Cold' }} required{{/}} value="{{current.stageReason}}">
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
-          </li>
-          <li style="clear:left">
-            <label class="col-md-4">Loss Date:</label>
-            <input class="form-control" id="curStageDate" readonly value="{{formatDate(current.stageDate)}}">
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
-          </li>
+        {{#tenant.show.marketing || tenant.show.stage}}
+	        <li style="clear:left">
+	          <label class="col-md-4">Existing customer?:</label>
+	          <input class="typeahead form-control" id="curExistingCustomer" type="checkbox" checked="{{current.existingCustomer}}">
+	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Is this an existing customer, even if we are in a new sales cycle?</p>
+	        </li>
+	        <li style="clear:left">
+	          <label class="col-md-4">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Stage{{/}}:</label>
+	          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
+	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">How far through the sales pipeline are you with this contact?</p>
+	        </li>
+	        {{# haveStageReasons() }}
+	          <li style="clear:left">
+	            <label class="col-md-4">Loss Reason:</label>
+	            <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStageReason" {{# current.stage=='Cold' }} required{{/}} value="{{current.stageReason}}">
+	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+	          </li>
+	          <li style="clear:left">
+	            <label class="col-md-4">Loss Date:</label>
+	            <input class="form-control" id="curStageDate" readonly value="{{formatDate(current.stageDate)}}">
+	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+	          </li>
+	        {{/}}
         {{/}}
       </ul>
     </div>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li>
-          <label class="">Enquiry Type:</label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">The nature of the initial contact</p>
-        </li>
+        {{#tenant.show.enquiryType}}
+	        <li>
+	          <label class="">Enquiry Type:</label>
+	          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
+	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">The nature of the initial contact</p>
+	        </li>
+	      {{/}}
         <li>
           <label class="">Account Type:</label>
           <input class="typeahead form-control" placeholder="Start typing to filter options" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Defines the nature of the relationship with this contact</p>
         </li>
         <li>
-          <label class="" style="margin-right:5px">Tags:</label>
-          <input class="tag-ctrl form-control" id="curTags" data-bind="current.tags"/>
+          <label class="col-md-4 col-sm-4 col-xs-4" style="margin-right:5px">Tags:</label>
+          <input class="tag-ctrl form-control col-md-8 col-sm-8 col-xs-8" id="curTags" data-bind="current.tags"/>
         </li>
       </ul>
     </div>
@@ -135,46 +157,50 @@
             <input class="" id="curEmailConfirmed" type="checkbox" checked="{{current.emailConfirmed}}">
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Has this email been confirmed valid?</p>
           </li>
-          <li>
-            <label class="">Do Not Email:</label>
-            <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"> Owner preference
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Check this if the user should not receive automated emails, for example during sensitive negotiations</p>  
-          </li>
-          <li>
-            <label class="">Opt out:</label>
-            <input class="" id="curOptOut" type="checkbox" checked="{{current.optOut}}"> User preference
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This will be checked if the user has opted-out of / unsubscribed from marketing emails</p>
-          </li>
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4">Twitter:</label>
-            <div class="input-group">
-              <input class="col-md-8 col-sm-8 form-control" id="curTwitter" pattern="@[a-zA-Z0-9_]{1,16}" type="text" value="{{current.twitter}}"/>
-              <span class="input-group-addon">
-                <a href="https://twitter.com/{{current.twitter}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
-              </span>
-            </div>
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include @</p>
-          </li>
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4">Facebook:</label>
-            <div class="input-group">
-              <input class="col-md-8 col-sm-8 form-control" id="curFacebook" type="url" value="{{current.facebook}}"/>
-              <span class="input-group-addon">
-                <a href="{{current.facebook}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
-              </span>
-            </div>
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
-          </li>
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4">LinkedIn:</label>
-            <div class="input-group">
-              <input class="col-md-8 col-sm-8 form-control" id="curLinkedIn" type="url" value="{{current.linkedIn}}"/>
-              <span class="input-group-addon">
-                <a href="{{current.linkedIn}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
-              </span>
-            </div>
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
-          </li>
+          {{#tenant.show.marketing}}
+	          <li>
+	            <label class="">Do Not Email:</label>
+	            <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"> Owner preference
+	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Check this if the user should not receive automated emails, for example during sensitive negotiations</p>  
+	          </li>
+	          <li>
+	            <label class="">Opt out:</label>
+	            <input class="" id="curOptOut" type="checkbox" checked="{{current.optOut}}"> User preference
+	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This will be checked if the user has opted-out of / unsubscribed from marketing emails</p>
+	          </li>
+	        {{/}}
+          {{#if tenant.show.socialContact}}
+	          <li class="form-group">
+	            <label class="col-md-4 col-sm-4">Twitter:</label>
+	            <div class="input-group">
+	              <input class="col-md-8 col-sm-8 form-control" id="curTwitter" pattern="@[a-zA-Z0-9_]{1,16}" type="text" value="{{current.twitter}}"/>
+	              <span class="input-group-addon">
+	                <a href="https://twitter.com/{{current.twitter}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+	              </span>
+	            </div>
+	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include @</p>
+	          </li>
+	          <li class="form-group">
+	            <label class="col-md-4 col-sm-4">Facebook:</label>
+	            <div class="input-group">
+	              <input class="col-md-8 col-sm-8 form-control" id="curFacebook" type="url" value="{{current.facebook}}"/>
+	              <span class="input-group-addon">
+	                <a href="{{current.facebook}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+	              </span>
+	            </div>
+	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
+	          </li>
+	          <li class="form-group">
+	            <label class="col-md-4 col-sm-4">LinkedIn:</label>
+	            <div class="input-group">
+	              <input class="col-md-8 col-sm-8 form-control" id="curLinkedIn" type="url" value="{{current.linkedIn}}"/>
+	              <span class="input-group-addon">
+	                <a href="{{current.linkedIn}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+	              </span>
+	            </div>
+	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
+	          </li>
+	        {{/if}}
         </ul>
       </div>
       <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
@@ -187,53 +213,70 @@
             <label class="">Alternate Phone:</label>
             <input class="form-control" id="curPhone2" pattern="\+?[0-9, \-()]{0,15}" value="{{current.phone2}}">
           </li>
-          <li>
-            <label class="">Do Not Call:</label>
-            <input class="" id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}">
-          </li>
-          <li>
-            <label class="">Address:</label>
-            <input class="form-control" id="curAddress1" value="{{current.address1}}"/>
-          </li>
-          <li>
-            <label class=""></label>
-            <input class="form-control" id="curAddress2" value="{{current.address2}}"/>
-          </li>
-          <li>
-            <label class=""></label>
-            <input class="form-control" id="curTown" placeholder="Town or village" value="{{current.town}}"/>
-          </li>
-          <li>
-            <label class=""></label>
-            <input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/>
-          </li>
-          <li>
-            <label class="">Post Code:</label>
-            <input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}">
-          </li>
-          <li>
-            <label class="">Country:</label>
-            <input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}">
-          </li>
-          {{#current.postCode}}
-            <li>
-              <label class="">Map:</label>
-              <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
-            </li>
-          {{/}}
-          {{^current.postCode}}
-            {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
-              <li>
-                <label class="">Map:</label>
-                <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
-              </li>
-            {{/}}
-          {{/}}
+          {{#tenant.show.marketing}}
+	          <li>
+	            <label class="">Do Not Call:</label>
+	            <input class="" id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}">
+	          </li>
+	        {{/}}
+          {{#if tenant.show.addressContact}}
+	          <li>
+	            <label class="">Address:</label>
+	            <input class="form-control" id="curAddress1" value="{{current.address1}}"/>
+	          </li>
+	          <li>
+	            <label class=""></label>
+	            <input class="form-control" id="curAddress2" value="{{current.address2}}"/>
+	          </li>
+	          <li>
+	            <label class=""></label>
+	            <input class="form-control" id="curTown" placeholder="Town or village" value="{{current.town}}"/>
+	          </li>
+	          <li>
+	            <label class=""></label>
+	            <input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/>
+	          </li>
+	          <li>
+	            <label class="">Post Code:</label>
+	            <input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}">
+	          </li>
+	          {{#tenant.show.multiNational}}
+		          <li>
+		            <label class="">Country:</label>
+		            <input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}">
+		          </li>
+		        {{/}}
+	          {{#current.postCode}}
+	            <li>
+	              <label class="">Map:</label>
+	              <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
+	            </li>
+	          {{/}}
+	          {{^current.postCode}}
+	            {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
+	              <li>
+	                <label class="">Map:</label>
+	                <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
+	              </li>
+	            {{/}}
+	          {{/}}
+	        {{/if}}
         </ul>
       </div>
+      
+      {{#tenant.show.contactDescription}}
+	      <div id="currentContactDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12" style="display:none">
+	        <ul class="form edit-form">
+	          <li class="form-group">
+	            <label class="textarea col-md-2 col-sm-4">{{#tenant.strings.contactDescription}}{{tenant.strings.contactDescription}}{{else}}Background info{{/}}:</label>
+	            <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#tenant.strings.contactDescriptionHint}}{{tenant.strings.contactDescriptionHint}}{{else}}Background info{{/}}" value="{{current.description}}"></textarea>
+	          </li>
+	        </ul>
+	      </div>
+      {{/}}
     </section>
 
-    {{#tenant.show.marketing}}
+    {{#tenant.show.marketing || tenant.show.marketingDigital}}
       <section id="marketingSect" style="clear:both;">
         <h3>
           <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
@@ -242,14 +285,16 @@
         </h3>
         <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
           <ul class="form edit-form">
-            <li>
-              <label class="">Source:</label>
-              <input class="typeahead form-control" placeholder="Start typing to filter options" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}">
-            </li>
-            <li>
-              <label class="">Medium:</label>
-              <input class="typeahead form-control" placeholder="Start typing to filter options" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}">
-            </li>
+            {{#tenant.show.marketingDigital}}
+	            <li>
+	              <label class="">Source:</label>
+	              <input class="typeahead form-control" placeholder="Start typing to filter options" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}">
+	            </li>
+	            <li>
+	              <label class="">Medium:</label>
+	              <input class="typeahead form-control" placeholder="Start typing to filter options" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}">
+	            </li>
+	          {{/}}
             {{#tenant.show.declaredSource}}
               <li>
                 <label class="">How heard of us?:</label>
@@ -260,18 +305,20 @@
         </div>
         <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
           <ul class="form edit-form">
-            <li>
-              <label class="">Page Submitted:</label>
-              <input class="form-control" id="curPageSubmitted" disabled readonly value="{{customField(current, 'pageSubmitted')}}">
-            </li>
-            <li>
-              <label class="">Campaign:</label>
-              <input class="form-control" id="curCampaign" {{ current.campaign ? 'disabled readonly' : '' }} value="{{current.campaign}}">
-            </li>
-            <li>
-              <label class="">IP Address:</label>
-              <input class="form-control" id="curIpAddress" disabled readonly value="{{customField(current, 'ip')}}">
-            </li>
+            {{#tenant.show.marketingDigital}}
+	            <li>
+	              <label class="">Page Submitted:</label>
+	              <input class="form-control" id="curPageSubmitted" disabled readonly value="{{customField(current, 'pageSubmitted')}}">
+	            </li>
+	            <li>
+	              <label class="">Campaign:</label>
+	              <input class="form-control" id="curCampaign" {{ current.campaign ? 'disabled readonly' : '' }} value="{{current.campaign}}">
+	            </li>
+	            <li>
+	              <label class="">IP Address:</label>
+	              <input class="form-control" id="curIpAddress" disabled readonly value="{{customField(current, 'ip')}}">
+	            </li>
+            {{/}}
           </ul>
         </div>
       </section>
@@ -320,7 +367,7 @@
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
             </li>
             <li class="form-group">
-              <label class="col-md-4">Company or Charity No:</label>
+              <label class="col-md-4">{{# tenant.strings.companyNumber}}{{tenant.strings.companyNumber}}{{else}}Company Number{{/}}:</label>
               <input autocomplete="off" class="typeahead form-control" id="curCompanyNumber" pattern="[OCS0-9]{2}[0-9]{6}" {{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.account.companyNumber}}">
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
             </li>
@@ -332,8 +379,8 @@
               </li>
             {{/}}
             <li class="form-group">
-              <label class="col-md-4 col-sm-4" style="line-height: 1.2em">No. of staff:</label>
-              <select class="col-md-8 col-sm-8 form-control" id="curNoOfEmployees" placeholder="Please choose the number of employees you have">
+              <label class="col-md-4 col-sm-4" style="line-height: 1.2em">{{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}}:</label>
+              <select class="col-md-8 col-sm-8 form-control" id="curNoOfEmployees" placeholder="Please choose the number of {{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}} you have">
                  <option value="Please select" selected="">Please select</option>
                  <option value="under10">less than 10</option> 
                  <option value="10-49">10-49</option> 
@@ -343,18 +390,20 @@
                  <option value="500-999">500-999</option>
                  <option value="1000+">over 1000</option>
                </select>
-               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">An approximate indication of the size of the company</p>
+               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">An approximate indication of the size of the {{#tenant.strings.account}}{{tenant.strings.account.toLowerCase()}}{{else}}account{{/}}</p>
             </li>
-            <li class="form-group">
-              <label class="col-md-4">Founded:</label>
-              <input autocomplete="off" class="form-control" id="curIncorporationYear" pattern="[0-9]{4}" placeholder="yyyy" value="{{current.account.incorporationYear}}"/>
-              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
-            </li>
-            <li class="form-group">
-              <label class="col-md-4">SIC:</label>
-              <input autocomplete="off" class="typeahead form-control" id="curSic" type="text" value="{{current.account.sic}}"/>
-              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Standard industrial classification of economic activities (SIC)</p>
-            </li>
+            {{#if tenant.show.accountCompanyDetails}}
+	            <li class="form-group">
+	              <label class="col-md-4">Founded:</label>
+	              <input autocomplete="off" class="form-control" id="curIncorporationYear" pattern="[0-9]{4}" placeholder="yyyy" value="{{current.account.incorporationYear}}"/>
+	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+	            </li>
+	            <li class="form-group">
+	              <label class="col-md-4">SIC:</label>
+	              <input autocomplete="off" class="typeahead form-control" id="curSic" type="text" value="{{current.account.sic}}"/>
+	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Standard industrial classification of economic activities (SIC)</p>
+	            </li>
+	          {{/if}}
           </ul>
         </div>
         <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
@@ -369,47 +418,93 @@
               </div>
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
             </li>
-            <li class="form-group">
-              <label class="col-md-4 col-sm-4">Twitter:</label>
-              <div class="input-group">
-                <input class="col-md-8 col-sm-8 form-control" id="curBusinessTwitter" pattern="@[a-zA-Z0-9_]{1,16}" type="text" value="{{current.account.twitter}}"/>
-                <span class="input-group-addon">
-                  <a href="https://twitter.com/{{current.account.twitter}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
-                </span>
-              </div>
-              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include @</p>
-            </li>
-            <li class="form-group">
-              <label class="col-md-4 col-sm-4">Facebook:</label>
-              <div class="input-group">
-                <input class="col-md-8 col-sm-8 form-control" id="curBusinessFacebook" type="url" value="{{current.account.facebook}}"/>
-                <span class="input-group-addon">
-                  <a href="{{current.account.facebook}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
-                </span>
-              </div>
-              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
-            </li>
-            <li class="form-group">
-              <label class="col-md-4 col-sm-4">LinkedIn:</label>
-              <div class="input-group">
-                <input class="col-md-8 col-sm-8 form-control" id="curBusinessLinkedIn" type="url" value="{{current.account.linkedIn}}"/>
-                <span class="input-group-addon">
-                  <a href="{{current.account.linkedIn}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
-                </span>
-              </div>
-              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
-            </li>
+            {{#if tenant.show.addressAccount}}
+	            <li>
+	              <label class="">Address:</label>
+	              <input class="form-control" id="curAddress1" value="{{current.account.address1}}"/>
+	            </li>
+	            <li>
+	              <label class=""></label>
+	              <input class="form-control" id="curAddress2" value="{{current.account.address2}}"/>
+	            </li>
+	            <li>
+	              <label class=""></label>
+	              <input class="form-control" id="curTown" placeholder="Town or village" value="{{current.account.town}}"/>
+	            </li>
+	            <li>
+	              <label class=""></label>
+	              <input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.account.countyOrCity}}"/>
+	            </li>
+	            <li>
+	              <label class="">Post Code:</label>
+	              <input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.account.postCode}}">
+	            </li>
+	            {{#tenant.show.multiNational}}
+		            <li>
+		              <label class="">Country:</label>
+		              <input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.account.country}}">
+		            </li>
+		          {{/}}
+	            {{#current.account.postCode}}
+                <li>
+                  <label class="">Map:</label>
+                  <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.account.postCode}}" target="_blank"></a>
+                </li>
+              {{/}}
+              {{^current.account.postCode}}
+                {{#current.account.town || current.account.address1 || current.account.address2 || current.account.countyOrCity}}
+                  <li>
+                    <label class="">Map:</label>
+                    <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.account.address1}}+{{current.account.address2}}+{{current.account.town}}+{{current.account.countyOrCity}}" target="_blank"></a>
+                  </li>
+                {{/}}
+              {{/}}
+	          {{/if}}
+            {{#if tenant.show.socialAccount}}
+	            <li class="form-group">
+	              <label class="col-md-4 col-sm-4">Twitter:</label>
+	              <div class="input-group">
+	                <input class="col-md-8 col-sm-8 form-control" id="curBusinessTwitter" pattern="@[a-zA-Z0-9_]{1,16}" type="text" value="{{current.account.twitter}}"/>
+	                <span class="input-group-addon">
+	                  <a href="https://twitter.com/{{current.account.twitter}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+	                </span>
+	              </div>
+	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include @</p>
+	            </li>
+	            <li class="form-group">
+	              <label class="col-md-4 col-sm-4">Facebook:</label>
+	              <div class="input-group">
+	                <input class="col-md-8 col-sm-8 form-control" id="curBusinessFacebook" type="url" value="{{current.account.facebook}}"/>
+	                <span class="input-group-addon">
+	                  <a href="{{current.account.facebook}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+	                </span>
+	              </div>
+	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
+	            </li>
+	            <li class="form-group">
+	              <label class="col-md-4 col-sm-4">LinkedIn:</label>
+	              <div class="input-group">
+	                <input class="col-md-8 col-sm-8 form-control" id="curBusinessLinkedIn" type="url" value="{{current.account.linkedIn}}"/>
+	                <span class="input-group-addon">
+	                  <a href="{{current.account.linkedIn}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+	                </span>
+	              </div>
+	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
+	            </li>
+	          {{/if}}
           </ul>
         </div>
 
-        <div id="currentAccountDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12" style="display:none">
-            <ul class="form edit-form">
-              <li class="form-group">
-                <label class="textarea col-md-2 col-sm-4">Description:</label>
-                <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" value="{{current.account.description}}"></textarea>
-              </li>
-            </ul>
-        </div>
+        {{#tenant.show.accountDescription}}
+	        <div id="currentAccountDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12" style="display:none">
+	            <ul class="form edit-form">
+	              <li class="form-group">
+	                <label class="textarea col-md-2 col-sm-4">{{#if tenant.strings.contactDescription}}{{tenant.strings.contactDescription}}{{else}}Additional info{{/if}}:</label>
+	                <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#if tenant.strings.contactDescriptionHint}}{{tenant.strings.contactDescriptionHint}}{{else}}Additional info{{/if}}" value="{{current.account.description}}"></textarea>
+	              </li>
+	            </ul>
+	        </div>
+	      {{/}}
 
         {{#tenant.show.financials}}
           {{>('accountFinancials')}}

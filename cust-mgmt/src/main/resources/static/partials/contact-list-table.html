@@ -7,11 +7,15 @@
       {{/}}
       <th on-click="sort:fullName">Full Name<span class="sortable {{ sorted('fullName') }} glyphicon "></th>
       {{#tenant.show.account}}<th on-click="sort:accountName">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
-      <th on-click="sort:stage">Stage<span class="sortable {{ sorted('stage') }} glyphicon"></th>
-      <th on-click="sort:enquiryType">Enquiry Type<span class="sortable {{ sorted('enquiryType') }} glyphicon"></th>
+      {{#tenant.show.marketing}}
+        <th on-click="sort:stage">Stage<span class="sortable {{ sorted('stage') }} glyphicon"></th>
+      {{/}}
+      {{#tenant.show.marketing || tenant.show.enquiryType}}
+        <th on-click="sort:enquiryType">Enquiry Type<span class="sortable {{ sorted('enquiryType') }} glyphicon"></th>
+      {{/}}
       <th on-click="sort:accountType">Account Type<span class="sortable {{ sorted('accountType') }} glyphicon"></th>
       <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon"></th>
-      <th on-click="sort:firstContact">First Contact<span class="sortable {{ sorted('firstContact') }} glyphicon"></th>
+      <th on-click="sort:firstContact">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}First Contact{{/}}<span class="sortable {{ sorted('firstContact') }} glyphicon"></th>
       <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
       <th>Alerts</th>
       <th>Tags</th>
@@ -30,8 +34,12 @@
           {{#tenant.show.account}}
             <td on-click="edit(this)">{{account == undefined ? accountName : account.name}}</td>
           {{/}}
-          <td on-click="edit(this)">{{stage}}</td>
-          <td on-click="edit(this)">{{enquiryType}}</td>
+          {{#tenant.show.marketing}}
+            <td on-click="edit(this)">{{stage}}</td>
+          {{/}}
+          {{#tenant.show.marketing || tenant.show.enquiryType}}
+            <td on-click="edit(this)">{{enquiryType}}</td>
+          {{/}}
           <td on-click="edit(this)">{{accountType}}</td>
           <td on-click="edit(this)">{{{gravatar(owner)}}}</td>
           <td on-click="edit(this)">{{formatDate(firstContact)}}</td>

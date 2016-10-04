@@ -5,9 +5,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import link.omny.catalog.json.JsonCustomOrderFieldDeserializer;
+import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
+import link.omny.catalog.model.CustomOrderField;
+import link.omny.catalog.model.CustomOrderItemField;
 import link.omny.catalog.model.Order;
 import link.omny.catalog.model.OrderItem;
 import link.omny.catalog.repositories.OrderRepository;
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -34,6 +39,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * REST web service for accessing stock items.
@@ -214,6 +222,9 @@ public class OrderController {
         private String cityOrCounty;
         private String postCode;
         private String country;
+        @JsonDeserialize(using = JsonCustomOrderFieldDeserializer.class)
+        @JsonSerialize(using = JsonCustomFieldSerializer.class)
+        private List<CustomOrderField> customFields;
         private List<ShortOrderItem> orderItems;
         private String types;
         private String status;
@@ -235,6 +246,9 @@ public class OrderController {
         private String type;
         private String status;
         private Order order;
+        @JsonDeserialize(using = JsonCustomOrderItemFieldDeserializer.class)
+        @JsonSerialize(using = JsonCustomFieldSerializer.class)
+        private List<CustomOrderItemField> customFields;
         private Date created;
         private Date lastUpdated;
         private String tenantId;

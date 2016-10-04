@@ -1,7 +1,7 @@
 <h1 class="navbar-top">
   <a class="nav navbar-brand" href="/index.html"></a>
   {{#profile.omnyBarPosition!='top'}}
-    <span>{{title}}</span>
+    <span>{{#tenant.strings[title.replace(/ /g,'')]}}{{tenant.strings[title.replace(/ /g,'')]}}{{else}}{{title}}{{/}}</span>
   {{/}}
 </h1>
 <div style="clear:both"></div>
