@@ -401,6 +401,7 @@ var ractive = new AuthenticatedRactive({
         }
         ractive.set('orders',data);
         console.log('fetched '+data.length+' orders');
+        ractive.set('saveObserver', true);
       }
     });
   },
