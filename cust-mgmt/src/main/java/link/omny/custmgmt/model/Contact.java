@@ -17,6 +17,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
@@ -144,6 +145,9 @@ public class Contact implements Serializable {
     private String country;
 
     @JsonProperty
+    private boolean existingCustomer;
+
+    @JsonProperty
     private String stage;
 
     @JsonProperty
@@ -175,6 +179,10 @@ public class Contact implements Serializable {
 
     @JsonProperty
     private String linkedIn;
+
+    @JsonProperty
+    @Lob
+    private String description;
 
     /**
      * Intended to capture the source of the lead from Analytics or in some

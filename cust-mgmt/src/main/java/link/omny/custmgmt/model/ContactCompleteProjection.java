@@ -56,6 +56,8 @@ public interface ContactCompleteProjection {
 
     String getAccountType();
 
+    boolean isExistingCustomer();
+
     String getStage();
 
     String getStageReason();
@@ -83,6 +85,8 @@ public interface ContactCompleteProjection {
     String getFacebook();
 
     String getLinkedIn();
+
+    String getDescription();
 
     Date getFirstContact();
 
