@@ -107,7 +107,7 @@ select:readonly,
 textarea:readonly {
   background-color: #cbcbcb;
 }
-textarea.form-control {
+.inline-form textarea.form-control {
   margin-left:5px;
 }
 label.required::after {
@@ -147,9 +147,10 @@ section h2 .search {
   border-bottom-right-radius: 0px;
   border-top-right-radius: 0px;
   border-color: #0e9acd;
-  width: 45%;
+  min-width: 15em;
 }
 section h2 .glyphicon {
+  height: 34px;
   margin-top: -6px;
 }
 section h2 .glyphicon-search {
@@ -368,14 +369,18 @@ h2 a.glyphicon:hover {
 .sort-desc::after {
   content: '\e252';
 }
+
 .help-block {
   clear: both;
   font-size: 0.65em;
   font-style: italic;
   line-height: 1em;
   margin-bottom: 0.1em;
-  margin-top: 0.3em;
+  margin-top: -0.8em;
   padding-left: 5px;
+}
+.modal .help-block {
+  margin-top: -0.1em;
 }
 .help-block-lg {
   line-height: 1.2em;
@@ -616,7 +621,8 @@ form#upload {
 }
 .form input[type='checkbox'],
 .form input[type='radio'] {
-  margin-top:10px;
+  position:relative;
+  top: -8px;
   width: 20px;
 }
 .form input.year {
@@ -649,10 +655,8 @@ h2.form.create-form {
 }
 .form .tagit {
   width: 60%;
-  float: right;
-  left: -30px;
-  position: relative;
 }
+
 .form .tagit input {
 	font-size: 0.85em;
 }

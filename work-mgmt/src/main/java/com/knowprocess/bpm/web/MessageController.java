@@ -432,6 +432,8 @@ public class MessageController {
                     isEmpty = false;
                 } else if (jv.getValue() instanceof JsonObject) {
                     return isEmpty((JsonObject) jv.getValue());
+                } else if (jv.getValue() instanceof JsonArray) {
+                    return ((JsonArray) jv.getValue()).size() == 0;
                 }
             }
         }

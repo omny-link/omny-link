@@ -83,6 +83,47 @@ public class Account implements Serializable {
     @JsonProperty
     private String businessWebsite;
 
+    /**
+     */
+    @JsonProperty
+    private String email;
+
+    @JsonProperty
+    private boolean emailConfirmed;
+
+    @JsonProperty
+    private String emailHash;
+
+    /**
+     */
+    @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
+    @JsonProperty
+    private String phone1;
+
+    /**
+     */
+    @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
+    @JsonProperty
+    private String phone2;
+
+    @JsonProperty
+    private String address1;
+
+    @JsonProperty
+    private String address2;
+
+    @JsonProperty
+    private String town;
+
+    @JsonProperty
+    private String countyOrCity;
+
+    @JsonProperty
+    private String postCode;
+
+    @JsonProperty
+    private String country;
+
     @JsonProperty
     private String twitter;
 
