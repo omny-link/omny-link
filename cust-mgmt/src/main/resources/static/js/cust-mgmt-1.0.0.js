@@ -196,6 +196,7 @@ var ractive = new AuthenticatedRactive({
       else return 'hidden';
     },
     stdPartials: [
+      { "name": "accountCurrentSect", "url": "/partials/account-current-sect.html"},
       { "name": "accountFinancials", "url": "/partials/account-financials.html"},
       { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
       { "name": "helpModal", "url": "/partials/help-modal.html"},
