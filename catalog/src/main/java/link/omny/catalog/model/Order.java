@@ -58,6 +58,10 @@ public class Order implements Serializable {
     @JsonProperty
     private String description;
 
+    @Temporal(TemporalType.DATE)
+    @JsonProperty
+    private Date date;
+
     @JsonProperty
     @Size(max = 20)
     private String status = "Draft";

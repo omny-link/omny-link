@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @MappedSuperclass
 @Data
+@EqualsAndHashCode(exclude = { "id" })
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomField implements Serializable {

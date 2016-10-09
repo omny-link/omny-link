@@ -32,33 +32,11 @@ public class CustomStockItemField extends CustomField {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CustomStockItemField other = (CustomStockItemField) obj;
-        if (stockItem == null) {
-            if (other.stockItem != null)
-                return false;
-        } else if (stockItem.getId() == null && other.stockItem.getId() != null) {
-            return false;
-        } else if (!stockItem.equals(other.stockItem))
-            return false;
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime
-                * result
-                + ((stockItem == null || stockItem.getId() == null) ? 0
-                        : stockItem.getId().hashCode());
-        return result;
+    public String toString() {
+        return String
+                .format("CustomStockItemField [id=%s, name=%s, value=%s, stockItemId=%s]",
+                        getId(), getName(), getValue(),
+                        stockItem == null ? null : stockItem.getId());
     }
 
 }

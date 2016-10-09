@@ -17,28 +17,28 @@
     </h2>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li>
-          <label class="">Account:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Account:</label>
           <input id="curFeatureAccount" type="checkbox" checked="{{current.features.account}}"> {{#current.features.account==true}}Enabled{{/}}
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Enable if contacts need to be associated with a company or other organisation.</p>
         </li>
-        <li>
-          <label class="">Account Financials:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Account Financials:</label>
           <input class="" id="curFinancials" type="checkbox" checked="{{current.features.financials}}"> {{#current.features.financials==true}}Enabled{{/}}
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Additional account fields.</p>
         </li>
-        <li>
-          <label class="">Activity Analysis:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Activity Analysis:</label>
           <input id="curFeatureActivity" type="checkbox" checked="{{current.features.activityAnalysis}}"> {{#current.features.activityAnalysis==true}}Enabled{{/}}
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Displays recent activity information such as last login.</p>  
         </li>
-        <li>
-          <label class="">Activity Tracker:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Activity Tracker:</label>
           <input id="curFeatureActivityTracker" type="checkbox" checked="{{current.features.activityTracker}}"> {{#current.features.activityTracker==true}}Enabled{{/}}
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block"><em>Experimental!</em> Record actions of the user, such as login etc.</p>  
         </li>
-        <li>
-          <label class="">Budget:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Budget:</label>
           <input id="curFeatureBudget" type="checkbox" checked="{{current.features.budget}}"> {{#current.features.budget==true}}Enabled{{/}}
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Display fields to manage a contact's budget.</p>
         </li>
@@ -46,28 +46,28 @@
     </div>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li>
-          <label class="">Company Data:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Company Data:</label>
           <input class="" id="curFeatureCompany" type="checkbox" checked="{{current.features.companyBackground}}"> {{#current.features.companyBackground==true}}Enabled{{/}}
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Displays research information about the company.</p>
         </li>
-        <li>
-          <label class="">Documents:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Documents:</label>
           <input class="" id="curDocuments" type="checkbox" checked="{{current.features.documents}}"> {{#current.features.documents==true}}Enabled{{/}}
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Allow documents links to be added to contacts.</p>  
         </li>
-        <li>
-          <label class="">Marketing:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Marketing:</label>
           <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.features.marketing}}"> {{#current.features.marketing==true}}Enabled{{/}}
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Display marketing information about the source of the lead.</p>  
         </li>
-        <li>
-          <label class="">Merge:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Merge:</label>
           <input class="" id="curOptOut" type="checkbox" checked="{{current.features.merge}}"> {{#current.features.merge==true}}Enabled{{/}}
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block"><em>Experimental!</em> Enable the experimental contact merge functionality.</p>
         </li>
-        <li>
-          <label class="">Support Bar:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Support Bar:</label>
           <input class="" id="curSupportBar" type="checkbox" checked="{{current.features.supportBar}}"> {{#current.features.supportBar==true}}Enabled{{/}}
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Display the tool to raise a support call</p>  
         </li>
