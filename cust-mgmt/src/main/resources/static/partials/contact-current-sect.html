@@ -81,7 +81,7 @@
           </li>
         {{/if}}
         <li class="form-group">
-          <label class="col-md-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
+          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
           <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}">
         </li>
         {{#tenant.show.marketing || tenant.show.stage}}
@@ -160,7 +160,7 @@
       <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
         <ul class="form edit-form">
           <li class="form-group">
-            <label class="col-md-4">Job Title:</label>
+            <label class="col-md-4 col-sm-4">Job Title:</label>
             <input class="form-control typeahead" id="curJobTitle" value="{{current.jobTitle}}"/>
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
           </li>
@@ -223,11 +223,11 @@
         <ul class="form edit-form">
           <li>
             <label class="col-md-4 col-sm-4">Preferred Phone:</label>
-            <input class="form-control" id="curPhone1" pattern="\+?[0-9, \-()]{0,15}" value="{{current.phone1}}">
+            <input class="form-control" id="curPhone1" pattern="\+?[0-9, \-()]{0,15}" type="tel" value="{{current.phone1}}">
           </li>
           <li>
             <label class="col-md-4 col-sm-4">Alternate Phone:</label>
-            <input class="form-control" id="curPhone2" pattern="\+?[0-9, \-()]{0,15}" value="{{current.phone2}}">
+            <input class="form-control" id="curPhone2" pattern="\+?[0-9, \-()]{0,15}" type="tel" value="{{current.phone2}}">
           </li>
           {{#tenant.show.marketing}}
             <li>
@@ -374,14 +374,16 @@
       </h2>
       <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
         <ul class="form edit-form">
-                    <li class="form-group">
-            <label class="col-md-4 col-sm-4">Since email:</label>
-            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceEmail" disabled readonly value="{{formatAge(current.timeSinceEmail)}}">
-          </li>
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4">Mails sent:</label>
-            <input class="col-md-8 col-sm-8 form-control" id="curEmailsSent" disabled readonly value="{{current.emailsSent}}">
-          </li>
+          {{#tenant.show.marketing}}
+	          <li class="form-group">
+	            <label class="col-md-4 col-sm-4">Since email:</label>
+	            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceEmail" disabled readonly value="{{formatAge(current.timeSinceEmail)}}">
+	          </li>
+	          <li class="form-group">
+	            <label class="col-md-4 col-sm-4">Mails sent:</label>
+	            <input class="col-md-8 col-sm-8 form-control" id="curEmailsSent" disabled readonly value="{{current.emailsSent}}">
+	          </li>
+          {{/}}
           {{#tenant.id == 'firmgains'}}
             <li class="form-group">
               <label class="col-md-4">Since valuation:</label>
@@ -397,7 +399,7 @@
             <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceLogin" disabled readonly value="{{formatAge(current.timeSinceLogin)}}">
           </li>
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">Since registration:</label>
+            <label class="col-md-4 col-sm-4">Since {{#tenant.strings.registration}}{{tenant.strings.registration}}{{else}}registration{{/}}:</label>
             <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceRegistration" disabled readonly value="{{formatAge(current.timeSinceRegistered)}}">
           </li>
         </ul>

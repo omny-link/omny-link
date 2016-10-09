@@ -10,6 +10,16 @@ import org.junit.Test;
 public class StockItemTest {
 
     @Test
+    public void testCustomFieldEquals() {
+        CustomStockItemField field1 = new CustomStockItemField("field", "foo");
+        field1.setId(1l);
+        CustomStockItemField field2 = new CustomStockItemField("field", "foo");
+        field1.setId(2l);
+
+        assertEquals(field1, field2);
+    }
+
+    @Test
     public void testMergeCustomFields() {
         StockItem stockItem = new StockItem("Widget1", "Widget");
         CustomStockItemField field1 = new CustomStockItemField("field1", "foo");

@@ -17,12 +17,12 @@
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         <li>
-          <label class="">Status:</label>
+          <label class="col-md-4 col-sm-4">Status:</label>
           <input class="form-control typeahead" placeholder="Start typing to filter options" id="curStatus" maxlength="20" value="{{current.status}}"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Draft, Ready for review, Published etc.</p>
         </li>
         <li>
-          <label class="">Video Code:</label>
+          <label class="col-md-4 col-sm-4">Video Code:</label>
           <input class="form-control" id="curVideoCode" value="{{current.videoCode}}"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">This might be either embed code from YouTube, Vimeo etc. or simply a URL but must match API client code.</p>
         </li>
@@ -46,18 +46,18 @@
 	
 	      <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
 		      <ul class="form edit-form"> 
-		        <li><label class="">Address:</label><input class="form-control" id="curAddress1" value="{{current.address1}}"/></li>
-		        <li><label class=""></label><input class="form-control" id="curAddress2" value="{{current.address2}}"/></li>
-		        <li><label class=""></label><input class="form-control" id="curTown" placeholder="Town or village" value="{{current.town}}"/></li>
-		        <li><label class=""></label><input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/></li>
+		        <li><label class="col-md-4 col-sm-4">Address:</label><input class="form-control" id="curAddress1" value="{{current.address1}}"/></li>
+		        <li><label class="col-md-4 col-sm-4"></label><input class="form-control" id="curAddress2" value="{{current.address2}}"/></li>
+		        <li><label class="col-md-4 col-sm-4"></label><input class="form-control" id="curTown" placeholder="Town or village" value="{{current.town}}"/></li>
+		        <li><label class="col-md-4 col-sm-4"></label><input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/></li>
 		        <li><label class="required">Post Code:</label><input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" required value="{{current.postCode}}"></li>
-		        <li><label class="">Country:</label><input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
+		        <li><label class="col-md-4 col-sm-4">Country:</label><input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
 		        {{#current.postCode}}
-		          <li><label class="">Map:</label><a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
+		          <li><label class="col-md-4 col-sm-4">Map:</label><a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
 		        {{/}}
 		        {{^current.postCode}}
 		          {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
-		            <li><label class="">Map:</label><a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
+		            <li><label class="col-md-4 col-sm-4">Map:</label><a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
 		          {{/}}
 		        {{/}}
 		      </ul>
@@ -90,12 +90,12 @@
       <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
         <ul class="form edit-form">
           <li class="form-group">
-            <label class="">Status:</label>
+            <label class="col-md-4 col-sm-4">Status:</label>
             <input class="form-control typeahead" placeholder="Start typing to filter options" id="curOfferStatus" maxlength="20" value="{{current.offerStatus}}"/>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Draft, Ready for review, Published etc.</p>
           </li>
           <li class="form-group">
-            <label class="">Title:</label>
+            <label class="col-md-4 col-sm-4">Title:</label>
             <input class="form-control" id="curOfferTitle" maxlength="35" value="{{current.offerTitle}}"/>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">The top line of the offer.</p>
           </li>
@@ -105,12 +105,12 @@
       <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
         <ul class="form edit-form">
           <li class="form-group">
-            <label class="">Call To Action:</label>
+            <label class="col-md-4 col-sm-4">Call To Action:</label>
             <input class="form-control" id="curOfferCallToAction" maxlength="30" value="{{current.offerCallToAction}}"/>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Call to action is typically used as button text.</p>
           </li>
           <li class="form-group">
-            <label class="">URL:</label>
+            <label class="col-md-4 col-sm-4">URL:</label>
             <input class="form-control" placeholder="A relative or absolute URL to redirect to" id="curOfferUrl" value="{{current.offerUrl}}"/>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">If absolute, must begin with http:// or https://.</p>
           </li>

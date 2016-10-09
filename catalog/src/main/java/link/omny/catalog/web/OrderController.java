@@ -216,12 +216,7 @@ public class OrderController {
         private String selfRef;
         private String name;
         private String description;
-        private String address1;
-        private String address2;
-        private String town;
-        private String cityOrCounty;
-        private String postCode;
-        private String country;
+        private Date date;
         @JsonDeserialize(using = JsonCustomOrderFieldDeserializer.class)
         @JsonSerialize(using = JsonCustomFieldSerializer.class)
         private List<CustomOrderField> customFields;
