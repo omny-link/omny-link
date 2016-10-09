@@ -29,6 +29,7 @@ import link.omny.custmgmt.model.CustomField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Entity
 @Table(name = "OL_STOCK_CAT")
 @Data
+@ToString(exclude = { "description", "stockItems" })
 @AllArgsConstructor
 @NoArgsConstructor
 public class StockCategory implements Serializable {
