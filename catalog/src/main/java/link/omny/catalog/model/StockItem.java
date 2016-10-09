@@ -194,7 +194,13 @@ public class StockItem implements Serializable {
 
     public void addCustomField(CustomStockItemField customField) {
         customField.setStockItem(this);
-        getCustomFields().add(customField);
+        if (getCustomFields().contains(customField)) {
+            LOGGER.warn(String
+                    .format("Ignoring request to add %1$s as it already exists in the list",
+                            customField));
+        } else {
+            getCustomFields().add(customField);
+        }
     }
 
     protected void setCustomField(CustomStockItemField newField) {

@@ -50,8 +50,14 @@ var ractive = new AuthenticatedRactive({
       "phone1": "^\\+?[0-9, \\-()]{0,15}$",
       "phone2": "^\\+?[0-9, \\-()]{0,15}$"
     },
+    findDocName: function(docId) {
+      console.info('findDocName: '+docId);
+    },
+    findDocName: function(docId) {
+      console.info('findDocName: '+docId);
+    },
     formatAge: function(timeString) {
-      console.log('formatAge: '+timeString);
+      console.info('formatAge: '+timeString);
       return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
     },
     formatContent: function(content) {
@@ -334,7 +340,6 @@ var ractive = new AuthenticatedRactive({
         if (ractive.hasRole('power-user')) $('.power-user').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
         ractive.fetchAccounts();
-        ractive.fetchOrders();
         ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
         ractive.set('saveObserver', true);
       }
@@ -387,14 +392,14 @@ var ractive = new AuthenticatedRactive({
       pattern:"inOut"
     });
   },
-  fetchOrders: function () {
+  fetchOrders: function (contactId) {
     console.info('fetchOrders...');
     if (ractive.get('tenant.show.orders')!=true) return;
 
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/'+contactId,
       crossDomain: true,
       success: function( data ) {
         if (data['_embedded'] != undefined) {
@@ -794,6 +799,9 @@ var ractive = new AuthenticatedRactive({
       $.getJSON(url+'?projection=complete', function( data ) {
         console.log('found contact '+data);
         ractive.set('current', data);
+
+        if (ractive.get('tenant.show.orders')) ractive.fetchOrders(ractive.id(ractive.get('current')));
+
         ractive.initControls();
         ractive.initTags();
         // who knows why this is needed, but it is, at least for first time rendering
