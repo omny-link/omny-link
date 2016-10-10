@@ -163,7 +163,8 @@
 				                  <td>{{endTime == undefined ? '' : duration(durationInMillis)}}</td>
 				                  <td>
 				                    {{#allocations}}
-				                      {{#type=='candidate'}}Offered to:{{/}} {{groupId}}{{userId}}<br/>
+				                      {{#type=='candidate' && groupId!=undefined && groupId.length >0}}Offered to group: {{groupId}}<br/>{{/}}
+				                      {{#type=='candidate' && userId!=undefined & userId.length > 0}}Offered to user: {{userId}}<br/>{{/}}
 				                    {{/}}
 				                  </td>
 				                </tr>

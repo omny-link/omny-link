@@ -8,36 +8,40 @@
     {{#current.description}}
       <p class="col-md-12 alert-info">{{current.description}}</p>
     {{/}}
-    <div class="col-md-6">
+    <div class="col-md-4 col-sm-4 col-xs-12">
       <ul class="form edit-form">
-        <li class="form-group">
-          <label class="col-md-4">Due:</label>
-          <div class="input-group date"  data-provide="datepicker" data-date-format="dd/mm/yyyy" data-date="{{current.dueDate}}" data-date-autoclose="true" data-date-start-date="1d">
-	          <input class="form-control" id="curDueDate" placeholder="dd/mm/yyyy" {{#current.processVariables.initiator!=profile.email}}readonly disabled{{/}}>
-	          <div class="input-group-addon">
-	            <span class="glyphicon glyphicon-th"></span>
-				    </div>
-			    </div>
-        </li>
-      </ul>
-    </div>
-    <div class="col-md-6">
-      <ul class="form edit-form">
-        <li class="form-group initiator">
-          <label class="col-md-4">Started By:</label>
-          {{#if current.processVariables['initiator']==undefined || current.processVariables['initiator']=='anonymousUser'}}
-            <span class="initiator-img" title="Omny Link"></span>
-          {{else}}
-            <span class="initiator-img" title="{{current.processVariables['initiator']}}"></span>
-          {{/if}}
-        </li>
         <li class="form-group">
           <label class="col-md-4">Created:</label>
           <input class="form-control" id="curCreated" disabled readonly value="{{formatDate(current.createTime)}}">
         </li>
       </ul>
     </div>
-  
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <ul class="form edit-form">
+        <li class="form-group">
+          <label class="col-md-4">Due:</label>
+          <div class="input-group date" data-provide="datepicker" data-date-format="dd/mm/yyyy" data-date="{{current.dueDate}}" data-date-autoclose="true" data-date-start-date="1d" style="float: right; top: 3px">
+            <input class="form-control" id="curDueDate" placeholder="dd/mm/yyyy" {{#current.processVariables.initiator!=profile.email}}readonly disabled{{/}}>
+            <div class="input-group-addon">
+              <span class="glyphicon glyphicon-th"></span>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <ul class="form edit-form">
+        <li class="form-group initiator">
+          <label class="col-md-4">Started By:</label>
+          {{#if current.processVariables['initiator']==undefined || current.processVariables['initiator']=='anonymousUser'}}
+            <span class="initiator-img" style="margin-top:-2px" title="Omny Link"></span>
+          {{else}}
+            <span class="initiator-img" style="margin-top:-2px" title="{{current.processVariables['initiator']}}"></span>
+          {{/if}}
+        </li>
+      </ul>
+    </div>
+
     {{#current.formKey!=undefined}}
       {{>userForm { current: current } }}
     {{/}}
@@ -57,7 +61,7 @@
       <li class="btn-warning text-warning warning"><input class="form-control" min="{{today}}" on-change="deferTask(this.value)" style="width: 165px" type="date"/></li>
     </ul>
   </div>
-  
+
   <div class="pull-right">
     <button class="btn btn-success" on-click="submitCompleteTask()" type="button">Mark Complete</button>
     <button class="btn btn-danger" data-process-instance-id="{{current.processInstanceId}}" on-click="suspend()" type="button">Delete</button>

@@ -86,7 +86,7 @@
         </li>
         {{#tenant.show.marketing || tenant.show.stage}}
           <li class="form-group">
-            <label class="col-md-4">Existing relationship:</label>
+            <label class="col-md-4 col-sm-4">Existing relationship:</label>
             <label class="radio-inline">
               <input type="radio" name="curExistingCustomer" id="inlineRadio1" checked="{{current.existingCustomer}}" value="true"> Existing Customer
             </label>
@@ -96,18 +96,18 @@
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Is this an existing customer, even if we are in a new sales cycle?</p>
           </li>
           <li class="form-group">
-            <label class="col-md-4">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Stage{{/}}:</label>
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Stage{{/}}:</label>
             <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">How far through the sales pipeline are you with this contact?</p>
           </li>
           {{# haveStageReasons() }}
             <li class="form-group">
-              <label class="col-md-4">Loss Reason:</label>
+              <label class="col-md-4 col-sm-4">Loss Reason:</label>
               <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStageReason" {{# current.stage=='Cold' }} required{{/}} value="{{current.stageReason}}">
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
             </li>
             <li class="form-group">
-              <label class="col-md-4">Loss Date:</label>
+              <label class="col-md-4 col-sm-4">Loss Date:</label>
               <input class="form-control" id="curStageDate" readonly value="{{formatDate(current.stageDate)}}">
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
             </li>
@@ -386,7 +386,7 @@
           {{/}}
           {{#tenant.id == 'firmgains'}}
             <li class="form-group">
-              <label class="col-md-4">Since valuation:</label>
+              <label class="col-md-4 col-sm-4">Since valuation:</label>
               <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceValuation" disabled readonly value="{{formatAge(current.timeSinceValuation)}}">
             </li>
           {{/}}
