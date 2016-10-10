@@ -183,6 +183,12 @@ public class ProcessInstanceController {
         return ProcessInstance.wrap(archivedInstances);
     }
 
+    @RequestMapping(value = "/{id}/suspend", method = RequestMethod.POST)
+    public @ResponseBody void suspendFromJson(@PathVariable("id") String id) {
+        LOGGER.info(String.format("suspending instance: %1$s", id));
+        processEngine.getRuntimeService().suspendProcessInstanceById(id);
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public @ResponseBody void deleteFromJson(@PathVariable("id") String id,
             @RequestParam(value = "reason", required = false) String reason) {
@@ -190,8 +196,9 @@ public class ProcessInstanceController {
         try {
             processEngine.getRuntimeService().deleteProcessInstance(id, reason);
         } catch (ActivitiObjectNotFoundException e) {
-            // must be complete instance
-            processEngine.getHistoryService().deleteHistoricProcessInstance(id);
+            LOGGER.warn(String
+                    .format("Ignoring request to delete non-existant instance %1$s",
+                            id));
         }
     }
 }

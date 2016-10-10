@@ -211,7 +211,7 @@ var ractive = new AuthenticatedRactive({
           console.log('data: '+data);
           if (jqXHR.status == 200) {
         	  ractive.fetch();
-              ractive.showMessage('Ended successfully');
+              ractive.showMessage('Ended workflow successfully');
           }
           ractive.showResults();
           //ractive.set('saveObserver',true);
