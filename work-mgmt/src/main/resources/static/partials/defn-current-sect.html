@@ -4,10 +4,10 @@
     <div class="pull-right">
       {{#current.deploymentId}}
         {{#current.suspended}}
-          <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.activate('{{current.key}}')" title="Activate"></a>
+          <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.activate('{{current.id}}')" title="Activate"></a>
         {{else}}
-          <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{current.key}}', '{{current.name}}', '{{username}}')" title="Start instance"></a>
-          <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.suspend('{{current.key}}')" title="Suspend"></a>
+          <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{current.id}}', '{{current.name}}', '{{username}}')" title="Start instance"></a>
+          <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.suspend('{{current.id}}')" title="Suspend"></a>
         {{/}}
       {{/}}
       <a class="glyphicon glyphicon-cloud-download" href="{{context}}/{{tenant.id}}/process-definitions/{{current.id}}.bpmn" target="bpmn" title="Download the BPMN representation of the process"></a>
@@ -29,6 +29,7 @@
         <th>Hash</th>
         <th>Deployment Id</th>
         {{#current.deployment.name}}<th>Deployment</th>{{/}}
+        <th>Active?</th>
       </tr>
     </thead>
     <tbody>
@@ -39,6 +40,7 @@
         <td>{{current.md5Hash}};</td>
         {{#current.deploymentId}}<td>{{current.deploymentId}}</td>{{else}}Incomplete model cannot be run{{/}}
         {{#current.deployment.name}}<td>{{current.deployment.name}}</td>{{/}}
+        <td>{{!current.suspended}}</td>
       </tr>
     </tbody>
   </table>

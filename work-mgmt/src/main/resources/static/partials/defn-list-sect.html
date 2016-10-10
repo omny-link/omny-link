@@ -54,10 +54,10 @@
           <td>
             {{#deploymentId}}
               {{#suspended}}
-                <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.activate('{{key}}')" title="Activate"></a>
+                <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.activate('{{id}}')" title="Activate"></a>
               {{else}}
                 <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{key}}', '{{name}}', '{{username}}')" title="Start instance"></a>
-                <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.suspend('{{key}}')" title="Suspend"></a>
+                <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.suspend('{{id}}')" title="Suspend"></a>
               {{/}}
             {{/}}
             <a href="/{{tenant.id}}/process-definitions/{{id}}.bpmn" target="_newtab">

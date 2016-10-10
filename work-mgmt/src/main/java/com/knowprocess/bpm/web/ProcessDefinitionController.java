@@ -98,24 +98,50 @@ public class ProcessDefinitionController {
         return pd;
     }
 
-    @RequestMapping(value = "/{id}/activate", method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}/activate", method = RequestMethod.POST, headers = "Accept=application/json")
     public @ResponseBody void activate(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id) {
         LOGGER.info(String.format("activate %1$s definition", id));
 
-        processEngine.getRepositoryService().activateProcessDefinitionByKey(id,
-                tenantId);
+        org.activiti.engine.repository.ProcessDefinition pd = processEngine
+                .getRepositoryService().createProcessDefinitionQuery()
+                .processDefinitionId(id).singleResult();
+        if (pd == null) {
+            throw new IllegalArgumentException(String.format(
+                    "Process definition %1$s not found", id));
+        } else if (!pd.getTenantId().equals(tenantId)) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Process definition %1$s does not belong to %1$s",
+                            tenantId));
+        } else {
+            processEngine.getRepositoryService().activateProcessDefinitionById(
+                    id);
+        }
     }
 
-    @RequestMapping(value = "/{id}/suspend", method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}/suspend", method = RequestMethod.POST, headers = "Accept=application/json")
     public @ResponseBody void suspend(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id) {
         LOGGER.info(String.format("suspend %1$s definition", id));
 
-        processEngine.getRepositoryService().suspendProcessDefinitionByKey(id,
-                tenantId);
+        org.activiti.engine.repository.ProcessDefinition pd = processEngine
+                .getRepositoryService().createProcessDefinitionQuery()
+                .processDefinitionId(id).singleResult();
+        if (pd == null) {
+            throw new IllegalArgumentException(String.format(
+                    "Process definition %1$s not found", id));
+        } else if (!pd.getTenantId().equals(tenantId)) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Process definition %1$s does not belong to %1$s",
+                            tenantId));
+        } else {
+            processEngine.getRepositoryService().suspendProcessDefinitionById(
+                    id);
+        }
     }
 
     @RequestMapping(value = "/{id}/instances", method = RequestMethod.GET, headers = "Accept=application/json")

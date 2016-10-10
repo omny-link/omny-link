@@ -153,7 +153,7 @@ var ractive = new AuthenticatedRactive({
     console.log('activate: '+key);
     $.ajax({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+key+'/activate',
-      type: 'GET',
+      type: 'POST',
       contentType: 'application/json',
       success: completeHandler = function(data,textStatus,jqXHR) {
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
@@ -373,7 +373,7 @@ var ractive = new AuthenticatedRactive({
     console.log('suspend: '+key);
     $.ajax({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+key+'/suspend',
-      type: 'GET',
+      type: 'POST',
       contentType: 'application/json',
       success: completeHandler = function(data,textStatus,jqXHR) {
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
