@@ -40,12 +40,12 @@
         </li>
         {{#if tenant.show.accountCompanyDetails}}
           <li class="form-group">
-            <label class="col-md-4">Founded:</label>
+            <label class="col-md-4 col-sm-4">Founded:</label>
             <input autocomplete="off" class="form-control" id="curIncorporationYear" pattern="[0-9]{4}" placeholder="yyyy" value="{{current.account.incorporationYear}}"/>
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
           </li>
           <li class="form-group">
-            <label class="col-md-4">SIC:</label>
+            <label class="col-md-4 col-sm-4">SIC:</label>
             <input autocomplete="off" class="typeahead form-control" id="curSic" type="text" value="{{current.account.sic}}"/>
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Standard industrial classification of economic activities (SIC)</p>
           </li>

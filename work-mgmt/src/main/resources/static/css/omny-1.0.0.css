@@ -294,6 +294,9 @@ tfoot th {
 	width: 200px;
   text-overflow: ellipsis;
 }
+.date {
+	max-width: 150px;
+}
 .field-age { 
 	width:20%
 }
