@@ -40,6 +40,9 @@ curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://lo
 # GET contact with specific uuid
 curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://localhost:8082/omny/contacts/findByUuid?uuid=bee1b1d6-c533-4372-910c-04fadb4d58ae
 
+# GET contacts belonging to an account
+curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://localhost:8082/alife/contacts/findByAccountId?accountId=13
+
 # record user activity
 curl -X POST -H 'Content-Type:application/json' -u tstephen:tstephen -v -d '' http://localhost:8082/msg/omny/omny.userActivity.json
 
