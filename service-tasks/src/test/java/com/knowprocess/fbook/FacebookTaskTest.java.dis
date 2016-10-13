@@ -1,0 +1,96 @@
+package com.knowprocess.fbook;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import facebook4j.Facebook;
+import facebook4j.FacebookException;
+import facebook4j.FacebookFactory;
+import facebook4j.Post;
+import facebook4j.Reading;
+import facebook4j.ResponseList;
+import facebook4j.auth.AccessToken;
+
+public class FacebookTaskTest {
+
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+    }
+
+    @Test
+    public void test() throws FacebookException {
+        Facebook facebook = new FacebookFactory().getInstance();
+        // If App ID / App Secret / access token / access permission are listed
+        // in facebook4j.properties then, they are set in Facebook instance
+        // given back.
+        // See Configuration | Facebook4J - A Java library for the Facebook
+        // Graph API for the detail.
+        // When they are not listed, it is setable later as follows:
+
+        // facebook.setOAuthAppId(appId, appSecret);
+        // facebook.setOAuthPermissions(commaSeparetedPermissions);
+        // facebook.setOAuthAccessToken(new AccessToken(accessToken, null));
+        // String url =
+        // facebook.getOAuthAuthorizationURL("http://localhost:8080");
+        // System.out.println("URL: " + url);
+        // System.out.println(facebook.getOAuthAppAccessToken());
+
+        // ResponseList<Account> accounts = facebook.getAccounts();
+        // Account yourPageAccount = accounts.get(0); // if index 0 is your page
+        // // account.
+        // String pageAccessToken = yourPageAccount.getAccessToken();
+        // System.out.println(pageAccessToken);
+        String accessTokenString = "CAACEdEose0cBACxUYPLsd0brpDS8MYbZB2b0cq755QSR00atuRzdjuieZCi8UDz8ZCO97B82ikroDTNvf8B22pPeoSZAw8ckXHUner5UfDIzZBF6fX5lrtf6FSbmQKVtxQmon8NALf55GY7yh4DrMTPTA5PJAzvxLA8paIF3leHes2s8PvY6UeZBix8ZBKuR4gjsMX5rMfXF2YZBSrQo0OYP";
+        AccessToken at = new AccessToken(accessTokenString);
+        // Set access token.
+        facebook.setOAuthAccessToken(at);
+
+        facebook.postStatusMessage("Great bike ride with William today");
+    }
+
+    @Test
+    public void test2() throws FacebookException {
+        // Generate facebook instance.
+        Facebook facebook = new FacebookFactory().getInstance();
+        // Use default values for oauth app id.
+        // facebook.setOAuthAppId("", "");
+        // Get an access token from:
+        // https://developers.facebook.com/tools/explorer
+        // Copy and paste it below.
+        // String accessTokenString =
+        // "CAACEdEose0cBACxUYPLsd0brpDS8MYbZB2b0cq755QSR00atuRzdjuieZCi8UDz8ZCO97B82ikroDTNvf8B22pPeoSZAw8ckXHUner5UfDIzZBF6fX5lrtf6FSbmQKVtxQmon8NALf55GY7yh4DrMTPTA5PJAzvxLA8paIF3leHes2s8PvY6UeZBix8ZBKuR4gjsMX5rMfXF2YZBSrQo0OYP";
+        // AccessToken at = new AccessToken(accessTokenString);
+        // // Set access token.
+        // facebook.setOAuthAccessToken(at);
+
+        // We're done.
+        // Access group feeds.
+        // You can get the group ID from:
+        // https://developers.facebook.com/tools/explorer
+
+        // Set limit to 25 feeds.
+        ResponseList<Post> feeds = facebook.getFeed("WestMidSafari",
+                new Reading().limit(25));
+
+        // For all 25 feeds...
+        for (int i = 0; i < feeds.size(); i++) {
+            // Get post.
+            Post post = feeds.get(i);
+            // Get (string) message.
+            String message = post.getMessage();
+            // Print out the message.
+            System.out.println("-----------------------------------------");
+            System.out.println(message);
+
+            String date = post.getCreatedTime().toString();
+            String name = post.getFrom() == null ? null : post.getFrom()
+                    .getName();
+            String id = post.getId();
+            System.out.println(" Posted: " + date + ", likes:"
+                    + post.getLikes().size() + ", comments: "
+                    + post.getComments().getCount());
+            System.out.println(" URL: " + post.getLink());
+        }
+    }
+
+}

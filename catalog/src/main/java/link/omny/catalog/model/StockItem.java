@@ -120,6 +120,11 @@ public class StockItem implements Serializable {
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomStockItemField> customFields;
 
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
+    // "stockItem", targetEntity = OrderItem.class)
+    // @RestResource(rel = "orderedItems2")
+    // private List<OrderItem> orderItems;
+
     private static Map<String, Properties> defaultDescriptions = new HashMap<String, Properties>();
 
     public static final int CURRENCY_SCALE = 2;
@@ -143,7 +148,7 @@ public class StockItem implements Serializable {
             is = StockItem.class.getResourceAsStream(resource);
             properties.load(is);
         } catch (Exception e) {
-            LOGGER.error(String.format(
+            LOGGER.warn(String.format(
                     "Unable to load default descriptions from %1$s", resource));
         } finally {
             try {
@@ -224,7 +229,7 @@ public class StockItem implements Serializable {
             try {
                 return getDefaultDescriptions(tenantId).getProperty(type);
             } catch (Exception e) {
-                LOGGER.error(String.format(
+                LOGGER.warn(String.format(
                         "Could not find default description of %1$s for %2$s",
                         type, tenantId));
                 return "";
@@ -236,13 +241,18 @@ public class StockItem implements Serializable {
 
     public List<MediaResource> getImages() {
         if (images == null || images.size() == 0) {
-            images = new ArrayList<MediaResource>(DEFAULT_IMAGE_COUNT);
-            for (int i = 0; i < DEFAULT_IMAGE_COUNT; i++) {
-                images.add(new MediaResource(getTenantId(), String.format(
-                        "/images/%1$s/%2$s/%3$d.jpg", 
-                        getStockCategory().getName().toLowerCase().replaceAll(" ", "_"), 
-                        type.toLowerCase().replaceAll(" ", "_"), 
-                        i + 1)));
+            if (type == null) {
+                LOGGER.warn("Cannot provide default images because stock category type is null");
+            } else {
+                images = new ArrayList<MediaResource>(DEFAULT_IMAGE_COUNT);
+                for (int i = 0; i < DEFAULT_IMAGE_COUNT; i++) {
+                    images.add(new MediaResource(getTenantId(), String.format(
+                            "/images/%1$s/%2$s/%3$d.jpg",
+                            getStockCategory().getName().toLowerCase()
+                                    .replaceAll(" ", "_"), type.toLowerCase()
+                                    .replaceAll(" ", "_"),
+                            i + 1)));
+                }
             }
         }
         return images;

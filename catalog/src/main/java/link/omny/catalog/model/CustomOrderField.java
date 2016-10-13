@@ -11,6 +11,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import org.springframework.data.rest.core.annotation.RestResource;
+
 @Entity
 @Table(name = "OL_ORDER_CUSTOM")
 @Data
@@ -22,6 +24,7 @@ public class CustomOrderField extends CustomField {
     private static final long serialVersionUID = -4795761632689941890L;
 
     @ManyToOne(optional = false, targetEntity = Order.class)
+    @RestResource(rel = "customOrder")
     private Order order;
 
     public CustomOrderField(String key, String object) {

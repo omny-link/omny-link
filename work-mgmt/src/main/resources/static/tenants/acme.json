@@ -2,22 +2,23 @@
   "id": "acme", 
   "name": "Acme Inc.",
   "show": { 
-    "account":true, "activityAnalysis":true, "activityTracker":true, "budget":true, "companyBackground":false, "declaredSource":true,
-    "documents": true, "financials":true, "marketing":true, "merge":true, "supportBar": true
+    "account":true, "activityAnalysis":true, "activityTracker":true,
+    "budget":true, "companyBackground":false, "declaredSource":true,
+    "documents": true, "financials":true, "marketing":true, "merge":true,
+    "orders":true, "supportBar": true
   },
   "accountFields": [ 
-    { "name": "Sector", "ref": "sector"},
-    { "name": "Lead Office", "ref": "leadOffice"},
-    { "name": "Current Site Capability", "ref": "currentSiteCapability"}
+    { "label": "Sector", "key": "sector"},
+    { "label": "Lead Office", "key": "leadOffice"},
+    { "label": "Current Site Capability", "key": "currentSiteCapability"}
   ],
   "contactActions": [
+    { "name": "Add order", "ref": "AddOrderToContact", "url": true  },
     { "name": "Add task", "ref": "SimpleToDo", "url": true },
     { "name": "Alert owner", "ref": "SendAlertToOwner"  },
     { "name": "Send email", "ref": "SendMemo", "url": true  }
   ],
   "contactFields": [ 
-    { "label": "Job Title", "key": "jobTitle"},
-    { "label": "Decision Making Role", "key": "decisionMakingRole"}
   ],
   "toolbar": [
     { "url": "work.html", "icon": "glyphicon-inbox", "description": "View your list of active tasks here", "name": "Work Management" },
@@ -27,6 +28,8 @@
     { "url": "memo-distribution.html", "icon": "glyphicon-send", "name": "Distribution Centre", "description": "Send messages to groups of contacts", "role": "admin" },
     { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates", "role": "admin"  },
     { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View your sales funnel", "name": "Funnel" },
+    { "url": "stock-items.html", "classes": "glyphicon-barcode", "role": "super_user", "description": "View and manage stock items here", "title": "Stock Items" },
+    { "url": "stock-categories.html", "classes": "glyphicon-barcode", "role": "super_user", "description": "View and manage stock categories here", "title": "Stock Categories" },
     { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },    
     { "url": "stacked-bar.html", "icon": "glyphicon-dashboard", "name": "Cohort Performance", "description": "Compare groups of contacts", "role": "super_admin" },
     { "url": "admin/users.html", "icon": "omny-icon-user", "name": "User Management", "description": "Manage users", "role": "super_admin" },
@@ -36,12 +39,16 @@
   "partials": [
     { "name": "acmeContactExtension", "url": "/partials/contact-extension.html"},
     { "name": "acmeAccountExtension", "url": "/partials/account-extension.html"},
+    { "name": "acmeOrderExtension", "url": "/partials/order-extension.html"},
+
+    { "name": "acmeAddOrderToContact", "url": "/partials/add-order.html"},
     { "name": "acmeSimpleToDo", "url": "/partials/simple-todo.html"},
     { "name": "acmeSendMemo", "url": "/partials/pick-memo.html"},
     { "name": "acmeWorkflowWizard", "url": "/partials/workflow-wizard.html"}
   ],
   "processes": [
     { "name": "Add activity to contact", "ref": "AddActivityToContact", "url": "processes/link/omny/custmgmt/AddActivityToContact.bpmn" },
+    { "name": "Add order to contact", "ref": "AddOrderToContact", "url": "processes/link/omny/catalog/AddOrderToContact.bpmn" },
     { "name": "Add note to contact", "ref": "AddNoteToContact", "url": "processes/link/omny/custmgmt/AddNoteToContact.bpmn" },
     { "name": "Ad-Hoc Task from external", "ref": "HandleAdHocTask", "url": "processes/link/omny/casemgmt/HandleAdHocTask.bpmn" },
     { "name": "Create contact and account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
@@ -85,6 +92,7 @@
     { "name": "sources", "ref": "#curSource", "url": "/data/sources.json"},
     { "name": "stages", "ref": "#curStage", "url": "/data/stages.json"},
     { "name": "status", "ref": "#curStatus", "url": "/data/status.json"},
+    { "ref": "#orderStatus", "url": "/data/status.json"},
     { "name": "tenants", "ref": "#curTenant", "url": "/data/tenants.json"}
   ],
   "workActions": [

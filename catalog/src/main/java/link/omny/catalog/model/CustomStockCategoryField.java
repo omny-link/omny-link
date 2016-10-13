@@ -11,6 +11,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import org.springframework.data.rest.core.annotation.RestResource;
+
 @Entity
 @Table(name = "OL_STOCK_CAT_CUSTOM")
 @Data
@@ -22,6 +24,7 @@ public class CustomStockCategoryField extends CustomField {
     private static final long serialVersionUID = -4795761632689941890L;
 
     @ManyToOne(optional = false, targetEntity = StockCategory.class)
+    @RestResource(rel = "customStockCategory")
     private StockCategory stockCategory;
 
     public CustomStockCategoryField(String key, String object) {

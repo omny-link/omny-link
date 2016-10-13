@@ -27,16 +27,18 @@
       <ul class="form edit-form">
         {{#tenant.show.stockCategory}}
 	        <li class="form-group">
-	          <label class="col-md-4 col-sm-4">Category:</label>
+	          <label class="col-md-4 col-sm-4">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}:</label>
 	          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.stockCategory.name}}">
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block"></p>
 	        </li>
 	      {{/}}
-        <li class="form-group">
-          <label class="col-md-4 col-sm-4">Type:</label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockType" required value="{{current.type}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block"></p>
-        </li>
+	      {{#if stockTypes!=undefined}}
+	        <li class="form-group">
+	          <label class="col-md-4 col-sm-4">{{#tenant.strings.stockItemType}}{{tenant.strings.stockItemType}}{{else}}Type{{/}}:</label>
+	          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockType" required value="{{current.type}}">
+	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block"></p>
+	        </li>
+	      {{/if}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4">Status:</label>
           <input class="form-control typeahead" placeholder="Start typing to filter options" id="curStatus" value="{{current.status}}"/>
@@ -44,23 +46,25 @@
         </li>
       </ul>
     </div>
-    <div class="currentBody col-md-6 col-sm-12">
-      <ul class="form edit-form">
-        <li class="form-group">
-          <label class="col-md-4 col-sm-4">Price:</label>
-          <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
-        </li>
-        <li class="form-group">
-          <label class="col-md-4 col-sm-4">Unit:</label>
-          <input class="form-control" id="curUnit" value="{{current.unit}}">
-        </li>
-        <li class="form-group">
-          <label class="col-md-4 col-sm-4">Size:</label>
-          <input class="form-control" id="curSize" type="number" value="{{current.size}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block"></p>
-        </li>
-      </ul>
-    </div>
+    {{#tenant.show.stockPricing}}
+	    <div class="currentBody col-md-6 col-sm-12">
+	      <ul class="form edit-form">
+	        <li class="form-group">
+	          <label class="col-md-4 col-sm-4">Price:</label>
+	          <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
+	        </li>
+	        <li class="form-group">
+	          <label class="col-md-4 col-sm-4">Unit:</label>
+	          <input class="form-control" id="curUnit" value="{{current.unit}}">
+	        </li>
+	        <li class="form-group">
+	          <label class="col-md-4 col-sm-4">Size:</label>
+	          <input class="form-control" id="curSize" type="number" value="{{current.size}}">
+	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block"></p>
+	        </li>
+	      </ul>
+	    </div>
+	  {{/}}
 
     <div class="currentBody col-md-12">
       <ul class="form edit-form">
@@ -76,7 +80,6 @@
         {{>(tenant.id+'StockItemExtension')}}
       </div>  
     {{/}}
-    
   </form>
   
   {{!>currentImageSect}}

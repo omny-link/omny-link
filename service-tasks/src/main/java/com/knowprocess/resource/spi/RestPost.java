@@ -2,6 +2,7 @@ package com.knowprocess.resource.spi;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,7 +115,9 @@ public class RestPost extends RestService implements JavaDelegate {
             if (responseVar == null) {
                 LOGGER.debug("No response variable requested");
             }
-            if (is == null) {
+            if (is == null
+                    || Collections.singletonList("0").equals(
+                            responseHeaders2.get("Content-Length"))) {
                 LOGGER.warn("POST response contains no body, variable will be set to null");
                 responses.put("body", null);
             } else {

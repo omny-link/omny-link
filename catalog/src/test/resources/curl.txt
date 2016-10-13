@@ -30,4 +30,14 @@ curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/
 curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/25
 
 # Create Order
-curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" -d '{ "orderItems": [{"date":"21/09/2016","time":"09:00-10:00","group":"Y2","type":"Health"},{"date":"21/09/2016","time":"10:00-11:00","group":"Y3","type":"Health"},{"date":"21/09/2016","time":"11:00-12:00","group":"Y4","type":"Health"}]}' -u tstephen:tstephen http://localhost:8082/alife/orders/
+curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" \
+  -d '{ "orderItems": [{"date":"21/09/2016","time":"09:00-10:00","group":"Y2","type":"Health"},{"date":"21/09/2016","time":"10:00-11:00","group":"Y3","type":"Health"},{"date":"21/09/2016","time":"11:00-12:00","group":"Y4","type":"Health"}]}'\
+  -u tstephen:tstephen http://localhost:8082/alife/orders/
+curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" \
+  -d '{  "contactId" : "35", "name" : "CPR", "date" : "2016-10-10", "price" : "£100", "stockItem" : "Training" }' \
+  -u tstephen:tstephen http://localhost:8082/rowden/orders/
+  
+# Create order via process
+curl -u tstephen:tstephen  -v 'http://localhost:8082/rowden/process-instances/' -H 'Content-Type: application/json' -H 'Accept: application/json' \
+  -d '{"processDefinitionId":"AddOrderToContact","businessKey":"Gareth G","label":"Add Record","processVariables":{"initiator":"tim@omny.link","tenantId":"rowden","contactId":"http://localhost:8082/contacts/35","contactShortId":"35","order":{"name":"3","date":"2016-03-03","price":""}}}'
+  

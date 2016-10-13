@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -194,7 +195,7 @@ public class UrlResource implements Resource {
             String msg = "Response code: " + code + ", details: " + error;
             LOGGER.error(msg);
             throw new IOException(msg);
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | NoSuchElementException e) {
             String msg = "Response code: " + code + ", no details";
             LOGGER.error(msg);
             throw new IOException(msg);

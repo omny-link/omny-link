@@ -1,6 +1,7 @@
 package link.omny.catalog.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,10 +13,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -32,6 +31,7 @@ import lombok.NoArgsConstructor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -69,6 +69,9 @@ public class OrderItem implements Serializable {
     @Size(max = 20)
     private String status = "Draft";
 
+    @JsonProperty
+    private BigDecimal price;
+
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
@@ -82,12 +85,12 @@ public class OrderItem implements Serializable {
     @JsonProperty
     private String tenantId;
 
-    @ManyToOne(targetEntity = Order.class)
-    @JoinColumn(name = "order_id")
+    @ManyToOne
+    @RestResource(rel = "foo")
     private Order order;
 
-    @OneToOne(targetEntity = StockItem.class)
-    @JoinColumn(name = "stock_item_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @RestResource(rel = "bar")
     private StockItem stockItem;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "orderItem")

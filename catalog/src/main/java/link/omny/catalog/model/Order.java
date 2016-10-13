@@ -1,6 +1,7 @@
 package link.omny.catalog.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,9 +63,16 @@ public class Order implements Serializable {
     @JsonProperty
     private Date date;
 
+    @Temporal(TemporalType.DATE)
+    @JsonProperty
+    private Date dueDate;
+
     @JsonProperty
     @Size(max = 20)
     private String status = "Draft";
+
+    @JsonProperty
+    private BigDecimal price;
 
     private Long contactId;
 

@@ -327,13 +327,15 @@ public class StockItemController {
                     .getName());
         }
         resource.setPrice(stockItem.getPriceString());
-        resource.setMapUrl(stockItem.getStockCategory().getMapUrl());
-        resource.setDirectionsByAir(stockItem.getStockCategory()
-                .getDirectionsByAir());
-        resource.setDirectionsByPublicTransport(stockItem.getStockCategory()
-                .getDirectionsByPublicTransport());
-        resource.setDirectionsByRoad(stockItem.getStockCategory()
-                .getDirectionsByRoad());
+        if (stockItem.getStockCategory() != null) {
+            resource.setMapUrl(stockItem.getStockCategory().getMapUrl());
+            resource.setDirectionsByAir(stockItem.getStockCategory()
+                    .getDirectionsByAir());
+            resource.setDirectionsByPublicTransport(stockItem
+                    .getStockCategory().getDirectionsByPublicTransport());
+            resource.setDirectionsByRoad(stockItem.getStockCategory()
+                    .getDirectionsByRoad());
+        }
 
         Link detail = linkTo(StockItemRepository.class, stockItem.getId())
                 .withSelfRel();

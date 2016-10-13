@@ -10,12 +10,14 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
+@Ignore
 public class GDriveRepositoryTest {
 
     private static final String UPLOADED_RESOURCE_MIME = "image/png";

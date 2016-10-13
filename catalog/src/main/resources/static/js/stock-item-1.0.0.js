@@ -155,7 +155,10 @@ var ractive = new AuthenticatedRactive({
     console.log('add...');
     $('h2.edit-form,h2.edit-field').hide();
     $('.create-form,create-field').show();
-    var stockItem = { name: ractive.get('tenant.strings.stockItem'), tenantId: ractive.get('tenant.id') };
+    var stockItem = {
+        name: ractive.get('tenant.strings.stockItem') == undefined ? 'Stock Item' : ractive.get('tenant.strings.stockItem'),
+        tenantId: ractive.get('tenant.id')
+    };
     ractive.select( stockItem );
     ractive.initTags();
   },
@@ -275,7 +278,7 @@ var ractive = new AuthenticatedRactive({
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/stock-categories/',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/stock-categories/',
       crossDomain: true,
       success: function( data ) {
         if (data['_embedded'] == undefined) {

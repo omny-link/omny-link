@@ -1,0 +1,44 @@
+<section id="orderSect">
+  <h3>
+    <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+    <span>{{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}Orders{{/}}</span>
+  </h3>
+  <div class="col-md-12" id="currentOrders" style="display:none">
+
+	  <table class="table table-striped">
+	    <thead>
+	      <tr>
+	        <th on-click="sortOrder:name">Name<span class="sortable {{ sortedOrder('name') }} glyphicon "></th>
+	        <th on-click="sortOrder:date">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}<span class="sortable {{ sortedOrder('date') }} glyphicon "></th>
+	        <th on-click="sortOrder:dueDate">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}<span class="sortable {{ sortedOrder('dueDate') }} glyphicon "></th>
+	        {{#tenant.show.stockPricing}}
+            <th on-click="sortOrder:price">Price<span class="sortable {{ sortedOrder('price') }} glyphicon "></th>
+          {{/}}
+          <th on-click="sortOrder:status">Status<span class="sortable {{ sortedOrder('status') }} glyphicon "></th>
+          {{#tenant.orderFields}}
+            <th on-click="sortOrder:{{ref}}">{{label}}<span class="sortable {{ sortedOrder('{{ref}}') }} glyphicon "></th>
+          {{/}}
+          <th on-click="sortOrder:created">Created<span class="sortable {{ sortedOrder('created') }} glyphicon "></th>
+        </tr>
+	    </thead>
+	    <tbody>
+	      {{#each sort(orders,sortOrderColumn,sortOrderAsc):i}}
+	        <tr class="{{formatDueDate(dueDate)}}">
+	          <td>{{name}}</td>
+	          <td>{{formatDate(date)}}</td>
+	          <td>{{formatDate(dueDate)}}</td>
+	          {{#tenant.show.stockPricing}}
+              <td>{{price}}</td>
+            {{/}}
+	          <td>{{status}}</td>
+	          {{#tenant.orderFields}}
+              <td>{{customFields[key]}}</td>
+            {{/}}
+	          <td>{{formatDateTime(created)}}</td>
+	        </tr>
+	      {{/each}}
+	    </tbody>
+	  </table>
+
+  </div>
+</section>
