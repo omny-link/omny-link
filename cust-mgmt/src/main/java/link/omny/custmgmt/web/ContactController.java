@@ -323,7 +323,7 @@ public class ContactController {
     /**
      * Return just the matching contact.
      * 
-     * @return contacts for that tenant with the matching tag.
+     * @return the contact with this id.
      * @throws BusinessEntityNotFoundException
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -335,6 +335,24 @@ public class ContactController {
         LOGGER.debug(String.format("Find contact for id %1$s", id));
 
         return wrap(contactRepo.findOne(Long.parseLong(id)));
+    }
+
+    /**
+     * Return all contacts associated with an account.
+     * 
+     * @return contacts matching that account.
+     * @throws BusinessEntityNotFoundException
+     */
+    @RequestMapping(value = "/findByAccountId", method = RequestMethod.GET)
+    @Transactional
+    public @ResponseBody List<ShortContact> findByAccountId(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam("accountId") String accountId)
+            throws BusinessEntityNotFoundException {
+        LOGGER.debug(String.format("Find contact for account %1$s", accountId));
+
+        return wrap(contactRepo.findByAccountId(Long.parseLong(accountId),
+                tenantId));
     }
 
     /**

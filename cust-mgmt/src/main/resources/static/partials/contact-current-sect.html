@@ -31,18 +31,18 @@
         {{/if}}
         <span class="pull-right">
           {{#matchRole('admin')}}
-            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" style="top: -1px;" title="Delete this record"></a>
+            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" style="top: -1px;right:-8px" title="Delete this record"></a>
           {{/}}
           <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
           {{#if tenant.contactActions!=undefined && tenant.contactActions.length>0 }}
             <span class="clickable dropdown" aria-hidden="true" title="Start Process">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
-                <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+                <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
               </a>
               <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
                 {{#each tenant.contactActions }}
                   {{#name}}
-                    <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{current.fullName}}')">{{name}}</li>
+                    <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{current.fullName}}')" title="{{name}}">{{name}}</li>
                   {{else}}
                     <li class="divider"></li>
                   {{/}}
@@ -130,7 +130,7 @@
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Defines the nature of the relationship with this contact</p>
         </li>
         <li>
-          <label class="col-md-4 col-sm-4 col-xs-4" style="margin-right:5px">Tags:</label>
+          <label class="col-md-4 col-sm-4 col-xs-4">Tags:</label>
           <input class="tag-ctrl form-control col-md-8 col-sm-8 col-xs-8" id="curTags" data-bind="current.tags"/>
         </li>
       </ul>

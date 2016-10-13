@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.java6.auth.oauth2.FileCredentialStore;
@@ -34,12 +37,18 @@ import com.knowprocess.resource.spi.Repository;
 
 /**
  * Store resource in Google Drive.
- * 
+ *
+ * <p>
+ * NOT thread-safe.
+ *
  * @author Tim Stephenson
  * 
  */
 public class GDriveRepository implements Repository,
         MediaHttpUploaderProgressListener {
+
+    public static final Logger LOGGER = LoggerFactory
+            .getLogger(GDriveRepository.class);
 
     /** Global instance of the HTTP transport. */
     private static HttpTransport HTTP_TRANSPORT;
@@ -50,6 +59,7 @@ public class GDriveRepository implements Repository,
     /** Global Drive API client. */
     private Drive drive;
     private File metadata;
+    private String url;
     private boolean debug = true;
 
 	public GDriveRepository() throws IOException {
@@ -96,12 +106,12 @@ public class GDriveRepository implements Repository,
                     .setApplicationName("knowprocess-cloudcast").build();
 
 		} catch (Exception e) {
-            System.err.println(e.getClass().getName() + ":" + e.getMessage());
+            LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
 			throw new GDriveConfigurationException(
                     "Unable to init access to GDrive, have you provided the secret?",
                     e);
         }
-        System.out.println("initialisation took: "
+        LOGGER.info("initialisation took: "
                 + (new Date().getTime() - start));
     }
 
@@ -128,13 +138,13 @@ public class GDriveRepository implements Repository,
 
         do {
             try {
-                System.out.println("Searching for: " + q);
+                LOGGER.info("Searching for: " + q);
                 FileList files = request.setQ(q).execute();
 
                 result.addAll(files.getItems());
                 request.setPageToken(files.getNextPageToken());
             } catch (IOException e) {
-                System.out.println("An error occurred: " + e);
+                LOGGER.error("An error occurred: " + e);
                 request.setPageToken(null);
             }
         } while (request.getPageToken() != null
@@ -169,10 +179,11 @@ public class GDriveRepository implements Repository,
             uploader.setDirectUploadEnabled(useDirectUpload);
             uploader.setProgressListener(this);
             metadata = insert.execute();
-            System.out.println("upload took: " + (new Date().getTime() - start)
+            url = metadata.getAlternateLink();
+            LOGGER.info("upload took: " + (new Date().getTime() - start)
                     + "ms");
         } else {
-            System.out.println(String.format(
+            LOGGER.warn(String.format(
                     "'%1$s' already exists, skipping...", resourceName));
         }
     }
@@ -184,10 +195,17 @@ public class GDriveRepository implements Repository,
         return metadata;
     }
 
+    /**
+     * @return The last object written to this repo cast to a String.
+     */
+    public String getDriveUrl() {
+        return (String) url;
+    }
+
     @Override
     public void progressChanged(MediaHttpUploader uploader) throws IOException {
         if (debug) {
-            System.out.println("Uploaded: " + uploader.getNumBytesUploaded());
+            LOGGER.info("Uploaded: " + uploader.getNumBytesUploaded());
         }
     }
 }

@@ -295,7 +295,8 @@ tfoot th {
   text-overflow: ellipsis;
 }
 .date {
-	max-width: 150px;
+	max-width: 170px;
+	min-width: 170px;
 }
 .field-age { 
 	width:20%
@@ -549,6 +550,9 @@ h2 a.glyphicon:hover {
 .currentBody { 
 	margin-top: 10px;
 }
+a.dropdown {
+	margin-left: -5px;
+}
 .omny-filter.dropdown-menu li:nth-child(1) {
   margin-top: 10px;
 }
@@ -605,6 +609,7 @@ form#upload {
 }
 .form .col-md-6 label {
   margin-bottom: 0px;
+  margin-right: 5px;
 }
 .form label.textarea {
   vertical-align: top;

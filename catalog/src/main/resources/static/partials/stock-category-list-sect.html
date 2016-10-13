@@ -24,9 +24,6 @@
       {{# matchSearch(this) && matchFilter(this) }}
           <tr data-href="{{selfRef}}">
             <td on-click="edit(this)">{{i+1}}</td>
-            {{#tenant.show.merge}}
-              <td><input class="checkbox" type="checkbox" on-change="selectMultiple(this)"/></td>
-            {{/}}
             <td on-click="edit(this)">{{name}}</td>
             <td on-click="edit(this)">{{this.status}}</td>
             <td on-click="edit(this)">{{formatDate(created)}}</td>
