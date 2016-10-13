@@ -1,5 +1,6 @@
 package link.omny.catalog.web;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -217,12 +218,13 @@ public class OrderController {
         private String name;
         private String description;
         private Date date;
+        private Date dueDate;
         @JsonDeserialize(using = JsonCustomOrderFieldDeserializer.class)
         @JsonSerialize(using = JsonCustomFieldSerializer.class)
         private List<CustomOrderField> customFields;
         private List<ShortOrderItem> orderItems;
-        private String types;
         private String status;
+        private BigDecimal price;
         private Date created;
         private Date lastUpdated;
     }
@@ -234,12 +236,8 @@ public class OrderController {
         private String selfRef;
         private String name;
         private String description;
-        private String size;
-        private String sizeString;
-        private String unit;
-        private String price;
-        private String type;
         private String status;
+        private BigDecimal price;
         private Order order;
         @JsonDeserialize(using = JsonCustomOrderItemFieldDeserializer.class)
         @JsonSerialize(using = JsonCustomFieldSerializer.class)

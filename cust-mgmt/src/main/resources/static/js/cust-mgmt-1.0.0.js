@@ -71,6 +71,16 @@ var ractive = new AuthenticatedRactive({
       var d = ractive.parseDate(timeString);
       return d.toLocaleDateString(navigator.languages);
     },
+    formatDateTime: function(timeString) {
+      if (timeString==undefined) return 'n/a';
+      return new Date(timeString).toLocaleString(navigator.languages);
+    },
+    formatDueDate: function(date) {
+      var diff = Date.parse(date)-new Date().getTime();
+      if (diff < 0) return 'alert-danger';
+      else if (diff < (1000*60*60*24*30)) return 'alert-warning';
+      else return '';
+    },
     formatFavorite: function(obj) {
       if (obj['favorite']) return 'glyphicon-star';
       else return 'glyphicon-star-empty';
@@ -180,16 +190,16 @@ var ractive = new AuthenticatedRactive({
     },
     selectMultiple: [],
     sort: function (array, column, asc) {
-      console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);
+      console.info('sort array of '+array.length+' items '+(asc ? 'ascending' : 'descending')+' on: '+column);
       array = array.slice(); // clone, so we don't modify the underlying data
 
       return array.sort( function ( a, b ) {
         if (b[column]==undefined || b[column]==null || b[column]=='') {
           return (a[column]==undefined || a[column]==null || a[column]=='') ? 0 : -1;
         } else if (asc) {
-          return a[ column ] < b[ column ] ? -1 : 1;
+          return (''+a[ column ]).toLowerCase() < (''+b[ column ]).toLowerCase() ? -1 : 1;
         } else {
-          return a[ column ] > b[ column ] ? -1 : 1;
+          return (''+a[ column ]).toLowerCase() > (''+b[ column ]).toLowerCase() ? -1 : 1;
         }
       });
     },
@@ -199,6 +209,14 @@ var ractive = new AuthenticatedRactive({
       console.info('sorted');
       if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
       else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc'
+      else return 'hidden';
+    },
+    sortOrderAsc: false,
+    sortOrderColumn: 'created',
+    sortedOrder: function(column) {
+      console.info('sortedOrder');
+      if (ractive.get('sortOrderColumn') == column && ractive.get('sortOrderAsc')) return 'sort-asc';
+      else if (ractive.get('sortOrderColumn') == column && !ractive.get('sortOrderAsc')) return 'sort-desc'
       else return 'hidden';
     },
     stdPartials: [
@@ -367,6 +385,20 @@ var ractive = new AuthenticatedRactive({
       }
     });
   },
+  fetchAccountContacts: function () {
+    console.info('fetchAccountContacts...');
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/contacts/findByAccountId?accountId='+ractive.get('current.accountId'),
+      crossDomain: true,
+      success: function( data ) {
+        ractive.set('current.account.contacts',data);
+        console.log('fetched '+data.length+' contacts for account');
+        ractive.set('saveObserver', true);
+      }
+    });
+  },
   fetchCompaniesHouseInfo: function() { 
     if (ractive.get('tenant.features.companyBackground')==undefined || ractive.get('tenant.features.companyBackground')==false) return;
     console.info('fetchCompaniesHouseInfo for '+ractive.get('current.account.companyNumber'));
@@ -411,6 +443,46 @@ var ractive = new AuthenticatedRactive({
       }
     });
   },
+  fetchProcessInstances: function (contactId) {
+    console.info('fetchProcessInstances...');
+
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/findByVar/contactId/'+contactId,
+      crossDomain: true,
+      success: function( data ) {
+        ractive.set('current.instances',data);
+        console.log('fetched '+data.length+' instances');
+        for (idx in data) {
+          ractive.splice('current.activities', { content: "A placeholder", type: "workflow", lastUpdated: "2016-10-10" });
+        }
+        ractive.set('saveObserver', true);
+      }
+    });
+  },
+  fetchStockItems: function () {
+    console.info('fetchStockItems...');
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/stock-items/?projection=typeahead',
+      crossDomain: true,
+      success: function( data ) {
+        if (data['_embedded'] != undefined) {
+          data = data['_embedded'].stockItems;
+        }
+        ractive.set('stockItems',data);
+        console.log('fetched '+data.length+' stock items for typeahead');
+        var accData = jQuery.map( data, function( n, i ) {
+          return ( {  "id": ractive.getId(n), "name": n.name } );
+        });
+        ractive.set('stockItemsTypeahead',accData);
+        ractive.initStockItemTypeahead();
+        ractive.set('saveObserver', true);
+      }
+    });
+  },  
   filter: function(filter) {
     console.log('filter: '+JSON.stringify(filter));
     ractive.set('filter',filter);
@@ -488,6 +560,32 @@ var ractive = new AuthenticatedRactive({
       }
     });
     $('#curAccountName').on("click", function (ev) {
+      newEv = $.Event("keydown");
+      newEv.keyCode = newEv.which = 40;
+      $(ev.target).trigger(newEv);
+      return true;
+    });
+  },
+  initStockItemTypeahead: function() {
+    console.info('initStockItemTypeahead');
+    //if (ractive.get('accountsTypeahead')==undefined) ractive.fetchAccounts();
+ // set up account typeahead
+    $('#curStockItem').typeahead({
+      items:'all',
+      minLength:0,
+      source:ractive.get('stockItemsTypeahead')
+//      updater:function(item) {
+//        ractive.set('current.accountId', item.id);
+//        var shortId = item.id.substring(item.id.lastIndexOf('/')+1);
+//        $.each(ractive.get('accounts'), function(i,d) {
+//          if (d.id == shortId) {
+//            ractive.saveAccountLink(ractive.uri(ractive.get('current'))+'/account', item.id);
+//          }
+//        });
+//        return item.name;
+//      }
+    });
+    $('#curStockItemName').on("click", function (ev) {
       newEv = $.Event("keydown");
       newEv.keyCode = newEv.which = 40;
       $(ev.target).trigger(newEv);
@@ -1022,4 +1120,10 @@ function significantDifference(newValue,oldValue) {
 ractive.on( 'filter', function ( event, filter ) {
   console.info('filter on '+JSON.stringify(event)+','+filter.idx);
   ractive.filter(filter);
+});
+ractive.on( 'sortOrder', function ( event, column ) {
+  console.info('sortOrder on '+column);
+  // if already sorted by this column reverse order
+  if (this.get('sortOrderColumn')==column) this.set('sortOrderAsc', !this.get('sortOrderAsc'));
+  this.set( 'sortOrderColumn', column );
 });

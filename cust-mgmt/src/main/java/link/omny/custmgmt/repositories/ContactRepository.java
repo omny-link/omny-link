@@ -100,6 +100,10 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     List<Contact> findActiveForTenant(@Param("sinceDate") Date sinceDate,
             @Param("tenantId") String tenantId);
 
+    @Query("SELECT c FROM Contact c INNER JOIN c.account a WHERE a.id = :accountId AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId ORDER BY c.lastName DESC")
+    List<Contact> findByAccountId(@Param("accountId") Long accountId,
+            @Param("tenantId") String tenantId);
+
     @Query(value = "UPDATE OL_CONTACT c set c.account_id = ?2 WHERE c.id = ?1", nativeQuery = true)
     @Modifying(clearAutomatically = true)
     public void setAccount(Long contactId, Long accountId);

@@ -13,8 +13,12 @@
       <tr>
         <th></th>
         <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
-        <th on-click="sort:stockCategoryName">Category<span class="sortable {{ sorted('stockCategoryName') }} glyphicon"></th>
-        <th on-click="type">Type<span class="sortable {{ sorted('type') }} glyphicon"></th>
+        {{#tenant.show.stockCategory}}
+          <th on-click="sort:stockCategoryName">Category<span class="sortable {{ sorted('stockCategoryName') }} glyphicon"></th>
+        {{/}}
+        {{#if stockTypes!=undefined}}
+          <th on-click="type">Type<span class="sortable {{ sorted('type') }} glyphicon"></th>
+        {{/if}}
         <th on-click="sort:status">Status<span class="sortable {{ sorted('status') }} glyphicon "></th>
         <th on-click="type">Unit Price<span class="sortable {{ sorted('unitPrice') }} glyphicon"></th>
         <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon"></th>
@@ -27,12 +31,13 @@
       {{# matchSearch(this) && matchFilter(this) }}
           <tr data-href="{{selfRef}}">
             <td on-click="edit(this)">{{i+1}}</td>
-            {{#tenant.show.merge}}
-              <td><input class="checkbox" type="checkbox" on-change="selectMultiple(this)"/></td>
-            {{/}}
             <td on-click="edit(this)">{{name}}</td>
-            <td on-click="edit(this)">{{stockCategoryName}}</td>
-            <td on-click="edit(this)">{{type}}</td>
+            {{#tenant.show.stockCategory}}
+              <td on-click="edit(this)">{{stockCategoryName}}</td>
+            {{/}}
+            {{#if stockTypes != undefined}}
+              <td on-click="edit(this)">{{type}}</td>
+            {{/if}}
             <td on-click="edit(this)">{{status}}</td>
             <td on-click="edit(this)">{{#price == 0}}P.O.A.{{else}}{{price}}{{/}}</td>
             <td on-click="edit(this)">{{formatDate(created)}}</td>
