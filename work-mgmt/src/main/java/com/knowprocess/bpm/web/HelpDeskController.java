@@ -39,7 +39,7 @@ import com.knowprocess.resource.internal.gdrive.GDriveRepository;
 @RequestMapping("/{tenantId}/helpdesk")
 public class HelpDeskController {
 
-    private static final String MSG_NAME = "omny.enquiry";
+    private static final String MSG_NAME = "omny.ticket";
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(HelpDeskController.class);
@@ -71,10 +71,6 @@ public class HelpDeskController {
                 .userId(username).singleResult();
         String page = request.getHeader("Referer");
 
-        String json = String.format(getMessageTemplate(), user.getFirstName(),
-                user.getLastName(), user.getEmail(), "Support Ticket", page,
-                filename, tenantId);
-
         // This is a quick JSON hack producing a list of strings
         Pattern pattern = Pattern.compile("\"(.+?)\"");
         Matcher matcher = pattern.matcher(context);
@@ -89,11 +85,18 @@ public class HelpDeskController {
         byte[] bytes = extractImage(filename,
                 keyValuePairs.get(keyValuePairs.indexOf("image") + 1));
         GDriveRepository gdriveRepo = new GDriveRepository();
-        gdriveRepo.write(filename, MediaType.IMAGE_PNG_VALUE, whenOccurred,
-                new ByteArrayInputStream(bytes));
+        gdriveRepo.write(filename, MediaType.IMAGE_PNG_VALUE,
+                whenOccurred, new ByteArrayInputStream(bytes));
+        String url = gdriveRepo.getDriveUrl();
 
-        // String entity = keyValuePairs.get(keyValuePairs.indexOf("entity") +
-        // 2);
+        String userMsg = keyValuePairs
+                .get(keyValuePairs.indexOf("message") + 1);
+        String msg = String.format("%1$s. Raised on page: %2$s, screenshot: %3$s",
+                userMsg, page, url);
+
+        String json = String.format(getMessageTemplate(), user.getFirstName(),
+                user.getLastName(), user.getEmail(), "tim@omny.link",
+                "Support Ticket", msg, page, filename, url, tenantId);
 
         return msgController.handleMessageStart(tenantId, MSG_NAME, bizDesc,
                 json);
@@ -101,13 +104,16 @@ public class HelpDeskController {
 
     protected String getMessageTemplate() {
         return "{"
-              + "\"firstName\":\"1$s\","
+              + "\"firstName\":\"%1$s\","
               + "\"lastName\":\"%2$s\","
               + "\"email\":\"%3$s\","
-              + "\"type\":\"%4$s\","
-              + "\"message\":\"%5$s\","
-              + "\"image\":\"%6$s\","
-              + "\"tenantId\":\"%7$s\""
+              + "\"owner\":\"%4$s\","
+              + "\"type\":\"%5$s\","
+              + "\"message\":\"%6$s\","
+              + "\"page\":\"%7$s\","
+              + "\"image\":\"%8$s\","
+              + "\"imageUrl\":\"%9$s\","
+              + "\"tenantId\":\"%10$s\""
               + "}";
     }
 

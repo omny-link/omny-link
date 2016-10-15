@@ -12,6 +12,9 @@ var ractive = new AuthenticatedRactive({
     enumCtrl: function() {
       return $('#enumTemplate').html();
     },
+    imageCtrl: function(v) {
+      return $('#imageTemplate').html();
+    },
     jsonCtrl: function(v) {
       return $('#jsonTemplate').html();
     },
@@ -115,6 +118,8 @@ var ractive = new AuthenticatedRactive({
     },
     renderAs: function(formProp) {
       console.log('renderAs: '+formProp.name);
+//      if (typeof formProp.value == 'string' && formProp.id=='imageUrl') {
+//        return 'image';
       if (typeof formProp.value == 'string' && formProp.value.substring(0,4)=='http') {
         return 'link';
       } else if (typeof formProp.value == 'string' && formProp.value.substring(0,1)=='{') {

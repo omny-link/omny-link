@@ -233,7 +233,8 @@ var ractive = new AuthenticatedRactive({
       { "name": "mergeModal", "url": "/partials/contact-merge-sect.html"},
       { "name": "navbar", "url": "/partials/contact-navbar.html"},
       { "name": "currentContactSect", "url": "/partials/contact-current-sect.html"},
-      { "name": "currentCompanyBackground", "url": "/partials/contact-company-sect.html"}
+      { "name": "currentCompanyBackground", "url": "/partials/contact-company-sect.html"},
+      { "name": "supportBar", "url": "/partials/support-bar.html"},
     ],
   },
   add: function () {
