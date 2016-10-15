@@ -140,6 +140,7 @@ var ractive = new AuthenticatedRactive({
       else return 'hidden';
     },
     stdPartials: [
+      { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
       { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "navbar", "url": "/partials/stock-item-navbar.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
