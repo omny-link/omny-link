@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/catalog" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1470672719521" name="" targetNamespace="http://omny.link/catalog" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <message id="omny.batch" name="omny.batch"/>
+  <process id="AddStockItems" isClosed="false" isExecutable="true" name="Add Stock Items" processType="None">
+    <documentation id="AddStockItems_D_1" textFormat="text/plain"><![CDATA[Add stock items]]></documentation>
+    <extensionElements>
+      <yaoqiang:pageFormat height="841.8897637795276" imageableHeight="831.8897637795276" imageableWidth="588.1102362204724" imageableX="5.0" imageableY="5.0" orientation="0" width="598.1102362204724"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+      <yaoqiang:pageFormat height="841.8897637795276" imageableHeight="831.8897637795276" imageableWidth="588.1102362204724" imageableX="5.0" imageableY="5.0" orientation="0" width="598.1102362204724"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <ioSpecification>
+      <dataInput id="_5" isCollection="true" name="stockItems"/>
+      <inputSet>
+        <dataInputRefs>_5</dataInputRefs>
+      </inputSet>
+      <outputSet/>
+    </ioSpecification>
+    <startEvent id="startEvent" isInterrupting="true" name="Start Event" parallelMultiple="false">
+      <outgoing>_13</outgoing>
+      <outputSet/>
+      <messageEventDefinition id="startEvent_ED_1" messageRef="omny.batch"/>
+    </startEvent>
+    <endEvent id="endEvent" name="End Event">
+      <incoming>_14</incoming>
+      <inputSet/>
+    </endEvent>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="_8" implementation="##WebService" isForCompensation="false" name="PUT stock item" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername">
+          <activiti:string>userInfo('tenant-bot')</activiti:string>
+        </activiti:field>
+        <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="globalResource">
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/stock-items/</activiti:expression>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field name="data">
+          <activiti:expression>${stockItem}</activiti:expression>
+        </activiti:field>
+        <activiti:field expression="stockItemId=Location" name="responseHeaders"/>
+        <activiti:field expression="stockItem" name="responseVar"/>
+      </extensionElements>
+      <incoming>_13</incoming>
+      <outgoing>_14</outgoing>
+      <multiInstanceLoopCharacteristics activiti:collection="${omny_batch.getJsonArray(&quot;stockItems&quot;)}" activiti:elementVariable="stockItem" behavior="All" isSequential="true"/>
+    </serviceTask>
+    <sequenceFlow id="_13" sourceRef="startEvent" targetRef="_8"/>
+    <sequenceFlow id="_14" sourceRef="_8" targetRef="endEvent"/>
+    <textAnnotation id="_2" textFormat="text/plain">
+      <text>ADD STOCK ITEMS</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddStockItems" name="New Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="AddStockItems">
+      <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
+        <dc:Bounds height="32.0" width="32.0" x="62.000000000000014" y="254.99999999999994"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="69.0" x="43.499999999999986" y="297.4453124999999"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
+        <dc:Bounds height="32.0" width="32.0" x="690.576923076923" y="254.99999999999994"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="62.0" x="675.576923076923" y="297.4453124999999"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
+        <dc:Bounds height="48.0" width="236.0" x="62.0" y="53.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="110.0" x="62.0" y="69.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_5" id="Yaoqiang-_5">
+        <dc:Bounds height="38.0" width="29.0" x="63.500000000000014" y="346.9059829059829"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="68.0" x="44.000000000000014" y="386.9059829059829"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_8" id="Yaoqiang-_8">
+        <dc:Bounds height="81.0" width="116.0" x="334.28846153846155" y="230.49999999999994"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="91.0" x="346.78846153846155" y="263.59765624999994"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_14" id="Yaoqiang-_14">
+        <di:waypoint x="450.32352941176464" y="270.99999999999994"/>
+        <di:waypoint x="690.3242052478375" y="270.99999999999994"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="567.323867329801" y="261.59765624999994"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_13" id="Yaoqiang-_13">
+        <di:waypoint x="94.32285357569175" y="270.99999999999994"/>
+        <di:waypoint x="334.32352941176464" y="270.99999999999994"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="211.3231914937282" y="261.59765624999994"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
