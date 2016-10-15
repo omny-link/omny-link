@@ -8,37 +8,37 @@
     <form id="userForm">
       <ul class="form edit-form">
         <li class="create-field">
-          <label class="required">Username:</label>
+          <label class="col-md-4 col-sm-4 required">Username:</label>
           <input class="form-control" id="curUsername" on-blur="save()" required value="{{current.id}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
-        <li>
-          <label class="required">First Name:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4 required">First Name:</label>
           <input class="no-update-field form-control" id="curFirstName" on-blur="save()" required value="{{current.firstName}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
-        <li>
-          <label class="required">Last Name:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4 required">Last Name:</label>
           <input class="no-update-field form-control" id="curLastName" on-blur="save()" required value="{{current.lastName}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
-        <li>
-          <label class="required">Email:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4 required">Email:</label>
           <input class="no-update-field form-control" id="curEmail" on-blur="save()" required type="email" value="{{current.email}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
-        <li>
-          <label class="">Phone:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Phone:</label>
           <input class="form-control" id="curPhone" on-blur="save()" pattern="\+?[0-9, ]{8,13}" type="tel" value="{{current.phone}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
         </li>
-        <li>
-          <label class="required">Preferred:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4 required">Preferred:</label>
           <input class="typeahead form-control" id="curCommsPreference" on-blur="save()" required value="{{current.commsPreference}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
         </li>
-        <li>
-          <label class="required">Tenant:</label>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4 required">Tenant:</label>
           <input class="no-update-field typeahead form-control" id="curTenant" on-blur="save()" required type="text" value="{{current.tenant}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
@@ -50,8 +50,8 @@
     <div class="currentBody col-md-6 col-sm-12">
       <form id="userPwdForm">
         <ul class="form edit-form">
-          <li>
-            <label class="col-md-3 col-sm-6">Groups:</label>
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">Groups:</label>
             <span id="curGroups">
               {{#each current.groups:j}}<span>{{name}}, </span>{{/each}}
               <input id="curNewGroup" class="hidden form-control" on-blur="addUserToGroup()" value="{{current.newGroup}}">
@@ -59,13 +59,13 @@
             </span>
           </li>
           <li style="clear:both">
-            <button class="col-md-offset-3 col-sm-offset-6 btn" id="resetPwdBtn" on-click="togglePwdFields()">Reset Password</button>
+            <button class="col-md-offset-4 col-sm-offset-4 btn" id="resetPwdBtn" on-click="togglePwdFields()">Reset Password</button>
           </li>
           <li style="clear:both;display:none" class="pwdField">
-            <input autocomplete="off" class="col-md-offset-3 col-sm-offset-6 form-control" id="curPassword" name="password" pattern=".{9,}" placeholder="New password" required title="8 characters minimum" type="password" value="{{current.newPassword}}">
+            <input autocomplete="off" class="col-md-offset-4 col-sm-offset-4 form-control" id="curPassword" name="password" pattern=".{9,}" placeholder="New password" required title="8 characters minimum" type="password" value="{{current.newPassword}}">
           </li>
           <li class="pwdField" style="display:none">
-            <input autocomplete="off" class="col-md-offset-3 col-sm-offset-6 form-control" id="curPassword2" name="password2" placeholder="Confirm password" required type="password" value="{{current.confirmPassword}}">
+            <input autocomplete="off" class="col-md-offset-4 col-sm-offset-4 form-control" id="curPassword2" name="password2" placeholder="Confirm password" required type="password" value="{{current.confirmPassword}}">
           </li>
         </ul>
       </form>
