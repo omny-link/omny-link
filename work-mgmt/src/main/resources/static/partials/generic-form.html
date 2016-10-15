@@ -5,6 +5,7 @@
       {{#current.formProperties:i}}
         <li class="form-group">
           {{# renderAs(.) == 'enum' }} {{> enumCtrl }} {{/}}
+          {{# renderAs(.) == 'image' }} {{> imageCtrl }} {{/}}
           {{# renderAs(.) == 'json' }} {{> jsonCtrl { id: ..id, name: ..name, obj: JSON.parse(..value), keys: keys(JSON.parse(..value)) } }} {{/}}
           {{# renderAs(.) == 'link' }} {{> linkCtrl }} {{/}}
           {{# renderAs(.) == 'default' }} {{> defaultCtrl }} {{/}}

@@ -28,10 +28,13 @@
   </script>
 
   <script id="enumTemplate" type="text/html">
-    <label class="col-md-offset-3">{{name}}</label>
+    <label class="col-md-offset-2 col-sm-offset-2">{{name}}</label>
     <select id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
       <option></option>  
     </select>
+  </script>
+  <script id="imageTemplate" type="text/html">
+    <img src="{{value}}"/>
   </script>
   <script id="jsonTemplate" type="text/html">
     <fieldset><legend class="col-md-12">{{name}}</legend>
@@ -39,7 +42,7 @@
       <ul class="form edit-form">
         {{# keys}}
           <li class="col-md-12">
-            <label class="col-md-4 col-sm-4">{{formatLabel(.)}}: </label>
+            <label class="col-md-3 col-sm-3">{{formatLabel(.)}}: </label>
             <input class="form-control col-md-9" id="cur{{.}}" readonly value="{{obj[.]}}">
           </li>
         {{/}}
@@ -48,10 +51,10 @@
   </script>
   <script id="linkTemplate" type="text/html">
     <!-- TODO need to get this from tenant config -->
-    <a class="col-md-offset-3" href="{{value}}" target="_newtab">{{name == undefined ? id : name}}</a>
+    <a class="col-md-offset-3 col-sm-offset-3" href="{{value}}" target="_newtab">{{name == undefined ? id : name}}</a>
   </script>
   <script id="defaultTemplate" type="text/html">
-    <label class="col-md-4 col-sm-4">{{name}}: </label>
+    <label class="col-md-3 col-sm-3">{{name}}: </label>
     <input class="form-control" id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
   </script>
 

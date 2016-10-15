@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/support" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1421050736845" name="" targetNamespace="http://omny.link/support" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <message id="omny.ticket" name="omny.ticket"/>
+  <process id="RaiseTicket" isClosed="false" isExecutable="true" name="Raise a support ticket" processType="None">
+    <documentation id="RaiseTicket_D_1" textFormat="text/plain"><![CDATA[Raise a support ticket]]></documentation>
+    <extensionElements>
+      <!-- <activiti:eventListener class="com.knowprocess.bpm.listeners.JsonInputListener" />-->
+      <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <sequenceFlow id="_7" sourceRef="startEvent" targetRef="fetchContact"/>
+    <boundaryEvent attachedToRef="fetchContact" cancelActivity="true" id="_4" name="Not found" parallelMultiple="false">
+      <extensionElements>
+        <yaoqiang:style align="right" labelPosition="left" verticalAlign="middle" verticalLabelPosition="bottom"/>
+        <yaoqiang:label offset-x="68.33107088989436" offset-y="-16.0" x="0.0" y="1.0"/>
+      </extensionElements>
+      <outgoing>_12</outgoing>
+      <outputSet/>
+      <errorEventDefinition id="_4_ED_1"/>
+    </boundaryEvent>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="fetchContact" implementation="##WebService" isForCompensation="false" name="Fetch contacts by email address" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername">
+          <activiti:string>userInfo('tenant-bot')</activiti:string>
+        </activiti:field>
+        <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="globalResource">
+          <activiti:expression>userInfo('cust-mgmt-url')/${omny_ticket.getString('tenantId')}/contacts/searchByEmail?email=${omny_ticket.getString('email')}</activiti:expression>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field expression="contacts" name="responseVar"/>
+      </extensionElements>
+      <incoming>_7</incoming>
+      <outgoing>_9</outgoing>
+    </serviceTask>
+    <startEvent id="startEvent" isInterrupting="true" name="omny.ticket" parallelMultiple="false">
+      <outgoing>_7</outgoing>
+      <outputSet/>
+      <messageEventDefinition id="_2_ED_1" messageRef="omny.ticket"/>
+    </startEvent>
+    <callActivity calledElement="CreateContactAndAccount" completionQuantity="1" id="_6" isForCompensation="false" name="Create Contact and &#10;Account in CRM" startQuantity="1">
+      <extensionElements>
+        <activiti:in source="omny_ticket" target="json"/>
+        <activiti:in sourceExpression="omny" target="tenantId"/>
+        <activiti:out source="contactId" target="contactId"/>
+        <activiti:out source="contactEmail" target="contactEmail"/>
+        <activiti:out source="contactPwd" target="contactPwd"/>
+        <activiti:out source="accountId" target="accountId"/>
+        <activiti:out source="contact" target="contact"/>
+      </extensionElements>
+      <incoming>_12</incoming>
+      <incoming>_13</incoming>
+      <outgoing>_26</outgoing>
+    </callActivity>
+    <sequenceFlow id="_12" sourceRef="_4" targetRef="_6"/>
+    <exclusiveGateway gatewayDirection="Converging" id="_15" name="Join">
+      <incoming>_26</incoming>
+      <incoming>_5</incoming>
+      <outgoing>_25</outgoing>
+    </exclusiveGateway>
+    <callActivity calledElement="SendMemo" completionQuantity="1" id="sendMemo" isForCompensation="false" name="Send Memo to enquirer" startQuantity="1">
+      <extensionElements>
+        <activiti:in sourceExpression="ThankYouForRaisingASupportTicket" target="memoName"/>
+        <activiti:in sourceExpression="${omny_ticket.getString('tenantId')}" target="tenantId"/>
+        <activiti:in source="contactId" target="contactId"/>
+        <activiti:in sourceExpression="${omny_ticket.getString('email')}" target="toEmail"/>
+      </extensionElements>
+      <incoming>_17</incoming>
+      <outgoing>_23</outgoing>
+    </callActivity>
+    <sequenceFlow id="_26" sourceRef="_6" targetRef="_15"/>
+    <exclusiveGateway default="_13" gatewayDirection="Diverging" id="_8" name="Have contact?">
+      <incoming>_9</incoming>
+      <outgoing>_13</outgoing>
+      <outgoing>_3</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="_9" sourceRef="fetchContact" targetRef="_8"/>
+    <sequenceFlow id="_13" name="No" sourceRef="_8" targetRef="_6"/>
+    <scriptTask completionQuantity="1" id="_2" isForCompensation="false" name="Select first contact" scriptFormat="JavaScript" startQuantity="1">
+      <incoming>_3</incoming>
+      <outgoing>_5</outgoing>
+      <script><![CDATA[var contacts = execution.getVariable('contacts');
+execution.setVariable('contact',contacts.getJsonObject(0));
+execution.setVariable('contactId',contacts.getJsonObject(0).getString('selfRef'));]]></script>
+    </scriptTask>
+    <sequenceFlow id="_3" name="Yes" sourceRef="_8" targetRef="_2">
+      <conditionExpression><![CDATA[${!empty(contacts)}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_5" sourceRef="_2" targetRef="_15"/>
+    <callActivity calledElement="SendAlert" completionQuantity="1" id="notifyInternalUsers" isForCompensation="false" name="Notify internal users" startQuantity="1">
+      <extensionElements>
+        <activiti:in sourceExpression="New Support Ticket from ${omny_ticket.getString('firstName')} ${omny_ticket.getString('lastName')}" target="subject"/>
+        <activiti:in sourceExpression="New Support Ticket" target="type"/>
+        <activiti:in sourceExpression="NotifyTicket" target="memoName"/>
+        <activiti:in source="addressee" target="addressee"/>
+        <activiti:in sourceExpression="Please review here: &lt;https://api.omny.link/work.html|Click to open work list&gt;" target="message"/>
+        <activiti:in sourceExpression="${omny_ticket.getString('tenantId')}" target="tenantId"/>
+        <activiti:in source="contactId" target="contactId"/>
+      </extensionElements>
+      <incoming>_22</incoming>
+      <outgoing>_28</outgoing>
+    </callActivity>
+    <sequenceFlow id="_24" sourceRef="_16" targetRef="_18"/>
+    <parallelGateway gatewayDirection="Diverging" id="_16" name="Split">
+      <incoming>_25</incoming>
+      <outgoing>_24</outgoing>
+      <outgoing>_32</outgoing>
+      <outgoing>_17</outgoing>
+    </parallelGateway>
+    <sequenceFlow id="_28" sourceRef="notifyInternalUsers" targetRef="endInternal"/>
+    <endEvent id="endInternal" name="End Internal Path">
+      <incoming>_28</incoming>
+      <inputSet/>
+    </endEvent>
+    <sequenceFlow id="_23" sourceRef="sendMemo" targetRef="endExternal"/>
+    <endEvent id="endExternal" name="End External Path">
+      <incoming>_23</incoming>
+      <inputSet/>
+    </endEvent>
+    <scriptTask completionQuantity="1" id="_18" isForCompensation="false" name="Find addressee to alert" scriptFormat="JavaScript" startQuantity="1">
+      <incoming>_24</incoming>
+      <outgoing>_22</outgoing>
+      <script><![CDATA[var botUser = execution.getEngineServices().getIdentityService()
+        .createUserQuery().userFirstName(execution.getTenantId())
+        .userLastName("Bot").singleResult();
+try {        
+  var emailToAlert = execution.getEngineServices().getIdentityService().getUserInfo(botUser.getId(), 'alert');
+  execution.setVariable('addressee',emailToAlert);
+} catch (e) {
+  // No one to notify
+}]]></script>
+    </scriptTask>
+    <sequenceFlow id="_22" sourceRef="_18" targetRef="notifyInternalUsers"/>
+    <sequenceFlow id="_25" sourceRef="_15" targetRef="_16"/>
+    <userTask activiti:dueDate="P1D" completionQuantity="1" id="_31" implementation="##unspecified" isForCompensation="false" name="Resolve ticket" startQuantity="1">
+      <documentation id="_3_D_1" textFormat="text/plain"><![CDATA[
+          Please respond to the customer about this support ticket.
+      ]]></documentation>
+      <extensionElements>
+        <activiti:formProperty expression="#{omny_ticket.getString('message')}" id="message" name="Message"/>
+        <activiti:formProperty expression="#{omny_ticket.getString('page')}" id="page" name="Page"/>
+        <activiti:formProperty expression="#{omny_ticket.getString('imageUrl')}" id="imageUrl" name="Screenshot"/>
+      </extensionElements>
+      <incoming>_32</incoming>
+      <outgoing>_34</outgoing>
+      <potentialOwner id="_31_RES_1">
+        <resourceRef>RS_1</resourceRef>
+      </potentialOwner>
+    </userTask>
+    <sequenceFlow id="_32" sourceRef="_16" targetRef="_31"/>
+    <endEvent id="_33" name="End Resolved">
+      <incoming>_34</incoming>
+      <inputSet/>
+    </endEvent>
+    <sequenceFlow id="_34" sourceRef="_31" targetRef="_33"/>
+    <sequenceFlow id="_17" sourceRef="_16" targetRef="sendMemo"/>
+    <textAnnotation id="_11" textFormat="text/plain">
+      <text>RAISE TICKET</text>
+    </textAnnotation>
+    <textAnnotation id="_10" textFormat="text/plain">
+      <text>This is not thrown 
+at the moment</text>
+    </textAnnotation>
+    <association associationDirection="None" id="_14" sourceRef="_10" targetRef="_4"/>
+  </process>
+  <resource id="RS_1" name="omny_support"/>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-RaiseTicket" name="New Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="RaiseTicket">
+      <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
+        <dc:Bounds height="31.0" width="238.0" x="26.0" y="41.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="81.0" x="26.0" y="49.09765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="fetchContact" id="Yaoqiang-fetchContact">
+        <dc:Bounds height="91.0" width="119.0" x="106.0512820512821" y="145.9411764705882"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8046875" width="105.0" x="113.0512820512821" y="177.0388327205882"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
+        <dc:Bounds height="32.0" width="32.0" x="42.500000000000014" y="175.4411764705882"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="71.0" x="23.0" y="218.1257467830882"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6" isExpanded="false">
+        <dc:Bounds height="91.0" width="119.0" x="215.71428571428572" y="285.83333333333337"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="46.8046875" width="92.0" x="229.21428571428572" y="309.93098958333337"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_15" id="Yaoqiang-_15" isMarkerVisible="true">
+        <dc:Bounds height="42.0" width="42.0" x="548.5" y="310.33333333333337"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="26.0" x="556.5" y="354.33333333333337"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sendMemo" id="Yaoqiang-sendMemo" isExpanded="false">
+        <dc:Bounds height="91.0" width="119.0" x="860.5" y="285.83333333333337"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8046875" width="88.0" x="876.0" y="316.93098958333337"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_8" id="Yaoqiang-_8" isMarkerVisible="true">
+        <dc:Bounds height="42.0" width="42.0" x="254.21428571428572" y="170.4411764705882"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="85.0" x="232.71428571428572" y="214.4411764705882"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
+        <dc:Bounds height="91.0" width="119.0" x="427.3571428571429" y="145.9411764705882"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8046875" width="68.0" x="452.8571428571429" y="177.0388327205882"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_10" id="Yaoqiang-_10">
+        <dc:Bounds height="55.0" width="241.0" x="29.0" y="397.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8046875" width="113.0" x="29.0" y="410.09765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="notifyInternalUsers" id="Yaoqiang-notifyInternalUsers" isExpanded="false">
+        <dc:Bounds height="91.0" width="119.0" x="862.8333333333334" y="418.1666666666667"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8046875" width="85.0" x="879.8333333333334" y="449.2643229166667"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_16" id="Yaoqiang-_16">
+        <dc:Bounds height="42.0" width="42.0" x="659.3333333333334" y="310.33333333333337"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="31.0" x="664.8333333333334" y="354.33333333333337"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endInternal" id="Yaoqiang-endInternal">
+        <dc:Bounds height="32.0" width="32.0" x="1026.0000000000002" y="447.6666666666667"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="103.0" x="990.5" y="488.5494791666667"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endExternal" id="Yaoqiang-endExternal">
+        <dc:Bounds height="32.0" width="32.0" x="1026.0000000000002" y="315.33333333333337"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="106.0" x="989.0" y="356.19368489583337"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_18" id="Yaoqiang-_18">
+        <dc:Bounds height="91.0" width="119.0" x="720.8333333333334" y="418.1666666666667"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8046875" width="94.0" x="733.3333333333334" y="449.2643229166667"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_31" id="Yaoqiang-_31">
+        <dc:Bounds height="91.0" width="119.0" x="720.8333333333334" y="145.9411764705882"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="84.0" x="738.3333333333334" y="184.0388327205882"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_33" id="Yaoqiang-_33">
+        <dc:Bounds height="32.0" width="32.0" x="1026.0000000000002" y="175.4411764705882"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="82.0" x="1001.0" y="216.1364889705882"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4">
+        <dc:Bounds height="32.0" width="32.0" x="174.38235294117646" y="220.9411764705882"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="61.0" x="113.38235294117646" y="261.53883272058823"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_28" id="Yaoqiang-_28">
+        <di:waypoint x="982.3235294117646" y="463.6666666666667"/>
+        <di:waypoint x="1026.3246137670405" y="463.6666666666667"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="1001.3240715894026" y="454.2643229166667"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_26" id="Yaoqiang-_26">
+        <di:waypoint x="334.32352941176464" y="326.0"/>
+        <di:waypoint x="471.0" y="326.0"/>
+        <di:waypoint x="553.1764705882351" y="326.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="440.7499999999999" y="316.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_25" id="Yaoqiang-_25">
+        <di:waypoint x="589.8431372549019" y="331.33333333333337"/>
+        <di:waypoint x="659.8039215686274" y="331.33333333333337"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="621.8235294117646" y="321.93098958333337"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_24" id="Yaoqiang-_24">
+        <di:waypoint x="680.0" y="351.5294117647059"/>
+        <di:waypoint x="680.0" y="467.0"/>
+        <di:waypoint x="721.3235294117646" y="467.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="677.0" y="420.5241268382353"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_23" id="Yaoqiang-_23">
+        <di:waypoint x="979.3235294117646" y="331.33333333333337"/>
+        <di:waypoint x="1026.33074280731" y="331.33333333333337"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="999.8271361095373" y="321.93098958333337"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_22" id="Yaoqiang-_22">
+        <di:waypoint x="840.3235294117646" y="463.6666666666667"/>
+        <di:waypoint x="863.3235294117646" y="463.6666666666667"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="848.8235294117646" y="454.2643229166667"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9">
+        <di:waypoint x="225.32352941176464" y="191.4411764705882"/>
+        <di:waypoint x="254.73529411764696" y="191.4411764705882"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="237.0294117647058" y="182.0388327205882"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_7" id="Yaoqiang-_7">
+        <di:waypoint x="74.31823009127064" y="191.4411764705882"/>
+        <di:waypoint x="106.32352941176464" y="191.4411764705882"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="87.32087975151764" y="182.0388327205882"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_17" id="Yaoqiang-_17">
+        <di:waypoint x="700.8431372549019" y="331.33333333333337"/>
+        <di:waypoint x="860.3235294117646" y="331.33333333333337"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="777.5833333333333" y="321.93098958333337"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
+        <di:waypoint x="546.3235294117646" y="191.4411764705882"/>
+        <di:waypoint x="569.0" y="257.0"/>
+        <di:waypoint x="569.0" y="310.1764705882352"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="566.0" y="230.06824448529403"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
+        <di:waypoint x="295.9117647058823" y="191.4411764705882"/>
+        <di:waypoint x="427.32352941176464" y="191.4411764705882"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8046875" width="121.0" x="301.1176470588235" y="175.0388327205882"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_13" id="Yaoqiang-_13">
+        <di:waypoint x="275.2142857142857" y="212.74369747899163"/>
+        <di:waypoint x="275.2142857142857" y="285.85294117647055"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="21.0" x="264.7142857142857" y="239.89597557773112"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
+        <di:waypoint x="187.0" y="252.50395239776662"/>
+        <di:waypoint x="187.0" y="323.0"/>
+        <di:waypoint x="215.32352941176464" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="184.0" y="292.51139715476563"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_34" id="Yaoqiang-_34">
+        <di:waypoint x="840.3235294117646" y="191.4411764705882"/>
+        <di:waypoint x="1026.3288287322587" y="191.4411764705882"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="930.3261790720117" y="182.0388327205882"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_32" id="Yaoqiang-_32">
+        <di:waypoint x="680.0" y="310.1764705882352"/>
+        <di:waypoint x="680.0" y="190.0"/>
+        <di:waypoint x="721.3235294117646" y="190.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="677.0" y="220.0241268382353"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_14" id="Yaoqiang-_14">
+        <di:waypoint x="155.75963974282027" y="396.85294117647055"/>
+        <di:waypoint x="186.92221347473594" y="252.48723201093975"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8046875" width="6.0" x="168.3409266087781" y="315.26774284370515"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

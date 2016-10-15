@@ -47,6 +47,7 @@
     { "name": "Check service levels", "ref": "RunDecisionLogicForAllContacts", "url": "processes/link/omny/custmgmt/RunDecisionLogicForAllContacts.bpmn" },
     { "name": "Create contact and account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
     { "name": "Import contact", "ref": "ImportContact", "url": "processes/link/omny/website/ImportContact.bpmn" },
+    { "name": "Raise ticket", "ref": "RaiseTicket", "url": "processes/link/omny/support/RaiseTicket.bpmn" },
     { "name": "Record an enquiry", "ref": "RecordEnquiry", "url": "processes/link/omny/website/RecordEnquiry.bpmn" },
     { "name": "Register a user", "ref": "RegisterOmnyContact", "url": "processes/link/omny/website/RegisterOmnyContact.bpmn" },
     { "name": "Reset user's password", "ref": "ResetPassword", "url": "processes/link/omny/support/ResetPassword.bpmn" },
@@ -69,8 +70,10 @@
     { "name": "ContactAlert", "ref": "ContactAlert" },
     { "name": "NotifyEnquiry", "ref": "NotifyEnquiry" },
     { "name": "NotifyToDo", "ref": "NotifyToDo" },
+    { "name": "NotifyTicket", "ref": "NotifyTicket" },
     { "name": "ResetPassword", "ref": "ResetPassword" },
     { "name": "ThankYouForEnquiry", "ref": "ThankYouForEnquiry" },
+    { "name": "ThankYouForRaisingASupportTicket", "ref": "ThankYouForRaisingASupportTicket" },
     { "name": "WelcomeNewUser", "ref": "WelcomeNewUser" }
   ],
   "typeaheadControls": [
