@@ -7,6 +7,24 @@
 <section id="stockItemsSect">
   <h2 class="navbar-top">
     {{>navbar}}
+    <span class="pull-right">
+      {{#if tenant.stockItemActions!=undefined && tenant.stockItemActions.length>0 }}
+        <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
+            <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+          </a>
+          <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+            {{#each tenant.stockItemActions }}
+              {{#name}}
+                <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', undefined{{#url}}, '{{url}}'{{/url}})">{{name}}</li>
+              {{else}}
+                <li class="divider"></li>
+              {{/}}
+            {{/each}}
+          </ul>
+        </span>
+      {{/if}}
+    </span>
   </h2>
   <table id="stockItemsTable" class="stockItems table table-striped">
     <thead>
@@ -20,7 +38,9 @@
           <th on-click="type">Type<span class="sortable {{ sorted('type') }} glyphicon"></th>
         {{/if}}
         <th on-click="sort:status">Status<span class="sortable {{ sorted('status') }} glyphicon "></th>
-        <th on-click="type">Unit Price<span class="sortable {{ sorted('unitPrice') }} glyphicon"></th>
+        {{#tenant.show.stockPricing}}
+          <th on-click="type">Unit Price<span class="sortable {{ sorted('unitPrice') }} glyphicon"></th>
+        {{/}}
         <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon"></th>
         <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
         <th class="col-actions">Actions</th>
@@ -39,7 +59,9 @@
               <td on-click="edit(this)">{{type}}</td>
             {{/if}}
             <td on-click="edit(this)">{{status}}</td>
-            <td on-click="edit(this)">{{#price == 0}}P.O.A.{{else}}{{price}}{{/}}</td>
+            {{#tenant.show.stockPricing}}
+              <td on-click="edit(this)">{{#price == 0}}P.O.A.{{else}}{{price}}{{/}}</td>
+            {{/}}
             <td on-click="edit(this)">{{formatDate(created)}}</td>
             <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
             <td class="col-actions">

@@ -294,9 +294,9 @@ tfoot th {
 	width: 200px;
   text-overflow: ellipsis;
 }
-.date {
-	max-width: 170px;
-	min-width: 170px;
+.date, .time {
+  max-width: 170px;
+  min-width: 170px;
 }
 .field-age { 
 	width:20%
@@ -614,6 +614,7 @@ form#upload {
 .form label.textarea {
   vertical-align: top;
   line-height: 1.2em;
+  padding-right: 5px;
 }
 .form .col-md-6 label.textarea {
   /*width: 17%;*/
