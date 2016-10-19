@@ -4,7 +4,7 @@
   {  "idx": 1, "id": "Qualify needs", "name": "Qualify needs"  },
   {  "idx": 2, "id": "Define Solution", "name": "Define Solution"  },
   {  "idx": 3, "id": "Propose", "name": "Propose"  },
-  {  "idx": 4, "id": "Close", "name": "Close"  },
+  {  "idx": 4, "id": "Closing", "name": "Closing"  },
   {  "idx": 5, "id": "Implement", "name": "Implement"  },
   {  "idx": 6, "id": "Measure value", "name": "Measure value"  },
   {  "idx": -1, "id": "Review", "name": "Review"  }
