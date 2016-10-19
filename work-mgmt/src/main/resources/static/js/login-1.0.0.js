@@ -246,6 +246,20 @@ var AuthenticatedRactive = Ractive.extend({
       }
     });
   },
+  loadStandardPartial: function(name,url) {
+    //console.log('loading...: '+d.name)
+      $.get(url, function(response){
+        //console.log('... loaded: '+d.name)
+        //console.log('response: '+response)
+        if (ractive != undefined) {
+          try {
+            ractive.resetPartial(name,response);
+          } catch (e) {
+            console.error('Unable to reset partial '+name+': '+e);
+          }
+        }
+      });
+    },
   loadStandardPartials: function(stdPartials) {
     console.info('loadStandardPartials');
     $.each(stdPartials, function(i,d) {
@@ -569,6 +583,13 @@ $(document).ready(function() {
     // if already sorted by this column reverse order
     if (this.get('sortColumn')==column) this.set('sortAsc', !this.get('sortAsc'));
     this.set( 'sortColumn', column );
+  });
+
+  ractive.observe('title', function(newValue, oldValue, keypath) {
+    console.log('title changing from '+oldValue+' to '+newValue);
+    if (newValue!=undefined && newValue!='') {
+      $('title').empty().append(newValue);
+    }
   });
 });
 

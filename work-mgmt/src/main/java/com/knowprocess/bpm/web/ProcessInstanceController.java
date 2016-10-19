@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +31,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knowprocess.bpm.impl.UriHelper;
 import com.knowprocess.bpm.model.ProcessInstance;
 
 @RequestMapping("/{tenantId}/process-instances")
@@ -40,6 +44,9 @@ public class ProcessInstanceController {
             .getLogger(ProcessInstanceController.class);
 
     private DateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd");
+
+    @Autowired
+    protected ObjectMapper objectMapper;
 
     @Autowired
     public ProcessEngine processEngine;
@@ -73,6 +80,32 @@ public class ProcessInstanceController {
         addCalledProcessAuditTrail(result, instanceId);
 
         return result;
+    }
+
+    @RequestMapping(value = "/findByVar/{varName}/{varValue}", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody List<ProcessInstance> listInstancesForVar(
+            @PathVariable("varName") String varName,
+            @PathVariable("varValue") String varValue) {
+        LOGGER.info(String.format("listInstancesForVar %1$s %2$s ", varName,
+                varValue));
+
+        varValue = UriHelper.expandUri(getClass(), varName, varValue).replace(
+                "/process-instances", "");
+
+        List<ProcessInstance> results = ProcessInstance.wrap(processEngine
+                .getRuntimeService().createProcessInstanceQuery()
+                .variableValueEquals(varName, varValue).list());
+
+        for (ProcessInstance result : results) {
+            result.addToAuditTrail(processEngine.getHistoryService()
+                    .createHistoricActivityInstanceQuery()
+                    .processInstanceId(varName)
+                    .orderByHistoricActivityInstanceEndTime().desc().list());
+
+            addCalledProcessAuditTrail(result, varName);
+        }
+
+        return results;
     }
 
     private void addCalledProcessAuditTrail(ProcessInstance result,
@@ -115,11 +148,24 @@ public class ProcessInstanceController {
                     req.getUserPrincipal().getName());
         }
         instanceToStart.getProcessVariables().put("tenantId", tenantId);
-        if (LOGGER.isDebugEnabled()
-                && instanceToStart.getProcessVariables() != null) {
-            LOGGER.debug("  vars: ");
-            for (Entry<String, Object> entry : instanceToStart
-                    .getProcessVariables().entrySet()) {
+        LOGGER.debug("  vars: %1$d", instanceToStart.getProcessVariables()
+                .size());
+        for (Entry<String, Object> entry : instanceToStart
+                .getProcessVariables().entrySet()) {
+            if (entry.getValue() instanceof Map
+                    || entry.getValue() instanceof List) {
+                try {
+                    instanceToStart.getProcessVariables().replace(
+                            entry.getKey(),
+                            objectMapper.writeValueAsString(entry.getValue()));
+                } catch (JsonProcessingException e) {
+                    LOGGER.error(String
+                            .format("Unable to serialize process variable %1$s as JSON, attempting to continue",
+                                    entry.getKey()));
+                }
+            }
+            if (LOGGER.isDebugEnabled()
+                    && instanceToStart.getProcessVariables() != null) {
                 LOGGER.debug(entry.getKey() + " " + entry.getValue());
             }
         }
@@ -183,12 +229,6 @@ public class ProcessInstanceController {
         return ProcessInstance.wrap(archivedInstances);
     }
 
-    @RequestMapping(value = "/{id}/suspend", method = RequestMethod.POST)
-    public @ResponseBody void suspendFromJson(@PathVariable("id") String id) {
-        LOGGER.info(String.format("suspending instance: %1$s", id));
-        processEngine.getRuntimeService().suspendProcessInstanceById(id);
-    }
-
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public @ResponseBody void deleteFromJson(@PathVariable("id") String id,
             @RequestParam(value = "reason", required = false) String reason) {
@@ -196,9 +236,9 @@ public class ProcessInstanceController {
         try {
             processEngine.getRuntimeService().deleteProcessInstance(id, reason);
         } catch (ActivitiObjectNotFoundException e) {
-            LOGGER.warn(String
-                    .format("Ignoring request to delete non-existant instance %1$s",
-                            id));
+            // must be complete instance
+            processEngine.getHistoryService().deleteHistoricProcessInstance(id);
         }
     }
+
 }

@@ -160,6 +160,15 @@ public class DeploymentController {
                 }
                 return deployment;
             } catch (ActivitiException e) {
+                LOGGER.warn(String
+                        .format("Processes rejected for execution, continue as non-executable. Reason: %1$s",
+                                e.getMessage()));
+                handleIncompleteModel(tenantId, processes);
+                return null;
+            } catch (Exception e) {
+                LOGGER.error(String
+                        .format("Unable to read file, attempt to continue as non-executable. Reason: %1$s",
+                                e.getMessage()));
                 handleIncompleteModel(tenantId, processes);
                 return null;
             }

@@ -33,7 +33,15 @@ curl -X GET -u tstephen:tstephen -H "Accept:application/json" -v \
  curl -X POST -u tstephen:tstephen -H "Accept:application/json" -v \
    -d'password=foo' -d'password2=foo' \
    http://localhost:8083/users/jdoe/reset-password
- 
+
+# list process instances for variable
+curl -X GET -u tstephen:tstephen -H "Accept:application/json" -v \
+    http://localhost:8082/omny/process-instances/findByVar/contactId/36
+
+# list tasks for process instances with variable
+curl -X GET -u tstephen:tstephen -H "Accept:application/json" -v \
+    http://localhost:8082/omny/tasks/findByVar/contactId/36
+
 # Run decision for all contacts
 curl -X POST -u tstephen:tstephen -H "Accept:application/json" \
     -H "Content-Type:application/json" \

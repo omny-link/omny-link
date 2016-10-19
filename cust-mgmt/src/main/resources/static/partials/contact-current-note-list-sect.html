@@ -1,0 +1,36 @@
+<form id="noteForm">
+ <section id="notesSect" style="clear: both">
+  <h2 id="notes">
+    <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+    <span>Notes</span>
+    <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')" title="Add a new note"></span>
+    <span class="clickable glyphicon glyphicon-star-empty" aria-hidden="true" onclick="ractive.toggleAllNotes(this)" title="Toggle showing all notes or just the favorites"></span>
+    {{#alerts['notes']}}<span class="alert-counter alert-danger"> {{alerts['notes']}}</span>{{/}}
+  </h2>
+  <div class="currentBody col-md-12" style="display:none">
+	  <table id="notesTable" class="table table-striped"><tbody>
+	    {{#each current.notes:j}}
+	      <tr class="{{#if favorite}}favorite{{else}}unfavorite{{/if}}">
+	        <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
+	        <td class="field-author">{{{gravatar(author)}}}</td>
+	        {{#created}}
+	          <td class="field-text" {{# lessThan24hAgo(created)}}notyetcontenteditable{{/}}>{{{formatContent(content)}}}</td>
+	        {{else}}
+	          <td class="field-text">
+	            <textarea id="note" on-blur="saveNote(this)" placeholder="Type your note here" required style="width:100%;" value={{content}}></textarea>
+	            <br/>
+	            <a onclick="ractive.cancelNote()">Cancel</a>
+	          </td>
+	        {{/}}
+	        <td class="pull-right field-favorite" on-click="toggleFavorite(j)">
+	          <span class="glyphicon {{formatFavorite(this)}}"></span>
+	        </td>
+	      </tr>
+	    {{/each}}
+	    {{^current.notes}}
+	      <tr><td colspan="5">None</td></tr>
+	    {{/}}
+	  </tbody></table>
+	</div>
+ </section>
+</form>
