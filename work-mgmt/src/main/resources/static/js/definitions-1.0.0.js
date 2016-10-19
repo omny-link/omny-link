@@ -137,6 +137,7 @@ var ractive = new AuthenticatedRactive({
       { "name": "defnListSect", "url": "/partials/defn-list-sect.html"},
       { "name": "defnPropSect", "url": "/partials/defn-property-sect.html"},
       { "name": "helpModal", "url": "/partials/help-modal.html"},
+      { "name": "instanceListSect", "url": "/partials/instance-list-sect.html"},
       { "name": "navbar", "url": "/partials/defn-navbar.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},

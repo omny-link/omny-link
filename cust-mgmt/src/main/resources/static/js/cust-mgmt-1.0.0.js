@@ -158,6 +158,10 @@ var ractive = new AuthenticatedRactive({
         }
       }
     },
+    matchPage: function(pageName) {
+      console.info('matchPage: '+pageName);
+      return document.location.href.indexOf(pageName)!=-1;
+    },
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {
@@ -222,8 +226,14 @@ var ractive = new AuthenticatedRactive({
     stdPartials: [
       { "name": "accountCurrentSect", "url": "/partials/account-current-sect.html"},
       { "name": "accountFinancials", "url": "/partials/account-financials.html"},
+      { "name": "currentContactSect", "url": "/partials/contact-current-sect.html"},
+      { "name": "currentCompanyBackground", "url": "/partials/contact-company-sect.html"},
+      { "name": "currentDocumentListSect", "url": "/partials/contact-current-document-list-sect.html"},
+      { "name": "currentNoteListSect", "url": "/partials/contact-current-note-list-sect.html"},
+      { "name": "currentTaskListSect", "url": "/partials/task-list-sect.html"},
       { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
       { "name": "helpModal", "url": "/partials/help-modal.html"},
+      { "name": "instanceListSect", "url": "/partials/instance-list-sect.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
@@ -232,10 +242,9 @@ var ractive = new AuthenticatedRactive({
       { "name": "contactListTable", "url": "/partials/contact-list-table.html"},
       { "name": "mergeModal", "url": "/partials/contact-merge-sect.html"},
       { "name": "navbar", "url": "/partials/contact-navbar.html"},
-      { "name": "currentContactSect", "url": "/partials/contact-current-sect.html"},
-      { "name": "currentCompanyBackground", "url": "/partials/contact-company-sect.html"},
       { "name": "supportBar", "url": "/partials/support-bar.html"},
-    ],
+      { "name": "taskListTable", "url": "/partials/task-list-table.html"}
+    ]
   },
   add: function () {
     console.log('add...');
@@ -456,8 +465,13 @@ var ractive = new AuthenticatedRactive({
         ractive.set('current.instances',data);
         console.log('fetched '+data.length+' instances');
         for (idx in data) {
-          ractive.splice('current.activities', { content: "A placeholder", type: "workflow", lastUpdated: "2016-10-10" });
+          ractive.push('current.activities', {
+            content: data[idx]['processDefinitionId']+': '+data[idx]['businessKey'],
+            occurred: "2016-10-10",
+            type: "workflow"
+          });
         }
+        ractive.sortChildren('instances','occurred',false);
         ractive.set('saveObserver', true);
       }
     });
@@ -483,7 +497,25 @@ var ractive = new AuthenticatedRactive({
         ractive.set('saveObserver', true);
       }
     });
-  },  
+  },
+  fetchTasks: function (contactId) {
+    console.info('fetchTasks...');
+
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/tasks/findByVar/contactId/'+contactId,
+      crossDomain: true,
+      success: function( data ) {
+        console.log('fetched '+data.length+' tasks');
+        ractive.set('xTasks',data);
+        ractive.set('current.tasks',data);
+        ractive.sortChildren('tasks','dueDate',false);
+        ractive.set('saveObserver', true);
+        ractive.set('alerts.tasks',data.length);
+      }
+    });
+  },
   filter: function(filter) {
     console.log('filter: '+JSON.stringify(filter));
     ractive.set('filter',filter);
@@ -900,6 +932,7 @@ var ractive = new AuthenticatedRactive({
         ractive.set('current', data);
 
         if (ractive.get('tenant.show.orders')) ractive.fetchOrders(ractive.id(ractive.get('current')));
+        ractive.fetchTasks(ractive.id(ractive.get('current')));
 
         ractive.initControls();
         ractive.initTags();

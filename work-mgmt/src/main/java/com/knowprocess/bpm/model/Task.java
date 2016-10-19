@@ -238,7 +238,7 @@ public class Task implements Serializable, org.activiti.engine.task.Task {
                 .taskCandidateOrAssigned(involvesUser).list());
     }
 
-    private static List<Task> wrap(
+    public static List<Task> wrap(
             final List<org.activiti.engine.task.Task> list) {
         ArrayList<Task> list2 = new ArrayList<Task>();
         for (org.activiti.engine.task.Task instance : list) {

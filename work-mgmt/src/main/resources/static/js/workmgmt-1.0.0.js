@@ -107,6 +107,10 @@ var ractive = new AuthenticatedRactive({
       else if (f.func=='isDeferred') return ractive.isDeferred(obj);
       else return eval('obj["'+f.field+'"]'+f.operator+f.value);
     },
+    matchPage: function(pageName) {
+      console.info('matchPage: '+pageName);
+      return document.location.href.indexOf(pageName)!=-1;
+    },
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {
@@ -184,7 +188,8 @@ var ractive = new AuthenticatedRactive({
       { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "workCurrentSect", "url": "/partials/work-current-sect.html"},
-      { "name": "workListSect", "url": "/partials/work-list-sect.html"}
+      { "name": "workListSect", "url": "/partials/work-list-sect.html"},
+      { "name": "workListTable", "url": "/partials/task-list-table.html"}
     ],
     tasks: [],
     title: 'Work Management',
@@ -227,8 +232,13 @@ var ractive = new AuthenticatedRactive({
     console.log('fetch...');
     $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/tasks/'+ractive.get('username')+'/', function( data ) {
       ractive.merge('tasks', data);
+      ractive.set('xTasks', ractive.get('tasks'));
       if (ractive.hasRole('admin')) $('.admin').show();
       ractive.set('searchMatched',$('#tasksTable tbody tr:visible').length);
+      
+      if (getSearchParameters()['id']!=undefined) {
+        ractive.select({ id: getSearchParameters()['id'] })
+      }
     });
   },
   fetchUserNotes: function () {
@@ -446,7 +456,7 @@ var ractive = new AuthenticatedRactive({
       });
     });
 //    ractive.fetchUserNotes();
-    ractive.toggleResults();
+    ractive.showTask();
     $('#currentSect').slideDown();
   },
   sendMessage: function() {
@@ -478,6 +488,12 @@ var ractive = new AuthenticatedRactive({
     $('#tasksTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
     $('#currentSect').slideUp();
     $('#tasksTable').slideDown({ queue: true });
+  },
+  showTask: function() {
+    console.log('showResults');
+    $('#tasksTableToggle').addClass('glyphicon-triangle-right').removeClass('glyphicon-triangle-bottom');
+    $('#tasksTable').slideUp();
+    $('#currentSect').slideDown({ queue: true });
   },
   submitTask: function(action) {
     console.log('submitTask '+JSON.stringify(ractive.get('current'))+' ...');

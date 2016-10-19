@@ -6,9 +6,6 @@
     "documents": true, "financials":true, "marketing":true, "merge":true, "supportBar": true
   },
   "accountFields": [ 
-    { "name": "Sector", "ref": "sector"},
-    { "name": "Lead Office", "ref": "leadOffice"},
-    { "name": "Current Site Capability", "ref": "currentSiteCapability"}
   ],
   "contactActions": [
     { "name": "Add task", "ref": "SimpleToDo", "url": true },

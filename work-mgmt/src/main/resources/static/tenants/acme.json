@@ -8,9 +8,6 @@
     "orders":true, "supportBar": true
   },
   "accountFields": [ 
-    { "label": "Sector", "key": "sector"},
-    { "label": "Lead Office", "key": "leadOffice"},
-    { "label": "Current Site Capability", "key": "currentSiteCapability"}
   ],
   "contactActions": [
     { "name": "Add order", "ref": "AddOrderToContact", "url": true  },
