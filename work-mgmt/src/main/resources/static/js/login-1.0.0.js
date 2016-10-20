@@ -374,6 +374,12 @@ var AuthenticatedRactive = Ractive.extend({
     $(selector).addClass('field-error');
     $(selector)[0].focus();
   },
+  showHelp: function() {
+    console.info('showHelp');
+    $('iframe.helpContent').attr('src',ractive.get('helpUrl'));
+    $('#helpModal').modal({});
+    $('iframe.helpContent').prop('height', window.innerHeight*0.8);
+  },
   showMessage: function(msg, additionalClass) {
     console.log('showMessage: '+msg);
     if (additionalClass == undefined) additionalClass = 'alert-info';
@@ -566,13 +572,11 @@ $( document ).ajaxSuccess(function( event, request, settings ) {
 
 $( document ).bind('keypress', function(e) {
   switch (e.keyCode) {
-  case 13: // Enter
+  case 13: // Enter key
     if (window['ractive'] && ractive['enter']) ractive['enter']();
     break; 
-  case 63:   // ?
-    console.log('help requested');
-    $('#helpModal').modal({});
-    $('iframe.helpContent').prop('height', window.innerHeight*0.8);
+  case 63:   // ? key
+    ractive.showHelp();
     break;
   }
 });
