@@ -1,0 +1,101 @@
+<section class="container navbar-sticky">
+  <h2>
+    {{>navbar}}
+    {{>profileArea}}
+  </h2>
+</section>
+
+<section id="pasteSect" style="display:none">
+  <h2>
+    Import
+    <a class="glyphicon glyphicon-import super-admin pull-right upload" aria-hidden="true" on-click="pasteImport()" title="Import data from file"></a>
+  </h2>
+  <div id="pasteZone" class="col-md-12 pasteZone">
+    <span class="target" style="border: #666 solid 1px">Paste your data here</span>
+  </div>
+
+  <div id="pastePreview" style="clear:both">
+    <table class="accounts table table-striped">
+      <thead>
+        {{#each pasteData.headers:idx}}
+          <th data-name="{{.}}" >
+            <span>{{.}}</span>
+            <span class="alert-warning glyphicon glyphicon-warning-sign" style="display:none" title="field '{{.}}' is not recognised"></span>
+          </th>
+        {{/each}}
+      </thead>
+      <tbody>
+        {{#each pasteData.rows:idx}}
+          <tr data-row="{{idx}}">
+            {{#each pasteData.rows[idx]:colIdx}}
+              <td data-col="{{colIdx}}">
+                <span>{{.}}</span>
+                <span class="alert-warning glyphicon glyphicon-warning-sign" style="display:none" title="'{{.}}' is not a valid value"></span>
+              </td>
+            {{/each}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
+<section id="accountsSect">
+  <h2 class="navbar-top">
+    {{>navbar}}
+    <a class="glyphicon glyphicon glyphicon-cloud-upload power-user pull-right" aria-hidden="true" on-click="pasteInit()" title="Upload data from file"></a>
+  </h2>
+  <table id="accountsTable" class="accounts table table-striped">
+	  <thead>
+	    <tr>
+	      <th></th>
+	      {{#tenant.show.merge}}
+	        <th><input class="checkbox" type="checkbox"/></th>
+	      {{/}}
+	      {{#tenant.show.account}}<th on-click="sort:accountName">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
+	      {{#tenant.show.marketing}}
+	        <th on-click="sort:stage">Stage<span class="sortable {{ sorted('stage') }} glyphicon"></th>
+	      {{/}}
+	      <th on-click="sort:accountType">Account Type<span class="sortable {{ sorted('accountType') }} glyphicon"></th>
+	      <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon"></th>
+	      <th on-click="sort:firstContact">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}First Contact{{/}}<span class="sortable {{ sorted('firstContact') }} glyphicon"></th>
+	      <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
+	      <th>Alerts</th>
+	      <th>Tags</th>
+	      <th class="col-actions">Actions</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	    {{#each sort(accounts,sortColumn,sortAsc):i}}
+	      {{# matchSearch(this) && matchFilter(this) }}
+	        <tr class="{{stage.toSlug()}}" data-href="{{selfRef}}">
+	          <td on-click="edit(this)">{{i+1}}</td>
+	          {{#tenant.show.merge}}
+	            <td><input class="checkbox" type="checkbox" on-change="selectMultiple(this)"/></td>
+	          {{/}}
+            <td on-click="edit(this)">{{name}}</td>
+	          {{#tenant.show.marketing}}
+	            <td on-click="edit(this)">{{stage}}</td>
+	          {{/}}
+	          <td on-click="edit(this)">{{accountType}}</td>
+	          <td on-click="edit(this)">{{{gravatar(owner)}}}</td>
+	          <td on-click="edit(this)">{{formatDate(firstContact)}}</td>
+	          <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
+	          <td on-click="edit(this)"><span class="alert-counter {{#alerts.length>0}}alert-danger{{else}}alert-success{{/}}">{{#alerts}}{{alerts.length}}{{else}}0{{/}}</span></td>
+	          <td on-click="edit(this)">{{{formatTags(tags)}}}</td>
+	          <td class="col-actions">
+	            <a class="clickable glyphicon glyphicon-transfer" aria-hidden="true" on-click="mergeContacts(this)" style="display:none;" title="Merge two records"></a>
+	            <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteAccount(this)" title="Delete this record"></a>
+	            <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)" title="View or edit this contact"></a>
+	            <a class="clickable glyphicon glyphicon-new-window" aria-hidden="true" on-click="openInNewWindow(this)" style="display:none" title="View or edit this contact"></a>
+	          </td>
+	        </tr>
+	      {{/}}
+	    {{/each}}
+	  </tbody>
+	  <tfoot>
+	    <tr><th colspan="12">{{searchMatched == 0 ? 'No' : searchMatched}} matching contact{{searchMatched==1 ? '' : 's'}}</th></tr>
+	  </tfoot>
+	</table>
+</section>

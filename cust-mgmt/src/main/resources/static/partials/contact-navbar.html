@@ -1,5 +1,11 @@
 <a id="contactsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the contact table"></a>
-<span>{{#tenant.strings.contacts}}{{tenant.strings.contacts}}{{else}}Contacts{{/}}</span>
+<span>
+  {{#entityPath=='/accounts'}}
+    {{#tenant.strings.accounts}}{{tenant.strings.accounts}}{{else}}Accounts{{/}}
+  {{else}}
+    {{#tenant.strings.contacts}}{{tenant.strings.contacts}}{{else}}Contacts{{/}}
+  {{/}}
+</span>
 <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new contact"></a>
 <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
 <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">

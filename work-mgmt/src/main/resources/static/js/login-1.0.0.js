@@ -68,6 +68,7 @@ var AuthenticatedRactive = Ractive.extend({
     $.getJSON(ractive.uri(ractive.get('current'))+'/documents',  function( data ) {
       if (data['_embedded'] != undefined) {
         console.log('found docs '+data);
+        if (ractive.get('current.documents')==undefined) ractive.set('current.documents', []);
         ractive.merge('current.documents', data['_embedded'].documents);
         // sort most recent first
         ractive.get('current.documents').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
@@ -79,6 +80,7 @@ var AuthenticatedRactive = Ractive.extend({
     $.getJSON(ractive.uri(ractive.get('current'))+'/notes',  function( data ) {
       if (data['_embedded'] != undefined) {
         console.log('found notes '+data);
+        if (ractive.get('current.notes')==undefined) ractive.set('current.notes', []);
         ractive.merge('current.notes', data['_embedded'].notes);
         // sort most recent first
         ractive.get('current.notes').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
@@ -170,7 +172,7 @@ var AuthenticatedRactive = Ractive.extend({
     return false;
   },
   hideMessage: function() {
-    $('#messages').hide();
+    $('#messages, .messages').hide();
   },
   hideUpload: function () {
     console.log('hideUpload...');
@@ -384,14 +386,14 @@ var AuthenticatedRactive = Ractive.extend({
     console.log('showMessage: '+msg);
     if (additionalClass == undefined) additionalClass = 'alert-info';
     if (msg === undefined) msg = 'Working...';
-    $('#messages').empty().append(msg).removeClass().addClass(additionalClass).show();
+    $('#messages, .messages').empty().append(msg).removeClass().addClass('messages').addClass(additionalClass).show();
 //    document.getElementById('messages').scrollIntoView();
     if (fadeOutMessages && additionalClass!='alert-danger' && additionalClass!='alert-warning') {
       setTimeout(function() {
-        $('#messages').fadeOut();
+        $('#messages, .messages').fadeOut();
       }, EASING_DURATION*10);
     } else {
-      $('#messages').append('<span class="text-danger pull-right glyphicon glyphicon-remove" onclick="ractive.hideMessage()"></span>');
+      $('#messages, .messages').append('<span class="text-danger pull-right glyphicon glyphicon-remove" onclick="ractive.hideMessage()"></span>');
     }
   },
   showReconnected: function() {
@@ -410,6 +412,17 @@ var AuthenticatedRactive = Ractive.extend({
   showUpload: function () {
     console.log('showUpload...');
     $('#upload').slideDown();
+  },
+  showSocial: function(network) {
+    console.log('showSocial: '+network);
+    ractive.set('network',network);
+    ractive.set('current.network',ractive.get('current.'+network));
+    $('#socialModalSect').modal('show');
+  },
+  submitSocial: function(network) {
+    console.log('submitSocial: '+network);
+    ractive.set('current.'+network,ractive.get('current.network'));
+    $('#socialModalSect').modal('hide');
   },
   sortChildren: function(childArray, sortBy, asc) {
     console.info('sortChildren');
@@ -443,6 +456,7 @@ var AuthenticatedRactive = Ractive.extend({
     console.log(JSON.stringify(instanceToStart));
     // save what we know so far...
     ractive.set('instanceToStart',instanceToStart);
+    ractive.initAutoComplete();
     if (form == undefined || !form) {
       // ... and submit
       ractive.submitCustomAction();
@@ -536,6 +550,8 @@ var AuthenticatedRactive = Ractive.extend({
   uri: function(entity) {
     // TODO switch to use modularized version
     console.log('uri: '+entity);
+    var saveObserver = ractive.get('saveObserver');
+    ractive.set('saveObserver', false);
     var uri;
     if (entity['links']!=undefined) {
       $.each(entity.links, function(i,d) {
@@ -553,6 +569,7 @@ var AuthenticatedRactive = Ractive.extend({
       uri = ractive.getServer()+uri;
     }
 
+    ractive.set('saveObserver', saveObserver);
     return uri;
   }
 });
