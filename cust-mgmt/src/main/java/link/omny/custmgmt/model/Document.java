@@ -53,6 +53,11 @@ public class Document implements Serializable {
     @JsonProperty
     private String url;
 
+    @RestResource(rel = "documentAccount")
+    @ManyToOne(targetEntity = Account.class)
+    @JoinColumn(name = "account_id")
+    private Account account;
+
     @RestResource(rel = "documentContact")
     @ManyToOne(targetEntity = Contact.class)
     @JoinColumn(name = "contact_id")

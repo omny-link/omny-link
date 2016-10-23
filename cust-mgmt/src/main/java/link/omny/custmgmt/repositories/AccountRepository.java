@@ -15,10 +15,10 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
 
     List<Account> findByName(@Param("name") String name);
 
-    @Query("SELECT a FROM Account a LEFT JOIN a.contact c WHERE a.tenantId = :tenantId ORDER BY a.lastUpdated DESC")
+    @Query("SELECT a FROM Account a WHERE a.tenantId = :tenantId ORDER BY a.lastUpdated DESC")
     List<Account> findAllForTenant(@Param("tenantId") String tenantId);
 
-    @Query("SELECT a FROM Account a LEFT JOIN a.contact c WHERE a.tenantId = :tenantId ORDER BY a.lastUpdated DESC")
+    @Query("SELECT a FROM Account a WHERE a.tenantId = :tenantId ORDER BY a.lastUpdated DESC")
     List<Account> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 

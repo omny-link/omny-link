@@ -66,6 +66,11 @@ public class Note implements Serializable {
     // http://stackoverflow.com/questions/25311978/posting-a-onetomany-sub-resource-association-in-spring-data-rest/25451662#25451662
     // However doing so means we are trapped in the POST sub-entity + PUT
     // association trap, hence doing it this way
+    @RestResource(rel = "noteAccount")
+    @ManyToOne(targetEntity = Account.class)
+    @JoinColumn(name = "account_id")
+    private Account account;
+
     @RestResource(rel = "noteContact")
     @ManyToOne(targetEntity = Contact.class)
     @JoinColumn(name = "contact_id")

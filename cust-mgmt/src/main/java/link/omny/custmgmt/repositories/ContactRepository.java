@@ -16,23 +16,23 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(excerptProjection = ContactExcept.class, path = "/contacts")
 public interface ContactRepository extends CrudRepository<Contact, Long> {
 
-    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (stage IS NULL OR stage != 'deleted') ORDER BY c.lastUpdated DESC")
+    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (c.stage IS NULL OR c.stage != 'deleted') ORDER BY c.lastUpdated DESC")
     List<Contact> findAllForTenant(@Param("tenantId") String tenantId);
 
-    @Query("SELECT COUNT(c) FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (stage IS NULL OR stage != 'deleted')")
+    @Query("SELECT COUNT(c) FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (c.stage IS NULL OR c.stage != 'deleted')")
     long countForTenant(@Param("tenantId") String tenantId);
 
-    @Query("SELECT COUNT(c) FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (stage IS NULL OR stage != 'deleted') AND alerts IS NOT NULL")
+    @Query("SELECT COUNT(c) FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (c.stage IS NULL OR c.stage != 'deleted') AND alerts IS NOT NULL")
     long countAlertsForTenant(@Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (stage IS NULL OR stage != 'deleted') AND (owner = :userId) ORDER BY c.lastUpdated DESC")
+    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (c.stage IS NULL OR c.stage != 'deleted') AND (owner = :userId) ORDER BY c.lastUpdated DESC")
     List<Contact> findAllForTenantOwnedByUser(
             @Param("tenantId") String tenantId, @Param("userId") String userId);
 
-    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND c.doNotEmail = false AND (stage IS NULL OR stage != 'deleted') ORDER BY c.lastUpdated DESC")
+    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND c.doNotEmail = false AND (c.stage IS NULL OR c.stage != 'deleted') ORDER BY c.lastUpdated DESC")
     List<Contact> findAllEmailableForTenant(@Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (stage IS NULL OR stage != 'deleted') ORDER BY c.lastUpdated DESC")
+    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (c.stage IS NULL OR c.stage != 'deleted') ORDER BY c.lastUpdated DESC")
     List<Contact> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
@@ -69,38 +69,38 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
             @Param("lastName") String lastName,
             @Param("accountName") String accountName);
 
-    @Query("SELECT c FROM Contact c WHERE c.email = :email AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId")
+    @Query("SELECT c FROM Contact c WHERE c.email = :email AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId")
     List<Contact> findByEmail(@Param("email") String email,
             @Param("tenantId") String tenantId);
 
     @Query("SELECT c FROM Contact c WHERE c.emailHash = :emailHash AND c.tenantId = :tenantId")
     List<Contact>  findByEmailHash(@Param("emailHash") String emailHash, @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c WHERE c.tags LIKE :tag AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId")
+    @Query("SELECT c FROM Contact c WHERE c.tags LIKE :tag AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId")
     List<Contact> findByTag(@Param("tag") String tag,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c.stage, COUNT(c) FROM Contact c WHERE (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId GROUP BY c.stage")
+    @Query("SELECT c.stage, COUNT(c) FROM Contact c WHERE (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId GROUP BY c.stage")
     List<Object[]> findAllForTenantGroupByStage(
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId")
+    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId")
     List<Contact> findByUuid(@Param("uuid") String uuid,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.email IS NOT NULL AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId")
+    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.email IS NOT NULL AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId")
     List<Contact> findKnownByUuid(@Param("uuid") String uuid,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.firstName IS NULL AND c.lastName IS NULL AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId")
+    @Query("SELECT c FROM Contact c WHERE c.uuid = :uuid AND c.firstName IS NULL AND c.lastName IS NULL AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId")
     List<Contact> findAnonByUuid(@Param("uuid") String uuid,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c INNER JOIN c.activity a WHERE a.occurred > :sinceDate AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId ORDER BY a.occurred DESC")
+    @Query("SELECT c FROM Contact c INNER JOIN c.activity a WHERE a.occurred > :sinceDate AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId ORDER BY a.occurred DESC")
     List<Contact> findActiveForTenant(@Param("sinceDate") Date sinceDate,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c INNER JOIN c.account a WHERE a.id = :accountId AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId ORDER BY c.lastName DESC")
+    @Query("SELECT c FROM Contact c INNER JOIN c.account a WHERE a.id = :accountId AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId ORDER BY c.lastName DESC")
     List<Contact> findByAccountId(@Param("accountId") Long accountId,
             @Param("tenantId") String tenantId);
 

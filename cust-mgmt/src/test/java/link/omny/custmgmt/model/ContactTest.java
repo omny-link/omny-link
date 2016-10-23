@@ -10,28 +10,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Scanner;
-import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpm.model.ProcessDefinition;
 
 public class ContactTest {
-
-    private static Validator validator;
-
-    @BeforeClass
-    public static void setUpClass() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
 
     @Test
     public void testSettingFullName() {
@@ -92,62 +77,6 @@ public class ContactTest {
 
         contact.confirmEmail(code);
         assertTrue(contact.isEmailConfirmed());
-    }
-
-    @Test
-    public void testUKCompanyNumber() {
-        Account acct = new Account();
-        acct.setCompanyNumber("12345678");
-
-        Set<ConstraintViolation<Account>> violations = validator
-                .validateProperty(acct, "companyNumber");
-        assertEquals(0, violations.size());
-    }
-
-    @Test
-    public void testUK7DigitCompanyNumber() {
-        Account acct = new Account();
-        acct.setCompanyNumber("1234567");
-
-        Set<ConstraintViolation<Account>> violations = validator
-                .validateProperty(acct, "companyNumber");
-        assertEquals(0, violations.size());
-        assertEquals("01234567", acct.getCompanyNumber());
-    }
-
-    @Test
-    public void testUK6DigitCompanyNumber() {
-        Account acct = new Account();
-        acct.setCompanyNumber("123456");
-
-        Set<ConstraintViolation<Account>> violations = validator
-                .validateProperty(acct, "companyNumber");
-        assertEquals(0, violations.size());
-        assertEquals("00123456", acct.getCompanyNumber());
-    }
-
-    @Test
-    public void testScottishCompanyNumber() {
-        Account acct = new Account();
-        acct.setCompanyNumber("SC345678");
-
-        Set<ConstraintViolation<Account>> violations = validator
-                .validateProperty(acct, "companyNumber");
-        assertEquals(0, violations.size());
-    }
-
-    @Test
-    public void testUKPartnershipNumber() {
-        Account acct = new Account();
-        acct.setCompanyNumber("OC345678");
-
-        Set<ConstraintViolation<Account>> violations = validator
-                .validateProperty(acct, "companyNumber");
-        assertEquals(0, violations.size());
-
-        acct.setCompanyNumber("CO345678");
-        violations = validator.validateProperty(acct, "companyNumber");
-        assertEquals(1, violations.size());
     }
 
     @Test
