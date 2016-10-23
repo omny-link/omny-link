@@ -57,6 +57,11 @@ public class Activity implements Serializable {
     @JsonProperty
     private Date occurred;
 
+    @RestResource(rel = "activityAccount")
+    @ManyToOne(targetEntity = Account.class)
+    @JoinColumn(name = "account_id")
+    private Account account;
+
     @RestResource(rel = "activityContact")
     @ManyToOne(targetEntity = Contact.class)
     @JoinColumn(name = "contact_id")

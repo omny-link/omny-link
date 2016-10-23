@@ -89,7 +89,7 @@ public class OrderController {
      * 
      * @return orders for that contact.
      */
-    @RequestMapping(value = "/{contactId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/findByContact/{contactId}", method = RequestMethod.GET)
     public @ResponseBody List<ShortOrder> listForContact(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
@@ -100,10 +100,36 @@ public class OrderController {
 
         List<Order> list;
         if (limit == null) {
-            list = orderRepo.findAllForContact(contactId);
+            list = orderRepo.findAllForContact(tenantId, contactId);
         } else {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
-            list = orderRepo.findPageForContact(contactId, pageable);
+            list = orderRepo.findPageForContact(tenantId, contactId, pageable);
+        }
+        LOGGER.info(String.format("Found %1$s orders", list.size()));
+
+        return wrap(list);
+    }
+
+    /**
+     * Return just the orders for a specific account.
+     * 
+     * @return orders for that contact.
+     */
+    @RequestMapping(value = "/findByAccount/{accountId}", method = RequestMethod.GET)
+    public @ResponseBody List<ShortOrder> listForAccount(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        LOGGER.info(String.format("List orders for contact %1$s & tenant %2$s",
+                accountId, tenantId));
+
+        List<Order> list;
+        if (limit == null) {
+            list = orderRepo.findAllForAccount(tenantId, accountId);
+        } else {
+            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            list = orderRepo.findPageForContact(tenantId, accountId, pageable);
         }
         LOGGER.info(String.format("Found %1$s orders", list.size()));
 
