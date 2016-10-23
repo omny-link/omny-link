@@ -1,14 +1,15 @@
 <section id="currentSect" style="display:none">
   <form class="inline-form form" id="currentForm">
-    {{^current.id}}
-      <h2 class="form create-form">
+    {{^current.selfRef}}
+      <div class="form create-form">
         <input class="create-field form-control col-xs-1" id="curTitle" placeholder="Title" value="{{current.title}}"/>
         <input class="create-field form-control col-xs-2" id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/>
         <input class="create-field form-control col-xs-2" id="curLastName" placeholder="Last Name" required value="{{current.lastName}}"/>
-      </h2>
+      </div>
+      <h2 class="create-form" style="">&nbsp;</h2>
     {{/}}
     
-    {{#current.id}}
+    {{#current.selfRef}}
       <h2 class="edit-form">
         <img class="img-rounded" src="//www.gravatar.com/avatar/{{hash(current.email)}}?d=blank&s=36" style="margin-top:-10px"/>
         <span contenteditable id="curTitle2" on-focus="editField('#curTitle2','current.title')" on-blur="updateField('#curTitle2','current.title')">{{current.title}}</span>
@@ -185,7 +186,36 @@
             </li>
           {{/}}
           {{#if tenant.show.socialContact}}
-            <li>{{>socialControls}}</li>
+            <li class="form-group">
+              <label class="col-md-4 col-sm-4">Twitter:</label>
+              <div class="input-group">
+                <input class="col-md-8 col-sm-8 form-control" id="curTwitter" pattern="@[a-zA-Z0-9_]{1,16}" type="text" value="{{current.twitter}}"/>
+                <span class="input-group-addon">
+                  <a href="https://twitter.com/{{current.twitter}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+                </span>
+              </div>
+              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include @</p>
+            </li>
+            <li class="form-group">
+              <label class="col-md-4 col-sm-4">Facebook:</label>
+              <div class="input-group">
+                <input class="col-md-8 col-sm-8 form-control" id="curFacebook" type="url" value="{{current.facebook}}"/>
+                <span class="input-group-addon">
+                  <a href="{{current.facebook}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+                </span>
+              </div>
+              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
+            </li>
+            <li class="form-group">
+              <label class="col-md-4 col-sm-4">LinkedIn:</label>
+              <div class="input-group">
+                <input class="col-md-8 col-sm-8 form-control" id="curLinkedIn" type="url" value="{{current.linkedIn}}"/>
+                <span class="input-group-addon">
+                  <a href="{{current.linkedIn}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+                </span>
+              </div>
+              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
+            </li>
           {{/if}}
         </ul>
       </div>

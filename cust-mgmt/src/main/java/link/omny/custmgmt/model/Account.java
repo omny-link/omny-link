@@ -69,8 +69,10 @@ public class Account implements Serializable {
      * left zero padding).
      * <li>Scottish company numbers are SC then 6 digits.
      * <li>UK LLP numbers are OC then 6 digits.
+     * <li>Northern Irish numbers are NI then 6 digits.
+     * <li>Edubase URNs are 6 digits.
      */
-    @Pattern(regexp = "[0-9OS][0-9C][0-9]{5,6}")
+    @Pattern(regexp = "[0-9OSN]?[0-9CI]?[0-9]{5,6}")
     @JsonProperty
     private String companyNumber;
 
@@ -154,6 +156,39 @@ public class Account implements Serializable {
     @Size(max = 20)
     private String noOfEmployees;
 
+    @JsonProperty
+    private boolean existingCustomer;
+
+    @JsonProperty
+    private String stage;
+
+    @JsonProperty
+    private String stageReason;
+
+    @JsonProperty
+    private Date stageDate;
+
+    @JsonProperty
+    private String enquiryType;
+
+    @JsonProperty
+    private String accountType;
+
+    @JsonProperty
+    private String owner;
+
+    /**
+     * Comma-separated set of alerts for the contact.
+     */
+    @JsonProperty
+    private String alerts;
+
+    /**
+     * Comma-separated set of arbitrary tags for the contact.
+     */
+    @JsonProperty
+    private String tags;
+
     /**
      */
     @NotNull
@@ -184,6 +219,15 @@ public class Account implements Serializable {
     @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomAccountField> customFields;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "account")
+    private List<Note> notes;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "account")
+    private List<Activity> activity;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "account")
+    private List<Document> documents;
 
     public List<CustomAccountField> getCustomFields() {
         if (customFields == null) {
@@ -235,10 +279,14 @@ public class Account implements Serializable {
         }
     }
 
+    @JsonProperty
+    public Long getAccountId() {
+        return getId();
+    }
+
     public String getCompanyNumber() {
-        if (companyNumber != null && companyNumber.length() < 8) {
-            companyNumber = String.format("%08d",
-                    Integer.parseInt(companyNumber));
+        if (companyNumber != null && companyNumber.trim().length() == 0) {
+            companyNumber = null;
         }
         return companyNumber;
     }

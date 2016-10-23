@@ -6,9 +6,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
+import link.omny.custmgmt.json.JsonCustomAccountFieldDeserializer;
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.Account;
+import link.omny.custmgmt.model.CustomAccountField;
+import link.omny.custmgmt.model.Document;
+import link.omny.custmgmt.model.Note;
 import link.omny.custmgmt.repositories.AccountRepository;
+import link.omny.custmgmt.repositories.DocumentRepository;
+import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +49,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 /**
  * REST web service for uploading and accessing a file of JSON Accounts (over
@@ -55,6 +68,12 @@ public class AccountController {
 
     @Autowired
     private AccountRepository accountRepo;
+
+    @Autowired
+    private DocumentRepository docRepo;
+
+    @Autowired
+    private NoteRepository noteRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -143,6 +162,23 @@ public class AccountController {
     }
 
     /**
+     * Return just the matching contact.
+     * 
+     * @return the contact with this id.
+     * @throws BusinessEntityNotFoundException
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @Transactional
+    public @ResponseBody ShortAccount findById(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id)
+            throws BusinessEntityNotFoundException {
+        LOGGER.debug(String.format("Find account for id %1$s", id));
+
+        return wrap(accountRepo.findOne(Long.parseLong(id)));
+    }
+    
+    /**
      * Update an existing account.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -155,6 +191,69 @@ public class AccountController {
         BeanUtils.copyProperties(updatedAccount, account, "id");
         account.setTenantId(tenantId);
         accountRepo.save(account);
+    }
+
+    /**
+     * Add a document to the specified contact.
+     */
+    // Jackson cannot deserialise document because of contact reference
+    // @RequestMapping(value = "/{contactId}/documents", method =
+    // RequestMethod.PUT)
+    public @ResponseBody void addDocument(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId, @RequestBody Document doc) {
+        Account account = accountRepo.findOne(accountId);
+        doc.setAccount(account);
+        docRepo.save(doc);
+        // necessary to force a save
+        account.setLastUpdated(new Date());
+        accountRepo.save(account);
+        // Similarly cannot return object until solve Jackson object cycle
+        // return doc;
+    }
+
+    /**
+     * Add a document to the specified contact.
+     */
+    @RequestMapping(value = "/{accountId}/documents", method = RequestMethod.POST)
+    public @ResponseBody void addDocument(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId,
+            @RequestParam("author") String author,
+            @RequestParam("name") String name, @RequestParam("url") String url) {
+
+        addDocument(tenantId, accountId, new Document(author, name, url));
+    }
+
+    /**
+     * Add a note to the specified contact.
+     */
+    // TODO Jackson cannot deserialise document because of contact reference
+    // @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.PUT)
+    public @ResponseBody void addNote(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId, @RequestBody Note note) {
+        Account account = accountRepo.findOne(accountId);
+        note.setAccount(account);
+        noteRepo.save(note);
+        // necessary to force a save
+        account.setLastUpdated(new Date());
+        accountRepo.save(account);
+        // Similarly cannot return object until solve Jackson object cycle
+        // return note;
+    }
+
+    /**
+     * Add a note to the specified contact.
+     */
+    @RequestMapping(value = "/{accountId}/notes", method = RequestMethod.POST)
+    public @ResponseBody void addNote(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId,
+            @RequestParam("author") String author,
+            @RequestParam("favorite") boolean favorite,
+            @RequestParam("content") String content) {
+        addNote(tenantId, accountId, new Note(author, content, favorite));
     }
 
     private List<ShortAccount> wrap(List<Account> list) {
@@ -183,9 +282,43 @@ public class AccountController {
     }
 
     @Data
+    @EqualsAndHashCode(callSuper = true)
     public static class ShortAccount extends ResourceSupport {
         private String selfRef;
         private String name;
+        private String companyNumber;
+        private String sic;
+        private String aliases;
+        private String businessWebsite;
+        private String email;
+        private boolean emailConfirmed;
+        private String emailHash;
+        private String phone1;
+        private String phone2;
+        private String address1;
+        private String address2;
+        private String town;
+        private String countyOrCity;
+        private String postCode;
+        private String country;
+        private String twitter;
+        private String facebook;
+        private String linkedIn;
+        private String shortDesc;
+        private String description;
+        private Integer incorporationYear;
+        private String noOfEmployees;
+        private String stage;
+        private String stageReason;
+        private Date stageDate;
+        private String enquiryType;
+        private String accountType;
+        private String owner;
+        private String alerts;
+        private String tags;
+        @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)
+        @JsonSerialize(using = JsonCustomFieldSerializer.class)
+        private List<CustomAccountField> customFields;
         private Date firstContact;
         private Date lastUpdated;
     }
