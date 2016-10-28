@@ -165,6 +165,32 @@ public class StockItemController {
     }
 
     /**
+     * @return stockItems for the specified tenant and status.
+     */
+    @RequestMapping(value = "/findByStatus/{status}", method = RequestMethod.GET)
+    public @ResponseBody List<ShortStockItem> findByStatusForTenant(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("status") String status,
+            @AuthenticationPrincipal UserDetails activeUser,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        LOGGER.info(String.format("List stockItems for tenant %1$s", tenantId));
+
+        List<StockItem> list;
+        if (limit == null) {
+            list = stockItemRepo.findByStatusForTenant(status.toLowerCase(),
+                    tenantId);
+        } else {
+            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            list = stockItemRepo.findPageByStatusForTenant(
+                    status.toLowerCase(), tenantId, pageable);
+        }
+        LOGGER.info(String.format("Found %1$s stockItems", list.size()));
+
+        return wrap(list);
+    }
+
+    /**
      * Return just the matching stock item.
      * 
      * @return stock item for that tenant with the matching id.
