@@ -115,19 +115,29 @@ var ractive = new AuthenticatedRactive({
   },
   clone: function(message) {
     console.log('clone');
-    if (message._links != undefined) { 
-      $.each(message._links, function(i,d) {
-        if (d.rel == 'self') message._links.splice(i,1);
-      });
-    } 
-    if (message.links != undefined) {
-      $.each(message.links, function(i,d) {
-        if (d.rel == 'self') message.links.splice(i,1);
-      });
-    }
-    message.title += ' (copy)';
-    ractive.set('current', message);
-    ractive.save();
+    ractive.set('saveObserver', false);
+
+    var newMemo = JSON.parse(JSON.stringify(message));
+    $.ajax({
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/memos/'+ractive.id(message)+'/clone',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(newMemo),
+      success: completeHandler = function(data, textStatus, jqXHR) {
+        //console.log('data: '+ data);
+        var location = jqXHR.getResponseHeader('Location');
+        ractive.set('saveObserver',false);
+        if (location != undefined) ractive.set('current._links.self.href',location);
+        if (jqXHR.status == 201) {
+          ractive.set('currentIdx',ractive.get('memos').push(ractive.get('current'))-1);
+        }
+        ractive.push('memos', data);
+        ractive.showResults();
+        ractive.showMessage('Memo copied');
+        ractive.set('saveObserver',true);
+      }
+    });
+    ractive.set('saveObserver', true);
   },
   download: function() {
     console.info('download');
@@ -183,6 +193,7 @@ var ractive = new AuthenticatedRactive({
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
         ractive.set('searchMatched',$('#memosTable tbody tr:visible').length);
+        ractive.initEditor();
         ractive.set('saveObserver', true);
       }
     });
@@ -219,36 +230,41 @@ var ractive = new AuthenticatedRactive({
     } 
     return uri;
   },
-  initEditor: function(enabled) {
+  initEditor: function() {
+    console.info('initEditor');
     ractive.editor = new wysihtml5.Editor("curRichContent", {
-      toolbar:     "wysihtml5-editor-toolbar",
+      parserRules: wysihtml5ParserRules,
       stylesheets: ["//yui.yahooapis.com/2.9.0/build/reset/reset-min.css", "/css/wysihtml5/editor.css"],
-      parserRules: wysihtml5ParserRules
+      toolbar:     "wysihtml5-editor-toolbar"
     });
+  },
+  initEditorContent: function(enabled) {
+    console.log('loading wysihtml5');
+    if (ractive.get('current.richContent')!=undefined) {
+      console.log('  ...'+ractive.get('current.richContent'));
+      ractive.editor.setValue(ractive.get('current.richContent'));
+    }
+    var composer = ractive.editor.composer;
+    var h1 = ractive.editor.composer.element.querySelector("h1");
+    if (h1) {
+      composer.selection.selectNode(h1);
+    }
+    // don't seem to be able to do this in CSS
+    $('.wysihtml5-sandbox')
+      .css('border-color','#ccc')
+      .css('margin-left',0);
+    if (!enabled) ractive.editor.disable();
     
-    ractive.editor.on("load", function() {
-      console.log('loading wysihtml5');
-      if (ractive.get('current.richContent')!=undefined) {
-        console.log('  ...'+ractive.get('current.richContent'));
-        ractive.editor.setValue(ractive.get('current.richContent'));
-      }
-      var composer = ractive.editor.composer;
-      var h1 = ractive.editor.composer.element.querySelector("h1");
-      if (h1) {
-        composer.selection.selectNode(h1);
-      }
-      // don't seem to be able to do this in CSS
-      $('.wysihtml5-sandbox')
-        .css('border-color','#ccc')
-        .css('margin-left',0);
-      if (!enabled) ractive.editor.disable();
-    });
     ractive.editor.on("change", function() {
       console.log('wysihtml5 changed value to: '+ractive.editor.getValue());
-      ractive.set('current.richContent',ractive.editor.getValue());
-      /*if (ractive.get('current.plainContent')==undefined || ractive.get('current.plainContent')==''/ * || ractive.get('current.plainContent')==stripTags(ractive.editor.composer.getValue())* /) {
+      if (ractive.get('current')==undefined) {
+        $('#currentForm :invalid').addClass('field-error');
+        $('#currentForm :invalid')[0].focus();
+        ractive.showMessage('Cannot save yet as message is incomplete');
+      } else {
+        ractive.set('current.richContent',ractive.editor.getValue());
         ractive.set('current.plainContent',stripTags(ractive.editor.composer.getValue()));
-      }*/
+      }
     });
   },
   oninit: function() {
@@ -257,21 +273,19 @@ var ractive = new AuthenticatedRactive({
     this.loadStandardPartials(this.get('stdPartials'));
   },
   save: function () {
-    console.log('save message: '+ractive.get('current').lastName+'...');
+    console.log('save message: '+ractive.get('current').name+'...');
     ractive.set('saveObserver',false);
     var id = ractive.uri(ractive.get('current'));
     ractive.set('saveObserver',true);
     if (document.getElementById('currentForm')==undefined) {
       // loading... ignore
     } else if(document.getElementById('currentForm').checkValidity()) {
-      // cannot save message and account in one (grrhh), this will clone...
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
-      tmp.notes = undefined;
-      tmp.documents = undefined;
       tmp.tenantId = ractive.get('tenant.id');
-//      console.log('ready to save message'+JSON.stringify(tmp)+' ...');
+      tmp.richContent = ractive.editor.getValue();
+      tmp.tenantId = ractive.get('tenant.id');
       $.ajax({
-        url: id === undefined ? ractive.getServer()+'/memos/' : ractive.uri(tmp),
+        url: id === undefined ? ractive.getServer()+'/memos/' : id,
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
@@ -290,8 +304,8 @@ var ractive = new AuthenticatedRactive({
         }
       });
     } else {
-      console.warn('Cannot save yet as message is invalid');
       $('#currentForm :invalid').addClass('field-error');
+      $('#currentForm :invalid')[0].focus();
       ractive.showMessage('Cannot save yet as message is incomplete');
     }
   },
@@ -324,9 +338,9 @@ var ractive = new AuthenticatedRactive({
         if (ractive.get('current.status')=='Published') { 
           $('#currentForm input,#currentForm select,#currentForm textarea').prop('disabled',true).prop('readonly',true);
           $('.glyphicon-remove').remove();
-          ractive.initEditor(false);
+          ractive.initEditorContent(false);
         } else {
-          ractive.initEditor(true);
+          ractive.initEditorContent(true);
         }
         ractive.editor.setValue(ractive.get('current.richContent'));
         ractive.set('saveObserver',true);
@@ -340,7 +354,7 @@ var ractive = new AuthenticatedRactive({
 	  $('#currentSect').slideDown();
   },
   showActivityIndicator: function(msg, addClass) {
-    document.body.style.cursor='progress';
+    dolastNcument.body.style.cursor='progress';
     this.showMessage(msg, addClass);
   },
   showResults: function() {

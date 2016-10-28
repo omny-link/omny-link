@@ -9,21 +9,21 @@
 
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li><label class="col-md-4 col-sm-4">Owner: </label><input class="col-md-8 col-sm-8 form-control typeahead" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}"></li>
+        <li><label class="col-md-4 col-sm-4 required">Owner: </label><input class="col-md-8 col-sm-8 form-control typeahead" placeholder="Start typing to filter options" id="curOwner" required value="{{current.owner}}"></li>
       </ul>
     </div>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         <li>
-          <label class="col-md-4 col-sm-4">Status: </label>
-          <input class="col-md-8 col-sm-8 form-control typeahead" placeholder="Start typing to filter options" id="curStatus" value="{{current.status}}">
+          <label class="col-md-4 col-sm-4 required">Status: </label>
+          <input class="col-md-8 col-sm-8 form-control typeahead" placeholder="Start typing to filter options" id="curStatus" required value="{{current.status}}">
           <p class="col-md-offset-4 hidden-sm help-block">Draft, Ready for review, Published etc.</p>
         </li>
       </ul>
     </div>
     <div class="col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li><label class="col-md-4 col-sm-4">Name:</label><input class="col-md-8 col-sm-8 form-control" id="curName" required type="text" value="{{current.name}}"></li>
+        <li><label class="col-md-4 col-sm-4 required">Name:</label><input class="col-md-8 col-sm-8 form-control" id="curName" pattern="[0-9a-zA-Z]*" required type="text" value="{{current.name}}"></li>
       </ul>
     </div>
     <div class="col-md-6 col-sm-12 col-xs-12">
@@ -80,12 +80,14 @@
                 <a data-wysihtml5-dialog-action="save">OK</a>&nbsp;<a data-wysihtml5-dialog-action="cancel">Cancel</a>
               </div>
             </div>
-            
+
             <div>
               <textarea class="rich-content" id="curRichContent" placeholder="Enter something ..." rows="30" spellcheck="false" style="width:86%;border-style:solid" value="{{current.richContent}}" wrap="off"></textarea>
             </div>
             <p class="help-block">A plain text version of this template will be derived automatically and displayed automatically in less capable mail clients.</p>
           </div>
+
+          <textarea id="curPlainContent" class="col-md-offset-2 col-md-9 form-control" cols="80" value="{{current.plainContent}}" style="display:none"></textarea>
         </li>
       </ul>
     </div>
@@ -94,10 +96,10 @@
       <ul class="form edit-form">
         <li>
           <label class="col-md-2 control-label">SMS / Tweet:</label>
-          <textarea id="curPlainContent" class="col-md-9 form-control" cols="80" value="{{current.plainContent}}"></textarea>
+          <textarea id="curShortContent" class="col-md-9 form-control" cols="80" maxlength="140" required value="{{current.shortContent}}"></textarea>
           <div class="clearfix"></div>
           <label class="col-md-offset-2">Characters used:</label>
-          <span id="curChars" value="{{chars(current.plainContent)}}">{{chars(current.plainContent)}}</span>
+          <span id="curChars" value="{{chars(current.shortContent)}}">{{chars(current.shortContent)}}</span>
           <p class="col-md-offset-2 help-block">Consider embedding a URL to fuller information in these short form messages.</p>              
         </li>
       </ul>

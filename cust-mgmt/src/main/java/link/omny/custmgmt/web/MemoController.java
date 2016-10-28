@@ -98,7 +98,7 @@ public class MemoController {
      * @return messages for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public @ResponseBody List<ShortMemo> listForTenant(
+    public @ResponseBody List<ResourceSupport> listForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
@@ -126,11 +126,11 @@ public class MemoController {
      */
     @RequestMapping(value = "/{idOrName}", method = RequestMethod.GET)
     @Transactional
-    public @ResponseBody ShortMemo findById(
+    public @ResponseBody ResourceSupport findById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("idOrName") String idOrName)
             throws BusinessEntityNotFoundException {
-        LOGGER.debug(String.format("Find memo for id %1$s", idOrName));
+        LOGGER.debug(String.format("Find memo %1$s", idOrName));
 
         Memo memo;
         try {
@@ -143,13 +143,45 @@ public class MemoController {
                     idOrName));
             throw new BusinessEntityNotFoundException("Memo", idOrName);
         }
-        return wrap(memo);
+        return wrap(memo, new MemoResource());
     }
 
     /**
-     * Export all contacts for the tenant.
+     * Clone the specified memo.
      * 
-     * @return contacts for that tenant.
+     * @param idOrName
+     *            If a number will be assumed to be the id, otherwise the name.
+     * @return memo for that tenant with the matching name or id.
+     * @throws BusinessEntityNotFoundException
+     */
+    @RequestMapping(value = "/{idOrName}/clone", method = RequestMethod.POST)
+    @Transactional
+    public @ResponseBody ResourceSupport clone(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("idOrName") String idOrName)
+            throws BusinessEntityNotFoundException {
+        LOGGER.debug(String.format("Clone memo %1$s", idOrName));
+
+        Memo memo;
+        try {
+            memo = messageRepo.findOne(Long.parseLong(idOrName));
+        } catch (NumberFormatException e) {
+            memo = messageRepo.findByName(idOrName, tenantId);
+        }
+        if (memo == null) {
+            LOGGER.error(String.format("Unable to find memo from %1$s",
+                    idOrName));
+            throw new BusinessEntityNotFoundException("Memo", idOrName);
+        }
+        Memo resource = new Memo();
+        BeanUtils.copyProperties(memo, resource, "id");
+        resource.setName(memo.getName() + "Copy");
+        messageRepo.save(resource);
+        return wrap(resource, new MemoResource());
+    }
+
+    /**
+     * @return Export all memos for the specified tenant as CSV.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
     public @ResponseBody List<Memo> exportAsCsv(
@@ -200,21 +232,23 @@ public class MemoController {
         // return note;
     }
 
-    private List<ShortMemo> wrap(List<Memo> list) {
-        List<ShortMemo> resources = new ArrayList<ShortMemo>(list.size());
+    private List<ResourceSupport> wrap(List<Memo> list) {
+        List<ResourceSupport> resources = new ArrayList<ResourceSupport>(
+                list.size());
         for (Memo message : list) {
-            resources.add(wrap(message));
+            resources.add(wrap(message, new ShortMemo()));
         }
         return resources;
     }
 
-    private ShortMemo wrap(Memo message) {
-        ShortMemo resource = new ShortMemo();
+    private ResourceSupport wrap(Memo message, ResourceSupport resource) {
         BeanUtils.copyProperties(message, resource);
         Link detail = linkTo(MemoRepository.class, message.getId())
                 .withSelfRel();
         resource.add(detail);
-        resource.setSelfRef(detail.getHref());
+        if (resource instanceof MemoResource) {
+            ((MemoResource) resource).setSelfRef(detail.getHref());
+        }
         return resource;
     }
     
@@ -232,11 +266,24 @@ public class MemoController {
         private String selfRef;
         private String name;
         private String title;
-        private String plainContent;
-        private String richContent;
         private String status;
         private String owner;
         private Date created;
         private Date lastUpdated;
       }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    public static class MemoResource extends ResourceSupport {
+        private String selfRef;
+        private String name;
+        private String title;
+        private String plainContent;
+        private String richContent;
+        private String shortContent;
+        private String status;
+        private String owner;
+        private Date created;
+        private Date lastUpdated;
+    }
 }
