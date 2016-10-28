@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,12 +47,17 @@ public class Memo implements Serializable {
     private String title;
 
     @JsonProperty
-    private String plainContent;
-    
-    @JsonProperty
     @Lob
     private String richContent;
-    
+
+    @JsonProperty
+    @Lob
+    private String plainContent;
+
+    @JsonProperty
+    @Size(max = 140)
+    private String shortContent;
+
     @NotNull
     @JsonProperty
     @Column(nullable = false)
