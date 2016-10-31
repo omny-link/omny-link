@@ -3,6 +3,10 @@ package com.knowprocess.mail;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +16,9 @@ import org.activiti.bdd.test.mailserver.TestMailServer;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.test.JobTestHelper;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.junit.Assume;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.toxos.activiti.assertion.ProcessAssert;
@@ -36,6 +42,20 @@ public class TemplatedMailshotProcessTest {
 
     private Map<String, Object> variableMap;
     private MailData mailData;
+
+    @BeforeClass
+    public static void setUpClass() {
+        try {
+            URL url = new URL(TEST_TEMPLATE_BASE);
+            URLConnection urlConnection = url.openConnection();
+            Object content = urlConnection.getContent();
+            assertNotNull(content);
+        } catch (MalformedURLException e) {
+            fail(e.getMessage());
+        } catch (IOException e) {
+            Assume.assumeTrue("No connection to test server, assume ok", false);
+        }
+    }
 
     @Before
     public void setUp() {
