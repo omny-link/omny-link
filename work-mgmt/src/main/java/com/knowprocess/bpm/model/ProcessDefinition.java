@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Data
 @Component
 public class ProcessDefinition implements Serializable {
@@ -91,6 +93,15 @@ public class ProcessDefinition implements Serializable {
     private String tenantId;
 
     private List<FormProperty> formProperties;
+
+    @JsonProperty
+    private transient String processText;
+
+    @JsonProperty
+    private transient String bpmn;
+
+    @JsonProperty
+    private transient String svgImage;
 
     public ProcessDefinition() {
         super();
