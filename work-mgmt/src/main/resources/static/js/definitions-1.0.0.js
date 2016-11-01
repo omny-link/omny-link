@@ -136,6 +136,7 @@ var ractive = new AuthenticatedRactive({
       { "name": "defnCurrentSect", "url": "/partials/defn-current-sect.html"},
       { "name": "defnListSect", "url": "/partials/defn-list-sect.html"},
       { "name": "defnPropSect", "url": "/partials/defn-property-sect.html"},
+      { "name": "designerSect", "url": "/partials/designer-sect.html"},
       { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "instanceListSect", "url": "/partials/instance-list-sect.html"},
       { "name": "navbar", "url": "/partials/defn-navbar.html"},
@@ -173,9 +174,37 @@ var ractive = new AuthenticatedRactive({
     //$('#upload fieldset').append($('#resourceControl').html());
     $("#resourceFile").click();
   },
+  addProcess: function () {
+    console.info('addProcess...');
+    $('#designer').slideDown();
+  },
   collapseAdd: function () {
     console.log('collapseAdd...');
     $('#upload').slideUp();
+  },
+  define: function(defn) {
+    console.info('define');
+    ractive.set('saveObserver',false);
+    if (document.getElementById('defnForm')==undefined) {
+      console.debug('still loading, safe to ignore');
+    } else if (document.getElementById('defnForm').checkValidity()) {
+      $.ajax({
+          url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(defn),
+          success: completeHandler = function(data) {
+            console.log('  Success, received: '+data);
+            ractive.set('defn', data);
+            ractive.set('saveObserver',true);
+          }
+      });
+    } else {
+      console.warn('Unfortunately the process text is invalid');
+      $('#defnForm :invalid').addClass('field-error');
+      ractive.showMessage('Cannot save yet as contact is incomplete');
+      ractive.set('saveObserver',true);
+    }
   },
   delete: function (deploymentId) {
     console.log('delete '+deploymentId+'...');

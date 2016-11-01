@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,6 +22,7 @@ import com.knowprocess.bpm.model.ProcessDefinition;
 import com.knowprocess.bpm.model.ProcessInstance;
 import com.knowprocess.bpm.model.ProcessModel;
 import com.knowprocess.bpm.repositories.ProcessModelRepository;
+import com.knowprocess.deployment.ProcessDefiner;
 import com.knowprocess.xslt.TransformTask;
 
 @RequestMapping("/{tenantId}/process-definitions")
@@ -43,6 +45,19 @@ public class ProcessDefinitionController {
     private TransformTask messageIntrospector;
 
     private TransformTask renderer;
+
+    @RequestMapping(value = "/", method = RequestMethod.POST, consumes = "application/json")
+    public @ResponseBody ProcessDefinition define(
+            @PathVariable String tenantId,
+            @RequestBody ProcessDefinition defn) {
+
+        ProcessDefiner definer = new ProcessDefiner();
+        String bpmn = new String(definer.convertToBpmn(defn.getProcessText(),
+                "UTF-8"));
+        defn.setBpmn(bpmn);
+        defn.setSvgImage(getProcessRenderer().transform(bpmn));
+        return defn;
+    }
 
     @RequestMapping(value = "", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<ProcessDefinition> showAllJson(

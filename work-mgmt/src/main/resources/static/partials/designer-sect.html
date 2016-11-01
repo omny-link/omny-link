@@ -1,0 +1,27 @@
+<section id="designer" style="display:none">
+  <form class="well form form-horizontal" id="defnForm">
+    <fieldset>
+      <ul class="form edit-form">
+        <li class="form-group">
+          <label class="col-md-2 col-sm-3 required">Name:</label>
+          <input class="col-md-10 col-sm-9 form-control" id="curDefnName" required value="{{defn.name}}">
+        </li>
+        <li class="form-group">
+          <label class="col-md-2 col-sm-3">Category:</label>
+          <input class="col-md-10 col-sm-9 form-control" id="curDefnCategory" value="{{defn.category}}">
+        </li>
+        <li class="form-group">
+          <label class="textarea col-md-2 col-sm-3 required">Process Text:</label>
+          <textarea class="col-md-10 col-sm-9 form-control" id="curDefnProcessText" on-blur="define(defn)" required style="height: 10em" value="{{defn.processText}}"></textarea>
+          <p class="col-md-offset-2 col-sm-offset-3 hidden-xs help-block">Try a number list of tasks</p>
+        </li>
+        <li class="form-group">
+          <label class="textarea col-md-2 col-sm-3 required">BPMN:</label>
+          <textarea class="col-md-10 col-sm-9 form-control" id="curDefnBpmn" readonly disabled style="height: 10em" value="{{defn.bpmn}}"></textarea>
+          <p class="col-md-offset-2 col-sm-offset-3 hidden-xs help-block">The BPMN will be generated automatically from the process text</p>
+        </li>
+      </ul>
+    </fieldset>
+  </form>
+  <div id="curDefnImage">{{{defn.svgImage}}}</div>
+</section>
