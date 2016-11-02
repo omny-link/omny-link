@@ -125,9 +125,10 @@ var ractive = new AuthenticatedRactive({
     },
     helpUrl: '//omny.link/user-help/contacts/#the_title',
     inactiveStages: function() {
-      return ractive.get('tenant.serviceLevel.inactiveStages')==undefined
+      var inactiveStages = ractive.get('tenant.serviceLevel.inactiveStages')==undefined
           ? DEFAULT_INACTIVE_STAGES
           : ractive.get('tenant.serviceLevel.inactiveStages').join();
+      return inactiveStages;
     },
     lessThan24hAgo: function(isoDateTime) {
       if (isoDateTime == undefined || (new Date().getTime()-new Date(isoDateTime).getTime()) < 1000*60*60*24) {
@@ -137,26 +138,31 @@ var ractive = new AuthenticatedRactive({
     },
     matchFilter: function(obj) {
       var filter = ractive.get('filter');
+      if (!Array.isArray(filter)) filter = [ filter ];
       //console.info('matchFilter: '+JSON.stringify(filter));
-      if (filter==undefined) {
-        return true;
-      } else {
-        try {
-          if (filter.operator=='in') {
-            var values = filter.value.toLowerCase().split(',');
-            return values.indexOf(obj[filter.field].toLowerCase())!=-1;
-          } else if (filter.operator=='!in') {
-            var values = filter.value.toLowerCase().split(',');
-            return values.indexOf(obj[filter.field].toLowerCase())==-1;
-          } else {
-            if (filter.operator==undefined) filter.operator='==';
-            return eval("'"+filter.value.toLowerCase()+"'"+filter.operator+"'"+(obj[filter.field]==undefined ? '' : obj[filter.field]).toLowerCase()+"'");
+      var retVal = true;
+      for (idx in filter) {
+        if (filter==undefined) {
+          ;
+        } else {
+          try {
+            if (filter[idx].operator=='in') {
+              var values = filter[idx].value.toLowerCase().split(',');
+              return values.indexOf(obj[filter[idx].field].toLowerCase())!=-1;
+            } else if (filter[idx].operator=='!in') {
+              var values = filter[idx].value.toLowerCase().split(',');
+              return values.indexOf(obj[filter[idx].field].toLowerCase())==-1;
+            } else {
+              if (filter[idx].operator==undefined) filter[idx].operator='==';
+              retVal = eval("'"+filter[idx].value.toLowerCase()+"'"+filter[idx].operator+"'"+(obj[filter[idx].field]==undefined ? '' : obj[filter[idx].field]).toLowerCase()+"'");
+            }
+          } catch (e) {
+            //console.debug('Exception during filter, probably means record does not have a value for the filtered field');
+            ;
           }
-        } catch (e) {
-          //console.debug('Exception during filter, probably means record does not have a value for the filtered field');
-          return true;
         }
       }
+      return retVal;
     },
     matchPage: function(pageName) {
       console.info('matchPage: '+pageName);
@@ -1095,7 +1101,7 @@ var ractive = new AuthenticatedRactive({
 
 ractive.observe('profile', function(newValue, oldValue, keypath) {
   console.log('profile changed');
-  ractive.filter( {field: 'owner', idx: 3, value: ractive.get('profile.id')} );
+  ractive.filter( [{idx:3,field: 'stage', operator: '!in', value: ractive.get('inactiveStages')()},{idx:3,field: 'owner', value: ractive.get('profile.id')}]  );
 });
 
 ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
