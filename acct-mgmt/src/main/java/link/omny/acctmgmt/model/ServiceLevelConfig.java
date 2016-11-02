@@ -2,10 +2,18 @@ package link.omny.acctmgmt.model;
 
 import lombok.Data;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+
 @Data
 public class ServiceLevelConfig {
 
-    private String[] inactiveStages = { "cold", "complete" };
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(ServiceLevelConfig.class);
+
+    @Value("${omny.contact.inactiveStages:cold,complete,on hold,unqualified,waiting list" )
+    private String[] inactiveStages;
     private Integer inactivityThreshold;
     private Integer initialResponseThreshold;
 
@@ -21,7 +29,7 @@ public class ServiceLevelConfig {
             setInitialResponseThreshold((Integer) obj);
             break;
         default:
-            System.err.println("Unsupported service level: " + name);
+            LOGGER.error("Unsupported service level: " + name);
         }
     }
 
