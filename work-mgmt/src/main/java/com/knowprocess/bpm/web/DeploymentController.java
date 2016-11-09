@@ -104,6 +104,43 @@ public class DeploymentController {
         return deployment;
     }
 
+    @RequestMapping(method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded", headers = "Accept=application/json")
+    public final @ResponseBody org.activiti.engine.repository.Deployment deploy(
+            @RequestParam String tenantId, @RequestParam String name,
+            @RequestParam String bpmn) throws UnsupportedEncodingException,
+            IOException, UnsupportedBpmnException {
+        org.activiti.engine.repository.Deployment deployment = null;
+
+        LOGGER.debug(String.format("deploymentName: %1$s", name));
+
+        DeploymentBuilder builder = processEngine.getRepositoryService()
+                .createDeployment().name(name).tenantId(tenantId);
+
+        final Map<String, String> processes = new HashMap<String, String>();
+        processes.put(name, bpmn);
+
+        try {
+            for (Entry<String, String> entry : runExecutableTweaker(processes)
+                    .entrySet()) {
+                builder.addString(entry.getKey() + ".bpmn", entry.getValue());
+            }
+            deployment = builder.deploy();
+
+            LOGGER.info(String.format(
+                    "Completed deployment: %1$s(%2$s) at %3$s", deployment
+                            .getName(), deployment.getId(), deployment
+                            .getDeploymentTime().toString()));
+            return deployment;
+        } catch (ActivitiException e) {
+            LOGGER.warn(String
+                    .format("Processes rejected for execution, continue as non-executable. Reason: %1$s",
+                            e.getMessage()));
+            handleIncompleteModel(tenantId, processes);
+            return null;
+        }
+
+    }
+
     @RequestMapping(method = RequestMethod.POST, consumes = "multipart/form-data", headers = "Accept=application/json")
     public final @ResponseBody org.activiti.engine.repository.Deployment uploadMultipleFiles(
             UriComponentsBuilder uriBuilder, @RequestParam String tenantId,

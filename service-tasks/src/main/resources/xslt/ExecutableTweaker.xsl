@@ -9,7 +9,8 @@
   - Manual task -> User task 
   - Set default transition for exclusive gateway
   - Suppress non-executable process
-  - Add an activiti initiator (named 'initiator') if one does not exist. 
+  - Add an activiti initiator (named 'initiator') if one does not exist.
+  - Convert activiti resource shortcuts (activiti:candidateXxx) to BPMN standard ones
   - Convert unsupported service tasks into user tasks, suppressing ST attributes, and assign to either pool name or initiator if no pools.
   - Add form property extensions for data objects (TODO when there is no form key???)  
   - Suppress assignee and candidate group shortcuts when potentialOwner is specified (also helps avoid namespace clash with camunda)
@@ -259,7 +260,7 @@
   </xsl:template>-->
   
   <!-- 
-    Convert all non-user tasks into user tasks.
+    Convert all manual and unspecified tasks into user tasks.
   -->
   <xsl:template match="semantic:manualTask|manualTask|semantic:task|task">
     <xsl:variable name="elName">

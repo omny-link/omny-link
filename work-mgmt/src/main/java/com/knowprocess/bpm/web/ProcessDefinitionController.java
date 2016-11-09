@@ -1,6 +1,7 @@
 package com.knowprocess.bpm.web;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.xml.transform.TransformerConfigurationException;
@@ -51,12 +52,17 @@ public class ProcessDefinitionController {
             @PathVariable String tenantId,
             @RequestBody ProcessDefinition defn) {
 
-        ProcessDefiner definer = new ProcessDefiner();
-        String bpmn = new String(definer.convertToBpmn(defn.getProcessText(),
-                "UTF-8"));
-        defn.setBpmn(bpmn);
-        defn.setSvgImage(getProcessRenderer().transform(bpmn));
-        return defn;
+        try {
+            ProcessDefiner definer = new ProcessDefiner();
+            String bpmn = new String(definer.convertToBpmn(
+                    defn.getProcessText(), defn.getName(), "UTF-8"));
+            defn.setBpmn(bpmn);
+            defn.setSvgImage(getProcessRenderer().transform(bpmn));
+            return defn;
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.error("Failed to create process definition", e);
+            throw new RuntimeException();
+        }
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET, headers = "Accept=application/json")

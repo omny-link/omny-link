@@ -1,6 +1,9 @@
 package com.knowprocess.deployment;
 
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
+
+import javax.xml.transform.TransformerConfigurationException;
 
 import org.activiti.bpmn.BpmnAutoLayout;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
@@ -10,13 +13,14 @@ import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.SequenceFlow;
 import org.activiti.bpmn.model.ServiceTask;
 import org.activiti.bpmn.model.StartEvent;
+import org.activiti.bpmn.model.SubProcess;
 import org.activiti.bpmn.model.Task;
 import org.activiti.bpmn.model.UserTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.knowprocess.bpmn.model.TaskType;
-
+import com.knowprocess.xslt.TransformTask;
 
 /**
  * Create BPMN models from simple textual descriptions. This is not a substitute
@@ -26,29 +30,66 @@ import com.knowprocess.bpmn.model.TaskType;
  */
 public class ProcessDefiner {
 
+    private static final int MAX_TASK_NAME_LENGTH = 30;
+
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(ProcessDefiner.class);
 
     private static final String EOL = System.getProperty("line.separator");
 
-    protected BpmnModel parse(String markup) {
+    private static final String POSTPROCESSOR_RESOURCES = "/xslt/ProcessDefinerPostProcessor.xsl";
+
+    private TransformTask postProcessor;
+
+    protected BpmnModel parse(String markdown, String rootProcessName) {
         BpmnModel bpmnModel = new BpmnModel();
         org.activiti.bpmn.model.Process process = new org.activiti.bpmn.model.Process();
         process.setId(generateId());
+        process.setName(rootProcessName);
 
         LOGGER.debug("Adding start event");
         FlowElement previousElement = new StartEvent();
         previousElement.setId(generateId());
         process.addFlowElement(previousElement);
 
-        String[] lines = markup.split(EOL);
-        for (String line : lines) {
-//            line = line.trim();
+        String[] lines = markdown.split(EOL);
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            // line = line.trim();
             if (line.length() == 0) {
                 continue;
             }
 
-            if (Character.isDigit(line.charAt(0))) {
+            if (i < (lines.length - 1)
+                    && Character.isWhitespace(lines[i + 1].charAt(0))) {
+                // TODO no support for nested sub-proc as yet
+                SubProcess subProcess = new SubProcess();
+                subProcess.setId(generateId());
+                subProcess
+                        .setName(line.substring(markdown.indexOf(' ')).trim());
+
+                process.addFlowElement(subProcess);
+                process.addFlowElement(new SequenceFlow(
+                        previousElement.getId(), subProcess.getId()));
+                previousElement = subProcess;
+
+                i++;
+                FlowElement spPreviousElement = null;
+                while (i < (lines.length - 1)
+                        && Character.isWhitespace(lines[i + 1].charAt(0))) {
+                    Task spCurrentElement = getTask(lines[i]);
+
+                    subProcess.addFlowElement(spCurrentElement);
+                    if (spPreviousElement != null) {
+                        subProcess.addFlowElement(new SequenceFlow(
+                                spPreviousElement.getId(), spCurrentElement
+                                        .getId()));
+                    }
+                    spPreviousElement = spCurrentElement;
+                    i++;
+                }
+
+            } else if (Character.isDigit(line.charAt(0))) {
                 LOGGER.debug("Adding serial task: " + line);
                 // Pattern assignee = Pattern.compile("[+]\\w");
                 // // Matcher matcher = Matcher;
@@ -62,8 +103,8 @@ public class ProcessDefiner {
                 process.addFlowElement(new SequenceFlow(
                         previousElement.getId(), currentElement.getId()));
                 previousElement = currentElement;
-//            }else if (isUnordered) { 
-//                
+                // }else if (isUnordered) {
+                //
 
             }
         }
@@ -79,15 +120,16 @@ public class ProcessDefiner {
         return bpmnModel;
     }
 
-    protected Task getTask(String markup) {
+    protected Task getTask(String markdown) {
         Task currentElement = null;
-        TaskType taskType = getTaskType(markup);
+        TaskType taskType = getTaskType(markdown);
         switch (taskType) {
         case SERVICE_TASK:
             currentElement = new ServiceTask();
             break;
         case USER_TASK:
             currentElement = new UserTask();
+            setResources((UserTask) currentElement, markdown);
             break;
         default:
             // TODO Activiti does not provide a concrete implementation on
@@ -97,22 +139,44 @@ public class ProcessDefiner {
         }
 
         currentElement.setId(generateId());
-        if (markup.contains("+")) {
-            currentElement.setName(markup.substring(markup.indexOf(' ',
- markup.indexOf('+'))).trim());
+        String text;
+        if (markdown.contains("+")) {
+            text = markdown.substring(
+                    markdown.indexOf(' ', markdown.indexOf('+'))).trim();
         } else {
-            currentElement.setName(markup.trim());
+            text = markdown.trim();
         }
-
+        if (text.indexOf('.') != -1) {
+            currentElement.setName(text.substring(0, text.indexOf('.')));
+            currentElement
+                    .setDocumentation(text.substring(text.indexOf('.') + 1));
+        } else if (text.length() > MAX_TASK_NAME_LENGTH) {
+            currentElement.setName(text.substring(0, MAX_TASK_NAME_LENGTH - 1)
+                    + "…");
+            currentElement.setDocumentation(text);
+        } else {
+            currentElement.setName(text);
+        }
         return currentElement;
     }
 
-    protected TaskType getTaskType(String markup) {
-        int start = markup.indexOf(":") + 1;
+    protected void setResources(UserTask task, String markdown) {
+        int start = markdown.indexOf('+') + 1;
+        String resource = markdown.substring(start,
+                markdown.indexOf(' ', start));
+        if (resource.indexOf('@') == -1) {
+            task.getCandidateGroups().add(resource);
+        } else {
+            task.getCandidateUsers().add(resource);
+        }
+    }
+
+    protected TaskType getTaskType(String markdown) {
+        int start = markdown.indexOf(":") + 1;
         if (start > 0) {
-            int end = markup.indexOf(' ', start);
-            String sType = markup.substring(start,
-                    end >= start ? end : markup.length());
+            int end = markdown.indexOf(' ', start);
+            String sType = markdown.substring(start, end >= start ? end
+                    : markdown.length());
             switch (sType.toLowerCase()) {
             case "businessrule":
             case "decision":
@@ -134,7 +198,7 @@ public class ProcessDefiner {
                 return TaskType.TASK;
             }
         } else {
-            if (markup.contains("+")) {
+            if (markdown.contains("+")) {
                 return TaskType.USER_TASK;
             } else {
                 return TaskType.TASK;
@@ -148,16 +212,35 @@ public class ProcessDefiner {
         return "_" + UUID.randomUUID().toString();
     }
 
-    protected byte[] convertToBpmn(BpmnModel model, String encoding) {
+    protected byte[] convertToBpmn(BpmnModel model, String encoding)
+            throws UnsupportedEncodingException {
         BpmnXMLConverter converter = new BpmnXMLConverter();
 
         BpmnAutoLayout layout = new BpmnAutoLayout(model);
         layout.execute();
 
-        return converter.convertToXML(model, encoding);
+        return getPreProcessor().transform(
+                new String(converter.convertToXML(model, encoding), encoding))
+                .getBytes();
     }
 
-    public byte[] convertToBpmn(String markup, String encoding) {
-        return convertToBpmn(parse(markup), encoding);
+    private TransformTask getPreProcessor() {
+        // if (preProcessor == null) {
+        postProcessor = new TransformTask();
+        try {
+            postProcessor.setXsltResources(POSTPROCESSOR_RESOURCES);
+        } catch (TransformerConfigurationException e) {
+            LOGGER.error(String.format(
+                    "Unable to load process definer post-processors: %1$s",
+                    POSTPROCESSOR_RESOURCES), e);
+        }
+        // }
+        return postProcessor;
+    }
+
+    public byte[] convertToBpmn(String markdown, String rootProcessName,
+            String encoding)
+            throws UnsupportedEncodingException {
+        return convertToBpmn(parse(markdown, rootProcessName), encoding);
     }
 }
