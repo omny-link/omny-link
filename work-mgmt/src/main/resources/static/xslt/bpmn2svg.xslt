@@ -655,6 +655,9 @@
 	      <xsl:attribute name="data-name"><xsl:value-of select="@name"/></xsl:attribute>
 	      <xsl:if test="local-name(.)='userTask'">
 		      <xsl:choose>
+            <xsl:when test="@activiti:candidateGroups">
+              <xsl:attribute name="data-resource"><xsl:value-of select="@activiti:candidateGroups"/></xsl:attribute>
+            </xsl:when>
 			      <xsl:when test="@activiti:candidateUsers">
 			        <xsl:attribute name="data-resource"><xsl:value-of select="@activiti:candidateUsers"/></xsl:attribute>
 			      </xsl:when>
