@@ -4,7 +4,7 @@
       <ul class="form edit-form">
         <li class="form-group">
           <label class="col-md-2 col-sm-3 required">Name:</label>
-          <input class="col-md-10 col-sm-9 form-control" id="curDefnName" required value="{{defn.name}}">
+          <input class="col-md-10 col-sm-9 form-control" id="curDefnName" name="name" required value="{{defn.name}}">
         </li>
         <li class="form-group">
           <label class="col-md-2 col-sm-3">Category:</label>
@@ -13,14 +13,19 @@
         <li class="form-group">
           <label class="textarea col-md-2 col-sm-3 required">Process Text:</label>
           <textarea class="col-md-10 col-sm-9 form-control" id="curDefnProcessText" on-blur="define(defn)" required style="height: 10em" value="{{defn.processText}}"></textarea>
-          <p class="col-md-offset-2 col-sm-offset-3 hidden-xs help-block">Try a number list of tasks</p>
+          <p class="col-md-offset-2 col-sm-offset-3 hidden-xs help-block">Try a numbered list of tasks</p>
         </li>
         <li class="form-group">
           <label class="textarea col-md-2 col-sm-3 required">BPMN:</label>
-          <textarea class="col-md-10 col-sm-9 form-control" id="curDefnBpmn" readonly disabled style="height: 10em" value="{{defn.bpmn}}"></textarea>
+          <textarea class="col-md-10 col-sm-9 form-control" id="curDefnBpmn" name="bpmn" readonly style="height: 10em" value="{{defn.bpmn}}"></textarea>
           <p class="col-md-offset-2 col-sm-offset-3 hidden-xs help-block">The BPMN will be generated automatically from the process text</p>
         </li>
       </ul>
+      <div class="pull-right">
+        <input name="tenantId" type="hidden" value="{{tenant.id}}">
+	      <button class="btn" on-click="collapseDesigner()" type="button">Cancel</button>
+	      <button class="btn btn-primary" on-click="deploy('defnForm')" type="button">Deploy</button>
+	    </div>
     </fieldset>
   </form>
   <div id="curDefnImage">{{{defn.svgImage}}}</div>

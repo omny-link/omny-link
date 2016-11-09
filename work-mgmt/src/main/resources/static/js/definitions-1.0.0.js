@@ -182,6 +182,10 @@ var ractive = new AuthenticatedRactive({
     console.log('collapseAdd...');
     $('#upload').slideUp();
   },
+  collapseDesigner: function () {
+    console.log('collapseDesigner...');
+    $('#designer').slideUp();
+  },
   define: function(defn) {
     console.info('define');
     ractive.set('saveObserver',false);
@@ -239,6 +243,32 @@ var ractive = new AuthenticatedRactive({
         }
     });
     return false; // cancel bubbling to prevent edit as well as delete
+  },
+  deploy: function(formId) {
+    console.info('deploy');
+    ractive.set('saveObserver',false);
+    if (document.getElementById(formId)==undefined) {
+      console.debug('still loading, safe to ignore');
+    } else if (document.getElementById(formId).checkValidity()) {
+      var defn = $('#'+formId).serializeArray();
+      $.ajax({
+          url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/deployments/',
+          type: 'POST',
+          data: defn,
+          success: completeHandler = function(data) {
+            console.log('  Success, received: '+data);
+            ractive.set('defn', data);
+            ractive.set('saveObserver',true);
+            ractive.collapseDesigner();
+            ractive.showMessage('Deployed successfully');
+          }
+      });
+    } else {
+      console.warn('Unfortunately the process text is invalid');
+      $('#defnForm :invalid').addClass('field-error');
+      ractive.showMessage('Cannot save yet as contact is incomplete');
+      ractive.set('saveObserver',true);
+    }
   },
   fetch: function () {
     console.log('fetch...');
@@ -452,6 +482,7 @@ var ractive = new AuthenticatedRactive({
 //          console.log('successfully uploaded definition');
           ractive.fetch();
           ractive.collapseAdd();
+          ractive.showMessage('Deployed successfully');
         }
     });
   }
