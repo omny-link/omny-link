@@ -537,8 +537,13 @@ var ractive = new AuthenticatedRactive({
   filter: function(filter) {
     console.log('filter: '+JSON.stringify(filter));
     ractive.set('filter',filter);
-    $('.omny-dropdown.dropdown-menu li').removeClass('selected')
-    $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
+    $('.omny-dropdown.dropdown-menu li').removeClass('selected');
+    if (!Array.isArray(filter)) filter = [ filter ];
+    for (j in Object.keys(filter)) {
+      if (typeof filter[j] == 'function') continue;
+      //console.log(j+': '+filter[j].idx);
+      $('.omny-dropdown.dropdown-menu li:nth-child('+filter[j].idx+')').addClass('selected');
+    }
     ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
     $('input[type="search"]').blur();
   },
