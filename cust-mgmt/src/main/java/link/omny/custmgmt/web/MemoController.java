@@ -1,6 +1,8 @@
 package link.omny.custmgmt.web;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -246,8 +248,12 @@ public class MemoController {
         Link detail = linkTo(MemoRepository.class, message.getId())
                 .withSelfRel();
         resource.add(detail);
-        if (resource instanceof MemoResource) {
-            ((MemoResource) resource).setSelfRef(detail.getHref());
+        try {
+            Method method = resource.getClass().getMethod("setSelfRef", String.class);
+            method.invoke(resource, detail.getHref());
+        } catch (NoSuchMethodException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException e) {
+            LOGGER.error("Unable to set self reference.", e);
         }
         return resource;
     }
