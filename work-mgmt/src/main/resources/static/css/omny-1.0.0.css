@@ -159,7 +159,11 @@ section h2 .search {
   border-bottom-right-radius: 0px;
   border-top-right-radius: 0px;
   border-color: #0e9acd;
-  min-width: 15em;
+}
+@media (min-width: 992px) {
+  section h2 .search {
+    min-width: 15em;
+  }
 }
 section h2 .glyphicon {
   height: 34px;
@@ -440,14 +444,19 @@ h2 a.glyphicon:hover {
 	 margin-top: 0;
    padding-top: 20px;
 }
-.navbar-sticky {
-  background-color: white;
-  padding-left: 0;
+.container-sticky {
+	padding-left:0;
+  padding-right: 30px;
   position: fixed;
-  left: auto;
-  right: auto;
   top: 0;
   z-index: 100;
+}
+.navbar-sticky {
+  background-color: white;
+  margin-top:0;
+  padding-left: 0;
+  left: auto;
+  right: auto;
 }
 .navbar-sticky h2 { 
   margin-top:0;
@@ -631,6 +640,27 @@ a.dropdown {
 #messages {
   line-height: 2.5em;
 }
+/* TAG IT overrides */
+.form ul.tagit li.tagit-choice {
+  line-height: 1.5em;
+}
+.form .tagit-label {
+	margin-left:5px;
+}
+.form ul.tagit li {
+  margin: 2px 0px 2px 5px;
+}
+.form .ui-widget {
+  font-size: 1em;
+}
+.form .tagit-new {
+  margin-bottom: 0px;
+  margin-left:5px;
+	margin-top: 0px;
+  padding-bottom: 0px;
+  padding-top: 0px;
+}
+/* END TAG IT overrides */
 form#upload {
 	min-width: 263px;
 }
