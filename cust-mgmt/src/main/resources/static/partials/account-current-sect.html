@@ -1,80 +1,100 @@
 <section id="currentSect" style="display:none">
   <form id="currentForm" class="form">
-		{{^current.selfRef}}
-		  <h2 class="form create-form">
-		    <input class="create-field form-control col-xs-2" id="curName" placeholder="Name" required value="{{current.name}}"/>
-		  </h2>
-		{{/}}
-		
-		{{#current.selfRef}}
-		  <h2 class="edit-form">
-		     <span class="clearfix">
-			   {{#if tenant.show.addressAccount && (current.name != undefined && current.name != '')}}
-			     <span>{{current.name}}{{#if current.town}}, {{current.town}}{{/if}}{{#if current.countyOrCity}}, {{current.countyOrCity}}{{/if}}</span>
-			       {{#current.postCode}}
-			          <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
-			       {{/}}
-			       {{^current.postCode}}
-			         {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
-			           <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
-			         {{/}}
-			       {{/}}
-			    {{/if}}
-			    <span class="pull-right">
-			      {{#matchRole('admin')}}
-			        <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteAccount(current)" style="top: -1px;right:-8px" title="Delete this record"></a>
-			      {{/}}
-			      <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
-			      {{#if tenant.contactActions!=undefined && tenant.contactActions.length>0 }}
-			        <span class="clickable dropdown" aria-hidden="true" title="Start Process">
-			          <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
-			            <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
-			          </a>
-			          <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
-			            {{#each tenant.contactActions }}
-			              {{#name}}
-			                <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{current.fullName}}')" title="{{name}}">{{name}}</li>
-			              {{else}}
-			                <li class="divider"></li>
-			              {{/}}
-			            {{/each}}
-			          </ul>
-			        </span>
-			      {{/if}}
-			    </span>
-			  </span>
-			  <span>
-			    {{#if (current.phone1 != undefined || current.phone2 != undefined) && (current.phone1 != '' || current.phone2 != '')}}
-			      {{#if (current.phone1 != undefined && current.phone1 != '')}}
-			        <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1}}" title="Click to call"></a>
-			        <span class="hidden-sm hidden-xs">{{current.phone1}}</span>
-			      {{/if}}
-			      {{#if (current.phone2 != undefined && current.phone2 != '')}}
-			        <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone2}}" title="Click to call"></a>
-			        <span class="hidden-sm hidden-xs"> {{current.phone2}}</span>
-			      {{/if}}
-			    {{/if}}
-			    {{#if current.email != undefined && current.email != ''}}
-			      <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
-			      <span class="hidden-sm hidden-xs">{{current.email}}</span>
-			    {{/if}}
-			  </span>
-		  </h2>
-		{{/}}
-	
+    {{^current.selfRef}}
+      <h2 class="form create-form">
+        <input class="create-field form-control col-xs-2" id="curName" placeholder="Name" required value="{{current.name}}"/>
+      </h2>
+    {{/}}
+
+    {{#current.selfRef}}
+      <h2 class="edit-form">
+         <span contenteditable id="curName2" on-focus="editField('#curName2','current.Name')" on-blur="updateField('#curName2','current.name')">{{current.name}}</span>
+
+         {{#if tenant.show.addressAccount && (current.name != undefined && current.name != '')}}
+           <span>{{#if current.town}}, {{current.town}}{{/if}}{{#if current.countyOrCity}}, {{current.countyOrCity}}{{/if}}</span>
+             {{#current.postCode}}
+                <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
+             {{/}}
+             {{^current.postCode}}
+               {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
+                 <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
+               {{/}}
+             {{/}}
+          {{/if}}
+          <span class="pull-right">
+            {{#matchRole('admin')}}
+              <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteAccount(current)" style="right:-8px" title="Delete this record"></a>
+            {{/}}
+            <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
+            {{#if tenant.accountActions!=undefined && tenant.accountActions.length>0 }}
+              <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
+                  <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
+                </a>
+                <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+                  {{#each tenant.accountActions }}
+                    {{#name}}
+                      <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{current.name}}')" title="{{name}}">{{name}}</li>
+                    {{else}}
+                      <li class="divider"></li>
+                    {{/}}
+                  {{/each}}
+                </ul>
+              </span>
+            {{/if}}
+        </span>
+        <span>
+          {{#if (current.phone1 != undefined || current.phone2 != undefined) && (current.phone1 != '' || current.phone2 != '')}}
+            {{#if (current.phone1 != undefined && current.phone1 != '')}}
+              <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1}}" title="Click to call"></a>
+              <span class="hidden-sm hidden-xs">{{current.phone1}}</span>
+            {{/if}}
+            {{#if (current.phone2 != undefined && current.phone2 != '')}}
+              <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone2}}" title="Click to call"></a>
+              <span class="hidden-sm hidden-xs"> {{current.phone2}}</span>
+            {{/if}}
+          {{/if}}
+          {{#if current.email != undefined && current.email != ''}}
+            <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
+            <span class="hidden-sm hidden-xs">{{current.email}}</span>
+          {{/if}}
+        </span>
+        {{#if current.contacts}}
+          <span class="clearfix">
+            <span>{{Array.findBy('mainContact',true,current.contacts).firstName}}</span>
+            <span>{{Array.findBy('mainContact',true,current.contacts).lastName}}</span>
+            {{#if (Array.findBy('mainContact',true,current.contacts).phone1 != undefined || Array.findBy('mainContact',true,current.contacts).phone2 != undefined) && (Array.findBy('mainContact',true,current.contacts).phone1 != '' || Array.findBy('mainContact',true,current.contacts).phone2 != '')}}
+              {{#if (Array.findBy('mainContact',true,current.contacts).phone1 != undefined && Array.findBy('mainContact',true,current.contacts).phone1 != '')}}
+                <a class="clickable glyphicon glyphicon-earphone" href="tel:{{Array.findBy('mainContact',true,current.contacts).phone1}}" title="Click to call"></a>
+                <span class="hidden-sm hidden-xs">{{Array.findBy('mainContact',true,current.contacts).phone1}}</span>
+              {{/if}}
+              {{#if (Array.findBy('mainContact',true,current.contacts).phone2 != undefined && Array.findBy('mainContact',true,current.contacts).phone2 != '')}}
+                <a class="clickable glyphicon glyphicon-earphone" href="tel:{{Array.findBy('mainContact',true,current.contacts).phone2}}" title="Click to call"></a>
+                <span class="hidden-sm hidden-xs"> {{Array.findBy('mainContact',true,current.contacts).phone2}}</span>
+              {{/if}}
+            {{/if}}
+            {{#if Array.findBy('mainContact',true,current.contacts).email != undefined && Array.findBy('mainContact',true,current.contacts).email != ''}}
+              <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{Array.findBy('mainContact',true,current.contacts).email}}" title="Click to email"></a>
+              <span class="hidden-sm hidden-xs">{{Array.findBy('mainContact',true,current.contacts).email}}</span>
+            {{/if}}
+          </span>
+        {{/if}}
+      </h2>
+    {{/}}
+
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form inline-form edit-form">
         <li class="form-group">
           <label class="col-md-4 col-sm-4">{{# tenant.strings.companyNumber}}{{tenant.strings.companyNumber}}{{else}}Company Number{{/}}:</label>
           <div class="input-group">
             <input autocomplete="off" class="typeahead col-md-8 col-sm-8 form-control" id="curCompanyNumber" pattern="[OCINS0-9]{0,2}[0-9]{6}" {{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.companyNumber}}">
-	          {{# tenant.strings.companyNumber == 'Edubase URN' && current.companyNumber!=undefined}}
-	            <span class="input-group-addon">
-	              <a href="http://www.education.gov.uk/edubase/establishment/summary.xhtml?urn={{parseInt(current.companyNumber)}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
-	            </span>
-	          {{else}}
-	            <span class="input-group-addon">N/A</span>
-	          {{/}}
+            {{# tenant.strings.companyNumber == 'Edubase URN' && current.companyNumber!=undefined}}
+              <span class="input-group-addon">
+                <a href="http://www.education.gov.uk/edubase/establishment/summary.xhtml?urn={{parseInt(current.companyNumber)}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+              </span>
+            {{else}}
+              <span class="input-group-addon">N/A</span>
+            {{/}}
           </div>
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
         </li>
@@ -98,7 +118,12 @@
             <input type="radio" name="curExistingCustomer" id="inlineRadio2" checked="{{!current.existingCustomer}}" value="false"><span class="hidden-md">New</span> Prospect
           </label>
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Is this an existing customer, even if we are in a new sales cycle?</p>
-        </li>        
+        </li>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Stage{{/}}:</label>
+          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">How far through the sales pipeline are you with this account?</p>
+        </li>
         {{#if tenant.show.accountCompanyDetails}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Founded:</label>
@@ -128,8 +153,8 @@
           <label class="col-md-4 col-sm-4" style="line-height: 1.2em">{{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}}:</label>
           <select class="col-md-8 col-sm-8 form-control" id="curNoOfEmployees" placeholder="Please choose the number of {{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}} you have">
              <option value="Please select" selected="selected">Please select</option>
-             <option value="under10">less than 10</option> 
-             <option value="10-49">10-49</option> 
+             <option value="under10">less than 10</option>
+             <option value="10-49">10-49</option>
              <option value="50-99">50-99</option>
              <option value="100-249">100-249</option>
              <option value="250-499">250-499</option>
@@ -187,16 +212,16 @@
             <div class="input-group">
               <input class="col-md-8 col-sm-8 form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}">
               <span class="input-group-addon">
-		            {{#current.postCode}}
-			            <a class="glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
-			          {{else}}
-			            {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
-			              <a class="glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
-			            {{else}}
-			              <span>N/A</span>
-			            {{/}}
-			            
-			          {{/}}
+                {{#current.postCode}}
+                  <a class="glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
+                {{else}}
+                  {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
+                    <a class="glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
+                  {{else}}
+                    <span>N/A</span>
+                  {{/}}
+
+                {{/}}
               </span>
             </div>
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
@@ -225,79 +250,132 @@
       </div>
     {{/}}
   </form>
-	
-	{{#tenant.show.financials}}
-	  {{>('accountFinancials')}}
-	{{/}}
-	
-	<div id="currentAccountTypeExtended" style="clear: both">
-	  {{>(tenant.id+current.accountType+'Extension')}}
-	</div>
-	
-	
-	{{#tenant.show.companyBackground}}
-	  {{>currentCompanyBackground}}
-	{{/}}
-	
-	{{#true}}
-	 <section id="accountContactsSect">
-	   <h3>
-			 <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
-			 <span> Contacts</span>
-		 </h3>
-		 <div class="col-md-12" style="display:none">
-			    <table class="table table-striped">
-			      <thead>
-			        <tr>
-			          <th>Main Contact</th>
-			          <th class="col-md-3 col-sm-3">Name</th>
-			          <th class="col-md-2 col-sm-2">Job Title</th>
-			          <th class="col-md-2 col-sm-2">Email</th>
-			          <th>Opt out</th>
-		            <th class="col-md-2 col-sm-2">Phone</th>
-		            <th class="col-md-1 col-sm-1">Actions</th>
-			        </tr>
-			      </thead>
-			      <tbody>
-			        {{#current.contacts:i}}
-			          <tr>
-                  <td><input class="checkbox" type="checkbox" checked="{{mainContact}}"/></td>
-			            <td class="col-md-3 col-sm-3">{{fullName}}</td>
-			            <td class="col-md-2 col-sm-2">{{jobTitle}}</td>
-			            <td class="col-md-2 col-sm-2">{{email}}</td>
-			            <td><input class="checkbox" type="checkbox" checked="{{current.emailConfirmed}}"/></td>
-		              <td class="col-md-2 col-sm-2">{{phone1}}</td>
-		              <td class="col-md-1 col-sm-1">
-										{{#matchRole('admin')}}
-					            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteContact(.)" style="top: -1px;right:-8px" title="Delete this record"></a>
-					          {{/}}
-									</td>
-			          </tr>
-			        {{/}}
-			      </tbody>
-			    </table>
-			  </div>
-	  </section>
-	{{/}}
-	
-	{{#if tenant.show.orders}}
-	  {{>(tenant.id+'OrderExtension')}}
-	{{/if}}
-	
-	{{>activityCurrentSect}}
-	
-	{{#if current.instances}}
-	  {{>instanceListSect}}
-	{{/if}}
-	
-	{{#if current.tasks}}
-	  {{>currentTaskListSect {tasks:current.tasks} }}
-	{{/if}}
-	
-	{{>currentNoteListSect}}
-	
-	{{#if tenant.show.documents}}
-	  {{>currentDocumentListSect}}
-	{{/if}}
+
+  {{#tenant.show.financials}}
+    {{>('accountFinancials')}}
+  {{/}}
+
+  <div id="currentAccountTypeExtended" style="clear: both">
+    {{>(tenant.id+current.accountType+'Extension')}}
+  </div>
+
+
+  {{#tenant.show.companyBackground}}
+    {{>currentCompanyBackground}}
+  {{/}}
+
+  {{#true}}
+   <section id="accountContactsSect">
+     <h3>
+       <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+       <span> Contacts</span>
+       <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addContact()" title="Add a new contact"></a>
+       <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetchAccountContacts()" title="Refresh the list"></a>
+     </h3>
+     <div class="col-md-12" style="display:none">
+       <form id="currentContactForm">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Main Contact</th>
+                <th class="col-md-2 col-sm-2" on-click="sortContact:fullName">Name<span class="sortable {{ sortedContact('fullName') }} glyphicon "></th>
+                <th class="col-md-2 col-sm-2" on-click="sortContact:jobTitle">Job Title<span class="sortable {{ sortedContact('jobTitle') }} glyphicon "></th>
+                <th class="col-md-2 col-sm-2" on-click="sortContact:email">Email<span class="sortable {{ sortedContact('email') }} glyphicon "></th>
+                <!--th>Opt out</th-->
+                <th class="col-md-2 col-sm-2" on-click="sortContact:phone1">Phone<span class="sortable {{ sortedContact('phone1') }} glyphicon "></th>
+                <th>Twitter</th>
+                <th>Linked In</th>
+                <th>Facebook</th>
+                <th class="col-md-2 col-sm-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#sort(current.contacts,sortContactColumn,sortContactAsc):i}}
+                <tr>
+                  <td><input class="radio" name="mainContact" type="radio" checked="{{mainContact}}" on-change="setMainContact(selfRef)"/></td>
+                  <td class="col-md-2 col-sm-2" data-contact-id="{{selfRef}}" data-key="fullName">
+	                  <span>{{fullName}}</span>
+	                  <input class="hidden form-control" value="{{fullName}}">
+                  </td>
+                  <td class="col-md-2 col-sm-2" data-contact-id="{{selfRef}}" data-key="jobTitle">
+                    <span>{{jobTitle}}</span>
+                    <input class="hidden form-control" value="{{jobTitle}}">
+                  </td>
+                  <td class="col-md-2 col-sm-2" data-contact-id="{{selfRef}}" data-key="email">
+                    <span>{{email}}</span>
+                    <input class="hidden form-control" value="{{email}}">
+                  </td>
+                  <td class="col-md-1 col-sm-1" data-contact-id="{{selfRef}}" data-key="phone1">
+                    <span>{{phone1}}</span>
+                    <input class="hidden form-control" value="{{phone1}}">
+                  </td>
+                  <td class="btn-group-social">
+	                  <div class="btn-group" role="group" aria-label="...">
+										  <a class="glyphicon kp-icon-twitter{{^twitter}} disabled{{/}}" {{#twitter}}href="https://twitter.com/{{twitter}}"{{else}}disabled {{/}} target="_newtab" title="{{^twitter}} None entered, click on edit icon to set Twitter handle{{/}}"></a>
+										  <a class="glyphicon glyphicon-pencil" on-click="showContactSocial(this, 'twitter', 'currentContact.twitter')"></a>
+										</div>
+                  </td>
+                  <td class="btn-group-social">
+                    <div class="btn-group" role="group" aria-label="...">
+                      <a class="glyphicon kp-icon-linkedin{{^linkedIn}} disabled{{/}}" {{#linkedIn}}href="{{linkedIn}}"{{else}}disabled {{/}} target="_newtab" title="{{^linkedIn}} None entered, click on edit icon to set LinkedIn page{{/}}"></a>
+                      <a class="glyphicon glyphicon-pencil" on-click="showContactSocial(this, 'linkedIn', 'currentContact.linkedIn')"></a>
+                    </div>
+                  </td>
+                  <td class="btn-group-social">
+                    <div class="btn-group" role="group" aria-label="...">
+                      <a class="glyphicon kp-icon-facebook{{^facebook}} disabled{{/}}" {{#facebook}}href="{{facebook}}"{{else}}disabled {{/}} target="_newtab" title="{{^facebook}} None entered, click on edit icon to set FaceBook page{{/}}"></a>
+                      <a class="glyphicon glyphicon-pencil" on-click="showContactSocial(this, 'facebook', 'currentContact.facebook')"></a>
+                    </div>
+                  </td>
+                  <td>
+                    <a class="glyphicon glyphicon-pencil" aria-hidden="true" on-click="toggleEditContact(.)" title="Edit this record"></a>
+                    {{#if tenant.contactActions!=undefined && tenant.contactActions.length>0 }}
+					            <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+					              <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
+					                <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
+					              </a>
+					              <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+					                {{#each tenant.contactActions }}
+					                  {{#name}}
+					                    <li onclick="ractive.set('currentContact',Array.findBy('selfRef','{{selfRef}}',ractive.get('current.contacts')));ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('currentContact'){{#url}}, '{{url}}'{{/url}}, '{{fullName}}')" title="{{name}}">{{name}}</li>
+					                  {{else}}
+					                    <li class="divider"></li>
+					                  {{/}}
+					                {{/each}}
+					              </ul>
+					            </span>
+					          {{/if}}
+                    {{#matchRole('admin')  && selfRef}}
+                      <a class="glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteContact(.)" title="Delete this record"></a>
+                    {{/}}
+                  </td>
+                </tr>
+              {{/}}
+            </tbody>
+          </table>
+        </form>
+      </div>
+    </section>
+  {{/}}
+
+  {{#if tenant.show.orders}}
+    {{>currentOrderListSect}}
+  {{/if}}
+
+  {{>activityCurrentSect}}
+
+  {{#if current.instances}}
+    {{>instanceListSect}}
+  {{/if}}
+
+  {{#if current.tasks}}
+    {{>currentTaskListSect {tasks:current.tasks} }}
+  {{/if}}
+
+  {{>currentNoteListSect}}
+
+  {{#if tenant.show.documents}}
+    {{>currentDocumentListSect}}
+  {{/if}}
 
 </section>

@@ -1,6 +1,6 @@
 <section id="currentSect" style="display:none">
   <form class="inline-form form" id="currentForm">
-    {{^current.id}}
+    {{^current.selfRef}}
       <h2 class="form create-form">
         <input class="create-field form-control col-xs-1" id="curTitle" placeholder="Title" value="{{current.title}}"/>
         <input class="create-field form-control col-xs-2" id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/>
@@ -154,7 +154,7 @@
       <h3>
         <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
         <span> Contact Information</span>
-        {{#alerts['connections']}}<span class="alert-counter alert-danger"> {{alerts['connections']}}</span>{{/}}
+        <span class="alert-counter {{#alerts.connections>0}}alert-danger{{else}}alert-hidden{{/}}"> {{alerts.connections}}</span>
       </h3>
       <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
         <ul class="form edit-form">
@@ -257,7 +257,7 @@
         <h3>
           <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
           <span> Marketing</span>
-          {{#alerts['marketing']}}<span class="alert-counter alert-danger"> {{alerts['marketing']}}</span>{{/}}
+          <span class="alert-counter {{#alerts.marketing>0}}alert-danger{{else}}alert-hidden{{/}}"> {{alerts.marketing}}</span>
         </h3>
         <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
           <ul class="form edit-form">
@@ -305,7 +305,7 @@
         <h3>
           <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
           <span>Budget</span>
-          {{#alerts['budget']}}<span class="alert-counter alert-danger"> {{alerts['budget']}}</span>{{/}}
+          <span class="alert-counter {{#alerts['budget']}}alert-danger{{else}}alert-hidden{{/}}"> {{alerts.budget}}</span>
         </h3>
         <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
           <ul class="form edit-form">

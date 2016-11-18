@@ -6,13 +6,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import link.omny.catalog.json.JsonCustomOrderFieldDeserializer;
 import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
 import link.omny.catalog.model.CustomOrderField;
 import link.omny.catalog.model.CustomOrderItemField;
 import link.omny.catalog.model.Order;
 import link.omny.catalog.model.OrderItem;
+import link.omny.catalog.repositories.OrderItemRepository;
 import link.omny.catalog.repositories.OrderRepository;
+import link.omny.catalog.repositories.StockItemRepository;
+import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -58,6 +63,12 @@ public class OrderController {
 
     @Autowired
     private OrderRepository orderRepo;
+
+    @Autowired
+    private OrderItemRepository orderItemRepo;
+
+    @Autowired
+    private StockItemRepository stockItemRepo;
 
     /**
      * Return just the orders for a specific tenant.
@@ -111,25 +122,27 @@ public class OrderController {
     }
 
     /**
-     * Return just the orders for a specific account.
+     * Return just the orders for a specific contact or contacts.
      * 
-     * @return orders for that contact.
+     * @return orders.
      */
-    @RequestMapping(value = "/findByAccount/{accountId}", method = RequestMethod.GET)
-    public @ResponseBody List<ShortOrder> listForAccount(
+    @RequestMapping(value = "/findByContacts/{contactIds}", method = RequestMethod.GET)
+    public @ResponseBody List<ShortOrder> listForContacts(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("accountId") Long accountId,
+            @PathVariable("contactIds") Long[] contactIds,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info(String.format("List orders for contact %1$s & tenant %2$s",
-                accountId, tenantId));
+        LOGGER.info(String.format(
+                "List orders for contacts %1$s & tenant %2$s", contactIds,
+                tenantId));
 
         List<Order> list;
         if (limit == null) {
-            list = orderRepo.findAllForAccount(tenantId, accountId);
+            list = orderRepo.findAllForContacts(tenantId, contactIds);
         } else {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
-            list = orderRepo.findPageForContact(tenantId, accountId, pageable);
+            list = orderRepo
+                    .findPageForContacts(tenantId, contactIds, pageable);
         }
         LOGGER.info(String.format("Found %1$s orders", list.size()));
 
@@ -149,10 +162,7 @@ public class OrderController {
             @RequestBody Order order) {
         order.setTenantId(tenantId);
 
-        for (OrderItem item : order.getOrderItems()) {
-            item.setTenantId(tenantId);
-            item.setOrder(order);
-        }
+        fixUpOrderItems(tenantId, order);
 
         orderRepo.save(order);
 
@@ -172,25 +182,99 @@ public class OrderController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @Transactional
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
             @RequestBody Order updatedOrder) {
         Order order = orderRepo.findOne(orderId);
 
-        BeanUtils.copyProperties(updatedOrder, order, "id",
-                "item");
-        order.setTenantId(tenantId);
+        NullAwareBeanUtils.copyNonNullProperties(updatedOrder, order, "id");
+
+        fixUpOrderItems(tenantId, order);
+        orderRepo.save(order);
+    }
+
+    private void fixUpOrderItems(String tenantId, Order order) {
+        for (OrderItem item : order.getOrderItems()) {
+            item.setTenantId(tenantId);
+            item.setOrder(order);
+            try {
+                item.setStockItem(stockItemRepo.findOne(Long
+                        .parseLong((String) item
+                                .getCustomFieldValue("stockItemId"))));
+            } catch (NumberFormatException e) {
+                LOGGER.error(String.format(
+                        "unable to find stock item with id: %1$s",
+                        item.getCustomFieldValue("stockItemId")));
+            }
+        }
+    }
+
+    /**
+     * Update an existing order with a new order item.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{id}/order-items", method = RequestMethod.POST, consumes = { "application/json" })
+    @Transactional
+    public @ResponseBody void addOrderItems(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long orderId, @RequestBody Order updatedOrder) {
+        Order order = orderRepo.findOne(orderId);
+
+        for (OrderItem item : updatedOrder.getOrderItems()) {
+            item.setTenantId(tenantId);
+            item.setOrder(order);
+        }
+
         orderRepo.save(order);
     }
 
     /**
-     * Delete an existing stockCategory.
+     * Update an existing order.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = { "application/json" })
+    @RequestMapping(value = "/{id}/order-items/{itemId}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @Transactional
+    public @ResponseBody void updateOrderItem(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long orderId,
+            @PathVariable("itemId") Long orderItemId,
+            @RequestBody OrderItem updatedOrderItem) {
+        OrderItem item = orderItemRepo.findOne(orderItemId);
+
+        NullAwareBeanUtils.copyNonNullProperties(updatedOrderItem, item, "id");
+        item.setTenantId(tenantId);
+        // item.setOrder(order);
+
+        orderItemRepo.save(item);
+    }
+
+    /**
+     * Delete an existing order.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @Transactional
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId) {
         orderRepo.delete(orderId);
+    }
+
+    /**
+     * Delete the specified order item.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{id}/order-items/{itemId}", method = RequestMethod.DELETE)
+    @Transactional
+    public @ResponseBody void deleteItem(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long orderId,
+            @PathVariable("itemId") Long orderItemId) {
+
+        // cascade does not appear to work on delete
+        orderRepo.deleteItemCustomField(orderItemId);
+
+        orderRepo.deleteItem(orderId, orderItemId);
     }
 
     private List<ShortOrder> wrap(List<Order> list) {
@@ -206,7 +290,7 @@ public class OrderController {
         ShortOrder resource = new ShortOrder();
 
         BeanUtils.copyProperties(order, resource);
-
+        resource.setContactId(order.getContactId());
 
         ArrayList<ShortOrderItem> items = new ArrayList<ShortOrderItem>();
         for (OrderItem item : order.getOrderItems()) {
@@ -226,6 +310,9 @@ public class OrderController {
 
         BeanUtils.copyProperties(item, resource);
         resource.setOrderItemId(item.getId());
+        if (item.getStockItem() != null) {
+            resource.setStockItemId(item.getStockItem().getId());
+        }
 
         return resource;
     }
@@ -244,13 +331,15 @@ public class OrderController {
         private String name;
         private String description;
         private Date date;
-        private Date dueDate;
+        private String dueDate;
         @JsonDeserialize(using = JsonCustomOrderFieldDeserializer.class)
         @JsonSerialize(using = JsonCustomFieldSerializer.class)
         private List<CustomOrderField> customFields;
         private List<ShortOrderItem> orderItems;
-        private String status;
+        private Long contactId;
+        private String stage;
         private BigDecimal price;
+        private String invoiceRef;
         private Date created;
         private Date lastUpdated;
     }
@@ -264,7 +353,7 @@ public class OrderController {
         private String description;
         private String status;
         private BigDecimal price;
-        private Order order;
+        private Long stockItemId;
         @JsonDeserialize(using = JsonCustomOrderItemFieldDeserializer.class)
         @JsonSerialize(using = JsonCustomFieldSerializer.class)
         private List<CustomOrderItemField> customFields;
