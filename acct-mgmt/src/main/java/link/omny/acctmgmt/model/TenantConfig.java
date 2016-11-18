@@ -122,6 +122,11 @@ public class TenantConfig implements Serializable {
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
     // targetEntity = TenantAction.class)
     @Transient
+    private List<TenantAction> accountActions;
+
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
+    // targetEntity = TenantAction.class)
+    @Transient
     private List<TenantAction> contactActions;
 
     @Transient

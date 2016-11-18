@@ -27,10 +27,12 @@ import link.omny.custmgmt.model.CustomField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -38,8 +40,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Entity
 @Table(name = "OL_ORDER")
 @Data
+@ToString(exclude = { "orderItems" })
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Order implements Serializable {
 
     private static final long serialVersionUID = -2334761729349848501L;
@@ -63,17 +67,22 @@ public class Order implements Serializable {
     @JsonProperty
     private Date date;
 
-    @Temporal(TemporalType.DATE)
-    @JsonProperty
-    private Date dueDate;
-
     @JsonProperty
     @Size(max = 20)
-    private String status = "Draft";
+    private String dueDate;
+
+    @JsonProperty
+    @Size(max = 30)
+    private String stage = "New enquiry";
 
     @JsonProperty
     private BigDecimal price;
 
+    @JsonProperty
+    @Size(max = 30)
+    private String invoiceRef;
+
+    @JsonProperty
     private Long contactId;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -89,7 +98,7 @@ public class Order implements Serializable {
     @JsonProperty
     private String tenantId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "order")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
     @JsonDeserialize(using = JsonCustomOrderFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomOrderField> customFields;
@@ -146,6 +155,14 @@ public class Order implements Serializable {
     }
 
 
+    public void setOrderItems(List<OrderItem> newItems) {
+        for (OrderItem item : newItems) {
+            item.setOrder(this);
+            item.setTenantId(tenantId);
+        }
+        orderItems = newItems;
+    }
+
     public List<OrderItem> getOrderItems() {
         if (orderItems == null) {
             orderItems = new ArrayList<OrderItem>();
@@ -154,6 +171,8 @@ public class Order implements Serializable {
     }
 
     public Order addOrderItem(OrderItem item) {
+        item.setOrder(this);
+        item.setTenantId(tenantId);
         getOrderItems().add(item);
         return this;
     }

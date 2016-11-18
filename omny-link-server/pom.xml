@@ -157,6 +157,11 @@
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>com.heartsmart</groupId>
+      <artifactId>heartsmart-omny</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>uk.co.circumcisioncentre</groupId>
       <artifactId>circom-omny</artifactId>
       <version>1.0-SNAPSHOT</version>

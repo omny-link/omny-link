@@ -7,7 +7,7 @@ var newLineRegEx = /\n/g;
 /**
  * Extends Ractive to handle authentication for RESTful clients connecting
  * to Spring servers.
- * 
+ *
  * Also offers some standard controls like Typeahead and a re-branding mechanism.
  *
  * Form names expected:
@@ -38,7 +38,7 @@ var AuthenticatedRactive = Ractive.extend({
       $('head').append('<link href="/css/'+tenant+'-1.0.0.css" rel="stylesheet">');
       $('.navbar-brand').empty().append('<img src="/images/'+tenant+'-logo.png" alt="logo"/>');
       if (ractive.get('tenant.show.activityTracker') && ua!=undefined) ua.enabled = true;
-      // ajax loader 
+      // ajax loader
       $( "#ajax-loader" ).remove();
       $('body').append('<div id="ajax-loader"><img class="ajax-loader" src="/images/omny-ajax-loader.gif" style="width:10%" alt="Loading..."/></div>');
       $( document ).ajaxStart(function() {
@@ -51,8 +51,12 @@ var AuthenticatedRactive = Ractive.extend({
       // tenant partial templates
       $.each(ractive.get('tenant').partials, function(i,d) {
         $.get(d.url, function(response){
-          //console.log('response: '+response)
-          ractive.resetPartial(d.name,response);
+//          console.log('partial '+d.url+' response: '+response);
+          try {
+            ractive.resetPartial(d.name,response);
+          } catch (e) {
+            console.error('Unable to reset partial '+d.name+': '+e);
+          }
         });
       });
       if (ractive.brandingCallbacks!=undefined) ractive.brandingCallbacks.fire();
@@ -67,7 +71,7 @@ var AuthenticatedRactive = Ractive.extend({
   fetchDocs: function() {
     $.getJSON(ractive.uri(ractive.get('current'))+'/documents',  function( data ) {
       if (data['_embedded'] != undefined) {
-        console.log('found docs '+data);
+        //console.log('found docs '+data);
         if (ractive.get('current.documents')==undefined) ractive.set('current.documents', []);
         ractive.merge('current.documents', data['_embedded'].documents);
         // sort most recent first
@@ -79,7 +83,7 @@ var AuthenticatedRactive = Ractive.extend({
   fetchNotes: function() {
     $.getJSON(ractive.uri(ractive.get('current'))+'/notes',  function( data ) {
       if (data['_embedded'] != undefined) {
-        console.log('found notes '+data);
+        //console.log('found notes '+data);
         if (ractive.get('current.notes')==undefined) ractive.set('current.notes', []);
         ractive.merge('current.notes', data['_embedded'].notes);
         // sort most recent first
@@ -123,27 +127,25 @@ var AuthenticatedRactive = Ractive.extend({
   handleError: function(jqXHR, textStatus, errorThrown) {
     if (jqXHR.status==200 && textStatus=='parsererror') {
       ractive.showReconnected();
-      ractive.showMessage("Session expired, please login again");
-      window.location.href='/login';
     }
     switch (jqXHR.status) {
     case 0:
       // server unavailable, retry will kick in
       break;
     case 200:
-      break;  
+      break;
     case 400:
       var msg = jqXHR.responseJSON == null ? textStatus+': '+errorThrown : errorThrown+': '+jqXHR.responseJSON.message;
       ractive.showError(msg);
-      break; 
+      break;
     case 401:
-    case 403: 
-    case 405: /* Could also be a bug but in production we'll assume a timeout */ 
+    case 403:
+    case 405: /* Could also be a bug but in production we'll assume a timeout */
       ractive.showReconnected();
       ractive.showMessage("Session expired, please login again");
       window.location.href='/login';
-      break; 
-    case 404: 
+      break;
+    case 404:
       var path ='';
       if (jqXHR.responseJSON != undefined) {
         path = " '"+jqXHR.responseJSON.path+"'";
@@ -152,7 +154,7 @@ var AuthenticatedRactive = Ractive.extend({
       console.error('msg:'+msg);
       ractive.showError(msg);
       break;
-    default: 
+    default:
       var msg = "Bother! Something has gone wrong (code "+jqXHR.status+"): "+textStatus+':'+errorThrown;
       console.error('msg:'+msg);
       $( "#ajax-loader" ).hide();
@@ -160,7 +162,7 @@ var AuthenticatedRactive = Ractive.extend({
     }
   },
   hash: function(email) {
-    if (email==undefined) return email; 
+    if (email==undefined) return email;
     return hex_md5(email.trim().toLowerCase());
   },
   hasRole: function(role) {
@@ -180,7 +182,7 @@ var AuthenticatedRactive = Ractive.extend({
   },
   id: function(entity) {
     // TODO switch to modular vsn
-    console.log('id: '+entity);
+    //console.log('id: '+entity);
     var id = ractive.uri(entity);
     return id.substring(id.lastIndexOf('/')+1);
   },
@@ -190,31 +192,31 @@ var AuthenticatedRactive = Ractive.extend({
       $.each(ractive.get('tenant.typeaheadControls'), function(i,d) {
         //console.log('binding ' +d.url+' to typeahead control: '+d.selector);
         $.get(ractive.getServer()+d.url, function(data){
-          if (d.name!=undefined) ractive.set(d.name,data); 
+          if (d.name!=undefined) ractive.set(d.name,data);
           $(d.selector).typeahead({ items:'all',minLength:0,source:data });
           $(d.selector).on("click", function (ev) {
             newEv = $.Event("keydown");
             newEv.keyCode = newEv.which = 40;
             $(ev.target).trigger(newEv);
             return true;
-         });
+          });
         },'json');
       });
     }
   },
-  initAutoNumeric: function() { 
+  initAutoNumeric: function() {
     if ($('.autoNumeric')!=undefined && $('.autoNumeric').length>0) {
       $('.autoNumeric').autoNumeric('init', {});
     }
   },
   initContentEditable: function() {
     console.log('initContentEditable');
-    $("[contenteditable]").focus(function() { 
+    $("[contenteditable]").focus(function() {
       console.log('click '+this.id);
       selectElementContents(this);
     });
   },
-  initControls: function() { 
+  initControls: function() {
     console.log('initControls');
     ractive.initAutoComplete();
     ractive.initAutoNumeric();
@@ -413,15 +415,14 @@ var AuthenticatedRactive = Ractive.extend({
     console.log('showUpload...');
     $('#upload').slideDown();
   },
-  showSocial: function(network) {
-    console.log('showSocial: '+network);
-    ractive.set('network',network);
-    ractive.set('current.network',ractive.get('current.'+network));
+  showSocial: function(networkName, keypath) {
+    console.log('showSocial: '+networkName);
+    ractive.set('network', { name: networkName, keypath: keypath, value: ractive.get(keypath) });
     $('#socialModalSect').modal('show');
   },
   submitSocial: function(network) {
     console.log('submitSocial: '+network);
-    ractive.set('current.'+network,ractive.get('current.network'));
+    ractive.set(network.keypath,ractive.get('network.value'));
     $('#socialModalSect').modal('hide');
   },
   sortChildren: function(childArray, sortBy, asc) {
@@ -481,6 +482,7 @@ var AuthenticatedRactive = Ractive.extend({
         } else {
           ractive.fetch(); // refresh list
         }
+        if (ractive.customActionCallbacks!=undefined) ractive.customActionCallbacks.fire();
       },
     });
   },
@@ -513,7 +515,7 @@ var AuthenticatedRactive = Ractive.extend({
     })
   },
   tenantUri: function(entity) {
-    console.log('tenantUri: '+entity);
+    //console.log('tenantUri: '+entity);
     var uri = ractive.uri(entity);
     if (uri != undefined && uri.indexOf(ractive.get('tenant.id')+'/')==-1) {
       uri = uri.replace(ractive.get('entityPath'),'/'+ractive.get('tenant.id')+ractive.get('entityPath'));
@@ -549,7 +551,7 @@ var AuthenticatedRactive = Ractive.extend({
   },
   uri: function(entity) {
     // TODO switch to use modularized version
-    console.log('uri: '+entity);
+    //console.log('uri: '+entity);
     var saveObserver = ractive.get('saveObserver');
     ractive.set('saveObserver', false);
     var uri;
@@ -591,7 +593,7 @@ $( document ).bind('keypress', function(e) {
   switch (e.keyCode) {
   case 13: // Enter key
     if (window['ractive'] && ractive['enter']) ractive['enter']();
-    break; 
+    break;
   case 63:   // ? key
     ractive.showHelp();
     break;
@@ -628,6 +630,18 @@ function selectElementContents(el) {
   var sel = window.getSelection();
   sel.removeAllRanges();
   sel.addRange(range);
+}
+
+/* Object extensions */
+
+/**
+ * @return The first array element whose 'k' field equals 'v'.
+ */
+Array.findBy = function(k,v,arr) {
+  for (idx in arr) {
+    if (arr[idx][k]==v) return arr[idx];
+    else if ('selfRef'==k && arr[idx][k] != undefined && arr[idx][k].endsWith(v)) return arr[idx];
+  }
 }
 
 /******************************** Polyfills **********************************/

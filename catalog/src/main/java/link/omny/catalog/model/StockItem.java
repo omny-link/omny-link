@@ -33,6 +33,7 @@ import link.omny.custmgmt.model.CustomField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 // Property in Flexspace terminology 
 @Data
+@ToString(exclude = { "sizeString" })
 @Entity
 @Table(name = "OL_STOCK_ITEM")
 @AllArgsConstructor

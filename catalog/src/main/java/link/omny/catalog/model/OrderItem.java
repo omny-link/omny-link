@@ -27,7 +27,9 @@ import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 // Property in Flexspace terminology 
 @Data
+@EqualsAndHashCode(exclude = { "order", "stockItem" })
+@ToString(exclude = { "order", "stockItem" })
 @Entity
 @Table(name = "OL_ORDER_ITEM")
 @AllArgsConstructor
@@ -62,7 +66,6 @@ public class OrderItem implements Serializable {
     private String description;
 
     @JsonProperty
-    // @NotNull
     private String type;
 
     @JsonProperty
@@ -86,14 +89,14 @@ public class OrderItem implements Serializable {
     private String tenantId;
 
     @ManyToOne
-    @RestResource(rel = "foo")
+    @RestResource(rel = "order")
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @RestResource(rel = "bar")
+    @RestResource(rel = "stockItem")
     private StockItem stockItem;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "orderItem")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "orderItem", orphanRemoval = true)
     @JsonDeserialize(using = JsonCustomOrderItemFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomOrderItemField> customFields;
