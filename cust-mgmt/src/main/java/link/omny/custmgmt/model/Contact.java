@@ -89,6 +89,12 @@ public class Contact implements Serializable {
     private String lastName;
 
     /**
+     * Whether this is the primary contact for an account.
+     */
+    @JsonProperty
+    private boolean mainContact;
+
+    /**
      */
     @JsonProperty
     private String title;
