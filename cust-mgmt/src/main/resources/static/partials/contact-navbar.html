@@ -16,7 +16,11 @@
   </a>
   <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
     <li on-click="filter:{idx:1}">Show All</li>
-    <li on-click="filter:{idx:2,field: 'stage', operator: '!in', value: {{inactiveStages()}}}">Show Active</li>
+    {{#entityPath=='/accounts'}}
+      <li on-click="filter:{idx:2,field: 'stage', operator: '!in', value: {{inactiveStages()}}}">Show Active</li>
+    {{else}}
+      <li on-click="filter:{idx:2,field: 'stage', operator: '!in', value: {{inactiveStages()}}}">Show Active</li>
+    {{/}}
     <li on-click="filter:[{idx:3,field: 'stage', operator: '!in', value: {{inactiveStages()}}},{idx:3,field: 'owner', value: {{profile.id}}}]">Show Mine</li>
     {{#if tenant.show.stage}}
 	    <li class="divider"></li>

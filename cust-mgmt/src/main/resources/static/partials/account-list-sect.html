@@ -44,7 +44,7 @@
 <section id="accountsSect">
   <h2 class="navbar-top">
     {{>navbar}}
-    <a class="glyphicon glyphicon glyphicon-cloud-upload power-user pull-right" aria-hidden="true" on-click="pasteInit()" title="Upload data from file"></a>
+    {{! TODO Untested<a class="glyphicon glyphicon glyphicon-cloud-upload power-user pull-right" aria-hidden="true" on-click="pasteInit()" title="Upload data from file"></a>}}
   </h2>
   <table id="accountsTable" class="accounts table table-striped">
 	  <thead>
@@ -54,7 +54,7 @@
 	        <th><input class="checkbox" type="checkbox"/></th>
 	      {{/}}
 	      {{#tenant.show.account}}<th on-click="sort:accountName">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
-	      {{#tenant.show.marketing}}
+	      {{#tenant.show.marketing || tenant.show.stage}}
 	        <th on-click="sort:stage">Stage<span class="sortable {{ sorted('stage') }} glyphicon"></th>
 	      {{/}}
 	      <th on-click="sort:accountType">Account Type<span class="sortable {{ sorted('accountType') }} glyphicon"></th>
@@ -75,7 +75,7 @@
 	            <td><input class="checkbox" type="checkbox" on-change="selectMultiple(this)"/></td>
 	          {{/}}
             <td on-click="edit(this)">{{name}}</td>
-	          {{#tenant.show.marketing}}
+	          {{#tenant.show.marketing || tenant.show.stage}}
 	            <td on-click="edit(this)">{{stage}}</td>
 	          {{/}}
 	          <td on-click="edit(this)">{{accountType}}</td>
@@ -95,7 +95,7 @@
 	    {{/each}}
 	  </tbody>
 	  <tfoot>
-	    <tr><th colspan="12">{{searchMatched == 0 ? 'No' : searchMatched}} matching contact{{searchMatched==1 ? '' : 's'}}</th></tr>
+	    <tr><th colspan="12">{{searchMatched == 0 ? 'No' : searchMatched}} matching {{#entityPath=='/accounts'}}{{#tenant.strings.account}}{{tenant.strings.account.toLowerCase()}}{{else}}account{{/}}{{else}}{{#tenant.strings.contact}}{{tenant.strings.contact.toLowerCase()}}{{else}}contact{{/}}{{/}}{{searchMatched==1 ? '' : 's'}}</th></tr>
 	  </tfoot>
 	</table>
 </section>

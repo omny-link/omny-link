@@ -5,6 +5,7 @@ import java.util.List;
 import link.omny.catalog.model.Order;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -20,20 +21,9 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     List<Order> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
-    @Query("SELECT o FROM Order o WHERE o.status IN :status AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
-    List<Order> findByStatusForTenant(
-            @Param("tenantId") String tenantId, @Param("status") String status);
-
-    // TODO compare perf of correlated sub-query
-    // http://openjpa.apache.org/builds/1.2.0/apache-openjpa-1.2.0/docs/manual/jpa_langref.html#jpa_langref_exists
-    @Query("SELECT o FROM Order o WHERE o.tenantId = :tenantId AND o.contactId IN (SELECT c FROM Contact c WHERE c.account.id = :accountId) ORDER BY o.lastUpdated DESC")
-    List<Order> findAllForAccount(@Param("tenantId") String tenantId,
-            @Param("accountId") Long accountId);
-
-    @Query("SELECT o FROM Order o WHERE o.tenantId = :tenantId AND o.contactId IN (SELECT c FROM Contact c WHERE c.account.id = :accountId) ORDER BY o.lastUpdated DESC")
-    List<Order> findPageForAccount(@Param("tenantId") String tenantId,
-            @Param("accountId") Long accountId,
-            Pageable pageable);
+    @Query("SELECT o FROM Order o WHERE o.stage IN :stage AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
+    List<Order> findBystageForTenant(@Param("tenantId") String tenantId,
+            @Param("stage") String stage);
 
     @Query("SELECT o FROM Order o WHERE o.tenantId = :tenantId AND o.contactId = :contactId ORDER BY o.lastUpdated DESC")
     List<Order> findAllForContact(@Param("tenantId") String tenantId,
@@ -43,4 +33,20 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     List<Order> findPageForContact(@Param("tenantId") String tenantId,
             @Param("contactId") Long contactId,
             Pageable pageable);
+
+    @Query("SELECT o FROM Order o WHERE o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
+    List<Order> findAllForContacts(@Param("tenantId") String tenantId,
+            @Param("contactIds") Long[] contactIds);
+
+    @Query("SELECT o FROM Order o WHERE o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
+    List<Order> findPageForContacts(@Param("tenantId") String tenantId,
+            @Param("contactIds") Long[] contactIds, Pageable pageable);
+
+    @Query("DELETE FROM CustomOrderItemField i WHERE i.orderItem.id = ?1")
+    @Modifying(clearAutomatically = true)
+    public void deleteItemCustomField(Long orderItemId);
+
+    @Query("DELETE FROM OrderItem i WHERE i.order.id = ?1 AND i.id = ?2")
+    @Modifying(clearAutomatically = true)
+    public void deleteItem(Long orderId, Long orderItemId);
 }

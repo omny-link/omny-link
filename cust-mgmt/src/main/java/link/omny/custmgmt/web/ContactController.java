@@ -867,6 +867,7 @@ public class ContactController {
         private String firstName;
         private String lastName;
         private String fullName;
+        private boolean mainContact;
         private String town;
         private String countyOrCity;
         private String country;
@@ -882,6 +883,10 @@ public class ContactController {
         private List<String> alerts;
         private String tags;
         private String uuid;
+        private String twitter;
+        private String linkedIn;
+        private String facebook;
+        private String skype;
         private String tenantId;
         private Date firstContact;
         private Date lastUpdated;

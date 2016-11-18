@@ -27,7 +27,10 @@ curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/
 curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/
 
 # List orders for contact
-curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/25
+curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/findByContacts/25
+
+# List orders for multiple contacts
+curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/findByContacts/40,45,48
 
 # Create Order
 curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" \
@@ -36,8 +39,16 @@ curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json"
 curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" \
   -d '{  "contactId" : "35", "name" : "CPR", "date" : "2016-10-10", "price" : "£100", "stockItem" : "Training" }' \
   -u tstephen:tstephen http://localhost:8082/rowden/orders/
-  
+
 # Create order via process
 curl -u tstephen:tstephen  -v 'http://localhost:8082/rowden/process-instances/' -H 'Content-Type: application/json' -H 'Accept: application/json' \
   -d '{"processDefinitionId":"AddOrderToContact","businessKey":"Gareth G","label":"Add Record","processVariables":{"initiator":"tim@omny.link","tenantId":"rowden","contactId":"http://localhost:8082/contacts/35","contactShortId":"35","order":{"name":"3","date":"2016-03-03","price":""}}}'
+
+# Update order with order items
+curl -X PUT -v  -H "Accept:application/json" -H "Content-Type:application/json" \
+  -d '{"accountId":"17","orderItems":[{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"09:00-10:00","year":"N"}},{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"10:00-11:00","year":"R"}}],"tenantId":"alife"}'\
+  -u tstephen:tstephen http://localhost:8082/alife/orders/73
+
+# Delete an order item
+curl -v -X DELETE -H 'Accept:application/json'  http://tim%40omny.link:tstephen12@localhost:8082/alife/orders/121/order-items/188/
   

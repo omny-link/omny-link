@@ -16,13 +16,13 @@ import org.activiti.bdd.test.mailserver.TestMailServer;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.test.JobTestHelper;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.webapp.WebAppContext;
 import org.toxos.activiti.assertion.ProcessAssert;
-
 
 public class TemplatedMailshotProcessTest {
 
@@ -31,8 +31,8 @@ public class TemplatedMailshotProcessTest {
     public static final String MSG_NAME = "messageName";
     public static final String MSG_MAILSHOT = "com.knowprocess.mail.MailData";
     private static final String TEST_SUBJECT = "Test mail";
-    private static final String TEST_TEMPLATE_BASE = "http://knowprocess.com/firmgains/emails";
-    private static final String TEST_TEMPLATE = "/new-registration";
+    private static final String TEST_TEMPLATE_BASE = "http://localhost:8080/acme/emails";
+    private static final String TEST_TEMPLATE = "new-registration";
 
     @Rule
     public ExtendedRule activitiRule = new ExtendedRule("test-activiti.cfg.xml");
@@ -42,9 +42,23 @@ public class TemplatedMailshotProcessTest {
 
     private Map<String, Object> variableMap;
     private MailData mailData;
+    private static Server server;
 
     @BeforeClass
-    public static void setUpClass() {
+    public static void startServer() throws Exception {
+        server = new Server(8080);
+        server.setStopAtShutdown(true);
+        WebAppContext webAppContext = new WebAppContext();
+        webAppContext.setContextPath("/");
+        webAppContext.setResourceBase("src/test/resources/static");
+        webAppContext.setClassLoader(TemplatedMailshotProcessTest.class
+                .getClassLoader());
+        server.addHandler(webAppContext);
+        server.start();
+    }
+    
+    @Before
+    public void setUp() {
         try {
             URL url = new URL(TEST_TEMPLATE_BASE);
             URLConnection urlConnection = url.openConnection();
@@ -53,19 +67,17 @@ public class TemplatedMailshotProcessTest {
         } catch (MalformedURLException e) {
             fail(e.getMessage());
         } catch (IOException e) {
-            Assume.assumeTrue("No connection to test server, assume ok", false);
+            e.printStackTrace();
+            fail();
         }
-    }
 
-    @Before
-    public void setUp() {
         variableMap = new HashMap<String, Object>();
         String json = "{ \"subject\": \"" + TEST_SUBJECT + "\","
-                + "\"sendAt\": \"\","
-                + "\"templateBase\": \"" + TEST_TEMPLATE_BASE + "\","
-                + "\"template\": \"" + TEST_TEMPLATE + "\","
-                + "\"contact\": { \"email\": \"" + TEST_ADDRESSEE + "\" } }";
-        mailData = new MailData().fromJson(json);
+                + "\"sendAt\": \"\"," + "\"templateBase\": \""
+                + TEST_TEMPLATE_BASE + "\"," + "\"template\": \""
+                + TEST_TEMPLATE + "\"," + "\"contact\": { \"email\": \""
+                + TEST_ADDRESSEE + "\" } }";
+        mailData = MailData.fromJson(json);
     }
 
     @Test

@@ -287,6 +287,9 @@ public class Account implements Serializable {
     public String getCompanyNumber() {
         if (companyNumber != null && companyNumber.trim().length() == 0) {
             companyNumber = null;
+        }else if (companyNumber != null && companyNumber.length() < 8) {
+            companyNumber = String.format("%08d",
+                    Integer.parseInt(companyNumber));
         }
         return companyNumber;
     }

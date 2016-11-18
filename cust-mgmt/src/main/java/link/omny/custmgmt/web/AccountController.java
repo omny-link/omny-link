@@ -11,10 +11,12 @@ import javax.transaction.Transactional;
 import link.omny.custmgmt.json.JsonCustomAccountFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.Account;
+import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomAccountField;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
 import link.omny.custmgmt.repositories.AccountRepository;
+import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.custmgmt.repositories.DocumentRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
@@ -70,6 +72,9 @@ public class AccountController {
     private AccountRepository accountRepo;
 
     @Autowired
+    private ContactRepository contactRepo;
+
+    @Autowired
     private DocumentRepository docRepo;
 
     @Autowired
@@ -77,6 +82,7 @@ public class AccountController {
 
     @Autowired
     private ObjectMapper objectMapper;
+
 
     /**
      * Imports JSON representation of accounts.
@@ -254,6 +260,22 @@ public class AccountController {
             @RequestParam("favorite") boolean favorite,
             @RequestParam("content") String content) {
         addNote(tenantId, accountId, new Note(author, content, favorite));
+    }
+
+    /**
+     * Delete an existing account.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long accountId) {
+
+        List<Contact> contacts = contactRepo.findByAccountId(accountId, tenantId);
+        for (Contact contact : contacts) {
+            contactRepo.delete(contact.getId());
+        }
+
+        accountRepo.delete(accountId);
     }
 
     private List<ShortAccount> wrap(List<Account> list) {

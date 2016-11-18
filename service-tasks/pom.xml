@@ -140,7 +140,6 @@
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
-      <version>1.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -156,7 +155,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <version>1.0.0.RELEASE</version>
     </dependency>
      <dependency>
       <groupId>org.toxos.activiti</groupId>
@@ -176,10 +174,6 @@
       <version>4.0.4</version>
       <optional>true</optional>
     </dependency>
-    <dependency>
-    	<groupId>org.springframework.boot</groupId>
-    	<artifactId>spring-boot-starter-remote-shell</artifactId>
-    </dependency>
   </dependencies>
   
   <build>
@@ -191,7 +185,6 @@
               <source>${java.version}</source>
               <target>${java.version}</target>
             </configuration>
-            <version>2.3.2</version>
           </plugin>
       </plugins>
   </build>

@@ -24,6 +24,8 @@ public interface ContactCompleteProjection {
 
     String getFullName();
 
+    boolean isMainContact();
+
     String getTitle();
 
     String getJobTitle();
