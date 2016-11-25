@@ -4,6 +4,11 @@ curl -v -H "Accept:application/json" -u tstephen:tstephen https://api.omny.link/
 # Access a single stock item
 curl -v -H "Accept:application/json" -u tstephen:tstephen https://api.omny.link/stock-items/1535
 curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/stock-items/1095
+# Get timings
+curl --max-time 10000 -w "@catalog/src/test/resources/curl-format.txt" \
+  -H "Accept:application/json" -u iciTche0nS16HiNoBe:6E34DErsERSS5SeY57 \
+  -o /dev/null -s  https://api.omny.link/stock-items/1703
+
 
 # Location based search
 curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByLocation?q=Corsham
