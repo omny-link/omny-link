@@ -741,6 +741,11 @@ form#upload {
 .form textarea {
 	width: 60%;
 }
+@media (min-width: 920px) {
+	.form textarea {
+	  width: 80%;
+	}
+}
 .form input[type='checkbox'],
 .form input[type='radio'] {
   position:relative;
