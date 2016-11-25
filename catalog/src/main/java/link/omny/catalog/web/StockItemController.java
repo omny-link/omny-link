@@ -202,7 +202,7 @@ public class StockItemController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id)
             throws BusinessEntityNotFoundException {
-        LOGGER.debug(String.format("Find contact for id %1$s", id));
+        LOGGER.debug(String.format("Find stock item for id %1$s", id));
 
         return wrap(stockItemRepo.findOne(Long.parseLong(id)));
     }
