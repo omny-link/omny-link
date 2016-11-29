@@ -129,12 +129,18 @@
           </ul>
         </div>
       </section>
+    {{/}}
 
-      {{#tenant.stockCategoryFields.length>0}}
+    {{#tenant.stockCategoryFields.length>0}}
+      {{#if haveCustomExtension('StockCategoryExtension')}}
         <div id="currentStockCategoryExtended" style="clear: both">
           {{>(tenant.id+'StockCategoryExtension')}}
         </div>
-      {{/}}
+      {{else}}
+        <div id="currentStockCategoryExtended" style="clear: both">
+          {{>currentStockCategoryExtensionSect}}
+        </div>
+      {{/if}}
     {{/}}
   </form>
 

@@ -18,6 +18,7 @@ public class FeatureConfig {
     private boolean companyBackground = false;
     private boolean contactDescription = false;
     private boolean enquiryType = true;
+    private boolean feedback = false;
     private boolean financials = false;
     private boolean marketing = true;
     private boolean marketingDigital = marketing;
@@ -26,6 +27,7 @@ public class FeatureConfig {
     private boolean documents = false;
     private boolean offers = true;
     private boolean orders = false;
+    private boolean orderItems = false;
     private boolean merge = false;
     private boolean poweredBy = true;
     @Column(name = "REFS")
@@ -79,6 +81,9 @@ public class FeatureConfig {
         case "enquiryType":
             setEnquiryType(b);
             break;
+        case "feedback":
+            setFeedback(b);
+            break;
         case "financials":
             setFinancials(b);
             break;
@@ -99,6 +104,9 @@ public class FeatureConfig {
             break;
         case "orders":
             setOrders(b);
+            break;
+        case "orderItems":
+            setOrderItems(b);
             break;
         case "poweredBy":
             setPoweredBy(b);

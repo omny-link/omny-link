@@ -146,9 +146,18 @@
       </div>
     {{/}}
 
-    <div id="currentContactExtended" style="clear: both">
-      {{>(tenant.id+'ContactExtension')}}
-    </div>
+    {{#tenant.contactFields.length>0}}
+      {{#if haveCustomExtension('ContactExtension')}}
+        <div id="currentContactExtended" style="clear: both">
+          {{>(tenant.id+'ContactExtension')}}
+        </div>
+      {{else}}
+        <div id="currentContactExtended" style="clear: both">
+          {{>currentContactExtensionSect}}
+        </div>
+      {{/if}}
+    {{/}}
+    
     
     <section id="connectionsSect">
       <h3>
@@ -332,7 +341,7 @@
   {{/}}
 
   {{#if tenant.show.orders}}
-    {{>(tenant.id+'OrderExtension')}}
+    {{>currentOrderListSect}}
   {{/if}}
 
   {{>activityCurrentSect}}
