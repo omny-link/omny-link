@@ -76,9 +76,15 @@
     </div>
 
     {{#tenant.stockItemFields.length>0}}
-      <div id="currentStockItemExtended" style="clear: both">
-        {{>(tenant.id+'StockItemExtension')}}
-      </div>  
+      {{#if haveCustomExtension('StockItemExtension')}}
+        <div id="currentStockItemExtended" style="clear: both">
+          {{>(tenant.id+'StockItemExtension')}}
+        </div>
+      {{else}}
+        <div id="currentStockItemExtended" style="clear: both">
+          {{>currentStockItemExtensionSect}}
+        </div>
+      {{/if}}
     {{/}}
   </form>
   

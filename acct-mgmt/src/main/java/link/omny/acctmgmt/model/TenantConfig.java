@@ -119,21 +119,18 @@ public class TenantConfig implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = TenantTypeaheadControl.class)
     private List<TenantTypeaheadControl> typeaheadControls;
 
-    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
-    // targetEntity = TenantAction.class)
     @Transient
     private List<TenantAction> accountActions;
 
-    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
-    // targetEntity = TenantAction.class)
     @Transient
     private List<TenantAction> contactActions;
 
     @Transient
+    private List<TenantAction> orderActions;
+
+    @Transient
     private List<TenantAction> stockItemActions;
 
-    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
-    // targetEntity = TenantAction.class)
     @Transient
     private List<TenantAction> workActions;
 
