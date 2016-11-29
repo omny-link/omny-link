@@ -33,7 +33,7 @@
 		    </thead>
 		    <tbody>
 		      {{#each sort(orders,sortOrderColumn,sortOrderAsc):i}}
-		        <tr class="{{#if orderItems}}alert-info{{else}}alert-warning{{/if}}">
+		        <tr class="{{#if tenant.show.orderItems && orderItems}}alert-info{{elseif tenant.show.orderItems}}alert-warning{{/if}}">
 		          {{#1==2}}<td>{{name}}</td>{{/}}
 		          {{#entityPath=='/accounts'}}<td data-order-id="{{selfRef}}" data-key="contactName">
 		            <span>{{#contactId}}{{Array.findBy('selfRef','/contacts/'+contactId,current.contacts).fullName}}{{else}}{{contactId}}{{/}}</span>
@@ -43,7 +43,7 @@
 		            <span>{{formatDate(date)}}</span>
                 <input class="hidden form-control" placeholder="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}" type="date" value="{{date}}">
               </td>
-              {{#if orderItems}}
+              {{#if tenant.show.orderItems && orderItems}}
                 <td data-order-id="{{selfRef}}">{{formatDate(orderItems.0.customFields.date)}}</td>
               {{else}}
                 <td data-order-id="{{selfRef}}" data-key="dueDate">
@@ -55,12 +55,12 @@
 		            <span>{{stage}}</span>
 		            <input class="hidden typeahead form-control" placeholder="Start typing to filter options" title="{{#tenant.strings.stageHint}}{{tenant.strings.stageHint}}{{else}}Stage the order has reached{{/}}" value="{{stage}}">
 		          </td>
-		          {{#if orderItems}}
+		          {{#if tenant.show.orderItems && orderItems}}
 		            <td data-order-id="{{selfRef}}" title="{{#tenant.strings.stockItems}}List of included {{tenant.strings.stockItems}}{{else}}List of included stock items{{/}}">{{formatStockItemId(uniq('stockItemId', orderItems))}}</td>
 	            {{else}}
 	              <td data-order-id="{{selfRef}}" data-key="customFields.proposedStockItems">
 	                <span title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}">{{customFields['proposedStockItems']}}</span>
-	                <input class="hidden form-control" placeholder="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}" value="{{customFields['proposedStockItems']}}"/>
+	                <input class="hidden form-control stock-item-typeahead typeahead" placeholder="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}" value="{{customFields['proposedStockItems']}}"/>
 	              </td>
 	            {{/if}}
 	            {{#tenant.show.stockPricing}}
@@ -82,58 +82,82 @@
 		          {{#1==2}}<td>{{formatDateTime(created)}}</td>{{/}}
 		          <td class="actions">
 		            <a class="glyphicon glyphicon-pencil" aria-hidden="true" on-click="toggleEditOrder(.)" title="Edit this record"></a>
-	              {{#if orderItems}}
-	                <a class="glyphicon {{#tenant.strings.orderItemIcon}}{{tenant.strings.orderItemIcon}}{{else}}glyphicon-th-list{{/}}" aria-hidden="true" on-click="toggleOrderSubEntity(this,'orderItems')" title="Show {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}"></a>
-	              {{else}}
-	                <a class="glyphicon {{#tenant.strings.orderItemIcon}}{{tenant.strings.orderItemIcon}}{{else}}glyphicon-th-list{{/}}" aria-hidden="true" on-click="addOrderItems(selfRef, 'AddOrderItems', 'Propose timetable', currentOrder, true, 'Timetable for '+Array.findBy('selfRef','/contacts/'+contactId,current.contacts).fullName)" title="Create {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}"></a>
+	              <a class="glyphicon glyphicon-duplicate" aria-hidden="true" on-click="cloneOrder(.)" title="Duplicate this record"></a>
+			          {{#if tenant.show.orderItems && orderItems}}
+	                <a class="glyphicon {{#tenant.strings.orderItemIcon}}{{tenant.strings.orderItemIcon}}{{else}}glyphicon-th-list{{/}}" aria-hidden="true" on-click="toggleOrderSubEntity(this,'orderItems')" 
+	                   title="Show {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}"></a>
+	              {{elseif tenant.show.orderItems}}
+	                <a class="glyphicon {{#tenant.strings.orderItemIcon}}{{tenant.strings.orderItemIcon}}{{else}}glyphicon-th-list{{/}}" aria-hidden="true" 
+	                   on-click="addOrderItems(selfRef, 'AddOrderItems', 'Propose timetable', currentOrder, true, 'Timetable for '+Array.findBy('selfRef','/contacts/'+contactId,current.contacts).fullName)" 
+	                   title="Create {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}"></a>
 	              {{/if}}
-	              {{#if orderItems}}<a class="glyphicon glyphicon-comment" aria-hidden="true" on-click="toggleOrderSubEntity(this,'feedback')" title="Show Feedback"></a>{{/if}}
-	                <a class="glyphicon glyphicon-duplicate" aria-hidden="true" on-click="cloneOrder(.)" title="Duplicate this record"></a>
+	              {{#if tenant.show.feedback}}<a class="glyphicon glyphicon-comment" aria-hidden="true" on-click="toggleOrderSubEntity(this,'feedback')" title="Show Feedback"></a>{{/if}}
 	              {{#if selfRef}}<a class="glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteOrder(.)" title="Delete this record"></a>{{/if}}
+	              {{#if tenant.orderActions!=undefined && tenant.orderActions.length>0 }}
+                  <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
+                      <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
+                    </a>
+                    <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+                      {{#each tenant.orderActions }}
+                        {{#name}}
+                          <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{current.fullName}}')" title="{{name}}">{{name}}</li>
+                        {{else}}
+                          <li class="divider"></li>
+                        {{/}}
+                      {{/each}}
+                    </ul>
+                  </span>
+                {{/if}}
 		          </td>
 		        </tr>
-		        <tr class="orderItems" data-order-id="{{selfRef}}" style="display:none">
-	            <th>{{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}: </th>
-	            <td colspan="10">
-		            {{#if orderItems==undefined || orderItems.length==0}}
-	                None
-	              {{else}}
-	                <table class="ol-order-items table table-striped">
-	                  <thead>
-	                    <tr>
-	                      <th title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}</th>
-	                      {{#tenant.orderItemFields}}
-	                        <th title="{{hint}}">{{label == undefined ? key.toLabel() : label}}</th>
-	                      {{/}}
-	                      <th>Actions</th>
-	                    </tr>
-	                  </thead>
-	                  <tbody>
-	                    {{#orderItems:j}}
-	                      <tr>
-	                        <td data-order-item-id="{{selfRef}}" title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#stockItemId}}{{Array.findBy('selfRef','/stock-items/'+stockItemId,stockItems).name}}{{else}}{{stockItemId}}{{/}}</td>
-	                        {{#tenant.orderItemFields}}
-		                        <td class="{{type}}" data-order-item-id="{{selfRef}}" data-key="orderItems.{{j}}.customFields.{{key}}">
-                              {{#if type=='date'}}
-                                <span title="{{hint}}">{{formatDate(customFields[key])}}</span>
-                                <input class="hidden form-control" placeholder="yyyy-mm-dd" type="date" title="{{hint}}" value="{{customFields[key]}}">
-                              {{else}}
-                                <span title="{{hint}}" >{{customFields[key]}}</span>
-                                <input class="hidden form-control" placeholder="{{hint}}" title="{{hint}}" type="{{type}}" value="{{customFields[key]}}">
-                              {{/if}}
-		                        </td>
+		        {{#if tenant.show.orderItems}}
+			        <tr class="orderItems" data-order-id="{{selfRef}}" style="display:none">
+		            <th>
+		              <div>{{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}:</div>
+		              <div><a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addOrderItem(orders[i].selfRef)" title="Add a new {{#tenant.strings.orderItem}}{{tenant.strings.orderItem.toLowerCase()}}{{else}}order item{{/}}"></a></div>
+		            </th>
+		            <td colspan="10">
+			            {{#if orderItems==undefined || orderItems.length==0}}
+		                None
+		              {{else}}
+		                <table class="ol-order-items table table-striped">
+		                  <thead>
+		                    <tr>
+		                      <th title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}</th>
+		                      {{#tenant.orderItemFields}}
+		                        <th title="{{hint}}">{{label == undefined ? key.toLabel() : label}}</th>
 		                      {{/}}
-		                      <td class="actions">
-						                <a class="glyphicon glyphicon-pencil" aria-hidden="true" on-click="toggleEditOrderItem(orders[i], .)" title="Edit this record"></a>
-                            <a class="glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteOrderItem(orders[i], .)" title="Delete this record"></a>
-						              </td>
-	                      </tr>
-	                    {{/}}
-	                  </tbody>
-	                </table>
-	              {{/if}}
-	            </td>
-	          </tr>
+		                      <th>Actions</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    {{#orderItems:j}}
+		                      <tr>
+		                        <td data-order-item-id="{{selfRef}}" title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#stockItemId}}{{Array.findBy('selfRef','/stock-items/'+stockItemId,stockItems).name}}{{else}}{{stockItemId}}{{/}}</td>
+		                        {{#tenant.orderItemFields}}
+			                        <td class="{{type}}" data-order-item-id="{{selfRef}}" data-key="orderItems.{{j}}.customFields.{{key}}">
+	                              {{#if type=='date'}}
+	                                <span title="{{hint}}">{{formatDate(customFields[key])}}</span>
+	                                <input class="hidden form-control" placeholder="yyyy-mm-dd" type="date" title="{{hint}}" value="{{customFields[key]}}">
+	                              {{else}}
+	                                <span title="{{hint}}" >{{customFields[key]}}</span>
+	                                <input class="hidden form-control" placeholder="{{hint}}" title="{{hint}}" type="{{type}}" value="{{customFields[key]}}">
+	                              {{/if}}
+			                        </td>
+			                      {{/}}
+			                      <td class="actions">
+							                <a class="glyphicon glyphicon-pencil" aria-hidden="true" on-click="toggleEditOrderItem(orders[i], .)" title="Edit this record"></a>
+	                            <a class="glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteOrderItem(orders[i], .)" title="Delete this record"></a>
+							              </td>
+		                      </tr>
+		                    {{/}}
+		                  </tbody>
+		                </table>
+		              {{/if}}
+		            </td>
+		          </tr>
+		        {{/if   }}
 	          <tr class="feedback" data-order-id="{{selfRef}}" style="display:none">
 	            <th>Feedback:</th>
 	            <td colspan="10">

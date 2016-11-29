@@ -643,6 +643,19 @@ Array.findBy = function(k,v,arr) {
     else if ('selfRef'==k && arr[idx][k] != undefined && arr[idx][k].endsWith(v)) return arr[idx];
   }
 }
+Array.uniq = function(fieldName, arr) {
+  // console.info('uniq');
+  list = '';
+  for (idx in arr) {
+    if (arr[idx][fieldName] != undefined
+        && list.indexOf(arr[idx][fieldName]) == -1) {
+      if (list != '')
+        list += ','
+      list += arr[idx][fieldName];
+    }
+  }
+  return list;
+}
 
 /******************************** Polyfills **********************************/
 // ref https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith

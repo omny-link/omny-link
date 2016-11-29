@@ -1,4 +1,4 @@
-{{#if tenant.contactFields}}
+{{#if tenant.contactFields.length>0}}
   <section id="currentContactExtendedSect">
     <h3>
       <span class="ol-collapse glyphicon glyphicon-triangle-bottom" onclick="ractive.toggleSection($(this).closest('section'))"></span>
@@ -8,8 +8,8 @@
       <ul class="form edit-form">
         {{#each tenant.contactFields.slice(0,Math.ceil(tenant.contactFields.length/2)):j}}
           <li class="form-group">
-            <label class="col-md-2 col-sm-4">{{label}}:</label>
-            <input class="form-control" id="curUnknown" value="{{current.customFields[name]}}">
+            <label class="col-md-2 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
+            <input class="form-control" id="cur{{name.toLeadingCaps()}}" value="{{current.customFields[name]}}">
             <p class="col-md-offeset-2 col-sm-offset-4 help-block field-error"></p>
           </li>
         {{/each}}
@@ -19,8 +19,8 @@
       <ul class="form edit-form">
         {{#each tenant.contactFields.slice(Math.ceil(tenant.contactFields.length/2),tenant.contactFields.length):j}}
           <li class="form-group">
-            <label class="col-md-2 col-sm-4">{{label}}:</label>
-            <input class="form-control" id="curUnknown" value="{{current.customFields[name]}}">
+            <label class="col-md-2 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
+            <input class="form-control" id="cur{{name.toLeadingCaps()}}" value="{{current.customFields[name]}}">
             <p class="col-md-offeset-2 col-sm-offset-4 help-block field-error"></p>
           </li>
         {{/each}}

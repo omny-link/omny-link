@@ -66,6 +66,9 @@ var ractive = new AuthenticatedRactive({
       if (email == undefined) return '';
       return ractive.hash(email);
     },
+    haveCustomExtension: function(extName) {
+      return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
+    },
     helpUrl: '//omny.link/user-help/stock-categories/#the_title',
     matchFilter: function(obj) {
       var filter = ractive.get('filter');
@@ -146,6 +149,7 @@ var ractive = new AuthenticatedRactive({
       { "name": "stockCategoryListSect", "url": "/partials/stock-category-list-sect.html"},
       { "name": "currentImageSect", "url": "/partials/image-current-sect.html"},
       { "name": "currentStockCategorySect", "url": "/partials/stock-category-current-sect.html"},
+      { "name": "currentStockCategoryExtensionSect", "url": "/partials/stock-category-extension.html"}
     ],
   },
   add: function () {

@@ -119,7 +119,7 @@ var ractive = new AuthenticatedRactive(
           // console.info('formatStockItemId');
           if (stockItemIds == undefined || stockItemIds.length == 0)
             return stockItemIds;
-          var ids = stockItemIds.split();
+          var ids = stockItemIds.split(',');
           var stockItemNames = '';
           for (idx in ids) {
             var tmp = Array.findBy('selfRef','/stock-items/' + ids[idx],ractive.get('stockItems'));
@@ -156,6 +156,9 @@ var ractive = new AuthenticatedRactive(
           if (email == undefined)
             return '';
           return ractive.hash(email);
+        },
+        haveCustomExtension: function(extName) {
+          return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
         },
         haveStageReasons : function() {
           console.info('haveStageReasons?');
@@ -373,17 +376,7 @@ var ractive = new AuthenticatedRactive(
           "url" : "/partials/task-list-table.html"
         } ],
         uniq : function(fieldName, arr) {
-          // console.info('uniq');
-          list = '';
-          for (idx in arr) {
-            if (arr[idx][fieldName] != undefined
-                && list.indexOf(arr[idx][fieldName]) == -1) {
-              if (list != '')
-                list += ','
-              list += arr[idx][fieldName];
-            }
-          }
-          return list;
+          return Array.uniq(fieldName, arr);
         }
       },
       add : function() {
@@ -458,7 +451,7 @@ var ractive = new AuthenticatedRactive(
         console.log('addOrder ...');
         if (ractive.get('current.contacts').length == 0) {
           ractive
-              .showWarning('There are no contacts yet, please create onen before trying to add an order');
+              .showWarning('There are no contacts yet, please create one before trying to add an order');
           return;
         }
         ractive.set('saveObserver', false);
@@ -478,6 +471,18 @@ var ractive = new AuthenticatedRactive(
         ractive.set('saveObserver', true);
         if ($('#orderSect div:visible').length == 0)
           $('#orderSect .ol-collapse').click();
+      },
+      addOrderItem: function(orderId) {
+//        ractive.set('saveObserver', false);
+        ractive.set('currentOrder', Array.findBy('selfRef',orderId,ractive.get('orders')))
+
+//        var obj = { 
+//          customFields: { 
+//            
+//          }
+//        };
+        ractive.get('currentOrder.orderItems').push(new Object());
+//        ractive.set('saveObserver', true);
       },
       addOrderItems: function(orderId, key, label, object, form, bizKey) {
         ractive.set('currentOrder', Array.findBy('selfRef',orderId,ractive.get('orders')))
