@@ -67,6 +67,9 @@ var ractive = new AuthenticatedRactive({
       if (email == undefined) return '';
       return ractive.hash(email);
     },
+    haveCustomExtension: function(extName) {
+      return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
+    },
     helpUrl: '//omny.link/user-help/stock-items/#the_title',
     matchFilter: function(obj) {
       var filter = ractive.get('filter');
@@ -149,7 +152,8 @@ var ractive = new AuthenticatedRactive({
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "stockItemListSect", "url": "/partials/stock-item-list-sect.html"},
       { "name": "currentImageSect", "url": "/partials/image-current-sect.html"},
-      { "name": "currentStockItemSect", "url": "/partials/stock-item-current-sect.html"}
+      { "name": "currentStockItemSect", "url": "/partials/stock-item-current-sect.html"},
+      { "name": "currentStockItemExtensionSect", "url": "/partials/stock-item-extension.html"}
     ],
   },
   add: function () {
