@@ -1,0 +1,41 @@
+
+<div class="form-group">
+  <label class="required" for="startDate">Start (inclusive)</label>
+  <input class="form-control" id="startDate" placeholder="yyyy-mm-dd" required type="date" value="{{instanceToStart.processVariables['startDate']}}">
+  <p class="help-block field-hint field-error">Please pick the first day you were sick</p>
+</div>
+<div class="form-group">
+  <label class="required" for="endDate">End (inclusive)</label>
+  <input class="form-control" id="endDate" placeholder="yyyy-mm-dd" required type="date" value="{{instanceToStart.processVariables['endDate']}}">
+  <p class="help-block field-hint field-error">Please pick the last day you were sick</p>
+</div>
+<div class="form-group">
+  <label class="required" for="numberOfDays">Number of working days?</label>
+  <input class="form-control required" id="numberOfDays" placeholder="Start typing to filter options" required step="1" type="number" value="{{instanceToStart.processVariables['numberOfDays']}}"/>
+  <p class="help-block field-hint field-error">How many days work did you miss in total?</p>
+</div>
+<div class="form-group">
+  <label class="required" for="reason">What was wrong?</label>
+  <textarea class="form-control" id="reason" placeholder="Type yourself a reminder of what to do" required value="{{instanceToStart.processVariables['reason']}}"></textarea>
+  <p class="help-block field-hint field-error"></p>
+</div>
+<script>
+  $(document).ready(function() {
+    ractive.initAutoComplete();
+    validateCustomActionForm();
+    $('#submitCustomActionForm').click(function() {
+      console.log('Submit custom action form');
+      validateCustomActionForm();
+    });
+    $('#customActionForm input,#customActionForm select,#customActionForm textarea').blur(function() {
+      console.log('blur custom action form field');
+      validateCustomActionForm();
+    });
+  });
+
+  function validateCustomActionForm() {
+    console.info('validateCustomActionForm');
+    $('#customActionForm input:invalid ~ .field-hint,#customActionForm select:invalid ~ .field-hint,#customActionForm textarea:invalid ~ .field-hint').css('visibility','visible').css('color','#f33').css('line-height','1.5em');
+    $('#customActionForm input:valid ~ .field-hint,#customActionForm select:valid ~ .field-hint,#customActionForm textarea:valid ~ .field-hint').css('visibility','hidden').css('color','#f33').css('line-height','0em');
+  }
+</script>
