@@ -1,0 +1,116 @@
+<div class="form-group">
+  <label class="control-label required">Memo Template:</label>
+  <input autocomplete="off" class="form-control" id="curMemoDisplay" placeholder="Please select a template" required style="width:60%;" type="text" value="{{distribution.memoDisplay}}">
+  <input id="curMemoRef" type="hidden" value="{{instanceToStart.processVariables.memoId}}">
+  <input id="curMemoName" type="hidden" value="{{instanceToStart.processVariables.memoName}}">
+  <p class="help-block">You must select a template to send to your contact.</p>
+</div>
+<div class="form-group">
+  <label class="control-label required">Order:</label>
+  <input autocomplete="off" class="form-control" id="curOrderDisplay" placeholder="Please select an order" required style="width:60%;" type="text" value="{{instanceToStart.processVariables.orderName}}">
+  <input id="curOrderRef" type="hidden" value="{{instanceToStart.processVariables.orderId}}">
+  <input id="curOrderName" type="hidden" value="{{instanceToStart.processVariables.orderName}}">
+  <p class="help-block">You must select a template to send to your contact.</p>
+</div>
+<div class="form-group form-inline">
+  <label class="control-label">Send at:</label>
+  <div>
+    <input id="curSendAtDate" class="form-control" style="width:170px" type="date" value="{{instanceToStart.processVariables.sendAtDate}}">
+    <input id="curSendAtTime" class="form-control" style="width:95px" type="time" value="{{instanceToStart.processVariables.sendAtTime}}">
+    <input id="curSendAtTZ" class="form-control" pattern="GMT[+-][0-9]{2}:[0-9]{2}" placeholder="GMT-HH:MM" style="width:120px;" type="text" value="{{distribution.sendAtTZ}}">
+    <p class="help-block" style="display:inline">You may optionally choose to send this template at a future date and time.</p>
+  </div>
+</div>
+<div class="form-group">
+  <script>
+    function initMemosSource() {
+      console.info('initMemosSource');
+      return jQuery.map(ractive.get('memos'), function( n, i ) {
+        console.log('n: '+n.selfRef+', '+n.name+', i:'+i);
+        return ( {id: n.selfRef, name: n.name} );
+      });
+    }
+    function initOrdersAutocomplete() {
+      console.info('initOrdersAutocomplete');
+      ractive.set('ordersTypeahead',jQuery.map(ractive.get('orders'), function( n, i ) {
+        if (n.orderItems == undefined || n.orderItems.length == 0) return;
+        console.log('n: '+n.selfRef+', '+n.id+', i:'+i);
+        return ( {id: ractive.shortId(n.selfRef), name: Array.findBy('selfRef','/contacts/'+n.contactId,ractive.get('current.contacts')).fullName+' '+n.orderItems[0].customFields['date']} );
+      }));
+      
+      $('#curOrderDisplay').typeahead({ 
+        items:'all',
+        minLength:0,
+        source: ractive.get('ordersTypeahead'),
+        afterSelect:function(d) {
+          console.info('afterSelect:'+d);
+          ractive.set('instanceToStart.processVariables.orderId',d.id);
+          ractive.set('instanceToStart.processVariables.orderName',d.name);
+        }
+      });
+      $('#curOrderDisplay').on("click", function (ev) {
+        newEv = $.Event("keydown");
+        newEv.keyCode = newEv.which = 40;
+        $(ev.target).trigger(newEv);
+        return true;
+      });
+    }
+    function fetchMemos() {
+      console.log('fetchMemos...');
+      $.ajax({
+        dataType: "json",
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/memos/',
+        crossDomain: true,
+        success: function( data ) {
+          console.log('Found '+data.length+' memos.');
+          if (data['_embedded'] == undefined) {
+            ractive.set('memos', data);
+          }else{
+            ractive.set('memos', data['_embedded'].memos);
+          }
+          $('#curMemoDisplay').typeahead({ 
+            items:'all',
+            minLength:0,
+            source: initMemosSource(),
+            afterSelect:function(d) {
+              console.info('afterSelect:'+d);
+              ractive.set('instanceToStart.processVariables.memoId',d.id.substring(d.id.lastIndexOf('/')+1));
+              ractive.set('instanceToStart.processVariables.memoName',d.name);
+            }
+          });
+          $('#curMemoDisplay').on("click", function (ev) {
+            newEv = $.Event("keydown");
+            newEv.keyCode = newEv.which = 40;
+            $(ev.target).trigger(newEv);
+            return true;
+          });
+        }     
+      });
+    }
+    function validateCustomActionForm() {
+      console.info('validateCustomActionForm');
+      $('#customActionForm input:invalid ~ .help-block,#customActionForm select:invalid ~ .help-block,#customActionForm textarea:invalid ~ .help-block').css('visibility','visible').css('color','#f33').css('line-height','1.5em');
+      $('#customActionForm input:valid ~ .help-block,#customActionForm select:valid ~ .help-block,#customActionForm textarea:valid ~ .help-block').css('visibility','hidden').css('color','#f33').css('line-height','0em');
+    }
+    
+    $(document).ready(function() {
+      fetchMemos();
+      initOrdersAutocomplete();
+      
+      $('#curMemoDisplay').val(undefined);
+      validateCustomActionForm();
+      $('#submitCustomActionForm').click(function() {
+        console.log('Submit custom action form');
+        validateCustomActionForm();
+        if (document.getElementById('customActionForm').checkValidity()) {
+          ractive.submitCustomAction('{{instanceToStart.processDefinitionId}}', '{{instanceToStart.label}}', ractive.get('current'));
+          $('#curMemoDisplay').val(undefined);
+        }
+      });
+      $('#customActionForm input,#customActionForm select,#customActionForm textarea').blur(function() {
+        console.log('blur custom action form field');
+        validateCustomActionForm();
+      });
+    });
+  </script>
+</div>
