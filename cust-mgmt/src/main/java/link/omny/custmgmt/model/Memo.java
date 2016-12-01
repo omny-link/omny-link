@@ -20,6 +20,8 @@ import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import org.jsoup.Jsoup;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
@@ -81,6 +83,13 @@ public class Memo implements Serializable {
         created = new Date();
     }
     
+    public String getPlainContent() {
+        if (plainContent == null && richContent != null) {
+            plainContent = Jsoup.parse(richContent).text();
+        }
+        return plainContent;
+    }
+
     @PrePersist
     public void preInsert() {
         if (created == null) {

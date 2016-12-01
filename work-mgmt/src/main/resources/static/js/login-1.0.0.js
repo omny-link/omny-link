@@ -643,6 +643,17 @@ Array.findBy = function(k,v,arr) {
     else if ('selfRef'==k && arr[idx][k] != undefined && arr[idx][k].endsWith(v)) return arr[idx];
   }
 }
+/**
+ * @return All  array elements whose 'k' field equals 'v'.
+ */
+Array.findAll = function(k,v,arr) {
+  var retArr = [];
+  for (idx in arr) {
+    if (arr[idx][k]==v) retArr.push(arr[idx]);
+    else if ('selfRef'==k && arr[idx][k] != undefined && arr[idx][k].endsWith(v)) return retArr.push(arr[idx]);
+  }
+  return retArr;
+}
 Array.uniq = function(fieldName, arr) {
   // console.info('uniq');
   list = '';

@@ -75,6 +75,23 @@ public class OrderController {
      * 
      * @return orders for that tenant.
      */
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public @ResponseBody ShortOrder readOrder(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long orderId) {
+        LOGGER.info(String.format("Read order %1$s for tenant %2$s", orderId,
+                tenantId));
+
+        Order order = orderRepo.findOne(orderId);
+
+        return wrap(order);
+    }
+
+    /**
+     * Return just the orders for a specific tenant.
+     * 
+     * @return orders for that tenant.
+     */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public @ResponseBody List<ShortOrder> listForTenant(
             @PathVariable("tenantId") String tenantId,
