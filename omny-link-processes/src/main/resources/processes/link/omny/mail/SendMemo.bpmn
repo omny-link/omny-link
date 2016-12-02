@@ -5,11 +5,15 @@
     <extensionElements>
       <activiti:executionListener class="com.knowprocess.bpm.listeners.FieldInjectionListener" event="start">
         <activiti:field name="varName" stringValue="toEmail"/>
-        <activiti:field expression="${''}" name="dynamicValue"/>
+        <activiti:field name="dynamicValue"/>
       </activiti:executionListener>
       <activiti:executionListener class="com.knowprocess.bpm.listeners.FieldInjectionListener" event="start">
         <activiti:field name="varName" stringValue="orderId"/>
-        <activiti:field expression="${''}" name="dynamicValue"/>
+        <activiti:field name="dynamicValue" expression="${''}"/>
+      </activiti:executionListener>
+      <activiti:executionListener class="com.knowprocess.bpm.listeners.FieldInjectionListener" event="start">
+        <activiti:field name="varName" stringValue="ccAccount"/>
+        <activiti:field name="dynamicValue" expression="userInfo('cc_account')"/>
       </activiti:executionListener>
       <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
@@ -52,10 +56,15 @@
       <incoming>_9</incoming>
       <outgoing>_11</outgoing>
     </serviceTask>
-    <scriptTask completionQuantity="1" id="_4" isForCompensation="false" name="Cache template" scriptFormat="JavaScript" startQuantity="1">
+    <scriptTask activiti:async="true" completionQuantity="1" id="_4" isForCompensation="false" name="Cache template" scriptFormat="JavaScript" startQuantity="1">
       <incoming>_11</incoming>
       <outgoing>_12</outgoing>
-      <script><![CDATA[execution.setVariable('plainContent',execution.getVariable('memo').getString('plainContent'));
+      <script><![CDATA[
+try {
+  execution.setVariable('plainContent',execution.getVariable('memo').getString('plainContent'));
+} catch (e) {
+  execution.setVariable('plainContent','');
+}
 execution.setVariable('richContent',execution.getVariable('memo').getString('richContent'));
 var contactId = execution.getVariable('contactId');
 if (contactId.indexOf('://')==-1) contactId = "userInfo('cust-mgmt-url')/"+contactId;
@@ -80,7 +89,7 @@ execution.setVariable('contactId',contactId);]]></script>
           <activiti:expression>${empty toEmail ? contact.getString('email') : toEmail}</activiti:expression>
         </activiti:field>
         <activiti:field name="cc">
-          <activiti:expression>userInfo('cc_account')</activiti:expression>
+          <activiti:expression>${ccAccount}</activiti:expression>
         </activiti:field>        
         <activiti:field name="subject">
           <activiti:expression><![CDATA[${memo.getString('title')}]]></activiti:expression>
