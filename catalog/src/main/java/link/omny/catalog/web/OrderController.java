@@ -83,6 +83,8 @@ public class OrderController {
                 tenantId));
 
         Order order = orderRepo.findOne(orderId);
+        LOGGER.info(String.format("Found order with %1$d order items", order
+                .getOrderItems().size()));
 
         return wrap(order);
     }
@@ -306,13 +308,37 @@ public class OrderController {
     private ShortOrder wrap(Order order) {
         ShortOrder resource = new ShortOrder();
 
-        BeanUtils.copyProperties(order, resource);
+        BeanUtils.copyProperties(order, resource, "customFields", "orderItems");
         resource.setContactId(order.getContactId());
 
-        ArrayList<ShortOrderItem> items = new ArrayList<ShortOrderItem>();
-        for (OrderItem item : order.getOrderItems()) {
-            items.add(wrap(item));
+        ArrayList<CustomOrderField> fields = new ArrayList<CustomOrderField>();
+        List<Long> fieldsSeen = new ArrayList<Long>();
+        for (CustomOrderField field : order.getCustomFields()) {
+            if (field.getOrder().getId().equals(order.getId())
+                    && !fieldsSeen.contains(field.getId())) {
+                fields.add(field);
+                fieldsSeen.add(field.getId());
+            } else {
+                LOGGER.debug(String.format(
+                        "Removing duplicate field due to inner join: %1$s",
+                        order));
+            }
         }
+        resource.setCustomFields(fields);
+
+        ArrayList<ShortOrderItem> items = new ArrayList<ShortOrderItem>();
+        List<Long> itemsSeen = new ArrayList<Long>();
+        for (OrderItem item : order.getOrderItems()) {
+            if (itemsSeen.contains(item.getId())) {
+                LOGGER.debug(String
+                        .format("Removing duplicate due to join on order item custom fields: %1$s",
+                                item));
+            } else {
+                items.add(wrap(item));
+                itemsSeen.add(item.getId());
+            }
+        }
+
         resource.setOrderItems(items);
 
         Link detail = linkTo(OrderRepository.class,
@@ -325,11 +351,29 @@ public class OrderController {
     private ShortOrderItem wrap(OrderItem item) {
         ShortOrderItem resource = new ShortOrderItem();
 
-        BeanUtils.copyProperties(item, resource);
+        BeanUtils.copyProperties(item, resource, "customFields");
         resource.setOrderItemId(item.getId());
+        resource.setOrderId(item.getOrder().getId());
+        resource.setName(item.getStockItem().getName());
         if (item.getStockItem() != null) {
             resource.setStockItemId(item.getStockItem().getId());
+            resource.setStockItemName(item.getStockItem().getName());
         }
+
+        ArrayList<CustomOrderItemField> fields = new ArrayList<CustomOrderItemField>();
+        List<Long> fieldsSeen = new ArrayList<Long>();
+        for (CustomOrderItemField field : item.getCustomFields()) {
+            if (field.getOrderItem().getId().equals(item.getId())
+                    && !fieldsSeen.contains(field.getId())) {
+                fields.add(field);
+                fieldsSeen.add(field.getId());
+            } else {
+                LOGGER.debug(String.format(
+                        "Removing duplicate field due to inner join: %1$s",
+                        item));
+            }
+        }
+        resource.setCustomFields(fields);
 
         return resource;
     }
@@ -365,12 +409,14 @@ public class OrderController {
     @EqualsAndHashCode(callSuper = true)
     public static class ShortOrderItem extends ResourceSupport {
         private Long orderItemId;
+        private Long orderId;
         private String selfRef;
         private String name;
         private String description;
         private String status;
         private BigDecimal price;
         private Long stockItemId;
+        private String stockItemName;
         @JsonDeserialize(using = JsonCustomOrderItemFieldDeserializer.class)
         @JsonSerialize(using = JsonCustomFieldSerializer.class)
         private List<CustomOrderItemField> customFields;
