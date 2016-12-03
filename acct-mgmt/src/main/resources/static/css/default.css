@@ -1,0 +1,98 @@
+/* FONTS */ 
+
+
+/* END FONTS */
+
+/*
+ * COLOURS
+ *
+ * headingColor: %1$s
+ * subHeadingColor: %2$s
+ * bodyColor: %3$s
+ * accentColor: %4$s
+ * iconColor: %5$s
+ */
+
+body {
+  color: %3$s;
+}
+h1 { 
+  color: %1$s;
+}
+section h2,
+section h3 {
+  border-bottom: solid 1px %4$s;
+  color: %1$s;
+}
+section h2 .search {
+  bottom: 5px;
+}
+section h2 .glyphicon-search {
+  top: 1px;
+}
+section h2 .search,
+section h2 .entity,
+section h2 .file {
+  background-color: #efefef;
+  border-color: %3$s;
+  color: %3$s;
+}
+section h3 {
+  font-size: 20px;
+  padding: 5px 20px 5px 20px;
+}
+a.glyphicon,
+a.glyphicon:visited,
+.glyphicon,
+.glyphicon:visited, 
+h2 a.glyphicon, 
+h2 a.glyphicon:visited {
+  color: %5$s;
+}
+section h2 a.glyphicon:hover,
+section h2 a.glyphicon:focus,
+section h2 .glyphicon:hover,
+section h2 .glyphicon:focus,
+a.glyphicon:hover,
+a.glyphicon:focus,
+.glyphicon:hover,
+.glyphicon:focus {
+  color: %4$s;
+}
+h1.navbar-top span {
+  padding-left: 20px;
+}
+.navbar-brand img {
+  height: 70px;
+}
+/* END BOOTSTRAP OVERRIDES */
+.omny-dropdown.dropdown-menu li.divider {
+  background-color: %4$s;
+}
+.omny-bar {
+  color: %1$s;
+}
+.omny-bar li span.glyphicon,
+.omny-bar li span.glyphicon:visited {
+  color: %3$s;
+}
+.omny-bar li span.glyphicon:hover,
+.omny-bar li span.glyphicon:active,
+.omny-bar li span.glyphicon.active {
+  color: %4$s;
+  background-color: %1$s;
+}
+.omny-bar-left li span:not(.active):not(:active):not(:hover) {
+  border-bottom-color: %1$s;
+}
+
+.support-bar {
+  background-color: %1$s;
+}
+.support-bar .glyphicon {
+  color: %5$s;
+}
+a #filterMenu,
+a:visited #filterMenu {
+	color: %1$s;
+}

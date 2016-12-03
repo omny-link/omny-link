@@ -8,7 +8,7 @@ import java.util.List;
 import link.omny.acctmgmt.model.Metric;
 import link.omny.acctmgmt.model.SystemConfig;
 import link.omny.acctmgmt.repositories.MetricRepository;
-import link.omny.acctmgmt.web.TenantConfigController.TenantSummary;
+import link.omny.acctmgmt.web.TenantController.TenantSummary;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class MetricController {
     private SystemConfig systemConfig;
 
     @Autowired
-    protected TenantConfigController tenantConfigController;
+    protected TenantController tenantController;
 
     @Autowired
     protected MetricRepository metricRepo;
@@ -50,7 +50,8 @@ public class MetricController {
     public @ResponseBody ResponseEntity<?> record() {
         Date now = new Date();
 
-        List<TenantSummary> list = tenantConfigController.showAllTenants();
+        List<TenantSummary> list = tenantController
+                .showAllTenants();
         for (TenantSummary tenant : list) {
             Metric defnMetric = new Metric(tenant.getShortId(), "definitions",
                     tenant.getDefinitions(), now);

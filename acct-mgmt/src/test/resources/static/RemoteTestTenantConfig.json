@@ -25,20 +25,10 @@
     { "name": "omnyWorkflowWizard", "url": "/partials/workflow-wizard.html"}
   ],
   "processes": [
-    { "name": "Catch All", "ref": "CatchAllProcess" }
+    { "name": "Dummy Process", "ref": "Dummy1", "url": "processes/link/omny/acctmgmt/Dummy1.bpmn" }
   ],
   "typeaheadControls": [
-    { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},
-    { "ref": "#curCountry", "url": "/data/countries.json"},
-    { "ref": "#curCurrentSiteCapability", "url": "/data/omny/current-site-capabilities.json"},
-    { "ref": "#curEnquiryType", "url": "/data/omny/enquiry-types.json"},
-    { "ref": "#curOwner", "url": "/data/omny/owners.json"},
-    { "ref": "#who", "url": "/data/omny/owners.json"},
-    { "ref": "#curMedium", "url": "/data/media.json"},
-    { "ref": "#curSector", "url": "/data/omny/sectors.json"},
-    { "ref": "#curSource", "url": "/data/sources.json"},
-    { "name": "stages", "ref": "#curStage", "url": "/data/omny/stages.json"},
-    { "name": "status", "ref": "#curStatus", "url": "/data/status.json"}
+    { "name": "owners", "ref": "#curOwner", "url": "/data/test/owners.json"}
   ],
   "workActions": [
     { "name": "Note to self", "ref": "SimpleTodo", "url": "/partials/SimpleTodo.html" }

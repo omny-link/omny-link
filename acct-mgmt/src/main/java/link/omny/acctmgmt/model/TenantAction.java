@@ -1,12 +1,7 @@
 package link.omny.acctmgmt.model;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-
 import lombok.NoArgsConstructor;
 
-@Entity
-@DiscriminatorValue("action")
 @NoArgsConstructor
 public class TenantAction extends TenantExtension {
 

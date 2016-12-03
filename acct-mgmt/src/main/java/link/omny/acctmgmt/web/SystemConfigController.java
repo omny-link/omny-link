@@ -1,8 +1,7 @@
 package link.omny.acctmgmt.web;
 
 import link.omny.acctmgmt.model.SystemConfig;
-import link.omny.acctmgmt.model.TenantConfig;
-import link.omny.acctmgmt.repositories.TenantConfigRepository;
+import link.omny.acctmgmt.repositories.TenantRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,19 +22,12 @@ public class SystemConfigController {
     private SystemConfig systemConfig;
 
     @Autowired
-    protected TenantConfigRepository tenantRepo;
+    protected TenantRepository tenantRepo;
 
     @RequestMapping(method = RequestMethod.GET)
     public final @ResponseBody SystemConfig getSystemConfig() {
         LOGGER.info("getSystemConfig");
 
         return systemConfig;
-    }
-
-    @RequestMapping(value = "/tenants", method = RequestMethod.GET, headers = "Accept=application/json")
-    public @ResponseBody Iterable<TenantConfig> showAllTenants() {
-        LOGGER.info(String.format("showAllJson"));
-
-        return tenantRepo.findAll();
     }
 }
