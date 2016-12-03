@@ -6,14 +6,14 @@
       </div>
       <h2 class="create-form" style="">&nbsp;</h2>
     {{/}}
-    
+
     {{#current.id}}
       <h2 class="edit-form">
         <span contenteditable id="curName2" on-focus="editField('#curName2','current.name')" on-blur="updateField('#curName2','current.name')">{{current.name}}</span>
         <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
       </h2>
     {{/}}
-    
+
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         <li>
@@ -82,7 +82,7 @@
         </div>
       </section>
     {{/}}
-    
+
     {{#tenant.show.offers}}
       <section id="offerSect">
         <h3>
@@ -142,8 +142,9 @@
         </div>
       {{/if}}
     {{/}}
+
   </form>
 
   {{!>currentImageSect}}
-  
+
 </section>
