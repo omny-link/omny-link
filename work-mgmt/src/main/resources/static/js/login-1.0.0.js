@@ -34,9 +34,13 @@ var AuthenticatedRactive = Ractive.extend({
     if (ractive.get('profile')==undefined) return ;
     var tenant = ractive.get('profile').tenant;
     if (tenant != undefined) {
-      $('link[rel="icon"]').attr('href',$('link[rel="icon"]').attr('href').replace('omny',tenant));
       $('head').append('<link href="/css/'+tenant+'-1.0.0.css" rel="stylesheet">');
-      $('.navbar-brand').empty().append('<img src="/images/'+tenant+'-logo.png" alt="logo"/>');
+      if (ractive.get('tenant.theme.logoUrl')!=undefined) {
+        $('.navbar-brand').empty().append('<img src="'+ractive.get('tenant.theme.logoUrl')+'" alt="logo"/>');
+      }
+      if (ractive.get('tenant.theme.iconUrl')!=undefined) {
+          $('link[rel="icon"]').attr('href',ractive.get('tenant.theme.iconUrl'));
+      }
       if (ractive.get('tenant.show.activityTracker') && ua!=undefined) ua.enabled = true;
       // ajax loader
       $( "#ajax-loader" ).remove();
@@ -191,18 +195,25 @@ var AuthenticatedRactive = Ractive.extend({
     if (ractive.get('tenant.typeaheadControls')!=undefined && ractive.get('tenant.typeaheadControls').length>0) {
       $.each(ractive.get('tenant.typeaheadControls'), function(i,d) {
         //console.log('binding ' +d.url+' to typeahead control: '+d.selector);
-        $.get(ractive.getServer()+d.url, function(data){
-          if (d.name!=undefined) ractive.set(d.name,data);
-          $(d.selector).typeahead({ items:'all',minLength:0,source:data });
-          $(d.selector).on("click", function (ev) {
-            newEv = $.Event("keydown");
-            newEv.keyCode = newEv.which = 40;
-            $(ev.target).trigger(newEv);
-            return true;
-          });
-        },'json');
+        if (d.url==undefined) {
+          ractive.initAutoCompletePart2(d,d.values);
+        } else {
+          $.get(ractive.getServer()+d.url, function(data) {
+            ractive.initAutoCompletePart2(d,data);
+          },'json');
+        }
       });
     }
+  },
+  initAutoCompletePart2: function(d, data) {
+    if (d.name!=undefined) ractive.set(d.name,data);
+    $(d.selector).typeahead({ items:'all',minLength:0,source:data });
+    $(d.selector).on("click", function (ev) {
+      newEv = $.Event("keydown");
+      newEv.keyCode = newEv.which = 40;
+      $(ev.target).trigger(newEv);
+      return true;
+    });
   },
   initAutoNumeric: function() {
     if ($('.autoNumeric')!=undefined && $('.autoNumeric').length>0) {

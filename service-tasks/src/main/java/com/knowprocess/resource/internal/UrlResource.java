@@ -104,9 +104,6 @@ public class UrlResource implements Resource {
             // Create connection
             LOGGER.debug("  " + method + ": " + sUrl);
             url = getUrl(sUrl);
-            // connection = (HttpURLConnection) url.openConnection();
-
-            url = new URL(sUrl);
             connection = (HttpURLConnection) url.openConnection();
             if (sUrl.startsWith("https://")) {
                 ((HttpsURLConnection) connection)
