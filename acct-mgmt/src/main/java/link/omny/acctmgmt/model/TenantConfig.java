@@ -12,34 +12,50 @@ import java.util.Scanner;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
-import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The model class to encapsulate a single tenant's configuration of Omny.
+ * A single tenant's configuration.
  *
  * @author Tim Stephenson
  */
 @Data
-@Entity
-@Table(name = "OL_TENANT")
 @NoArgsConstructor
 @AllArgsConstructor
-// TODO This is intended to replace the current JSON file, in particular to
-// allow user-management of drop down lists and also but also to remove the need
-// for re-deployment to update those JSON files.
 public class TenantConfig implements Serializable {
     private static final long serialVersionUID = -2041167810028725542L;
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(TenantConfig.class);
+
+    public static boolean resourceExists(String resourceUrl) {
+        InputStream is = null;
+        try {
+            is = TenantConfig.class.getResourceAsStream(resourceUrl);
+            return is != null;
+        } catch (Exception e) {
+            LOGGER.warn(String.format("Unable to find resource named %1$s",
+                    resourceUrl));
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+                ;
+            }
+        }
+        return false;
+    }
 
     public static String readResource(String resource) {
         InputStream is = null;
@@ -67,6 +83,9 @@ public class TenantConfig implements Serializable {
 
     @Embedded
     private FeatureConfig features;
+
+    @Embedded
+    private ThemeConfig theme;
 
     @Embedded
     private ServiceLevelConfig serviceLevel;
@@ -175,28 +194,6 @@ public class TenantConfig implements Serializable {
         setId(tenantId);
     }
 
-    public void setId(String id) {
-        this.id = id;
-        for (TenantAction action : getContactActions()) {
-            action.setTenant(this);
-        }
-        for (TenantPartial partial : getPartials()) {
-            partial.setTenant(this);
-        }
-        for (TenantProcess process : getProcesses()) {
-            process.setTenant(this);
-        }
-        for (TenantToolbarEntry toolbarEntry : getToolbar()) {
-            toolbarEntry.setTenant(this);
-        }
-        for (TenantTypeaheadControl control : getTypeaheadControls()) {
-            control.setTenant(this);
-        }
-        for (TenantAction action : getWorkActions()) {
-            action.setTenant(this);
-        }
-    }
-
     public String getName() {
         if (name == null) {
             return id;
@@ -242,7 +239,6 @@ public class TenantConfig implements Serializable {
     }
 
     public void addContactAction(TenantAction action) {
-        action.setTenant(this);
         getContactActions().add(action);
     }
 
@@ -254,7 +250,6 @@ public class TenantConfig implements Serializable {
     }
 
     public void addWorkAction(TenantAction action) {
-        action.setTenant(this);
         getWorkActions().add(action);
     }
 
@@ -266,7 +261,6 @@ public class TenantConfig implements Serializable {
     }
 
     public void addPartial(TenantPartial tenantExtension) {
-        tenantExtension.setTenant(this);
         getPartials().add(tenantExtension);
     }
 
@@ -278,7 +272,6 @@ public class TenantConfig implements Serializable {
     }
 
     public void addProcess(TenantProcess tenantExtension) {
-        tenantExtension.setTenant(this);
         getProcesses().add(tenantExtension);
     }
 
@@ -290,7 +283,6 @@ public class TenantConfig implements Serializable {
     }
 
     public void addToolbarEntry(TenantToolbarEntry tenantExtension) {
-        tenantExtension.setTenant(this);
         getToolbar().add(tenantExtension);
     }
 
@@ -302,7 +294,6 @@ public class TenantConfig implements Serializable {
     }
 
     public void addTemplate(TenantTemplate template) {
-        template.setTenant(this);
         getTemplates().add(template);
     }
 
@@ -314,7 +305,6 @@ public class TenantConfig implements Serializable {
     }
 
     public void addTypeaheadControl(TenantTypeaheadControl control) {
-        control.setTenant(this);
         getTypeaheadControls().add(control);
     }
 

@@ -1,47 +1,52 @@
 { 
-  "id": "acme", 
-  "name": "Acme Inc.",
+  "id": "mazatos", 
+  "name": "Mazatos Hills 4 Committee",
+  "theme": {
+    "logo": "/images/mazatos-logo.png",
+    "icon": "/images/icon/mazatos-icon-16x16.png",
+    "headingColor": "#6f781a",
+    "subHeadingColor": "#b6bd30",
+    "bodyColor": "#47322c",
+    "accentColor": "#ffd056",
+    "iconColor": "#b6bd30"
+  },
   "show": { 
-    "account":true, "activityAnalysis":true, "activityTracker":true,
-    "budget":true, "companyBackground":false, "declaredSource":true,
-    "documents": true, "financials":true, "marketing":true, "merge":true,
-    "orders":true, "orderItems":false, "supportBar": true
+    "account":false, "activityAnalysis":false, "activityTracker":false,
+    "budget":false, "companyBackground":false, "declaredSource":false,
+    "documents": true, "enquiryType": false, "financials":false,  
+    "marketing":false, "marketingDigital":false, "merge":false,
+    "multiNational": true, "offers": false,
+    "orders":true, "stockCategory": true, "supportBar": true
   },
   "accountFields": [ 
   ],
   "contactActions": [
     { "name": "Add order", "ref": "AddOrderToContact", "url": true  },
     { "name": "Add task", "ref": "SimpleToDo", "url": true },
-    { "name": "Alert owner", "ref": "SendAlertToOwner"  },
     { "name": "Send email", "ref": "SendMemo", "url": true  }
   ],
   "contactFields": [ 
   ],
   "toolbar": [
-    { "url": "work.html", "icon": "glyphicon-inbox", "description": "View your list of active tasks here", "name": "Work Management" },
     { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
-    { "url": "domain.html", "icon": "omny-icon-domain-model", "name": "Domain Model", "description": "Business glossary", "role": "super_admin" },
-    { "url": "decisions-dmn.html", "icon": "glyphicon-list-alt", "name": "Decisions Repository", "description": "Home of your Decision Models", "role": "super_admin" },
-    { "url": "memo-distribution.html", "icon": "glyphicon-send", "name": "Distribution Centre", "description": "Send messages to groups of contacts", "role": "admin" },
     { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates", "role": "admin"  },
     { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View your sales funnel", "name": "Funnel" },
-    { "url": "stock-items.html", "classes": "glyphicon-barcode", "role": "super_user", "description": "View and manage stock items here", "title": "Stock Items" },
-    { "url": "stock-categories.html", "classes": "glyphicon-barcode", "role": "super_user", "description": "View and manage stock categories here", "title": "Stock Categories" },
+    { "url": "stock-items.html", "classes": "glyphicon-barcode", "role": "super_user", "description": "View and manage properties here", "title": "Properties" },
+    { "url": "stock-categories.html", "classes": "glyphicon-barcode", "role": "super_user", "description": "View and manage blocks (groups of propeties) here", "title": "Blocks" },
     { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },    
-    { "url": "stacked-bar.html", "icon": "glyphicon-dashboard", "name": "Cohort Performance", "description": "Compare groups of contacts", "role": "super_admin" },
     { "url": "admin/users.html", "icon": "omny-icon-user", "name": "User Management", "description": "Manage users", "role": "super_admin" },
-    { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status", "description": "Check various aspects of the tenant's configuration", "role": "admin" },
-    { "url": "api.html", "icon": "glyphicon-wrench", "name": "API Documentation", "role": "admin" }
+    { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status", "description": "Check various aspects of the tenant's configuration", "role": "admin" }
   ],
   "partials": [
-    { "name": "acmeContactExtension", "url": "/partials/contact-extension.html"},
-    { "name": "acmeAccountExtension", "url": "/partials/account-extension.html"},
-    { "name": "acmeOrderExtension", "url": "/partials/order-extension.html"},
+    { "name": "mazatosContactExtension", "url": "/partials/contact-extension.html"},
+    { "name": "mazatosAccountExtension", "url": "/partials/account-extension.html"},
+    { "name": "mazatosOrderExtension", "url": "/partials/order-extension.html"},
+    { "name": "mazatosStockCategoryExtension", "url": "/partials/stock-category-extension.html"},
 
-    { "name": "acmeAddOrderToContact", "url": "/partials/add-order.html"},
-    { "name": "acmeSimpleToDo", "url": "/partials/simple-todo.html"},
-    { "name": "acmeSendMemo", "url": "/partials/pick-memo.html"},
-    { "name": "acmeWorkflowWizard", "url": "/partials/workflow-wizard.html"}
+    { "name": "mazatosAddOrderToContact", "url": "/partials/add-order.html"},
+    { "name": "mazatosSimpleToDo", "url": "/partials/simple-todo.html"},
+    { "name": "mazatosSendMemo", "url": "/partials/pick-memo.html"},
+    { "name": "mazatosWorkflowWizard", "url": "/partials/workflow-wizard.html"}
   ],
   "processes": [
     { "name": "Add activity to contact", "ref": "AddActivityToContact", "url": "processes/link/omny/custmgmt/AddActivityToContact.bpmn" },
@@ -66,6 +71,27 @@
     "inactiveStages":["discovery","review"],
     "initialResponseThreshold":7
   },
+  "stockCategoryFields": [
+    { "name": "unitPriceLastYear", "label": "Last Price", "type": "number", "hint": "Price per unit (m2 floor area) charged last year" },
+    { "name": "unitPriceThisYear", "label": "Price Now",  "type": "number", "hint": "Price per unit (m2 floor area) charged this year" } 
+  ],
+  "stockItemFields": [ 
+  ],
+  "strings": {
+    "order": "Invoice",
+    "orders": "Invoices",
+    "orderItem": "Invoice Item",
+    "orderItems": "Invoice Items",
+    "sizeHint": "How large is the property (number)?",
+    "stage": "Status",
+    "stageHint": "Is this an active contact (e.g. current or former tenant or supplier)?",
+    "stockCategories": "Blocks",
+    "stockCategory": "Block",
+    "stockItem": "Property",
+    "stockItems": "Properties",
+    "StockManagement": "Property Management",
+    "unitHint": "Units the property is measured in, e.g. square metres"
+  },
   "templates": [
     { "name": "ContactAlert", "ref": "ContactAlert" },
     { "name": "NotifyEnquiry", "ref": "NotifyEnquiry" },
@@ -75,23 +101,32 @@
     { "name": "WelcomeNewUser", "ref": "WelcomeNewUser" }
   ],
   "typeaheadControls": [
-    { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},
-    { "name": "commsPreference", "ref": "#curCommsPreference", "url": "/data/comms-preference.json"},
-    { "name": "countries", "ref": "#curCountry", "url": "/data/countries.json"},
-    { "name": "enquiryTypes", "ref": "#curEnquiryType", "values": [
-        {  "id": "Explosives", "name": "Explosives"  },
-        {  "id": "Insurance", "name": "Insurance"  }
+    { 
+      "name": "accountTypes", "ref": "#curAccountType", "values": [
+        {  "id": "Tenant", "name": "Tenant"  },
+        {  "id": "Other", "name": "Other"  },
+        {  "id": "Supplier", "name": "Supplier"  }
       ]
     },
-    { "name": "owners", "ref": "#curOwner", "url": "/data/omny/owners.json"},
-    { "ref": "#who", "url": "/data/omny/owners.json"},
-    { "ref": "#notify", "url": "/data/omny/owners.json"},
-    { "name": "media", "ref": "#curMedium", "url": "/data/media.json"},
-    { "name": "sectors", "ref": "#curSector", "url": "/data/omny/sectors.json"},
-    { "name": "sources", "ref": "#curSource", "url": "/data/sources.json"},
-    { "name": "stages", "ref": "#curStage", "url": "/data/stages.json"},
-    { "name": "status", "ref": "#curStatus", "url": "/data/status.json"},
-    { "ref": "#orderStatus", "url": "/data/status.json"}
+    { "name": "countries", "ref": "#curCountry", "url": "/data/countries.json"},
+    { 
+      "name": "owners", "ref": "#curOwner", "values": [
+        {  "id": "stphn2014@gmail.com", "name": "stphn2014@gmail.com"  }
+      ]
+    },
+    { 
+      "name": "stages", "ref": "#curStage", "values": [
+        {  "id": "Current", "name": "Current"  },
+        {  "id": "Former", "name": "Former"  }
+      ]
+    },
+    { 
+      "name": "status", "ref": "#curStatus", "values": [
+        {  "id": "Draft", "name": "Draft"  },
+        {  "id": "For Review", "name": "For Review"  },
+        {  "id": "Published", "name": "Published"  }
+      ]
+    }
   ],
   "workActions": [
     { "name": "Add task", "ref": "SimpleToDo", "url": true }

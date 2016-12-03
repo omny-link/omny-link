@@ -29,20 +29,20 @@
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}:</label>
 	          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.stockCategory.name}}">
-	          <p class="col-md-offset-4 col-sm-offset-4 hidden-sm hidden-xs help-block"></p>
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>
 	        </li>
 	      {{/}}
 	      {{#if stockTypes!=undefined}}
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">{{#tenant.strings.stockItemType}}{{tenant.strings.stockItemType}}{{else}}Type{{/}}:</label>
 	          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockType" required value="{{current.type}}">
-	          <p class="col-md-offset-4 col-sm-offset-4 hidden-sm hidden-xs help-block"></p>
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>
 	        </li>
 	      {{/if}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4">Status:</label>
           <input class="form-control typeahead" placeholder="Start typing to filter options" id="curStatus" value="{{current.status}}"/>
-          <p class="col-md-offset-4 col-sm-offset-4 help-block">Draft, Ready for review, Published etc.</p>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Draft, Ready for review, Published etc.</p>
         </li>
       </ul>
     </div>
@@ -52,15 +52,17 @@
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Price:</label>
 	          <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Unit:</label>
 	          <input class="form-control" id="curUnit" value="{{current.unit}}">
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.unitHint}}{{tenant.strings.unitHint}}{{/}}:</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Size:</label>
 	          <input class="form-control" id="curSize" type="number" value="{{current.size}}">
-	          <p class="col-md-offset-4 col-sm-offset-4 hidden-sm hidden-xs help-block"></p>
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.sizeHint}}{{tenant.strings.sizeHint}}{{/}}</p>
 	        </li>
 	      </ul>
 	    </div>

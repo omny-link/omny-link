@@ -3,6 +3,8 @@ package link.omny.acctmgmt.model;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TenantConfigTest {
 
-    private static final String CONFIG = "/static/tenants/tenantConfig.json";
+    private static final String CONFIG = "/static/tenants/test.json";
     private static final String LEGACY_CONFIG = "/static/tenants/legacyTenantConfig.json";
     private static ObjectMapper objectMapper;
 
@@ -36,7 +38,7 @@ public class TenantConfigTest {
         assertEquals(11, config.getToolbar().size());
         assertEquals(6, config.getPartials().size());
         assertEquals(1, config.getProcesses().size());
-        assertEquals(11, config.getTypeaheadControls().size());
+        assertEquals(1, config.getTypeaheadControls().size());
     }
 
     @Test
@@ -71,6 +73,21 @@ public class TenantConfigTest {
         assertEquals(2, config.getPartials().size());
         assertEquals(1, config.getProcesses().size());
         assertEquals(10, config.getTypeaheadControls().size());
+    }
+
+    @Test
+    public void testSerialiseEmbeddedTypeaheads() {
+        TenantConfig config = new TenantConfig();
+        List<TenantTypeaheadControl> typeaheadControls = new ArrayList<TenantTypeaheadControl>();
+
+        TenantTypeaheadControl control = new TenantTypeaheadControl();
+        control.setName("test");
+        List<TenantTypeaheadValue> typeaheadValues = new ArrayList<TenantTypeaheadValue>();
+        typeaheadValues.add(new TenantTypeaheadValue());
+        control.setValues(typeaheadValues);
+        typeaheadControls.add(control);
+
+        config.setTypeaheadControls(typeaheadControls);
     }
 
 }

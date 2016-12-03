@@ -83,7 +83,7 @@
           <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
           <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}">
         </li>
-        {{#tenant.show.marketing || tenant.show.stage}}
+        {{#tenant.show.marketing}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Relationship:</label>
             <label class="radio-inline">
@@ -94,10 +94,12 @@
             </label>
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Is this an existing customer, even if we are in a new sales cycle?</p>
           </li>
+        {{/}}
+        {{#tenant.show.marketing || tenant.show.stage}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Stage{{/}}:</label>
             <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">How far through the sales pipeline are you with this contact?</p>
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.stageHint}}{{tenant.strings.stageHint}}{{else}}How far through the sales pipeline are you with this contact?{{/}}</p>
           </li>
           {{# haveStageReasons() }}
             <li class="form-group">

@@ -74,7 +74,7 @@ public class Fetcher extends RestService implements JavaDelegate {
     }
 
     public String fetchToString(String resourceUrl) throws IOException {
-        return fetchToString(resourceUrl, null, null);
+        return fetchToString(resourceUrl, new HashMap<String, String>(), null);
     }
 
     public String fetchToString(String resourceUrl,
@@ -176,12 +176,16 @@ public class Fetcher extends RestService implements JavaDelegate {
         String ext = resourceUrl.substring(resourceUrl.lastIndexOf('.') + 1);
         if ("bpmn".equalsIgnoreCase(ext)) {
             return MIME_XML;
+        } else if ("css".equalsIgnoreCase(ext)) {
+            return "text/css";
         } else if ("html".equalsIgnoreCase(ext)) {
             return "text/html";
         } else if ("txt".equalsIgnoreCase(ext)) {
             return "text/plain";
         } else if ("jpg".equalsIgnoreCase(ext) || "jpeg".equalsIgnoreCase(ext)) {
             return "image/jpeg";
+        } else if ("js".equalsIgnoreCase(ext)) {
+            return "application/javascript";
         } else if ("json".equalsIgnoreCase(ext)) {
             return "application/json";
         } else if ("mp3".equalsIgnoreCase(ext)) {
