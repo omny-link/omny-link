@@ -35,3 +35,4 @@ curl -H "Accept:application/json" -X POST -u tstephen:tstephen http://localhost:
  
 # LIST tenant config
 curl -H "Accept:application/json" -X GET -u tstephen:tstephen http://localhost:8082/tenants/omny.json
+curl -H "Accept:application/json" -X GET -u tstephen:tstephen https://api.omny.link/tenants/mazatos.json
