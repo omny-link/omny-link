@@ -4,10 +4,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import link.omny.website.TestCredentials;
+
 import org.activiti.bdd.ActivitiSpec;
 import org.activiti.bdd.ext.DumpAuditTrail;
 import org.activiti.bdd.test.activiti.ExtendedRule;
-import org.activiti.bdd.test.mailserver.TestMailServer;
 import org.activiti.engine.IdentityService;
 import org.junit.After;
 import org.junit.Before;
@@ -31,14 +32,13 @@ public class SimpleToDoTest {
     @Rule
     public ExtendedRule activitiRule = new ExtendedRule("test-activiti.cfg.xml");
 
-    @Rule
-    public TestMailServer mailServer = new TestMailServer();
-
     @Before
     public void setUp() {
         IdentityService idSvc = activitiRule.getIdentityService();
         idSvc.saveUser(idSvc.newUser(USERNAME));
         idSvc.saveUser(idSvc.newUser(DELEGATE));
+
+        TestCredentials.initBot(idSvc, TENANT_ID);
     }
 
     @After
@@ -46,6 +46,8 @@ public class SimpleToDoTest {
         IdentityService idSvc = activitiRule.getIdentityService();
         idSvc.deleteUser(USERNAME);
         idSvc.deleteUser(DELEGATE);
+
+        TestCredentials.removeBot(idSvc, TENANT_ID);
     }
 
     @SuppressWarnings("unchecked")
