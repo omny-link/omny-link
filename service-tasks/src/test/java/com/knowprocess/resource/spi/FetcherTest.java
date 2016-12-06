@@ -16,20 +16,51 @@ import java.util.Map;
 import org.activiti.bdd.test.activiti.ExtendedRule;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
 import org.activiti.engine.repository.Deployment;
+import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.webapp.WebAppContext;
 
 import com.knowprocess.resource.internal.gdrive.GDriveConfigurationException;
 
 public class FetcherTest {
+
+    private static Server server;
+
     @Rule
     public ExtendedRule activitiRule = new ExtendedRule("test-activiti.cfg.xml");
 
     private Fetcher svc;
-    private String resourceUrl = "http://farm4.staticflickr.com/3140/3094868910_41c19ce2a3_b_d.jpg";
+    private String resourceUrl = "http://localhost:8080/images/test.png";
     private String repoUri = "https://docs.google.com/tux-collage.jpg";
+
+    @BeforeClass
+    public static void startServer() {
+        server = new Server(8080);
+        server.setStopAtShutdown(true);
+        WebAppContext webAppContext = new WebAppContext();
+        webAppContext.setContextPath("/");
+        webAppContext.setResourceBase("src/test/resources/static");
+        webAppContext.setClassLoader(FetcherTest.class
+                .getClassLoader());
+        server.addHandler(webAppContext);
+        try {
+            server.start();
+        } catch (Exception e) {
+            Assume.assumeTrue(
+                    "Unable to start test resource server, assume due to port clash",
+                    false);
+        }
+    }
+
+    @AfterClass
+    public static void stopServer() throws Exception {
+        server.stop();
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -131,8 +162,7 @@ public class FetcherTest {
     public void testUrlResourceToBlob() {
         OutputStream out = null;
         try {
-            byte[] bytes = svc
-                    .fetchToByteArray("http://www.activiti.org/images/activiti_logo.png");
+            byte[] bytes = svc.fetchToByteArray(resourceUrl);
             assertNotNull(bytes);
 
             File file = new File(new File("target"),

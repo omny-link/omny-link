@@ -16,6 +16,7 @@ import link.omny.acctmgmt.web.TenantController.TenantSummary;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.identity.User;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -65,6 +66,25 @@ public class TenantConfigControllerTest {
     @Autowired
     private ProcessEngine processEngine;
 
+    @BeforeClass
+    public static void startServer() {
+        server = new Server(8080);
+        server.setStopAtShutdown(true);
+        WebAppContext webAppContext = new WebAppContext();
+        webAppContext.setContextPath("/");
+        webAppContext.setResourceBase("src/test/resources/static");
+        webAppContext.setClassLoader(TenantConfigControllerTest.class
+                .getClassLoader());
+        server.addHandler(webAppContext);
+        try {
+            server.start();
+        } catch (Exception e) {
+            Assume.assumeTrue(
+                    "Unable to start test resource server, assume due to port clash",
+                    false);
+        }
+    }
+
     @Before
     public void setUp() {
         User botUser = processEngine.getIdentityService().newUser(
@@ -91,6 +111,11 @@ public class TenantConfigControllerTest {
         } catch (Exception e) {
             ; // ok if exception prevented test completing successfully
         }
+    }
+
+    @AfterClass
+    public static void stopServer() throws Exception {
+        server.stop();
     }
 
     @Test
@@ -158,22 +183,5 @@ public class TenantConfigControllerTest {
         assertEquals(1, controls.size());
         assertEquals(CONTROL_EXTENSION, controls.get(0).getUrl());
         assertTrue(controls.get(0).isValid());
-    }
-
-    @BeforeClass
-    public static void startServer() {
-        server = new Server(8080);
-        server.setStopAtShutdown(true);
-        WebAppContext webAppContext = new WebAppContext();
-        webAppContext.setContextPath("/");
-        webAppContext.setResourceBase("src/test/resources/static");
-        webAppContext.setClassLoader(TenantConfigControllerTest.class
-                .getClassLoader());
-        server.addHandler(webAppContext);
-        try {
-            server.start();
-        } catch (Exception e) {
-            Assume.assumeTrue("Unable to start test resource server, assume due to port clash", false);
-        }
     }
 }
