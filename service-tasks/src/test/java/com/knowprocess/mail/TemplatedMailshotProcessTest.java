@@ -16,6 +16,8 @@ import org.activiti.bdd.test.mailserver.TestMailServer;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.test.JobTestHelper;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -45,7 +47,7 @@ public class TemplatedMailshotProcessTest {
     private static Server server;
 
     @BeforeClass
-    public static void startServer() throws Exception {
+    public static void startServer() {
         server = new Server(8080);
         server.setStopAtShutdown(true);
         WebAppContext webAppContext = new WebAppContext();
@@ -54,7 +56,18 @@ public class TemplatedMailshotProcessTest {
         webAppContext.setClassLoader(TemplatedMailshotProcessTest.class
                 .getClassLoader());
         server.addHandler(webAppContext);
-        server.start();
+        try {
+            server.start();
+        } catch (Exception e) {
+            Assume.assumeTrue(
+                    "Unable to start test resource server, assume due to port clash",
+                    false);
+        }
+    }
+
+    @AfterClass
+    public static void stopServer() throws Exception {
+        server.stop();
     }
     
     @Before
