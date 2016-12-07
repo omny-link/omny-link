@@ -6,6 +6,7 @@
         <h1 class="modal-title" id="customActionModalLabel">{{instanceToStart.businessKey}}</h1>
       </div>
       <div class="modal-body">
+        <div class="messages alert-info" style="display: none;"></div>
         <form id="customActionForm">
           {{#if instanceToStart!=undefined}}
             {{>tenant.id+instanceToStart.processDefinitionId}}
