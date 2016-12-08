@@ -1,0 +1,90 @@
+{ 
+  "id": "corshamprimary", 
+  "name": "Corsham Primary",
+  "show": { 
+    "account":true, "activityAnalysis":true, "activityTracker":true,
+    "budget":true, "companyBackground":false, "declaredSource":true,
+    "documents": true, "financials":true, "marketing":true, "merge":true,
+    "orders":true, "orderItems":false, "supportBar": true
+  },
+  "accountFields": [ 
+  ],
+  "contactActions": [
+    { "name": "Add order", "ref": "AddOrderToContact", "url": true  },
+    { "name": "Add task", "ref": "SimpleToDo", "url": true },
+    { "name": "Alert owner", "ref": "SendAlertToOwner"  },
+    { "name": "Send email", "ref": "SendMemo", "url": true  }
+  ],
+  "contactFields": [ 
+  ],
+  "toolbar": [
+    { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
+    { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates", "role": "admin"  },
+    { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },    
+    { "url": "admin/users.html", "icon": "omny-icon-user", "name": "User Management", "description": "Manage users", "role": "super_admin" },
+    { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status", "description": "Check various aspects of the tenant's configuration", "role": "admin" }
+  ],
+  "partials": [
+    { "name": "corshamprimaryContactExtension", "url": "/partials/contact-extension.html"},
+    { "name": "corshamprimaryAccountExtension", "url": "/partials/account-extension.html"},
+    { "name": "corshamprimaryOrderExtension", "url": "/partials/order-extension.html"},
+
+    { "name": "corshamprimaryAddOrderToContact", "url": "/partials/add-order.html"},
+    { "name": "corshamprimarySimpleToDo", "url": "/partials/simple-todo.html"},
+    { "name": "corshamprimarySendMemo", "url": "/partials/pick-memo.html"},
+    { "name": "corshamprimaryWorkflowWizard", "url": "/partials/workflow-wizard.html"}
+  ],
+  "processes": [
+    { "name": "Add activity to contact", "ref": "AddActivityToContact", "url": "processes/link/omny/custmgmt/AddActivityToContact.bpmn" },
+    { "name": "Add order to contact", "ref": "AddOrderToContact", "url": "processes/link/omny/catalog/AddOrderToContact.bpmn" },
+    { "name": "Add note to contact", "ref": "AddNoteToContact", "url": "processes/link/omny/custmgmt/AddNoteToContact.bpmn" },
+    { "name": "Ad-Hoc Task from external", "ref": "HandleAdHocTask", "url": "processes/link/omny/casemgmt/HandleAdHocTask.bpmn" },
+    { "name": "Create contact and account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
+    { "name": "Import contact", "ref": "ImportContact", "url": "processes/link/omny/website/ImportContact.bpmn" },
+    { "name": "Record an enquiry", "ref": "RecordEnquiry", "url": "processes/link/omny/website/RecordEnquiry.bpmn" },
+    { "name": "Register a user", "ref": "RegisterOmnyContact", "url": "processes/link/omny/website/RegisterOmnyContact.bpmn" },
+    { "name": "Reset user's password", "ref": "ResetPassword", "url": "processes/link/omny/support/ResetPassword.bpmn" },
+    { "name": "Select enquiry response", "ref": "SelectEnquiryResponse", "url": "processes/link/omny/mail/SelectDefaultEnquiryResponse.bpmn" },
+    { "name": "Send memo", "ref": "SendMemo", "url": "processes/link/omny/mail/SendMemo.bpmn" },
+    { "name": "Send alert", "ref": "SendAlert", "url": "processes/link/omny/alerts/SendAlertMemo.bpmn" },
+    { "name": "Send alert to contact's owner", "ref": "SendAlertToOwner", "url": "processes/link/omny/alerts/SendAlertToOwner.bpmn" },
+    { "name": "Catch all", "ref": "CatchAllProcess", "url": "processes/link/omny/support/CatchAllProcessPostToSlack.bpmn" },
+    { "name": "Add task", "ref": "SimpleToDo", "url": "processes/link/omny/casemgmt/SimpleToDo.bpmn" },
+    { "name": "Fetch company information", "ref": "companyRecord", "url": "processes/link/omny/companiesHouse/FetchCompanyInfo.bpmn" },
+    { "name": "Search for companies", "ref": "companySearch", "url": "processes/link/omny/companiesHouse/SearchForCompany.bpmn" }
+  ],
+  "serviceLevel": {
+    "inactiveStages":["discovery","review"],
+    "initialResponseThreshold":7
+  },
+  "templates": [
+    { "name": "ContactAlert", "ref": "ContactAlert" },
+    { "name": "NotifyEnquiry", "ref": "NotifyEnquiry" },
+    { "name": "NotifyToDo", "ref": "NotifyToDo" },
+    { "name": "ResetPassword", "ref": "ResetPassword" },
+    { "name": "ThankYouForEnquiry", "ref": "ThankYouForEnquiry" },
+    { "name": "WelcomeNewUser", "ref": "WelcomeNewUser" }
+  ],
+  "typeaheadControls": [
+    { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},
+    { "name": "commsPreference", "ref": "#curCommsPreference", "url": "/data/comms-preference.json"},
+    { "name": "countries", "ref": "#curCountry", "url": "/data/countries.json"},
+    { "name": "enquiryTypes", "ref": "#curEnquiryType", "values": [
+        {  "id": "Explosives", "name": "Explosives"  },
+        {  "id": "Insurance", "name": "Insurance"  }
+      ]
+    },
+    { "name": "owners", "ref": "#curOwner", "url": "/data/omny/owners.json"},
+    { "ref": "#who", "url": "/data/omny/owners.json"},
+    { "ref": "#notify", "url": "/data/omny/owners.json"},
+    { "name": "media", "ref": "#curMedium", "url": "/data/media.json"},
+    { "name": "sectors", "ref": "#curSector", "url": "/data/omny/sectors.json"},
+    { "name": "sources", "ref": "#curSource", "url": "/data/sources.json"},
+    { "name": "stages", "ref": "#curStage", "url": "/data/stages.json"},
+    { "name": "status", "ref": "#curStatus", "url": "/data/status.json"},
+    { "ref": "#orderStatus", "url": "/data/status.json"}
+  ],
+  "workActions": [
+    { "name": "Add task", "ref": "SimpleToDo", "url": true }
+  ]
+}
