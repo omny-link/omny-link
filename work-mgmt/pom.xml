@@ -242,6 +242,12 @@
       <artifactId>rome</artifactId>
       <version>1.5.0</version>
     </dependency>
+    <!-- Required for XSLT maximum template in BPMN2SVG -->
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>2.7.1</version>
+    </dependency>
     
     <!-- Web jars -->
     <dependency>
