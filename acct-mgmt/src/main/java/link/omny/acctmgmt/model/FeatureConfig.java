@@ -16,6 +16,7 @@ public class FeatureConfig {
     private boolean addressContact = true;
     private boolean budget = false;
     private boolean companyBackground = false;
+    private boolean contact = true;
     private boolean contactDescription = false;
     private boolean enquiryType = true;
     private boolean feedback = false;
@@ -68,6 +69,9 @@ public class FeatureConfig {
             break;
         case "companyBackground":
             setCompanyBackground(b);
+            break;
+        case "contact":
+            setContact(b);
             break;
         case "contactDescription":
             setContactDescription(b);

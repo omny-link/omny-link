@@ -37,10 +37,10 @@
       <incoming>_7</incoming>
       <outgoing>_9</outgoing>
     </serviceTask>
-    <startEvent id="startEvent" isInterrupting="true" name="omny.enquiry" parallelMultiple="false">
+    <startEvent activiti:async="true" id="startEvent" isInterrupting="true" name="omny.enquiry" parallelMultiple="false">
       <outgoing>_7</outgoing>
       <outputSet/>
-      <messageEventDefinition id="_2_ED_1" messageRef="omny.enquiry"/>
+      <messageEventDefinition id="selectContact_ED_1" messageRef="omny.enquiry"/>
     </startEvent>
     <callActivity calledElement="AddNoteToContact" completionQuantity="1" id="addActivityToContact" isForCompensation="false" name="Add enquiry &#10;to contact" startQuantity="1">
       <extensionElements>
@@ -53,7 +53,7 @@
       <incoming>_17</incoming>
       <outgoing>_20</outgoing>
     </callActivity>
-    <callActivity calledElement="CreateContactAndAccount" completionQuantity="1" id="_6" isForCompensation="false" name="Create Contact and &#10;Account in CRM" startQuantity="1">
+    <callActivity calledElement="CreateContactAndAccount" completionQuantity="1" id="createContactAndAccount" isForCompensation="false" name="Create Contact and &#10;Account in CRM" startQuantity="1">
       <extensionElements>
         <activiti:in source="omny_enquiry" target="json"/>
         <activiti:in sourceExpression="omny" target="tenantId"/>
@@ -67,7 +67,7 @@
       <incoming>_13</incoming>
       <outgoing>_26</outgoing>
     </callActivity>
-    <sequenceFlow id="_12" sourceRef="_4" targetRef="_6"/>
+    <sequenceFlow id="_12" sourceRef="_4" targetRef="createContactAndAccount"/>
     <sequenceFlow id="_17" sourceRef="_15" targetRef="addActivityToContact"/>
     <exclusiveGateway gatewayDirection="Converging" id="_15" name="Join">
       <incoming>_26</incoming>
@@ -84,25 +84,25 @@
       <incoming>_19</incoming>
       <outgoing>_23</outgoing>
     </callActivity>
-    <sequenceFlow id="_26" sourceRef="_6" targetRef="_15"/>
+    <sequenceFlow id="_26" sourceRef="createContactAndAccount" targetRef="_15"/>
     <exclusiveGateway default="_13" gatewayDirection="Diverging" id="_8" name="Have contact?">
       <incoming>_9</incoming>
       <outgoing>_13</outgoing>
       <outgoing>_3</outgoing>
     </exclusiveGateway>
     <sequenceFlow id="_9" sourceRef="fetchContact" targetRef="_8"/>
-    <sequenceFlow id="_13" name="No" sourceRef="_8" targetRef="_6"/>
-    <scriptTask completionQuantity="1" id="_2" isForCompensation="false" name="Select first contact" scriptFormat="JavaScript" startQuantity="1">
+    <sequenceFlow id="_13" name="No" sourceRef="_8" targetRef="createContactAndAccount"/>
+    <scriptTask completionQuantity="1" id="selectContact" isForCompensation="false" name="Select first contact" scriptFormat="JavaScript" startQuantity="1">
       <incoming>_3</incoming>
       <outgoing>_5</outgoing>
       <script><![CDATA[var contacts = execution.getVariable('contacts');
 execution.setVariable('contact',contacts.getJsonObject(0));
 execution.setVariable('contactId',contacts.getJsonObject(0).getString('selfRef'));]]></script>
     </scriptTask>
-    <sequenceFlow id="_3" name="Yes" sourceRef="_8" targetRef="_2">
+    <sequenceFlow id="_3" name="Yes" sourceRef="_8" targetRef="selectContact">
       <conditionExpression><![CDATA[${!empty(contacts)}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="_5" sourceRef="_2" targetRef="_15"/>
+    <sequenceFlow id="_5" sourceRef="selectContact" targetRef="_15"/>
     <callActivity calledElement="SelectEnquiryResponse" completionQuantity="1" id="selectEnquiryResponse" isForCompensation="false" name="Choose template &#10;to send enquirer" startQuantity="1">
       <extensionElements>
         <activiti:in source="omny_enquiry" target="json"/>
@@ -129,7 +129,7 @@ execution.setVariable('contactId',contacts.getJsonObject(0).getString('selfRef')
       <incoming>_22</incoming>
       <outgoing>_28</outgoing>
     </callActivity>
-    <sequenceFlow id="_24" sourceRef="_16" targetRef="_18"/>
+    <sequenceFlow id="_24" sourceRef="_16" targetRef="findAlertee"/>
     <parallelGateway gatewayDirection="Diverging" id="_16" name="Split">
       <incoming>_20</incoming>
       <outgoing>_21</outgoing>
@@ -145,7 +145,7 @@ execution.setVariable('contactId',contacts.getJsonObject(0).getString('selfRef')
       <incoming>_23</incoming>
       <inputSet/>
     </endEvent>
-    <scriptTask completionQuantity="1" id="_18" isForCompensation="false" name="Find addressee to alert" scriptFormat="JavaScript" startQuantity="1">
+    <scriptTask completionQuantity="1" id="findAlertee" isForCompensation="false" name="Find addressee to alert" scriptFormat="JavaScript" startQuantity="1">
       <incoming>_24</incoming>
       <outgoing>_22</outgoing>
       <script><![CDATA[var botUser = execution.getEngineServices().getIdentityService()
@@ -158,7 +158,7 @@ try {
   // No one to notify
 }]]></script>
     </scriptTask>
-    <sequenceFlow id="_22" sourceRef="_18" targetRef="notifyInternalUsers"/>
+    <sequenceFlow id="_22" sourceRef="findAlertee" targetRef="notifyInternalUsers"/>
     <textAnnotation id="_11" textFormat="text/plain">
       <text>RECORD ENQUIRY</text>
     </textAnnotation>
@@ -194,7 +194,7 @@ at the moment</text>
           <dc:Bounds height="32.955078125" width="72.0" x="633.0" y="316.85579427083337"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6" isExpanded="false">
+      <bpmndi:BPMNShape bpmnElement="createContactAndAccount" id="Yaoqiang-createContactAndAccount" isExpanded="false">
         <dc:Bounds height="91.0" width="119.0" x="215.71428571428572" y="285.83333333333337"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="46.955078125" width="91.0" x="229.71428571428572" y="309.85579427083337"/>
@@ -218,7 +218,7 @@ at the moment</text>
           <dc:Bounds height="18.955078125" width="80.0" x="235.21428571428572" y="196.21428571428572"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
+      <bpmndi:BPMNShape bpmnElement="selectContact" id="Yaoqiang-selectContact">
         <dc:Bounds height="91.0" width="119.0" x="427.3571428571429" y="127.71428571428572"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.955078125" width="105.0" x="434.3571428571429" y="165.73674665178572"/>
@@ -260,7 +260,7 @@ at the moment</text>
           <dc:Bounds height="18.955078125" width="99.0" x="1087.5000000000002" y="355.90071614583337"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_18" id="Yaoqiang-_18">
+      <bpmndi:BPMNShape bpmnElement="findAlertee" id="Yaoqiang-findAlertee">
         <dc:Bounds height="91.0" width="119.0" x="815.8333333333334" y="418.1666666666667"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="32.955078125" width="101.0" x="824.8333333333334" y="449.1891276041667"/>
