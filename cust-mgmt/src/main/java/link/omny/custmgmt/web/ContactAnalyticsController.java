@@ -27,11 +27,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Tim Stephenson
  */
 @Controller
-@RequestMapping(value = "/{tenantId}/analytics")
-public class AnalyticsController {
+@RequestMapping(value = "/{tenantId}/analytics/contacts")
+public class ContactAnalyticsController {
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(AnalyticsController.class);
+            .getLogger(ContactAnalyticsController.class);
 
     @Autowired
     private ContactRepository contactRepo;

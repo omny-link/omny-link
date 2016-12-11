@@ -163,7 +163,7 @@ var ractive = new AuthenticatedRactive({
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/analytics/funnel',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/analytics/contacts/funnel',
       crossDomain: true,
       success: function( data ) {
         ractive.set('funnel.raw', data);
