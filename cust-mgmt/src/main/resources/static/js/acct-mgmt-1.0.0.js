@@ -5,27 +5,27 @@ var DEFAULT_INACTIVE_STAGES = 'cold,complete,on hold,unqualified,waiting list';
 
 var ractive = new AuthenticatedRactive(
     {
-      el : 'container',
-      lazy : true,
-      template : '#template',
-      data : {
-        accounts : [],
-        entityPath : '/contacts',
-        csrfToken : getCookie(CSRF_COOKIE),
-        contacts : [],
+      el: 'container',
+      lazy: true,
+      template: '#template',
+      data: {
+        accounts: [],
+        entityPath: '/contacts',
+        csrfToken: getCookie(CSRF_COOKIE),
+        contacts: [],
         // saveObserver:false,
-        title : 'Account Management',
-        username : localStorage['username'],
-        age : function(timeString) {
+        title: 'Account Management',
+        username: localStorage['username'],
+        age: function(timeString) {
           if (timeString == undefined)
             return;
           return i18n.getAgeString(ractive.parseDate(timeString))
         },
-        alerts : function(selector) {
+        alerts: function(selector) {
           console.log('alerts for ' + selector);
           return $(selector + ' :invalid').length;
         },
-        customField : function(obj, name) {
+        customField: function(obj, name) {
           if (obj['customFields'] == undefined) {
             return undefined;
           } else if (!Array.isArray(obj['customFields'])) {
@@ -39,7 +39,7 @@ var ractive = new AuthenticatedRactive(
             return val;
           }
         },
-        fields : [ "id", "country", "owner", "fullName", "title",
+        fields: [ "id", "country", "owner", "fullName", "title",
             "customFields", "tenantId", "lastUpdated", "firstName", "lastName",
             "tags", "source", "email", "postCode", "account", "uuid", "phone1",
             "stage", "doNotCall", "doNotEmail", "firstContact", "accountId",
@@ -48,23 +48,23 @@ var ractive = new AuthenticatedRactive(
             "campaign", "keyword", "emailConfirmed", "account.name",
             "account.businessWebsite", "account.companyNumber",
             "account.incorporationYear", "account.sic" ],
-        fieldValidators : {
-          "phone1" : "^\\+?[0-9, \\-()]{0,15}$",
-          "phone2" : "^\\+?[0-9, \\-()]{0,15}$"
+        fieldValidators: {
+          "phone1": "^\\+?[0-9, \\-()]{0,15}$",
+          "phone2": "^\\+?[0-9, \\-()]{0,15}$"
         },
-        findDocName : function(docId) {
+        findDocName: function(docId) {
           console.info('findDocName: ' + docId);
         },
-        findDocName : function(docId) {
+        findDocName: function(docId) {
           console.info('findDocName: ' + docId);
         },
-        formatAge : function(timeString) {
+        formatAge: function(timeString) {
           console.info('formatAge: ' + timeString);
-          return timeString == "-1" ? 'n/a' : i18n
+          return timeString == "-1" ? 'n/a': i18n
               .getDurationString(timeString)
               + ' ago';
         },
-        formatContent : function(content) {
+        formatContent: function(content) {
           // console.info('formatContent');
           if (content == undefined)
             return '';
@@ -72,18 +72,18 @@ var ractive = new AuthenticatedRactive(
           content = Autolinker.link(content);
           return content;
         },
-        formatDate : function(timeString) {
+        formatDate: function(timeString) {
           if (timeString == undefined || timeString.length==0)
             return 'n/a';
           var d = ractive.parseDate(timeString);
           return d.toLocaleDateString(navigator.languages);
         },
-        formatDateTime : function(timeString) {
+        formatDateTime: function(timeString) {
           if (timeString == undefined)
             return 'n/a';
           return new Date(timeString).toLocaleString(navigator.languages);
         },
-        formatDueDate : function(date) {
+        formatDueDate: function(date) {
           var diff = Date.parse(date) - new Date().getTime();
           if (diff < 0)
             return 'alert-danger';
@@ -92,7 +92,7 @@ var ractive = new AuthenticatedRactive(
           else
             return '';
         },
-        formatFavorite : function(obj) {
+        formatFavorite: function(obj) {
           if (obj == undefined)
             return '';
           else if (obj['favorite'])
@@ -100,13 +100,13 @@ var ractive = new AuthenticatedRactive(
           else
             return 'glyphicon-star-empty';
         },
-        formatJson : function(json) {
+        formatJson: function(json) {
           console.log('formatJson: ' + json);
           try {
             var obj = JSON.parse(json);
             var html = '';
             $.each(Object.keys(obj), function(i, d) {
-              html += (typeof obj[d] == 'object' ? '' : '<b>' + d + '</b>: '
+              html += (typeof obj[d] == 'object' ? '': '<b>' + d + '</b>: '
                   + obj[d] + '<br/>');
             });
             return html;
@@ -115,7 +115,7 @@ var ractive = new AuthenticatedRactive(
             return json;
           }
         },
-        formatStockItemId : function(stockItemIds) {
+        formatStockItemId: function(stockItemIds) {
           // console.info('formatStockItemId');
           if (stockItemIds == undefined || stockItemIds.length == 0)
             return stockItemIds;
@@ -131,7 +131,7 @@ var ractive = new AuthenticatedRactive(
           }
           return stockItemNames;
         },
-        formatTags : function(tags) {
+        formatTags: function(tags) {
           var html = '';
           if (tags == undefined)
             return html;
@@ -142,7 +142,7 @@ var ractive = new AuthenticatedRactive(
           });
           return html;
         },
-        gravatar : function(email) {
+        gravatar: function(email) {
           if (email == undefined)
             return '';
           return '<img class="img-rounded" style="width:36px" src="//www.gravatar.com/avatar/'
@@ -152,7 +152,7 @@ var ractive = new AuthenticatedRactive(
               + '%2Fgravatars%2F'
               + ractive.hash(email) + '.png"/>'
         },
-        hash : function(email) {
+        hash: function(email) {
           if (email == undefined)
             return '';
           return ractive.hash(email);
@@ -160,7 +160,7 @@ var ractive = new AuthenticatedRactive(
         haveCustomExtension: function(extName) {
           return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
         },
-        haveStageReasons : function() {
+        haveStageReasons: function() {
           console.info('haveStageReasons?');
           if (ractive.get('current.stage') != 'Cold')
             return false;
@@ -168,12 +168,12 @@ var ractive = new AuthenticatedRactive(
             return d.name == 'stageReasons';
           }).length > 0;
         },
-        helpUrl : '//omny.link/user-help/contacts/#the_title',
-        inactiveStages : function() {
+        helpUrl: '//omny.link/user-help/contacts/#the_title',
+        inactiveStages: function() {
           return ractive.get('tenant.serviceLevel.inactiveStages') == undefined ? DEFAULT_INACTIVE_STAGES
-              : ractive.get('tenant.serviceLevel.inactiveStages').join();
+             : ractive.get('tenant.serviceLevel.inactiveStages').join();
         },
-        lessThan24hAgo : function(isoDateTime) {
+        lessThan24hAgo: function(isoDateTime) {
           if (isoDateTime == undefined
               || (new Date().getTime() - new Date(isoDateTime).getTime()) < 1000 * 60 * 60 * 24) {
             return true;
@@ -198,7 +198,7 @@ var ractive = new AuthenticatedRactive(
                   retVal = retVal && values.indexOf(obj[filter[idx].field].toLowerCase())==-1;
                 } else {
                   if (filter[idx].operator==undefined) filter[idx].operator='==';
-                  retVal = retVal && eval("'"+filter[idx].value.toLowerCase()+"'"+filter[idx].operator+"'"+(obj[filter[idx].field]==undefined ? '' : obj[filter[idx].field]).toLowerCase()+"'");
+                  retVal = retVal && eval("'"+filter[idx].value.toLowerCase()+"'"+filter[idx].operator+"'"+(obj[filter[idx].field]==undefined ? '': obj[filter[idx].field]).toLowerCase()+"'");
                 }
               } catch (e) {
                 //console.debug('Exception during filter, probably means record does not have a value for the filtered field');
@@ -208,11 +208,11 @@ var ractive = new AuthenticatedRactive(
           }
           return retVal;
         },
-        matchPage : function(pageName) {
+        matchPage: function(pageName) {
           console.info('matchPage: ' + pageName);
           return document.location.href.indexOf(pageName) != -1;
         },
-        matchRole : function(role) {
+        matchRole: function(role) {
           // console.info('matchRole: ' + role)
           if (role == undefined || ractive.hasRole(role)) {
             $('.' + role).show();
@@ -221,7 +221,7 @@ var ractive = new AuthenticatedRactive(
             return false;
           }
         },
-        matchSearch : function(obj) {
+        matchSearch: function(obj) {
           var searchTerm = ractive.get('searchTerm');
           // console.info('matchSearch: '+searchTerm);
           if (searchTerm == undefined || searchTerm.length == 0) {
@@ -245,7 +245,7 @@ var ractive = new AuthenticatedRactive(
         sort: function(array, column, asc) {
           if (array == undefined || array.length == 0) return;
           console.info('sort array of ' + array.length + ' items '
-              + (asc ? 'ascending' : 'descending') + ' on: ' + column);
+              + (asc ? 'ascending': 'descending') + ' on: ' + column);
           // use slice to clone first, so we don't modify the underlying data
           return array
               .slice()
@@ -254,19 +254,19 @@ var ractive = new AuthenticatedRactive(
                     if (b[column] == undefined || b[column] == null
                         || b[column] == '') {
                       return (a[column] == undefined || a[column] == null || a[column] == '') ? 0
-                          : -1;
+                         : -1;
                     } else if (asc) {
                       return ('' + a[column]).toLowerCase() < ('' + b[column])
-                          .toLowerCase() ? -1 : 1;
+                          .toLowerCase() ? -1: 1;
                     } else {
                       return ('' + a[column]).toLowerCase() > ('' + b[column])
-                          .toLowerCase() ? -1 : 1;
+                          .toLowerCase() ? -1: 1;
                     }
                   });
         },
-        sortAsc : false,
-        sortColumn : 'lastUpdated',
-        sorted : function(column) {
+        sortAsc: false,
+        sortColumn: 'lastUpdated',
+        sorted: function(column) {
           console.info('sorted');
           if (ractive.get('sortColumn') == column && ractive.get('sortAsc'))
             return 'sort-asc';
@@ -276,9 +276,9 @@ var ractive = new AuthenticatedRactive(
           else
             return 'hidden';
         },
-        sortContactAsc : false,
-        sortContactColumn : 'created',
-        sortedContact : function(column) {
+        sortContactAsc: false,
+        sortContactColumn: 'created',
+        sortedContact: function(column) {
           console.info('sortedContact');
           if (ractive.get('sortContactColumn') == column
               && ractive.get('sortContactAsc'))
@@ -289,9 +289,9 @@ var ractive = new AuthenticatedRactive(
           else
             return 'hidden';
         },
-        sortOrderAsc : false,
-        sortOrderColumn : 'created',
-        sortedOrder : function(column) {
+        sortOrderAsc: false,
+        sortOrderColumn: 'created',
+        sortedOrder: function(column) {
           console.info('sortedOrder');
           if (ractive.get('sortOrderColumn') == column
               && ractive.get('sortOrderAsc'))
@@ -302,107 +302,107 @@ var ractive = new AuthenticatedRactive(
           else
             return 'hidden';
         },
-        stdPartials : [ {
-          "name" : "accountFinancials",
-          "url" : "/partials/account-financials.html"
+        stdPartials: [ {
+          "name": "accountFinancials",
+          "url": "/partials/account-financials.html"
         }, {
-          "name" : "accountListSect",
-          "url" : "/partials/account-list-sect.html"
+          "name": "accountListSect",
+          "url": "/partials/account-list-sect.html"
         }, {
-          "name" : "contactListSect",
-          "url" : "/partials/contact-list-sect.html"
+          "name": "contactListSect",
+          "url": "/partials/contact-list-sect.html"
         }, {
-          "name" : "contactListTable",
-          "url" : "/partials/contact-list-table.html"
+          "name": "contactListTable",
+          "url": "/partials/contact-list-table.html"
         }, {
-          "name" : "currentAccountSect",
-          "url" : "/partials/account-current-sect.html"
+          "name": "currentAccountSect",
+          "url": "/partials/account-current-sect.html"
         }, {
-          "name" : "currentContactSect",
-          "url" : "/partials/contact-current-sect.html"
+          "name": "currentContactSect",
+          "url": "/partials/contact-current-sect.html"
         }, {
-          "name" : "currentContactAccountSect",
-          "url" : "/partials/contact-current-account-sect.html"
+          "name": "currentContactAccountSect",
+          "url": "/partials/contact-current-account-sect.html"
         }, {
-          "name" : "currentCompanyBackground",
-          "url" : "/partials/contact-company-sect.html"
+          "name": "currentCompanyBackground",
+          "url": "/partials/contact-company-sect.html"
         }, {
-          "name" : "currentDocumentListSect",
-          "url" : "/partials/contact-current-document-list-sect.html"
+          "name": "currentDocumentListSect",
+          "url": "/partials/contact-current-document-list-sect.html"
         }, {
-          "name" : "currentNoteListSect",
-          "url" : "/partials/contact-current-note-list-sect.html"
+          "name": "currentNoteListSect",
+          "url": "/partials/contact-current-note-list-sect.html"
         }, {
-          "name" : "currentOrderListSect",
-          "url" : "/partials/contact-current-order-list-sect.html"
+          "name": "currentOrderListSect",
+          "url": "/partials/contact-current-order-list-sect.html"
         }, {
-          "name" : "currentTaskListSect",
-          "url" : "/partials/task-list-sect.html"
+          "name": "currentTaskListSect",
+          "url": "/partials/task-list-sect.html"
         }, {
-          "name" : "customActionModal",
-          "url" : "/partials/custom-action-modal.html"
+          "name": "customActionModal",
+          "url": "/partials/custom-action-modal.html"
         }, {
-          "name" : "helpModal",
-          "url" : "/partials/help-modal.html"
+          "name": "helpModal",
+          "url": "/partials/help-modal.html"
         }, {
-          "name" : "instanceListSect",
-          "url" : "/partials/instance-list-sect.html"
+          "name": "instanceListSect",
+          "url": "/partials/instance-list-sect.html"
         }, {
-          "name" : "poweredBy",
-          "url" : "/partials/powered-by.html"
+          "name": "poweredBy",
+          "url": "/partials/powered-by.html"
         }, {
-          "name" : "profileArea",
-          "url" : "/partials/profile-area.html"
+          "name": "profileArea",
+          "url": "/partials/profile-area.html"
         }, {
-          "name" : "socialControls",
-          "url" : "/partials/social-controls.html"
+          "name": "socialControls",
+          "url": "/partials/social-controls.html"
         }, {
-          "name" : "sidebar",
-          "url" : "/partials/sidebar.html"
+          "name": "sidebar",
+          "url": "/partials/sidebar.html"
         }, {
-          "name" : "titleArea",
-          "url" : "/partials/title-area.html"
+          "name": "titleArea",
+          "url": "/partials/title-area.html"
         }, {
-          "name" : "mergeModal",
-          "url" : "/partials/contact-merge-sect.html"
+          "name": "mergeModal",
+          "url": "/partials/contact-merge-sect.html"
         }, {
-          "name" : "navbar",
-          "url" : "/partials/account-navbar.html"
+          "name": "navbar",
+          "url": "/partials/account-navbar.html"
         }, {
-          "name" : "supportBar",
-          "url" : "/partials/support-bar.html"
+          "name": "supportBar",
+          "url": "/partials/support-bar.html"
         }, {
-          "name" : "taskListTable",
-          "url" : "/partials/task-list-table.html"
+          "name": "taskListTable",
+          "url": "/partials/task-list-table.html"
         } ],
-        uniq : function(fieldName, arr) {
+        uniq: function(fieldName, arr) {
           return Array.uniq(fieldName, arr);
         }
       },
-      add : function() {
+      add: function() {
         console.log('add...');
         $('h2.edit-form,h2.edit-field').hide();
         $('.create-form,create-field').show();
         var contact = {
-          account : {},
-          author : ractive.get('username'),
-          tenantId : ractive.get('tenant.id'),
-          url : undefined
+          account: {},
+          author: ractive.get('username'),
+          tenantId: ractive.get('tenant.id'),
+          url: undefined
         };
         ractive.select(contact);
         ractive.initTags();
       },
-      addContact : function() {
+      addContact: function() {
         console.log('addContact ');
         ractive.set('saveObserver', false);
         if (ractive.get('current.contacts')==undefined) ractive.set('current.contacts', []);
 
         var obj = {
-          account : ractive.uri(ractive.get('current')),
-          mainContact: ractive.get('current.contacts').length==0 ? true : false,
+          account: ractive.uri(ractive.get('current')),
+          mainContact: ractive.get('current.contacts').length==0 ? true: false,
           owner: ractive.get('current.owner'),
           selfRef: '',
-          tenant : ractive.get('tenant.id')
+          tenant: ractive.get('tenant.id')
         }
         ractive.get('current.contacts').splice(0, 0, obj);
 
@@ -412,7 +412,7 @@ var ractive = new AuthenticatedRactive(
         if ($('#accountContactsSect div:visible').length == 0)
           $('#accountContactsSect .ol-collapse').click();
       },
-      addDoc : function(contact) {
+      addDoc: function(contact) {
         console.log('addDoc ' + contact + ' ...');
         if (contact == undefined || contact == '') {
           ractive
@@ -420,15 +420,15 @@ var ractive = new AuthenticatedRactive(
           return;
         }
         ractive.set('current.doc', {
-          author : ractive.get('username'),
-          contact : ractive.stripProjection(contact),
-          url : undefined
+          author: ractive.get('username'),
+          contact: ractive.stripProjection(contact),
+          url: undefined
         });
         if ($('#documentSect div:visible').length == 0)
           $('#documentSect .ol-collapse').click();
         $('#docsTable tr:nth-child(1)').slideDown();
       },
-      addNote : function(contact) {
+      addNote: function(contact) {
         console.log('addNote ' + contact + ' ...');
         ractive.set('saveObserver', false);
         if (contact == undefined || contact == '') {
@@ -437,17 +437,17 @@ var ractive = new AuthenticatedRactive(
           return;
         }
         ractive.get('current.notes').splice(0, 0, {
-          author : ractive.get('username'),
-          contact : ractive.uri(ractive.get('current')),
-          content : '',
-          favorite : true
+          author: ractive.get('username'),
+          contact: ractive.uri(ractive.get('current')),
+          content: '',
+          favorite: true
         });
         ractive.set('saveObserver', true);
         if ($('#notesSect div:visible').length == 0)
           $('#notesSect .ol-collapse').click();
         // $('#notesTable tr:nth-child(1)').slideDown();
       },
-      addOrder : function() {
+      addOrder: function() {
         console.log('addOrder ...');
         if (ractive.get('current.contacts').length == 0) {
           ractive
@@ -457,11 +457,11 @@ var ractive = new AuthenticatedRactive(
         ractive.set('saveObserver', false);
 
         var obj = {
-          selfRef : '',
-          account : ractive.uri(ractive.get('current')),
-          tenantId : ractive.get('tenant.id'),
-          feedback : [],
-          orderItems : [],
+          selfRef: '',
+          account: ractive.uri(ractive.get('current')),
+          tenantId: ractive.get('tenant.id'),
+          feedback: [],
+          orderItems: [],
           stage: Array.findBy('idx',0,ractive.get('stages')).name
         }
         ractive.get('orders').splice(0, 0, obj);
@@ -488,12 +488,12 @@ var ractive = new AuthenticatedRactive(
         ractive.set('currentOrder', Array.findBy('selfRef',orderId,ractive.get('orders')))
         ractive.startCustomAction(key, label, object, form, bizKey);
       },
-      addSector : function() {
+      addSector: function() {
         console.log('addSector ...');
         ractive.showError('Not yet implemented');
         // $('#curPartnerSectors').append($('#sectorTemplate').html());
       },
-      addServiceLevelAlerts : function() {
+      addServiceLevelAlerts: function() {
         if (ractive.get('current.stage') == undefined)
           return;
         $('#curStage').removeClass('alert-danger');
@@ -532,7 +532,7 @@ var ractive = new AuthenticatedRactive(
         if (msgs != undefined)
           ractive.showError(msgs);
       },
-      cancelNote : function() {
+      cancelNote: function() {
         console.info('cancelNote');
         ractive.get('current.notes').splice(0, 1);
       },
@@ -557,7 +557,7 @@ var ractive = new AuthenticatedRactive(
         ractive.set('currentOrder', newOrder);
         ractive.saveOrder();
       },
-      edit : function(contact) {
+      edit: function(contact) {
         console.log('edit: ' + contact.selfRef + '...');
         $('h2.edit-form,h2.edit-field').show();
         $('.create-form,create-field').hide();
@@ -567,7 +567,7 @@ var ractive = new AuthenticatedRactive(
             ractive.get('entityPath').substring(1)).indexOf(contact));
         ractive.select(contact);
       },
-      editField : function(selector, path) {
+      editField: function(selector, path) {
         console.log('editField ' + path + '...');
         $(selector).css('border-width', '1px').css('padding',
             '5px 10px 5px 10px');
@@ -582,73 +582,73 @@ var ractive = new AuthenticatedRactive(
       /*
        * formatJson: function(json) { console.log('formatJson: '+json); var obj =
        * JSON.parse(json); var html = ''; $.each(Object.keys(obj), function(i,d) {
-       * html += (typeof obj[d] == 'object' ? '' : d+': '+obj[d]+'<br/>'); });5
+       * html += (typeof obj[d] == 'object' ? '': d+': '+obj[d]+'<br/>'); });5
        * //console.log('HTML: '+html); //ractive.set('current.html',html);
        * return html;) // $(selector).append(html); },
        */
-      deleteAccount : function(obj) {
+      deleteAccount: function(obj) {
         console.log('delete ' + obj + '...');
         $.ajax({
-          url : ractive.getServer()+'/'+ractive.get('tenant.id')+'/accounts/' + ractive.id(obj),
-          type : 'DELETE',
-          success : completeHandler = function(data) {
+          url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/accounts/' + ractive.id(obj),
+          type: 'DELETE',
+          success: completeHandler = function(data) {
             ractive.fetch();
           }
         });
         return false; // cancel bubbling to prevent edit as well as delete
       },
-      deleteContact : function(obj) {
+      deleteContact: function(obj) {
         console.log('delete ' + obj + '...');
         if (Array.findBy('contactId', ractive.shortId(obj.selfRef), ractive.get('orders'))==undefined) {
           $.ajax({
-            url : ractive.getServer() + '/contacts/' + ractive.id(obj),
-            type : 'DELETE',
-            success : completeHandler = function(data) {
+            url: ractive.getServer() + '/contacts/' + ractive.id(obj),
+            type: 'DELETE',
+            success: completeHandler = function(data) {
               ractive.fetchAccountContacts();
             }
           });
         } else {
-          ractive.showError('Cannot delete contact while it has '+(ractive.get('tenant.strings.orders') == null ? 'orders' : ractive.get('tenant.strings.orders').toLowerCase()));
+          ractive.showError('Cannot delete contact while it has '+(ractive.get('tenant.strings.orders') == null ? 'orders': ractive.get('tenant.strings.orders').toLowerCase()));
         }
         return false; // cancel bubbling to prevent edit as well as delete
       },
-      deleteOrder : function(obj) {
+      deleteOrder: function(obj) {
         console.log('deleteOrder ' + obj.selfRef + '...');
         $.ajax({
-          url : ractive.getServer() + '/orders/' + ractive.id(obj),
-          type : 'DELETE',
-          success : completeHandler = function(data) {
+          url: ractive.getServer() + '/orders/' + ractive.id(obj),
+          type: 'DELETE',
+          success: completeHandler = function(data) {
             ractive.fetchOrders(ractive.get('current'));
           }
         });
         return false; // cancel bubbling to prevent edit as well as delete
       },
-      deleteOrderItem : function(order, item) {
+      deleteOrderItem: function(order, item) {
         console.log('deleteOrderItem ' + order.selfRef + ', '+ item.selfRef +'...');
         $.ajax({
-          url : ractive.getServer() + '/'+ractive.get('tenant.id')+'/orders/' + ractive.shortId(order.selfRef)+ '/order-items/' + ractive.shortId(item.selfRef),
-          type : 'DELETE',
-          success : completeHandler = function(data) {
+          url: ractive.getServer() + '/'+ractive.get('tenant.id')+'/orders/' + ractive.shortId(order.selfRef)+ '/order-items/' + ractive.shortId(item.selfRef),
+          type: 'DELETE',
+          success: completeHandler = function(data) {
             ractive.fetchOrders(ractive.get('current'));
           }
         });
         return false; // cancel bubbling to prevent edit as well as delete
       },
-      fetch : function() {
+      fetch: function() {
         console.info('fetch...');
         ractive.set('saveObserver', false);
         ractive.fetchPrimaryEntityList();
       },
-      fetchPrimaryEntityList : function() {
+      fetchPrimaryEntityList: function() {
         console.info('fetchPrimaryEntityList...');
         ractive.set('saveObserver', false);
         var entityName = ractive.get('entityPath').substring(1);
         $.ajax({
-          dataType : "json",
-          url : ractive.getServer() + '/' + ractive.get('tenant.id')
+          dataType: "json",
+          url: ractive.getServer() + '/' + ractive.get('tenant.id')
               + ractive.get('entityPath') + '/?projection=complete',
-          crossDomain : true,
-          success : function(data) {
+          crossDomain: true,
+          success: function(data) {
             if (data['_embedded'] == undefined) {
               ractive.merge(entityName, data);
             } else {
@@ -666,23 +666,23 @@ var ractive = new AuthenticatedRactive(
           }
         });
       },
-      fetchAccountsTypeahead : function() {
+      fetchAccountsTypeahead: function() {
         console.info('fetchAccountsTypeahead...');
         ractive.set('saveObserver', false);
         $.ajax({
-          dataType : "json",
-          url : ractive.getServer() + '/' + ractive.get('tenant.id')
+          dataType: "json",
+          url: ractive.getServer() + '/' + ractive.get('tenant.id')
               + '/accounts/?projection=typeahead',
-          crossDomain : true,
-          success : function(data) {
+          crossDomain: true,
+          success: function(data) {
             if (data['_embedded'] != undefined) {
               data = data['_embedded'].accounts;
             }
             console.log('fetched ' + data.length + ' accounts for typeahead');
             var accData = jQuery.map(data, function(n, i) {
               return ({
-                "id" : ractive.getId(n),
-                "name" : n.name
+                "id": ractive.getId(n),
+                "name": n.name
               });
             });
             ractive.set('accountsTypeahead', accData);
@@ -691,22 +691,22 @@ var ractive = new AuthenticatedRactive(
           }
         });
       },
-      fetchAccountContacts : function() {
+      fetchAccountContacts: function() {
         console.info('fetchAccountContacts...');
         ractive.set('saveObserver', false);
         $.ajax({
-          dataType : "json",
-          url : ractive.getServer() + '/' + ractive.get('tenant.id')
+          dataType: "json",
+          url: ractive.getServer() + '/' + ractive.get('tenant.id')
               + '/contacts/findByAccountId?accountId='
               + ractive.id(ractive.get('current')),
-          crossDomain : true,
-          success : function(data) {
+          crossDomain: true,
+          success: function(data) {
             ractive.set('saveObserver', false);
             ractive.set('current.contacts', data);
             var contactData = jQuery.map(data, function(n, i) {
               return ({
-                "id" : ractive.getId(n),
-                "name" : n.fullName
+                "id": ractive.getId(n),
+                "name": n.fullName
               });
             });
             ractive.set('contactsTypeahead', contactData);
@@ -717,7 +717,7 @@ var ractive = new AuthenticatedRactive(
           }
         });
       },
-      fetchCompaniesHouseInfo : function() {
+      fetchCompaniesHouseInfo: function() {
         if (ractive.get('tenant.features.companyBackground') == undefined
             || ractive.get('tenant.features.companyBackground') == false)
           return;
@@ -725,11 +725,11 @@ var ractive = new AuthenticatedRactive(
             + ractive.get('current.companyNumber'));
         ractive
             .sendMessage({
-              name : "omny.companyRecord",
-              body : JSON.stringify({
-                companyNumber : ractive.get('current.companyNumber')
+              name: "omny.companyRecord",
+              body: JSON.stringify({
+                companyNumber: ractive.get('current.companyNumber')
               }),
-              callback : function(results) {
+              callback: function(results) {
                 // results = JSON.parse(results);
                 ractive.set('saveObserver', false);
                 ractive.set('current.companiesHouseInfo', JSON.parse(results));
@@ -749,10 +749,10 @@ var ractive = new AuthenticatedRactive(
                 ractive.set('saveObserver', true);
                 $('#fhTable').addClass('table-striped');
               },
-              pattern : "inOut"
+              pattern: "inOut"
             });
       },
-      fetchOrders : function(account) {
+      fetchOrders: function(account) {
         console.info('fetchOrders...');
         if (ractive.get('tenant.show.orders') != true)
           return;
@@ -770,11 +770,11 @@ var ractive = new AuthenticatedRactive(
           return; // no contacts means no orders
 
         $.ajax({
-          dataType : "json",
-          url : ractive.getServer() + '/' + ractive.get('tenant.id')
+          dataType: "json",
+          url: ractive.getServer() + '/' + ractive.get('tenant.id')
               + '/orders/findByContacts/' + contactIds,
-          crossDomain : true,
-          success : function(data) {
+          crossDomain: true,
+          success: function(data) {
             if (data['_embedded'] != undefined) {
               data = data['_embedded'].accounts;
             }
@@ -785,25 +785,25 @@ var ractive = new AuthenticatedRactive(
           }
         });
       },
-      fetchProcessInstances : function(contactId) {
+      fetchProcessInstances: function(contactId) {
         console.info('fetchProcessInstances...');
 
         ractive.set('saveObserver', false);
         $.ajax({
-          dataType : "json",
-          url : ractive.getServer() + '/' + ractive.get('tenant.id')
+          dataType: "json",
+          url: ractive.getServer() + '/' + ractive.get('tenant.id')
               + '/process-instances/findByVar/contactId/' + contactId,
-          crossDomain : true,
-          success : function(data) {
+          crossDomain: true,
+          success: function(data) {
             ractive.set('saveObserver', false);
             ractive.set('current.instances', data);
             console.log('fetched ' + data.length + ' instances');
             for (idx in data) {
               ractive.push('current.activities', {
-                content : data[idx]['processDefinitionId'] + ': '
+                content: data[idx]['processDefinitionId'] + ': '
                     + data[idx]['businessKey'],
-                occurred : "2016-10-10",
-                type : "workflow"
+                occurred: "2016-10-10",
+                type: "workflow"
               });
             }
             ractive.sortChildren('instances', 'occurred', false);
@@ -811,15 +811,15 @@ var ractive = new AuthenticatedRactive(
           }
         });
       },
-      fetchStockItems : function() {
+      fetchStockItems: function() {
         console.info('fetchStockItems...');
         ractive.set('saveObserver', false);
         $.ajax({
-          dataType : "json",
-          url : ractive.getServer() + '/' + ractive.get('tenant.id')
+          dataType: "json",
+          url: ractive.getServer() + '/' + ractive.get('tenant.id')
               + '/stock-items/?projection=typeahead',
-          crossDomain : true,
-          success : function(data) {
+          crossDomain: true,
+          success: function(data) {
             if (data['_embedded'] != undefined) {
               data = data['_embedded'].stockItems;
             }
@@ -828,8 +828,8 @@ var ractive = new AuthenticatedRactive(
                 .log('fetched ' + data.length + ' stock items for typeahead');
             var stockItemData = jQuery.map(data, function(n, i) {
               return ({
-                "id" : ractive.getId(n),
-                "name" : n.name
+                "id": ractive.getId(n),
+                "name": n.name
               });
             });
             ractive.set('stockItemsTypeahead', stockItemData);
@@ -838,16 +838,16 @@ var ractive = new AuthenticatedRactive(
           }
         });
       },
-      fetchTasks : function(contactId) {
+      fetchTasks: function(accountId) {
         console.info('fetchTasks...');
 
         ractive.set('saveObserver', false);
         $.ajax({
-          dataType : "json",
-          url : ractive.getServer() + '/' + ractive.get('tenant.id')
-              + '/tasks/findByVar/contactId/' + contactId,
-          crossDomain : true,
-          success : function(data) {
+          dataType: "json",
+          url: ractive.getServer() + '/' + ractive.get('tenant.id')
+              + '/tasks/findByVar/accountId/' + accountId,
+          crossDomain: true,
+          success: function(data) {
             console.log('fetched ' + data.length + ' tasks');
             ractive.set('saveObserver', false);
             ractive.set('xTasks', data);
@@ -874,7 +874,7 @@ var ractive = new AuthenticatedRactive(
         $('input[type="search"]').blur();
       },
       /** @deprecated use findAny */
-      find : function(contactId) {
+      find: function(contactId) {
         console.log('find: ' + contactId);
         var c;
         $.each(ractive.get('contacts'), function(i, d) {
@@ -884,7 +884,7 @@ var ractive = new AuthenticatedRactive(
         });
         return c;
       },
-      findAny : function(id, arr) {
+      findAny: function(id, arr) {
         if (arr == undefined)
           return null; // in case entity array not loaded yet
         console.log('findAny: ' + id);
@@ -899,31 +899,31 @@ var ractive = new AuthenticatedRactive(
         });
         return c;
       },
-      findByFullName : function(entity, idx, arr) {
+      findByFullName: function(entity, idx, arr) {
         return entity['fullName'] == ractive.get('fullName');
       },
-      hideResults : function() {
+      hideResults: function() {
         $('#accountsTableToggle').removeClass('glyphicon-triangle-bottom')
             .addClass('glyphicon-triangle-right');
         $('#accountsTable').slideUp();
         $('#currentSect').slideDown({
-          queue : true
+          queue: true
         });
       },
-      importComplete : function(imported, failed) {
+      importComplete: function(imported, failed) {
         console.log('inferComplete');
         ractive.showMessage('Import complete added ' + imported + ' records '
             + ' with ' + failed + ' failures');
         if (failed == 0) {
           ractive.fetch();
           $("#pasteSect").animate({
-            width : 'toggle'
+            width: 'toggle'
           }, EASING_DURATION * 2, function() {
             $("#contactsSect").slideDown(EASING_DURATION * 2);
           });
         }
       },
-      inferDomainName : function() {
+      inferDomainName: function() {
         console.info('inferDomainName');
         var email = ractive.get('current.email');
         if (email == undefined)
@@ -948,17 +948,17 @@ var ractive = new AuthenticatedRactive(
         }
         console.log('  emailDomain: ' + emailDomain);
       },
-      initAccountTypeahead : function() {
+      initAccountTypeahead: function() {
         console.info();
         // if (ractive.get('accountsTypeahead')==undefined)
         // ractive.fetchAccountsTypeahead();
         // set up account typeahead
         $('#curAccountName').typeahead(
             {
-              items : 'all',
-              minLength : 0,
-              source : ractive.get('accountsTypeahead'),
-              updater : function(item) {
+              items: 'all',
+              minLength: 0,
+              source: ractive.get('accountsTypeahead'),
+              updater: function(item) {
                 ractive.set('current.accountId', item.id);
                 var shortId = item.id.substring(item.id.lastIndexOf('/') + 1);
                 $.each(ractive.get('accounts'), function(i, d) {
@@ -977,12 +977,12 @@ var ractive = new AuthenticatedRactive(
           return true;
         });
       },
-      initStockItemTypeahead : function() {
+      initStockItemTypeahead: function() {
         console.info('initStockItemTypeahead');
         $('.stock-item-typeahead').typeahead({
-          items : 'all',
-          minLength : 0,
-          source : ractive.get('stockItemsTypeahead')
+          items: 'all',
+          minLength: 0,
+          source: ractive.get('stockItemsTypeahead')
         // updater:function(item) {
         // ractive.set('current.accountId', item.id);
         // var shortId = item.id.substring(item.id.lastIndexOf('/')+1);
@@ -1002,7 +1002,7 @@ var ractive = new AuthenticatedRactive(
           return true;
         });
       },
-      mergeContacts : function() {
+      mergeContacts: function() {
         console.info('mergeContacts');
         ractive.set('contact1', ractive.get('contacts[0]'));
         ractive.set('contact2', ractive.get('contacts[1]'));
@@ -1010,16 +1010,16 @@ var ractive = new AuthenticatedRactive(
         // alert('Sorry merge of contacts is not yet implemented');
         $('#mergeModal').modal({});
       },
-      oninit : function() {
+      oninit: function() {
         console.log('oninit');
         this.ajaxSetup();
         this.loadStandardPartials(this.get('stdPartials'));
       },
-      pasteInit : function() {
+      pasteInit: function() {
         ractive.set('pasteData', undefined);
         $("#contactsSect").slideUp(EASING_DURATION * 2, function() {
           $("#pasteSect").animate({
-            width : 'toggle'
+            width: 'toggle'
           }, EASING_DURATION * 2);
         });
 
@@ -1033,7 +1033,7 @@ var ractive = new AuthenticatedRactive(
           }
         });
       },
-      pasteDataToObjects : function() {
+      pasteDataToObjects: function() {
         console.info('pasteDataToObjects');
 
         var list = [];
@@ -1078,7 +1078,7 @@ var ractive = new AuthenticatedRactive(
         ractive.set('list', list);
         return list;
       },
-      pasteImport : function() {
+      pasteImport: function() {
         console.info('pasteImport');
 
         var list = ractive.pasteDataToObjects();
@@ -1087,15 +1087,15 @@ var ractive = new AuthenticatedRactive(
 
         for ( var idx in list) {
           ractive.sendMessage({
-            name : "omny.importedContact",
-            body : JSON.stringify(list[idx]),
-            callback : function(results) {
+            name: "omny.importedContact",
+            body: JSON.stringify(list[idx]),
+            callback: function(results) {
               console.log('  sendMessage callback...')
               imported++;
               if (imported + failed == list.length)
                 ractive.importComplete(imported, failed);
             },
-            pattern : "inOnly"
+            pattern: "inOnly"
           }).fail(function(jqXHR, textStatus, errorThrown) {
             var msg = "Unable to import record " + idx;
             console.warn('msg:' + msg);
@@ -1105,7 +1105,7 @@ var ractive = new AuthenticatedRactive(
           });
         }
       },
-      pastePreview : function(data) {
+      pastePreview: function(data) {
         var rows = data.split("\n");
 
         for ( var y in rows) {
@@ -1120,10 +1120,10 @@ var ractive = new AuthenticatedRactive(
         ractive.pasteValidate();
 
         $("#pasteZone").animate({
-          width : 'toggle'
+          width: 'toggle'
         }, EASING_DURATION * 2);
       },
-      pasteValidate : function(data) {
+      pasteValidate: function(data) {
         var valid = true;
         $.each(ractive.get('pasteData.headers'), function(i, d) {
           console.log('  ' + i + ':' + d);
@@ -1149,10 +1149,10 @@ var ractive = new AuthenticatedRactive(
           ractive
               .showWarning('There are problems with the proposed import, please modify and try again');
       },
-      save : function() {
+      save: function() {
         ractive.saveAccount();
       },
-      saveAccount : function() {
+      saveAccount: function() {
         console.log('save account: ' + ractive.get('current').name + '...');
         ractive.set('saveObserver', false);
         var id = ractive.uri(ractive.get('current'));
@@ -1167,12 +1167,12 @@ var ractive = new AuthenticatedRactive(
           tmp.tenantId = ractive.get('tenant.id');
           // console.log('ready to save contact'+JSON.stringify(tmp)+' ...');
           $.ajax({
-            url : id === undefined ? ractive.getServer() + '/' + tmp.tenantId
-                + ractive.get('entityPath') + '/' : ractive.tenantUri(tmp),
-            type : id === undefined ? 'POST' : 'PUT',
-            contentType : 'application/json',
-            data : JSON.stringify(tmp),
-            success : completeHandler = function(data, textStatus, jqXHR) {
+            url: id === undefined ? ractive.getServer() + '/' + tmp.tenantId
+                + ractive.get('entityPath') + '/': ractive.tenantUri(tmp),
+            type: id === undefined ? 'POST': 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(tmp),
+            success: completeHandler = function(data, textStatus, jqXHR) {
               // console.log('data: '+ data);
               var entityName = ractive.get('entityPath').substring(1);
               var location = jqXHR.getResponseHeader('Location');
@@ -1206,7 +1206,7 @@ var ractive = new AuthenticatedRactive(
           ractive.set('saveObserver', true);
         }
       },
-      saveContact : function() {
+      saveContact: function() {
         console.log('save contact:...');
         ractive.set('saveObserver', false);
         if (document.getElementById('currentContactForm') == undefined) {
@@ -1217,17 +1217,17 @@ var ractive = new AuthenticatedRactive(
 
           var tmp = ractive.get('currentContact');
           delete tmp.alerts;
-          var id = ractive.uri(tmp) == undefined ? undefined : ractive.id(tmp);
+          var id = ractive.uri(tmp) == undefined ? undefined: ractive.id(tmp);
           console.log('ready to save contact' + JSON.stringify(tmp) + ' ...');
           $.ajax({
             // TODO cannot use tenantUri() here
-            url : id === undefined ? ractive.getServer() + '/' + tmp.tenantId
-                + '/contacts/' : ractive.getServer() + '/' + tmp.tenantId
+            url: id === undefined ? ractive.getServer() + '/' + tmp.tenantId
+                + '/contacts/': ractive.getServer() + '/' + tmp.tenantId
                 + '/contacts/' + id,
-            type : id === undefined ? 'POST' : 'PUT',
-            contentType : 'application/json',
-            data : JSON.stringify(tmp),
-            success : completeHandler = function(data, textStatus, jqXHR) {
+            type: id === undefined ? 'POST': 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(tmp),
+            success: completeHandler = function(data, textStatus, jqXHR) {
               // console.log('data: '+ data);
               var location = jqXHR.getResponseHeader('Location');
               ractive.set('saveObserver', false);
@@ -1252,7 +1252,7 @@ var ractive = new AuthenticatedRactive(
           ractive.set('saveObserver', true);
         }
       },
-      saveDependentAccount : function() {
+      saveDependentAccount: function() {
         if (ractive.get('current.account') == undefined)
           return;
         if (ractive.uri(ractive.get('current')) == undefined) {
@@ -1271,12 +1271,12 @@ var ractive = new AuthenticatedRactive(
         if ($('#currentAccountForm:visible').length != 0
             && document.getElementById('currentAccountForm').checkValidity()) {
           $.ajax({
-            url : ractive.getServer() + '/' + ractive.get('tenant.id')
-                + '/accounts/' + (id == undefined ? '' : id),
-            type : id == undefined ? 'POST' : 'PUT',
-            contentType : 'application/json',
-            data : JSON.stringify(ractive.get('current.account')),
-            success : completeHandler = function(data, textStatus, jqXHR) {
+            url: ractive.getServer() + '/' + ractive.get('tenant.id')
+                + '/accounts/' + (id == undefined ? '': id),
+            type: id == undefined ? 'POST': 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(ractive.get('current.account')),
+            success: completeHandler = function(data, textStatus, jqXHR) {
               var location = jqXHR.getResponseHeader('Location');
               if (location != undefined)
                 ractive.set('current.account.id', location.substring(location
@@ -1307,15 +1307,15 @@ var ractive = new AuthenticatedRactive(
           ractive.set('saveObserver', true);
         }
       },
-      saveAccountLink : function(contactAccountLink, location) {
+      saveAccountLink: function(contactAccountLink, location) {
         console.info('saveAccountLink: ' + contactAccountLink + ' to '
             + location);
         $.ajax({
-          url : contactAccountLink,
-          type : 'PUT',
-          contentType : 'text/uri-list',
-          data : location,
-          success : completeHandler = function(data, textStatus, jqXHR) {
+          url: contactAccountLink,
+          type: 'PUT',
+          contentType: 'text/uri-list',
+          data: location,
+          success: completeHandler = function(data, textStatus, jqXHR) {
             ractive.set('saveObserver', false);
             console.log('linked account: ' + location + ' to '
                 + contactAccountLink);
@@ -1341,17 +1341,17 @@ var ractive = new AuthenticatedRactive(
             tmp.contactId = ractive.shortId(Array.findBy('fullName', contactName,ractive.get('current.contacts')).selfRef);
             delete tmp.contactName;
           }
-          var id = ractive.uri(tmp) == undefined ? undefined : ractive.id(tmp);
+          var id = ractive.uri(tmp) == undefined ? undefined: ractive.id(tmp);
           console.log('ready to save order' + JSON.stringify(tmp) + ' ...');
           $.ajax({
             // TODO cannot use tenantUri() here
-            url : id === undefined ? ractive.getServer() + '/' + tmp.tenantId
-                + '/orders/' : ractive.getServer() + '/' + tmp.tenantId
+            url: id === undefined ? ractive.getServer() + '/' + tmp.tenantId
+                + '/orders/': ractive.getServer() + '/' + tmp.tenantId
                 + '/orders/' + id,
-            type : id === undefined ? 'POST' : 'PUT',
-            contentType : 'application/json',
-            data : JSON.stringify(tmp),
-            success : completeHandler = function(data, textStatus, jqXHR) {
+            type: id === undefined ? 'POST': 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(tmp),
+            success: completeHandler = function(data, textStatus, jqXHR) {
               // console.log('data: '+ data);
               var location = jqXHR.getResponseHeader('Location');
               ractive.set('saveObserver', false);
@@ -1388,13 +1388,13 @@ var ractive = new AuthenticatedRactive(
           console.log('ready to save order item' + JSON.stringify(tmp) + ' ...');
           $.ajax({
             // TODO no use case for creating items (yet)
-            url : id === undefined
+            url: id === undefined
               ? ractive.getServer() + '/' + tmp.tenantId + '/orders/' + tmp.orderId + '/order-items/'
-              : ractive.getServer() + '/' + tmp.tenantId + '/orders/' + tmp.orderId + '/order-items/' +id,
-            type : id === undefined ? 'POST' : 'PUT',
-            contentType : 'application/json',
-            data : JSON.stringify(tmp),
-            success : completeHandler = function(data, textStatus, jqXHR) {
+             : ractive.getServer() + '/' + tmp.tenantId + '/orders/' + tmp.orderId + '/order-items/' +id,
+            type: id === undefined ? 'POST': 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(tmp),
+            success: completeHandler = function(data, textStatus, jqXHR) {
               // console.log('data: '+ data);
               var location = jqXHR.getResponseHeader('Location');
               ractive.set('saveObserver', false);
@@ -1417,7 +1417,7 @@ var ractive = new AuthenticatedRactive(
           ractive.set('saveObserver', true);
         }
       },
-      searchCompaniesHouse : function() {
+      searchCompaniesHouse: function() {
         if (ractive.get('tenant.features.companyBackground') == undefined
             || ractive.get('tenant.features.companyBackground') == false)
           return;
@@ -1425,25 +1425,25 @@ var ractive = new AuthenticatedRactive(
         var q = ractive.get('current.account.name');
         ractive
             .sendMessage({
-              name : "omny.companySearch",
-              body : JSON.stringify({
-                companyName : q
+              name: "omny.companySearch",
+              body: JSON.stringify({
+                companyName: q
               }),
-              callback : function(results) {
+              callback: function(results) {
                 console.log('  sendMessage callback...')
                 results = JSON.parse(results);
                 ractive.set('companiesHouseResults', results);
                 var data = jQuery.map(results.items, function(n, i) {
                   return ({
-                    "id" : n.company_number,
-                    "name" : n.company_number + ' ' + n.title
+                    "id": n.company_number,
+                    "name": n.company_number + ' ' + n.title
                   });
                 });
                 $('#curCompanyNumber').typeahead({
-                  items : 'all',
-                  minLength : 0,
-                  source : data,
-                  updater : function(item) {
+                  items: 'all',
+                  minLength: 0,
+                  source: data,
+                  updater: function(item) {
                     return item.id;
                   }
                 });
@@ -1456,7 +1456,7 @@ var ractive = new AuthenticatedRactive(
                 if (ractive.get('current.account.companyNumber') != undefined)
                   ractive.fetchCompaniesHouseInfo();
               },
-              pattern : "inOut"
+              pattern: "inOut"
             })
             .fail(
                 function(jqXHR, textStatus, errorThrown) {
@@ -1465,75 +1465,61 @@ var ractive = new AuthenticatedRactive(
                   ractive.showMessage(msg, 'alert-warning');
                 });
       },
-      select : function(contact) {
-        console.log('select: ' + contact.selfRef);
+      select: function(account) {
+        console.log('select: ' + account.selfRef);
         ractive.set('saveObserver', false);
-        if (ractive.get('entityPath') == '/contacts'
-            && (contact.account == undefined || contact.account == ''))
-          contact.account = new Object();
         // default owner to current user
-        if (contact.owner == undefined || contact.owner == '')
-          contact.owner = ractive.get('username');
+        if (account.owner == undefined || account.owner == '')
+          account.owner = ractive.get('username');
         // adapt between Spring Hateos and Spring Data Rest
-        if (contact._links == undefined && contact.links != undefined) {
-          contact._links = contact.links;
-          $.each(contact.links, function(i, d) {
+        if (account._links == undefined && account.links != undefined) {
+          account._links = account.links;
+          $.each(account.links, function(i, d) {
             if (d.rel == 'self')
-              contact._links.self = {
-                href : d.href
+              account._links.self = {
+                href: d.href
               };
           });
         }
-        if (contact._links != undefined) {
-          var url = ractive.uri(contact); // includes getServer
+        if (account._links != undefined) {
+          var url = ractive.uri(account); // includes getServer
           if (url == undefined) {
-            ractive.showError('No contact selected, please check link');
+            ractive.showError('No account selected, please check link');
             return;
           }
           // console.log('loading detail for ' + url);
-          $
-              .getJSON(
-                  ractive.tenantUri(contact),
-                  function(data) {
-                    console.log('found contact ' + data);
-                    ractive.set('saveObserver', false);
-                    ractive.set('current', data);
+          $.getJSON(ractive.tenantUri(account), function(data) {
+              console.log('found account ' + data);
+              ractive.set('saveObserver', false);
+              ractive.set('current', data);
 
-                    ractive.fetchStockItems();
-                    ractive.fetchAccountContacts();
-                    ractive.fetchTasks(ractive.id(ractive.get('current')));
+              ractive.fetchStockItems();
+              ractive.fetchAccountContacts();
+              ractive.fetchTasks(ractive.id(ractive.get('current')));
 
-                    ractive.initControls();
-                    ractive.initTags();
-                    // who knows why this is needed, but it is, at least for
-                    // first time rendering
-                    $('.autoNumeric').autoNumeric('update', {});
-                    ractive.addServiceLevelAlerts();
-                    ractive.fetchNotes();
-                    ractive.fetchDocs();
-                    if (ractive.get('current.account.companyNumber') != undefined)
-                      ractive.fetchCompaniesHouseInfo();
-                    if (ractive.get('current.activities') != undefined)
-                      ractive.sortChildren('activities', 'occurred', false);
-                    if (ractive.get('current.account') == undefined
-                        || ractive.get('current.account.name') == undefined) {
-                      // ractive.initAccountTypeahead();
-                    } else if (ractive.get('current.account.businessWebsite') == undefined
-                        || ractive.get('current.account.businessWebsite') == '') {
-                      ractive.inferDomainName();
-                    }
-                    if (ractive.hasRole('admin'))
-                      $('.admin').show();
-                    ractive.set('saveObserver', true);
-                  });
+              ractive.initControls();
+              ractive.initTags();
+              // who knows why this is needed, but it is, at least for
+              // first time rendering
+              $('.autoNumeric').autoNumeric('update', {});
+              ractive.addServiceLevelAlerts();
+              ractive.fetchNotes();
+              ractive.fetchDocs();
+              if (ractive.get('current.companyNumber') != undefined)
+                ractive.fetchCompaniesHouseInfo();
+              if (ractive.get('current.activities') != undefined)
+                ractive.sortChildren('activities', 'occurred', false);
+              if (ractive.hasRole('admin')) $('.admin').show();
+              ractive.set('saveObserver', true);
+            });
         } else {
-          console.log('Skipping load as no _links.' + contact.lastName);
-          ractive.set('current', contact);
+          console.log('Skipping load as no _links.' + account.lastName);
+          ractive.set('current', account);
           ractive.set('saveObserver', true);
         }
         ractive.hideResults();
       },
-      selectMultiple : function(contact) {
+      selectMultiple: function(account) {
         console.info('selectMultiple: ' + contact.selfRef);
         if ($('tr[data-href="' + contact.selfRef + '"] input[type="checkbox"]')
             .prop('checked')) {
@@ -1557,31 +1543,31 @@ var ractive = new AuthenticatedRactive(
           });
         }
       },
-      sendMessage : function(msg) {
+      sendMessage: function(msg) {
         console.log('sendMessage: ' + msg.name);
         var type = (msg['pattern'] == 'inOut' || msg['pattern'] == 'outOnly') ? 'GET'
-            : 'POST';
+           : 'POST';
         var d = (msg['pattern'] == 'inOut') ? {
-          query : msg['body']
-        } : {
-          json : msg['body']
+          query: msg['body']
+        }: {
+          json: msg['body']
         };
         console.log('d: ' + d);
         // var d['businessDescription']=ractive.get('message.bizKey');
         return $.ajax({
-          url : ractive.getServer() + '/msg/' + ractive.get('tenant.id') + '/'
+          url: ractive.getServer() + '/msg/' + ractive.get('tenant.id') + '/'
               + msg.name + '/',
-          type : type,
-          data : d,
-          dataType : 'text',
-          success : completeHandler = function(data) {
+          type: type,
+          data: d,
+          dataType: 'text',
+          success: completeHandler = function(data) {
             console.log('Message received:' + data);
             if (msg['callback'] != undefined)
               msg.callback(data);
           },
         });
       },
-      setMainContact : function(contactRef) {
+      setMainContact: function(contactRef) {
         console.info('setMainContact: ' + contactRef);
         for (idx in ractive.get('current.contacts')) {
           ractive.set('currentContact', ractive.get('current.contacts.' + idx));
@@ -1594,20 +1580,20 @@ var ractive = new AuthenticatedRactive(
           }
         }
       },
-      showActivityIndicator : function(msg, addClass) {
+      showActivityIndicator: function(msg, addClass) {
         document.body.style.cursor = 'progress';
         this.showMessage(msg, addClass);
       },
-      showAlertCounters : function() {
+      showAlertCounters: function() {
         // console.info('showAlertCounters');
         var alerts = {
-          account : $('#currentAccount :invalid').length,
-          activities : $('#activitySect :invalid').length,
-          activityAnalysis : $('#activityAnalysisSect :invalid').length,
-          budget : $('#budgetSect :invalid').length,
-          connections : $('#connectionsSect :invalid').length,
-          documents : $('#documentsTable .alert-danger').length,
-          notes : $('#notesTable .alert-danger, #notesSect .messages.alert-danger').length,
+          account: $('#currentAccount :invalid').length,
+          activities: $('#activitySect :invalid').length,
+          activityAnalysis: $('#activityAnalysisSect :invalid').length,
+          budget: $('#budgetSect :invalid').length,
+          connections: $('#connectionsSect :invalid').length,
+          documents: $('#documentsTable .alert-danger').length,
+          notes: $('#notesTable .alert-danger, #notesSect .messages.alert-danger').length,
         }
         ractive.set('alerts', alerts);
       },
@@ -1615,12 +1601,12 @@ var ractive = new AuthenticatedRactive(
         ractive.set('currentContact',obj);
         ractive.showSocial(networkName, keypath);
       },
-      showResults : function() {
+      showResults: function() {
         $('#accountsTableToggle').addClass('glyphicon-triangle-bottom')
             .removeClass('glyphicon-triangle-right');
         $('#currentSect').slideUp();
         $('#accountsTable').slideDown({
-          queue : true
+          queue: true
         });
       },
       startAccountContactAcction: function(action, contactId) {
@@ -1628,12 +1614,12 @@ var ractive = new AuthenticatedRactive(
         ractive.set('instanceToStart.processVariables.contactId',contactId);
 //        ractive.startCustomAction(action.ref, action.name, ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{fullName}}')
       },
-      toggleAllNotes : function(btn) {
+      toggleAllNotes: function(btn) {
         console.info('toggleAllNotes');
         $('#notesTable tr.unfavorite').slideToggle();
         $(btn).toggleClass('glyphicon-star glyphicon-star-empty');
       },
-      toggleFavorite : function(idx) {
+      toggleFavorite: function(idx) {
         console.info('toggleFavorite: ' + idx);
         ractive.set('current.notes.' + idx + '.favorite', !ractive
             .get('current.notes.' + idx + '.favorite'));
@@ -1643,18 +1629,18 @@ var ractive = new AuthenticatedRactive(
             + ractive.entityName(n));
 
         $.ajax({
-          url : url,
-          type : 'POST',
-          data : {
-            favorite : n.favorite
+          url: url,
+          type: 'POST',
+          data: {
+            favorite: n.favorite
           },
-          success : completeHandler = function(data) {
+          success: completeHandler = function(data) {
             console.log('response: ' + data);
             ractive.showMessage('Note favorited');
           }
         });
       },
-      toggleEditContact : function(obj) {
+      toggleEditContact: function(obj) {
         console.info('toggleEditContact');
         ractive.set('currentContact', obj);
         var editing = $('[data-contact-id="' + obj.selfRef + '"]').siblings()
@@ -1684,7 +1670,7 @@ var ractive = new AuthenticatedRactive(
             });
         }
       },
-      toggleEditOrder : function(obj) {
+      toggleEditOrder: function(obj) {
         console.info('toggleEditOrder');
         ractive.set('currentOrder', obj);
         var editing = $('[data-order-id="' + obj.selfRef + '"]').siblings()
@@ -1705,10 +1691,10 @@ var ractive = new AuthenticatedRactive(
           $('[data-order-id="' + obj.selfRef + '"]>input').removeClass('hidden');
           $('[data-order-id="' + obj.selfRef + '"][data-key="contactName"] .typeahead')
             .typeahead({
-              items : 'all',
-              minLength : 0,
-              source : ractive.get('contactsTypeahead'),
-              afterSelect : function(item) {
+              items: 'all',
+              minLength: 0,
+              source: ractive.get('contactsTypeahead'),
+              afterSelect: function(item) {
                 ractive.set('currentOrder.contactId', item.id);
                 ractive.set('currentOrder.contactName', item.name);
               }
@@ -1722,9 +1708,9 @@ var ractive = new AuthenticatedRactive(
             });
           $('[data-order-id="'+obj.selfRef+'"][data-key="stage"] .typeahead')
             .typeahead({
-              items : 'all',
-              minLength : 0,
-              source : ractive.get('stages')
+              items: 'all',
+              minLength: 0,
+              source: ractive.get('stages')
             }).on("click", function(ev) {
               newEv = $.Event("keydown");
               newEv.keyCode = newEv.which = 40;
@@ -1749,7 +1735,7 @@ var ractive = new AuthenticatedRactive(
            */
         }
       },
-      toggleEditOrderItem : function(order, orderItem) {
+      toggleEditOrderItem: function(order, orderItem) {
         console.info('toggleEditOrderItem');
         orderItem.orderId = ractive.shortId(order.selfRef);
         ractive.set('currentOrderItem', orderItem);
@@ -1774,14 +1760,14 @@ var ractive = new AuthenticatedRactive(
             });
         }
       },
-      toggleOrderSubEntity : function(obj, subEntity) {
+      toggleOrderSubEntity: function(obj, subEntity) {
         console.log('toggleOrderSubEntity(' + obj.selfRef + ', ' + subEntity
             + ')');
         $('[data-order-id="' + obj.selfRef + '"].' + subEntity).slideToggle();
         if (subEntity == 'feedback')
           ractive.showWarning('Feedback is not yet implemented');
       },
-      toggleResults : function() {
+      toggleResults: function() {
         console.info('toggleResults');
         $('#accountsTableToggle').toggleClass('glyphicon-triangle-bottom')
             .toggleClass('glyphicon-triangle-right');
@@ -1790,13 +1776,13 @@ var ractive = new AuthenticatedRactive(
       /**
        * Inverse of editField.
        */
-      updateField : function(selector, path) {
+      updateField: function(selector, path) {
         var tmp = $(selector).text();
         console.log('updateField ' + path + ' to ' + tmp);
         ractive.set(path, tmp);
         $(selector).css('border-width', '0px').css('padding', '0px');
       },
-      upload : function(formId) {
+      upload: function(formId) {
         console.log('upload:' + formId);
         ractive.showMessage('Uploading ...');
 
@@ -1806,19 +1792,19 @@ var ractive = new AuthenticatedRactive(
         var fileName = $('#' + formId + ' input[type="file"]').val();
         var fileExt = fileName.substring(fileName.lastIndexOf('.') + 1);
         return $.ajax({
-          type : 'POST',
-          url : ractive.getServer() + '/' + ractive.get('tenant.id') + '/'
+          type: 'POST',
+          url: ractive.getServer() + '/' + ractive.get('tenant.id') + '/'
               + entity + '/upload' + fileExt.toLowerCase(),
-          data : formData,
-          cache : false,
-          contentType : false,
-          processData : false,
-          success : function(response) {
+          data: formData,
+          cache: false,
+          contentType: false,
+          processData: false,
+          success: function(response) {
             // console.log('successfully uploaded data');
             ractive.showMessage('Successfully uploaded ' + response.length
                 + ' records');
           },
-          error : function(jqXHR, textStatus, errorThrown) {
+          error: function(jqXHR, textStatus, errorThrown) {
             ractive.handleError(jqXHR, textStatus, errorThrown);
           }
         });
@@ -1871,10 +1857,10 @@ ractive.observe('current.stage', function(newValue, oldValue, keypath) {
   if (newValue == 'Cold' && ractive.get('current.stageDate') == undefined) {
     ractive.set('current.stageDate', new Date());
     $('#curStageReason').typeahead({
-      items : 'all',
-      minLength : 0,
-      source : ractive.get('stageReasons'),
-      updater : function(item) {
+      items: 'all',
+      minLength: 0,
+      source: ractive.get('stageReasons'),
+      updater: function(item) {
         return item.id;
       }
     });
