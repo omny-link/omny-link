@@ -367,7 +367,7 @@ var ractive = new AuthenticatedRactive(
           "url" : "/partials/contact-merge-sect.html"
         }, {
           "name" : "navbar",
-          "url" : "/partials/contact-navbar.html"
+          "url" : "/partials/account-navbar.html"
         }, {
           "name" : "supportBar",
           "url" : "/partials/support-bar.html"
