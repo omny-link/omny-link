@@ -1,0 +1,28 @@
+<a id="contactsTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the contact table"></a>
+<span>
+  {{#tenant.strings.accounts}}{{tenant.strings.accounts}}{{else}}Accounts{{/}}
+</span>
+<a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new contact"></a>
+<a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+<input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+<a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
+<a class="clickable dropdown" aria-hidden="true" id="filterBtn" title="Show filters">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
+  </a>
+  <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
+    <li on-click="filter:{idx:1}">Show All</li>
+    <li on-click="filter:{idx:2,field: 'stage', operator: '!in', value: {{inactiveStages()}}}">Show Active</li>
+    <li on-click="filter:[{idx:3,field: 'stage', operator: '!in', value: {{inactiveStages()}}},{idx:3,field: 'owner', value: {{profile.id}}}]">Show Mine</li>
+    {{#if tenant.show.stage}}
+	    <li class="divider"></li>
+	    {{#stages:i}}
+	      <li on-click="filter:{idx:{{5+i}},field: 'stage', value: '{{id}}'}">{{name}}</li>
+	    {{/stages}}
+    {{/if}}
+    <li class="divider"></li>
+    {{#accountTypes:k}}
+      <li on-click="filter:{idx:{{5+(tenant.show.stage?1:0)+stages.length+k}},field: 'accountType', value: '{{id}}'}">{{name}}</li>
+    {{/accountTypes}}
+  </ul>
+</a>
