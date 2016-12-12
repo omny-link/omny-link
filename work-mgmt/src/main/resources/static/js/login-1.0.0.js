@@ -438,6 +438,7 @@ var AuthenticatedRactive = Ractive.extend({
   },
   sortChildren: function(childArray, sortBy, asc) {
     console.info('sortChildren');
+    if (ractive.get('current.'+childArray)==undefined) return 0;
     ractive.get('current.'+childArray).sort(function(a,b) {
       if (a[sortBy] > b[sortBy]) {
         return asc ? 1 : -1;

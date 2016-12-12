@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.knowprocess.bpm.impl.UriHelper;
 import com.knowprocess.bpm.model.Task;
 import com.rometools.rome.feed.atom.Entry;
 import com.rometools.rome.feed.atom.Feed;
@@ -125,16 +124,17 @@ public class TaskController {
 
     @RequestMapping(value = "/{tenantId}/tasks/findByVar/{varName}/{varValue}", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<Task> listForVar(
+            @PathVariable("tenantId") String tenantId,
             @PathVariable("varName") String varName,
             @PathVariable("varValue") String varValue) {
         LOGGER.info(String.format("listInstancesForVar %1$s %2$s ", varName,
                 varValue));
 
-        varValue = UriHelper.expandUri(getClass(), varName, varValue);
-
         List<Task> tasks = Task.wrap(processEngine.getTaskService()
                 .createTaskQuery()
-                .processVariableValueEquals(varName, varValue).list());
+                .taskTenantId(tenantId)
+                .processVariableValueLike(varName, ("%/" + varValue))
+                .list());
         for (Task task : tasks) {
             setCustomTaskName(task);
         }
