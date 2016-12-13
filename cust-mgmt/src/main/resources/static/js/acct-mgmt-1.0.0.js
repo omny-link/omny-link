@@ -1504,7 +1504,7 @@ var ractive = new AuthenticatedRactive(
               $('.autoNumeric').autoNumeric('update', {});
               ractive.addServiceLevelAlerts();
               ractive.fetchNotes();
-              ractive.fetchDocs();
+              if (ractive.get('tenant.show.documents')) ractive.fetchDocs();
               if (ractive.get('current.companyNumber') != undefined)
                 ractive.fetchCompaniesHouseInfo();
               if (ractive.get('current.activities') != undefined)

@@ -867,20 +867,35 @@ public class ContactController {
         private String firstName;
         private String lastName;
         private String fullName;
+        private String title;
         private boolean mainContact;
+        private String address1;
+        private String address2;
         private String town;
         private String countyOrCity;
         private String country;
+        private String postCode;
         private String email;
+        private boolean emailConfirmed;
         private String jobTitle;
         private String phone1;
         private String phone2;
         private String accountName;
         private String owner;
         private String stage;
+        private String stageReason;
+        private Date stageDate;
         private String enquiryType;
         private String accountType;
+        private Account account;
         private List<String> alerts;
+        private boolean existingCustomer;
+        private String source;
+        private String medium;
+        private String campaign;
+        private String keyword;
+        private boolean doNotCall;
+        private boolean doNotEmail;
         private String tags;
         private String uuid;
         private String twitter;
@@ -891,4 +906,5 @@ public class ContactController {
         private Date firstContact;
         private Date lastUpdated;
     }
+
 }

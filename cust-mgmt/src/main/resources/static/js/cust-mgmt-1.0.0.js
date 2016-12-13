@@ -1112,6 +1112,8 @@ var ractive = new AuthenticatedRactive({
         ractive.initTags();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
+        ractive.fetchNotes();
+        if (ractive.get('tenant.show.documents')) ractive.fetchDocs();
         ractive.sortChildren('notes','created',false);
         ractive.addServiceLevelAlerts();
         ractive.sortChildren('documents','created',false);
