@@ -817,7 +817,7 @@ var ractive = new AuthenticatedRactive(
         $.ajax({
           dataType : "json",
           url : ractive.getServer() + '/' + ractive.get('tenant.id')
-              + '/stock-items/?projection=typeahead',
+              + '/stock-items/',
           crossDomain : true,
           success : function(data) {
             if (data['_embedded'] != undefined) {
@@ -825,7 +825,7 @@ var ractive = new AuthenticatedRactive(
             }
             ractive.set('stockItems', data);
             console
-                .log('fetched ' + data.length + ' stock items for typeahead');
+                .log('fetched ' + data.length + ' stock items');
             var stockItemData = jQuery.map(data, function(n, i) {
               return ({
                 "id" : ractive.getId(n),
