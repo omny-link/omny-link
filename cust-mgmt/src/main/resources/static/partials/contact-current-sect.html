@@ -8,7 +8,7 @@
       </h2>
     {{/}}
     
-    {{#current.id}}
+    {{#current.selfRef}}
       <h2 class="edit-form">
         <img class="img-rounded" src="//www.gravatar.com/avatar/{{hash(current.email)}}?d=blank&s=36" style="margin-top:-10px"/>
         <span contenteditable id="curTitle2" on-focus="editField('#curTitle2','current.title')" on-blur="updateField('#curTitle2','current.title')">{{current.title}}</span>
@@ -70,9 +70,9 @@
       <ul class="form edit-form">
         {{#if tenant.show.references || matchRole('admin') || matchRole('super-admin')}}
           <li>
-            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Ref{{/}}:</label>
+            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.id}}{{tenant.strings.id}}{{else}}Ref{{/}}:</label>
             <div class="input-group">
-              <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curId" readonly disabled value="{{current.id}}"/>
+              <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curShortId" readonly disabled value="{{shortId(current.selfRef)}}"/>
               <span class="input-group-addon">
                 <a href="contacts.html?id=/contacts/{{current.id}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
               </span>
