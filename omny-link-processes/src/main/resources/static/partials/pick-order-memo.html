@@ -94,23 +94,11 @@
     }
     
     $(document).ready(function() {
+      console.info('ready event on pick-order-memo');
       fetchMemos();
       initOrdersAutocomplete();
       
       $('#curMemoDisplay').val(undefined);
-      validateCustomActionForm();
-      $('#submitCustomActionForm').click(function() {
-        console.log('Submit custom action form');
-        validateCustomActionForm();
-        if (document.getElementById('customActionForm').checkValidity()) {
-          ractive.submitCustomAction('{{instanceToStart.processDefinitionId}}', '{{instanceToStart.label}}', ractive.get('current'));
-          $('#curMemoDisplay').val(undefined);
-        }
-      });
-      $('#customActionForm input,#customActionForm select,#customActionForm textarea').blur(function() {
-        console.log('blur custom action form field');
-        validateCustomActionForm();
-      });
     });
   </script>
 </div>
