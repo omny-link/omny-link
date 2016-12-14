@@ -131,11 +131,12 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          <th class="col-md-3">API Key</th>
-          <th class="col-md-3">API Secret</th>
+          <th class="col-md-2">API Key</th>
+          <th class="col-md-2">API Secret</th>
           <th class="col-md-2">Contact Mgmt URL</th>
-          <th class="col-md-3">Contact Mgmt Secret</th>
-          <th class="col-md-">Status</th>
+          <th class="col-md-2">Contact Mgmt Secret</th>
+          <th class="col-md-2">CC Account</th>
+          <th class="col-md-2">Status</th>
         </tr>
       </thead>
       <tbody>
@@ -144,12 +145,17 @@
           <td>{{current.bot.apiSecret}}</td>
           <td>{{current.bot.custMgmtUrl}}</td>
           <td>{{current.bot.custMgmtSecret}}</td>
+          <td>{{current.bot.ccAccount}}</td>
           <td>
             {{# current.bot.valid==true}}
               <span class="glyphicon glyphicon-ok-sign glyphicon-success" id="curBotValid" title="Deployed and ready"></span>
             {{else}}
               <span class="glyphicon glyphicon-remove-sign glyphicon-danger" id="curBotInvalid" title="Missing or out of date"></span>
-              <span class="glyphicon glyphicon-repeat" id="curBotCreate" on-click="createBot()" title="Create the missing bot user"></span>
+              {{#if current.bot.apiKey}}
+                <span class="glyphicon glyphicon-repeat" id="curBotCreate" on-click="createBot(true)" title="Re-create the bot user"></span>
+              {{else}}
+                <span class="glyphicon glyphicon-repeat" id="curBotCreate" on-click="createBot(false)" title="Create the missing bot user"></span>
+              {{/if}}
             {{/}}
           </td>
         </tr>
