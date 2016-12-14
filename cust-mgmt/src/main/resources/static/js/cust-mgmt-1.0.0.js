@@ -203,6 +203,9 @@ var ractive = new AuthenticatedRactive({
     },
     saveObserver: false,
     selectMultiple: [],
+    shortId: function(selfRef) {
+      return ractive.shortId(selfRef);
+    },
     sort: function (array, column, asc) {
       console.info('sort array of '+array.length+' items '+(asc ? 'ascending' : 'descending')+' on: '+column);
       array = array.slice(); // clone, so we don't modify the underlying data
