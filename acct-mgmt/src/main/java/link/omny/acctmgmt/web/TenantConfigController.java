@@ -128,13 +128,17 @@ public class TenantConfigController {
                 .getPassword(), botUser.getEmail()));
             tenantConfig.getBot().setCustMgmtUrl(
                     processEngine.getIdentityService().getUserInfo(botUser.getId(),
-                            "cust-mgmt-url"));
+                            BotConfig.KEY_CUST_MGMT_URL));
             tenantConfig.getBot().setCustMgmtSecret(
                     processEngine.getIdentityService().getUserInfo(botUser.getId(),
-                            "cust-mgmt-secret"));
+                            BotConfig.KEY_CUST_MGMT_SECRET));
+            tenantConfig.getBot().setCcAccount(
+                    processEngine.getIdentityService().getUserInfo(botUser.getId(),
+                            BotConfig.KEY_CC_ACCOUNT));
             tenantConfig.getBot().setValid(
                     tenantConfig.getBot().getCustMgmtUrl() != null
-                    && tenantConfig.getBot().getCustMgmtSecret() != null);
+                    && tenantConfig.getBot().getCustMgmtSecret() != null
+                    && tenantConfig.getBot().getCcAccount() != null);
         }
         
         for (TenantExtension process : tenantConfig.getProcesses()) {
