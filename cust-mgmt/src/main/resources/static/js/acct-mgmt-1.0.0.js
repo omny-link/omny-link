@@ -815,17 +815,17 @@ var ractive = new AuthenticatedRactive(
         console.info('fetchStockItems...');
         ractive.set('saveObserver', false);
         $.ajax({
-          dataType: "json",
-          url: ractive.getServer() + '/' + ractive.get('tenant.id')
-              + '/stock-items/?projection=typeahead',
-          crossDomain: true,
-          success: function(data) {
+          dataType : "json",
+          url : ractive.getServer() + '/' + ractive.get('tenant.id')
+              + '/stock-items/',
+          crossDomain : true,
+          success : function(data) {
             if (data['_embedded'] != undefined) {
               data = data['_embedded'].stockItems;
             }
             ractive.set('stockItems', data);
             console
-                .log('fetched ' + data.length + ' stock items for typeahead');
+                .log('fetched ' + data.length + ' stock items');
             var stockItemData = jQuery.map(data, function(n, i) {
               return ({
                 "id": ractive.getId(n),
