@@ -15,7 +15,7 @@
       </div>
       <div class="modal-footer">
         <button id="cancelCustomActionForm" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button id="submitCustomActionForm" type="button" class="btn btn-primary" onclick="if (document.getElementById('customActionForm').checkValidity()) ractive.submitCustomAction('{{instanceToStart.processDefinitionId}}', '{{instanceToStart.label}}', ractive.get('current'))">{{instanceToStart.label}}</button>
+        <button id="submitCustomActionForm" type="button" class="btn btn-primary">{{instanceToStart.label}}</button>
       </div>
     </div>
   </div>

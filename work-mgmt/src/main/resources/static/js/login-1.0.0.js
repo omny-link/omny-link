@@ -473,29 +473,34 @@ var AuthenticatedRactive = Ractive.extend({
       // ... and submit
       ractive.submitCustomAction();
     } else {
-      // ... or display form
+      // ... or display form, override submit handler with $('#submitCustomActionForm').off('click').on('click',function)
+      $('#submitCustomActionForm').on('click', ractive.submitCustomAction);
       $('#customActionModalSect').modal('show');
     }
   },
   submitCustomAction: function() {
     console.info('submitCustomAction');
-    $.ajax({
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(ractive.get('instanceToStart')),
-      success: completeHandler = function(data, textStatus, jqXHR) {
-        console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
-        ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
-        $('#customActionModalSect').modal('hide');
-        if (document.location.href.endsWith('contacts.html')) {
-          ractive.select(ractive.get('current'));// refresh individual record
-        } else {
-          ractive.fetch(); // refresh list
-        }
-        if (ractive.customActionCallbacks!=undefined) ractive.customActionCallbacks.fire();
-      },
-    });
+    if (document.getElementById('customActionForm').checkValidity()) {
+      $.ajax({
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(ractive.get('instanceToStart')),
+        success: completeHandler = function(data, textStatus, jqXHR) {
+          console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
+          ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
+          $('#customActionModalSect').modal('hide');
+          if (document.location.href.endsWith('contacts.html')) {
+            ractive.select(ractive.get('current'));// refresh individual record
+          } else {
+            ractive.fetch(); // refresh list
+          }
+          if (ractive.customActionCallbacks!=undefined) ractive.customActionCallbacks.fire();
+        },
+      });
+    } else {
+      ractive.showFormError('customActionForm','Please correct the highlighted fields');
+    }
   },
   stripProjection: function(link) {
     // TODO switch to modularized version

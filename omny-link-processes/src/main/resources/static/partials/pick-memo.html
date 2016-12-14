@@ -55,28 +55,10 @@
         }     
       });
     }
-    function validateCustomActionForm() {
-      console.info('validateCustomActionForm');
-      $('#customActionForm input:invalid ~ .help-block,#customActionForm select:invalid ~ .help-block,#customActionForm textarea:invalid ~ .help-block').css('visibility','visible').css('color','#f33').css('line-height','1.5em');
-      $('#customActionForm input:valid ~ .help-block,#customActionForm select:valid ~ .help-block,#customActionForm textarea:valid ~ .help-block').css('visibility','hidden').css('color','#f33').css('line-height','0em');
-    }
-    
     $(document).ready(function() {
+      console.info('ready event on pick-memo');
       fetchMemos();
       $('#curMemoDisplay').val(undefined);
-      validateCustomActionForm();
-      $('#submitCustomActionForm').click(function() {
-        console.log('Submit custom action form');
-        validateCustomActionForm();
-        if (document.getElementById('customActionForm').checkValidity()) {
-          ractive.submitCustomAction('{{instanceToStart.processDefinitionId}}', '{{instanceToStart.label}}', ractive.get('current'));
-          $('#curMemoDisplay').val(undefined);
-        }
-      });
-      $('#customActionForm input,#customActionForm select,#customActionForm textarea').blur(function() {
-        console.log('blur custom action form field');
-        validateCustomActionForm();
-      });
     });
   </script>
 </div>
