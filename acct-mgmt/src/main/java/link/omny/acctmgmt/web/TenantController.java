@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import link.omny.acctmgmt.model.BotConfig;
 import link.omny.acctmgmt.model.SystemConfig;
 import link.omny.acctmgmt.model.Tenant;
 import link.omny.acctmgmt.model.TenantConfig;
@@ -136,10 +137,11 @@ public class TenantController {
         idSvc.saveUser(botUser);
 
         String url = request.getRequestURL().toString();
-        idSvc.setUserInfo(botUser.getId(), "cust-mgmt-url",
+        idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CUST_MGMT_URL,
                 url.substring(0, url.indexOf("/tenants")));
-        idSvc.setUserInfo(botUser.getId(), "cust-mgmt-secret",
+        idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CUST_MGMT_SECRET,
                 botUser.getPassword());
+        idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CC_ACCOUNT, "");
         idSvc.setUserInfo(botUser.getId(), "tenant",tenantId);
 
         idSvc.createMembership(botUser.getId(), "bot");

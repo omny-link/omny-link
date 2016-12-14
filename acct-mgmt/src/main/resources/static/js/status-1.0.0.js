@@ -90,10 +90,10 @@ var ractive = new AuthenticatedRactive({
       { "name": "currentTenantSect", "url": "/partials/status-current-sect.html"}
     ],
   },
-  createBot: function () {
+  createBot: function (force) {
     console.log('createBot...');
     $.ajax({
-      url: ractive.getServer()+'/tenants/'+ractive.get('tenant.id')+'/bot',
+      url: ractive.getServer()+'/admin/tenants/'+ractive.get('tenant.id')+'/bot'+(force ? '/?force=true' : ''),
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(ractive.get('plan')),
