@@ -109,6 +109,15 @@ input[type='checkbox'] ~ .help-block {
 	margin-top: -1em;
 }
 
+/* help-block is the bootstrap terminology, field-hint is deprecated */
+input:invalid ~ .help-block,
+select:invalid ~ .help-block,
+textarea:invalid ~ .help-block {
+  color: #f33 ;
+}
+input:focus:invalid ~ .help-block,
+select:focus:invalid ~ .help-block,
+textarea:focus:invalid ~ .help-block,
 input:focus:invalid ~ .field-hint,
 select:focus:invalid ~ .field-hint,
 textarea:focus:invalid ~ .field-hint {

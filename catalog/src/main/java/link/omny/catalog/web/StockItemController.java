@@ -33,10 +33,7 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -136,25 +133,7 @@ public class StockItemController {
 
         List<StockItem> list;
         if (limit == null) {
-            // TODO unfortunately activeUser is null, prob some kind of class
-            // cast error it seems
-            // Use SecurityContextHolder as temporary fallback
-            Authentication authentication = SecurityContextHolder.getContext()
-                    .getAuthentication();
-
-            for (GrantedAuthority a : authentication.getAuthorities()) {
-                System.out.println("  " + a.getAuthority());
-                System.out.println("  "
-                        + a.getAuthority().equals("ROLE_editor"));
-                System.out.println("  " + a.getAuthority().equals("editor"));
-            }
-
-            // if (authentication.getAuthorities().contains("ROLE_editor")) {
             list = stockItemRepo.findAllForTenant(tenantId);
-            // } else {
-            // list = stockItemRepo.findAllForTenantOwnedByUser(tenantId,
-            // authentication.getName());
-            // }
         } else {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
             list = stockItemRepo.findPageForTenant(tenantId, pageable);
