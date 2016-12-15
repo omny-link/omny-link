@@ -334,7 +334,7 @@ public class Contact implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     private List<Note> notes;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "contact")
     private List<Activity> activity;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
@@ -350,6 +350,10 @@ public class Contact implements Serializable {
         setLastName(lastName);
         setEmail(email);
         setTenantId(tenantId);
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activity = activities;
     }
 
     public List<Activity> getActivities() {
@@ -563,6 +567,10 @@ public class Contact implements Serializable {
     @JsonProperty
     public int getEmailsSent() {
         return getActivitiesOfType("email").size();
+    }
+
+    public void setEmailsSent() {
+        ; // discard derived
     }
 
     public List<Activity> getActivitiesOfType(String type) {
