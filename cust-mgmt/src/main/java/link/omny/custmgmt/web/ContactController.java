@@ -16,9 +16,12 @@ import javax.transaction.Transactional.TxType;
 
 import link.omny.custmgmt.internal.CsvImporter;
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
+import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.CustomContactField;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
 import link.omny.custmgmt.repositories.AccountRepository;
@@ -62,6 +65,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 /**
@@ -333,7 +338,6 @@ public class ContactController {
             @PathVariable("id") String id)
             throws BusinessEntityNotFoundException {
         LOGGER.debug(String.format("Find contact for id %1$s", id));
-
         return wrap(contactRepo.findOne(Long.parseLong(id)));
     }
 
@@ -887,7 +891,6 @@ public class ContactController {
         private Date stageDate;
         private String enquiryType;
         private String accountType;
-        private Account account;
         private List<String> alerts;
         private boolean existingCustomer;
         private String source;
@@ -905,6 +908,18 @@ public class ContactController {
         private String tenantId;
         private Date firstContact;
         private Date lastUpdated;
+        private long timeSinceBusinessPlanDownload;
+        private long timeSinceLogin;
+        private long timeSinceFirstLogin;
+        private long timeSinceRegistered;
+        private long timeSinceEmail;
+        private int emailsSent;
+        private long timeSinceValuation;
+        @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
+        @JsonSerialize(using = JsonCustomFieldSerializer.class)
+        private List<CustomContactField> customFields;
+        private Account account;
+        private List<Activity> activities;
     }
 
 }
