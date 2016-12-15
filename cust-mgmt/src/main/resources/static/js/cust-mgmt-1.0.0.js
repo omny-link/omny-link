@@ -856,6 +856,7 @@ var ractive = new AuthenticatedRactive({
       delete tmp.notes;
       delete tmp.documents;
       delete tmp.tasks;
+      tmp.alerts = tmp.alerts.join();
       if (id != undefined && tmp.account != undefined && Object.keys(tmp.account).length > 0 && tmp.account.id != undefined) {
         tmp.account = id.substring(0,id.indexOf('/',8))+'/accounts/'+tmp.account.id;
       } else {
