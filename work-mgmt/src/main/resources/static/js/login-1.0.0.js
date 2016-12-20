@@ -532,9 +532,10 @@ var AuthenticatedRactive = Ractive.extend({
       }
     })
   },
-  tenantUri: function(entity) {
+  tenantUri: function(entity, entityPath) {
     //console.log('tenantUri: '+entity);
     var uri = ractive.uri(entity);
+    if (entityPath===undefined) entityPath = ractive.get('entityPath');
     if (uri != undefined && uri.indexOf(ractive.get('tenant.id')+'/')==-1) {
       uri = uri.replace(ractive.get('entityPath'),'/'+ractive.get('tenant.id')+ractive.get('entityPath'));
     }

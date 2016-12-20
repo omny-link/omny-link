@@ -1216,14 +1216,20 @@ var ractive = new AuthenticatedRactive(
           ractive.set('currentContact.tenantId', ractive.get('tenant.id'));
 
           var tmp = ractive.get('currentContact');
-          delete tmp.alerts;
+          delete tmp.account;
+          delete tmp.activities;
+          delete tmp.documents;
+          delete tmp.notes;
+          delete tmp.orders;
+          delete tmp.customFields; // NOTE cannot handle customFields
+          tmp.accountId = ractive.id(ractive.get('current'));
+          if (tmp.alerts!=undefined && Array.isArray(tmp.alerts)) tmp.alerts = tmp.alerts.join();
           var id = ractive.uri(tmp) == undefined ? undefined: ractive.id(tmp);
           console.log('ready to save contact' + JSON.stringify(tmp) + ' ...');
           $.ajax({
-            // TODO cannot use tenantUri() here
-            url: id === undefined ? ractive.getServer() + '/' + tmp.tenantId
-                + '/contacts/': ractive.getServer() + '/' + tmp.tenantId
-                + '/contacts/' + id,
+            url: id === undefined
+                ? ractive.getServer() + '/' + tmp.tenantId + '/contacts/'
+                : ractive.tenantUri(ractive.get('currentContact'), '/contacts'),
             type: id === undefined ? 'POST': 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(tmp),
