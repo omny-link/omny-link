@@ -391,9 +391,10 @@ var AuthenticatedRactive = Ractive.extend({
   },
   showHelp: function() {
     console.info('showHelp');
-    $('iframe.helpContent').attr('src',ractive.get('helpUrl'));
+    $('iframe.helpContent')
+        .attr('src',ractive.get('helpUrl'))
+        .prop('height', window.innerHeight*0.8);
     $('#helpModal').modal({});
-    $('iframe.helpContent').prop('height', window.innerHeight*0.8);
   },
   showMessage: function(msg, additionalClass) {
     console.log('showMessage: '+msg);

@@ -168,7 +168,7 @@ var ractive = new AuthenticatedRactive(
             return d.name == 'stageReasons';
           }).length > 0;
         },
-        helpUrl: '//omny.link/user-help/contacts/#the_title',
+        helpUrl: '//omny.link/user-help/accounts/#the_title',
         inactiveStages: function() {
           return ractive.get('tenant.serviceLevel.inactiveStages') == undefined ? DEFAULT_INACTIVE_STAGES
              : ractive.get('tenant.serviceLevel.inactiveStages').join();
