@@ -79,6 +79,11 @@
       <artifactId>acctmgmt</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- <dependency>
+      <groupId>link.omny.analytics</groupId>
+      <artifactId>analytics</artifactId>
+      <version>${project.version}</version>
+    </dependency> -->
     <dependency>
       <groupId>link.omny.catalog</groupId>
       <artifactId>catalog</artifactId>
