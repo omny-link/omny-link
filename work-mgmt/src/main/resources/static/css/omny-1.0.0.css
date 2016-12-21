@@ -87,14 +87,16 @@ textarea.rich-content {
 }
 input.field-error:invalid,
 select.field-error:invalid,
-textarea.field-error:invalid {
+textarea.field-error:invalid,
+ul.tagit.field-error {
   border: solid 3px #f33;
 }
 
 /* TODO not used ? */
 input:focus:invalid,
 select:focus:invalid,
-textarea:focus:invalid {
+textarea:focus:invalid,
+ul.tagit.field-error:focus {
   border: solid 3px #f33 ;
 }
 
@@ -698,23 +700,28 @@ a.dropdown {
 }
 /* TAG IT overrides */
 
+/* omny styling */
+ul.tagit {
+	margin-bottom: 10px;
+}
+
 /* tagit.ui-zendesk.css: Optional scoped theme for tag-it which mimics the zendesk widget. */
 ul.tagit {
-    border-style: solid;
-    border-width: 1px;
-    border-color: #C6C6C6;
-    background: inherit;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #C6C6C6;
+  background: inherit;
 }
 ul.tagit li.tagit-choice {
-    -moz-border-radius: 6px;
-    border-radius: 6px;
-    -webkit-border-radius: 6px;
-    border: 1px solid #CAD8F3;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  border: 1px solid #CAD8F3;
 
-    background: none;
-    background-color: #d9edf7;
+  background: none;
+  background-color: #d9edf7;
 
-    font-weight: normal;
+  font-weight: normal;
 }
 ul.tagit li.tagit-choice .tagit-label:not(a) {
     color: #555;
