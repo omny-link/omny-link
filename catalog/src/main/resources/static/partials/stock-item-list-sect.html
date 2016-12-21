@@ -35,11 +35,11 @@
           <th on-click="sort:stockCategoryName">Category<span class="sortable {{ sorted('stockCategoryName') }} glyphicon"></th>
         {{/}}
         {{#if stockTypes!=undefined}}
-          <th on-click="type">Type<span class="sortable {{ sorted('type') }} glyphicon"></th>
+          <th on-click="sort:tags">Tags<span class="sortable {{ sorted('tags') }} glyphicon"></th>
         {{/if}}
         <th on-click="sort:status">Status<span class="sortable {{ sorted('status') }} glyphicon "></th>
         {{#tenant.show.stockPricing}}
-          <th on-click="type">Unit Price<span class="sortable {{ sorted('unitPrice') }} glyphicon"></th>
+          <th on-click="sort:unitPrice">Unit Price<span class="sortable {{ sorted('unitPrice') }} glyphicon"></th>
         {{/}}
         <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon"></th>
         <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
@@ -56,7 +56,7 @@
               <td on-click="edit(this)">{{stockCategoryName}}</td>
             {{/}}
             {{#if stockTypes != undefined}}
-              <td on-click="edit(this)">{{type}}</td>
+              <td on-click="edit(this)">{{tags}}</td>
             {{/if}}
             <td on-click="edit(this)">{{status}}</td>
             {{#tenant.show.stockPricing}}

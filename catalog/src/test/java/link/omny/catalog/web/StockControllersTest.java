@@ -2,6 +2,7 @@ package link.omny.catalog.web;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -124,7 +125,7 @@ public class StockControllersTest {
     protected void findAll(StockCategory category, StockItem officeItem,
             StockItem warehouseItem) throws IOException {
         List<ShortStockCategory> categoryResults = categoryController
-                .findByLocation(TENANT_ID, null, null, false, null, null);
+                .findByLocation(TENANT_ID, null, null, null, false, null, null);
         assertEquals(1, categoryResults.size());
 
         checkCategory(category, categoryResults.get(0));
@@ -139,7 +140,8 @@ public class StockControllersTest {
     protected void findOffice(StockCategory category, StockItem officeItem)
             throws IOException {
         List<ShortStockCategory> categoryResults = categoryController
-                .findByLocation(TENANT_ID, null, "Office", false, null, null);
+                .findByLocation(TENANT_ID, null, "Office", null, false, null,
+                        null);
         assertEquals(2, categoryResults.get(0).getStockItems().size());
 
         checkCategory(category, categoryResults.get(0));
@@ -149,7 +151,8 @@ public class StockControllersTest {
     protected void findNearReading(StockCategory category, StockItem officeItem)
             throws IOException {
         List<ShortStockCategory> categoryResults = categoryController
-                .findByLocation(TENANT_ID, "Reading", null, false, null, null);
+                .findByLocation(TENANT_ID, "Reading", null, null, false, null,
+                        null);
         assertEquals(3, categoryResults.get(0).getStockItems().size());
 
         checkCategory(category, categoryResults.get(0));
@@ -159,8 +162,8 @@ public class StockControllersTest {
     protected void findOfficeNearReading(StockCategory category,
             StockItem officeItem) throws IOException {
         List<ShortStockCategory> categoryResults = categoryController
-                .findByLocation(TENANT_ID, "Reading", "Office", false, null,
-                        null);
+                .findByLocation(TENANT_ID, "Reading", "Office", null, false,
+                        null, null);
         assertEquals(2, categoryResults.get(0).getStockItems().size());
 
         checkOfficeItem(category, officeItem, categoryResults.get(0));
@@ -169,7 +172,7 @@ public class StockControllersTest {
     protected void findOffersNearReading(StockCategory category,
             StockItem officeItem) throws IOException {
         List<ShortStockCategory> categoryResults = categoryController
-                .findByLocation(TENANT_ID, "Reading", null, true, null,
+                .findByLocation(TENANT_ID, "Reading", null, null, true, null,
                         null);
         assertEquals(3, categoryResults.get(0).getStockItems().size());
 
@@ -180,7 +183,7 @@ public class StockControllersTest {
             StockItem officeItem,
             StockItem warehouseItem) throws IOException {
         ShortStockCategory categoryFound = categoryController.findByName(
-                TENANT_ID, CATEGORY_BOREHAMWOOD, null);
+                TENANT_ID, CATEGORY_BOREHAMWOOD, null, null);
 
         checkCategory(category, categoryFound);
 
@@ -190,9 +193,9 @@ public class StockControllersTest {
         
         checkOfficeItem(category, officeItem, categoryFound);
 
-        // Find just Office types
+        // Find just Office tags
         categoryFound = categoryController.findByName(TENANT_ID,
-                CATEGORY_BOREHAMWOOD, "Office");
+                CATEGORY_BOREHAMWOOD, "Office", null);
         assertEquals(2, categoryFound.getStockItems().size());
 
         return categoryFound;
@@ -202,7 +205,7 @@ public class StockControllersTest {
             ShortStockCategory categoryFound) {
         assertEquals(category.getName(), categoryFound.getName());
         assertEquals("Published", categoryFound.getStatus());
-        assertEquals("Business unit,Office,Warehouse", categoryFound.getTypes());
+        assertEquals("Business unit,Office,Warehouse", categoryFound.getTags());
         assertNotNull(category.getImages());
         assertEquals(StockCategory.DEFAULT_IMAGE_COUNT, category.getImages()
                 .size());
@@ -269,7 +272,7 @@ public class StockControllersTest {
         item.setId(Long.parseLong(itemUri.substring(itemUri.lastIndexOf('/') + 1)));
 
         assertEquals("trademark", item.getName());
-        assertEquals("Office", item.getType());
+        assertEquals("Office", item.getTags());
         assertEquals("vacant", item.getCustomFields().get(0).getName());
         assertEquals("true", item.getCustomFields().get(0).getValue());
         assertEquals("true", item.getCustomFieldValue("vacant"));
@@ -344,7 +347,7 @@ public class StockControllersTest {
                 + "\"description\":\"A very fine property\","
                 + "\"postCode\":\"WD6 1RN\"," 
                 + "\"status\":\"Published\","
-                + "\"type\":\"Office\","
+                + "\"tags\":\"Office\","
                 + "\"offerStatus\":\"Published\","
                 + "\"offerTitle\":\"Summer Special\","
                 + "\"offerCallToAction\":\"Apply Now\","
@@ -362,7 +365,7 @@ public class StockControllersTest {
     }
 
     protected StockItem getOfficeItem() throws IOException {
-        String itemJson = "{\"name\":\"trademark\",\"type\":\"Office\","
+        String itemJson = "{\"name\":\"trademark\",\"tags\":\"Office\","
                 + "\"tenantId\":\"" + TENANT_ID + "\","
                 + "\"firstContact\":null,\"lastUpdated\":null,"
                 + "\"status\": \"Published\","
@@ -373,7 +376,7 @@ public class StockControllersTest {
                 });
         assertNotNull(item);
         assertEquals("trademark", item.getName());
-        assertEquals("Office", item.getType());
+        assertEquals("Office", item.getTags());
         assertEquals("Published", item.getStatus());
         assertEquals("vacant", item.getCustomFields().get(0).getName());
         assertEquals("true", item.getCustomFields().get(0).getValue());
@@ -390,7 +393,7 @@ public class StockControllersTest {
                 Boolean.TRUE.toString()));
 
         assertEquals("Warehouse name", item.getName());
-        assertEquals("Warehouse", item.getType());
+        assertEquals("Warehouse", item.getTags());
         return item;
     }
 
@@ -398,11 +401,14 @@ public class StockControllersTest {
         StockItem item = new StockItem("Business unit name", "Business unit");
         item.setTenantId(TENANT_ID);
         item.setStatus("Published");
+        item.addTag("Office");
         item.addCustomField(new CustomStockItemField("publishWebsite",
                 Boolean.TRUE.toString()));
 
         assertEquals("Business unit name", item.getName());
-        assertEquals("Business unit", item.getType());
+        assertEquals(2, item.getTagsAsList().size());
+        assertTrue(item.getTagsAsList().contains("Business unit"));
+        assertTrue(item.getTagsAsList().contains("Office"));
         return item;
     }
 
@@ -412,7 +418,7 @@ public class StockControllersTest {
         item.setStatus("Draft");
 
         assertEquals("Unpublished unit name", item.getName());
-        assertEquals("Gym", item.getType());
+        assertEquals("Gym", item.getTags());
         return item;
     }
 }

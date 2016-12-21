@@ -31,11 +31,10 @@ public class StockCategoryTest {
     @Test
     public void testSortTypes() {
         StockCategory category = new StockCategory("Springfield")
-.addStockItem(
-                new StockItem("Springfield 1", "Power Plant", "Published"))
+                .addStockItem(new StockItem("Springfield 1", "Power Plant", "Published"))
                 .addStockItem(new StockItem("Office 1", "Office", "Published"));
 
-        assertEquals("Office,Power Plant", category.getTypes());
+        assertEquals("Office,Power Plant", category.getTags());
     }
 
     @Test
@@ -44,8 +43,8 @@ public class StockCategoryTest {
                 new StockItem("Springfield 1", "Power Plant")).addStockItem(
                 new StockItem("Office 1", "Office"));
 
-        category.setTypes("Office");
-        assertEquals("Office", category.getTypes());
+        category.setTags("Office");
+        assertEquals("Office", category.getTags());
     }
 
 }
