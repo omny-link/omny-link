@@ -677,14 +677,25 @@ Array.uniq = function(fieldName, arr) {
   // console.info('uniq');
   list = '';
   for (idx in arr) {
-    if (arr[idx][fieldName] != undefined
-        && list.indexOf(arr[idx][fieldName]) == -1) {
+    if (index(arr[idx],fieldName) != undefined
+        && list.indexOf(index(arr[idx],fieldName)) == -1) {
       if (list != '')
         list += ','
-      list += arr[idx][fieldName];
+      list += index(arr[idx],fieldName);
     }
   }
   return list;
+}
+
+function index(obj, keypath, value) {
+  if (typeof keypath == 'string')
+      return index(obj,keypath.split('.'), value);
+  else if (keypath.length==1 && value!==undefined)
+      return obj[keypath[0]] = value;
+  else if (keypath.length==0)
+      return obj;
+  else
+      return index(obj[keypath[0]],keypath.slice(1), value);
 }
 
 /******************************** Polyfills **********************************/
