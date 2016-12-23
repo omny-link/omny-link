@@ -4,12 +4,15 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -89,9 +92,11 @@ public class StockItem implements Serializable {
     // @Transient
     // private String priceString;
 
+    /**
+     * Comma separated set of tags for the item.
+     */
     @JsonProperty
-    // @NotNull
-    private String type;
+    private String tags;
 
     @JsonProperty
     private String status;
@@ -161,14 +166,14 @@ public class StockItem implements Serializable {
 
     }
 
-    public StockItem(String name, String type) {
+    public StockItem(String name, String tag) {
         this();
         setName(name);
-        setType(type);
+        addTag(tag);
     }
 
-    public StockItem(String name, String type, String status) {
-        this(name, type);
+    public StockItem(String name, String tag, String status) {
+        this(name, tag);
         setStatus(status);
     }
 
@@ -225,15 +230,41 @@ public class StockItem implements Serializable {
         }
     }
 
+    public List<String> getTagsAsList() {
+        if (tags == null) {
+            return Collections.emptyList();
+        } else {
+            return Arrays.asList(tags.split(","));
+        }
+    }
+
+    public String getPrimeTag() {
+        List<String> tagsAsList = getTagsAsList();
+        if (tagsAsList.size() == 0) {
+            return null;
+        } else {
+            return tagsAsList.get(0);
+        }
+    }
+
+    public void addTag(@Nonnull String tag) {
+        if (tags == null) {
+            tags = tag;
+        } else {
+            tags += ("," + tag);
+        }
+    }
+
     public String getDescription() {
         if ((description == null || description.trim().length() == 0)
                 && tenantId != null) {
             try {
-                return getDefaultDescriptions(tenantId).getProperty(type);
+                return getDefaultDescriptions(tenantId).getProperty(
+                        getPrimeTag());
             } catch (Exception e) {
                 LOGGER.warn(String.format(
                         "Could not find default description of %1$s for %2$s",
-                        type, tenantId));
+                        getPrimeTag(), tenantId));
                 return "";
             }
         } else {
@@ -243,15 +274,15 @@ public class StockItem implements Serializable {
 
     public List<MediaResource> getImages() {
         if (images == null || images.size() == 0) {
-            if (type == null) {
-                LOGGER.warn("Cannot provide default images because stock category type is null");
+            if (tags == null) {
+                LOGGER.warn("Cannot provide default images because stock item has no tags");
             } else {
                 images = new ArrayList<MediaResource>(DEFAULT_IMAGE_COUNT);
                 for (int i = 0; i < DEFAULT_IMAGE_COUNT; i++) {
                     images.add(new MediaResource(getTenantId(), String.format(
                             "/images/%1$s/%2$s/%3$d.jpg",
                             getStockCategory().getName().toLowerCase()
-                                    .replaceAll(" ", "_"), type.toLowerCase()
+                                    .replaceAll(" ", "_"), tags.toLowerCase()
                                     .replaceAll(" ", "_"),
                             i + 1)));
                 }
@@ -352,10 +383,10 @@ public class StockItem implements Serializable {
                 return false;
         } else if (!tenantId.equals(other.tenantId))
             return false;
-        if (type == null) {
-            if (other.type != null)
+        if (tags == null) {
+            if (other.tags != null)
                 return false;
-        } else if (!type.equals(other.type))
+        } else if (!tags.equals(other.tags))
             return false;
         if (unit == null) {
             if (other.unit != null)
@@ -384,7 +415,7 @@ public class StockItem implements Serializable {
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime * result
                 + ((tenantId == null) ? 0 : tenantId.hashCode());
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((tags == null) ? 0 : tags.hashCode());
         result = prime * result + ((unit == null) ? 0 : unit.hashCode());
         return result;
     }

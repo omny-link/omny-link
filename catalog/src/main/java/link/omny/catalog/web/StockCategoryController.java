@@ -57,6 +57,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RequestMapping(value = "/{tenantId}/stock-categories")
 public class StockCategoryController {
 
+    private static final String PUBLISHED = "Published";
+
     private static final Logger LOGGER = LoggerFactory
             .getLogger(StockCategoryController.class);
 
@@ -151,10 +153,15 @@ public class StockCategoryController {
     public @ResponseBody ShortStockCategory findByName(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("name") String name,
+            @RequestParam(value = "tag", required = false) String tag,
             @RequestParam(value = "type", required = false) String type)
             throws IOException {
-        LOGGER.info(String.format("findByName %1$s, type %2$s for tenant %3$s",
-                name, type, tenantId));
+        // backwards compatibility
+        if (type != null && tag == null) {
+            tag = type;
+        }
+        LOGGER.info(String.format("findByName %1$s, tag %2$s for tenant %3$s",
+                name, tag, tenantId));
 
         StockCategory category = stockCategoryRepo.findByName(name, tenantId);
         if (category == null) {
@@ -162,7 +169,7 @@ public class StockCategoryController {
                     "No Stock Category with name %1$s", name));
         }
 
-        filter(category, expandTypes(type));
+        filter(category, expandTags(tag));
 
         ShortStockCategory shortStockCategory = wrap(category);
         return shortStockCategory;
@@ -181,14 +188,19 @@ public class StockCategoryController {
     public @ResponseBody List<ShortStockCategory> findByLocation(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "q", required = false) String q,
+            @RequestParam(value = "tag", required = false) String tag,
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "offers", required = false) boolean offers,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit)
             throws IOException {
+        // backwards compatibility
+        if (type != null && tag == null) {
+            tag = type;
+        }
         LOGGER.info(String
-                .format("List stockCategories for tenant: %1$s, q: %2$s, type: %3$s, offers: %4$B",
-                        tenantId, q, type, offers));
+                .format("List stockCategories for tenant: %1$s, q: %2$s, tag: %3$s, offers: %4$B",
+                        tenantId, q, tag, offers));
 
         List<StockCategory> list = new ArrayList<StockCategory>();
         GeoPoint qPoint = null;
@@ -203,12 +215,12 @@ public class StockCategoryController {
         }
 
         // TODO need to make this some kind of extension point
-        List<String> types = expandTypes(type);
+        List<String> tags = expandTags(tag);
 
         List<StockCategory> tmpList = findStockCategories(tenantId, offers);
         for (StockCategory stockCategory : tmpList) {
-            // Capture types now before filtering
-            String allTypesAvail = stockCategory.getTypes();
+            // Capture tags now before filtering
+            String allTagsAvail = stockCategory.getTags();
             try {
                 if (stockCategory.getLng() == 0.0d) {
                     stockCategory.setGeoPoint(geo.locate(stockCategory
@@ -217,22 +229,22 @@ public class StockCategoryController {
                 }
 
                 if (matchQuery(q, qPoint, stockCategory)) {
-                    filter(stockCategory, types);
+                    filter(stockCategory, tags);
                     list.add(stockCategory);
                 }
             } catch (UnknownHostException e) {
                 LOGGER.error(String
                         .format("Unable to geo locate '%1$s', will return unfiltered list",
                                 stockCategory.getPostCode()));
-                filter(stockCategory, types);
+                filter(stockCategory, tags);
                 list.add(stockCategory);
             } catch (Exception e) {
                 LOGGER.error(String.format(
                         "Exception calculating distance of %1$s from %2$s",
                         stockCategory.getName(), q), e);
             }
-            // set unfiltered type list
-            stockCategory.setTypes(allTypesAvail);
+            // set unfiltered tag list
+            stockCategory.setTags(allTagsAvail);
         }
         Collections
                 .sort(list,
@@ -248,39 +260,39 @@ public class StockCategoryController {
             boolean offers) {
         if (offers) {
             return stockCategoryRepo.findByStatusAndOffersForTenant(tenantId,
-                    "Published", "Published");
+                    PUBLISHED, PUBLISHED);
         } else {
             return stockCategoryRepo.findByStatusForTenant(tenantId,
-                    "Published");
+                    PUBLISHED);
         }
     }
 
-    private List<String> expandTypes(String type) {
-        List<String> types;
-        if (type == null){ 
+    private List<String> expandTags(String tag) {
+        List<String> tags;
+        if (tag == null) {
             return Collections.emptyList();
-        } else if (type.toLowerCase().contains("office")
-                || type.toLowerCase().contains("storage")
-                || type.toLowerCase().contains("workshop")) {
-            types = Arrays.asList("Business Unit", type);
+        } else if (tag.toLowerCase().contains("office")
+                || tag.toLowerCase().contains("storage")
+                || tag.toLowerCase().contains("workshop")) {
+            tags = Arrays.asList("Business Unit", tag);
         } else {
-            types = Arrays.asList(type);
+            tags = Arrays.asList(tag);
         }
-        return types;
+        return tags;
     }
     
     private void filter(final StockCategory stockCategory,
-            final List<String> types) {
+            final List<String> tags) {
         ArrayList<StockItem> filteredItems = new ArrayList<StockItem>();
         for (StockItem item : stockCategory.getStockItems()) {
-            for (String type : types) {
-                if (type == null || (item.getType().equalsIgnoreCase(type)
-                        && "Published".equalsIgnoreCase(item.getStatus()))) {
+            for (String tag : tags) {
+                if (tag == null || (item.getTags().contains(tag)
+                        && PUBLISHED.equalsIgnoreCase(item.getStatus()))) {
                     filteredItems.add(item);
                 }
             }
-            if ((types == null || types.size() == 0)
-                    && "Published".equalsIgnoreCase(item.getStatus())) {
+            if ((tags == null || tags.size() == 0)
+                    && PUBLISHED.equalsIgnoreCase(item.getStatus())) {
                 filteredItems.add(item);
             }
         }
@@ -408,7 +420,7 @@ public class StockCategoryController {
         private String distance;
         private List<ShortStockItem> stockItems;
         private List<MediaResource> images;
-        private String types;
+        private String tags;
         private String mapUrl;
         private double lat;
         private double lng;
@@ -437,7 +449,7 @@ public class StockCategoryController {
         private String sizeString;
         private String unit;
         private String price;
-        private String type;
+        private String tags;
         private String status;
         private StockCategory stockCategory;
         private Date created;
