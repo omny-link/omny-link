@@ -30,7 +30,9 @@ interface StockItemIncCategoryProjection {
 
     BigDecimal getPrice();
 
-    String getType();
+    String getTags();
+
+    List<String> getTagsAsList();
 
     String getStatus();
 

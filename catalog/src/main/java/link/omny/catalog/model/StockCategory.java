@@ -94,7 +94,7 @@ public class StockCategory implements Serializable {
 
     @JsonProperty
     @Transient
-    private String types;
+    private String tags;
 
     @JsonProperty
     private String mapUrl;
@@ -242,25 +242,29 @@ public class StockCategory implements Serializable {
         return this;
     }
 
-    public String getTypes() {
-        if (types != null) {
-            return types;
+    public String getTags() {
+        if (tags != null) {
+            return tags;
         }
         if (stockItems == null) {
             return null;
         }
-        List<String> types = new ArrayList<String>();
+        List<String> tags = new ArrayList<String>();
         for (StockItem stockItem : stockItems) {
-            if (stockItem != null && stockItem.isPublished()
-                    && !types.contains(stockItem.getType())) {
-                types.add(stockItem.getType());
+            if (stockItem != null && stockItem.isPublished()) {
+                for (String tag : stockItem.getTagsAsList()) {
+                    if (!tags.contains(tag)) {
+                        tags.add(tag);
+                    }
+                }
+
             }
         }
 
-        Collections.sort(types, (o1, o2) -> o1.compareToIgnoreCase(o2));
+        Collections.sort(tags, (o1, o2) -> o1.compareToIgnoreCase(o2));
 
         StringBuilder sb = new StringBuilder();
-        for (String stockItem : types) {
+        for (String stockItem : tags) {
             sb.append(stockItem).append(",");
         }
         if (sb.toString().endsWith(",")) {
