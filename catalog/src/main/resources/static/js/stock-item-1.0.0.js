@@ -293,12 +293,6 @@ var ractive = new AuthenticatedRactive({
     });
     return c;
   },
-  findUri: function(entityList, name, value) { 
-    console.log('findUri: '+entityList+','+name+', '+value);
-    var entity = ractive.findEntity(entityList, name, value);
-    if (entity == undefined) return undefined;
-    else return ractive.uri(entity);
-  },
   oninit: function() {
     console.log('oninit');
     this.ajaxSetup();
@@ -314,11 +308,11 @@ var ractive = new AuthenticatedRactive({
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       delete tmp.images;
       if (id != undefined && tmp.stockCategory != undefined) {
-        tmp.stockCategory = ractive.findUri('stockCategories','name',tmp.stockCategory.name);  
+        tmp.stockCategory = ractive.uri(Array.findBy('name',ractive.get('current.stockCategory.name'),ractive.get('stockCategories')));
       } else {
         delete tmp.stockCategory;
         delete tmp.stockCategoryId;
-      }       
+      }
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save stockItem'+JSON.stringify(tmp)+' ...');
       $.ajax({
@@ -458,7 +452,7 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
     console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
     ractive.save();
   } else { 
-    console.warn  ('Skipped stockItem save of '+keypath);
+    console.warn('Skipped stockItem save of '+keypath);
     //console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
     //console.log('  saveObserver: '+ractive.get('saveObserver'));
   }

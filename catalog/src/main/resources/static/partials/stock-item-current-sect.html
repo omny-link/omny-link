@@ -27,16 +27,16 @@
       <ul class="form edit-form">
         {{#tenant.show.stockCategory}}
 	        <li class="form-group">
-	          <label class="col-md-4 col-sm-4">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}:</label>
+	          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}:</label>
 	          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.stockCategory.name}}">
 	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>
 	        </li>
 	      {{/}}
 	      {{#if stockTypes!=undefined}}
 	        <li class="form-group">
-	          <label class="col-md-4 col-sm-4">{{#tenant.strings.stockItemType}}{{tenant.strings.stockItemType}}{{else}}Type{{/}}:</label>
-	          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockType" required value="{{current.type}}">
-	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>
+	          <label class="col-md-4 col-sm-4 col-xs-4 required">Tags:</label>
+	          <input class="tag-ctrl form-control col-md-8 col-sm-8 col-xs-8" id="curTags" data-bind="current.tags" required/>
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.tagsHint}}{{tenant.strings.tagsHint}}{{else}}Tags allow multiple and free-form classification{{/}}</p>
 	        </li>
 	      {{/if}}
         <li class="form-group">
@@ -52,17 +52,17 @@
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Price:</label>
 	          <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
-	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price of the {{tenant.strings.stockItem}}{{/}}:</p>
 	        </li>
 	        <li class="form-group">
-	          <label class="col-md-4 col-sm-4">Unit:</label>
+	          <label class="col-md-4 col-sm-4">Unit of Measure:</label>
 	          <input class="form-control" id="curUnit" value="{{current.unit}}">
-	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.unitHint}}{{tenant.strings.unitHint}}{{/}}:</p>
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.unitHint}}{{tenant.strings.unitHint}}{{else}}Relevant unit of measure for the {{#if tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/if}}{{/}}:</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Size:</label>
 	          <input class="form-control" id="curSize" type="number" value="{{current.size}}">
-	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.sizeHint}}{{tenant.strings.sizeHint}}{{/}}</p>
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.sizeHint}}{{tenant.strings.sizeHint}}{{else}}Number of UOMs in this {{tenant.strings.stockItem}}{{/}}</p>
 	        </li>
 	      </ul>
 	    </div>
