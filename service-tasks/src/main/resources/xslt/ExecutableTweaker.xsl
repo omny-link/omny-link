@@ -56,12 +56,12 @@
   
   <xsl:template match="BPMNShape">
     <xsl:variable name="bpmnId" select="@bpmnElement"/>
-	  <xsl:if test="//participant[@name=$processParticipantToExecute]/@id=$bpmnId or //process[@name=$processParticipantToExecute]//@id=$bpmnId">
-	    <xsl:copy>
-	      <xsl:apply-templates select="@*"/>
-	      <xsl:apply-templates/>
-	    </xsl:copy>
-	  </xsl:if>
+    <xsl:if test="//participant[@name=$processParticipantToExecute]/@id=$bpmnId or //process[@name=$processParticipantToExecute]//@id=$bpmnId">
+      <xsl:copy>
+        <xsl:apply-templates select="@*"/>
+        <xsl:apply-templates/>
+      </xsl:copy>
+    </xsl:if>
   </xsl:template>
   
   <xsl:template match="semantic:collaboration|collaboration">
@@ -97,13 +97,15 @@
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="semantic:dataOutput|dataOutput" mode="formProperty">
+  <xsl:template match="semantic:dataInput|dataInput|semantic:dataOutput|dataOutput" mode="formProperty">
     <xsl:element name="activiti:formProperty">
       <xsl:attribute name="id"><xsl:value-of select="@name"/></xsl:attribute>
       <xsl:attribute name="name">
         <xsl:value-of select="translate(substring(@name,1,1), $lcase, $ucase)" />
         <xsl:value-of select="substring(@name,2)" />
       </xsl:attribute>
+      <xsl:attribute name="readable">true</xsl:attribute>
+      <xsl:attribute name="writeable">true</xsl:attribute>
       <!-- Some conventions to allow type to be set for simple XSD types -->
       <xsl:choose>
         <xsl:when test="@itemSubjectRef='xsdBool'">
@@ -227,9 +229,9 @@
     </xsl:comment>
   </xsl:template>
   
-	<xsl:template match="semantic:process/@isExecutable">
-		<xsl:attribute name="isExecutable">true</xsl:attribute>
-	</xsl:template>
+  <xsl:template match="semantic:process/@isExecutable">
+    <xsl:attribute name="isExecutable">true</xsl:attribute>
+  </xsl:template>
   
   <!-- 
     No longer needed as have implemented support for resourceRef (awaiting merge)
@@ -280,16 +282,16 @@
       <xsl:choose>
         <xsl:when test="//collaboration/participant[@processRef=$process/@id]">
           <xsl:attribute name="activiti:candidateGroups">
-			      <xsl:apply-templates select="//collaboration/participant[@processRef=$process/@id]" mode="resource">
-			        <xsl:with-param name="id" select="@id"/>
-			        <xsl:with-param name="process" select="parent::node()"/>
-			      </xsl:apply-templates>
-			    </xsl:attribute>
-		    </xsl:when>
-		    <xsl:otherwise>
-		      <xsl:attribute name="activiti:assignee">${initiator}</xsl:attribute>
-		    </xsl:otherwise>
-	    </xsl:choose>
+            <xsl:apply-templates select="//collaboration/participant[@processRef=$process/@id]" mode="resource">
+              <xsl:with-param name="id" select="@id"/>
+              <xsl:with-param name="process" select="parent::node()"/>
+            </xsl:apply-templates>
+          </xsl:attribute>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:attribute name="activiti:assignee">${initiator}</xsl:attribute>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:apply-templates select="@*"/>
       <xsl:apply-templates/>
     </xsl:element>
@@ -454,9 +456,9 @@
         <xsl:comment>Suppress incomplete signal start event (without signal reference)</xsl:comment>
       </xsl:when>
       <xsl:otherwise>
-	      <xsl:copy>
-		      <xsl:apply-templates select="@*|*"/>
-		    </xsl:copy>
+        <xsl:copy>
+          <xsl:apply-templates select="@*|*"/>
+        </xsl:copy>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -482,10 +484,38 @@
   <!-- 
     See if there are more extensions we can infer from standards-based elements
   -->
+  <xsl:template match="semantic:userTask|userTask">
+    <xsl:comment>user task <xsl:value-of select="@id"/> has extensions: <xsl:choose><xsl:when test="semantic:extensionElements|extensionElements">Yes</xsl:when><xsl:otherwise>No</xsl:otherwise></xsl:choose></xsl:comment>
+    <xsl:choose>
+      <xsl:when test="semantic:extensionElements|extensionElements">
+        <xsl:copy>
+          <xsl:apply-templates select="@*|*"/>
+        </xsl:copy>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:comment>Creating extensionElements</xsl:comment>
+        <xsl:copy>
+          <xsl:apply-templates select="@*"/>
+          <xsl:element name="extensionElements">
+            <xsl:apply-templates select="semantic:ioSpecification/semantic:dataInput" mode="formProperty"/>
+            <xsl:apply-templates select="ioSpecification/dataInput" mode="formProperty"/>
+            <xsl:apply-templates select="semantic:ioSpecification/semantic:dataOutput" mode="formProperty"/>
+            <xsl:apply-templates select="ioSpecification/dataOutput" mode="formProperty"/>
+          </xsl:element>
+          <xsl:apply-templates select="*"/>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
   <xsl:template match="semantic:userTask/semantic:extensionElements|userTask/extensionElements">
+    <xsl:comment>Extending extensionElements</xsl:comment>
     <xsl:copy>
       <xsl:apply-templates select="@*|*"/>
+      <xsl:apply-templates select="../semantic:ioSpecification/semantic:dataInput" mode="formProperty"/>
+      <xsl:apply-templates select="../ioSpecification/dataInput" mode="formProperty"/>
       <xsl:apply-templates select="../semantic:ioSpecification/semantic:dataOutput" mode="formProperty"/>
+      <xsl:apply-templates select="../ioSpecification/dataOutput" mode="formProperty"/>
     </xsl:copy>
   </xsl:template>
 
@@ -519,13 +549,13 @@
     </xsl:choose>
   </xsl:template>
 
-	<!-- standard copy template -->
-	<xsl:template match="@*|node()">
-		<xsl:copy>
-			<xsl:apply-templates select="@*"/>
-			<xsl:apply-templates/>
-		</xsl:copy>
-	</xsl:template>
+  <!-- standard copy template -->
+  <xsl:template match="@*|node()">
+    <xsl:copy>
+      <xsl:apply-templates select="@*"/>
+      <xsl:apply-templates/>
+    </xsl:copy>
+  </xsl:template>
   
   <!-- ********************** -->
   <!-- NAMED TEMPLATES FOLLOW -->
