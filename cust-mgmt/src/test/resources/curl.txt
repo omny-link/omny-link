@@ -51,3 +51,6 @@ curl -X POST -H 'Content-Type:application/json' -u tstephen:tstephen -v -d '' ht
 
 # get gravatar (hash of tstephen)
 curl -X GET -u tstephen:tstephen -v http://localhost:8082/omny/gravatars/7cb160cf07301abd60974781835c933e
+
+GET notes for account
+curl  -H 'Accept: application/json' -v -u tim@omny.link:tstephen12 http://localhost:8082/accounts/17/notes

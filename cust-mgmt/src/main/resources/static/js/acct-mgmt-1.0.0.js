@@ -21,6 +21,13 @@ var ractive = new AuthenticatedRactive(
             return;
           return i18n.getAgeString(ractive.parseDate(timeString))
         },
+        index: function (a,b) {return index(a,b);},
+        sum: function(fieldName, arr) {
+           console.info('sum: '+fieldName);
+           return arr.reduce(function (a,b) {
+             return a + (isNaN(parseInt(index(b,fieldName))) ? 0 : parseInt(index(b,fieldName)));
+           }, 0);
+        },
         alerts: function(selector) {
           console.log('alerts for ' + selector);
           return $(selector + ' :invalid').length;

@@ -69,12 +69,19 @@
                   <input class="hidden form-control" placeholder="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}" type="number" value="{{price}}">
                 </td>
 	            {{/}}
-		          {{#tenant.orderFields}}
-	              <td data-order-id="{{selfRef}}" data-key="customFields.{{key}}">
-	                <span title="{{hint}}">{{customFields[key]}}</span>
-	                <input class="hidden form-control" {{#if validation}}pattern="{{validation}}"{{/if}} placeholder="{{hint}}" title="{{hint}}" type="{{type}}" value="{{customFields[key]}}">
-	              </td>
-	            {{/}}
+              {{#tenant.orderFields}}
+                {{#if tenant.show.orderItems && orderItems && orderItems[0]!=undefined && index(orderItems[0],'customFields.'+key)!=undefined}}
+                  <td data-order-id="{{selfRef}}" title="{{hint}}">{{#if type=='number'}}{{sum('customFields.'+key,orderItems)}}{{else}}{{uniq('customFields.'+key,orderItems)}}{{/if}}</td>
+                {{elseif tenant.show.orderItems && orderItems}}
+                  <td data-order-id="{{selfRef}}" title="{{hint}}">{{customFields[key]}}</td>
+                {{/if}}
+                {{#if tenant.show.orderItems && orderItems.length==0}}
+                  <td data-order-id="{{selfRef}}" data-key="customFields.{{key}}">
+                    <span title="{{hint}}">{{customFields[key]}}</span>
+                    <input class="hidden form-control" {{#if validation}}pattern="{{validation}}"{{/if}} placeholder="{{hint}}" title="{{hint}}" type="{{type}}" value="{{customFields[key]}}">
+                  </td>
+                {{/if}}
+              {{/}}
 	            <td data-order-id="{{selfRef}}" data-key="invoiceRef">
 	              <span title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">{{invoiceRef}}</span>
 	              <input class="hidden form-control" placeholder="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}" value="{{invoiceRef}}"/>
