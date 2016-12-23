@@ -15,7 +15,7 @@ import org.junit.Test;
 public class CatalogCsvImporterTest {
 
     private static final String TENANT_ID = "omny";
-    private static final String HEADER_LINE = "stockCategory.name,name,type,customFields.vacant,size";
+    private static final String HEADER_LINE = "stockCategory.name,name,tags,customFields.vacant,size";
     private static final String RECORD_1_LINE = "Borehamwood,Studio 101/102,Office,Occupied,475.000";
     private static final String LF = System.getProperty("line.separator");
 
@@ -39,7 +39,7 @@ public class CatalogCsvImporterTest {
             assertEquals("Studio 101/102", list.get(0).getName());
             assertEquals("Borehamwood", list.get(0).getStockCategory()
                     .getName());
-            assertEquals("Office", list.get(0).getType());
+            assertEquals("Office", list.get(0).getTags());
             assertEquals("475.000", list.get(0).getSize());
             assertEquals(TENANT_ID, list.get(0).getTenantId());
 

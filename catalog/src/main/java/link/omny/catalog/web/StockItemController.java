@@ -366,7 +366,7 @@ public class StockItemController {
         private String sizeString;
         private String unit;
         private String price;
-        private String type;
+        private String tags;
         private String tenantId;
         private String stockCategoryName;
         private String mapUrl;
