@@ -72,7 +72,7 @@
 		          {{#tenant.orderFields}}
 	              <td data-order-id="{{selfRef}}" data-key="customFields.{{key}}">
 	                <span title="{{hint}}">{{customFields[key]}}</span>
-	                <input class="hidden form-control" placeholder="{{hint}}" title="{{hint}}" type="{{type}}" value="{{customFields[key]}}">
+	                <input class="hidden form-control" {{#if validation}}pattern="{{validation}}"{{/if}} placeholder="{{hint}}" title="{{hint}}" type="{{type}}" value="{{customFields[key]}}">
 	              </td>
 	            {{/}}
 	            <td data-order-id="{{selfRef}}" data-key="invoiceRef">
