@@ -87,10 +87,10 @@ public class StockCategory implements Serializable {
     private String country;
 
     @JsonProperty
-    private double lat;
+    private Double lat;
 
     @JsonProperty
-    private double lng;
+    private Double lng;
 
     @JsonProperty
     @Transient
@@ -290,6 +290,9 @@ public class StockCategory implements Serializable {
     }
 
     public GeoPoint getGeoPoint() {
+        if (getLat() == null || getLng() == null) {
+            return null;
+        }
         return new GeoPoint(getLat(), getLng());
     }
 

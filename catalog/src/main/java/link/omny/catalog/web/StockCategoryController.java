@@ -222,7 +222,7 @@ public class StockCategoryController {
             // Capture tags now before filtering
             String allTagsAvail = stockCategory.getTags();
             try {
-                if (stockCategory.getLng() == 0.0d) {
+                if (stockCategory.getLng() == null) {
                     stockCategory.setGeoPoint(geo.locate(stockCategory
                             .getPostCode()));
                     stockCategoryRepo.save(stockCategory);
@@ -422,8 +422,8 @@ public class StockCategoryController {
         private List<MediaResource> images;
         private String tags;
         private String mapUrl;
-        private double lat;
-        private double lng;
+        private Double lat;
+        private Double lng;
         private String directionsByRoad;
         private String directionsByPublicTransport;
         private String directionsByAir;
