@@ -2,18 +2,23 @@ package link.omny.catalog.web;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
+import link.omny.catalog.json.JsonCustomFeedbackFieldDeserializer;
 import link.omny.catalog.json.JsonCustomOrderFieldDeserializer;
 import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
+import link.omny.catalog.model.CustomFeedbackField;
 import link.omny.catalog.model.CustomOrderField;
 import link.omny.catalog.model.CustomOrderItemField;
+import link.omny.catalog.model.Feedback;
 import link.omny.catalog.model.Order;
 import link.omny.catalog.model.OrderItem;
+import link.omny.catalog.repositories.FeedbackRepository;
 import link.omny.catalog.repositories.OrderItemRepository;
 import link.omny.catalog.repositories.OrderRepository;
 import link.omny.catalog.repositories.StockItemRepository;
@@ -62,6 +67,9 @@ public class OrderController {
             .getLogger(OrderController.class);
 
     @Autowired
+    private FeedbackRepository feedbackRepo;
+
+    @Autowired
     private OrderRepository orderRepo;
 
     @Autowired
@@ -83,10 +91,37 @@ public class OrderController {
                 tenantId));
 
         Order order = orderRepo.findOne(orderId);
-        LOGGER.info(String.format("Found order with %1$d order items", order
-                .getOrderItems().size()));
+        LOGGER.info(String.format(
+                "Found order with %1$d order items and %2$s inc. feedback",
+                order.getOrderItems().size(),
+                order.getFeedback() == null ? "DOES NOT" : "DOES"));
 
         return wrap(order);
+    }
+
+    /**
+     * Return feedback for the specifed order.
+     *
+     * @return orders for that tenant.
+     */
+    @RequestMapping(value = "/{id}/feedback", method = RequestMethod.GET)
+    public @ResponseBody FeedbackResource readFeedback(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long orderId) {
+        LOGGER.info(String.format(
+                "Read feedback for order %1$s of tenant %2$s", orderId,
+                tenantId));
+
+        Feedback feedback = feedbackRepo.findByOrder(tenantId, orderId);
+
+        if (feedback == null) {
+            LOGGER.info(String.format("No feedback for order %1$d", orderId));
+            return null;
+        } else {
+            LOGGER.info(String.format("Found feedback for order %1$d: %2$s",
+                    orderId, feedback));
+            return wrap(feedback);
+        }
     }
 
     /**
@@ -152,8 +187,8 @@ public class OrderController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
         LOGGER.info(String.format(
-                "List orders for contacts %1$s & tenant %2$s", contactIds,
-                tenantId));
+                "List orders for contacts %1$s & tenant %2$s",
+                Arrays.asList(contactIds), tenantId));
 
         List<Order> list;
         if (limit == null) {
@@ -249,6 +284,31 @@ public class OrderController {
     }
 
     /**
+     * Update an existing order with new feedback.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{id}/feedback", method = RequestMethod.POST, consumes = { "application/json" })
+    @Transactional
+    public @ResponseBody void addFeedback(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long orderId, @RequestBody Feedback feedback) {
+        Feedback existingFeedback = feedbackRepo.findByOrder(tenantId, orderId);
+        if (existingFeedback == null) {
+            Order order = orderRepo.findOne(orderId);
+            feedback.setTenantId(tenantId);
+            feedback.setOrder(order);
+            feedbackRepo.save(feedback);
+
+            order.setFeedback(feedback);
+            orderRepo.save(order);
+        } else {
+            NullAwareBeanUtils
+                    .copyNonNullProperties(feedback, existingFeedback);
+            feedbackRepo.save(existingFeedback);
+        }
+    }
+
+    /**
      * Update an existing order.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -266,6 +326,22 @@ public class OrderController {
         // item.setOrder(order);
 
         orderItemRepo.save(item);
+    }
+
+    /**
+     * Change the stage the order has reached.
+     */
+    @RequestMapping(value = "/{orderId}/stage", method = RequestMethod.POST, consumes = "application/json")
+    public @ResponseBody void setStage(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("orderId") Long orderId,
+            @RequestBody String stage) {
+        LOGGER.info(String.format("Setting order %1$s to stage %2$s",
+                orderId, stage));
+
+        Order order = orderRepo.findOne(orderId);
+        order.setStage(stage);
+        orderRepo.save(order);
     }
 
     /**
@@ -310,6 +386,7 @@ public class OrderController {
 
         BeanUtils.copyProperties(order, resource, "customFields", "orderItems");
         resource.setContactId(order.getContactId());
+        resource.setOrderId(order.getId());
 
         ArrayList<CustomOrderField> fields = new ArrayList<CustomOrderField>();
         List<Long> fieldsSeen = new ArrayList<Long>();
@@ -354,8 +431,8 @@ public class OrderController {
         BeanUtils.copyProperties(item, resource, "customFields");
         resource.setOrderItemId(item.getId());
         resource.setOrderId(item.getOrder().getId());
-        resource.setName(item.getStockItem().getName());
         if (item.getStockItem() != null) {
+            resource.setName(item.getStockItem().getName());
             resource.setStockItemId(item.getStockItem().getId());
             resource.setStockItemName(item.getStockItem().getName());
         }
@@ -378,6 +455,32 @@ public class OrderController {
         return resource;
     }
 
+    private FeedbackResource wrap(Feedback feedback) {
+        FeedbackResource resource = new FeedbackResource();
+
+        NullAwareBeanUtils
+                .copyNonNullProperties(feedback, resource, "customFields");
+        resource.setFeedbackId(feedback.getId());
+        resource.setOrderId(feedback.getOrder().getId());
+
+        ArrayList<CustomFeedbackField> fields = new ArrayList<CustomFeedbackField>();
+        List<Long> fieldsSeen = new ArrayList<Long>();
+        for (CustomFeedbackField field : feedback.getCustomFields()) {
+            if (field.getFeedback().getId().equals(feedback.getId())
+                    && !fieldsSeen.contains(field.getId())) {
+                fields.add(field);
+                fieldsSeen.add(field.getId());
+            } else {
+                LOGGER.debug(String.format(
+                        "Removing duplicate field due to inner join: %1$s",
+                        feedback));
+            }
+        }
+        resource.setCustomFields(fields);
+
+        return resource;
+    }
+
     private Link linkTo(
             @SuppressWarnings("rawtypes") Class<? extends CrudRepository> clazz,
             Long id) {
@@ -389,6 +492,7 @@ public class OrderController {
     @EqualsAndHashCode(callSuper = true)
     public static class ShortOrder extends ResourceSupport {
         private String selfRef;
+        private Long orderId;
         private String name;
         private String description;
         private Date date;
@@ -403,6 +507,22 @@ public class OrderController {
         private String invoiceRef;
         private Date created;
         private Date lastUpdated;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    public static class FeedbackResource extends ResourceSupport {
+        private Long feedbackId;
+        private Long orderId;
+        private String selfRef;
+        private String description;
+        private BigDecimal price;
+        @JsonDeserialize(using = JsonCustomFeedbackFieldDeserializer.class)
+        @JsonSerialize(using = JsonCustomFieldSerializer.class)
+        private List<CustomFeedbackField> customFields;
+        private Date created;
+        private Date lastUpdated;
+        private String tenantId;
     }
 
     @Data

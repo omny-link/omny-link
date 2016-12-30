@@ -186,7 +186,7 @@ execution.setVariable('contactId',contactId);]]></script>
       <outgoing>_27</outgoing>
     </exclusiveGateway>
     <sequenceFlow id="_27" name="No" sourceRef="_22" targetRef="sendMail"/>
-    <callActivity calledElement="TransformOrderToHtml" completionQuantity="1" id="_16" isForCompensation="false" name="Transform&#10;order&#10;to HTML" startQuantity="1">
+    <callActivity calledElement="TransformOrderToHtml" completionQuantity="1" id="transformOrder" isForCompensation="false" name="Transform&#10;order&#10;to HTML" startQuantity="1">
       <extensionElements>
         <activiti:in source="order" target="order"/>
         <activiti:out source="order" target="order"/>
@@ -195,8 +195,8 @@ execution.setVariable('contactId',contactId);]]></script>
       <incoming>_28</incoming>
       <outgoing>_29</outgoing>
     </callActivity>
-    <sequenceFlow id="_28" sourceRef="readOrder" targetRef="_16"/>
-    <sequenceFlow id="_29" sourceRef="_16" targetRef="sendMail"/>
+    <sequenceFlow id="_28" sourceRef="readOrder" targetRef="transformOrder"/>
+    <sequenceFlow id="_29" sourceRef="transformOrder" targetRef="sendMail"/>
     <textAnnotation id="_7" textFormat="text/plain">
       <text>Send memo to a single contact</text>
     </textAnnotation>
@@ -319,7 +319,7 @@ execution.setVariable('contactId',contactId);]]></script>
           <dc:Bounds height="18.8046875" width="89.0" x="620.5555555555557" y="250.27272727272728"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_16" id="Yaoqiang-_16" isExpanded="false">
+      <bpmndi:BPMNShape bpmnElement="transformOrder" id="Yaoqiang-transformOrder" isExpanded="false">
         <dc:Bounds height="74.0" width="105.0" x="815.7222222222223" y="305.22222222222223"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="46.8046875" width="66.0" x="835.2222222222223" y="320.81987847222223"/>

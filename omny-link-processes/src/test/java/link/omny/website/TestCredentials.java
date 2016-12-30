@@ -17,6 +17,7 @@ public class TestCredentials {
         idSvc.saveUser(botUser);
         idSvc.setUserInfo(BOT_USERNAME, "cust-mgmt-secret", BOT_PWD);
         idSvc.setUserInfo(BOT_USERNAME, "cust-mgmt-url", CUST_MGMT_URL);
+        idSvc.setUserInfo(BOT_USERNAME, "cc_account", "");
     }
 
     public static void initBotWithTwitterIntegration(IdentityService idSvc,
