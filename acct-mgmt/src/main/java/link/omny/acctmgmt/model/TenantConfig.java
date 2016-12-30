@@ -111,6 +111,10 @@ public class TenantConfig implements Serializable {
 
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Transient
+    private List<FeedbackField> feedbackFields;
+
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Transient
     private List<StockCategoryField> stockCategoryFields;
 
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

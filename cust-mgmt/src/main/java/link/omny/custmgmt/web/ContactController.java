@@ -696,6 +696,7 @@ public class ContactController {
     /**
      * Change the sale stage the contact is at.
      */
+    // TODO should be POST and not specify 'consumes'
     @RequestMapping(value = "/{contactId}/stage", method = RequestMethod.PUT, consumes = "application/x-www-form-urlencoded")
     public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,

@@ -206,7 +206,7 @@ public class TenantConfigController {
 
         for (TenantTemplate template : tenantConfig.getTemplates()) {
             try {
-                Memo memo = memoRepo.findByName(template.getName(), id);
+                Memo memo = memoRepo.findByName(template.getRef(), id);
                 if (memo != null) {
                     template.setValid(true);
                     template.setDescription(String.format("Subject: %1$s",

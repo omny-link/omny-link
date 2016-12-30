@@ -164,32 +164,52 @@
 		              {{/if}}
 		            </td>
 		          </tr>
-		        {{/if   }}
+		        {{/if}}
 	          <tr class="feedback" data-order-id="{{selfRef}}" style="display:none">
 	            <th>Feedback:</th>
 	            <td colspan="10">
 	              {{#if feedback==undefined || feedback.length==0}}
 	                None
 	              {{else}}
-		              <table class="ol-order-items table table-striped">
-		                <thead>
-		                  <tr>
-		                    <th>Type</th>
-		                    <th>Description</th>
-		                  </tr>
-		                </thead>
-		                <tbody>
-		                  {{#feedback}}
-		                    <tr>
-		                      <td value="{{type}}"></td>
-		                      <td value="{{description}}"></td>
-		                    </tr>
-		                  {{/}}
-		                </tbody>
-		              </table>
-		            {{/if}}
-	            </td>
-	          </tr>
+		              <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+							      <ul class="form edit-form">
+                      {{#if feedback.description}}
+                        <li class="form-group">
+                          <label class="col-md-4 col-sm-4">{{#tenant.strings.feedbackDesc}}{{tenant.strings.feedbackDesc}}{{else}}Feedback{{/}}:</label>
+                          <input class="form-control" id="curFeedbackDescription" value="{{feedback.description}}">
+                          <p class="col-md-offset-4 col-sm-offset-4 help-block field-error"></p>
+                        </li>
+                      {{/if}}
+                      {{#each tenant.feedbackFields.slice(0,Math.ceil(tenant.feedbackFields.length/2)):j}}
+                        <li class="form-group">
+                          <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
+                          <input class="form-control" id="cur{{name.toLeadingCaps()}}" value="{{feedback.customFields[name]}}">
+                          <p class="col-md-offset-4 col-sm-offset-4 help-block field-error">{{hint}}</p>
+                        </li>
+                      {{/each}}
+                    </ul>
+                  </div>
+                  <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+                    <ul class="form edit-form">
+                      {{#if feedback.type}}
+                        <li class="form-group">
+                          <label class="col-md-4 col-sm-4">Type:</label>
+                          <input class="form-control" id="curFeedbackType" value="{{feedback.type}}">
+                          <p class="col-md-offset-4 col-sm-offset-4 help-block field-error"></p>
+                        </li>
+                      {{/if}}
+                      {{#each tenant.feedbackFields.slice(Math.ceil(tenant.feedbackFields.length/2),tenant.feedbackFields.length):j}}
+                        <li class="form-group">
+                          <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
+                          <input class="form-control" id="cur{{name.toLeadingCaps()}}" value="{{feedback.customFields[name]}}">
+                          <p class="col-md-offset-4 col-sm-offset-4 help-block field-error">{{hint}}</p>
+                        </li>
+                      {{/each}}
+                    </ul>
+                  </div>
+                {{/if}}
+              </td>
+            </tr>
 		      {{/each}}
 		    </tbody>
 		  </table>

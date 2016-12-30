@@ -523,7 +523,7 @@ var ractive = new AuthenticatedRactive({
       pattern:"inOut"
     });
   },
-  fetchOrders: function (contact) {
+  fetchOrders: function(contact) {
     console.info('fetchOrders...');
     if (ractive.get('tenant.show.orders')!=true) return;
     var contactId = ractive.id(contact);
@@ -534,9 +534,6 @@ var ractive = new AuthenticatedRactive({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/findByContact/'+contactId,
       crossDomain: true,
       success: function( data ) {
-        if (data['_embedded'] != undefined) {
-          data = data['_embedded'].accounts;
-        }
         ractive.set('saveObserver', false);
         ractive.set('orders',data);
         console.log('fetched '+data.length+' orders');

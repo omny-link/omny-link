@@ -759,6 +759,24 @@ var ractive = new AuthenticatedRactive(
               pattern: "inOut"
             });
       },
+      fetchFeedback: function(order) {
+        console.info('fetchFeedback...');
+        if (ractive.get('tenant.show.orders')!=true) return;
+        var orderId = ractive.id(order);
+
+        ractive.set('saveObserver', false);
+        $.ajax({
+          dataType: "json",
+          url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/'+orderId+'/feedback',
+          crossDomain: true,
+          success: function(data) {
+            ractive.set('saveObserver', false);
+            var orderIdx = ractive.get('orders').indexOf(Array.findBy('selfRef','/orders/'+orderId,ractive.get('orders')));
+            ractive.set('orders.'+orderIdx+'.feedback',data);
+            ractive.set('saveObserver', true);
+          }
+        });
+      },
       fetchOrders: function(account) {
         console.info('fetchOrders...');
         if (ractive.get('tenant.show.orders') != true)
@@ -1777,8 +1795,7 @@ var ractive = new AuthenticatedRactive(
         console.log('toggleOrderSubEntity(' + obj.selfRef + ', ' + subEntity
             + ')');
         $('[data-order-id="' + obj.selfRef + '"].' + subEntity).slideToggle();
-        if (subEntity == 'feedback')
-          ractive.showWarning('Feedback is not yet implemented');
+        if (subEntity == 'feedback') ractive.fetchFeedback(obj);
       },
       toggleResults: function() {
         console.info('toggleResults');
