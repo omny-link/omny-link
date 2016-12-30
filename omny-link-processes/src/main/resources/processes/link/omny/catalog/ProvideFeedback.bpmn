@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/catalog" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="5.0" expressionLanguage="http://activiti.org/Juel" id="_1483034361361" name="" targetNamespace="http://omny.link/catalog" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <message id="omny.feedback" name="omny.feedback"/>
+  <process id="ProvideFeedback" isClosed="false" isExecutable="true" name="Provide feedback on Order" processType="None">
+    <documentation id="ProvideFeedback_D_1" textFormat="text/plain"><![CDATA[Provide feedback on an order]]></documentation>
+    <extensionElements>
+      <yaoqiang:pageFormat height="841.8897637795276" imageableHeight="831.8897637795276" imageableWidth="588.1102362204724" imageableX="5.0" imageableY="5.0" orientation="0" width="598.1102362204724"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <ioSpecification>
+      <inputSet/>
+      <outputSet/>
+    </ioSpecification>
+    <startEvent id="startEvent" isInterrupting="true" name="omny.feedback" parallelMultiple="false">
+      <extensionElements>
+        <yaoqiang:label offset-x="1.0" offset-y="-6.0"/>
+      </extensionElements>
+      <outgoing>_4</outgoing>
+      <outputSet/>
+      <messageEventDefinition id="startEvent_ED_1" messageRef="omny.feedback"/>
+    </startEvent>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="saveFeedback" implementation="##WebService" isForCompensation="false" name="Save feedback" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername">
+          <activiti:string>userInfo('tenant-bot')</activiti:string>
+        </activiti:field>
+        <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="globalResource">
+          <activiti:expression>userInfo('cust-mgmt-url')/${omny_feedback.getString('tenantId')}/orders/${omny_feedback.getString('orderId')}/feedback</activiti:expression>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field name="data">
+          <activiti:expression>${omny_feedback}</activiti:expression>
+        </activiti:field>
+      </extensionElements>
+      <incoming>_4</incoming>
+      <outgoing>_3</outgoing>
+    </serviceTask>
+    <callActivity activiti:async="true" calledElement="SendMemo" completionQuantity="1" id="sendThanksMemo" isForCompensation="false" name="Send&#10;thanks memo" startQuantity="1">
+      <extensionElements>
+        <activiti:in sourceExpression="ThanksForFeedback" target="memoName"/>
+        <activiti:in sourceExpression="${omny_feedback.getString('tenantId')}" target="tenantId"/>
+        <activiti:in sourceExpression="/contacts/${omny_feedback.getString('contactId')}" target="contactId"/>
+        <activiti:in sourceExpression="${omny_feedback.getString('orderId')}" target="orderId"/>
+      </extensionElements>
+      <incoming>_5</incoming>
+      <outgoing>_9</outgoing>
+    </callActivity>
+    <endEvent id="_8" name="End Event">
+      <incoming>_9</incoming>
+      <inputSet/>
+    </endEvent>
+    <sequenceFlow id="_9" sourceRef="sendThanksMemo" targetRef="_8"/>
+    <sequenceFlow id="_4" sourceRef="startEvent" targetRef="saveFeedback"/>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="setOrderStage" implementation="##WebService" isForCompensation="false" name="Set stage to feedback received" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername">
+          <activiti:string>userInfo('tenant-bot')</activiti:string>
+        </activiti:field>
+        <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="globalResource">
+          <activiti:expression>userInfo('cust-mgmt-url')/${omny_feedback.getString('tenantId')}/orders/${omny_feedback.getString('orderId')}/stage</activiti:expression>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field name="data">
+          <activiti:expression>Feedback received</activiti:expression>
+        </activiti:field>
+      </extensionElements>
+      <incoming>_3</incoming>
+      <outgoing>_5</outgoing>
+    </serviceTask>
+    <sequenceFlow id="_3" sourceRef="saveFeedback" targetRef="setOrderStage"/>
+    <sequenceFlow id="_5" sourceRef="setOrderStage" targetRef="sendThanksMemo"/>
+    <textAnnotation id="_11" textFormat="text/plain">
+      <text>PROVIDE FEEDBACK</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-ProvideFeedback" name="Untitled Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="ProvideFeedback">
+      <bpmndi:BPMNShape bpmnElement="saveFeedback" id="Yaoqiang-saveFeedback">
+        <omgdc:Bounds height="73.0" width="105.0" x="168.75" y="186.5"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.8046875" width="89.0" x="176.75" y="215.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sendThanksMemo" id="Yaoqiang-sendThanksMemo" isExpanded="false">
+        <omgdc:Bounds height="73.0" width="105.0" x="433.25" y="186.5"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="32.8046875" width="84.0" x="443.75" y="208.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
+        <omgdc:Bounds height="32.0" width="32.0" x="73.0" y="207.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.8046875" width="92.0" x="44.0" y="241.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_8" id="Yaoqiang-_8">
+        <omgdc:Bounds height="32.0" width="32.0" x="602.0" y="207.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.8046875" width="62.0" x="587.0" y="248.37890625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
+        <omgdc:Bounds height="31.0" width="135.0" x="73.0" y="102.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.8046875" width="116.0" x="73.0" y="110.09765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="setOrderStage" id="Yaoqiang-setOrderStage">
+        <omgdc:Bounds height="73.0" width="105.0" x="301.0" y="186.5"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="46.8046875" width="80.0" x="313.5" y="201.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9">
+        <omgdi:waypoint x="538.0" y="223.0"/>
+        <omgdi:waypoint x="602.0008680791043" y="223.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.8046875" width="6.0" x="567.0004340395521" y="213.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
+        <omgdi:waypoint x="406.0" y="223.0"/>
+        <omgdi:waypoint x="433.0" y="223.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.8046875" width="6.0" x="416.5" y="213.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_4" id="Yaoqiang-_4">
+        <omgdi:waypoint x="104.99913192089565" y="223.0"/>
+        <omgdi:waypoint x="169.0" y="223.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.8046875" width="6.0" x="133.99956596044782" y="213.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
+        <omgdi:waypoint x="274.0" y="223.0"/>
+        <omgdi:waypoint x="301.0" y="223.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.8046875" width="6.0" x="284.5" y="213.59765625"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

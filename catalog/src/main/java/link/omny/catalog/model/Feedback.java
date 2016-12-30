@@ -1,7 +1,6 @@
 package link.omny.catalog.model;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,37 +19,40 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
-import link.omny.catalog.json.JsonCustomOrderFieldDeserializer;
+import link.omny.catalog.json.JsonCustomFeedbackFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.rest.core.annotation.RestResource;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@Entity
-@Table(name = "OL_ORDER")
+// Property in Flexspace terminology 
 @Data
-@ToString(exclude = { "orderItems" })
+@EqualsAndHashCode(exclude = { "order" })
+@ToString(exclude = { "order" })
+@Entity
+@Table(name = "OL_FEEDBACK")
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Order implements Serializable {
+public class Feedback implements Serializable {
 
-    private static final long serialVersionUID = -2334761729349848501L;
+    private static final long serialVersionUID = 8577876040188427429L;
 
     protected static final Logger LOGGER = LoggerFactory
-            .getLogger(Order.class);
+            .getLogger(Feedback.class);
+
+    public static final int DEFAULT_IMAGE_COUNT = 4;
 
     @Id
     @Column(name = "id")
@@ -59,38 +61,16 @@ public class Order implements Serializable {
     private Long id;
 
     @JsonProperty
-    private String name;
-
-    @JsonProperty
     private String description;
 
-    @Temporal(TemporalType.DATE)
     @JsonProperty
-    private Date date;
-
-    @JsonProperty
-    @Size(max = 20)
-    private String dueDate;
-
-    @JsonProperty
-    @Size(max = 30)
-    private String stage = "New enquiry";
-
-    @JsonProperty
-    private BigDecimal price;
-
-    @JsonProperty
-    @Size(max = 30)
-    private String invoiceRef;
-
-    @JsonProperty
-    private Long contactId;
+    private String type;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
-    private Date created = new Date();
+    private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
@@ -99,34 +79,37 @@ public class Order implements Serializable {
     @JsonProperty
     private String tenantId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
-    @JsonDeserialize(using = JsonCustomOrderFieldDeserializer.class)
+    @OneToOne
+    @RestResource(rel = "order")
+    private Order order;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "feedback", orphanRemoval = true)
+    @JsonDeserialize(using = JsonCustomFeedbackFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
-    private List<CustomOrderField> customFields;
+    private List<CustomFeedbackField> customFields;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "order", targetEntity = OrderItem.class)
-    private List<OrderItem> orderItems;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    private Feedback feedback;
-
-    public Order(String name) {
+    public Feedback(String desc, String type) {
         this();
-        setName(name);
+        setDescription(desc);
+        setType(type);
     }
 
-    public List<CustomOrderField> getCustomFields() {
+    public String getSelfRef() {
+        return String.format("/order-items/%1$d", id);
+    }
+
+    public List<CustomFeedbackField> getCustomFields() {
         if (customFields == null) {
-            customFields = new ArrayList<CustomOrderField>();
+            customFields = new ArrayList<CustomFeedbackField>();
         }
         return customFields;
     }
 
-    public void setCustomFields(List<CustomOrderField> fields) {
-        for (CustomOrderField newField : fields) {
+    public void setCustomFields(List<CustomFeedbackField> fields) {
+        for (CustomFeedbackField newField : fields) {
             setCustomField(newField);
         }
-        // setLastUpdated(new Date());
+        setLastUpdated(new Date());
     }
 
     public Object getCustomFieldValue(@NotNull String fieldName) {
@@ -138,49 +121,26 @@ public class Order implements Serializable {
         return null;
     }
 
-    public void addCustomField(CustomOrderField customField) {
-        customField.setOrder(this);
+    public void addCustomField(CustomFeedbackField customField) {
+        customField.setFeedback(this);
         getCustomFields().add(customField);
     }
 
-    protected void setCustomField(CustomOrderField newField) {
-        boolean found = false;
-        for (CustomOrderField field : getCustomFields()) {
+    protected void setCustomField(CustomFeedbackField newField) {
+        boolean found = false; 
+        for (CustomFeedbackField field : getCustomFields()) {
             if (field.getName().equals(newField.getName())) {
                 field.setValue(newField.getValue() == null ? null : newField
                         .getValue().toString());
-                found = true;
+                found= true;
             }
         }
         if (!found) {
-            newField.setOrder(this);
+            newField.setFeedback(this);
             getCustomFields().add(newField);
+            lastUpdated = new Date();
         }
     }
-
-
-    public void setOrderItems(List<OrderItem> newItems) {
-        for (OrderItem item : newItems) {
-            item.setOrder(this);
-            item.setTenantId(tenantId);
-        }
-        orderItems = newItems;
-    }
-
-    public List<OrderItem> getOrderItems() {
-        if (orderItems == null) {
-            orderItems = new ArrayList<OrderItem>();
-        }
-        return orderItems;
-    }
-
-    public Order addOrderItem(OrderItem item) {
-        item.setOrder(this);
-        item.setTenantId(tenantId);
-        getOrderItems().add(item);
-        return this;
-    }
-
 
     @PreUpdate
     public void preUpdate() {

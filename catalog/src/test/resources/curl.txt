@@ -57,6 +57,19 @@ curl -X PUT -v  -H "Accept:application/json" -H "Content-Type:application/json" 
   -d '{"accountId":"17","orderItems":[{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"09:00-10:00","year":"N"}},{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"10:00-11:00","year":"R"}}],"tenantId":"alife"}'\
   -u tstephen:tstephen http://localhost:8082/alife/orders/73
 
+# Set order stage
+curl -X POST -u tstephen:tstephen -v 'http://localhost:8082/alife/orders/214/stage' \
+  -H 'Content-Type: application/json' -H 'Accept: application/json' \
+  -d '{"stage":"Feedback received"}'
+
 # Delete an order item
 curl -v -X DELETE -H 'Accept:application/json'  http://tim%40omny.link:tstephen12@localhost:8082/alife/orders/121/order-items/188/
+
+# Add feedback to Order
+curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" \
+  -d '{ "description":"Healthy session at Acme Primary", "customFields": { "coachComments": "New head (Gina Cook) from next year" }}' \
+  -u tstephen:tstephen http://localhost:8082/alife/orders/214/feedback
+
+# GET order feedback
+curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/216/feedback
   

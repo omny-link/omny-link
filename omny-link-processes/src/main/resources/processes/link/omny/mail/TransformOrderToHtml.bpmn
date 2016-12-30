@@ -17,7 +17,7 @@
       <outgoing>_4</outgoing>
       <outputSet/>
     </startEvent>
-    <scriptTask completionQuantity="1" id="_19" isForCompensation="false" name="Transform&#10;order&#10;to HTML" scriptFormat="JavaScript" startQuantity="1">
+    <scriptTask completionQuantity="1" id="transformOrderToHtml" isForCompensation="false" name="Transform&#10;order&#10;to HTML" scriptFormat="JavaScript" startQuantity="1">
       <incoming>_4</incoming>
       <outgoing>_5</outgoing>
       <script><![CDATA[//var System = java.lang.System;
@@ -47,8 +47,8 @@ if (order.price!=undefined) {
 execution.setVariable('order', JSON.stringify(order));
 ]]></script>
     </scriptTask>
-    <sequenceFlow id="_4" sourceRef="_2" targetRef="_19"/>
-    <sequenceFlow id="_5" sourceRef="_19" targetRef="endEvent"/>
+    <sequenceFlow id="_4" sourceRef="_2" targetRef="transformOrderToHtml"/>
+    <sequenceFlow id="_5" sourceRef="transformOrderToHtml" targetRef="endEvent"/>
     <endEvent id="endEvent" name="End">
       <incoming>_5</incoming>
       <inputSet/>
@@ -89,7 +89,7 @@ execution.setVariable('order', JSON.stringify(order));
           <dc:Bounds height="18.8046875" width="37.0" x="44.363636363636424" y="410.5568181818182"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_19" id="Yaoqiang-_19">
+      <bpmndi:BPMNShape bpmnElement="transformOrderToHtml" id="Yaoqiang-transformOrderToHtml">
         <dc:Bounds height="74.0" width="105.0" x="184.68181818181844" y="154.27272727272728"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="46.8046875" width="66.0" x="204.18181818181844" y="169.87038352272728"/>
