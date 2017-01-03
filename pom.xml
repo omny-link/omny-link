@@ -119,6 +119,7 @@
   <modules>
     <module>acct-mgmt</module>
     <module>activiti-miwg</module>
+    <module>analytics</module>
     <module>catalog</module>
     <module>cust-mgmt</module>
     <module>fonts</module>

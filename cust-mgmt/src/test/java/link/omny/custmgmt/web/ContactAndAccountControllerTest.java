@@ -59,8 +59,8 @@ public class ContactAndAccountControllerTest {
     public void tearDown() {
         contactController.delete(TENANT_ID, contactId);
         // check clean
-        List<ShortContact> list = contactController.listForTenant(TENANT_ID,
-                null, null, null);
+        List<ShortContact> list = contactController.listForTenantAsJson(
+                TENANT_ID, null, null, null);
         assertEquals(0, list.size());
     }
 

@@ -79,11 +79,11 @@
       <artifactId>acctmgmt</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- <dependency>
+    <dependency>
       <groupId>link.omny.analytics</groupId>
       <artifactId>analytics</artifactId>
       <version>${project.version}</version>
-    </dependency> -->
+    </dependency>
     <dependency>
       <groupId>link.omny.catalog</groupId>
       <artifactId>catalog</artifactId>
@@ -141,16 +141,6 @@
       <artifactId>flexspace-omny</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>uk.co.rowdensurgery</groupId>
-      <artifactId>rowden-omny</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-    <!-- dependency>
-      <groupId>org.spotlightuk</groupId>
-      <artifactId>spotlight-omny</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency-->
     <dependency>
       <groupId>com.gardenatics</groupId>
       <artifactId>gardenatics-omny</artifactId>

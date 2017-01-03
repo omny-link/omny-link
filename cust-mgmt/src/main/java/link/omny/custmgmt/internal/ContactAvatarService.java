@@ -9,8 +9,7 @@ import java.util.Scanner;
 
 import javax.validation.constraints.NotNull;
 
-import lombok.NoArgsConstructor;
-
+import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
@@ -19,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-@NoArgsConstructor
 public class ContactAvatarService {
 
     private static final Logger LOGGER = LoggerFactory
@@ -31,7 +29,20 @@ public class ContactAvatarService {
 
     private File outputDir;
 
+    public ContactAvatarService() {
+        // Jasper Reports baulks if we include Xerces and Batik if we don't
+        // From
+        // http://mail-archives.apache.org/mod_mbox/xmlgraphics-batik-users/200501.mbox/%3C3AE413A5D1F1D44188D9D2810E67186FD41206@MOEEXC02.europe.bmw.corp%3E
+        t.addTranscodingHint(PNGTranscoder.KEY_XML_PARSER_CLASSNAME,
+                "com.sun.org.apache.xerces.internal.parsers.SAXParser");
+        t.addTranscodingHint(PNGTranscoder.KEY_XML_PARSER_VALIDATING,
+                new Boolean(false));
+        t.addTranscodingHint(PNGTranscoder.KEY_DOM_IMPLEMENTATION,
+                SVGDOMImplementation.getDOMImplementation());
+    }
+
     public ContactAvatarService(@NotNull String outputDir) {
+        this();
         this.outputDir = new File(outputDir);
         this.outputDir.mkdirs();
     }
