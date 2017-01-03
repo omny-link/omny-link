@@ -19,6 +19,7 @@
   "toolbar": [
     { "url": "work.html", "icon": "glyphicon-inbox", "description": "View your list of active tasks here", "name": "Work Management" },
     { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
+    { "url": "omny/analytics/contacts/contacts1", "icon": "omny-icon-address-book", "description": "A simple tabular report of contacts", "name": "First Contact Report" },
     { "url": "domain.html", "icon": "omny-icon-domain-model", "name": "Domain Model", "description": "Business glossary", "role": "super_admin" },
     { "url": "decisions-dmn.html", "icon": "glyphicon-list-alt", "name": "Decisions Repository", "description": "Home of your Decision Models", "role": "super_admin" },
     { "url": "memo-distribution.html", "icon": "glyphicon-send", "name": "Distribution Centre", "description": "Send messages to groups of contacts", "role": "admin" },
@@ -58,6 +59,9 @@
     { "name": "Search for companies", "ref": "companySearch", "url": "processes/link/omny/companiesHouse/SearchForCompany.bpmn" },
     { "name": "Update contact with decision logic", "ref": "UpdateContactWithDecisionLogic", "url": "processes/link/omny/custmgmt/UpdateContactWithDecisionLogic.bpmn" },
     { "name": "Update service level alerts", "ref": "RunDecisionLogicOnContact", "url": "processes/link/omny/alerts/RunAlertDecisionLogicOnContact.bpmn" }
+  ],
+  "reports": [
+    { "name": "Basic contacts", "ref": "contacts1" }
   ],
   "serviceLevel": {
     "inactiveStages":["discovery","review"],

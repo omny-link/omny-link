@@ -34,6 +34,12 @@ curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen http://local
 # GET sales funnel 
 curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://localhost:8082/omny/analytics/funnel
 
+# GET all tenant's contacts (JSON)
+curl -H 'Accept:application/json' -u tstephen:tstephen -v http://localhost:8082/corshamprimary/contacts/
+
+# GET all tenant's contacts (CSV)
+curl -H 'Accept:text/csv' -u tstephen:tstephen -v http://localhost:8082/corshamprimary/contacts/contacts.csv
+
 # GET contacts with a given tag
 curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://localhost:8082/omny/contacts/findByTag?tag=blue
 
@@ -46,11 +52,11 @@ curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://lo
 # record user activity
 curl -X POST -H 'Content-Type:application/json' -u tstephen:tstephen -v -d '' http://localhost:8082/msg/omny/omny.userActivity.json
 
-# current active users
+# current active users (those active on site right now)
 #curl -H 'Accept:application/json' -u tstephen:tstephen -v http://localhost:8082/gardenatics/contacts/findActive
 
 # get gravatar (hash of tstephen)
-curl -X GET -u tstephen:tstephen -v http://localhost:8082/omny/gravatars/7cb160cf07301abd60974781835c933e
+curl -X GET -u tstephen:tstephen -v http://localhost:8082/omny/gravatars/7cb160cf07301abd60974781835c933e.png
 
 GET notes for account
 curl  -H 'Accept: application/json' -v -u tim@omny.link:tstephen12 http://localhost:8082/accounts/17/notes

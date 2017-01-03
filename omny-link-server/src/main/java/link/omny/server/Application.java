@@ -3,6 +3,7 @@ package link.omny.server;
 import io.onedecision.engine.OneDecisionConfig;
 import link.omny.acctmgmt.AcctMgmtConfig;
 import link.omny.acctmgmt.model.SystemConfig;
+import link.omny.analytics.AnalyticsConfig;
 import link.omny.catalog.CatalogConfig;
 import link.omny.custmgmt.CustMgmtConfig;
 
@@ -19,10 +20,11 @@ import com.knowprocess.bpm.BpmConfiguration;
 import com.knowprocess.bpm.api.ActivitiApplicationSecurity;
 
 @Configuration
-@Import({ OneDecisionConfig.class, AcctMgmtConfig.class,
+@Import({ OneDecisionConfig.class, AnalyticsConfig.class, AcctMgmtConfig.class,
         BpmConfiguration.class, CustMgmtConfig.class, CatalogConfig.class })
-@ComponentScan(basePackages = { "link.omny.acctmgmt", "link.omny.catalog",
-        "link.omny.custmgmt", "link.omny.server", "io.onedecision.engine" })
+@ComponentScan(basePackages = { "link.omny.acctmgmt", "link.omny.analytics",
+        "link.omny.catalog", "link.omny.custmgmt", "link.omny.server",
+        "io.onedecision.engine" })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Bean

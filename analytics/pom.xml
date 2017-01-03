@@ -3,12 +3,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <name>Customer Management</name>
-  <description>Customer Management</description>
-  <inceptionYear>2015</inceptionYear>
+  <name>Analytics</name>
+  <description>Reporting tools</description>
+  <inceptionYear>2016</inceptionYear>
 
-  <groupId>link.omny.custmgmt</groupId>
-  <artifactId>custmgmt</artifactId>
+  <groupId>link.omny.analytics</groupId>
+  <artifactId>analytics</artifactId>
   <packaging>jar</packaging>
 
   <parent>
@@ -19,13 +19,30 @@
   </parent>
 
   <properties>
-    <start-class>link.omny.custmgmt.Application</start-class>
+    <start-class>link.omny.acctmgmt.Application</start-class>
   </properties>
 
+  <repositories>
+      <repository>
+        <id>jcenter-snapshots</id>
+        <name>jcenter</name>
+        <url>https://jcenter.bintray.com/</url>
+      </repository>
+  </repositories>
+ 
   <dependencies>
+	  <!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports -->
+		<dependency>
+		    <groupId>net.sf.jasperreports</groupId>
+		    <artifactId>jasperreports</artifactId>
+		    <version>6.1.0</version>
+		</dependency>
+	  
+    <!-- Required for native JSON support -->
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.json</artifactId>
+      <version>1.0.2</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -38,26 +55,53 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-csv</artifactId>
-      <version>1.2</version>
-    </dependency>
-    <dependency>
       <groupId>org.subethamail</groupId>
       <artifactId>subethasmtp-wiser</artifactId>
       <version>1.2</version>
       <optional>true</optional>
-      <!-- Swagger UI requires at least 2.5 -->
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+    
+    <!-- Generates REST documentation -->
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger2</artifactId>
+        <version>2.0.0</version>
+    </dependency>
+    <dependency>
+        <groupId>io.springfox</groupId>
+        <artifactId>springfox-swagger-ui</artifactId>
+        <version>2.0.0</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>io.onedecision</groupId>
+      <artifactId>onedecision-engine</artifactId>
+      <version>${onedecision.version}</version>
       <exclusions>
         <exclusion>
-          <artifactId>servlet-api</artifactId>
-          <groupId>javax.servlet</groupId>
+          <artifactId>ractive</artifactId>
+          <groupId>org.webjars</groupId>
         </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>link.omny.acctmgmt</groupId>
+      <artifactId>acctmgmt</artifactId>
+      <version>${omny-link.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>link.omny.custmgmt</groupId>
+      <artifactId>custmgmt</artifactId>
+      <version>${omny-link.version}</version>
+      <exclusions>
+      	<exclusion>
+      		<artifactId>xercesImpl</artifactId>
+      		<groupId>xerces</groupId>
+      	</exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -65,35 +109,7 @@
       <artifactId>work-mgmt</artifactId>
       <version>${work-mgmt.version}</version>
     </dependency>
-    <dependency>
-      <groupId>io.onedecision</groupId>
-      <artifactId>onedecision-engine</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/batik/batik-transcoder -->
-    <dependency>
-      <groupId>batik</groupId>
-      <artifactId>batik-transcoder</artifactId>
-      <version>1.6-1</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>xalan</artifactId>
-          <groupId>xalan</groupId>
-        </exclusion>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-        <exclusion>
-          <artifactId>xmlParserAPIs</artifactId>
-          <groupId>xml-apis</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>xml-apis</artifactId>
-          <groupId>xml-apis</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+    
     <!-- Web jars -->
     <dependency>
       <groupId>org.webjars</groupId>
@@ -104,6 +120,11 @@
       <groupId>org.webjars</groupId>
       <artifactId>Bootstrap-3-Typeahead</artifactId>
       <version>3.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>d3js</artifactId>
+      <version>3.5.5-1</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
@@ -127,17 +148,6 @@
     </dependency>    
   </dependencies>
 
-  <dependencyManagement>
-    <dependencies>
-      <!-- Update from 2.2.1 dependency of fop -->
-      <dependency>
-        <groupId>xerces</groupId>
-        <artifactId>xercesImpl</artifactId>
-        <version>[2.5.0,)</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <build>
     <plugins>
       <plugin>
@@ -156,5 +166,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>

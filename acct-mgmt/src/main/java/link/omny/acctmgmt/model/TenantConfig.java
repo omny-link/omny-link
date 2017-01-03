@@ -137,6 +137,9 @@ public class TenantConfig implements Serializable {
     private List<TenantPartial> partials;
 
     @Transient
+    private List<TenantReport> reports;
+
+    @Transient
     private List<TenantTemplate> templates;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = TenantTypeaheadControl.class)
@@ -277,6 +280,13 @@ public class TenantConfig implements Serializable {
 
     public void addProcess(TenantProcess tenantExtension) {
         getProcesses().add(tenantExtension);
+    }
+
+    public List<TenantReport> getReports() {
+        if (reports == null) {
+            reports = new ArrayList<TenantReport>();
+        }
+        return reports;
     }
 
     public List<TenantToolbarEntry> getToolbar() {
