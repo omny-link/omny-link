@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * REST web service for uploading and accessing a file of JSON Contacts (over
- * and above the CRUD offered by spring data).
+ * REST web service for fetching contacts aggregated in a way convenient for
+ * reporting.
  * 
  * @author Tim Stephenson
  */
