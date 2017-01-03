@@ -1,0 +1,1 @@
+curl -u tstephen:tstephen -v http://localhost:8082/omny/analytics/contacts/contacts1.jrxml
