@@ -14,6 +14,7 @@ import link.omny.acctmgmt.model.Tenant;
 import link.omny.acctmgmt.model.TenantConfig;
 import link.omny.acctmgmt.model.TenantExtension;
 import link.omny.acctmgmt.model.TenantProcess;
+import link.omny.acctmgmt.model.ThemeConfig;
 import link.omny.acctmgmt.repositories.TenantRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import lombok.Data;
@@ -25,10 +26,7 @@ import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.Deployment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
@@ -48,7 +46,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.knowprocess.bpm.api.ReportableException;
 
 @Controller
-@RequestMapping("/admin/tenants")
+@RequestMapping(value = "/admin/tenants")
 public class TenantController {
 
     protected static final Logger LOGGER = LoggerFactory
@@ -73,21 +71,18 @@ public class TenantController {
      * Create a new tenant.
      */
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "/tenants/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/", method = RequestMethod.POST)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public @ResponseBody ResponseEntity<?> create(
-            @PathVariable("id") String tenantId,
             @RequestBody Tenant tenant) {
-        tenant.setId(tenantId);
-
         tenantRepo.save(tenant);
 
-        tenant.setConfig(tenantConfigController.showTenant(tenantId));
+        tenant.setConfig(tenantConfigController.showTenant(tenant.getId()));
 
         for (TenantExtension process : tenant.getConfig().getProcesses()) {
             Deployment deployment = processEngine.getRepositoryService()
                     .createDeployment().addClasspathResource(process.getUrl())
-                    .tenantId(tenantId).deploy();
+                    .tenantId(tenant.getId()).deploy();
             LOGGER.info(String.format(
                     "Deployed process from %1$s, deployment id: %2$s",
                     process.getUrl(), deployment.getId()));
@@ -96,7 +91,7 @@ public class TenantController {
         UriComponentsBuilder builder = MvcUriComponentsBuilder
                 .fromController(getClass());
         HashMap<String, String> vars = new HashMap<String, String>();
-        vars.put("tenantId", tenantId);
+        vars.put("tenantId", tenant.getId());
         vars.put("id", tenant.getId().toString());
 
         HttpHeaders headers = new HttpHeaders();
@@ -159,90 +154,77 @@ public class TenantController {
     }
 
     /**
-     * @param id
-     *            The id of an existing tenant.
-     * @return The complete configuration for that tenant.
+     * @return Summary statistics for all tenants.
      */
-    @RequestMapping(value = "/admin/tenants", method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<TenantSummary> showAllTenants() {
         LOGGER.info(String.format("showAllTenants"));
 
-        // TODO not currently persisting tenants
-        // Iterable<TenantConfig> list = tenantRepo.findAll();
-        // for (TenantConfig tenant : list) {
-        List<TenantConfig> list = new ArrayList<TenantConfig>();
-        for (String tenantId : systemConfig.getTenants().split(",")) {
-            TenantConfig tenant = new TenantConfig(tenantId);
+        List<TenantSummary> result = new ArrayList<TenantSummary>();
+        Iterable<Tenant> list = tenantRepo.findAll();
+        for (Tenant tenant : list) {
+            TenantSummary summary = new TenantSummary();
+            summary.setTenantId(tenant.getId());
 
-            tenant.setContacts(contactRepo.countForTenant(tenantId));
-            tenant.setContactAlerts(contactRepo.countAlertsForTenant(tenantId));
+            try {
+                TenantConfig tenantConfig = tenantConfigController
+                        .showTenant(tenant.getId());
+                summary.setName(tenantConfig.getName());
+                summary.setTheme(tenantConfig.getTheme());
+            } catch (Exception e) {
+                LOGGER.error(String.format(
+                        "Unable to read tenant config for '%1$s'",
+                        tenant.getId()));
+            }
 
-            tenant.setDefinitions(processEngine.getRepositoryService()
+            UriComponentsBuilder builder = MvcUriComponentsBuilder
+                    .fromController(TenantConfigController.class);
+
+            Link detail = new Link(builder.path("/{tenantId}")
+                    .buildAndExpand(tenant.getId()).toUriString());
+            summary.add(detail);
+
+            summary.setContacts(contactRepo.countForTenant(tenant.getId()));
+            summary.setContactAlerts(contactRepo.countAlertsForTenant(tenant
+                    .getId()));
+            summary.setDefinitions(processEngine.getRepositoryService()
                     .createProcessDefinitionQuery()
                     .processDefinitionTenantId(tenant.getId()).count());
-            tenant.setActiveInstances(processEngine.getRuntimeService()
+            summary.setActiveInstances(processEngine.getRuntimeService()
                     .createProcessInstanceQuery()
                     .processInstanceTenantId(tenant.getId()).count());
-            tenant.setHistoricInstances(processEngine.getHistoryService()
+            summary.setHistoricInstances(processEngine.getHistoryService()
                     .createHistoricProcessInstanceQuery()
                     .processInstanceTenantId(tenant.getId()).count());
-            tenant.setJobs(processEngine.getManagementService()
+            summary.setJobs(processEngine.getManagementService()
                     .createJobQuery().jobId(tenant.getId()).count());
-            tenant.setTasks(processEngine.getTaskService().createTaskQuery()
+            summary.setTasks(processEngine.getTaskService().createTaskQuery()
                     .taskTenantId(tenant.getId()).count());
-            tenant.setUsers(processEngine.getIdentityService()
+            summary.setUsers(processEngine.getIdentityService()
                     .createUserQuery().memberOfGroup(tenant.getId()).count());
 
-            list.add(tenant);
+            result.add(summary);
         }
-        return wrap(list);
+        return result;
     }
 
     /**
-     * Delete an existing contact.
+     * Delete an existing tenant.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = { "application/json" })
+    @RequestMapping(value = "/admin/tenants/{id}", method = RequestMethod.DELETE, consumes = { "application/json" })
     public @ResponseBody void delete(@PathVariable("id") String id) {
         Tenant tenant = tenantRepo.findOne(id);
 
         tenantRepo.delete(tenant);
     }
 
-    private List<TenantSummary> wrap(Iterable<TenantConfig> list) {
-        List<TenantSummary> resources = new ArrayList<TenantSummary>();
-        for (TenantConfig contact : list) {
-            resources.add(wrap(contact));
-        }
-        return resources;
-    }
-
-    private TenantSummary wrap(TenantConfig tenant) {
-        TenantSummary resource = new TenantSummary();
-        BeanUtils.copyProperties(tenant, resource);
-        resource.setShortId(tenant.getId());
-        Link detail = linkTo(TenantRepository.class, tenant.getId())
-                .withSelfRel();
-        resource.add(detail);
-        resource.setSelfRef(detail.getHref());
-        return resource;
-    }
-
-    private Link linkTo(
-            @SuppressWarnings("rawtypes") Class<? extends CrudRepository> clazz,
-            String id) {
-        return new Link(clazz.getAnnotation(RepositoryRestResource.class)
-                .path() + "/" + id);
-    }
-
     @Data
     @EqualsAndHashCode(callSuper = true)
     public static class TenantSummary extends ResourceSupport {
-        private String shortId;
-        private String selfRef;
+        private String tenantId;
         private String name;
         private Long contacts;
-        private Long contactActions;
         private Long contactAlerts;
         private Long definitions;
         private Long activeInstances;
@@ -252,6 +234,7 @@ public class TenantController {
         private Long users;
         private Date lastLogin;
         private Date lastActivity;
+        private ThemeConfig theme;
         private List<TenantProcess> processes;
     }
 }

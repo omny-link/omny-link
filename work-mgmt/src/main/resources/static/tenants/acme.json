@@ -1,6 +1,10 @@
 { 
   "id": "acme", 
   "name": "Acme Inc.",
+    "theme": {
+    "logoUrl": "/images/acme-logo.png",
+    "iconUrl": "/images/icon/acme-icon-16x16.png"
+  },
   "show": { 
     "account":true, "activityAnalysis":true, "activityTracker":true,
     "budget":true, "companyBackground":false, "declaredSource":true,

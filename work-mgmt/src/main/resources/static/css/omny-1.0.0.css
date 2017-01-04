@@ -40,6 +40,15 @@ h1, h2, h3, h4, h5, h6 {
  *   grey 4:    b7b7b7
  */
 
+/* RESPONSIVE OVERRIDES */
+
+@media (min-width: 920px) {
+	.min-md-180  {
+	  min-width: 180px;
+	}
+}
+
+
 /* START BOOTSTRAP OVERRIDES */
 
 body {
@@ -453,8 +462,10 @@ h2 a.glyphicon:hover {
   position: relative;
   top: -18px;  
 }
-.navbar-brand img {
-  height: 79px;	
+.navbar-brand img,
+.brand-logo {
+  max-height: 80px;
+  max-width: 160px;
 }
 .navbar-top {
 	 background-color:white;

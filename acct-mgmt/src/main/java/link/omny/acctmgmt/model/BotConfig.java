@@ -1,8 +1,10 @@
 package link.omny.acctmgmt.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class BotConfig {
 
     private String apiKey;

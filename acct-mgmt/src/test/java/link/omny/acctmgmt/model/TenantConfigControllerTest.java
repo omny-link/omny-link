@@ -121,8 +121,8 @@ public class TenantConfigControllerTest {
     @Test
     public void testLocalJsonLifecycle() throws IOException {
         // CREATE
-        Tenant tenant = new Tenant();
-        tenantController.create(TEST_TENANT_ID, tenant);
+        Tenant tenant = new Tenant(TEST_TENANT_ID, null);
+        tenantController.create(tenant);
 
         // RETRIEVE
         TenantConfig tenantConfig2 = svc.showTenant(TEST_TENANT_ID);
@@ -156,7 +156,7 @@ public class TenantConfigControllerTest {
         // CREATE
         Tenant tenant = new Tenant(REMOTE_TEST_TENANT_ID,
                 REMOTE_TEST_TENANT_CONFIG_URL);
-        tenantController.create(TEST_TENANT_ID, tenant);
+        tenantController.create(tenant);
 
         // RETRIEVE
         TenantConfig tenantConfig2 = svc.showTenant(TEST_TENANT_ID);

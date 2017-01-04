@@ -37,7 +37,7 @@ import com.knowprocess.bpm.web.Md5HashUtils;
 import com.knowprocess.resource.spi.RestGet;
 
 @Controller
-// @RequestMapping("/admin/tenants")
+@RequestMapping(value = "/tenants")
 public class TenantConfigController {
 
     protected static final Logger LOGGER = LoggerFactory
@@ -69,7 +69,7 @@ public class TenantConfigController {
      *            The id of an existing tenant.
      * @return The complete configuration for that tenant.
      */
-    @RequestMapping(value = "/tenants/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody TenantConfig showTenant(@PathVariable("id") String id) {
         LOGGER.info(String.format("showTenant"));
 
@@ -87,7 +87,7 @@ public class TenantConfigController {
                         new TypeReference<TenantConfig>() {
                         }));
                 tenant.getConfig().setId(id);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new IllegalArgumentException(String.format(
                         "Unable to read legacy tenant config from '%1$s'",
                         resource));
@@ -107,7 +107,7 @@ public class TenantConfigController {
                 String msg = String.format(
                         "Unable to read tenant config for '%1$s' from '%2$s'",
                         id, tenant.getRemoteUrl());
-                LOGGER.warn(msg);
+                LOGGER.warn(msg, e);
                 throw new IllegalArgumentException(msg);
             }
         }

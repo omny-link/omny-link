@@ -278,7 +278,7 @@ public class DeploymentController {
                 validator.setXsltResources(VALIDATOR_RESOURCES);
             } catch (TransformerConfigurationException e) {
                 LOGGER.error(String.format(
-                        "Unable to location deployment validator: %1$s",
+                        "Unable to locate deployment validator: %1$s",
                         VALIDATOR_RESOURCES), e);
             }
         }

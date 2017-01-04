@@ -1,6 +1,10 @@
 { 
   "id": "omny", 
   "name": "Omny Link",
+  "theme": {
+    "logoUrl": "/images/omny-logo.png",
+    "iconUrl": "/images/icon/omny-icon-16x16.png"
+  },
   "show": { 
     "account":true, "activityAnalysis":true, "activityTracker":true, "budget":true, "companyBackground":false,
     "documents": true, "financials":true, "marketing":true, "merge":true, "supportBar": true
