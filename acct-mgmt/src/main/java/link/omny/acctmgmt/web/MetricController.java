@@ -53,19 +53,19 @@ public class MetricController {
         List<TenantSummary> list = tenantController
                 .showAllTenants();
         for (TenantSummary tenant : list) {
-            Metric defnMetric = new Metric(tenant.getShortId(), "definitions",
+            Metric defnMetric = new Metric(tenant.getTenantId(), "definitions",
                     tenant.getDefinitions(), now);
             metricRepo.save(defnMetric);
-            Metric historicInstancesMetric = new Metric(tenant.getShortId(),
+            Metric historicInstancesMetric = new Metric(tenant.getTenantId(),
                     "historicInstances", tenant.getHistoricInstances(), now);
             metricRepo.save(historicInstancesMetric);
-            Metric instanceMetric = new Metric(tenant.getShortId(),
+            Metric instanceMetric = new Metric(tenant.getTenantId(),
                     "instances", tenant.getActiveInstances(), now);
             metricRepo.save(instanceMetric);
-            Metric jobMetric = new Metric(tenant.getShortId(), "jobs",
+            Metric jobMetric = new Metric(tenant.getTenantId(), "jobs",
                     tenant.getJobs(), now);
             metricRepo.save(jobMetric);
-            Metric userMetric = new Metric(tenant.getShortId(), "users",
+            Metric userMetric = new Metric(tenant.getTenantId(), "users",
                     tenant.getUsers(), now);
             metricRepo.save(userMetric);
         }

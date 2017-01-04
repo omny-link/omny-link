@@ -5,8 +5,8 @@
 # LIST GLOBAL CONFIG
 curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/configuration/
 
-# LIST TENANT METRICS (SNAPHOT)
-curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/tenants/
+# LIST TENANT METRICS (SNAPSHOT)
+curl -H "Accept:application/json" -u tstephen:tstephen -v http://localhost:8082/admin/tenants/
 
 # RECORD TENANT METRICS
 curl -X POST -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/metrics/
@@ -15,24 +15,26 @@ curl -X POST -H "Accept:application/json" -u tstephen:tstephen http://localhost:
 curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/metrics/
 
 # LIST HISTORIC METRICS FOR SINGLE TENANT
- curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/metrics/
+curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/metrics/
 
 #
 # PER TENANT
 #
 
-# CREATE TENANT
-curl -H "Accept:application/json" -H "Content-Type: application/json" -X POST -d '{ "tenantId":"omny" }' -u tstephen:tstephen http://localhost:8082/tenantConfigs
+# CREATE TENANT (assumes config already embedded)
+curl -H "Accept:application/json" -H "Content-Type: application/json" -X POST -d '{ "id":"omny" }' -u tstephen:tstephen http://localhost:8082/admin/tenants/
+# CREATE TENANT (supply config already hosted externally)
+curl -H "Accept:application/json" -H "Content-Type: application/json" -X POST -d '{ "id":"foobar", "remoteUrl":"https://api.omny.link/tenants/omny.json" }' -u tstephen:tstephen -v http://localhost:8082/admin/tenants/
 
-# 
-curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/admin/tenants/omny
-
-# CREATE TENANT BOT 
-curl -H "Accept:application/json" -X POST -u tstephen:tstephen http://localhost:8083/tenants/sdu/bot
-
-# FORCE RECREATE BOT
- curl -v -H "Accept:application/json" -X POST -u tstephen:tstephen http://localhost:8083/tenants/sdu/bot?force=true
- 
-# LIST tenant config
+# DISPLAY TENANT CONFIG
+curl -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/tenants/omny
 curl -H "Accept:application/json" -X GET -u tstephen:tstephen http://localhost:8082/tenants/omny.json
 curl -H "Accept:application/json" -X GET -u tstephen:tstephen https://api.omny.link/tenants/mazatos.json
+
+# CREATE TENANT BOT 
+curl -H "Accept:application/json" -X POST -u tstephen:tstephen http://localhost:8083/admin/tenants/foobar/bot
+
+# FORCE RECREATE BOT
+ curl -v -H "Accept:application/json" -X POST -u tstephen:tstephen http://localhost:8083/admin/tenants/foobar/bot?force=true
+ 
+

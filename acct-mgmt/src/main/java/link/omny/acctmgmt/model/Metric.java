@@ -73,7 +73,7 @@ public class Metric implements Serializable {
     @JsonProperty
     protected Date occurred;
 
-    @ManyToOne(optional = false, targetEntity = CohortPerformance.class)
+    @ManyToOne(optional = true, targetEntity = CohortPerformance.class)
     private CohortPerformance cohort;
 
     public Metric(String tenantId, String name, boolean bool) {

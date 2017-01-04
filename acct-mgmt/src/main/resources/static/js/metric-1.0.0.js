@@ -13,7 +13,7 @@ var ractive = new AuthenticatedRactive({
     csrfToken: getCookie(CSRF_COOKIE),
     metrics: [],
     //saveObserver:false,
-    title: 'Metric Management',
+    title: 'Metrics',
     username: localStorage['username'],
     age: function(timeString) {
       if (timeString==undefined) return;

@@ -209,7 +209,7 @@ public class ProcessInstanceController {
                 .createHistoricProcessInstanceQuery()
                 .processInstanceTenantId(tenantId).finishedBefore(beforeDate)
                 .orderByProcessInstanceEndTime().asc().list();
-        LOGGER.warn(String.format("Found %1$d instances to archive for %1$s",
+        LOGGER.warn(String.format("Found %1$d instances to archive for %2$s",
                 archivedInstances.size(), tenantId));
         int count = 0;
         for (HistoricProcessInstance hpi : archivedInstances) {
