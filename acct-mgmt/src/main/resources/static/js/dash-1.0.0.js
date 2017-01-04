@@ -89,7 +89,7 @@ var ractive = new AuthenticatedRactive({
       });
     },
     sortAsc: true,
-    sortColumn: 'shortId',
+    sortColumn: 'tenantId',
     sorted: function(column) {
       console.info('sorted');
       if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
@@ -139,7 +139,7 @@ var ractive = new AuthenticatedRactive({
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/admin/tenants',
+      url: ractive.getServer()+'/admin/tenants/',
       crossDomain: true,
       success: function( data ) {
         ractive.set('tenants', data);
@@ -183,7 +183,6 @@ var ractive = new AuthenticatedRactive({
 
 ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
   console.log('searchTerm changed');
-  ractive.showResults();
   setTimeout(function() {
     ractive.set('searchMatched',$('#tenantsTable tbody tr').length);
   }, 500);
