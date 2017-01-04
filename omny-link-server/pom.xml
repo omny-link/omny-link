@@ -137,6 +137,11 @@
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>uk.co.carquake</groupId>
+      <artifactId>carquake-omny</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
       <groupId>uk.co.flexspace</groupId>
       <artifactId>flexspace-omny</artifactId>
       <version>1.0-SNAPSHOT</version>
