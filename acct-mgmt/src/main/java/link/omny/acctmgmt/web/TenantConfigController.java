@@ -162,8 +162,11 @@ public class TenantConfigController {
                                     .readFromClasspath("/" + process.getUrl()),
                             latestDeployedBpmn)) {
                         process.setValid(true);
-                        process.setDescription(pd.getDescription());
+                    } else {
+                        process.setStatus("warning");
+                        process.setValid(false);
                     }
+                    process.setDescription(pd.getDescription());
                 } catch (Throwable t) {
                     LOGGER.error(String
                             .format("Problem loading process from %1$s, check configuration",
@@ -175,6 +178,8 @@ public class TenantConfigController {
                          ;
                      }
                 }
+            } else {
+                // Missing will be flagged as an error
             }
         }
 
