@@ -48,6 +48,7 @@
     { "name": "Ad-Hoc Task from external", "ref": "HandleAdHocTask", "url": "processes/link/omny/casemgmt/HandleAdHocTask.bpmn" },
     { "name": "Check service levels", "ref": "RunDecisionLogicForAllContacts", "url": "processes/link/omny/custmgmt/RunDecisionLogicForAllContacts.bpmn" },
     { "name": "Create contact and account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
+    { "name": "De-duplicate contact and account", "ref": "DedupeContact", "url": "processes/link/omny/custmgmt/DedupeContact.bpmn" },
     { "name": "Import contact", "ref": "ImportContact", "url": "processes/link/omny/website/ImportContact.bpmn" },
     { "name": "Raise ticket", "ref": "RaiseTicket", "url": "processes/link/omny/support/RaiseTicket.bpmn" },
     { "name": "Record an enquiry", "ref": "RecordEnquiry", "url": "processes/link/omny/website/RecordEnquiry.bpmn" },
