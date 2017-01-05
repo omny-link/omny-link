@@ -313,6 +313,7 @@ var ractive = new AuthenticatedRactive({
         delete tmp.stockCategory;
         delete tmp.stockCategoryId;
       }
+      delete tmp.tagsAsList;
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save stockItem'+JSON.stringify(tmp)+' ...');
       $.ajax({
