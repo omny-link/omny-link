@@ -143,7 +143,7 @@ execution.setVariable('contactId',contactId);]]></script>
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/searchByEmail?email=${contact.getString('owner')}</activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/searchByEmail?email=${contact.get('owner')}</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Accept:application/json</activiti:string>
