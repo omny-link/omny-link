@@ -465,6 +465,8 @@ h2 a.glyphicon:hover {
 .navbar-brand img,
 .brand-logo {
   max-height: 80px;
+}
+.brand-logo {
   max-width: 160px;
 }
 .navbar-top {
