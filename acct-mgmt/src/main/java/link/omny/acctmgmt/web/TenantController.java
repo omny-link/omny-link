@@ -197,7 +197,7 @@ public class TenantController {
                     .createHistoricProcessInstanceQuery()
                     .processInstanceTenantId(tenant.getId()).count());
             summary.setJobs(processEngine.getManagementService()
-                    .createJobQuery().jobId(tenant.getId()).count());
+                    .createJobQuery().jobTenantId(tenant.getId()).count());
             summary.setTasks(processEngine.getTaskService().createTaskQuery()
                     .taskTenantId(tenant.getId()).count());
             summary.setUsers(processEngine.getIdentityService()
