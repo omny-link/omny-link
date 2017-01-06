@@ -88,19 +88,5 @@ public class CustMgmtConfig extends RepositoryRestMvcConfiguration {
         return factory;
     }
 
-    // @Bean
-    // public Jackson2ObjectMapperBuilder jacksonBuilder() {
-    // Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-    // // builder.indentOutput(true).dateFormat(
-    // // new SimpleDateFormat("yyyy-MM-dd"));
-    // builder.serializationInclusion(JsonInclude.Include.NON_EMPTY);
-    // // builder.deserializerByType(Contact.class, new
-    // // JsonContactDeserializer());
-    // // builder.serializerByType(Extension.class, new
-    // // JsonExtensionSerializer());
-    //
-    // return builder;
-    // }
-
 }
 

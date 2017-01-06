@@ -14,9 +14,11 @@ import link.omny.catalog.model.CustomStockItemField;
 import link.omny.catalog.model.MediaResource;
 import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
+import link.omny.catalog.repositories.CustomStockItemRepository;
 import link.omny.catalog.repositories.MediaResourceRepository;
 import link.omny.catalog.repositories.StockCategoryRepository;
 import link.omny.catalog.repositories.StockItemRepository;
+import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -64,6 +66,9 @@ public class StockItemController {
 
     @Autowired
     private StockItemRepository stockItemRepo;
+
+    @Autowired
+    private CustomStockItemRepository customStockItemRepo;
 
     @Autowired
     private StockCategoryRepository stockCategoryRepo;
@@ -187,18 +192,22 @@ public class StockItemController {
     }
 
     /**
-     * Return just the matching stockItems (probably will be one in almost every
-     * case).
+     * Return just the stock items for a given stock category name.
      * 
-     * @return stockItems for that tenant.
+     * @return stockItems for that tenant and stock category.
      */
-    @RequestMapping(value = "/stock-category/{locationName}", method = RequestMethod.GET)
-    public @ResponseBody List<ShortStockItem> getForLocationName(
+    @RequestMapping(value = "/findByStockCategoryName/{categoryName}", method = RequestMethod.GET)
+    public @ResponseBody List<ShortStockItem> findByStockCategoryName(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("locationName") String locationName) {
+            @PathVariable("categoryName") String categoryName) {
 
-        return wrap(stockItemRepo
-                .findAllForCategoryName(locationName, tenantId));
+        if (categoryName == null) {
+            throw new IllegalArgumentException(
+                    String.format("You must specify the category name to search for"));
+        }
+
+        return wrap(stockItemRepo.findAllForCategoryName(
+                categoryName.toLowerCase(), tenantId));
     }
 
     /**
@@ -237,7 +246,9 @@ public class StockItemController {
             @RequestBody StockItem updatedStockItem) {
         StockItem stockItem = stockItemRepo.findOne(stockItemId);
 
-        BeanUtils.copyProperties(updatedStockItem, stockItem, "id");
+        NullAwareBeanUtils.copyNonNullProperties(updatedStockItem, stockItem,
+                "id");
+
         stockItem.setTenantId(tenantId);
         stockItemRepo.save(stockItem);
     }

@@ -500,6 +500,8 @@ public class OrderController {
         @JsonDeserialize(using = JsonCustomOrderFieldDeserializer.class)
         @JsonSerialize(using = JsonCustomFieldSerializer.class)
         private List<CustomOrderField> customFields;
+        // TOOD consider splitting this into second call to permit single DB
+        // query
         private List<ShortOrderItem> orderItems;
         private Long contactId;
         private String stage;
