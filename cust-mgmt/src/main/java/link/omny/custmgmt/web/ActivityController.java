@@ -1,11 +1,16 @@
 package link.omny.custmgmt.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import javax.transaction.Transactional;
 
 import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.repositories.ActivityRepository;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 /**
  * REST web service for uploading and accessing a file of JSON Activities (over
@@ -76,24 +82,32 @@ public class ActivityController {
         return result;
     }
 
-    // /**
-    // * @return just the latest matching activity.
-    // */
-    // @RequestMapping(value = "/findLatestByTimeTypeAndContent", method =
-    // RequestMethod.GET, params = { "tag" })
-    // public @ResponseBody ShortActivity findLatestByTimeTypeAndContent(
-    // @PathVariable("tenantId") String tenantId,
-    // @RequestParam("time") String time,
-    // @RequestParam("type") String type,
-    // @RequestParam("content") String content) {
-    // LOGGER.debug(String.format("List contacts for tag %1$s", type));
-    //
-    // List<Activity> list = repo.findByTimeTypeAndContent(time, type,
-    // content, tenantId);
-    // LOGGER.info(String.format("Found %1$s activities", list.size()));
-    //
-    // return wrap(list.get(0));
-    // }
+    /**
+     * Return all activities associated with a contact.
+     * 
+     * @return contacts matching that contact.
+     * @throws BusinessEntityNotFoundException
+     */
+    @RequestMapping(value = "/findByContactId/{contactId}", method = RequestMethod.GET)
+    @Transactional
+    public @ResponseBody List<ShortActivity> findByContactId(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("contactId") String contactId)
+            throws BusinessEntityNotFoundException {
+        LOGGER.debug(String.format("Find activities for contact %1$s",
+                contactId));
+
+        return wrapShort(repo.findByContactId(Long.parseLong(contactId)));
+    }
+
+    private List<ShortActivity> wrapShort(List<Activity> list) {
+        List<ShortActivity> resources = new ArrayList<ShortActivity>(
+                list.size());
+        for (Activity activity : list) {
+            resources.add(wrap(activity));
+        }
+        return resources;
+    }
 
     private ShortActivity wrap(Activity activity) {
         ShortActivity resource = new ShortActivity();
@@ -113,10 +127,11 @@ public class ActivityController {
     }
 
     @Data
+    @EqualsAndHashCode(callSuper = true)
     public static class ShortActivity extends ResourceSupport {
         private String selfRef;
         private String type;
-        private String occurred;
+        private Date occurred;
         private String content;
     }
 }

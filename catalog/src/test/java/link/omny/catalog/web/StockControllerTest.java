@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = TestApplication.class)
 @WebAppConfiguration
-public class StockControllersTest {
+public class StockControllerTest {
 
     private static final String CATEGORY_BOREHAMWOOD = "Borehamwood";
 
@@ -112,6 +112,8 @@ public class StockControllersTest {
         assertNotNull(stockItem.getId());
 
         GregorianCalendar cal = new GregorianCalendar();
+        // StockItem stockItem = new StockItem();
+        stockItem.setId(itemId);
         stockItem.addCustomField(new CustomStockItemField("tenancyEndDate",
                 isoFormatter.format(cal.getTime())));
 

@@ -37,9 +37,9 @@ interface StockCategoryCompleteProjection {
 
     String getCountry();
 
-    double getLat();
+    Double getLat();
 
-    double getLng();
+    Double getLng();
 
     String getMapUrl();
 

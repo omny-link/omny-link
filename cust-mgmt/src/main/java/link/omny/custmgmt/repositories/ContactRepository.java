@@ -7,6 +7,7 @@ import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.ContactExcept;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -15,6 +16,10 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(excerptProjection = ContactExcept.class, path = "/contacts")
 public interface ContactRepository extends CrudRepository<Contact, Long> {
+
+    @Override
+    @EntityGraph("contactWithAccount")
+    Contact findOne(@Param("id") Long id);
 
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (c.stage IS NULL OR c.stage != 'deleted') ORDER BY c.lastUpdated DESC")
     List<Contact> findAllForTenant(@Param("tenantId") String tenantId);
@@ -26,17 +31,21 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     long countAlertsForTenant(@Param("tenantId") String tenantId);
 
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (c.stage IS NULL OR c.stage != 'deleted') AND (owner = :userId) ORDER BY c.lastUpdated DESC")
+    @EntityGraph("contactWithAccount")
     List<Contact> findAllForTenantOwnedByUser(
             @Param("tenantId") String tenantId, @Param("userId") String userId);
 
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND c.doNotEmail = false AND (c.stage IS NULL OR c.stage != 'deleted') ORDER BY c.lastUpdated DESC")
+    @EntityGraph("contactWithAccount")
     List<Contact> findAllEmailableForTenant(@Param("tenantId") String tenantId);
 
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (c.stage IS NULL OR c.stage != 'deleted') ORDER BY c.lastUpdated DESC")
+    @EntityGraph("contactWithAccount")
     List<Contact> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND c.doNotEmail = false AND (stage IS NULL OR stage != 'deleted') ORDER BY c.lastUpdated DESC")
+    @EntityGraph("contactWithAccount")
     List<Contact> findEmailablePageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
@@ -70,6 +79,7 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
             @Param("accountName") String accountName);
 
     @Query("SELECT c FROM Contact c WHERE c.email = :email AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId")
+    @EntityGraph("contactWithAccount")
     List<Contact> findByEmail(@Param("email") String email,
             @Param("tenantId") String tenantId);
 
@@ -97,10 +107,12 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
             @Param("tenantId") String tenantId);
 
     @Query("SELECT c FROM Contact c INNER JOIN c.activity a WHERE a.occurred > :sinceDate AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId ORDER BY a.occurred DESC")
+    @EntityGraph("contactWithActivities")
     List<Contact> findActiveForTenant(@Param("sinceDate") Date sinceDate,
             @Param("tenantId") String tenantId);
 
     @Query("SELECT c FROM Contact c INNER JOIN c.account a WHERE a.id = :accountId AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId ORDER BY c.lastName DESC")
+    @EntityGraph("contactWithAccount")
     List<Contact> findByAccountId(@Param("accountId") Long accountId,
             @Param("tenantId") String tenantId);
 
