@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+import link.omny.catalog.CatalogException;
 import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.MediaResource;
 import link.omny.catalog.model.StockCategory;
@@ -34,7 +35,7 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -53,7 +55,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  * @author Tim Stephenson
  */
-@Controller
+@RestController
 @RequestMapping(value = "/{tenantId}/stock-categories")
 public class StockCategoryController {
 
@@ -77,7 +79,7 @@ public class StockCategoryController {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private GeolocationService geo;
+    private GeoLocationService geo;
 
     public int getSearchRadius() {
         if (iSearchRadius == 0) {
@@ -150,6 +152,7 @@ public class StockCategoryController {
     }
 
     @RequestMapping(value = "/findByName", method = RequestMethod.GET)
+    @Transactional(readOnly = true)
     public @ResponseBody ShortStockCategory findByName(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("name") String name,
@@ -168,6 +171,7 @@ public class StockCategoryController {
             throw new EntityNotFoundException(String.format(
                     "No Stock Category with name %1$s", name));
         }
+        geocode(category);
 
         filter(category, expandTags(tag));
 
@@ -185,6 +189,7 @@ public class StockCategoryController {
      *             throws an exception.
      */
     @RequestMapping(value = "/findByLocation", method = RequestMethod.GET)
+    @Transactional(readOnly = true)
     public @ResponseBody List<ShortStockCategory> findByLocation(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "q", required = false) String q,
@@ -222,17 +227,13 @@ public class StockCategoryController {
             // Capture tags now before filtering
             String allTagsAvail = stockCategory.getTags();
             try {
-                if (stockCategory.getLng() == null) {
-                    stockCategory.setGeoPoint(geo.locate(stockCategory
-                            .getPostCode()));
-                    stockCategoryRepo.save(stockCategory);
-                }
+                geocode(stockCategory);
 
                 if (matchQuery(q, qPoint, stockCategory)) {
                     filter(stockCategory, tags);
                     list.add(stockCategory);
                 }
-            } catch (UnknownHostException e) {
+            } catch (CatalogException e) {
                 LOGGER.error(String
                         .format("Unable to geo locate '%1$s', will return unfiltered list",
                                 stockCategory.getPostCode()));
@@ -252,8 +253,29 @@ public class StockCategoryController {
                                 - ((int) o2.getDistance()));
 
         LOGGER.info(String.format("Found %1$s stock categories", list.size()));
-
         return wrap(list);
+    }
+
+    protected void geocode(StockCategory stockCategory) {
+        if (stockCategory.getLng() == null
+                && stockCategory.getPostCode() != null) {
+            try {
+                stockCategory.setGeoPoint(geo.locate(stockCategory
+                    .getPostCode()));
+                stockCategoryRepo.save(stockCategory);
+            } catch (IOException e) {
+
+                String msg  = String
+                        .format("Unable to geo locate '%1$s', details follow",
+                                stockCategory.getPostCode());
+                LOGGER.error(msg, e);
+                throw new CatalogException(msg);
+            }
+        } else if (stockCategory.getLng() == null) {
+            LOGGER.warn(String
+                    .format("Skipping geo-coding because postcode of stock category %1$d is missing",
+                            stockCategory.getId()));
+        }
     }
 
     private List<StockCategory> findStockCategories(String tenantId,
@@ -303,6 +325,7 @@ public class StockCategoryController {
             StockCategory stockCategory) {
         return q == null
                 || q.trim().length() == 0
+                || stockCategory.getGeoPoint() == null
                 || geo.distance(qPoint, stockCategory) <= getSearchRadius();
     }
 
@@ -341,6 +364,11 @@ public class StockCategoryController {
             @RequestBody StockCategory updatedStockCategory) {
         StockCategory stockCategory = stockCategoryRepo
                 .findOne(stockCategoryId);
+        try {
+            geocode(stockCategory);
+        } catch (CatalogException e) {
+            ; // already logged
+        }
 
         BeanUtils.copyProperties(updatedStockCategory, stockCategory, "id",
                 "item");
@@ -451,7 +479,6 @@ public class StockCategoryController {
         private String price;
         private String tags;
         private String status;
-        private StockCategory stockCategory;
         private Date created;
         private Date lastUpdated;
         private String tenantId;

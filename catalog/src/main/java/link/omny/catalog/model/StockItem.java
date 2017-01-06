@@ -22,6 +22,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -50,6 +53,17 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @ToString(exclude = { "sizeString" })
 @Entity
 @Table(name = "OL_STOCK_ITEM")
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "stockItemWithAll", attributeNodes = {
+            @NamedAttributeNode("customFields"),
+                // Unfortunately don't seem to be able to get category custom
+                // fields as would result in cartesian product
+            @NamedAttributeNode("stockCategory")
+        }),
+        @NamedEntityGraph(name = "stockItemWithCustomFields", attributeNodes = {
+            @NamedAttributeNode("customFields")
+        })
+})
 @AllArgsConstructor
 @NoArgsConstructor
 public class StockItem implements Serializable {
@@ -119,10 +133,12 @@ public class StockItem implements Serializable {
     private StockCategory stockCategory;
 
     @JsonProperty
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockItem")
+    @Transient
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
+    // "stockItem")
     private List<MediaResource> images;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockItem")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockItem")
     @JsonDeserialize(using = JsonCustomStockItemFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomStockItemField> customFields;

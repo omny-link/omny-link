@@ -14,8 +14,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(path = "/accounts")
 public interface AccountRepository extends CrudRepository<Account, Long> {
 
-    List<Account> findByName(@Param("name") String name);
-
     @Query("SELECT a FROM Account a WHERE (a.stage IS NULL OR a.stage != 'deleted') AND a.tenantId = :tenantId ORDER BY a.lastUpdated DESC")
     List<Account> findAllForTenant(@Param("tenantId") String tenantId);
 

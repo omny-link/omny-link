@@ -14,6 +14,9 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(path = "/orders")
 public interface OrderRepository extends CrudRepository<Order, Long> {
 
+    @Override
+    Order findOne(Long id);
+
     @Query("SELECT o FROM Order o WHERE o.stage != 'deleted' AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
     List<Order> findAllForTenant(@Param("tenantId") String tenantId);
 

@@ -92,7 +92,7 @@ public class OrderItem implements Serializable {
     @RestResource(rel = "order")
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @RestResource(rel = "stockItem")
     private StockItem stockItem;
 
