@@ -454,7 +454,6 @@ var ractive = new AuthenticatedRactive({
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.hasRole('power-user')) $('.power-user').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
-        ractive.fetchAccounts();
         ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
         ractive.set('saveObserver', true);
       }
@@ -463,9 +462,10 @@ var ractive = new AuthenticatedRactive({
   fetchAccounts: function () {
     console.info('fetchAccounts...');
     ractive.set('saveObserver', false);
+    $( document ).ajaxStart(function() {});
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/accounts/?projection=typeahead',
+      url: ractive.getServer()+ractive.get('tenant.id')+'/accounts/',
       crossDomain: true,
       success: function( data ) {
         if (data['_embedded'] != undefined) {
@@ -483,17 +483,17 @@ var ractive = new AuthenticatedRactive({
       }
     });
   },
-  fetchAccountContacts: function () {
-    console.info('fetchAccountContacts...');
+  fetchActivities: function() {
+    console.info('fetchActivities...');
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/contacts/findByAccountId?accountId='+ractive.get('current.accountId'),
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/activities/findByContactId/'+ractive.id(ractive.get('current')),
       crossDomain: true,
       success: function( data ) {
         ractive.set('saveObserver', false);
-        ractive.set('current.account.contacts',data);
-        console.log('fetched '+data.length+' contacts for account');
+        ractive.set('current.activities',data);
+        console.log('fetched '+data.length+' activities for contact');
         ractive.set('saveObserver', true);
       }
     });
@@ -671,7 +671,6 @@ var ractive = new AuthenticatedRactive({
   },
   initAccountTypeahead: function() {
     console.info();
-    //if (ractive.get('accountsTypeahead')==undefined) ractive.fetchAccounts();
  // set up account typeahead
     $('#curAccountName').typeahead({
       items:'all',
@@ -1082,6 +1081,9 @@ var ractive = new AuthenticatedRactive({
   select: function(contact) {
     console.log('select: '+JSON.stringify(contact));
     ractive.set('saveObserver',false);
+    if (ractive.get('tenant.show.account') && ractive.get('accounts').length==0) {
+      ractive.fetchAccounts();
+    } 
     if (contact.account == undefined || contact.account == '') contact.account = new Object();
     // default owner to current user
     if (contact.owner == undefined || contact.owner == '') contact.owner = ractive.get('username');
@@ -1116,6 +1118,7 @@ var ractive = new AuthenticatedRactive({
         ractive.fetchNotes();
         if (ractive.get('tenant.show.documents')) ractive.fetchDocs();
         ractive.sortChildren('notes','created',false);
+        if (ractive.get('tenant.show.activityAnalysis') || ractive.get('tenant.show.activityTracker')) ractive.fetchActivities();
         ractive.addServiceLevelAlerts();
         ractive.sortChildren('documents','created',false);
         if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();

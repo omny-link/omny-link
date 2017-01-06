@@ -37,4 +37,10 @@ curl -H "Accept:application/json" -X POST -u tstephen:tstephen http://localhost:
 # FORCE RECREATE BOT
  curl -v -H "Accept:application/json" -X POST -u tstephen:tstephen http://localhost:8083/admin/tenants/foobar/bot?force=true
  
+# GET single tenant config
+curl -H "Accept:application/json" -X GET -u tstephen:tstephen http://localhost:8082/tenants/omny.json
+curl --max-time 10000 -w "@omny-link-server/src/test/resources/curl-format.txt" \
+  -H "Accept:application/json" -u tstephen:tstephen \
+  -o /dev/null -s http://localhost:8082/tenants/omny.json
+curl -H "Accept:application/json" -X GET -u tstephen:tstephen https://api.omny.link/tenants/mazatos.json
 

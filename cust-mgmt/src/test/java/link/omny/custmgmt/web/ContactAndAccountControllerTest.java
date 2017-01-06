@@ -9,8 +9,12 @@ import java.util.List;
 import link.omny.custmgmt.Application;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.CustomContactField;
+import link.omny.custmgmt.model.CustomField;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.repositories.CustomContactFieldRepository;
+import link.omny.custmgmt.web.ContactController.ContactResource;
 import link.omny.custmgmt.web.ContactController.ShortContact;
 
 import org.junit.After;
@@ -41,6 +45,9 @@ public class ContactAndAccountControllerTest {
 
     @Autowired
     private ContactRepository contactRepo;
+
+    @Autowired
+    private CustomContactFieldRepository customContactRepo;
 
     @Autowired
     private AccountRepository accountRepo;
@@ -88,7 +95,7 @@ public class ContactAndAccountControllerTest {
         contactController.setAccount(TENANT_ID, contactId, "/accounts/"
                 + acctId);
 
-        List<ShortContact> contactResults = contactController.searchByEmail(
+        List<ContactResource> contactResults = contactController.searchByEmail(
                 TENANT_ID, contact.getEmail());
         assertEquals(1, contactResults.size());
         assertContactEquals(contact, acct, contactResults);
@@ -97,13 +104,19 @@ public class ContactAndAccountControllerTest {
         assertNotNull(contact2.getFirstContact());
         assertNotNull(contact2.getLastUpdated());
 
-        // SIMULATE REST BEHAVIOUR
+        // SIMULATE REST UPDATE BEHAVIOUR
         contact2.setAccount(null);
         contactController.update(TENANT_ID, contactId, contact2);
         contact2 = contactRepo.findOne(contactId);
         assertNotNull("Update has de-linked contact and account",
                 contact2.getAccount());
         assertEquals(acct.getName(), contact2.getAccount().getName());
+
+        // FETCH ALL CONTACTS
+        List<ShortContact> contacts = contactController.listForTenantAsJson(
+                TENANT_ID, null, null, null);
+        assertEquals(1, contacts.size());
+        // assertContactEquals(contact, acct, contacts);
     }
 
     /**
@@ -129,17 +142,24 @@ public class ContactAndAccountControllerTest {
         contactId = Long.parseLong(locationHdrs.get(0).substring(
                 locationHdrs.get(0).lastIndexOf('/') + 1));
 
-        List<ShortContact> contactResults = contactController.searchByEmail(
+        List<ContactResource> contactResults = contactController.searchByEmail(
                 TENANT_ID, contact.getEmail());
         assertEquals(1, contactResults.size());
         assertContactEquals(contact, acct, contactResults);
 
         Contact contact2 = contactRepo.findOne(contactId);
         assertNotNull(contact2.getFirstContact());
-        assertEquals(contact.getCustomFieldValue("eyeColor"),
-                contact2.getCustomFieldValue("eyeColor"));
         // TODO this should be null but is not
         // assertNull(contact2.getLastUpdated());
+
+        List<CustomContactField> customFields = customContactRepo
+                .findByContactId(contactId);
+        for (CustomField field : customFields) {
+            if ("eyeColor".equals(field.getName())) {
+                assertEquals(contact.getCustomFieldValue("eyeColor"),
+                        field.getValue());
+            }
+        }
 
         // UPDATE CONTACT
         contact.setFirstName(contact.getFirstName() + "Updated");
@@ -160,9 +180,12 @@ public class ContactAndAccountControllerTest {
     }
 
     private void assertContactEquals(Contact contact, Account acct,
-            List<ShortContact> contactResults) {
+            List<ContactResource> contactResults) {
         assertEquals(contact.getFullName(), contactResults.get(0).getFullName());
         assertEquals(contact.getEmail(), contactResults.get(0).getEmail());
+        assertEquals(1, contactResults.get(0).getCustomFields().size());
+        assertEquals("blue",
+                contactResults.get(0).getCustomFieldValue("eyeColor"));
         assertEquals(acct.getName(), contactResults.get(0).getAccountName());
     }
 

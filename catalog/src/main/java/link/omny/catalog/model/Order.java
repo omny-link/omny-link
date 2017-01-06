@@ -107,7 +107,7 @@ public class Order implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "order", targetEntity = OrderItem.class)
     private List<OrderItem> orderItems;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     private Feedback feedback;
 
     public Order(String name) {

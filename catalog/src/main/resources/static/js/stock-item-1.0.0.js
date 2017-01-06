@@ -397,9 +397,6 @@ var ractive = new AuthenticatedRactive({
         ractive.initTags();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
-//        ractive.fetchNotes();
-//        ractive.fetchDocs();
-        ractive.fetchImages();
         ractive.set('saveObserver',true);
       });
     } else { 

@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
+import javax.validation.constraints.NotNull;
 
 import link.omny.custmgmt.internal.CsvImporter;
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
@@ -23,11 +24,13 @@ import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomContactField;
+import link.omny.custmgmt.model.CustomField;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ActivityRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.repositories.CustomContactFieldRepository;
 import link.omny.custmgmt.repositories.DocumentRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
@@ -86,6 +89,9 @@ public class ContactController {
 
     @Autowired
     private ContactRepository contactRepo;
+
+    @Autowired
+    private CustomContactFieldRepository customContactRepo;
 
     @Autowired
     private AccountRepository accountRepo;
@@ -268,7 +274,7 @@ public class ContactController {
             @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        return wrap(listForTenant(tenantId, activeUser, page, limit));
+        return wrapShort(listForTenant(tenantId, activeUser, page, limit));
     }
 
     public List<Contact> listForTenant(String tenantId,
@@ -330,7 +336,7 @@ public class ContactController {
         }
         LOGGER.info(String.format("Found %1$s contacts", list.size()));
 
-        return wrap(list);
+        return wrapShort(list);
     }
 
     /**
@@ -341,7 +347,7 @@ public class ContactController {
      */
     @RequestMapping(value = "/searchByAccountNameLastNameFirstName", method = RequestMethod.GET, params = {
             "accountName", "lastName", "firstName" })
-    public @ResponseBody List<ShortContact> listForAccountNameLastNameFirstName(
+    public @ResponseBody List<ContactResource> listForAccountNameLastNameFirstName(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("lastName") String lastName,
             @RequestParam("firstName") String firstName,
@@ -365,7 +371,7 @@ public class ContactController {
      * @return contacts for that tenant.
      */
     @RequestMapping(value = "/{lastName}/{firstName}/{accountName}", method = RequestMethod.GET)
-    public @ResponseBody List<ShortContact> getForAccountNameLastNameFirstName(
+    public @ResponseBody List<ContactResource> getForAccountNameLastNameFirstName(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountName") String accountName,
             @PathVariable("lastName") String lastName,
@@ -382,7 +388,7 @@ public class ContactController {
      * @return contacts for that tenant with the specified email address.
      */
     @RequestMapping(value = "/searchByEmail", method = RequestMethod.GET, params = { "email" })
-    public @ResponseBody List<ShortContact> searchByEmail(
+    public @ResponseBody List<ContactResource> searchByEmail(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("email") String email) {
         LOGGER.debug(String.format("List contacts for email %1$s", email));
@@ -391,6 +397,18 @@ public class ContactController {
         // multi-instance loops
         List<Contact> list = contactRepo.findByEmail(unwrap(email), tenantId);
         LOGGER.info(String.format("Found %1$s contacts", list.size()));
+
+        if (list.size() > 10) {
+            LOGGER.warn(String
+                    .format("Loading activities for %1$d contacts, this may be a bottleneck",
+                            list.size()));
+        }
+        for (Contact contact : list) {
+            contact.setActivities(activityRepo.findByContactId(contact.getId()));
+            LOGGER.debug(String.format(
+                    "  loaded %1$d activities for contact %2$d",
+                    contact.getActivities().size(), contact.getId()));
+        }
 
         return wrap(list);
     }
@@ -401,7 +419,7 @@ public class ContactController {
      * @return contacts for that tenant with the matching tag.
      */
     @RequestMapping(value = "/findByTag", method = RequestMethod.GET, params = { "tag" })
-    public @ResponseBody List<ShortContact> findByTag(
+    public @ResponseBody List<ContactResource> findByTag(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("tag") String tag) {
         LOGGER.debug(String.format("List contacts for tag %1$s", tag));
@@ -423,12 +441,13 @@ public class ContactController {
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @Transactional
-    public @ResponseBody ShortContact findById(
+    public @ResponseBody ContactResource findById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id)
             throws BusinessEntityNotFoundException {
         LOGGER.debug(String.format("Find contact for id %1$s", id));
-        return wrap(contactRepo.findOne(Long.parseLong(id)));
+        return (ContactResource) wrap(contactRepo.findOne(Long.parseLong(id)),
+                new ContactResource());
     }
 
     /**
@@ -439,7 +458,7 @@ public class ContactController {
      */
     @RequestMapping(value = "/findByAccountId", method = RequestMethod.GET)
     @Transactional
-    public @ResponseBody List<ShortContact> findByAccountId(
+    public @ResponseBody List<ContactResource> findByAccountId(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("accountId") String accountId)
             throws BusinessEntityNotFoundException {
@@ -457,13 +476,15 @@ public class ContactController {
      */
     @RequestMapping(value = "/findByUuid", method = RequestMethod.GET, params = { "uuid" })
     @Transactional
-    public @ResponseBody ShortContact findByUuid(
+    public @ResponseBody ContactResource findByUuid(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("uuid") String uuid)
             throws BusinessEntityNotFoundException {
         LOGGER.debug(String.format("Find contact for uuid %1$s", uuid));
 
-        return wrap(consolidateContactsWithUuid(uuid, tenantId));
+        return (ContactResource) wrap(
+                consolidateContactsWithUuid(uuid, tenantId),
+                new ContactResource());
     }
 
     /**
@@ -487,7 +508,7 @@ public class ContactController {
         GregorianCalendar cal = new GregorianCalendar();
         cal.add(Calendar.MINUTE, minsConsideredActive);
         Date sinceDate = cal.getTime();
-        return wrap(contactRepo.findActiveForTenant(sinceDate, tenantId));
+        return wrapShort(contactRepo.findActiveForTenant(sinceDate, tenantId));
     }
 
     protected synchronized Contact consolidateContactsWithUuid(String uuid,
@@ -525,6 +546,11 @@ public class ContactController {
             @PathVariable("tenantId") String tenantId,
             @RequestBody Contact contact) {
         contact.setTenantId(tenantId);
+
+        if (contact.getAccountId() != null) {
+            contact.setAccount(accountRepo.findOne(contact.getAccountId()));
+        }
+
         contact = contactRepo.save(contact);
 
 
@@ -569,9 +595,6 @@ public class ContactController {
             @PathVariable("id") Long contactId,
             @RequestBody Contact updatedContact) {
         Contact contact = contactRepo.findOne(contactId);
-
-        LOGGER.debug(String.format("  contact: %1$s", contact));
-        LOGGER.debug(String.format("  updated contact: %1$s", updatedContact));
 
         if (updatedContact.isFirstNameDefault()) {
             updatedContact.setFirstName(contact.getFirstName());
@@ -924,26 +947,58 @@ public class ContactController {
         return value.toString();
     }
 
-    private List<ShortContact> wrap(List<Contact> list) {
+    private List<ShortContact> wrapShort(List<Contact> list) {
         List<ShortContact> resources = new ArrayList<ShortContact>(list.size());
         for (Contact contact : list) {
-            resources.add(wrap(contact));
+            resources.add((ShortContact) wrap(contact, new ShortContact()));
         }
         return resources;
     }
 
-    private ShortContact wrap(Contact contact) {
-        ShortContact resource = new ShortContact();
+    private List<ContactResource> wrap(List<Contact> list) {
+        List<ContactResource> resources = new ArrayList<ContactResource>(
+                list.size());
+        for (Contact contact : list) {
+            resources
+                    .add((ContactResource) wrap(contact, new ContactResource()));
+        }
+        return resources;
+    }
+
+    private ResourceSupport wrap(Contact contact, ResourceSupport resource) {
         BeanUtils.copyProperties(contact, resource);
-        resource.setAlerts(contact.getAlertsAsList());
         Link detail = new Link(getGlobalUri(contact).toString());
         resource.add(detail);
-        resource.setSelfRef(detail.getHref());
         if (contact.getAccount() != null) {
-            resource.setAccountName(contact.getAccount().getName());
+            try {
+                BeanUtils
+                        .getPropertyDescriptor(resource.getClass(),
+                                "accountName").getWriteMethod()
+                        .invoke(resource, contact.getAccount().getName());
+            } catch (Exception e) {
+                LOGGER.warn(String
+                        .format("Unable to set account name for contact %1$d"),
+                        contact.getId());
+            }
             resource.add(linkTo(AccountRepository.class,
                     contact.getAccount().getId()).withRel("account"));
         }
+        try {
+            BeanUtils.getPropertyDescriptor(resource.getClass(), "selfRef")
+                    .getWriteMethod().invoke(resource, detail.getHref());
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        try {
+            BeanUtils.getPropertyDescriptor(resource.getClass(), "alerts")
+                    .getWriteMethod()
+                    .invoke(resource, contact.getAlertsAsList());
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         return resource;
     }
 
@@ -957,7 +1012,7 @@ public class ContactController {
 
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class ShortContact extends ResourceSupport {
+    public static class ContactResource extends ResourceSupport {
         private String selfRef;
         private String firstName;
         private String lastName;
@@ -1011,6 +1066,34 @@ public class ContactController {
         private List<CustomContactField> customFields;
         private Account account;
         private List<Activity> activities;
+
+        public Object getCustomFieldValue(@NotNull String fieldName) {
+            for (CustomField field : getCustomFields()) {
+                if (fieldName.equals(field.getName())) {
+                    return field.getValue();
+                }
+            }
+            return null;
+        }
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    public static class ShortContact extends ResourceSupport {
+        private String selfRef;
+        private String firstName;
+        private String lastName;
+        private String fullName;
+        private String accountName;
+        private String owner;
+        private String stage;
+        private String enquiryType;
+        private String accountType;
+        private String tags;
+        private List<String> alerts;
+        private String tenantId;
+        private Date firstContact;
+        private Date lastUpdated;
     }
 
 }

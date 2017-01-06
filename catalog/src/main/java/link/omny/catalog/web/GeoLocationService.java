@@ -6,49 +6,46 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import javax.annotation.Nonnull;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
+import link.omny.catalog.internal.LruCache;
 import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.StockCategory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-@Component
-public class GeolocationService {
+public class GeoLocationService {
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(GeolocationService.class);
+            .getLogger(GeoLocationService.class);
 
     private static final String GEOCODING_URL = "https://maps.googleapis.com/maps/api/geocode/json?address=%1$s,UK";
 
-    public GeoPoint locate(String q) throws IOException {
-        URL url = new URL(String.format(GEOCODING_URL,
-                URLEncoder.encode(q, "UTF-8")));
-        LOGGER.debug(String.format("  Geo-coding url constructed: %1$s", url));
-        // String content;
-        InputStream is = null;
-        // StringBuilder sb = new StringBuilder();
-        // try {
-        // is = (InputStream) url.getContent();
-        // char[] buf = new char[1024];
-        //
-        // int result = 0;
-        // while (result != -1) {
-        // result = new InputStreamReader(is).read(buf);
-        // System.out.println("result: " + result);
-        // sb = sb.append(buf);
-        // }
-        // } finally {
-        // is.close();
-        // }
-        // System.out.println("content: " + sb.toString());
-        JsonReader jsonReader = null;
+    private LruCache<String, GeoPoint> cache ;
 
+    public GeoLocationService(int cacheSize) {
+        cache = new LruCache<String, GeoPoint>(cacheSize);
+    }
+
+    public GeoPoint locate(@Nonnull String q) throws IOException {
+        if (cache.containsKey(q)) {
+            LOGGER.debug(String.format("  Geo-coding cache hit for: %1$s", q));
+            return cache.get(q);
+        }
+
+        InputStream is = null;
+        JsonReader jsonReader = null;
         try {
+            long start = System.currentTimeMillis();
+            URL url = new URL(String.format(GEOCODING_URL,
+                    URLEncoder.encode(q, "UTF-8")));
+            LOGGER.debug(String.format("  Geo-coding url constructed: %1$s",
+                    url));
+
             is = (InputStream) url.getContent();
             jsonReader = Json.createReader(new InputStreamReader(is));
             JsonObject obj = jsonReader.readObject();
@@ -56,8 +53,16 @@ public class GeolocationService {
                     .get(0)).getJsonObject("geometry")
                     .getJsonObject("location");
 
-            return new GeoPoint(location.getJsonNumber("lat").doubleValue(),
-                    location.getJsonNumber("lng").doubleValue());
+            GeoPoint geoPoint = new GeoPoint(location.getJsonNumber("lat")
+                    .doubleValue(), location.getJsonNumber("lng").doubleValue());
+            cache.put(q, geoPoint);
+
+            LOGGER.info(String.format("Geo-coding took %1$d ms",
+                    (System.currentTimeMillis() - start)));
+            return geoPoint;
+        } catch (NullPointerException e) {
+            LOGGER.warn(String.format("Location %1$s could not be geocoded", q));
+            return null;
         } finally {
             try {
                 is.close();

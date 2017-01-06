@@ -14,6 +14,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -40,6 +43,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "OL_STOCK_CAT")
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "stockCategoryWithCustomFields", attributeNodes = {
+            @NamedAttributeNode("customFields")
+        })
+})
 @Data
 @ToString(exclude = { "description", "stockItems" })
 @AllArgsConstructor
@@ -142,7 +150,9 @@ public class StockCategory implements Serializable {
     private String offerUrl;
 
     @JsonProperty
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockCategory")
+    @Transient
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
+    // "stockCategory")
     private List<MediaResource> images;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -162,12 +172,12 @@ public class StockCategory implements Serializable {
     @JsonProperty
     private double distance;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockCategory")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockCategory")
     @JsonDeserialize(using = JsonCustomStockCategoryFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomStockCategoryField> customFields;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "stockCategory", targetEntity = StockItem.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockCategory", targetEntity = StockItem.class)
     private List<StockItem> stockItems;
 
     public StockCategory(String name) {

@@ -11,7 +11,8 @@ import org.junit.Test;
 
 public class GeolocationServiceTest {
 
-    protected GeolocationService svc = new GeolocationService();
+    // disable cache for tests
+    protected GeoLocationService svc = new GeoLocationService(0);
 
     @Test
     public void testDistanceWatfordToAldermaston() {

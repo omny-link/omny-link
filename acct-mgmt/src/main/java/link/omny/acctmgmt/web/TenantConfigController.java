@@ -2,6 +2,8 @@ package link.omny.acctmgmt.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import link.omny.acctmgmt.model.BotConfig;
@@ -209,17 +211,19 @@ public class TenantConfigController {
                     + partial.getUrl()));
         }
 
+        List<Memo> memos = memoRepo.findAllForTenant(id);
         for (TenantTemplate template : tenantConfig.getTemplates()) {
             try {
-                Memo memo = memoRepo.findByName(template.getRef(), id);
-                if (memo != null) {
-                    template.setValid(true);
-                    template.setDescription(String.format("Subject: %1$s",
-                            memo.getTitle()));
-                }
-            } catch (Exception e) {
-                LOGGER.error(String.format("Missing template named %1$s",
-                        template.getName()));
+                Memo memo = memos.stream()
+                        .filter(p -> template.getName().equals(p.getName()))
+                        .findFirst().get();
+                template.setValid(true);
+                template.setDescription(String.format("Subject: %1$s",
+                        memo.getTitle()));
+            } catch (NoSuchElementException e) {
+                LOGGER.warn(String.format(
+                        "Tenant %1$s is missing expected template %2$s", id,
+                        template.getRef()));
             }
         }
 

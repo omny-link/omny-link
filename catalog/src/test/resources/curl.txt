@@ -5,14 +5,21 @@ curl -v -H "Accept:application/json" -u tstephen:tstephen https://api.omny.link/
 curl -v -H "Accept:application/json" -u tstephen:tstephen https://api.omny.link/stock-items/1535
 curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/stock-items/1095
 # Get timings
-curl --max-time 10000 -w "@catalog/src/test/resources/curl-format.txt" \
+curl --max-time 10000 -w "@omny-link-server/src/test/resources/curl-format.txt" \
   -H "Accept:application/json" -u iciTche0nS16HiNoBe:6E34DErsERSS5SeY57 \
   -o /dev/null -s  https://api.omny.link/stock-items/1703
 
+# GET single location
+curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByName?name=Glasgow
+curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByName?name=West%20Bromwich
 
 # Location based search
 curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByLocation?q=Corsham
 curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham
+curl --max-time 10000 -w "@omny-link-server/src/test/resources/curl-format.txt" \
+  -H "Accept:application/json" -u tstephen:tstephen \
+  -o /dev/null -s \
+  http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham
 
 curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByLocation?q=Corsham&type=Office
 curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham&type=Office
@@ -30,6 +37,9 @@ curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/
 
 # List orders for tenant
 curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/
+curl --max-time 10000 -w "@catalog/src/test/resources/curl-format.txt" \
+  -H "Accept:application/json" -u tstephen:tstephen \
+  -o /dev/null -s http://localhost:8082/alife/orders/
 
 # List orders for contact
 curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/findByContacts/25

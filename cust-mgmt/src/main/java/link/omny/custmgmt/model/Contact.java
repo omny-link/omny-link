@@ -19,6 +19,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -48,6 +51,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "OL_CONTACT")
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "contactWithAccount", attributeNodes = {
+                @NamedAttributeNode("account"),
+                @NamedAttributeNode("customFields") }),
+        @NamedEntityGraph(name = "contactWithActivities", attributeNodes = { @NamedAttributeNode("activity") }) })
 @Data
 @EqualsAndHashCode(exclude = { "fullName" })
 @AllArgsConstructor
@@ -258,7 +266,7 @@ public class Contact implements Serializable {
     @Column(nullable = false)
     private String tenantId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "contact", targetEntity = CustomContactField.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contact", targetEntity = CustomContactField.class)
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private List<CustomContactField> customFields;
@@ -334,7 +342,7 @@ public class Contact implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
     private List<Note> notes;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "contact")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contact")
     private List<Activity> activity;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
@@ -565,11 +573,19 @@ public class Contact implements Serializable {
     }
 
     @JsonProperty
+    @Transient
     public int getEmailsSent() {
-        return getActivitiesOfType("email").size();
+        try {
+            return getActivitiesOfType("email").size();
+        } catch (RuntimeException e) {
+            LOGGER.warn(String.format(
+                    "No activities available for contact %1$d", id));
+            return 0;
+        }
     }
 
-    public void setEmailsSent() {
+    public void setEmailsSent(int sent) {
+        LOGGER.info("Discarding derived value");
         ; // discard derived
     }
 

@@ -8,6 +8,7 @@ import java.util.List;
 
 import link.omny.catalog.TestApplication;
 import link.omny.catalog.model.CustomFeedbackField;
+import link.omny.catalog.model.CustomOrderField;
 import link.omny.catalog.model.Feedback;
 import link.omny.catalog.model.Order;
 import link.omny.catalog.model.OrderItem;
@@ -28,6 +29,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @SpringApplicationConfiguration(classes = TestApplication.class)
 @WebAppConfiguration
 public class OrderContollerTest {
+    private static final CustomOrderField CUSTOM_FIELD_2 = new CustomOrderField("field2", "bar");
+
+    private static final CustomOrderField CUSTOM_FIELD_1 = new CustomOrderField("field1", "foo");
+
     private static final String FEEDBACK = "5 stars";
 
     private static final String FEEDBACK_CUSTOM_KEY = "timeliness";
@@ -40,6 +45,8 @@ public class OrderContollerTest {
 
     private static final String TENANT_ID = "omny";
 
+    private static final Long CONTACT_ID = 1l;
+
     @Autowired
     private OrderController svc;
 
@@ -49,10 +56,12 @@ public class OrderContollerTest {
         assertNotNull(order);
         assertNotNull(order.getId());
         assertEquals(PRICE, order.getPrice());
+        assertEquals(CONTACT_ID, order.getContactId());
         assertEquals(2, order.getPrice().scale());
 
         ShortOrder order2 = retrieveOrder();
         assertNotNull(order2);
+        assertEquals(2, order2.getCustomFields().size());
 
         order.setInvoiceRef(INVOICE_REF);
         ShortOrder order3 = updateOrder(order.getId(), order);
@@ -121,6 +130,11 @@ public class OrderContollerTest {
     private Order getSimpleOrder() {
         Order order = new Order("1 type A widget");
         order.setPrice(PRICE);
+        order.setContactId(CONTACT_ID);
+
+        order.addCustomField(CUSTOM_FIELD_1);
+        order.addCustomField(CUSTOM_FIELD_2);
+
         return order;
     }
 
