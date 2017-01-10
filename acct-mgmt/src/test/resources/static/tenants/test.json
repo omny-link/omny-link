@@ -28,7 +28,15 @@
     { "name": "Dummy Process", "ref": "Dummy1", "url": "processes/link/omny/acctmgmt/Dummy1.bpmn" }
   ],
   "typeaheadControls": [
-    { "name": "owners", "ref": "#curOwner", "url": "/data/test/owners.json"}
+    { "name": "owners", "ref": "#curOwner", "url": "/data/test/owners.json"},
+    { "name": "stages", "selector": "#curStage", "values": [
+        {  "idx": 0, "id": "Enquiry", "name": "Enquiry"  },
+        {  "idx": 6, "id": "Follow up", "name": "Follow up"  },
+        {  "idx": 8, "id": "Complete", "name": "Complete"  },
+        {  "idx": -1, "id": "On hold", "name": "On hold"  },
+        {  "idx": -1, "id": "Cold", "name": "Cold"  }
+      ]
+    }
   ],
   "workActions": [
     { "name": "Note to self", "ref": "SimpleTodo", "url": "/partials/SimpleTodo.html" }
