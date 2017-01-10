@@ -22,26 +22,26 @@ public interface StockItemRepository extends CrudRepository<StockItem, Long> {
     @EntityGraph("stockItemWithCustomFields")
     StockItem findByName(@Param("name") String name);
 
-    @Query("SELECT i FROM StockItem i WHERE i.tenantId = :tenantId AND (i.status IS NULL OR i.status != 'deleted') ORDER BY i.lastUpdated DESC")
+    @Query("SELECT i FROM StockItem i WHERE i.tenantId = :tenantId AND (i.status IS NULL OR i.status != 'deleted') ORDER BY i.name ASC")
     @EntityGraph("stockItemWithAll")
     List<StockItem> findAllForTenant(@Param("tenantId") String tenantId);
 
-    @Query("SELECT i FROM StockItem i WHERE i.tenantId = :tenantId AND (i.status IS NULL OR i.status != 'deleted') ORDER BY i.lastUpdated DESC")
+    @Query("SELECT i FROM StockItem i WHERE i.tenantId = :tenantId AND (i.status IS NULL OR i.status != 'deleted') ORDER BY i.name ASC")
     @EntityGraph("stockItemWithCustomFields")
     List<StockItem> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
-    @Query("SELECT i FROM StockItem i WHERE i.tenantId = :tenantId AND LOWER(i.status) = :status ORDER BY i.lastUpdated DESC")
+    @Query("SELECT i FROM StockItem i WHERE i.tenantId = :tenantId AND LOWER(i.status) = :status ORDER BY i.name ASC")
     @EntityGraph("stockItemWithCustomFields")
     List<StockItem> findByStatusForTenant(@Param("status") String status,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT i FROM StockItem i WHERE i.tenantId = :tenantId AND LOWER(i.status) = :status ORDER BY i.lastUpdated DESC")
+    @Query("SELECT i FROM StockItem i WHERE i.tenantId = :tenantId AND LOWER(i.status) = :status ORDER BY i.name ASC")
     @EntityGraph("stockItemWithCustomFields")
     List<StockItem> findPageByStatusForTenant(@Param("status") String status,
             @Param("tenantId") String tenantId, Pageable pageable);
 
-    @Query("SELECT i FROM StockItem i INNER JOIN i.stockCategory c WHERE i.tenantId = :tenantId AND LOWER(c.name) LIKE :categoryName AND (i.status IS NULL OR i.status != 'deleted') ORDER BY i.lastUpdated DESC")
+    @Query("SELECT i FROM StockItem i INNER JOIN i.stockCategory c WHERE i.tenantId = :tenantId AND LOWER(c.name) LIKE :categoryName AND (i.status IS NULL OR i.status != 'deleted') ORDER BY i.name ASC")
     @EntityGraph("withAll")
     List<StockItem> findAllForCategoryName(
             @Param("categoryName") String categoryName,
