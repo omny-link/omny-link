@@ -171,8 +171,8 @@ public class TenantConfigController {
                     process.setDescription(pd.getDescription());
                 } catch (Throwable t) {
                     LOGGER.error(String
-                            .format("Problem loading process from %1$s, check configuration",
-                                    process.getUrl()));
+                            .format("Problem loading process from '%1$s', check configuration for '%2$s'",
+                                    process.getUrl(), id));
                 } finally {
                      try {
                          is.close();
@@ -222,16 +222,17 @@ public class TenantConfigController {
                         memo.getTitle()));
             } catch (NoSuchElementException e) {
                 LOGGER.warn(String.format(
-                        "Tenant %1$s is missing expected template %2$s", id,
-                        template.getRef()));
+                        "Tenant '%1$s' is missing expected template '%2$s'",
+                        id, template.getRef()));
             }
         }
 
         for (TenantTypeaheadControl control : tenantConfig
                 .getTypeaheadControls()) {
             if (control.getUrl() == null) {
-                LOGGER.debug(String.format("Have embedded typeahead for %1$s",
-                        control.getName()));
+                LOGGER.debug(String.format(
+                        "Have embedded typeahead '%1$s' for '%2$s'",
+                        control.getName(), id));
             } else if (control.getUrl() != null
                     && control.getUrl().indexOf(id) == -1) {
                 control.setStatus("warning");
