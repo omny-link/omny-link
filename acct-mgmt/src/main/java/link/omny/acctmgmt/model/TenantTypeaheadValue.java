@@ -7,6 +7,8 @@ import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Data
@@ -20,7 +22,10 @@ public class TenantTypeaheadValue implements Serializable {
     private String id;
 
     @JsonProperty
-    private int idx = -1;
+    // Include override is necessary due to this decision:
+    // https://github.com/FasterXML/jackson-databind/issues/849
+    @JsonInclude(value = Include.ALWAYS)
+    private Integer idx = -1;
 
     @NotNull
     @JsonProperty

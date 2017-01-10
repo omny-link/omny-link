@@ -1,7 +1,10 @@
 package link.omny.acctmgmt.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class TenantConfigTest {
 
@@ -38,7 +42,24 @@ public class TenantConfigTest {
         assertEquals(11, config.getToolbar().size());
         assertEquals(6, config.getPartials().size());
         assertEquals(1, config.getProcesses().size());
-        assertEquals(1, config.getTypeaheadControls().size());
+        assertEquals(2, config.getTypeaheadControls().size());
+        assertEquals(5, config.getTypeaheadControls().get(1).getValues().size());
+        for (TenantTypeaheadValue value : config.getTypeaheadControls().get(1)
+                .getValues()) {
+            assertNotNull(value.getIdx());
+        }
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(
+                    "target/test-serialization-tenant-config.json");
+            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+            objectMapper.writeValue(fos, config);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        } finally {
+            fos.close();
+        }
     }
 
     @Test
