@@ -68,6 +68,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -1012,6 +1014,7 @@ public class ContactController {
 
     @Data
     @EqualsAndHashCode(callSuper = true)
+    @JsonInclude(value = Include.NON_EMPTY)
     public static class ContactResource extends ResourceSupport {
         private String selfRef;
         private String firstName;
