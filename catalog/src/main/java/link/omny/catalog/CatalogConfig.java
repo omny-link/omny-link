@@ -39,15 +39,15 @@ public class CatalogConfig extends RepositoryRestMvcConfiguration {
         config.exposeIdsFor(ShortStockCategory.class, StockItem.class,
                 StockCategory.class);
     }
+
     @Autowired
     private Environment env;
+
     @Autowired
     private Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
 
     @Autowired
     private ObjectMapper objectMapper;
-
-
 
     @PostConstruct
     public void init() {

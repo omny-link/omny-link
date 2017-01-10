@@ -1082,7 +1082,9 @@ var ractive = new AuthenticatedRactive({
     console.log('select: '+JSON.stringify(contact));
     ractive.set('saveObserver',false);
     if (ractive.get('tenant.show.account') && ractive.get('accounts').length==0) {
-      ractive.fetchAccounts();
+      // This is not viable as it causes the UI to hang once have a couple of
+      // thousand accounts. Also a very rare case that it's needed
+      //ractive.fetchAccounts();
     } 
     if (contact.account == undefined || contact.account == '') contact.account = new Object();
     // default owner to current user
@@ -1106,7 +1108,8 @@ var ractive = new AuthenticatedRactive({
         ractive.set('current', data);
 
         if (ractive.get('tenant.show.orders')) {
-          ractive.fetchStockItems();
+          // TODO WIP
+          //ractive.fetchStockItems();
           ractive.fetchOrders(ractive.get('current'));
         }
         ractive.fetchTasks(ractive.id(ractive.get('current')));

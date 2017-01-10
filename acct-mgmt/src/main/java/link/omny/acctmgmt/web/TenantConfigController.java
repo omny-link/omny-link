@@ -16,6 +16,7 @@ import link.omny.acctmgmt.model.TenantPartial;
 import link.omny.acctmgmt.model.TenantTemplate;
 import link.omny.acctmgmt.model.TenantToolbarEntry;
 import link.omny.acctmgmt.model.TenantTypeaheadControl;
+import link.omny.acctmgmt.model.TenantTypeaheadValue;
 import link.omny.acctmgmt.repositories.TenantRepository;
 import link.omny.custmgmt.model.Memo;
 import link.omny.custmgmt.repositories.ContactRepository;
@@ -229,22 +230,40 @@ public class TenantConfigController {
 
         for (TenantTypeaheadControl control : tenantConfig
                 .getTypeaheadControls()) {
+            LOGGER.debug(String.format("Have typeahead '%1$s' for '%2$s'",
+                    control.getName(), id));
             if (control.getUrl() == null) {
-                LOGGER.debug(String.format(
-                        "Have embedded typeahead '%1$s' for '%2$s'",
-                        control.getName(), id));
+                LOGGER.debug(String.format("  with %1$d embedded values",
+                        control.getValues().size()));
+                control.setValid(true);
             } else if (control.getUrl() != null
                     && control.getUrl().indexOf(id) == -1) {
+                LOGGER.debug(String.format("  relies on defaults at %1$s",
+                        control.getUrl()));
                 control.setStatus("warning");
                 control.setValid(false);
                 if (control.getDescription() == null) {
                     control.setDescription("NOTE: relying on Omny Link defaults");
                 }
             } else {
+                LOGGER.debug(String.format("  specifies local resource: %1$s",
+                        control.getUrl()));
                 control.setValid(TenantConfig.resourceExists(STATIC_BASE
                         + control.getUrl()));
             }
 
+            if (control.getName() != null && control.getName().equals("stages")
+                    && control.getUrl() == null) {
+                for (TenantTypeaheadValue value : control.getValues()) {
+                    if (value.getIdx() == null) {
+                        LOGGER.error(String
+                                .format("stages typeahead for '%1$s' contains value %2$s without an idx",
+                                        tenantConfig.getId(), value.getId()));
+                        control.setValid(false);
+                        control.setDescription("'stages' values must have an 'idx' field to order them by");
+                    }
+                }
+            }
         }
     }
 }
