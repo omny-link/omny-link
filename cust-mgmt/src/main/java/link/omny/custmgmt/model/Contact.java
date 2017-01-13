@@ -336,7 +336,8 @@ public class Contact implements Serializable {
     private transient Long accountId;
 
     public Long getAccountId() {
-        return getAccount() == null ? null : getAccount().getId();
+        return getAccount() == null ? (accountId == null ? null : accountId)
+                : getAccount().getId();
     }
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
