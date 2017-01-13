@@ -26,8 +26,7 @@ var AuthenticatedRactive = Ractive.extend({
     $.ajaxSetup({
       username: localStorage['username'],
       password: localStorage['password'],
-      headers: { 'X-CSRF-TOKEN': this.getCookie(CSRF_COOKIE) },
-      error: this.handleError
+      headers: { 'X-CSRF-TOKEN': this.getCookie(CSRF_COOKIE) }
     });
   },
   applyBranding: function() {
@@ -127,43 +126,6 @@ var AuthenticatedRactive = Ractive.extend({
       if (parseInt(d['idx'])==idx) rtn = d.name;
     });
     return rtn;
-  },
-  handleError: function(jqXHR, textStatus, errorThrown) {
-    if (jqXHR.status==200 && textStatus=='parsererror') {
-      ractive.showReconnected();
-    }
-    switch (jqXHR.status) {
-    case 0:
-      // server unavailable, retry will kick in
-      break;
-    case 200:
-      break;
-    case 400:
-      var msg = jqXHR.responseJSON == null ? textStatus+': '+errorThrown : errorThrown+': '+jqXHR.responseJSON.message;
-      ractive.showError(msg);
-      break;
-    case 401:
-    case 403:
-    case 405: /* Could also be a bug but in production we'll assume a timeout */
-      ractive.showReconnected();
-      ractive.showMessage("Session expired, please login again");
-      window.location.href='/login';
-      break;
-    case 404:
-      var path ='';
-      if (jqXHR.responseJSON != undefined) {
-        path = " '"+jqXHR.responseJSON.path+"'";
-      }
-      var msg = "That's odd, we can't find the page"+path+". Please let us know about this message";
-      console.error('msg:'+msg);
-      ractive.showError(msg);
-      break;
-    default:
-      var msg = "Bother! Something has gone wrong (code "+jqXHR.status+"): "+textStatus+':'+errorThrown;
-      console.error('msg:'+msg);
-      $( "#ajax-loader" ).hide();
-      ractive.showError(msg);
-    }
   },
   hash: function(email) {
     if (email==undefined) return email;
@@ -537,7 +499,7 @@ var AuthenticatedRactive = Ractive.extend({
     var uri = ractive.uri(entity);
     if (entityPath===undefined) entityPath = ractive.get('entityPath');
     if (uri != undefined && uri.indexOf(ractive.get('tenant.id')+'/')==-1) {
-      uri = uri.replace(ractive.get('entityPath'),'/'+ractive.get('tenant.id')+ractive.get('entityPath'));
+      uri = uri.replace(entityPath,'/'+ractive.get('tenant.id')+entityPath);
     }
     return uri;
   },
@@ -596,16 +558,48 @@ var AuthenticatedRactive = Ractive.extend({
 });
 
 $( document ).ajaxError(function( event, request, settings ) {
-  if (settings['retryIn']==undefined) settings.retryIn = 4000;
-  else settings.retryIn = settings.retryIn * 2;
-  var msg = 'Unable to connect, retrying in '+(settings.retryIn/1000)+' secs ...';
-  ractive.showDisconnected(msg);
-  setTimeout(function() {
-    $.ajax(settings);
-  }, settings.retryIn);
+  switch (request.status) {
+  case 0:
+    // server unavailable, retry
+    if (settings['retryIn']==undefined) settings.retryIn = 4000;
+    else settings.retryIn = settings.retryIn * 2;
+    var msg = 'Unable to connect, retrying in '+(settings.retryIn/1000)+' secs ...';
+    ractive.showDisconnected(msg);
+    setTimeout(function() {
+      $.ajax(settings);
+    }, settings.retryIn);
+    break;
+  case 200:
+    break;
+  case 400:
+    var msg = request.responseJSON == null ? textStatus+': '+errorThrown : errorThrown+': '+request.responseJSON.message;
+    ractive.showError(msg);
+    break;
+  case 401:
+  case 403:
+  case 405: /* Could also be a bug but in production we'll assume a timeout */
+    ractive.showReconnected();
+    ractive.showMessage("Session expired, please login again");
+    window.location.href='/login';
+    break;
+  case 404:
+    var path ='';
+    if (request.responseJSON != undefined) {
+      path = " '"+request.responseJSON.path+"'";
+    }
+    var msg = "That's odd, we can't find the page"+path+". Please let us know about this message";
+    console.error('msg:'+msg);
+    ractive.showError(msg);
+    break;
+  default:
+    var msg = "Bother! Something has gone wrong (code "+request.status+"): "+textStatus+':'+errorThrown;
+    console.error('msg:'+msg);
+    $( "#ajax-loader" ).hide();
+    ractive.showError(msg);
+  }
 });
 $( document ).ajaxSuccess(function( event, request, settings ) {
-  ractive.showReconnected();
+  if (settings['retryIn']==undefined) ractive.showReconnected();
 });
 
 $( document ).bind('keypress', function(e) {

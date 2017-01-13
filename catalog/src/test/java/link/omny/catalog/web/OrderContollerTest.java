@@ -9,11 +9,13 @@ import java.util.List;
 import link.omny.catalog.TestApplication;
 import link.omny.catalog.model.CustomFeedbackField;
 import link.omny.catalog.model.CustomOrderField;
+import link.omny.catalog.model.CustomOrderItemField;
 import link.omny.catalog.model.Feedback;
 import link.omny.catalog.model.Order;
 import link.omny.catalog.model.OrderItem;
 import link.omny.catalog.web.OrderController.FeedbackResource;
 import link.omny.catalog.web.OrderController.ShortOrder;
+import link.omny.catalog.web.OrderController.ShortOrderItem;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +31,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @SpringApplicationConfiguration(classes = TestApplication.class)
 @WebAppConfiguration
 public class OrderContollerTest {
+    private static final String CUST_FIELD_COLOUR = "colour";
+
     private static final CustomOrderField CUSTOM_FIELD_2 = new CustomOrderField("field2", "bar");
 
     private static final CustomOrderField CUSTOM_FIELD_1 = new CustomOrderField("field1", "foo");
@@ -40,6 +44,9 @@ public class OrderContollerTest {
     private static final String FEEDBACK_CUSTOM_VALUE = "Good";
 
     private static final BigDecimal PRICE = new BigDecimal("9.99");
+
+    private static final BigDecimal PRICE_INCREASED = PRICE
+            .multiply(new BigDecimal(1.15));
 
     private static final String INVOICE_REF = "INV123";
 
@@ -101,9 +108,32 @@ public class OrderContollerTest {
         assertEquals(2, order.getOrderItems().size());
         OrderItem orderItem = order.getOrderItems().get(0);
         assertEquals(PRICE, orderItem.getPrice());
+        assertEquals("Avocado", orderItem.getCustomFieldValue(CUST_FIELD_COLOUR));
 
         ShortOrder order2 = retrieveOrder();
         assertNotNull(order2);
+
+        // Update price
+        assertEquals(2, order2.getOrderItems().size());
+        ShortOrderItem orderItem2 = order2.getOrderItems().get(0);
+        assertEquals(PRICE, orderItem2.getPrice());
+        order.getOrderItems().get(0).setPrice(PRICE_INCREASED);
+        updateOrder(order.getId(), order);
+        ShortOrder order2b = retrieveOrder();
+        assertNotNull(order2b);
+        ShortOrderItem orderItem2b = order2b.getOrderItems().get(0);
+        assertEquals(PRICE_INCREASED.doubleValue(), orderItem2b.getPrice()
+                .doubleValue(), 0.01);
+
+        // Update custom field
+        order.getOrderItems().get(0).setCustomField(
+                        new CustomOrderItemField(CUST_FIELD_COLOUR, "Absinthe"));
+        updateOrder(order.getId(), order);
+        ShortOrder order2c = retrieveOrder();
+        assertNotNull(order2c);
+        ShortOrderItem orderItem2c = order2c.getOrderItems().get(0);
+        assertEquals(1, orderItem2c.getCustomFields().size());
+        // assertEquals("Absinthe", orderItem2c.getCustomFields());
 
         order.setInvoiceRef(INVOICE_REF);
         ShortOrder order3 = updateOrder(order.getId(), order);
@@ -150,10 +180,14 @@ public class OrderContollerTest {
 
         OrderItem orderItem1 = new OrderItem("Widget A", "Widget");
         orderItem1.setPrice(PRICE);
+        orderItem1.addCustomField(new CustomOrderItemField(CUST_FIELD_COLOUR,
+                "Avocado"));
         order.addOrderItem(orderItem1);
         
         OrderItem orderItem2 = new OrderItem("Widget B", "Widget");
         orderItem2.setPrice(PRICE);
+        orderItem2
+                .addCustomField(new CustomOrderItemField(CUST_FIELD_COLOUR, "Blue"));
         order.addOrderItem(orderItem2);
 
         return order;

@@ -31,12 +31,22 @@ public class OrderTest {
         field1.setId(1l);
         order.addCustomField(field1);
 
+        OrderItem orderItem1 = new OrderItem("Widget A", "Widget");
+        orderItem1.setId(1l);
+        orderItem1
+                .addCustomField(new CustomOrderItemField("colour", "Avocado"));
+        order.addOrderItem(orderItem1);
+
         CustomOrderField field2 = new CustomOrderField("field1", "foo");
         assertNull(field2.getId());
-        
         order.setCustomFields(Collections.singletonList(field2));
+
+        orderItem1.addCustomField(
+                new CustomOrderItemField("colour", "Blue"));
         
         assertEquals(1, order.getCustomFields().size());
+        assertEquals(1, order.getOrderItems().size());
+        assertEquals(1, order.getOrderItems().get(0).getCustomFields().size());
         assertEquals(field1.getId(), order.getCustomFields().get(0).getId());
     }
 
