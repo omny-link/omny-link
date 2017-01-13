@@ -457,8 +457,7 @@ var ractive = new AuthenticatedRactive(
       addOrder: function() {
         console.log('addOrder ...');
         if (ractive.get('current.contacts').length == 0) {
-          ractive
-              .showWarning('There are no contacts yet, please create one before trying to add an order');
+          ractive.showWarning('There are no contacts yet, please create one before trying to add an order');
           return;
         }
         ractive.set('saveObserver', false);
@@ -467,7 +466,6 @@ var ractive = new AuthenticatedRactive(
           selfRef: '',
           account: ractive.uri(ractive.get('current')),
           tenantId: ractive.get('tenant.id'),
-          feedback: [],
           orderItems: [],
           stage: Array.findBy('idx',0,ractive.get('stages')).name
         }
@@ -476,29 +474,23 @@ var ractive = new AuthenticatedRactive(
         ractive.toggleEditOrder(obj);
 
         ractive.set('saveObserver', true);
-        if ($('#orderSect div:visible').length == 0)
-          $('#orderSect .ol-collapse').click();
+        if ($('#orderSect div:visible').length == 0) $('#orderSect .ol-collapse').click();
       },
       addOrderItem: function(orderId) {
-//        ractive.set('saveObserver', false);
-        ractive.set('currentOrder', Array.findBy('selfRef',orderId,ractive.get('orders')))
-
-//        var obj = { 
-//          customFields: { 
-//            
-//          }
-//        };
-        ractive.get('currentOrder.orderItems').push(new Object());
-//        ractive.set('saveObserver', true);
+        console.info('addOrderItem: '+orderId);
+        var tmp = ractive.get('itemPrototype')== undefined ? {} : ractive.get('itemPrototype');
+        tmp.orderId = ractive.shortId(orderId);
+        ractive.set('currentOrderIdx',ractive.get('orders').indexOf(Array.findBy('selfRef',orderId,ractive.get('orders'))));
+        ractive.push('orders.'+ractive.get('currentOrderIdx')+'.orderItems', tmp);
+        ractive.set('currentOrderItemIdx',ractive.get('orders.'+ractive.get('currentOrderIdx')+'.orderItems').length-1);
+        ractive.saveOrderItem();
       },
-      addOrderItems: function(orderId, key, label, object, form, bizKey) {
-        ractive.set('currentOrder', Array.findBy('selfRef',orderId,ractive.get('orders')))
-        ractive.startCustomAction(key, label, object, form, bizKey);
-      },
-      addSector: function() {
-        console.log('addSector ...');
-        ractive.showError('Not yet implemented');
-        // $('#curPartnerSectors').append($('#sectorTemplate').html());
+      addOrderItems: function(orderId, form) {
+        var order = Array.findBy('selfRef',orderId,ractive.get('orders'));
+        ractive.set('currentOrderIdx', ractive.get('orders').indexOf(order));
+        var label = 'Add order items';
+        if (ractive.get('tenant.strings.addOrderItems')!=undefined) label = ractive.get('tenant.strings.addOrderItems');
+        ractive.startCustomAction('AddOrderItems', label, order, form, label);
       },
       addServiceLevelAlerts: function() {
         if (ractive.get('current.stage') == undefined)
@@ -544,9 +536,11 @@ var ractive = new AuthenticatedRactive(
         ractive.get('current.notes').splice(0, 1);
       },
       cloneOrder: function(order) {
+        console.log('cloneOrder, id: '+ order.id+', name: '+order.name)
         var newOrder = JSON.parse(JSON.stringify(order));
         delete newOrder.created;
         delete newOrder.date;
+        delete newOrder.id;
         delete newOrder.invoiceRef;
         delete newOrder.links;
         delete newOrder.selfRef;
@@ -556,12 +550,14 @@ var ractive = new AuthenticatedRactive(
           delete newOrder.created;
           // TODO remove tenant-specifics
           delete newOrder.orderItems[idx].customFields.date;
+          delete newOrder.orderItems[idx].id;
           delete newOrder.orderItems[idx].links;
           delete newOrder.orderItems[idx].orderItemId;
           delete newOrder.orderItems[idx].selfRef;
           delete newOrder.lastUpdated;
         }
-        ractive.set('currentOrder', newOrder);
+        ractive.push('orders', newOrder);
+        ractive.set('currentOrderIdx', ractive.get('orders').length-1);
         ractive.saveOrder();
       },
       edit: function(contact) {
@@ -630,10 +626,10 @@ var ractive = new AuthenticatedRactive(
         });
         return false; // cancel bubbling to prevent edit as well as delete
       },
-      deleteOrderItem: function(order, item) {
-        console.log('deleteOrderItem ' + order.selfRef + ', '+ item.selfRef +'...');
+      deleteOrderItem: function(item) {
+        console.log('deleteOrderItem ' + item.orderId + ', '+ item.selfRef +'...');
         $.ajax({
-          url: ractive.getServer() + '/'+ractive.get('tenant.id')+'/orders/' + ractive.shortId(order.selfRef)+ '/order-items/' + ractive.shortId(item.selfRef),
+          url: ractive.getServer() + '/'+ractive.get('tenant.id')+'/orders/'+item.orderId+'/order-items/'+ractive.shortId(item.selfRef),
           type: 'DELETE',
           success: completeHandler = function(data) {
             ractive.fetchOrders(ractive.get('current'));
@@ -774,6 +770,10 @@ var ractive = new AuthenticatedRactive(
             var orderIdx = ractive.get('orders').indexOf(Array.findBy('selfRef','/orders/'+orderId,ractive.get('orders')));
             ractive.set('orders.'+orderIdx+'.feedback',data);
             ractive.set('saveObserver', true);
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            console.debug("No feedback, that's ok, change status to 200");
+            jqXHR.status = 200;
           }
         });
       },
@@ -791,8 +791,7 @@ var ractive = new AuthenticatedRactive(
             contactIds += ractive.shortId(account.contacts[idx].selfRef);
           }
         }
-        if (contactIds.length == 0)
-          return; // no contacts means no orders
+        if (contactIds.length == 0) return; // no contacts means no orders
 
         $.ajax({
           dataType: "json",
@@ -806,6 +805,7 @@ var ractive = new AuthenticatedRactive(
             ractive.set('saveObserver', false);
             ractive.set('orders', data);
             console.log('fetched ' + data.length + ' orders');
+            ractive.update('orders');
             ractive.set('saveObserver', true);
           }
         });
@@ -1362,11 +1362,11 @@ var ractive = new AuthenticatedRactive(
         if (document.getElementById('currentOrderForm') == undefined) {
           console.debug('still loading, safe to ignore');
         } else if (document.getElementById('currentOrderForm').checkValidity()) {
-          ractive.set('currentOrder.tenantId', ractive.get('tenant.id'));
+          // TODO redundant?
+          ractive.set('orders.'+ractive.get('currentOrderIdx')+'.tenantId', ractive.get('tenant.id'));
 
-          var tmp = ractive.get('currentOrder');
-          if (tmp.date == 'n/a')
-            delete tmp.date;
+          var tmp = ractive.get('orders.'+ractive.get('currentOrderIdx'));
+          if (tmp.date == 'n/a') delete tmp.date;
           var contactName = tmp.contactName;
           if (contactName != undefined) {
             tmp.contactId = ractive.shortId(Array.findBy('fullName', contactName,ractive.get('current.contacts')).selfRef);
@@ -1384,19 +1384,8 @@ var ractive = new AuthenticatedRactive(
             data: JSON.stringify(tmp),
             success: completeHandler = function(data, textStatus, jqXHR) {
               // console.log('data: '+ data);
-              var location = jqXHR.getResponseHeader('Location');
-              ractive.set('saveObserver', false);
-              if (location != undefined)
-                ractive.set('currentOrder._links.self.href', location);
-              switch (jqXHR.status) {
-              case 201:
-                break;
-              case 204:
-                break;
-              }
               ractive.showMessage('Order saved');
-              ractive.set('saveObserver', true);
-              //ractive.fetchOrders(ractive.get('current'));
+              ractive.fetchOrders(ractive.get('current'));
             }
           });
         } else {
@@ -1412,39 +1401,29 @@ var ractive = new AuthenticatedRactive(
         if (document.getElementById('currentOrderForm') == undefined) {
           console.debug('still loading, safe to ignore');
         } else if (document.getElementById('currentOrderForm').checkValidity()) {
-          ractive.set('currentOrder.tenantId', ractive.get('tenant.id'));
-
-          var tmp = ractive.get('currentOrderItem');
-          var id = tmp.orderItemId;
+          var tmp = ractive.get('orders.'+ractive.get('currentOrderIdx')+'.orderItems.'+ractive.get('currentOrderItemIdx'));
+          tmp.tenantId = ractive.get('tenant.id');
+          var id = tmp.selfRef;
           console.log('ready to save order item' + JSON.stringify(tmp) + ' ...');
           $.ajax({
             // TODO no use case for creating items (yet)
             url: id === undefined
-              ? ractive.getServer() + '/' + tmp.tenantId + '/orders/' + tmp.orderId + '/order-items/'
-             : ractive.getServer() + '/' + tmp.tenantId + '/orders/' + tmp.orderId + '/order-items/' +id,
+              ? ractive.getServer() + '/' + tmp.tenantId + '/orders/' + tmp.orderId + '/order-items'
+             : ractive.getServer() + '/' + tmp.tenantId + '/orders/' + tmp.orderId + id,
             type: id === undefined ? 'POST': 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(tmp),
             success: completeHandler = function(data, textStatus, jqXHR) {
               // console.log('data: '+ data);
-              var location = jqXHR.getResponseHeader('Location');
-              ractive.set('saveObserver', false);
-              if (location != undefined)
-                ractive.set('currentOrder._links.self.href', location);
-              switch (jqXHR.status) {
-              case 201:
-                break;
-              case 204:
-                break;
-              }
-              ractive.showMessage('Order saved');
-              ractive.set('saveObserver', true);
+              ractive.fetchOrders(ractive.get('current'));
+              ractive.showMessage('Order item saved');
             }
           });
         } else {
-          console.warn('Cannot save yet as order is invalid');
+          var msg = 'Cannot save yet as order item is invalid';
+          console.warn(msg);
           $('#currentOrderForm :invalid').addClass('field-error');
-          ractive.showMessage('Cannot save yet as order is incomplete');
+          ractive.showMessage(msg);
           ractive.set('saveObserver', true);
         }
       },
@@ -1684,7 +1663,10 @@ var ractive = new AuthenticatedRactive(
         $('[data-contact-id="' + obj.selfRef + '"] input').addClass('hidden');
 
         if (editing) { // Change editable to display, inc. discard unsaved
-          ractive.fetchAccountContacts()
+          ractive.fetchAccountContacts();
+        } else if (ractive.uri(obj) == undefined) { // new contact
+          // save now to avoid race condition leading to multiple records later
+          ractive.saveContact();
         } else { // Change clicked contact to editable
           $('[data-contact-id="' + obj.selfRef + '"]').siblings()
             .children('a.glyphicon-pencil').addClass('editing');
@@ -1694,16 +1676,15 @@ var ractive = new AuthenticatedRactive(
             .addClass('editing')
             .on('blur', function(ev) {
               ractive.set('saveObserver', false);
-              var contact = ractive.get('currentContact');
-              contact[$(ev.target).data('key')] = ev.target.innerHTML;
+              ractive.set('currentContact.'+ev.target.name,ev.target.value);
               ractive.saveContact();
-              ractive.set('saveObserver', true);
+//              ractive.set('saveObserver', true);
             });
         }
       },
       toggleEditOrder: function(obj) {
         console.info('toggleEditOrder');
-        ractive.set('currentOrder', obj);
+        ractive.set('currentOrderIdx', ractive.get('orders').indexOf(obj));
         var editing = $('[data-order-id="' + obj.selfRef + '"]').siblings()
             .children('a.glyphicon-pencil').hasClass('editing');
         // disable _all_ orders
@@ -1726,8 +1707,8 @@ var ractive = new AuthenticatedRactive(
               minLength: 0,
               source: ractive.get('contactsTypeahead'),
               afterSelect: function(item) {
-                ractive.set('currentOrder.contactId', item.id);
-                ractive.set('currentOrder.contactName', item.name);
+                ractive.set('orders.'+ractive.get('currentOrderIdx')+'.contactId', item.id);
+                ractive.set('orders.'+ractive.get('currentOrderIdx')+'.contactName', item.name);
               }
             }).on("click", function(ev) {
               newEv = $.Event("keydown");
@@ -1751,25 +1732,17 @@ var ractive = new AuthenticatedRactive(
           $('[data-order-id="' + obj.selfRef + '"] input')
             .on('blur', function(ev) {
                 ractive.set('saveObserver', false);
-                ractive.set('currentOrder.' + $(ev.target).data('key'), ev.target.innerHTML);
-                delete ractive.get('currentOrder').orderItems;
+                ractive.set('orders.'+ractive.get('currentOrderIdx')+'.'+$(ev.target).data('key'), ev.target.value);
                 ractive.saveOrder();
                 ractive.set('saveObserver', true);
               });
-          /*
-           * This works for simple text but not typeaheads etc.
-           * $('[data-order-id="' + obj.selfRef + '"]:not(:has("input"))')
-           * .attr('contenteditable',!editing) .on('blur', function(ev) {
-           * ractive.set('saveObserver', false);
-           * ractive.set('currentOrder.'+$(ev.target).data('key'),ev.target.innerHTML);
-           * ractive.saveOrder(); ractive.set('saveObserver', true); });
-           */
         }
       },
-      toggleEditOrderItem: function(order, orderItem) {
-        console.info('toggleEditOrderItem');
-        orderItem.orderId = ractive.shortId(order.selfRef);
-        ractive.set('currentOrderItem', orderItem);
+      toggleEditOrderItem: function(orderItem) {
+        console.info('toggleEditOrderItem, order: '+orderItem.orderId+', item: '+orderItem.selfRef);
+        var order = Array.findBy('selfRef','/orders/'+orderItem.orderId,ractive.get('orders'));
+        ractive.set('currentOrderIdx', ractive.get('orders').indexOf(order));
+        ractive.set('currentOrderItemIdx', order.orderItems.indexOf(orderItem));
         var editing = $('[data-order-item-id="' + orderItem.selfRef + '"]')
             .siblings().children('a.glyphicon-pencil').hasClass('editing');
         // disable _all_ order-items
@@ -1785,7 +1758,7 @@ var ractive = new AuthenticatedRactive(
           $('[data-order-item-id="' + orderItem.selfRef + '"] input')
             .on('blur', function(ev) {
               ractive.set('saveObserver', false);
-              ractive.set('currentOrder.' + $(ev.target).parent().data('key'), ev.target.innerHTML);
+              ractive.set('orders.'+ractive.get('currentOrderIdx')+'.'+$(ev.target).parent().data('key'), ev.target.value);
               ractive.saveOrderItem();
               ractive.set('saveObserver', true);
             });
@@ -1875,6 +1848,21 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
     // console.log(' saveObserver: '+ractive.get('saveObserver'));
   }
 });
+
+/*ractive.observe('currentContact.*', function(newValue, oldValue, keypath) {
+  if (ractive.get('currentContact') != undefined)
+    ractive.showAlertCounters();
+  ignored = [ ];
+  if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1) {
+    console.log('current prop change: ' + newValue + ',' + oldValue + ' '
+        + keypath);
+    ractive.saveContact();
+  } else {
+    // console.warn('Skipped contact save of ' + keypath);
+    // console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
+    // console.log(' saveObserver: '+ractive.get('saveObserver'));
+  }
+});*/
 
 ractive.observe('current.contacts.*.twitter currentContact.twitter', function(newValue, oldValue, keypath) {
   if (ractive.get('saveObserver') && newValue != undefined && newValue != '') {
