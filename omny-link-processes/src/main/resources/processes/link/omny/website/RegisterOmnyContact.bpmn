@@ -53,6 +53,21 @@ user.setPassword(org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(1
 execution.getEngineServices().getIdentityService().saveUser(user);
 
 execution.getEngineServices().getIdentityService().createMembership(userId, 'user');
+execution.getEngineServices().getIdentityService().createMembership(userId, contact.getString('tenantId'));
+if (contact.getString('roles') != undefined) {
+  var System = java.lang.System;
+  var roles = contact.getString('roles').split(',');
+  for (idx in roles) {
+    try {
+      var g = execution.getEngineServices().getIdentityService().newGroup(roles[idx].trim().toLowerCase());
+      g.setName(roles[idx]);
+      execution.getEngineServices().getIdentityService().saveGroup(g);
+    } catch (e) {
+      ; // group must already exist
+    }
+    execution.getEngineServices().getIdentityService().createMembership(userId, roles[idx].trim().toLowerCase());
+  }
+}
 execution.getEngineServices().getIdentityService().setUserInfo(userId, 'tenant', contact.getString('tenantId'));
 
 execution.setVariable('pwd',user.getPassword());
