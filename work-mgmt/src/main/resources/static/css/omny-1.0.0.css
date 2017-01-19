@@ -516,9 +516,6 @@ h2 a.glyphicon:hover {
 .active-table td.actions {
   min-width: 106px;
 }
-.active-table td.editing {
-	padding:1px;
-}
 .active-table td.editing>input {
   padding: 3px;
   margin: 0;

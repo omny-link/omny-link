@@ -27,7 +27,7 @@ public class CustomOrderItemField extends CustomField {
     @RestResource(rel = "customOrderItem")
     private OrderItem orderItem;
 
-    public CustomOrderItemField(String key, String object) {
+    public CustomOrderItemField(String key, Object object) {
         super(key, object);
     }
 
@@ -65,4 +65,5 @@ public class CustomOrderItemField extends CustomField {
             return false;
         return true;
     }
+
 }
