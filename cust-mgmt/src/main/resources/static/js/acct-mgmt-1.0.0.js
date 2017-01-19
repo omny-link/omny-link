@@ -470,7 +470,7 @@ var ractive = new AuthenticatedRactive(
           stage: Array.findBy('idx',0,ractive.get('stages')).name
         }
         ractive.get('orders').splice(0, 0, obj);
-
+        ractive.initStockItemTypeahead();
         ractive.toggleEditOrder(obj);
 
         ractive.set('saveObserver', true);
@@ -1755,7 +1755,24 @@ var ractive = new AuthenticatedRactive(
           $('[data-order-item-id="' + orderItem.selfRef + '"]').addClass('editing');
           $('[data-order-item-id="' + orderItem.selfRef + '"] span').addClass('hidden');
           $('[data-order-item-id="' + orderItem.selfRef + '"] input').removeClass('hidden');
-          $('[data-order-item-id="' + orderItem.selfRef + '"] input')
+          $('[data-order-item-id="' + orderItem.selfRef + '"][data-key="stockItem"] .typeahead')
+            .typeahead({
+              items: 'all',
+              minLength: 0,
+              source: ractive.get('stockItemsTypeahead'),
+              afterSelect: function(item) {
+                ractive.set('saveObserver', false);
+                ractive.set('orders.'+ractive.get('currentOrderIdx')+'.orderItems.'+ractive.get('currentOrderItemIdx')+'.customFields.stockItemId', ractive.shortId(item.id));
+                ractive.saveOrderItem();
+                ractive.set('saveObserver', true);
+              }
+            }).on("click", function(ev) {
+              newEv = $.Event("keydown");
+              newEv.keyCode = newEv.which = 40;
+              $(ev.target).trigger(newEv);
+              return true;
+            });
+          $('[data-order-item-id="' + orderItem.selfRef + '"] input:not(.typeahead)')
             .on('blur', function(ev) {
               ractive.set('saveObserver', false);
               ractive.set('orders.'+ractive.get('currentOrderIdx')+'.'+$(ev.target).parent().data('key'), ev.target.value);
