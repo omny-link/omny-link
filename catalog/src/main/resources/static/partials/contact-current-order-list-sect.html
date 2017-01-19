@@ -2,7 +2,9 @@
   <h3>
     <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
     <span>{{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}Orders{{/}}</span>
-    <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addOrder()" title="Add a new order"></a>
+    {{#if matchRole('sales')}}
+      <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addOrder()" title="Add a new order"></a>
+    {{/if}}
     <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetchOrders(current)" title="Refresh the order list"></a>
   </h3>
   <div class="col-md-12" id="currentOrders" style="display:none">
@@ -35,10 +37,12 @@
 		      {{#each sort(orders,sortOrderColumn,sortOrderAsc):i}}
 		        <tr class="{{#if tenant.show.orderItems && orderItems}}alert-info{{elseif tenant.show.orderItems}}alert-warning{{/if}}">
 		          {{#1==2}}<td>{{name}}</td>{{/}}
-		          {{#entityPath=='/accounts'}}<td data-order-id="{{selfRef}}" data-key="contactName">
-		            <span>{{#contactId}}{{Array.findBy('selfRef','/contacts/'+contactId,current.contacts).fullName}}{{else}}{{contactId}}{{/}}</span>
-		            <input class="hidden contact-typeahead typeahead form-control" placeholder="Start typing to filter options" value="{{#contactId}}{{Array.findBy('selfRef','/contacts/'+contactId,current.contacts).fullName}}{{else}}{{contactId}}{{/}}">
-		          </td>{{/}}
+              {{#entityPath=='/accounts'}}
+                <td data-order-id="{{selfRef}}" data-key="contactName">
+                  <span>{{#contactId}}{{Array.findBy('selfRef','/contacts/'+contactId,current.contacts).fullName}}{{else}}{{contactId}}{{/}}</span>
+                  <input class="hidden contact-typeahead typeahead form-control" placeholder="Start typing to filter options" required value="{{#contactId}}{{Array.findBy('selfRef','/contacts/'+contactId,current.contacts).fullName}}{{else}}{{contactId}}{{/}}">
+                </td>
+              {{/}}
 		          <td data-order-id="{{selfRef}}" data-key="date">
 		            <span>{{formatDate(date)}}</span>
                 <input class="hidden form-control" placeholder="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}" type="date" value="{{date}}">
@@ -72,13 +76,10 @@
               {{#tenant.orderFields}}
                 {{#if tenant.show.orderItems && orderItems && orderItems[0]!=undefined && index(orderItems[0],'customFields.'+key)!=undefined}}
                   <td data-order-id="{{selfRef}}" title="{{hint}}">{{#if type=='number'}}{{sum('customFields.'+key,orderItems)}}{{else}}{{uniq('customFields.'+key,orderItems)}}{{/if}}</td>
-                {{elseif tenant.show.orderItems && orderItems}}
-                  <td data-order-id="{{selfRef}}" title="{{hint}}">{{customFields[key]}}</td>
-                {{/if}}
-                {{#if tenant.show.orderItems && orderItems.length==0}}
-                  <td data-order-id="{{selfRef}}" data-key="customFields.{{key}}">
-                    <span title="{{hint}}">{{customFields[key]}}</span>
-                    <input class="hidden form-control" {{#if validation}}pattern="{{validation}}"{{/if}} placeholder="{{hint}}" title="{{hint}}" type="{{type}}" value="{{customFields[key]}}">
+                {{else}}
+                  <td data-order-id="{{selfRef}}" title="{{hint}}">
+                   <span title="{{hint}}">{{customFields[key]}}</span>
+                   <input class="hidden form-control" {{#if validation}}pattern="{{validation}}"{{/if}} placeholder="{{hint}}" title="{{hint}}" type="{{type}}" value="{{customFields[key]}}">
                   </td>
                 {{/if}}
               {{/}}
@@ -95,11 +96,11 @@
 	                   title="Show {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}"></a>
 	              {{elseif tenant.show.orderItems}}
 	                <a class="glyphicon {{#tenant.strings.orderItemIcon}}{{tenant.strings.orderItemIcon}}{{else}}glyphicon-th-list{{/}}" aria-hidden="true" 
-	                   on-click="addOrderItems(selfRef, 'AddOrderItems', 'Propose timetable', currentOrder, true, 'Timetable for '+Array.findBy('selfRef','/contacts/'+contactId,current.contacts).fullName)" 
-	                   title="Create {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}"></a>
+	                   on-click="addOrderItems(selfRef, true)"
+	                   title="{{#tenant.strings.addOrderItems}}{{tenant.strings.addOrderItems}}{{else}}Create Order Items{{/}}"></a>
 	              {{/if}}
 	              {{#if tenant.show.feedback}}<a class="glyphicon glyphicon-comment" aria-hidden="true" on-click="toggleOrderSubEntity(this,'feedback')" title="Show Feedback"></a>{{/if}}
-	              {{#if selfRef}}<a class="glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteOrder(.)" title="Delete this record"></a>{{/if}}
+	              {{#if selfRef && matchRole('admin')}}<a class="glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteOrder(.)" title="Delete this record"></a>{{/if}}
 	              {{#if tenant.orderActions!=undefined && tenant.orderActions.length>0 }}
                   <span class="clickable dropdown" aria-hidden="true" title="Start Process">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
@@ -119,12 +120,12 @@
 		          </td>
 		        </tr>
 		        {{#if tenant.show.orderItems}}
-			        <tr class="orderItems" data-order-id="{{selfRef}}" style="display:none">
-		            <th>
-		              <div>{{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}:</div>
-		              <div><a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addOrderItem(orders[i].selfRef)" title="Add a new {{#tenant.strings.orderItem}}{{tenant.strings.orderItem.toLowerCase()}}{{else}}order item{{/}}"></a></div>
-		            </th>
-		            <td colspan="10">
+              <tr class="orderItems" data-order-id="{{..selfRef}}" style="display:none">
+                <th>
+                  <div>{{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}</div>
+                  <div><a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addOrderItem(..selfRef)" title="Add a new {{#tenant.strings.orderItem}}{{tenant.strings.orderItem.toLowerCase()}}{{else}}order item{{/}}"></a></div>
+                </th>
+                <td colspan="10">
 			            {{#if orderItems==undefined || orderItems.length==0}}
 		                None
 		              {{else}}
@@ -139,11 +140,14 @@
 		                    </tr>
 		                  </thead>
 		                  <tbody>
-		                    {{#orderItems:j}}
+		                    {{#..orderItems:j}}
 		                      <tr>
-		                        <td data-order-item-id="{{selfRef}}" title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#stockItemId}}{{Array.findBy('selfRef','/stock-items/'+stockItemId,stockItems).name}}{{else}}{{stockItemId}}{{/}}</td>
+                            <td data-order-item-id="{{..selfRef}}" data-key="stockItem">
+                              <span title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#stockItemId}}{{Array.findBy('selfRef','/stock-items/'+stockItemId,stockItems).name}}{{else}}{{stockItemId}}{{/}}</span>
+                              <input class="hidden form-control stock-item-typeahead typeahead" placeholder="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}" title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}" value="{{stockItem}}"/>
+                            </td>
 		                        {{#tenant.orderItemFields}}
-			                        <td class="{{type}}" data-order-item-id="{{selfRef}}" data-key="orderItems.{{j}}.customFields.{{key}}">
+			                        <td class="{{type}}" data-order-item-id="{{orderItems[j].selfRef}}" data-key="orderItems.{{j}}.customFields.{{key}}">
 	                              {{#if type=='date'}}
 	                                <span title="{{hint}}">{{formatDate(customFields[key])}}</span>
 	                                <input class="hidden form-control" placeholder="yyyy-mm-dd" type="date" title="{{hint}}" value="{{customFields[key]}}">
@@ -153,10 +157,12 @@
 	                              {{/if}}
 			                        </td>
 			                      {{/}}
-			                      <td class="actions">
-							                <a class="glyphicon glyphicon-pencil" aria-hidden="true" on-click="toggleEditOrderItem(orders[i], .)" title="Edit this record"></a>
-	                            <a class="glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteOrderItem(orders[i], .)" title="Delete this record"></a>
-							              </td>
+                            <td class="actions">
+                              <a class="glyphicon glyphicon-pencil" aria-hidden="true" on-click="toggleEditOrderItem(.)" title="Edit this record"></a>
+                              {{#if matchRole('admin')}}
+                                <a class="glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteOrderItem(.)" title="Delete this record"></a>
+                              {{/if}}
+                            </td>
 		                      </tr>
 		                    {{/}}
 		                  </tbody>
@@ -169,7 +175,7 @@
 	            <th>Feedback:</th>
 	            <td colspan="10">
 	              {{#if feedback==undefined || feedback.length==0}}
-	                None
+	                No feedback has been submitted yet.
 	              {{else}}
 		              <div class="currentBody col-md-6 col-sm-12 col-xs-12">
 							      <ul class="form edit-form">
