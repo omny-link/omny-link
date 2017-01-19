@@ -158,7 +158,6 @@ public class Order implements Serializable {
         }
     }
 
-
     public void setOrderItems(List<OrderItem> newItems) {
         for (OrderItem item : newItems) {
             item.setOrder(this);

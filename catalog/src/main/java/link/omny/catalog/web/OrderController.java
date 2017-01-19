@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import link.omny.catalog.CatalogObjectNotFoundException;
 import link.omny.catalog.json.JsonCustomFeedbackFieldDeserializer;
 import link.omny.catalog.json.JsonCustomOrderFieldDeserializer;
 import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
@@ -116,7 +117,9 @@ public class OrderController {
 
         if (feedback == null) {
             LOGGER.info(String.format("No feedback for order %1$d", orderId));
-            return null;
+            throw new CatalogObjectNotFoundException(String.format(
+                    "Unable to find object of type %1$s for order %2$s",
+                    Feedback.class, orderId), Feedback.class, orderId);
         } else {
             LOGGER.info(String.format("Found feedback for order %1$d: %2$s",
                     orderId, feedback));
@@ -252,15 +255,19 @@ public class OrderController {
         for (OrderItem item : order.getOrderItems()) {
             item.setTenantId(tenantId);
             item.setOrder(order);
-            try {
-                item.setStockItem(stockItemRepo.findOne(Long
-                        .parseLong((String) item
-                                .getCustomFieldValue("stockItemId"))));
-            } catch (NumberFormatException e) {
-                LOGGER.error(String.format(
-                        "unable to find stock item with id: %1$s",
-                        item.getCustomFieldValue("stockItemId")));
-            }
+            fixUpOrderItem(tenantId, item);
+        }
+    }
+
+    private void fixUpOrderItem(String tenantId, OrderItem item) {
+        item.setTenantId(tenantId);
+        try {
+            item.setStockItem(stockItemRepo.findOne(Long
+                    .parseLong((String) item.getCustomFieldValue("stockItemId"))));
+        } catch (NumberFormatException e) {
+            LOGGER.error(String.format(
+                    "unable to find stock item with id: %1$s",
+                    item.getCustomFieldValue("stockItemId")));
         }
     }
 
@@ -272,15 +279,13 @@ public class OrderController {
     @Transactional
     public @ResponseBody void addOrderItems(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("id") Long orderId, @RequestBody Order updatedOrder) {
+            @PathVariable("id") Long orderId, @RequestBody OrderItem newItem) {
         Order order = orderRepo.findOne(orderId);
 
-        for (OrderItem item : updatedOrder.getOrderItems()) {
-            item.setTenantId(tenantId);
-            item.setOrder(order);
-        }
+        newItem.setTenantId(tenantId);
+        newItem.setOrder(order);
 
-        orderRepo.save(order);
+        orderItemRepo.save(newItem);
     }
 
     /**
@@ -323,6 +328,7 @@ public class OrderController {
 
         NullAwareBeanUtils.copyNonNullProperties(updatedOrderItem, item, "id");
         item.setTenantId(tenantId);
+        fixUpOrderItem(tenantId, item);
         // item.setOrder(order);
 
         orderItemRepo.save(item);

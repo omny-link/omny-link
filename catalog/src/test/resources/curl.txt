@@ -72,6 +72,11 @@ curl -X POST -u tstephen:tstephen -v 'http://localhost:8082/alife/orders/214/sta
   -H 'Content-Type: application/json' -H 'Accept: application/json' \
   -d '{"stage":"Feedback received"}'
 
+# Add order item to order
+curl -X POST -u tstephen:tstephen -v 'http://localhost:8082/alife/orders/214/order-items' \
+  -H 'Content-Type: application/json' -H 'Accept: application/json' \
+  -d '{"customFields": { "location": "Hall" }}'
+
 # Delete an order item
 curl -v -X DELETE -H 'Accept:application/json'  http://tim%40omny.link:tstephen12@localhost:8082/alife/orders/121/order-items/188/
 
