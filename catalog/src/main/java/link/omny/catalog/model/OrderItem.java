@@ -136,10 +136,10 @@ public class OrderItem implements Serializable {
 
     public void addCustomField(CustomOrderItemField customField) {
         customField.setOrderItem(this);
-        getCustomFields().add(customField);
+        setCustomField(customField);
     }
 
-    protected void setCustomField(CustomOrderItemField newField) {
+    public void setCustomField(CustomOrderItemField newField) {
         boolean found = false; 
         for (CustomOrderItemField field : getCustomFields()) {
             if (field.getName().equals(newField.getName())) {
