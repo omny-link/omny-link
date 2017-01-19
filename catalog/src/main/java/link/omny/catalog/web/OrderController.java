@@ -255,15 +255,19 @@ public class OrderController {
         for (OrderItem item : order.getOrderItems()) {
             item.setTenantId(tenantId);
             item.setOrder(order);
-            try {
-                item.setStockItem(stockItemRepo.findOne(Long
-                        .parseLong((String) item
-                                .getCustomFieldValue("stockItemId"))));
-            } catch (NumberFormatException e) {
-                LOGGER.error(String.format(
-                        "unable to find stock item with id: %1$s",
-                        item.getCustomFieldValue("stockItemId")));
-            }
+            fixUpOrderItem(tenantId, item);
+        }
+    }
+
+    private void fixUpOrderItem(String tenantId, OrderItem item) {
+        item.setTenantId(tenantId);
+        try {
+            item.setStockItem(stockItemRepo.findOne(Long
+                    .parseLong((String) item.getCustomFieldValue("stockItemId"))));
+        } catch (NumberFormatException e) {
+            LOGGER.error(String.format(
+                    "unable to find stock item with id: %1$s",
+                    item.getCustomFieldValue("stockItemId")));
         }
     }
 
@@ -324,6 +328,7 @@ public class OrderController {
 
         NullAwareBeanUtils.copyNonNullProperties(updatedOrderItem, item, "id");
         item.setTenantId(tenantId);
+        fixUpOrderItem(tenantId, item);
         // item.setOrder(order);
 
         orderItemRepo.save(item);

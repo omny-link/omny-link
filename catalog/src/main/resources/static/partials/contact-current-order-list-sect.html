@@ -122,7 +122,7 @@
 		        {{#if tenant.show.orderItems}}
               <tr class="orderItems" data-order-id="{{..selfRef}}" style="display:none">
                 <th>
-                  <div>{{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}:</div>
+                  <div>{{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}</div>
                   <div><a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addOrderItem(..selfRef)" title="Add a new {{#tenant.strings.orderItem}}{{tenant.strings.orderItem.toLowerCase()}}{{else}}order item{{/}}"></a></div>
                 </th>
                 <td colspan="10">
@@ -142,7 +142,10 @@
 		                  <tbody>
 		                    {{#..orderItems:j}}
 		                      <tr>
-		                        <td data-order-item-id="{{..selfRef}}" title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#stockItemId}}{{Array.findBy('selfRef','/stock-items/'+stockItemId,stockItems).name}}{{else}}{{stockItemId}}{{/}}</td>
+                            <td data-order-item-id="{{..selfRef}}" data-key="stockItem">
+                              <span title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#stockItemId}}{{Array.findBy('selfRef','/stock-items/'+stockItemId,stockItems).name}}{{else}}{{stockItemId}}{{/}}</span>
+                              <input class="hidden form-control stock-item-typeahead typeahead" placeholder="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}" title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}" value="{{stockItem}}"/>
+                            </td>
 		                        {{#tenant.orderItemFields}}
 			                        <td class="{{type}}" data-order-item-id="{{orderItems[j].selfRef}}" data-key="orderItems.{{j}}.customFields.{{key}}">
 	                              {{#if type=='date'}}
