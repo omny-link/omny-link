@@ -31,8 +31,8 @@
     { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
     { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates", "role": "admin"  },
     { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View your sales funnel", "name": "Funnel" },
-    { "url": "stock-items.html", "classes": "glyphicon-barcode", "role": "super_user", "description": "View and manage properties here", "title": "Properties" },
-    { "url": "stock-categories.html", "classes": "glyphicon-barcode", "role": "super_user", "description": "View and manage blocks (groups of propeties) here", "title": "Blocks" },
+    { "url": "stock-items.html", "classes": "glyphicon-barcode", "role": "power_user", "description": "View and manage properties here", "title": "Properties" },
+    { "url": "stock-categories.html", "classes": "glyphicon-barcode", "role": "power_user", "description": "View and manage blocks (groups of propeties) here", "title": "Blocks" },
     { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },    
     { "url": "admin/users.html", "icon": "omny-icon-user", "name": "User Management", "description": "Manage users", "role": "super_admin" },
     { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status", "description": "Check various aspects of the tenant's configuration", "role": "admin" }
