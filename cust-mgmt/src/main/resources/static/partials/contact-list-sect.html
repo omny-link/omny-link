@@ -8,7 +8,7 @@
 <section id="pasteSect" style="display:none">
   <h2>
     Import
-    <a class="glyphicon glyphicon-import super-admin pull-right upload" aria-hidden="true" on-click="pasteImport()" title="Import data from file"></a>
+    <a class="glyphicon glyphicon-import admin pull-right upload" aria-hidden="true" on-click="pasteImport()" title="Import data from file"></a>
   </h2>
   <div id="pasteZone" class="col-md-12 pasteZone">
     <span class="target" style="border: #666 solid 1px">Paste your data here</span>
@@ -44,7 +44,9 @@
 <section id="contactsSect">
   <h2 class="navbar-top">
     {{>navbar}}
-    <a class="glyphicon glyphicon glyphicon-cloud-upload power-user pull-right" aria-hidden="true" on-click="pasteInit()" title="Upload data from file"></a>
+    {{# matchRole('admin')}}
+      <a class="glyphicon glyphicon glyphicon-cloud-upload pull-right" aria-hidden="true" on-click="pasteInit()" title="Upload data from file"></a>
+    {{/}}
   </h2>
   {{>contactListTable}}
 </section>
