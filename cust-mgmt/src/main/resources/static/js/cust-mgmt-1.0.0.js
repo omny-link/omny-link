@@ -159,6 +159,7 @@ var ractive = new AuthenticatedRactive({
               if (filter[idx].operator==undefined) filter[idx].operator='==';
               retVal = eval("'"+filter[idx].value.toLowerCase()+"'"+filter[idx].operator+"'"+(obj[filter[idx].field]==undefined ? '' : obj[filter[idx].field]).toLowerCase()+"'");
             }
+            if (!retVal) break; // if already false no need to check others
           } catch (e) {
             //console.debug('Exception during filter, probably means record does not have a value for the filtered field');
             ;
@@ -207,7 +208,7 @@ var ractive = new AuthenticatedRactive({
       return ractive.shortId(selfRef);
     },
     sort: function (array, column, asc) {
-      console.info('sort array of '+array.length+' items '+(asc ? 'ascending' : 'descending')+' on: '+column);
+      console.info('sort array of '+(array == undefined ? 0 : array.length)+' items '+(asc ? 'ascending' : 'descending')+' on: '+column);
       array = array.slice(); // clone, so we don't modify the underlying data
 
       return array.sort( function ( a, b ) {
