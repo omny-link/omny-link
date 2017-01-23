@@ -27,6 +27,11 @@ var ractive = new AuthenticatedRactive({
         return val; 
       }
     },
+    featureEnabled: function(feature) {
+      console.log('featureEnabled: '+feature);
+      if (feature==undefined || feature.length==0) return true;
+      else return ractive.get('tenant.show.'+feature);
+    },
     formatAge: function(timeString) {
       console.log('formatAge: '+timeString);
       return (timeString==undefined || timeString == "-1") ? 'n/a' : i18n.getDurationString(timeString)+' ago';
