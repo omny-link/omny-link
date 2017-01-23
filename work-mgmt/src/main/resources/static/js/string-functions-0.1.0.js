@@ -7,7 +7,7 @@ String.prototype.singular = function() {
 
 String.prototype.toCamelCase = function() {
   if (this == undefined) return this;
-  var leadingCaps = this.toLeadingCaps().replace(/-/g, '');
+  var leadingCaps = this.toLeadingCaps().replace(/[\s-]/g, '');
   return leadingCaps.substring(0,1).toLowerCase()+leadingCaps.substring(1);
 }
 

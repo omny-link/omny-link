@@ -10,6 +10,11 @@ var ractive = new AuthenticatedRactive({
     metrics:[],
     title: 'Moving Window',
     username: localStorage['username'],
+    featureEnabled: function(feature) {
+      console.log('featureEnabled: '+feature);
+      if (feature==undefined || feature.length==0) return true;
+      else return ractive.get('tenant.show.'+feature);
+    },
     formatDate: function(date) {
       if (date==undefined) return 'n/a';
       return date.toLocaleDateString(navigator.languages);

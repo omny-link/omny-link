@@ -1,18 +1,14 @@
 { 
   "id": "omny", 
   "name": "Omny Link",
-  "theme": {
-    "logoUrl": "/images/omny-logo.png",
-    "iconUrl": "/images/icon/omny-icon-16x16.png"
-  },
   "show": { 
     "account":true, "activityAnalysis":true, "activityTracker":true, "budget":true, "companyBackground":false,
-    "documents": true, "financials":true, "marketing":true, "merge":true, "supportBar": true, "workManagement": true
+    "documents": true, "financials":true, "marketing":true, "merge":true, "supportBar": true, "workManagement": false
   },
   "accountFields": [ 
   ],
   "contactActions": [
-    { "feature":"workManagement", "name": "Add task", "ref": "SimpleToDo", "url": true },
+    { "name": "Add task", "ref": "SimpleToDo", "url": true },
     { "name": "Alert owner", "ref": "SendAlertToOwner"  },
     { "name": "Send email", "ref": "SendMemo", "url": true  }
   ],
@@ -21,9 +17,8 @@
     { "label": "Decision Making Role", "key": "decisionMakingRole"}
   ],
   "toolbar": [
-    { "url": "work.html", "icon": "glyphicon-inbox", "description": "View your list of active tasks here", "feature":"workManagement", "name": "Work Management" },
+    { "url": "work.html", "icon": "glyphicon-inbox", "description": "View your list of active tasks here", "name": "Work Management", "feature":"workManagement"},
     { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
-    { "url": "omny/analytics/contacts/contacts1", "icon": "omny-icon-address-book", "description": "A simple tabular report of contacts", "name": "First Contact Report" },
     { "url": "domain.html", "icon": "omny-icon-domain-model", "name": "Domain Model", "description": "Business glossary", "role": "super_admin" },
     { "url": "decisions-dmn.html", "icon": "glyphicon-list-alt", "name": "Decisions Repository", "description": "Home of your Decision Models", "role": "super_admin" },
     { "url": "memo-distribution.html", "icon": "glyphicon-send", "name": "Distribution Centre", "description": "Send messages to groups of contacts", "role": "admin" },
@@ -48,7 +43,6 @@
     { "name": "Ad-Hoc Task from external", "ref": "HandleAdHocTask", "url": "processes/link/omny/casemgmt/HandleAdHocTask.bpmn" },
     { "name": "Check service levels", "ref": "RunDecisionLogicForAllContacts", "url": "processes/link/omny/custmgmt/RunDecisionLogicForAllContacts.bpmn" },
     { "name": "Create contact and account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
-    { "name": "De-duplicate contact and account", "ref": "DedupeContact", "url": "processes/link/omny/custmgmt/DedupeContact.bpmn" },
     { "name": "Import contact", "ref": "ImportContact", "url": "processes/link/omny/website/ImportContact.bpmn" },
     { "name": "Raise ticket", "ref": "RaiseTicket", "url": "processes/link/omny/support/RaiseTicket.bpmn" },
     { "name": "Record an enquiry", "ref": "RecordEnquiry", "url": "processes/link/omny/website/RecordEnquiry.bpmn" },
@@ -64,9 +58,6 @@
     { "name": "Search for companies", "ref": "companySearch", "url": "processes/link/omny/companiesHouse/SearchForCompany.bpmn" },
     { "name": "Update contact with decision logic", "ref": "UpdateContactWithDecisionLogic", "url": "processes/link/omny/custmgmt/UpdateContactWithDecisionLogic.bpmn" },
     { "name": "Update service level alerts", "ref": "RunDecisionLogicOnContact", "url": "processes/link/omny/alerts/RunAlertDecisionLogicOnContact.bpmn" }
-  ],
-  "reports": [
-    { "name": "Basic contacts", "ref": "contacts1" }
   ],
   "serviceLevel": {
     "inactiveStages":["discovery","review"],
