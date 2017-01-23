@@ -36,6 +36,11 @@ var ractive = new AuthenticatedRactive({
         return val;
       }
     },
+    featureEnabled: function(feature) {
+      console.log('featureEnabled: '+feature);
+      if (feature==undefined || feature.length==0) return true;
+      else return ractive.get('tenant.show.'+feature);
+    },
     fields: ["id", "country", "owner", "fullName", "title", "customFields",
               "tenantId", "lastUpdated", "firstName", "lastName", "tags",
               "source", "email", "postCode", "account", "uuid", "phone1",

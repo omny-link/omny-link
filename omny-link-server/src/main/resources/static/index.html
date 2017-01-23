@@ -25,7 +25,7 @@
       <p>{{{intro}}}</p>
       <ul style="list-style:none;">
         {{#tenant.toolbar}}
-          {{#if matchRole(role) }}
+          {{#if matchRole(role)  && featureEnabled(feature)}}
             <li>
               <a href="{{context}}{{url}}">
                 <span class="glyphicon {{role}} {{icon}}" style="display:inline-block" title="{{title}}"></span>

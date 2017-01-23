@@ -35,6 +35,11 @@ var ractive = new AuthenticatedRactive({
         return val; 
       }
     },
+    featureEnabled: function(feature) {
+      console.log('featureEnabled: '+feature);
+      if (feature==undefined || feature.length==0) return true;
+      else return ractive.get('tenant.show.'+feature);
+    },
     formatDate: function(timeString) {
       return new Date(timeString).toLocaleDateString(navigator.languages).replace('Invalid Date','n/a').replace('01/01/1970','n/a');
     },

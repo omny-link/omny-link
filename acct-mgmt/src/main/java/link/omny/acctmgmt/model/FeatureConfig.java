@@ -15,9 +15,12 @@ public class FeatureConfig {
     private boolean addressAccount = false;
     private boolean addressContact = true;
     private boolean budget = false;
+    private boolean catalog = true;
     private boolean companyBackground = false;
     private boolean contact = true;
     private boolean contactDescription = false;
+    private boolean contactManagement = true;
+    private boolean comms = true;
     private boolean enquiryType = true;
     private boolean feedback = false;
     private boolean financials = false;
@@ -40,6 +43,7 @@ public class FeatureConfig {
     private boolean stockPricing = true;
     private boolean stage = true;
     private boolean supportBar = true;
+    private boolean workManagement = true;
 
     public void set(String name, boolean b) {
         switch (name) {
@@ -67,6 +71,12 @@ public class FeatureConfig {
         case "budget":
             setBudget(b);
             break;
+        case "catalog":
+            setCatalog(b);
+            break;
+        case "comms":
+            setComms(b);
+            break;
         case "companyBackground":
             setCompanyBackground(b);
             break;
@@ -76,6 +86,8 @@ public class FeatureConfig {
         case "contactDescription":
             setContactDescription(b);
             break;
+        case "contactManagement":
+            setContactManagement(b);
         case "declaredSource":
             setDeclaredSource(b);
             break;
@@ -138,6 +150,9 @@ public class FeatureConfig {
             break;
         case "supportBar":
             setSupportBar(b);
+            break;
+        case "workManagement":
+            setWorkManagement(b);
             break;
         default:
             System.err.println("Unsupported feature: " + name);
