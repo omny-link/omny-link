@@ -40,9 +40,9 @@
               </a>
               <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
                 {{#each tenant.contactActions }}
-                  {{#name}}
+                  {{#name && matchRole(role) && featureEnabled(feature)}}
                     <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{current.fullName}}')" title="{{name}}">{{name}}</li>
-                  {{else}}
+                  {{elseif name==undefined}}
                     <li class="divider"></li>
                   {{/}}
                 {{/each}}

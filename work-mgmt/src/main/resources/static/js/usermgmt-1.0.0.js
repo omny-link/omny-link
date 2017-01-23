@@ -3,6 +3,11 @@ var ractive = new AuthenticatedRactive({
   template: '#template',
   data: {
     helpUrl: '//omny.link/user-help/users/#the_title',
+    featureEnabled: function(feature) {
+      console.log('featureEnabled: '+feature);
+      if (feature==undefined || feature.length==0) return true;
+      else return ractive.get('tenant.show.'+feature);
+    },
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {

@@ -11,6 +11,11 @@ var ractive = new AuthenticatedRactive({
     title: 'Omny Link',
     title2: 'Next generation contact management is here!',
     username: localStorage['username'],
+    featureEnabled: function(feature) {
+      console.log('featureEnabled: '+feature);
+      if (feature==undefined || feature.length==0) return true;
+      else return ractive.get('tenant.show.'+feature);
+    },
     gravatar: function(email) {
       if (email == undefined) return '';
       return '<img class="img-rounded" style="width:36px" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36&d=https%3A%2F%2Fapi.omny.link%2F'+ractive.get('tenant.id')+'%2Fgravatars%2F'+ractive.hash(email)+'.png"/>'

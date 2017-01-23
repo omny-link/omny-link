@@ -59,6 +59,11 @@ var ractive = new AuthenticatedRactive({
       return i18n.getAgeString(new Date(timeString))
     },
     events: [],
+    featureEnabled: function(feature) {
+      console.log('featureEnabled: '+feature);
+      if (feature==undefined || feature.length==0) return true;
+      else return ractive.get('tenant.show.'+feature);
+    },
     filter: {idx:8, field: 'taskLocalVariables.deferUntil', func: 'isActive'},
     formatJson: function(formProp) { 
       console.log('formatJson: '+formProp);

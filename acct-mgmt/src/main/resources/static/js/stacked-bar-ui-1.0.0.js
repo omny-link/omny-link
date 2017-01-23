@@ -5,6 +5,11 @@ var ractive = new AuthenticatedRactive({
   data: {
     title: 'Summary of latest returns',
     username: localStorage['username'],
+    featureEnabled: function(feature) {
+      console.log('featureEnabled: '+feature);
+      if (feature==undefined || feature.length==0) return true;
+      else return ractive.get('tenant.show.'+feature);
+    },
     hash: function(email) {
       if (email == undefined) return '';
       //console.log('hash '+email+' = '+ractive.hash(email));

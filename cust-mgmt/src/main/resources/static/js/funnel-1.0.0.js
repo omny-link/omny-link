@@ -14,6 +14,11 @@ var ractive = new AuthenticatedRactive({
     title: 'Sales Funnel',
     username: localStorage['username'],
     contacts:[],
+    featureEnabled: function(feature) {
+      console.log('featureEnabled: '+feature);
+      if (feature==undefined || feature.length==0) return true;
+      else return ractive.get('tenant.show.'+feature);
+    },
     filter: { field2: 'owner' },
     formatAge: function(timeString) {
       console.log('formatAge: '+timeString);

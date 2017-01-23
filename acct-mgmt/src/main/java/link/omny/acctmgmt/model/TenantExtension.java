@@ -33,6 +33,9 @@ public class TenantExtension implements Serializable {
     private String role;
 
     @JsonProperty
+    private String feature;
+
+    @JsonProperty
     private String description;
 
     @JsonProperty
