@@ -91,7 +91,10 @@ execution.setVariable('contactId',contactId);]]></script>
         <activiti:field name="to">
           <activiti:expression>${empty toEmail ? contact.getString('email') : toEmail}</activiti:expression>
         </activiti:field>
-        <activiti:field name="cc">
+        <activiti:field name="from">
+          <activiti:expression>${empty initiator ? 'info@omny.link' : initiator}</activiti:expression>
+        </activiti:field>
+        <activiti:field name="bcc">
           <activiti:expression>${ccAccount}</activiti:expression>
         </activiti:field>
         <activiti:field name="subject">

@@ -29,6 +29,7 @@
         <activiti:in source="tenantId" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
         <activiti:in source="addressee" target="toEmail"/>
+        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_2</incoming>
       <outgoing>_5</outgoing>

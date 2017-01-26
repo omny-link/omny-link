@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.knowprocess.bpm.MultiTenantActivitiProperties;
 import com.knowprocess.bpm.api.BadJsonMessageException;
 import com.knowprocess.bpm.api.ReportableException;
 import com.knowprocess.bpm.impl.JsonManager;
@@ -59,6 +60,9 @@ public class MessageController {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(MessageController.class);
+
+    @Autowired
+    private MultiTenantActivitiProperties activitiMultiTenantProperties;
 
     protected static ProcessEngine processEngine;
 
@@ -117,14 +121,14 @@ public class MessageController {
                         .format("No message returned from request to %1$s. If this is expected, please POST instead of GET",
                                 msgId);
                 LOGGER.warn(msg);
-                return new ResponseEntity(msg, headers, HttpStatus.OK);
+                return new ResponseEntity<String>(msg, headers, HttpStatus.OK);
             }
             String msg = null;
             try {
                 Method toJson = o.getClass().getMethod("toJson", new Class[0]);
 
                 if (toJson != null) {
-                    msg = (String) toJson.invoke(o, null);
+                    msg = (String) toJson.invoke(o, (Object[]) null);
                 } else if (o != null) {
                     msg = o.toString();
                 }
@@ -136,13 +140,13 @@ public class MessageController {
                 msg = o.toString();
             }
             LOGGER.debug("msg: " + msg);
-            return new ResponseEntity(msg, headers, HttpStatus.CREATED);
+            return new ResponseEntity<String>(msg, headers, HttpStatus.CREATED);
         } catch (ActivitiException e) {
             throw e;
         } catch (Exception e) {
             ReportableException e2 = new ReportableException(e.getClass()
                     .getName() + ":" + e.getMessage(), e);
-            return new ResponseEntity(e2.toJson(), headers,
+            return new ResponseEntity<String>(e2.toJson(), headers,
                     HttpStatus.BAD_REQUEST);
         }
     }
@@ -238,8 +242,11 @@ public class MessageController {
 
             try {
                 String username = "anonymousUser";
-                // String username = SecurityContextHolder.getContext()
-                // .getAuthentication().getName();
+                if (activitiMultiTenantProperties.getServers().containsKey(
+                        tenantId)) {
+                    username = activitiMultiTenantProperties.getServers()
+                            .get(tenantId).getMailServerDefaultFrom();
+                }
                 LOGGER.debug(" ... from " + username);
                 Authentication.setAuthenticatedUserId(username);
                 vars.put("initiator", username);
