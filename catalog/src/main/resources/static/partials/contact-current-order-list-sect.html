@@ -70,7 +70,7 @@
 	            {{#tenant.show.stockPricing}}
 	              <td class="number" data-order-id="{{selfRef}}" data-key="price">
 	                <span title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{price}}</span>
-                  <input class="hidden form-control" placeholder="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}" type="number" value="{{price}}">
+                  <input class="hidden form-control" placeholder="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}" {{^matchRole('sales_manager')}}readonly{{/}} title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}" type="number" value="{{price}}">
                 </td>
 	            {{/}}
               {{#tenant.orderFields}}
