@@ -27,6 +27,7 @@
         <activiti:in sourceExpression="${omny_registration.getString('tenantId')}" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
         <activiti:in source="pwd" target="pwd"/>
+        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_6</incoming>
       <outgoing>_8</outgoing>

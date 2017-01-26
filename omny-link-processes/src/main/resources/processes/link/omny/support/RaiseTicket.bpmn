@@ -68,6 +68,7 @@
         <activiti:in sourceExpression="${omny_ticket.getString('tenantId')}" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
         <activiti:in sourceExpression="${omny_ticket.getString('email')}" target="toEmail"/>
+        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_17</incoming>
       <outgoing>_23</outgoing>
@@ -100,6 +101,7 @@ execution.setVariable('contactId',contacts.getJsonObject(0).getString('selfRef')
         <activiti:in sourceExpression="Please review here: &lt;https://api.omny.link/work.html|Click to open work list&gt;" target="message"/>
         <activiti:in sourceExpression="${omny_ticket.getString('tenantId')}" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
+        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_22</incoming>
       <outgoing>_28</outgoing>

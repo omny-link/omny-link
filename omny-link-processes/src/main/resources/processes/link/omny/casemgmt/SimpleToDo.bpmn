@@ -71,6 +71,7 @@
         <activiti:in sourceExpression="Please review here: &lt;https://api.omny.link/work.html|Click to open work manager&gt;" target="message"/>
         <activiti:in source="tenantId" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
+        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_29</incoming>
     </callActivity>
@@ -83,6 +84,7 @@
         <activiti:in sourceExpression="Please review here: &lt;https://api.omny.link/work.html|Click to open work manager&gt;" target="message"/>
         <activiti:in source="tenantId" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
+        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_32</incoming>
       <outgoing>_33</outgoing>
@@ -119,6 +121,7 @@
         <activiti:in sourceExpression="Please review here: &lt;https://api.omny.link/work.html|Click to open work manager&gt;" target="message"/>
         <activiti:in source="tenantId" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
+        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_30</incoming>
     </callActivity>

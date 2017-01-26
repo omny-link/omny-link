@@ -46,6 +46,7 @@
         <activiti:in sourceExpression="${omny_feedback.getString('tenantId')}" target="tenantId"/>
         <activiti:in sourceExpression="/contacts/${omny_feedback.getString('contactId')}" target="contactId"/>
         <activiti:in sourceExpression="${omny_feedback.getString('orderId')}" target="orderId"/>
+        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_5</incoming>
       <outgoing>_9</outgoing>

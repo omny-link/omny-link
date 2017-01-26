@@ -68,6 +68,7 @@
         <activiti:in sourceExpression="${omny_orderConfirmation.getString('tenantId')}" target="tenantId"/>
         <activiti:in sourceExpression="/contacts/${omny_orderConfirmation.getString('contactId')}" target="contactId"/>
         <activiti:in sourceExpression="${omny_orderConfirmation.getString('orderId')}" target="orderId"/>
+        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_7</incoming>
       <outgoing>_9</outgoing>

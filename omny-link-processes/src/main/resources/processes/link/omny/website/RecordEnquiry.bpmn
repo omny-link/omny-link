@@ -16,7 +16,7 @@
     <callActivity calledElement="AddNoteToContact" completionQuantity="1" id="addActivityToContact" isForCompensation="false" name="Add enquiry &#10;to contact" startQuantity="1">
       <extensionElements>
         <activiti:in source="omny_enquiry" target="contact"/>
-        <activiti:in sourceExpression="${omny_enquiry.getString('message')}" target="noteContent"/>
+        <activiti:in sourceExpression="${empty omny_enquiry.getJsonObject('message') ? 'No message' : omny_enquiry.getString('message')}" target="noteContent"/>
         <activiti:in source="contactId" target="contactId"/>
         <activiti:out source="contactId" target="contactId"/>
         <activiti:out source="noteId" target="noteId"/>
@@ -30,6 +30,7 @@
         <activiti:in sourceExpression="${omny_enquiry.getString('tenantId')}" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
         <activiti:in sourceExpression="${omny_enquiry.getString('email')}" target="toEmail"/>
+        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_19</incoming>
       <outgoing>_23</outgoing>
@@ -56,6 +57,7 @@
         <activiti:in sourceExpression="Please review here: &lt;https://api.omny.link/contacts.html|Click to open contact manager&gt;" target="message"/>
         <activiti:in sourceExpression="${omny_enquiry.getString('tenantId')}" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
+        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_18</incoming>
       <outgoing>_28</outgoing>

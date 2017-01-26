@@ -29,6 +29,7 @@
         <activiti:in source="tenantId" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
         <activiti:in sourceExpression="${contact.getString('owner')}" target="addressee"/>
+        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_6</incoming>
       <outgoing>_5</outgoing>
