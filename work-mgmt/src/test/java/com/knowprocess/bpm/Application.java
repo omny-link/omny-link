@@ -23,9 +23,6 @@ public class Application extends WebMvcConfigurerAdapter {
     @Autowired
     private EntityManagerFactory entityManagerFactory;
 
-    @Autowired
-    private MultiTenantActivitiProperties overrideProperties;
-
     @Bean
     public JsonManager jsonManager() {
         return new JsonManager();

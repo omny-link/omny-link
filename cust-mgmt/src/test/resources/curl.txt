@@ -86,3 +86,9 @@ curl -u tstephen:tstephen -v \
   -F "filecomment=This is a JSON file" \
   -F "file=@/home/tstephen/git/questionnaire/batch1.json" \
   http://localhost:8082/corshamprimary/contacts/uploadjson
+
+# record enquiry
+curl -X POST -H 'Accept:application/json' -u tstephen:tstephen -v \
+-d 'json={ "lastName":"Burns", "firstName":"Charles Montgomery Third", "email":"mrburns@springfieldpower.com", "phone1":"44987654321", "type":"Enquiry", "message":"Hello there", "tenantId":"omny" }' \
+http://localhost:8082/msg/flexspace/omny.enquiry.json
+  
