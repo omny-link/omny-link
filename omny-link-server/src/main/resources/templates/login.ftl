@@ -83,7 +83,7 @@
     <div class="col-md-offset-6 col-md-6 col-sm-12" id="loginSect">
       <form class="form-inline" id="loginForm" name="loginForm" action="/login" method="POST">
         <fieldset>
-          <input class="form-control input-lg" type="text" id="username" name="username" placeholder="Username" required/>
+          <input class="form-control input-lg" type="text" id="username" name="username" placeholder="Email (Username)" required/>
           <input class="form-control input-lg" type="password" id="password" name="password" placeholder="Password" required/>
           <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
           <input type="hidden" id="redirect" name="redirect" value="index.html" />
