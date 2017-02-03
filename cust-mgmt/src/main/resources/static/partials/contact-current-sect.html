@@ -98,7 +98,7 @@
         {{#tenant.show.marketing || tenant.show.stage}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Stage{{/}}:</label>
-            <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
+            <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" on-blur="initAutoComplete()" value="{{current.stage}}">
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.stageHint}}{{tenant.strings.stageHint}}{{else}}How far through the sales pipeline are you with this contact?{{/}}</p>
           </li>
           {{# haveStageReasons() }}
@@ -109,7 +109,7 @@
             </li>
             <li class="form-group">
               <label class="col-md-4 col-sm-4">{{#tenant.strings.stageDate}}{{tenant.strings.stageDate}}{{else}}Loss Date{{/}}:</label>
-              <input class="form-control" id="curStageDate" readonly value="{{formatDate(current.stageDate)}}">
+              <input class="form-control" id="curStageDate" value="{{formatDate(current.stageDate)}}">
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
             </li>
           {{/}}
