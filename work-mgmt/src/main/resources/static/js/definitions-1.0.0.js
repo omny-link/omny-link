@@ -14,6 +14,11 @@ var ractive = new AuthenticatedRactive({
     duration: function(timeString) {
       return i18n.getDurationString(new Date(timeString))
     },
+    featureEnabled: function(feature) {
+      console.log('featureEnabled: '+feature);
+      if (feature==undefined || feature.length==0) return true;
+      else return ractive.get('tenant.show.'+feature);
+    },
     formatDateTime: function(timeString) {
 //    console.log('formatDate: '+timeString);
       if (timeString==undefined) return 'n/a';
