@@ -6,15 +6,3 @@
     {"date":"21/09/2016","time":"11:00-12:00","group":"Y4","type":"Health"}
   ]
 }
-
-[
-  { 
-    "name": "Booking for Corsham Primary",
-    "contactId": "33",
-    "orderItems": [
-      {"date":"21/09/2016","time":"09:00-10:00","group":"Y2","type":"Health"},
-      {"date":"21/09/2016","time":"10:00-11:00","group":"Y3","type":"Health"},
-      {"date":"21/09/2016","time":"11:00-12:00","group":"Y4","type":"Health"}
-    ]
-  }
-]
