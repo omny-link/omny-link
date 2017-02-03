@@ -7,5 +7,7 @@
   {  "idx": 4, "id": "Closing", "name": "Closing"  },
   {  "idx": 5, "id": "Implement", "name": "Implement"  },
   {  "idx": 6, "id": "Measure value", "name": "Measure value"  },
-  {  "idx": -1, "id": "Review", "name": "Review"  }
+  {  "idx": -1, "id": "Review", "name": "Review"  },
+  {  "idx": -1, "id": "On hold", "name": "On hold"  },
+  {  "idx": -1, "id": "Cold", "name": "Cold"  }
 ]
