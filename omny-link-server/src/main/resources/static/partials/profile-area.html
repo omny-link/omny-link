@@ -1,6 +1,6 @@
 <div class="profile pull-right">
   <form name="logoutForm" action="/logout" method="POST">
-    <span id="tenantId" class="replaceable super-admin tenant" contenteditable="true" onblur="ractive.switchToTenant($('#tenantId').text())" name="tenantId" value="{{#tenant}}{{tenant.id}}{{else}}Click to set{{/}}"></span>
+    <span id="tenantId" class="replaceable super-admin tenant" contenteditable="true" onblur="ractive.switchToTenant($('#tenantId').text())" value="{{#tenant}}{{tenant.id}}{{else}}Click to set{{/}}"></span>
     <a href="/me.html" title="To set your profile picture, please visit gravatar.com">
       <span class="profile-img">{{username}}</span>
     </a>
