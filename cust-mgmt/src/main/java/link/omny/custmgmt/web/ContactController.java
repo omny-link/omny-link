@@ -16,26 +16,6 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 import javax.validation.constraints.NotNull;
 
-import link.omny.custmgmt.internal.CsvImporter;
-import link.omny.custmgmt.internal.NullAwareBeanUtils;
-import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
-import link.omny.custmgmt.model.Account;
-import link.omny.custmgmt.model.Activity;
-import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.CustomContactField;
-import link.omny.custmgmt.model.CustomField;
-import link.omny.custmgmt.model.Document;
-import link.omny.custmgmt.model.Note;
-import link.omny.custmgmt.repositories.AccountRepository;
-import link.omny.custmgmt.repositories.ActivityRepository;
-import link.omny.custmgmt.repositories.ContactRepository;
-import link.omny.custmgmt.repositories.CustomContactFieldRepository;
-import link.omny.custmgmt.repositories.DocumentRepository;
-import link.omny.custmgmt.repositories.NoteRepository;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.identity.User;
@@ -75,6 +55,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
+
+import link.omny.custmgmt.internal.CsvImporter;
+import link.omny.custmgmt.internal.NullAwareBeanUtils;
+import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
+import link.omny.custmgmt.model.Account;
+import link.omny.custmgmt.model.Activity;
+import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.CustomContactField;
+import link.omny.custmgmt.model.CustomField;
+import link.omny.custmgmt.model.Document;
+import link.omny.custmgmt.model.Note;
+import link.omny.custmgmt.repositories.AccountRepository;
+import link.omny.custmgmt.repositories.ActivityRepository;
+import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.repositories.CustomContactFieldRepository;
+import link.omny.custmgmt.repositories.DocumentRepository;
+import link.omny.custmgmt.repositories.NoteRepository;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * REST web service for uploading and accessing a file of JSON Contacts (over
@@ -1087,6 +1087,7 @@ public class ContactController {
         private String firstName;
         private String lastName;
         private String fullName;
+        private String email;
         private String accountName;
         private String owner;
         private String stage;
