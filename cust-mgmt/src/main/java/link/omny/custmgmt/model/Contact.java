@@ -32,14 +32,6 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import link.omny.custmgmt.internal.NullAwareBeanUtils;
-import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.slf4j.Logger;
@@ -48,6 +40,14 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import link.omny.custmgmt.internal.NullAwareBeanUtils;
+import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "OL_CONTACT")
