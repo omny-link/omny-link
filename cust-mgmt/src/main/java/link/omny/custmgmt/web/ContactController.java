@@ -70,7 +70,6 @@ import link.omny.custmgmt.model.Note;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ActivityRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
-import link.omny.custmgmt.repositories.CustomContactFieldRepository;
 import link.omny.custmgmt.repositories.DocumentRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
@@ -92,8 +91,8 @@ public class ContactController {
     @Autowired
     private ContactRepository contactRepo;
 
-    @Autowired
-    private CustomContactFieldRepository customContactRepo;
+//    @Autowired
+//    private CustomContactFieldRepository customContactRepo;
 
     @Autowired
     private AccountRepository accountRepo;
@@ -1070,6 +1069,7 @@ public class ContactController {
         private List<CustomContactField> customFields;
         private Account account;
         private List<Activity> activities;
+        private List<Note> notes;
 
         public Object getCustomFieldValue(@NotNull String fieldName) {
             for (CustomField field : getCustomFields()) {
