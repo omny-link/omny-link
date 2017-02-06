@@ -9,11 +9,11 @@
     xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  <xsl:output omit-xml-declaration="yes"/>
-    
   <!-- Note: An imported style sheet has lower precedence than the importing style sheet. -->
   <xsl:import href="/xslt/ActivitiSupportRules.xsl"/>
   
+  <xsl:output omit-xml-declaration="yes"/>
+    
   <xsl:template match="/">
 		<xsl:apply-templates/>
 	</xsl:template>
