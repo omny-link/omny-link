@@ -1043,6 +1043,7 @@ public class ContactController {
         private List<String> alerts;
         private boolean existingCustomer;
         private String source;
+        private String source2;
         private String medium;
         private String campaign;
         private String keyword;
