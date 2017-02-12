@@ -74,7 +74,7 @@
             <div class="input-group">
               <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curShortId" readonly disabled value="{{shortId(current.selfRef)}}"/>
               <span class="input-group-addon">
-                <a href="contacts.html?id=/contacts/{{current.id}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+                <a href="contacts.html?searchTerm={{current.selfRef.substring(current.selfRef.lastIndexOf('/')+1)}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
               </span>
             </div>
           </li>
