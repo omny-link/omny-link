@@ -3,15 +3,15 @@ package link.omny.acctmgmt.repositories;
 import java.util.Date;
 import java.util.List;
 
-import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.ContactExcept;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.ContactExcept;
 
 @RepositoryRestResource(excerptProjection = ContactExcept.class, path = "/cohorts")
 public interface CohortPerformanceRepository extends CrudRepository<Contact, Long> {
@@ -91,13 +91,13 @@ public interface CohortPerformanceRepository extends CrudRepository<Contact, Lon
     List<Contact> findActiveForTenant(@Param("sinceDate") Date sinceDate,
             @Param("tenantId") String tenantId);
 
-    @Query(value = "UPDATE OL_CONTACT c set c.account_id = ?2 WHERE c.id = ?1", nativeQuery = true)
+    @Query(value = "UPDATE OL_CONTACT c set c.account_id = :accountId WHERE c.id = :contactId", nativeQuery = true)
     @Modifying(clearAutomatically = true)
-    public void setAccount(Long contactId, Long accountId);
+    public void setAccount(@Param("contactId") Long contactId, @Param("accountId") Long accountId);
 
     @Override
-    @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = ?1")
+    @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = :id")
     @Modifying(clearAutomatically = true)
-    public void delete(Long id);
+    public void delete(@Param("id") Long id);
 
 }
