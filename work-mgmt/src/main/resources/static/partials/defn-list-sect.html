@@ -7,7 +7,7 @@
 <section id="definitionSect">
   <h2 class="navbar-top">
     {{>navbar}}
-    <a class="clickable glyphicon glyphicon-cloud-upload pull-right" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
+    <a class="clickable glyphicon glyphicon-cloud-upload pull-right hidden-xs" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
   </h2>
   <div id="upload" style="display:none">
     <form action="/{{tenant.id}}/deployments" class="well form form-inline" enctype="multipart/form-data" id="uploadForm" method="post">
@@ -31,28 +31,30 @@
     <thead>
       <tr>
         <th></th>
-        <th class="col-md-2" on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
-        <th class="col-md-2" on-click="sort:description">Description<span class="sortable {{ sorted('description') }} glyphicon "></th>
-        <th class="col-md-2" on-click="sort:category">Category<span class="sortable {{ sorted('category') }} glyphicon "></th>
-        <th on-click="sort:deploymentId">Deployment Bundle<span class="sortable {{ sorted('deploymentId') }} glyphicon "></th>
+        <th class="col-md-2 col-sm-3 col-xs-2" on-click="sort:Key">Key<span class="sortable {{ sorted('key') }} glyphicon "></th>
+        <th class="col-md-3 col-sm-5 col-xs-2" on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
+        <!--th class="col-md-2 col-sm-2 col-xs-3" on-click="sort:description">Description<span class="sortable {{ sorted('description') }} glyphicon "></th-->
+        <th class="col-md-2 hidden-sm hidden-xs" on-click="sort:category">Category<span class="sortable {{ sorted('category') }} glyphicon "></th>
+        <th class="col-md-2 hidden-sm hidden-xs" on-click="sort:deploymentId">Deployment Bundle<span class="sortable {{ sorted('deploymentId') }} glyphicon "></th>
         <th on-click="sort:version">Version<span class="sortable {{ sorted('version') }} glyphicon "></th>
-        <th class="col-md-4">Actions</th>
+        <th class="col-md-3 col-sm-3 col-xs-3 col-actions">Actions</th>
       </tr>
     </thead>
     <tbody>
       {{#each sort(definitions,sortColumn,sortAsc):i}}
         {{# matchSearch(this) }}
-        <tr data-href="{{_links.self.href}}">
+        <tr data-id="{{id}}">
           <td on-click="select(this)">{{i+1}}</td>
-          <td on-click="select(this)">{{name}} {{#key}}({{key}}){{/}}</td>
+          <td class="col-md-2 col-sm-3 col-xs-2" on-click="select(this)">{{key}}</td>
+          <td class="col-md-3 col-sm-5 col-xs-2" on-click="select(this)">{{name}}</td>
           <!-- <td on-click="select(this)">
             <img class="col-md-1" src="/{{tenant.id}}/process-definitions/{{id}}.svg"/>
           </td>-->
-          <td class="col-md-5" on-click="select(this)">{{description}}</td>
-          <td on-click="select(this)">{{category}}</td>
-          <td on-click="select(this)">{{deploymentId}}</td>
+          <!--td class="col-md-2 col-sm-2 col-xs-2" on-click="select(this)">{{description}}</td-->
+          <td class="col-md-2 hidden-sm hidden-xs" on-click="select(this)">{{category}}</td>
+          <td class="col-md-2 hidden-sm hidden-xs" on-click="select(this)">{{deploymentId}}</td>
           <td on-click="select(this)">{{version}}</td>
-          <td>
+          <td class="col-md-3 col-sm-3 col-xs-3 col-actions">
             {{#deploymentId}}
               {{#suspended}}
                 <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.activate('{{id}}')" title="Activate"></a>
@@ -76,5 +78,8 @@
         {{/}}
       {{/each}}
     </tbody>
+    <tfoot>
+      <tr><th colspan="12">{{searchMatched == 0 ? 'No' : searchMatched}} matching definition{{searchMatched==1 ? '' : 's'}}</th></tr>
+    </tfoot>    
   </table>
 </section>

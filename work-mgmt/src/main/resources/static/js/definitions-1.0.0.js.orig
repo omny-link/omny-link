@@ -104,12 +104,9 @@ var ractive = new AuthenticatedRactive({
         return ( (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.description!=undefined && obj.description.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.id.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-          || (searchTerm.startsWith('category:') && obj.category!=undefined && obj.category.indexOf(ractive.get('searchTerm').substring(9))!=-1)
-          || (searchTerm.startsWith('version:latest') && ractive.isLatestVersion(obj))
         );
       }
     },
-    searchTerm: 'version:latest',
     sort: function (array, column, asc) {
       console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);
       array = array.slice(); // clone, so we don't modify the underlying data
@@ -282,11 +279,6 @@ var ractive = new AuthenticatedRactive({
     console.log('fetch...');
     $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions', function( data ) {
       ractive.merge('definitions', data);
-      ractive.set('searchMatched',$('#definitionsTable tbody tr:visible').length);
-      if (ractive.get('searchMatched')==1) {
-        var id = $($('#definitionsTable tbody tr:visible')[0]).data('id');
-        ractive.select(Array.findBy('id', id, ractive.get('definitions')));
-      }
     });
   },
   fetchImage: function(definition) {
@@ -336,22 +328,9 @@ var ractive = new AuthenticatedRactive({
     console.info('hidePropertySect');
     $('#propertySect').slideUp();
   },
-  isLatestVersion: function(defn) {
-    var defns = ractive.get('definitions');
-    var latestVsn = 0;
-    for(idx in defns) {
-      if (defns[idx].key == defn.key && defns[idx].version>latestVsn) latestVsn = defns[idx].version;
-    }
-    return defn.version==latestVsn ? true : false;
-  },
   oninit: function() {
     this.ajaxSetup();
     this.loadStandardPartials(this.get('stdPartials'));
-  },
-  search: function(searchTerm) {
-    ractive.set('searchTerm',searchTerm);
-    ractive.set('searchMatched',$('#definitionsTable tbody tr:visible').length);
-    ractive.showResults();
   },
   select: function(definition) {
     ractive.set('current', definition);

@@ -189,7 +189,7 @@ section h2 .search {
 }
 section h2 .glyphicon {
   height: 34px;
-  margin: -6px 0px 2px 0px;
+  margin-top: -6px;
 }
 section h2 .glyphicon-search {
   border-bottom-left-radius: 0;
@@ -329,7 +329,7 @@ tfoot th {
   left: -7px;
 }
 .col-actions {
-  min-width: 105px !important;
+  min-width: 101px !important;
 }
 .col-truncate {
 	width: 200px;
@@ -390,7 +390,7 @@ input[type="checkbox"].form-control:focus {
 	font-size: 20px;
   border: solid 1px;
   padding: 6px;
-  margin: 2px 1px;
+  margin: 3px;
   border-radius: 5px;
   color: #0e9acd;
   min-width: 36px;
@@ -499,20 +499,10 @@ h2 a.glyphicon:hover {
 
 .search {
 	border-radius:15px;
+	width:100px;
 	display:inline;
 	position:relative;
-	bottom:5px;
-	width:20%;
-}
-@media (min-width: 480px) {
-	.search {
-	  width:30%;
-	}
-}
-@media (min-width: 768px) {
-  .search {
-    width:40%;
-  }
+	bottom:5px;	
 }
 /* END BOOTSTRAP OVERRIDES */
 
@@ -639,7 +629,6 @@ h2 a.glyphicon:hover {
 	left: 0px;
 	position: fixed;
 	top: 0px;
-	z-index: 300;
 }
 
 /* END OMNY BAR */
@@ -966,11 +955,6 @@ ul.json li label {
 	font-style: italic;
 	position: relative;
 	z-index: 250;
-}
-.navbar-sticky .profile.pull-right {
-  position: absolute;
-  right: 5%;
-  top: 7px;
 }
 .navbar-top .profile .tenant {
 	display:inline;
