@@ -8,11 +8,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.List;
 
-import link.omny.acctmgmt.Application;
-import link.omny.acctmgmt.web.TenantConfigController;
-import link.omny.acctmgmt.web.TenantController;
-import link.omny.acctmgmt.web.TenantController.TenantSummary;
-
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.identity.User;
 import org.junit.After;
@@ -30,6 +25,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import link.omny.acctmgmt.Application;
+import link.omny.acctmgmt.web.TenantConfigController;
+import link.omny.acctmgmt.web.TenantController;
+import link.omny.acctmgmt.web.TenantController.TenantSummary;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -146,7 +146,7 @@ public class TenantConfigControllerTest {
 
         List<TenantTypeaheadControl> controls = tenantConfig2
                 .getTypeaheadControls();
-        assertEquals(1, controls.size());
+        assertEquals(2, controls.size());
         assertEquals(CONTROL_EXTENSION, controls.get(0).getUrl());
         assertTrue(controls.get(0).isValid());
     }
@@ -159,7 +159,7 @@ public class TenantConfigControllerTest {
         tenantController.create(tenant);
 
         // RETRIEVE
-        TenantConfig tenantConfig2 = svc.showTenant(TEST_TENANT_ID);
+        TenantConfig tenantConfig2 = svc.showTenant(REMOTE_TEST_TENANT_ID);
         assertNotNull(tenantConfig2);
         assertTrue(!tenantConfig2.getFeatures().isAccount());
 
@@ -182,6 +182,8 @@ public class TenantConfigControllerTest {
                 .getTypeaheadControls();
         assertEquals(1, controls.size());
         assertEquals(CONTROL_EXTENSION, controls.get(0).getUrl());
-        assertTrue(controls.get(0).isValid());
+        assertTrue(!controls.get(0).isValid());
+        // warning for using non-owned defaults
+        assertEquals("warning", controls.get(0).getStatus());
     }
 }
