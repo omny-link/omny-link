@@ -2,14 +2,14 @@ package link.omny.catalog.repositories;
 
 import java.util.List;
 
-import link.omny.catalog.model.Order;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import link.omny.catalog.model.Order;
 
 @RepositoryRestResource(path = "/orders")
 public interface OrderRepository extends CrudRepository<Order, Long> {
@@ -46,15 +46,15 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
             @Param("contactIds") Long[] contactIds, Pageable pageable);
 
     @Override
-    @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = ?1")
+    @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = :orderId")
     @Modifying(clearAutomatically = true)
-    public void delete(Long id);
+    public void delete(@Param("orderId") Long id);
 
-    @Query("DELETE FROM CustomOrderItemField i WHERE i.orderItem.id = ?1")
+    @Query("DELETE FROM CustomOrderItemField i WHERE i.orderItem.id = :orderItemId")
     @Modifying(clearAutomatically = true)
-    public void deleteItemCustomField(Long orderItemId);
+    public void deleteItemCustomField(@Param("orderItemId") Long orderItemId);
 
-    @Query("DELETE FROM OrderItem i WHERE i.order.id = ?1 AND i.id = ?2")
+    @Query("DELETE FROM OrderItem i WHERE i.order.id = :orderId AND i.id = :orderItemId")
     @Modifying(clearAutomatically = true)
-    public void deleteItem(Long orderId, Long orderItemId);
+    public void deleteItem(@Param("orderId") Long orderId, @Param("orderItemId") Long orderItemId);
 }
