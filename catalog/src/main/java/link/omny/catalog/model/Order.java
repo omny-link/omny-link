@@ -13,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PreUpdate;
@@ -22,7 +23,19 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.rest.core.annotation.RestResource;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import link.omny.catalog.json.JsonCustomOrderFieldDeserializer;
+import link.omny.catalog.model.api.OrderWithSubEntities;
+import link.omny.catalog.views.OrderViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
 import lombok.AllArgsConstructor;
@@ -30,13 +43,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "OL_ORDER")
@@ -45,7 +51,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Order implements Serializable {
+public class Order implements OrderWithSubEntities, Serializable {
 
     private static final long serialVersionUID = -2334761729349848501L;
 
@@ -56,58 +62,83 @@ public class Order implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
+//    @JsonFormat(shape= JsonFormat.Shape.NUMBER)
+    @JsonView(OrderViews.Detailed.class)
     private Long id;
 
     @JsonProperty
+    @JsonView(OrderViews.Summary.class)
     private String name;
 
     @JsonProperty
+    @JsonView(OrderViews.Summary.class)
     private String description;
 
     @Temporal(TemporalType.DATE)
     @JsonProperty
+    @JsonView(OrderViews.Summary.class)
     private Date date;
 
     @JsonProperty
     @Size(max = 20)
+    @JsonView(OrderViews.Summary.class)
     private String dueDate;
 
     @JsonProperty
     @Size(max = 30)
+    @JsonView(OrderViews.Summary.class)
     private String stage = "New enquiry";
 
     @JsonProperty
+    @JsonView(OrderViews.Summary.class)
     private BigDecimal price;
+
+    // Although this annotation does not change the name, without it Jackson
+    // gets confused and attempts to cast id:Long to String. Why this property
+    // affects a completely different one is a mystery I have not investigated
+    @JsonProperty("stockItem")
+    @JsonView(OrderViews.Detailed.class)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @RestResource(rel = "stockItem")
+    private StockItem stockItem;
 
     @JsonProperty
     @Size(max = 30)
+    @JsonView(OrderViews.Summary.class)
     private String invoiceRef;
 
     @JsonProperty
+    @JsonView(OrderViews.Summary.class)
     private Long contactId;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
+    @JsonView(OrderViews.Summary.class)
     private Date created = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
+    @JsonView(OrderViews.Summary.class)
     private Date lastUpdated;
 
     @JsonProperty
+    @JsonView(OrderViews.Summary.class)
     private String tenantId;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
     @JsonDeserialize(using = JsonCustomOrderFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
+    @JsonView(OrderViews.Detailed.class)
     private List<CustomOrderField> customFields;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "order", targetEntity = OrderItem.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "order", targetEntity = OrderItem.class)
+    @JsonView(OrderViews.Detailed.class)
     private List<OrderItem> orderItems;
 
     @OneToOne(fetch = FetchType.EAGER)
+    @JsonView( { OrderViews.Summary.class, OrderViews.Detailed.class } )
     private Feedback feedback;
 
     public Order(String name) {
@@ -143,7 +174,7 @@ public class Order implements Serializable {
         getCustomFields().add(customField);
     }
 
-    protected void setCustomField(CustomOrderField newField) {
+    public void setCustomField(CustomOrderField newField) {
         boolean found = false;
         for (CustomOrderField field : getCustomFields()) {
             if (field.getName().equals(newField.getName())) {
@@ -159,11 +190,14 @@ public class Order implements Serializable {
     }
 
     public void setOrderItems(List<OrderItem> newItems) {
+        orderItems = newItems;
+        if (newItems == null ) { 
+            return ;
+        }
         for (OrderItem item : newItems) {
             item.setOrder(this);
             item.setTenantId(tenantId);
         }
-        orderItems = newItems;
     }
 
     public List<OrderItem> getOrderItems() {
@@ -179,7 +213,6 @@ public class Order implements Serializable {
         getOrderItems().add(item);
         return this;
     }
-
 
     @PreUpdate
     public void preUpdate() {

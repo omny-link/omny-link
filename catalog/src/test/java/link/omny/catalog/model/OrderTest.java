@@ -31,7 +31,7 @@ public class OrderTest {
         field1.setId(1l);
         order.addCustomField(field1);
 
-        OrderItem orderItem1 = new OrderItem("Widget A", "Widget");
+        OrderItem orderItem1 = new OrderItem("Widget");
         orderItem1.setId(1l);
         orderItem1
                 .addCustomField(new CustomOrderItemField("colour", "Avocado"));
