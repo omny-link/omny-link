@@ -1,0 +1,20 @@
+<a id="ordersTableToggle" class="clickable glyphicon glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the order table"></a>
+<span>{{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}Orders{{/}}</span>
+<a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new order"></a>
+<a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+<input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
+<a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching orders"></a>
+<a class="clickable dropdown" aria-hidden="true" id="filterBtn" title="Show filters">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
+  </a>
+  <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
+    <li on-click="filter:{idx:1}">Show All</li>
+    {{#if tenant.show.stage}}
+      <li class="divider"></li>
+      {{#stages:i}}
+        <li on-click="filter:{idx:{{1+i}},field: 'stage', value: '{{id}}'}">{{name}}</li>
+      {{/stages}}
+    {{/if}}
+  </ul>
+</a>

@@ -13,9 +13,9 @@ import link.omny.catalog.model.CustomOrderItemField;
 import link.omny.catalog.model.Feedback;
 import link.omny.catalog.model.Order;
 import link.omny.catalog.model.OrderItem;
+import link.omny.catalog.model.api.OrderWithSubEntities;
+import link.omny.catalog.model.api.ShortOrder;
 import link.omny.catalog.web.OrderController.FeedbackResource;
-import link.omny.catalog.web.OrderController.ShortOrder;
-import link.omny.catalog.web.OrderController.ShortOrderItem;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,7 +66,7 @@ public class OrderContollerTest {
         assertEquals(CONTACT_ID, order.getContactId());
         assertEquals(2, order.getPrice().scale());
 
-        ShortOrder order2 = retrieveOrder();
+        OrderWithSubEntities order2 = retrieveOrder(order.getId());
         assertNotNull(order2);
         assertEquals(2, order2.getCustomFields().size());
 
@@ -110,18 +110,18 @@ public class OrderContollerTest {
         assertEquals(PRICE, orderItem.getPrice());
         assertEquals("Avocado", orderItem.getCustomFieldValue(CUST_FIELD_COLOUR));
 
-        ShortOrder order2 = retrieveOrder();
+        OrderWithSubEntities order2 = retrieveOrder(order.getId());
         assertNotNull(order2);
 
         // Update price
         assertEquals(2, order2.getOrderItems().size());
-        ShortOrderItem orderItem2 = order2.getOrderItems().get(0);
+        OrderItem orderItem2 = order2.getOrderItems().get(0);
         assertEquals(PRICE, orderItem2.getPrice());
         order.getOrderItems().get(0).setPrice(PRICE_INCREASED);
         updateOrder(order.getId(), order);
-        ShortOrder order2b = retrieveOrder();
+        OrderWithSubEntities order2b = retrieveOrder(order.getId());
         assertNotNull(order2b);
-        ShortOrderItem orderItem2b = order2b.getOrderItems().get(0);
+        OrderItem orderItem2b = order2b.getOrderItems().get(0);
         assertEquals(PRICE_INCREASED.doubleValue(), orderItem2b.getPrice()
                 .doubleValue(), 0.01);
 
@@ -129,9 +129,9 @@ public class OrderContollerTest {
         order.getOrderItems().get(0).setCustomField(
                         new CustomOrderItemField(CUST_FIELD_COLOUR, "Absinthe"));
         updateOrder(order.getId(), order);
-        ShortOrder order2c = retrieveOrder();
+        OrderWithSubEntities order2c = retrieveOrder(order.getId());
         assertNotNull(order2c);
-        ShortOrderItem orderItem2c = order2c.getOrderItems().get(0);
+        OrderItem orderItem2c = order2c.getOrderItems().get(0);
         assertEquals(1, orderItem2c.getCustomFields().size());
         // assertEquals("Absinthe", orderItem2c.getCustomFields());
 
@@ -178,13 +178,13 @@ public class OrderContollerTest {
     private Order getOrderAndItems() {
         Order order = new Order("Basket");
 
-        OrderItem orderItem1 = new OrderItem("Widget A", "Widget");
+        OrderItem orderItem1 = new OrderItem("Widget");
         orderItem1.setPrice(PRICE);
         orderItem1.addCustomField(new CustomOrderItemField(CUST_FIELD_COLOUR,
                 "Avocado"));
         order.addOrderItem(orderItem1);
         
-        OrderItem orderItem2 = new OrderItem("Widget B", "Widget");
+        OrderItem orderItem2 = new OrderItem("Widget");
         orderItem2.setPrice(PRICE);
         orderItem2
                 .addCustomField(new CustomOrderItemField(CUST_FIELD_COLOUR, "Blue"));
@@ -199,7 +199,7 @@ public class OrderContollerTest {
         return allOrders.get(0);
     }
 
-    private ShortOrder retrieveOrder(Long orderId) {
+    private OrderWithSubEntities retrieveOrder(Long orderId) {
         return svc.readOrder(TENANT_ID, orderId);
     }
 

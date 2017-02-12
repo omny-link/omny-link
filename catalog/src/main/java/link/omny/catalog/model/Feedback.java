@@ -20,7 +20,17 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.rest.core.annotation.RestResource;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import link.omny.catalog.json.JsonCustomFeedbackFieldDeserializer;
+import link.omny.catalog.views.OrderViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
 import lombok.AllArgsConstructor;
@@ -28,14 +38,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.rest.core.annotation.RestResource;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 // Property in Flexspace terminology 
 @Data
@@ -58,25 +60,32 @@ public class Feedback implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
     private Long id;
 
     @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
     private String description;
 
     @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
     private String type;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
+    // See OrderItem.lastUpdated for explanation
+    //@JsonView(OrderViews.Detailed.class)
     private Date lastUpdated;
 
     @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
     private String tenantId;
 
     @OneToOne
@@ -86,6 +95,7 @@ public class Feedback implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "feedback", orphanRemoval = true)
     @JsonDeserialize(using = JsonCustomFeedbackFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
+    @JsonView(OrderViews.Detailed.class)
     private List<CustomFeedbackField> customFields;
 
     public Feedback(String desc, String type) {

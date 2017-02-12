@@ -23,7 +23,7 @@
           {{/if}}
           <span class="pull-right">
             {{#matchRole('admin')}}
-              <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteAccount(current)" style="right:-8px" title="Delete this record"></a>
+              <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="deleteAccount(current)" style="top:-1px" title="Delete this record"></a>
             {{/}}
             <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
             {{#if tenant.accountActions!=undefined && tenant.accountActions.length>0 }}
@@ -68,13 +68,33 @@
 
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form inline-form edit-form">
+        {{# tenant.strings.companyNumber == 'Establishment Group'}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">{{# tenant.strings.edubaseUrn}}{{tenant.strings.edubaseUrn}}{{else}}Edubase URN{{/}}:</label>
+            <div class="input-group">
+              <input class="col-md-8 col-sm-8 form-control" id="curEdubaseUrn" pattern="[0-9]{6}" type="text" value="{{current.customFields['edubaseUrn']}}">
+              {{# current.customFields['edubaseUrn']!=undefined}}
+                <span class="input-group-addon">
+                  <a href="http://www.education.gov.uk/edubase/establishment/summary.xhtml?urn={{parseInt(current.customFields['edubaseUrn'])}}" target="edubaseEstablishment"><span class="glyphicon glyphicon-new-window"></span></a>
+                </span>
+              {{else}}
+                <span class="input-group-addon">N/A</span>
+              {{/}}
+            </div>
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
+          </li>
+        {{/}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4">{{# tenant.strings.companyNumber}}{{tenant.strings.companyNumber}}{{else}}Company Number{{/}}:</label>
           <div class="input-group">
-            <input autocomplete="off" class="typeahead col-md-8 col-sm-8 form-control" id="curCompanyNumber" pattern="[OCINS0-9]{0,2}[0-9]{6}" {{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.companyNumber}}">
-            {{# tenant.strings.companyNumber == 'Edubase URN' && current.companyNumber!=undefined}}
+            <input autocomplete="off" class="typeahead col-md-8 col-sm-8 form-control" id="curCompanyNumber" pattern="[OCINS0-9]{0,2}[0-9]{4,6}" {{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.companyNumber}}">
+            {{# tenant.strings.companyNumber == 'Establishment Group' && current.companyNumber!=undefined}}
               <span class="input-group-addon">
-                <a href="http://www.education.gov.uk/edubase/establishment/summary.xhtml?urn={{parseInt(current.companyNumber)}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a>
+                <a href="http://www.education.gov.uk/edubase/groups/group/summary.xhtml?id={{parseInt(current.companyNumber)}}" target="edubaseGroup"><span class="glyphicon glyphicon-new-window"></span></a>
+              </span>
+            {{elseif current.companyNumber!=undefined}}
+              <span class="input-group-addon">
+                <a href="https://beta.companieshouse.gov.uk/company/{{current.companyNumber}}" target="companiesHouse"><span class="glyphicon glyphicon-new-window" title="View Companies House Information"></span></a>
               </span>
             {{else}}
               <span class="input-group-addon">N/A</span>
@@ -82,13 +102,6 @@
           </div>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
         </li>
-        {{# false && current.companyNumber}}
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4 "></label>
-            <a href="https://beta.companieshouse.gov.uk/company/{{current.companyNumber}}" target="_newTab">View Companies House Information</a>
-            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
-          </li>
-        {{/}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
           <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}">
@@ -255,8 +268,6 @@
      <h3>
        <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
        <span> Contacts</span>
-       <a class="clickable glyphicon glyphicon-plus" aria-hidden="true" on-click="addContact()" title="Add a new contact"></a>
-       <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetchAccountContacts()" title="Refresh the list"></a>
      </h3>
      <div class="col-md-12" style="display:none">
        <form id="currentContactForm">

@@ -1,0 +1,114 @@
+<section id="currentSect" style="display:none">
+  <form class="inline-form form" id="currentForm">
+    <h2 class="">
+      {{#matchRole('super_admin')}}
+        <span>{{current.id}} - </span>
+      {{/}}
+      <span>{{#current.contactId}}{{formatContactId(current.contactId)}}{{/}}</span>
+      <span class="pull-right">
+        <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+        {{#if tenant.orderActions!=undefined && tenant.orderActions.length>0 }}
+          <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
+              <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+            </a>
+            <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+              {{#each tenant.orderActions }}
+                {{#name && matchRole(role) && featureEnabled(feature)}}
+                  <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}})">{{name}}</li>
+                {{elseif name==undefined}}
+                  <li class="divider"></li>
+                {{/}}
+              {{/each}}
+            </ul>
+          </span>
+        {{/if}}
+      </span>
+    </h2>
+    
+    <div class="currentBody col-md-6 col-sm-12">
+      <ul class="form edit-form">
+        {{#1==2}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4 required">Name:</label>
+            <input class="form-control" list="stockCategories" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.name}}">
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>
+          </li>
+        {{/}}
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}:</label>
+          <input class="form-control" list="contacts" onblur="ractive.updateContactId(this.value)" placeholder="Start typing to filter options" 
+              id="curContact" required value="{{#current.contactId}}{{formatContactId(current.contactId)}}{{/}}">
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Person this {{tenant.strings.order.toLowerCase()}} is for</p>
+        </li>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}:</label>
+          <input class="form-control col-md-8 col-sm-8 col-xs-8" id="curDate" type="date" value="{{current.date}}"/>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}</p>
+        </li>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Stage:</label>
+          <input class="form-control" list="stages" placeholder="Start typing to filter options" id="curOrderStage" value="{{current.stage}}"/>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.stageHint}}{{tenant.strings.stageHint}}{{else}}Stage the order has reached{{/}}</p>
+        </li>
+        {{#tenant.show.orderDueDate}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}:</label>
+            {{#if current.orderItems}}
+              <span>{{formatOrderItemDates(current)}}</span>
+            {{else}}
+              <input class="form-control col-md-8 col-sm-8 col-xs-8" id="curDueDate" {{#if !tenant.show.orderItems}}type="date" {{/if}}value="{{current.dueDate}}"/>
+            {{/if}}
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Date order due to be delivered{{/}}</p>
+          </li>
+        {{/}}
+      </ul>
+    </div>
+    <div class="currentBody col-md-6 col-sm-12">
+      <ul class="form edit-form">
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
+          {{#if current.orderItems}}
+            <span>{{formatStockItemIds(current)}}</span>
+          {{else}}
+            <input class="form-control" list="stockItems" onblur="ractive.updateStockItem(this.value)" placeholder="Start typing to filter options"
+                id="curContact" required value="{{#current.stockItem}}{{current.stockItem.name}}{{/}}">
+          {{/if}}
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{tenant.strings.stockItem}} this {{tenant.strings.order.toLowerCase()}} is for</p>
+        </li>
+        {{#tenant.show.stockPricing}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">Price:</label>
+            <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price for the {{tenant.strings.order.toLowerCase()}}{{/}}</p>
+          </li>
+        {{/}}
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Invoice Ref:</label>
+          <input class="form-control" id="curPrice" step="any" value="{{current.invoiceRef}}">
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference for {{tenant.strings.order.toLowerCase()}}{{/}}</p>
+        </li>
+      </ul>
+    </div>
+
+    {{#tenant.orderFields.length>0}}
+      {{#if haveCustomExtension('OrderExtension')}}
+        <div id="currentOrderExtended" style="clear: both">
+          {{>(tenant.id+'OrderExtension')}}
+        </div>
+      {{else}}
+        <div id="currentOrderExtended" style="clear: both">
+          {{>currentOrderExtensionSect}}
+        </div>
+      {{/if}}
+    {{/}}
+  </form>
+  
+  {{#if tenant.show.orderItems}}
+    {{>currentOrderItemListSect}}
+  {{/if}}
+  
+  {{#if tenant.show.feedback}}
+    {{>currentFeedbackSect}}
+  {{/if}}  
+</section>

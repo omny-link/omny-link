@@ -1,0 +1,41 @@
+  <ul class="form edit-form">
+    <li class="form-group">
+      <label class="col-md-2 col-sm-2">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}:</label>
+      <input class="form-control" id="curOrderContact" value="{{instanceToStart.processVariables.order.contactId}}">
+      <p class="col-md-offset-2 col-sm-offset-2 help-block field-error">{{#tenant.strings.contactHint}}{{tenant.strings.contactHint}}{{else}}&nbsp;{{/}}</p>
+    </li>
+    <li class="form-group">
+      <label class="col-md-2 col-sm-2">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
+      <input class="form-control" list="stockItems" id="curOrderStockItem" value="{{instanceToStart.processVariables.order.stockItem.name}}">
+      <p class="col-md-offset-2 col-sm-offset-2 help-block field-error">{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}&nbsp;{{/}}</p>
+    </li>
+    <li class="form-group">
+      <label class="col-md-2 col-sm-2">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}:</label>
+      <input class="form-control" id="curOrderDueDate" type="date" value="{{instanceToStart.processVariables.order.dueDate}}">
+      <p class="col-md-offset-2 col-sm-offset-2 help-block field-error">{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}&nbsp;{{/}}</p>
+    </li>
+    <li class="form-group">
+      <label class="col-md-2 col-sm-2">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Stage{{/}}:</label>
+      <input class="form-control" list="stages" id="curOrderStage" value="{{instanceToStart.processVariables.order.stage}}">
+      <p class="col-md-offset-2 col-sm-offset-2 help-block field-error">{{#tenant.strings.stageHint}}{{tenant.strings.stageHint}}{{else}}&nbsp;{{/}}</p>
+    </li>
+    <li class="form-group">
+      <label class="col-md-2 col-sm-2">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}:</label>
+      <input class="form-control" id="curOrderPrice" value="{{instanceToStart.processVariables.order.price}}">
+      <p class="col-md-offset-2 col-sm-offset-2 help-block field-error">{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}&nbsp;{{/}}</p>
+    </li>
+  </ul>
+<script>
+  $(document).ready(function() {
+    ractive.initAutoComplete();
+    $('#customActionForm input,#customActionForm select,#customActionForm textarea').blur(function() {
+      console.log('blur custom action form field');
+    });
+  });
+  $('#customActionModalSect').on('show.bs.modal', function (event) {
+    ractive.set('instanceToStart.processVariables.order.contactId', ractive.id(ractive.get('current')));
+  });
+  $('#submitCustomActionForm').on('click', function (event) {
+    ractive.set('instanceToStart.processVariables.order.stockItem', '/stock-items/53165');
+  });
+</script>

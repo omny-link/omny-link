@@ -104,6 +104,10 @@ var ractive = new AuthenticatedRactive({
         return json;
       }
     },
+    formatStockItemIds: function(order) {
+      // console.info('formatStockItemIds');
+      return ractive.getStockItemNames(order);
+    },
     formatTags: function(tags) {
       var html = '';
       if (tags==undefined) return html;
@@ -440,6 +444,7 @@ var ractive = new AuthenticatedRactive({
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.hasRole('power-user')) $('.power-user').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
+        if (ractive.get('tenant.show.orders')) ractive.fetchStockItems();
         ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
         ractive.set('saveObserver', true);
       }
@@ -547,29 +552,6 @@ var ractive = new AuthenticatedRactive({
           });
         }
         ractive.sortChildren('instances','occurred',false);
-        ractive.set('saveObserver', true);
-      }
-    });
-  },
-  fetchStockItems: function () {
-    console.info('fetchStockItems...');
-    ractive.set('saveObserver', false);
-    $.ajax({
-      dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/stock-items/?projection=typeahead',
-      crossDomain: true,
-      success: function( data ) {
-        if (data['_embedded'] != undefined) {
-          data = data['_embedded'].stockItems;
-        }
-        ractive.set('saveObserver', false);
-        ractive.set('stockItems',data);
-        console.log('fetched '+data.length+' stock items for typeahead');
-        var accData = jQuery.map( data, function( n, i ) {
-          return ( {  "id": ractive.getId(n), "name": n.name } );
-        });
-        ractive.set('stockItemsTypeahead',accData);
-        ractive.initStockItemTypeahead();
         ractive.set('saveObserver', true);
       }
     });

@@ -21,6 +21,13 @@ var AuthenticatedRactive = Ractive.extend({
     //$('#upload fieldset').append($('#resourceControl').html());
     $("#file").click();
   },
+  addDataList: function(d, data) {
+    $('datalist#'+d.name).remove();
+    $('body').append('<datalist id="'+d.name+'">');
+    $.each(data, function (i,e) {
+      $('datalist#'+d.name).append('<option value="'+e.name+'">'+e.name+'</option>');
+    });
+  },
   ajaxSetup: function() {
     console.log('ajaxSetup: '+this);
     $.ajaxSetup({
@@ -94,11 +101,67 @@ var AuthenticatedRactive = Ractive.extend({
       }
     });
   },
+  fetchStockItems: function() {
+    console.info('fetchStockItems...');
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType : "json",
+      url : ractive.getServer() + '/' + ractive.get('tenant.id') + '/stock-items/',
+      crossDomain : true,
+      success : function(data) {
+        if (data['_embedded'] != undefined) {
+          data = data['_embedded'].stockItems;
+        }
+        ractive.set('stockItems', data);
+        console.log('fetched ' + data.length + ' stock items');
+        var stockItemData = jQuery.map(data, function(n, i) {
+          return ({
+            "id": ractive.getId(n),
+            "name": n.name
+          });
+        });
+        ractive.set('stockItemsTypeahead', stockItemData);
+        if (ractive['initStockItemTypeahead']!= undefined) ractive.initStockItemTypeahead();
+
+        // HTML5 style
+        $('datalist#stockItems').remove();
+        $('body').append('<datalist id="stockItems">');
+        $.each(ractive.get('stockItems'), function (i,d) {
+          $('datalist#stockItems').append('<option value="'+d.name+'">'+d.name+'</option>');
+        });
+
+        ractive.set('saveObserver', true);
+      }
+    });
+  },
   getCookie: function(name) {
     //console.log('getCookie: '+name)
     var value = "; " + document.cookie;
     var parts = value.split("; " + name + "=");
     if (parts.length == 2) return parts.pop().split(";").shift();
+  },
+  getStockItemNames: function(order) {
+    var stockItemIds = [];
+    if (order == undefined 
+        || (!ractive.get('tenant.show.orderItems') && order['stockItem'] == undefined) 
+        ||  (ractive.get('tenant.show.orderItems') && (order['orderItems'] == undefined || order.orderItems.length==0))) return;
+    else if (!ractive.get('tenant.show.orderItems')) stockItemIds.push(order.stockItem.selfRef.substring(order.stockItem.selfRef.lastIndexOf('/')+1));
+    else {
+      for (idx in order.orderItems) {
+        stockItemIds.push(order.orderItems[idx].customFields['stockItemId']);
+      }
+    }
+    var stockItemNames = '';
+    stockItemIds = uniq(stockItemIds);
+    for (idx in stockItemIds) {
+      var tmp = Array.findBy('selfRef','/stock-items/' + stockItemIds[idx],ractive.get('stockItems'));
+      if (tmp != undefined) {
+        if (stockItemNames.length > 0)
+          stockItemNames += ',';
+        stockItemNames += tmp.name;
+      }
+    }
+    return stockItemNames;
   },
   /** @deprecated use uri() */
   getId: function(entity) {
@@ -158,16 +221,21 @@ var AuthenticatedRactive = Ractive.extend({
       $.each(ractive.get('tenant.typeaheadControls'), function(i,d) {
         //console.log('binding ' +d.url+' to typeahead control: '+d.selector);
         if (d.url==undefined) {
-          ractive.initAutoCompletePart2(d,d.values);
+          ractive.initTypeaheadControl(d,d.values);
+          ractive.addDataList(d,d.values);
         } else {
           $.get(ractive.getServer()+d.url, function(data) {
-            ractive.initAutoCompletePart2(d,data);
+            ractive.initTypeaheadControl(d,data);
+            ractive.addDataList(d,data);
           },'json');
         }
       });
     }
   },
-  initAutoCompletePart2: function(d, data) {
+  /**
+   * @deprecated Use html 5 datalist going forward.
+   */
+  initTypeaheadControl: function(d, data) {
     if (d.name!=undefined) ractive.set(d.name,data);
     $(d.selector).typeahead({ items:'all',minLength:0,source:data });
     $(d.selector).on("click", function (ev) {
@@ -460,6 +528,8 @@ var AuthenticatedRactive = Ractive.extend({
             ractive.fetch(); // refresh list
           }
           if (ractive.customActionCallbacks!=undefined) ractive.customActionCallbacks.fire();
+          // cleanup ready for next time
+          $('#submitCustomActionForm').off('click');
         },
       });
     } else {
@@ -544,6 +614,8 @@ var AuthenticatedRactive = Ractive.extend({
       });
     } else if (entity['_links']!=undefined) {
       uri = ractive.stripProjection(entity._links.self.href);
+    } else if (entity['id']!=undefined) {
+      uri = ractive.get('entityPath')+'/'+entity.id;
     }
     // work around for sub-dir running
     if (uri != undefined && uri.indexOf(ractive.getServer())==-1 && uri.indexOf('//')!=-1) {
@@ -627,6 +699,11 @@ $(document).ready(function() {
       $('title').empty().append(newValue);
     }
   });
+
+  var params = getSearchParameters();
+  if (params['searchTerm']!=undefined) {
+    ractive.set('searchTerm',decodeURIComponent(params['searchTerm']));
+  }
 });
 
 // TODO remove the redundancy of having this in AuthenticatedRactive and here

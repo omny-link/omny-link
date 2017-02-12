@@ -1,0 +1,50 @@
+<ul class="form edit-form">
+  <li class="form-group">
+    <label class="col-md-3 col-sm-3 col-xs-4 required">First Name:</label>
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalFirstName" required value="{{instanceToStart.processVariables.contact.firstName}}">
+    <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block"></p>
+  </li>
+  <li class="form-group">
+    <label class="col-md-3 col-sm-3 col-xs-4 required">Last Name:</label>
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalLastName" required value="{{instanceToStart.processVariables.contact.lastName}}">
+    <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block"></p>
+  </li>
+  <li class="form-group">
+    <label class="col-md-3 col-sm-3 col-xs-4 required">Email:</label>
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalEmail" required type="email" value="{{instanceToStart.processVariables.contact.email}}">
+    <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block"></p>
+  </li>
+  <li class="form-group">
+    <label class="col-md-3 col-sm-3 col-xs-4">Phone:</label>
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalPhone1" type="tel" value="{{instanceToStart.processVariables.contact.phone1}}">
+    <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block"></p>
+  </li>
+  <li class="form-group">
+    <label class="col-md-3 col-sm-3 col-xs-4">Twitter:</label>
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalTwitter" value="{{instanceToStart.processVariables.contact.twitter}}">
+    <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Remember to include the leading @</p>
+  </li>
+  <li class="form-group">
+    <label class="col-md-3 col-sm-3 col-xs-4">LinkedIn</label>
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalFirstName" type="url" value="{{instanceToStart.processVariables.contact.linkedIn}}">
+    <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Remember to include http:// or https://</p>
+  </li>
+  <li class="form-group">
+    <label class="col-md-3 col-sm-3 col-xs-4">Facebook:</label>
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalFirstName" type="url" value="{{instanceToStart.processVariables.contact.facebook}}">
+    <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Remember to include http:// or https://</p>
+  </li>
+  {{#each tenant.contactFields:k}}
+    <li class="form-group">
+      <label class="col-md-3 col-sm-3 col-xs-4">{{label == undefined ? name.toLabel() : label}}:</label>
+      <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="cur{{name.toLeadingCaps()}}" type="{{type}}" value="{{instanceToStart.processVariables.contact.customFields[name]}}">
+      <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">{{hint}}</p>
+    </li>
+  {{/each}}
+</ul>
+<script type="text/javascript">
+  $(document).ready(function() {
+    if (ractive.customActionCallbacks==undefined) ractive.customActionCallbacks = $.Callbacks();
+    ractive.customActionCallbacks.add(function() { ractive.select(ractive.get('current')) });
+  });
+</script>
