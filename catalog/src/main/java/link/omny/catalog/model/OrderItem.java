@@ -22,7 +22,17 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.rest.core.annotation.RestResource;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
+import link.omny.catalog.views.OrderViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
 import lombok.AllArgsConstructor;
@@ -30,14 +40,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.rest.core.annotation.RestResource;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 // Property in Flexspace terminology 
 @Data
@@ -60,38 +62,51 @@ public class OrderItem implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
     private Long id;
 
     @JsonProperty
-    private String description;
-
-    @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
     private String type;
 
     @JsonProperty
     @Size(max = 20)
+    @JsonView(OrderViews.Detailed.class)
     private String status = "Draft";
 
     @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
     private BigDecimal price;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
+    // If json view included as below, get exception:
+    //DefaultHandlerExceptionResolver: Failed to write HTTP message: org.springframework.http.converter.HttpMessageNotWritableException: Could not write content: java.sql.Timestamp cannot be cast to java.lang.String (through reference chain: java.util.ArrayList[0]->link.omny.catalog.web.OrderResource["orderItems"]->org.hibernate.collection.internal.PersistentBag[0]->link.omny.catalog.model.OrderItem["lastUpdated"]); nested exception is com.fasterxml.jackson.databind.JsonMappingException: java.sql.Timestamp cannot be cast to java.lang.String (through reference chain: java.util.ArrayList[0]->link.omny.catalog.web.OrderResource["orderItems"]->org.hibernate.collection.internal.PersistentBag[0]->link.omny.catalog.model.OrderItem["lastUpdated"])
+    //@JsonView(OrderViews.Detailed.class)
+    // Attempts to resolve with these JsonFormats both fail
+    // Although https://github.com/FasterXML/jackson-databind/issues/1154
+    // appears relevant switching to jackson-databind-2.7.3 made no difference
+    //@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd")
+    //@JsonFormat(shape=JsonFormat.Shape.OBJECT)
     private Date lastUpdated;
 
     @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
     private String tenantId;
 
     @ManyToOne
     @RestResource(rel = "order")
     private Order order;
 
+    @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
     @ManyToOne(fetch = FetchType.EAGER)
     @RestResource(rel = "stockItem")
     private StockItem stockItem;
@@ -99,11 +114,11 @@ public class OrderItem implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "orderItem", orphanRemoval = true)
     @JsonDeserialize(using = JsonCustomOrderItemFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
+    @JsonView(OrderViews.Detailed.class)
     private List<CustomOrderItemField> customFields;
 
-    public OrderItem(String desc, String type) {
+    public OrderItem(String type) {
         this();
-        setDescription(desc);
         setType(type);
     }
 

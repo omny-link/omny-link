@@ -1,0 +1,46 @@
+<section class="currentOrderItemSect" data-id="{{id}}" style="display:none">
+    
+    {{#if tenant.orderItemFields.length>0 && haveCustomExtension('OrderItemExtension')}}
+      <div id="currentOrderItemExtended" style="clear: both">
+        {{>(tenant.id+'OrderItemExtension')}}
+      </div>
+    {{else}}
+      <h4>{{#tenant.strings.orderItem}}{{tenant.strings.orderItem}}{{/}}{{#current.orderItems[j].name}} - {{current.orderItems[j].name}}{{/}}{{#current.orderItems[j].stockItem.name}} - {{current.orderItems[j].stockItem.name}}{{/}}</h4>
+      <div id="currentOrderItemExtended" style="clear: both">
+        <div class="currentBody col-md-6 col-sm-12">
+          <ul class="form edit-form">
+            <li class="form-group">
+              <label class="col-md-4 col-sm-4">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
+              <input class="form-control" list="stockItems" id="curStockItem{{j}}" value="{{current.orderItems[j].stockItem.name}}">
+              <p class="col-md-offset-4 col-sm-offset-4 help-block field-error"></p>
+            </li>
+            {{#each tenant.orderItemFields.slice(0,Math.ceil(tenant.orderItemFields.length/2)):k}}
+              <li class="form-group">
+                <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
+                <input class="form-control" id="cur{{name.toLeadingCaps()}}" type="{{type}}" value="{{current.orderItems[j].customFields[name]}}">
+                <p class="col-md-offset-4 col-sm-offset-4 help-block field-error">{{hint}}</p>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+        <div class="currentBody col-md-6 col-sm-12">
+          <ul class="form edit-form">
+            {{#tenant.strings.orderItemPriceHint}}
+              <li class="form-group">
+                <label class="col-md-4 col-sm-4">Price:</label>
+                <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderItemPriceHint}}{{tenant.strings.orderItemPriceHint}}{{else}}Price for the {{tenant.strings.orderItem}}{{/}}:</p>
+              </li>
+            {{/}}
+            {{#each tenant.orderItemFields.slice(Math.ceil(tenant.orderItemFields.length/2),tenant.orderItemFields.length):k}}
+              <li class="form-group">
+                <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
+                <input class="form-control" id="cur{{name.toLeadingCaps()}}" type="{{type}}" value="{{current.orderItems[j].customFields[name]}}">
+                <p class="col-md-offset-4 col-sm-offset-4 help-block field-error">{{hint}}</p>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    {{/if}}
+    
+</section>

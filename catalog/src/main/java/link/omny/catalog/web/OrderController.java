@@ -1,32 +1,15 @@
 package link.omny.catalog.web;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
-
-import link.omny.catalog.CatalogObjectNotFoundException;
-import link.omny.catalog.json.JsonCustomFeedbackFieldDeserializer;
-import link.omny.catalog.json.JsonCustomOrderFieldDeserializer;
-import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
-import link.omny.catalog.model.CustomFeedbackField;
-import link.omny.catalog.model.CustomOrderField;
-import link.omny.catalog.model.CustomOrderItemField;
-import link.omny.catalog.model.Feedback;
-import link.omny.catalog.model.Order;
-import link.omny.catalog.model.OrderItem;
-import link.omny.catalog.repositories.FeedbackRepository;
-import link.omny.catalog.repositories.OrderItemRepository;
-import link.omny.catalog.repositories.OrderRepository;
-import link.omny.catalog.repositories.StockItemRepository;
-import link.omny.custmgmt.internal.NullAwareBeanUtils;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,10 +33,32 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import link.omny.catalog.CatalogObjectNotFoundException;
+import link.omny.catalog.json.JsonCustomFeedbackFieldDeserializer;
+import link.omny.catalog.json.JsonCustomOrderFieldDeserializer;
+import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
+import link.omny.catalog.model.CustomFeedbackField;
+import link.omny.catalog.model.CustomOrderField;
+import link.omny.catalog.model.CustomOrderItemField;
+import link.omny.catalog.model.Feedback;
+import link.omny.catalog.model.Order;
+import link.omny.catalog.model.OrderItem;
+import link.omny.catalog.model.StockItem;
+import link.omny.catalog.model.api.OrderWithSubEntities;
+import link.omny.catalog.model.api.ShortOrder;
+import link.omny.catalog.repositories.FeedbackRepository;
+import link.omny.catalog.repositories.OrderItemRepository;
+import link.omny.catalog.repositories.OrderRepository;
+import link.omny.catalog.views.OrderViews;
+import link.omny.custmgmt.internal.NullAwareBeanUtils;
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * REST web service for accessing stock items.
@@ -76,16 +81,15 @@ public class OrderController {
     @Autowired
     private OrderItemRepository orderItemRepo;
 
-    @Autowired
-    private StockItemRepository stockItemRepo;
-
     /**
-     * Return just the orders for a specific tenant.
+     * Return the specified order and its items and feedback.
      * 
-     * @return orders for that tenant.
+     * @return a complete order.
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public @ResponseBody ShortOrder readOrder(
+    @JsonView(OrderViews.Detailed.class)
+    @Transactional
+    public @ResponseBody Order readOrder(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId) {
         LOGGER.info(String.format("Read order %1$s for tenant %2$s", orderId,
@@ -96,12 +100,16 @@ public class OrderController {
                 "Found order with %1$d order items and %2$s inc. feedback",
                 order.getOrderItems().size(),
                 order.getFeedback() == null ? "DOES NOT" : "DOES"));
+        
+        order.setFeedback(feedbackRepo.findByOrder(tenantId, orderId));
 
-        return wrap(order);
+        return order;
+//        CompleteOrder orderResource = wrap(order);
+//        return orderResource;
     }
 
     /**
-     * Return feedback for the specifed order.
+     * Return feedback for the specified order.
      *
      * @return orders for that tenant.
      */
@@ -133,6 +141,7 @@ public class OrderController {
      * @return orders for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
+//    @JsonView(OrderViews.OrderSummary.class)
     public @ResponseBody List<ShortOrder> listForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -148,8 +157,9 @@ public class OrderController {
             list = orderRepo.findPageForTenant(tenantId, pageable);
         }
         LOGGER.info(String.format("Found %1$s orders", list.size()));
-
-        return wrap(list);
+        
+        return wrapShort(list);
+//        return list;
     }
 
     /**
@@ -158,7 +168,7 @@ public class OrderController {
      * @return orders for that contact.
      */
     @RequestMapping(value = "/findByContact/{contactId}", method = RequestMethod.GET)
-    public @ResponseBody List<ShortOrder> listForContact(
+    public @ResponseBody List<OrderWithSubEntities> listForContact(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -184,7 +194,9 @@ public class OrderController {
      * @return orders.
      */
     @RequestMapping(value = "/findByContacts/{contactIds}", method = RequestMethod.GET)
-    public @ResponseBody List<ShortOrder> listForContacts(
+//    @JsonView(OrderViews.Detailed.class)
+    //[2017-02-09 17:03:08.735] boot - 22032  WARN [http-nio-8082-exec-1] --- DefaultHandlerExceptionResolver: Failed to write HTTP message: org.springframework.http.converter.HttpMessageNotWritableException: Could not write content: Can not override serializer (through reference chain: java.util.ArrayList[0]); nested exception is com.fasterxml.jackson.databind.JsonMappingException: Can not override serializer (through reference chain: java.util.ArrayList[0])
+    public @ResponseBody List<OrderWithSubEntities> listForContacts(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactIds") Long[] contactIds,
             @RequestParam(value = "page", required = false) Integer page,
@@ -211,7 +223,6 @@ public class OrderController {
      * 
      * @return
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public @ResponseBody ResponseEntity<?> create(
@@ -223,15 +234,18 @@ public class OrderController {
 
         orderRepo.save(order);
 
-        UriComponentsBuilder builder = MvcUriComponentsBuilder
-                .fromController(getClass());
         HashMap<String, String> vars = new HashMap<String, String>();
         vars.put("tenantId", tenantId);
         vars.put("id", order.getId().toString());
 
+        return getCreatedResponseEntity("/{id}", vars);
+    }
+
+    protected ResponseEntity<Object> getCreatedResponseEntity(String path, Map<String, String> vars) {
+        URI location = MvcUriComponentsBuilder.fromController(getClass()).path(path).buildAndExpand(vars).toUri();
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(builder.path("/{id}").buildAndExpand(vars).toUri());
-        return new ResponseEntity(headers, HttpStatus.CREATED);
+        headers.setLocation(location);
+        return new ResponseEntity<Object>(headers, HttpStatus.CREATED);
     }
 
     /**
@@ -261,23 +275,16 @@ public class OrderController {
 
     private void fixUpOrderItem(String tenantId, OrderItem item) {
         item.setTenantId(tenantId);
-        try {
-            item.setStockItem(stockItemRepo.findOne(Long
-                    .parseLong((String) item.getCustomFieldValue("stockItemId"))));
-        } catch (NumberFormatException e) {
-            LOGGER.error(String.format(
-                    "unable to find stock item with id: %1$s",
-                    item.getCustomFieldValue("stockItemId")));
-        }
     }
 
     /**
      * Update an existing order with a new order item.
+     * @return 
      */
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/{id}/order-items", method = RequestMethod.POST, consumes = { "application/json" })
     @Transactional
-    public @ResponseBody void addOrderItems(
+    public @ResponseBody ResponseEntity<Object> addOrderItem(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId, @RequestBody OrderItem newItem) {
         Order order = orderRepo.findOne(orderId);
@@ -285,16 +292,23 @@ public class OrderController {
         newItem.setTenantId(tenantId);
         newItem.setOrder(order);
 
-        orderItemRepo.save(newItem);
+        newItem = orderItemRepo.save(newItem);
+        HashMap<String, String> vars = new HashMap<String, String>();
+        vars.put("tenantId", tenantId);
+        vars.put("id", order.getId().toString());
+        vars.put("itemId", newItem.getId().toString());
+        
+        return getCreatedResponseEntity("/{id}/order-items/{itemId}", vars);
     }
 
     /**
      * Update an existing order with new feedback.
+     * @return 
      */
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/{id}/feedback", method = RequestMethod.POST, consumes = { "application/json" })
     @Transactional
-    public @ResponseBody void addFeedback(
+    public @ResponseBody ResponseEntity<Object> addFeedback(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId, @RequestBody Feedback feedback) {
         Feedback existingFeedback = feedbackRepo.findByOrder(tenantId, orderId);
@@ -302,7 +316,7 @@ public class OrderController {
             Order order = orderRepo.findOne(orderId);
             feedback.setTenantId(tenantId);
             feedback.setOrder(order);
-            feedbackRepo.save(feedback);
+            feedback = feedbackRepo.save(feedback);
 
             order.setFeedback(feedback);
             orderRepo.save(order);
@@ -311,6 +325,13 @@ public class OrderController {
                     .copyNonNullProperties(feedback, existingFeedback);
             feedbackRepo.save(existingFeedback);
         }
+        
+        HashMap<String, String> vars = new HashMap<String, String>();
+        vars.put("tenantId", tenantId);
+        vars.put("id", orderId.toString());
+        vars.put("feedbackId", feedback.getId().toString());
+        
+        return getCreatedResponseEntity("/{id}/feedback/{feedbackId}",vars);
     }
 
     /**
@@ -354,10 +375,10 @@ public class OrderController {
      * Delete an existing order.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{orderId}", method = RequestMethod.DELETE)
     @Transactional
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
-            @PathVariable("id") Long orderId) {
+            @PathVariable("orderId") Long orderId) {
         orderRepo.delete(orderId);
     }
 
@@ -378,51 +399,21 @@ public class OrderController {
         orderRepo.deleteItem(orderId, orderItemId);
     }
 
-    private List<ShortOrder> wrap(List<Order> list) {
+    private List<ShortOrder> wrapShort(List<Order> list) {
         List<ShortOrder> resources = new ArrayList<ShortOrder>(
                 list.size());
-        for (Order orders : list) {
-            resources.add(wrap(orders));
+        for (Order order : list) {
+            resources.add(wrapShort(order));
         }
         return resources;
     }
 
-    private ShortOrder wrap(Order order) {
-        ShortOrder resource = new ShortOrder();
+    private ShortOrder wrapShort(Order order) {
+        ShortOrderResource resource = new ShortOrderResource();
 
-        BeanUtils.copyProperties(order, resource, "customFields", "orderItems");
+        BeanUtils.copyProperties(order, resource, "feedback", "orderItems");
         resource.setContactId(order.getContactId());
         resource.setOrderId(order.getId());
-
-        ArrayList<CustomOrderField> fields = new ArrayList<CustomOrderField>();
-        List<Long> fieldsSeen = new ArrayList<Long>();
-        for (CustomOrderField field : order.getCustomFields()) {
-            if (field.getOrder().getId().equals(order.getId())
-                    && !fieldsSeen.contains(field.getId())) {
-                fields.add(field);
-                fieldsSeen.add(field.getId());
-            } else {
-                LOGGER.debug(String.format(
-                        "Removing duplicate field due to inner join: %1$s",
-                        order));
-            }
-        }
-        resource.setCustomFields(fields);
-
-        ArrayList<ShortOrderItem> items = new ArrayList<ShortOrderItem>();
-        List<Long> itemsSeen = new ArrayList<Long>();
-        for (OrderItem item : order.getOrderItems()) {
-            if (itemsSeen.contains(item.getId())) {
-                LOGGER.debug(String
-                        .format("Removing duplicate due to join on order item custom fields: %1$s",
-                                item));
-            } else {
-                items.add(wrap(item));
-                itemsSeen.add(item.getId());
-            }
-        }
-
-        resource.setOrderItems(items);
 
         Link detail = linkTo(OrderRepository.class,
                 order.getId()).withSelfRel();
@@ -431,34 +422,31 @@ public class OrderController {
         return resource;
     }
 
-    private ShortOrderItem wrap(OrderItem item) {
-        ShortOrderItem resource = new ShortOrderItem();
-
-        BeanUtils.copyProperties(item, resource, "customFields");
-        resource.setOrderItemId(item.getId());
-        resource.setOrderId(item.getOrder().getId());
-        if (item.getStockItem() != null) {
-            resource.setName(item.getStockItem().getName());
-            resource.setStockItemId(item.getStockItem().getId());
-            resource.setStockItemName(item.getStockItem().getName());
+    private List<OrderWithSubEntities> wrap(List<Order> list) {
+        List<OrderWithSubEntities> resources = new ArrayList<OrderWithSubEntities>(
+                list.size());
+        for (Order order : list) {
+            resources.add(wrap(order));
         }
+        return resources;
+    }
+    
+    private OrderResource wrap(Order order) {
+        OrderResource orderResource = new OrderResource();
 
-        ArrayList<CustomOrderItemField> fields = new ArrayList<CustomOrderItemField>();
-        List<Long> fieldsSeen = new ArrayList<Long>();
-        for (CustomOrderItemField field : item.getCustomFields()) {
-            if (field.getOrderItem().getId().equals(item.getId())
-                    && !fieldsSeen.contains(field.getId())) {
-                fields.add(field);
-                fieldsSeen.add(field.getId());
-            } else {
-                LOGGER.debug(String.format(
-                        "Removing duplicate field due to inner join: %1$s",
-                        item));
-            }
-        }
-        resource.setCustomFields(fields);
+        BeanUtils.copyProperties(order, orderResource);
+        orderResource.setContactId(order.getContactId());
+        orderResource.setOrderId(order.getId());
 
-        return resource;
+        orderResource.setFeedback(feedbackRepo.findByOrder(order.getTenantId(),
+                order.getId()));
+
+        Link detail = linkTo(OrderRepository.class, order.getId())
+                .withSelfRel();
+        orderResource.add(detail);
+        orderResource.setSelfRef(detail.getHref());
+
+        return orderResource;
     }
 
     private FeedbackResource wrap(Feedback feedback) {
@@ -494,9 +482,21 @@ public class OrderController {
                 .path() + "/" + id);
     }
 
+    
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class ShortOrder extends ResourceSupport {
+    public static class OrderResource extends ShortOrderResource implements
+            OrderWithSubEntities {
+        private static final long serialVersionUID = -5578143108772043622L;
+        private List<OrderItem> orderItems;
+        private Feedback feedback;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    public static class ShortOrderResource extends ResourceSupport implements
+            ShortOrder {
+        private static final long serialVersionUID = 385801786736131068L;
         private String selfRef;
         private Long orderId;
         private String name;
@@ -506,15 +506,22 @@ public class OrderController {
         @JsonDeserialize(using = JsonCustomOrderFieldDeserializer.class)
         @JsonSerialize(using = JsonCustomFieldSerializer.class)
         private List<CustomOrderField> customFields;
-        // TOOD consider splitting this into second call to permit single DB
-        // query
-        private List<ShortOrderItem> orderItems;
         private Long contactId;
         private String stage;
         private BigDecimal price;
         private String invoiceRef;
+        private StockItem stockItem;
         private Date created;
         private Date lastUpdated;
+        private String tenantId;
+
+        @Override
+        public void addCustomField(CustomOrderField customField) {
+            if (customFields == null) {
+                customFields = new ArrayList<CustomOrderField>();
+            }
+            customFields.add(customField);
+        }
     }
 
     @Data
@@ -535,7 +542,7 @@ public class OrderController {
 
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class ShortOrderItem extends ResourceSupport {
+    public static class ShortOrderItemResource extends ResourceSupport {
         private Long orderItemId;
         private Long orderId;
         private String selfRef;
