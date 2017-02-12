@@ -6,22 +6,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import link.omny.acctmgmt.model.BotConfig;
-import link.omny.acctmgmt.model.SystemConfig;
-import link.omny.acctmgmt.model.Tenant;
-import link.omny.acctmgmt.model.TenantAction;
-import link.omny.acctmgmt.model.TenantConfig;
-import link.omny.acctmgmt.model.TenantExtension;
-import link.omny.acctmgmt.model.TenantPartial;
-import link.omny.acctmgmt.model.TenantTemplate;
-import link.omny.acctmgmt.model.TenantToolbarEntry;
-import link.omny.acctmgmt.model.TenantTypeaheadControl;
-import link.omny.acctmgmt.model.TenantTypeaheadValue;
-import link.omny.acctmgmt.repositories.TenantRepository;
-import link.omny.custmgmt.model.Memo;
-import link.omny.custmgmt.repositories.ContactRepository;
-import link.omny.custmgmt.repositories.MemoRepository;
-
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -39,6 +23,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpm.web.Md5HashUtils;
 import com.knowprocess.resource.spi.RestGet;
 
+import link.omny.acctmgmt.model.BotConfig;
+import link.omny.acctmgmt.model.Tenant;
+import link.omny.acctmgmt.model.TenantAction;
+import link.omny.acctmgmt.model.TenantConfig;
+import link.omny.acctmgmt.model.TenantExtension;
+import link.omny.acctmgmt.model.TenantPartial;
+import link.omny.acctmgmt.model.TenantTemplate;
+import link.omny.acctmgmt.model.TenantToolbarEntry;
+import link.omny.acctmgmt.model.TenantTypeaheadControl;
+import link.omny.acctmgmt.model.TenantTypeaheadValue;
+import link.omny.acctmgmt.repositories.TenantRepository;
+import link.omny.custmgmt.model.Memo;
+import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.repositories.MemoRepository;
+
 @Controller
 @RequestMapping(value = "/tenants")
 public class TenantConfigController {
@@ -47,9 +46,6 @@ public class TenantConfigController {
             .getLogger(TenantConfigController.class);
 
     private static final String STATIC_BASE = "/static";
-
-    @Autowired
-    private SystemConfig systemConfig;
 
     @Autowired
     protected ContactRepository contactRepo;
