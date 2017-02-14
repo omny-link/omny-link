@@ -77,7 +77,6 @@
       <groupId>com.zaxxer</groupId>
       <!-- drop -java6 suffix for Java 8 compiled version -->
       <artifactId>HikariCP-java6</artifactId>
-      <version>2.3.2</version>
     </dependency>
     
     <!-- Spring XML to/back object -->
@@ -247,6 +246,18 @@
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
       <version>2.7.1</version>
+    </dependency>
+    
+    <!-- If you want PDF output -->
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>itextpdf</artifactId>
+      <version>5.5.10</version>
+    </dependency>
+    <dependency>
+      <groupId>com.itextpdf.tool</groupId>
+      <artifactId>xmlworker</artifactId>
+      <version>5.5.10</version>
     </dependency>
     
     <!-- Web jars -->

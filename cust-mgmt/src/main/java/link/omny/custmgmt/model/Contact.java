@@ -495,6 +495,30 @@ public class Contact implements Serializable {
         return now;
     }
 
+    @JsonProperty
+    public String getAddress() {
+        StringBuilder sb = new StringBuilder();
+        if (address1 != null && address1.length()>0) {
+            sb.append(address1).append(", ");
+        }
+        if (address2 != null && address2.length()>0) {
+            sb.append(address2).append(", ");
+        }
+        if (town != null && town.length()>0) {
+            sb.append(town).append(", ");
+        }
+        if (countyOrCity != null && countyOrCity.length()>0) {
+            sb.append(countyOrCity).append(", ");
+        }
+        if (postCode != null && postCode.length()>0) {
+            sb.append(postCode).append(". ");
+        }
+        if (country != null && country.length()>0) {
+            sb.append(country).append(".");
+        }
+        return sb.toString();
+    }
+
     private long getTimeSinceLast(String type) {
         long time = -1;
         try {
