@@ -1,7 +1,10 @@
 package link.omny.custmgmt.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,12 +20,13 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import org.jsoup.Jsoup;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Entity
 @Table(name = "OL_MEMO")
@@ -47,6 +51,9 @@ public class Memo implements Serializable {
 
     @JsonProperty
     private String title;
+
+    @JsonProperty
+    private String requiredVars;
 
     @JsonProperty
     @Lob
@@ -82,7 +89,25 @@ public class Memo implements Serializable {
     public Memo() {
         created = new Date();
     }
-    
+
+    @JsonIgnore
+    public void setRequiredVarList(List<String> vars) {
+        if (vars == null || vars.size()==0) {
+            requiredVars = null;
+        } else {
+            requiredVars = vars.toString();
+        }
+    }
+
+    @JsonIgnore
+    public List<String> getRequiredVarList() {
+        if (requiredVars == null || requiredVars.length()==0) {
+            return Collections.emptyList();
+        } else {
+            return Arrays.asList(requiredVars.split(","));
+        }
+    }
+
     public String getPlainContent() {
         if (plainContent == null && richContent != null) {
             plainContent = Jsoup.parse(richContent).text();
@@ -99,7 +124,14 @@ public class Memo implements Serializable {
 
     @PreUpdate
     public void preUpdate() {
+        cleanHtml();
         lastUpdated = new Date();
+    }
+
+    private void cleanHtml() {
+        if (getRichContent()!=null) {
+          setRichContent(getRichContent().replace("&nbsp;", " ").replace("&#39;", "\'"));
+        }
     }
 
     public String toCsv() {

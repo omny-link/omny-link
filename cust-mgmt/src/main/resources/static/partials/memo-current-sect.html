@@ -1,6 +1,6 @@
 <section id="currentSect" style="display:none">
-  <form id="currentForm">
-    <h2 class="form-inline">Edit Template
+  <form class="inline-form form" id="currentForm">
+      <h2 class="form-inline">Edit Template
       <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
       <span class="pull-right">
         <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
@@ -9,84 +9,35 @@
 
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li><label class="col-md-4 col-sm-4 required">Owner: </label><input class="col-md-8 col-sm-8 form-control typeahead" placeholder="Start typing to filter options" id="curOwner" required value="{{current.owner}}"></li>
-      </ul>
-    </div>
-    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
-      <ul class="form edit-form">
-        <li>
-          <label class="col-md-4 col-sm-4 required">Status: </label>
+        <li class="form-group"><label class="col-md-4 col-sm-4 required">Owner:</label><input class="col-md-8 col-sm-8 form-control typeahead" placeholder="Start typing to filter options" id="curOwner" required value="{{current.owner}}"></li>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4 required">Status:</label>
           <input class="col-md-8 col-sm-8 form-control typeahead" placeholder="Start typing to filter options" id="curStatus" required value="{{current.status}}">
           <p class="col-md-offset-4 hidden-sm help-block">Draft, Ready for review, Published etc.</p>
+        </li>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Required variables:</label>
+          <input class="col-md-8 col-sm-8 form-control" id="curRequiredVars" readonly disabled type="text" value="{{current.requiredVars}}">
+          <p class="col-md-offset-4 hidden-sm help-block">The fields required to fill the template, these are derived or set by an administrator.</p>
         </li>
       </ul>
     </div>
     <div class="col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li><label class="col-md-4 col-sm-4 required">Name:</label><input class="col-md-8 col-sm-8 form-control" id="curName" pattern="[0-9a-zA-Z]*" required type="text" value="{{current.name}}"></li>
-      </ul>
-    </div>
-    <div class="col-md-6 col-sm-12 col-xs-12">
-      <ul class="form edit-form">
-        <li><label class="col-md-4 col-sm-4">Subject:</label><input class="col-md-8 col-sm-8 form-control" id="curSubject" required type="text" value="{{current.title}}"></li>
+        <li class="form-group"><label class="col-md-4 col-sm-4 required">Name:</label><input class="col-md-8 col-sm-8 form-control" id="curName" pattern="[0-9a-zA-Z]*" required type="text" value="{{current.name}}"></li>
+        <li class="form-group"><label class="col-md-4 col-sm-4 required">Subject:</label><input class="col-md-8 col-sm-8 form-control" id="curSubject" required type="text" value="{{current.title}}"></li>
       </ul>
     </div>
     <div style="clear: both" class="col-md-12 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         <li>
-          <label class="col-md-2">Email template:</label>
-          <div class="col-md-9">
-            <div id="wysihtml5-editor-toolbar" class="wysihtml5-editor-toolbar">
-              <ul class="commands">
-                <li data-wysihtml5-command="bold" title="Make text bold (CTRL + B)" class="command"></li>
-                <li data-wysihtml5-command="italic" title="Make text italic (CTRL + I)" class="command"></li>
-                <li data-wysihtml5-command="insertUnorderedList" title="Insert an unordered list" class="command"></li>
-                <li data-wysihtml5-command="insertOrderedList" title="Insert an ordered list" class="command"></li>
-                <li data-wysihtml5-command="createLink" title="Insert a link" class="command"></li>
-                <li data-wysihtml5-command="insertImage" title="Insert an image" class="command"></li>
-                <li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1" title="Insert headline 1" class="command"></li>
-                <li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2" title="Insert headline 2" class="command"></li>
-                <!--
-                <li data-wysihtml5-command-group="foreColor" class="fore-color" title="Color the selected text" class="command">
-                  <ul>
-                    <li class="data-wysihtml5-command="foreColor" data-wysihtml5-command-value="silver"></li>
-                    <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="gray"></li>
-                    <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="maroon"></li>
-                    <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="red"></li>
-                    <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="purple"></li>
-                    <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="green"></li>
-                    <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="olive"></li>
-                    <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="navy"></li>
-                    <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="blue"></li>
-                  </ul>
-                </li>-->
-                <li data-wysihtml5-command="insertSpeech" title="Insert speech" class="command"></li>
-                <li data-wysihtml5-action="change_view" title="Show HTML" class="action"></li>
-              </ul>
-                
-              <div data-wysihtml5-dialog="createLink" style="display: none;">
-                <label>
-                  Link:
-                  <input data-wysihtml5-dialog-field="href" value="http://">
-                </label>
-                <a data-wysihtml5-dialog-action="save">OK</a>&nbsp;<a data-wysihtml5-dialog-action="cancel">Cancel</a>
-              </div>
-        
-              <div data-wysihtml5-dialog="insertImage" style="display: none;">
-                <label>
-                  Image:
-                  <input data-wysihtml5-dialog-field="src" value="http://">
-                </label>
-                <a data-wysihtml5-dialog-action="save">OK</a>&nbsp;<a data-wysihtml5-dialog-action="cancel">Cancel</a>
-              </div>
-            </div>
-
-            <div>
-              <textarea class="rich-content" id="curRichContent" placeholder="Enter something ..." rows="30" spellcheck="false" style="width:86%;border-style:solid" value="{{current.richContent}}" wrap="off"></textarea>
-            </div>
-            <p class="help-block">A plain text version of this template will be derived automatically and displayed automatically in less capable mail clients.</p>
+          <label class="col-md-2 required">Template:</label>
+          <div class="col-md-9" style="margin: 0;padding: 0;width: 80%;">
+            <textarea class="rich-content" name="curRichContent" id="curRichContent" placeholder="Enter something ..." required rows="30" value="{{current.richContent}}" wrap="soft">
+                This is my textarea to be replaced with CKEditor.
+            </textarea>
+            <p class="help-block" style="margin:5px 0">A plain text version of this template will be derived automatically and displayed automatically as necessary (for instance in less capable mail clients).</p>
           </div>
-
           <textarea id="curPlainContent" class="col-md-offset-2 col-md-9 form-control" cols="80" value="{{current.plainContent}}" style="display:none"></textarea>
         </li>
       </ul>
