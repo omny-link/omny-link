@@ -9,13 +9,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import link.omny.custmgmt.model.Memo;
-import link.omny.custmgmt.model.Note;
-import link.omny.custmgmt.repositories.MemoRepository;
-import link.omny.custmgmt.repositories.NoteRepository;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +19,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,11 +29,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
+
+import link.omny.custmgmt.internal.NullAwareBeanUtils;
+import link.omny.custmgmt.model.Memo;
+import link.omny.custmgmt.model.Note;
+import link.omny.custmgmt.repositories.MemoRepository;
+import link.omny.custmgmt.repositories.NoteRepository;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * REST web service for uploading and accessing a file of JSON Messages (over
@@ -47,13 +52,13 @@ import com.knowprocess.bpmn.BusinessEntityNotFoundException;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/memos")
-public class MemoController {
+public class MemoController extends BaseTenantAwareController {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MemoController.class);
 
     @Autowired
-    private MemoRepository messageRepo;
+    private MemoRepository memoRepo;
 
     @Autowired
     private NoteRepository noteRepo;
@@ -89,9 +94,32 @@ public class MemoController {
             message.setTenantId(tenantId);
         }
 
-        Iterable<Memo> result = messageRepo.save(list);
+        Iterable<Memo> result = memoRepo.save(list);
         LOGGER.info("  saved.");
         return result;
+    }
+    
+    /**
+     * Create a new memo.
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public @ResponseBody ResponseEntity<?> create(
+            @PathVariable("tenantId") String tenantId,
+            @RequestBody Memo memo) {
+        memo.setTenantId(tenantId);
+
+        memo = memoRepo.save(memo);
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(getGlobalUri(memo.getId()));
+
+        // TODO migrate to http://host/tenant/contacts/id
+        // headers.setLocation(getTenantBasedUri(tenantId, contact));
+
+        return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
     /**
@@ -108,10 +136,10 @@ public class MemoController {
 
         List<Memo> list;
         if (limit == null) {
-            list = messageRepo.findAllForTenant(tenantId);
+            list = memoRepo.findAllForTenant(tenantId);
         } else {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
-            list = messageRepo.findPageForTenant(tenantId, pageable);
+            list = memoRepo.findPageForTenant(tenantId, pageable);
         }
         LOGGER.info(String.format("Found %1$s messages", list.size()));
 
@@ -136,9 +164,9 @@ public class MemoController {
 
         Memo memo;
         try {
-            memo = messageRepo.findOne(Long.parseLong(idOrName));
+            memo = memoRepo.findOne(Long.parseLong(idOrName));
         } catch (NumberFormatException e) {
-            memo = messageRepo.findByName(idOrName, tenantId);
+            memo = memoRepo.findByName(idOrName, tenantId);
         }
         if (memo == null) {
             LOGGER.error(String.format("Unable to find memo from %1$s",
@@ -166,9 +194,9 @@ public class MemoController {
 
         Memo memo;
         try {
-            memo = messageRepo.findOne(Long.parseLong(idOrName));
+            memo = memoRepo.findOne(Long.parseLong(idOrName));
         } catch (NumberFormatException e) {
-            memo = messageRepo.findByName(idOrName, tenantId);
+            memo = memoRepo.findByName(idOrName, tenantId);
         }
         if (memo == null) {
             LOGGER.error(String.format("Unable to find memo from %1$s",
@@ -178,7 +206,7 @@ public class MemoController {
         Memo resource = new Memo();
         BeanUtils.copyProperties(memo, resource, "id");
         resource.setName(memo.getName() + "Copy");
-        messageRepo.save(resource);
+        memoRepo.save(resource);
         return wrap(resource, new MemoResource());
     }
 
@@ -194,10 +222,10 @@ public class MemoController {
 
         List<Memo> list;
         if (limit == null) {
-            list = messageRepo.findAllForTenant(tenantId);
+            list = memoRepo.findAllForTenant(tenantId);
         } else {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
-            list = messageRepo.findPageForTenant(tenantId, pageable);
+            list = memoRepo.findPageForTenant(tenantId, pageable);
         }
         LOGGER.info(String.format("Found %1$s messages", list.size()));
 
@@ -205,7 +233,22 @@ public class MemoController {
     }
 
     /**
-     * Add a note to the specified message.
+     * Update an existing memo.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long memoId,
+            @RequestBody Memo updatedMemo) {
+        Memo memo = memoRepo.findOne(memoId);
+
+        NullAwareBeanUtils.copyNonNullProperties(updatedMemo, memo, "id");
+        memo.setTenantId(tenantId);
+        memoRepo.save(memo);
+    }
+
+    /**
+     * Add a note to the specified memo.
      */
     @RequestMapping(value = "/{messageId}/notes", method = RequestMethod.POST)
     public @ResponseBody void addNote(
@@ -224,12 +267,12 @@ public class MemoController {
     public @ResponseBody void addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("messageId") Long messageId, @RequestBody Note note) {
-        Memo message = messageRepo.findOne(messageId);
+        Memo message = memoRepo.findOne(messageId);
         // note.setMessage(message);
         noteRepo.save(note);
         // necessary to force a save
         message.setLastUpdated(new Date());
-        messageRepo.save(message);
+        memoRepo.save(message);
         // Similarly cannot return object until solve Jackson object cycle
         // return note;
     }
@@ -274,6 +317,7 @@ public class MemoController {
         private String title;
         private String status;
         private String owner;
+        private String requiredVars;
         private Date created;
         private Date lastUpdated;
       }
@@ -289,6 +333,7 @@ public class MemoController {
         private String shortContent;
         private String status;
         private String owner;
+        private String requiredVars;
         private Date created;
         private Date lastUpdated;
     }
