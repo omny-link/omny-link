@@ -82,6 +82,16 @@
             <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price for the {{tenant.strings.order.toLowerCase()}}{{/}}</p>
           </li>
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.tax}}{{tenant.strings.tax}}{{else}}VAT{{/}}:</label>
+            <input class="form-control" id="curTax" step="any" type="number" value="{{current.tax}}">
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.taxHint}}{{tenant.strings.taxHint}}{{else}}Tax due on the {{tenant.strings.order.toLowerCase()}}{{/}}</p>
+          </li>
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">Total Price:</label>
+            <input class="form-control" id="curTotalPrice" disabled readonly step="any" type="number" value="{{current.price+current.tax}}">
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.totalPriceHint}}{{tenant.strings.totalPriceHint}}{{else}}Total of price and VAT{{/}}</p>
+          </li>
         {{/}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4">Invoice Ref:</label>
