@@ -425,7 +425,7 @@ var ractive = new AuthenticatedRactive({
     ractive.set('saveObserver',false);
     $.getJSON(ractive.getServer()+'/task/'+task.id+'/', function( data ) {
       console.log('found task '+JSON.stringify(data));
-      data.taskLocalVarNames = Object.keys(data.taskLocalVariables);
+      data.taskLocalVarNames = data['taskLocalVariables'] == undefined ? [] : Object.keys(data.taskLocalVariables);
       data.processVarNames = Object.keys(data.processVariables);
       data.msg = data.processVariables[data.processVariables['messageName']];
       // Ensure freshest data available...
