@@ -518,7 +518,7 @@ var AuthenticatedRactive = Ractive.extend({
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(ractive.get('instanceToStart')),
-        success: completeHandler = function(data, textStatus, jqXHR) {
+        success: function(data, textStatus, jqXHR) {
           console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
           ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
           $('#customActionModalSect').modal('hide');
@@ -527,7 +527,7 @@ var AuthenticatedRactive = Ractive.extend({
           } else {
             ractive.fetch(); // refresh list
           }
-          if (ractive.customActionCallbacks!=undefined) ractive.customActionCallbacks.fire();
+          if (ractive.customActionCallbacks!=undefined) ractive.customActionCallbacks.fire(jqXHR.getResponseHeader('Location'));
           // cleanup ready for next time
           $('#submitCustomActionForm').off('click');
         },

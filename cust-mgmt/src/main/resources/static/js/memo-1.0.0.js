@@ -76,6 +76,23 @@ var ractive = new AuthenticatedRactive({
         return false;
       }
     },
+    matchSearch: function(obj) {
+      var searchTerm = ractive.get('searchTerm');
+      //console.info('matchSearch: '+searchTerm);
+      if (searchTerm==undefined || searchTerm.length==0) {
+        return true;
+      } else {
+        return ( (obj.selfRef.indexOf(searchTerm)>=0)
+          || (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+          || (obj.title.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+          || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
+          || (searchTerm.startsWith('created>') && new Date(obj.created)>new Date(ractive.get('searchTerm').substring(8)))
+          || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(ractive.get('searchTerm').substring(8)))
+          || (searchTerm.startsWith('created<') && new Date(obj.created)<new Date(ractive.get('searchTerm').substring(8)))
+          || (searchTerm.startsWith('status:') && obj.status!=undefined && obj.status.toLowerCase().indexOf(ractive.get('searchTerm').substring(7))!=-1)
+        );
+      }
+    },
     saveObserver: false,
     sort: function (array, column, asc) {
       console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);
@@ -115,7 +132,13 @@ var ractive = new AuthenticatedRactive({
     console.log('add...');
     $('h2.edit-form,h2.edit-field').hide();
     $('.create-form,create-field').show();
-    var message = { owner:ractive.get('username'), status:'Draft', tenantId: ractive.get('tenant.id'), url: undefined };
+    var message = { 
+        owner:ractive.get('username'),
+        shortContent: 'Not currently used',
+        status:'Draft',
+        tenantId: ractive.get('tenant.id'),
+        url: undefined
+    };
     ractive.select(-1, message );
   },
   clone: function(message) {
@@ -198,7 +221,6 @@ var ractive = new AuthenticatedRactive({
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
         ractive.set('searchMatched',$('#memosTable tbody tr:visible').length);
-        ractive.initEditor();
         ractive.set('saveObserver', true);
       }
     });
@@ -221,6 +243,21 @@ var ractive = new AuthenticatedRactive({
     });
     return c;
   },
+  findRequiredVars: function() {
+    console.info('findRequiredVars');
+    var rich = CKEDITOR.instances.curRichContent.getData();
+    var requiredVars = [];
+    var idx = 0;
+    while ((idx = rich.indexOf('${', idx)) != -1) {
+      var endIdx = rich.indexOf('}', idx);
+      var dotIdx = rich.indexOf('.', idx);
+      var nextIdx = dotIdx == -1 || dotIdx > endIdx ? endIdx : dotIdx;
+      var obj = rich.substring(idx+2, nextIdx);
+      if (requiredVars.indexOf(obj)==-1) requiredVars.push(obj);
+      idx = nextIdx;
+    }
+    return requiredVars.join();
+  },
   getId: function(message) { 
     console.log('getId: '+message);
     var uri; 
@@ -237,40 +274,20 @@ var ractive = new AuthenticatedRactive({
   },
   initEditor: function() {
     console.info('initEditor');
-    ractive.editor = new wysihtml5.Editor("curRichContent", {
-      parserRules: wysihtml5ParserRules,
-      stylesheets: ["//yui.yahooapis.com/2.9.0/build/reset/reset-min.css", "/css/wysihtml5/editor.css"],
-      toolbar:     "wysihtml5-editor-toolbar"
-    });
-  },
-  initEditorContent: function(enabled) {
-    console.log('loading wysihtml5');
-    if (ractive.get('current.richContent')!=undefined) {
-      console.log('  ...'+ractive.get('current.richContent'));
-      ractive.editor.setValue(ractive.get('current.richContent'));
+    if (CKEDITOR.instances['curRichContent']==undefined) {
+      CKEDITOR.replace( 'curRichContent' );
+      CKEDITOR.instances['curRichContent'].on('blur', ractive.save);
     }
-    var composer = ractive.editor.composer;
-    var h1 = ractive.editor.composer.element.querySelector("h1");
-    if (h1) {
-      composer.selection.selectNode(h1);
-    }
-    // don't seem to be able to do this in CSS
-    $('.wysihtml5-sandbox')
-      .css('border-color','#ccc')
-      .css('margin-left',0);
-    if (!enabled) ractive.editor.disable();
-    
-    ractive.editor.on("change", function() {
-      console.log('wysihtml5 changed value to: '+ractive.editor.getValue());
-      if (ractive.get('current')==undefined) {
-        $('#currentForm :invalid').addClass('field-error');
-        $('#currentForm :invalid')[0].focus();
-        ractive.showMessage('Cannot save yet as message is incomplete');
+    try {
+      if (ractive.get('current.status')=='Published') { 
+        CKEDITOR.instances['curRichContent'].setReadOnly(true);
       } else {
-        ractive.set('current.richContent',ractive.editor.getValue());
-        ractive.set('current.plainContent',stripTags(ractive.editor.composer.getValue()));
+        CKEDITOR.instances['curRichContent'].setReadOnly(false);
       }
-    });
+    } catch (e) {
+      console.warn('setReadOnly raises error first time but is apparently ignorable.');
+    }
+    CKEDITOR.instances['curRichContent'].setData(ractive.get('current.richContent'));
   },
   oninit: function() {
     console.log('oninit');
@@ -285,12 +302,15 @@ var ractive = new AuthenticatedRactive({
     if (document.getElementById('currentForm')==undefined) {
       // loading... ignore
     } else if(document.getElementById('currentForm').checkValidity()) {
+      ractive.set('current.requiredVars',ractive.findRequiredVars());
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       tmp.tenantId = ractive.get('tenant.id');
-      tmp.richContent = ractive.editor.getValue();
-      tmp.tenantId = ractive.get('tenant.id');
+      tmp.richContent = CKEDITOR.instances.curRichContent.getData();
+      var id = ractive.uri(tmp);
       $.ajax({
-        url: id === undefined ? ractive.getServer()+'/memos/' : id,
+        url: id === undefined 
+            ? ractive.getServer()+'/'+ractive.get('tenant.id')+'/memos/' 
+            : ractive.tenantUri(tmp),
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
@@ -299,11 +319,8 @@ var ractive = new AuthenticatedRactive({
           var location = jqXHR.getResponseHeader('Location');
           ractive.set('saveObserver',false);
           if (location != undefined) ractive.set('current._links.self.href',location);
-          if (jqXHR.status == 201) {
-            ractive.set('currentIdx',ractive.get('memos').push(ractive.get('current'))-1);
-          }
-          if (jqXHR.status == 204) ractive.splice('memos',ractive.get('currentIdx'),1,ractive.get('current'));
-
+          ractive.fetch();
+          
           ractive.showMessage('Memo saved');
           ractive.set('saveObserver',true);
         }
@@ -313,6 +330,11 @@ var ractive = new AuthenticatedRactive({
       $('#currentForm :invalid')[0].focus();
       ractive.showMessage('Cannot save yet as message is incomplete');
     }
+  },
+  search: function(searchTerm) {
+    ractive.set('searchTerm',searchTerm);
+    ractive.set('searchMatched',$('#memosTable tbody tr:visible').length);
+    ractive.showResults();
   },
   select: function(idx,message) {
     console.log('select: '+JSON.stringify(message));
@@ -327,8 +349,9 @@ var ractive = new AuthenticatedRactive({
         if (d.rel == 'self') message._links.self = { href:d.href };
       });
 	  }
+	  ractive.initEditor();
 	  if (message._links != undefined) {
-	    var url = ractive.uri(message); // includes getServer
+	    var url = ractive.tenantUri(message); // includes getServer
       if (url == undefined) {
         ractive.showError('No memo selected, please check link');
         return;
@@ -342,12 +365,11 @@ var ractive = new AuthenticatedRactive({
         $('.autoNumeric').autoNumeric('update',{});
         if (ractive.get('current.status')=='Published') { 
           $('#currentForm input,#currentForm select,#currentForm textarea').prop('disabled',true).prop('readonly',true);
-          $('.glyphicon-remove').remove();
-          ractive.initEditorContent(false);
+          $('.glyphicon-remove').hide();
         } else {
-          ractive.initEditorContent(true);
+          $('#currentForm input:not("#curRequiredVars"),#currentForm select,#currentForm textarea').prop('disabled',false).prop('readonly',false);
+          if (ractive.hasRole('admin')) $('.glyphicon-remove').show();
         }
-        ractive.editor.setValue(ractive.get('current.richContent'));
         ractive.set('saveObserver',true);
       });
     } else { 
@@ -355,11 +377,11 @@ var ractive = new AuthenticatedRactive({
       ractive.set('current', message);
       ractive.set('saveObserver',true);
     }
-	  ractive.toggleResults();
+    ractive.toggleResults();
 	  $('#currentSect').slideDown();
   },
   showActivityIndicator: function(msg, addClass) {
-    dolastNcument.body.style.cursor='progress';
+    document.body.style.cursor='progress';
     this.showMessage(msg, addClass);
   },
   showResults: function() {
