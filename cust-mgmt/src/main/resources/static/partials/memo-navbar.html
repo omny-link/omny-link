@@ -4,3 +4,21 @@
 <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
 <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
 <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching templates"></a>
+<a class="clickable dropdown" aria-hidden="true" id="filterBtn" title="Show filters">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
+  </a>
+  <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
+    <li on-click="search()">Show All</li>
+    <li class="divider"></li>
+    <li on-click="search('status:draft')">Draft</li>
+    <li on-click="search('status:review')">Pending Review</li>
+    <li on-click="search('status:published')">Published</li>
+    <li class="divider"></li>
+    <li on-click="search('category:custmgmt')">Contact</li>
+    <li on-click="search('category:catalog')">Stock & Orders</li>
+    <li on-click="search('category:support')">Support</li>
+    <li on-click="search('category:website')">Web</li>
+    <li on-click="search('category:workmgmt')">Work</li>
+  </ul>
+</a>

@@ -1,5 +1,7 @@
 package com.knowprocess.bpm.web;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,6 +35,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
 import com.knowprocess.bpm.impl.UriHelper;
 import com.knowprocess.bpm.model.ProcessInstance;
 
@@ -50,6 +56,8 @@ public class ProcessInstanceController {
 
     @Autowired
     public ProcessEngine processEngine;
+
+    private String baseUrl = "https://api.omny.link";
 
     @RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<ProcessInstance> listJson() {
@@ -82,6 +90,60 @@ public class ProcessInstanceController {
         return result;
     }
 
+    @RequestMapping(value = "/{instanceId}/variables/{varName}", method = RequestMethod.GET, headers = "Accept=text/*")
+    public @ResponseBody String getInstanceVar(
+            @PathVariable("instanceId") String instanceId, 
+            @PathVariable("varName") String varName) {
+        LOGGER.info("getInstanceVar");
+        
+        try {
+            return processEngine.getRuntimeService()
+                    .getVariable(instanceId, varName).toString();
+        } catch (ActivitiObjectNotFoundException e) {
+            return processEngine.getHistoryService()
+                    .createHistoricVariableInstanceQuery()
+                    .processInstanceId(instanceId)
+                    .variableName(varName)
+                    .singleResult().getValue().toString();
+        }
+    }
+    
+    @RequestMapping(value = "/{instanceId}/variables/{varName}", method = RequestMethod.GET, headers = "Accept=application/pdf", produces = "application/pdf")
+    public void getInstanceVarAsPdf(
+            HttpServletResponse response,
+            @PathVariable("instanceId") String instanceId, 
+            @PathVariable("varName") String varName) {
+        LOGGER.info("getInstanceVar");
+        String var = getInstanceVar(instanceId, varName);
+
+        StringBuilder sb = new StringBuilder()
+                .append("<html><head>")
+                .append("<link href=\"").append(baseUrl).append("/webjars/bootstrap/3.3.5/css/bootstrap.min.css\" rel=\"stylesheet\"/>")
+                .append("<link href=\"").append(baseUrl).append("/css/omny-1.0.0.css\" rel=\"stylesheet\" type=\"text/css\" />")
+                .append("</head><body>")
+                .append(var.replaceAll("<br>", "<br/>"))
+                .append("</body></html>");
+        
+        try {
+            Document document = new Document();
+            response.setContentType("application/pdf");
+            PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
+            document.open();
+            XMLWorkerHelper.getInstance().parseXHtml(writer, document, new StringReader(sb.toString())); 
+            document.close();
+        
+            LOGGER.debug(String.format("PDF Created for var %1$s of process instance %2$s", varName, instanceId));
+        } catch (NoClassDefFoundError e) {
+            throw new IllegalStateException("PDf generation not currently enabled.");
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new IllegalStateException(e);
+        } catch (DocumentException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new IllegalStateException("Probably a template problem.");
+        }
+    }
+    
     @RequestMapping(value = "/findByVar/{varName}/{varValue}", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<ProcessInstance> listInstancesForVar(
             @PathVariable("varName") String varName,

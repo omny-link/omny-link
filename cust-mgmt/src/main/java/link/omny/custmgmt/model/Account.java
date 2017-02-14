@@ -24,18 +24,18 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import link.omny.custmgmt.json.JsonCustomAccountFieldDeserializer;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import link.omny.custmgmt.json.JsonCustomAccountFieldDeserializer;
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "OL_ACCOUNT")
@@ -135,8 +135,6 @@ public class Account implements Serializable {
     @JsonProperty
     private String linkedIn;
 
-    /**
-     */
     @Size(max = 120)
     @JsonProperty
     private String shortDesc;
@@ -145,14 +143,10 @@ public class Account implements Serializable {
     @Lob
     private String description;
 
-    /**
-     */
     @Digits(integer = 4, fraction = 0)
     @JsonProperty
     private Integer incorporationYear;
 
-    /**
-     */
     @Size(max = 20)
     private String noOfEmployees;
 
@@ -292,6 +286,30 @@ public class Account implements Serializable {
                     Integer.parseInt(companyNumber));
         }
         return companyNumber;
+    }
+
+    @JsonProperty
+    public String getAddress() {
+        StringBuilder sb = new StringBuilder();
+        if (address1 != null && address1.length()>0) {
+            sb.append(address1).append(", ");
+        }
+        if (address2 != null && address2.length()>0) {
+            sb.append(address2).append(", ");
+        }
+        if (town != null && town.length()>0) {
+            sb.append(town).append(", ");
+        }
+        if (countyOrCity != null && countyOrCity.length()>0) {
+            sb.append(countyOrCity).append(", ");
+        }
+        if (postCode != null && postCode.length()>0) {
+            sb.append(postCode).append(". ");
+        }
+        if (country != null && country.length()>0) {
+            sb.append(country).append(".");
+        }
+        return sb.toString();
     }
 
     @PreUpdate

@@ -3,13 +3,11 @@ package link.omny.custmgmt.web;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -45,8 +43,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -83,9 +79,9 @@ import lombok.EqualsAndHashCode;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/contacts")
-public class ContactController {
+public class ContactController extends BaseTenantAwareController{
 
-    private static final Logger LOGGER = LoggerFactory
+    static final Logger LOGGER = LoggerFactory
             .getLogger(ContactController.class);
 
     @Autowired
@@ -556,35 +552,12 @@ public class ContactController {
 
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(getGlobalUri(contact));
+        headers.setLocation(getGlobalUri(contact.getId()));
 
         // TODO migrate to http://host/tenant/contacts/id
         // headers.setLocation(getTenantBasedUri(tenantId, contact));
 
         return new ResponseEntity(headers, HttpStatus.CREATED);
-    }
-
-    protected URI getGlobalUri(Contact contact) {
-        try {
-            UriComponentsBuilder builder = MvcUriComponentsBuilder
-                    .fromController(getClass());
-            String uri = builder.build().toUriString()
-                    .replace("{tenantId}/", "");
-            return new URI(uri
-                    + "/" + contact.getId());
-        } catch (URISyntaxException e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
-        }
-    }
-
-    protected URI getTenantBasedUri(String tenantId, Contact contact) {
-        UriComponentsBuilder builder = MvcUriComponentsBuilder
-                .fromController(getClass());
-        HashMap<String, String> vars = new HashMap<String, String>();
-        vars.put("tenantId", tenantId);
-        vars.put("id", contact.getId().toString());
-        return builder.path("/{id}").buildAndExpand(vars).toUri();
     }
 
     /**
@@ -968,7 +941,7 @@ public class ContactController {
 
     private ResourceSupport wrap(Contact contact, ResourceSupport resource) {
         BeanUtils.copyProperties(contact, resource);
-        Link detail = new Link(getGlobalUri(contact).toString());
+        Link detail = new Link(getGlobalUri(contact.getId()).toString());
         resource.add(detail);
         if (contact.getAccount() != null) {
             try {
@@ -1027,6 +1000,7 @@ public class ContactController {
         private String countyOrCity;
         private String country;
         private String postCode;
+        private String address;
         private String email;
         private boolean emailConfirmed;
         private String jobTitle;
