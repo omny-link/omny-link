@@ -70,7 +70,7 @@ var ractive = new AuthenticatedRactive({
     }
 
     $.ajax({
-      url: ractive.getServer()+'/messages/omny.newPassword/'+ractive.get('current.instanceId'),
+      url: ractive.getServer()+'/'+ractive.get('current.tenantId')+'/messages/omny.newPassword/'+ractive.get('current.instanceId'),
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(ractive.get('current')),
