@@ -211,8 +211,12 @@ public class TenantConfigController {
         List<Memo> memos = memoRepo.findAllForTenant(id);
         for (TenantTemplate template : tenantConfig.getTemplates()) {
             try {
+                // Confusingly the 'ref' of the template maps to the
+                // 'name' of the memo. This is because the memo's name
+                // is the unique (yet user visible) identifier that does
+                // not allow spaces etc.
                 Memo memo = memos.stream()
-                        .filter(p -> template.getName().equals(p.getName()))
+                        .filter(p -> template.getRef().equals(p.getName()))
                         .findFirst().get();
                 template.setValid(true);
                 template.setDescription(String.format("Subject: %1$s",
