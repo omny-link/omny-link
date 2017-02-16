@@ -1631,6 +1631,7 @@ var ractive = new AuthenticatedRactive(
 
         if (editing) { // Change editable to display, inc. discard unsaved
           ractive.fetchAccountContacts();
+          ractive.set('currentContact', undefined);
         } else if (ractive.uri(obj) == undefined) { // new contact
           // save now to avoid race condition leading to multiple records later
           ractive.saveContact();

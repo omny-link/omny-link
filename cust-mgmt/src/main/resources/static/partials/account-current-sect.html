@@ -291,24 +291,24 @@
               {{#sort(current.contacts,sortContactColumn,sortContactAsc):i}}
                 <tr>
                   <td class="hidden">
-                    <span>{{selfRef}}</span>
+                    <span>{{..selfRef}}</span>
                   </td>
                   <td><input class="radio" name="mainContact" type="radio" checked="{{mainContact}}" on-change="setMainContact(selfRef)"/></td>
-                  <td class="col-md-2 col-sm-2" data-contact-id="{{selfRef}}" data-key="fullName">
+                  <td class="col-md-2 col-sm-2" data-contact-id="{{..selfRef}}" data-key="fullName">
 	                  <span>{{fullName}}</span>
-	                  <input class="hidden form-control" name="fullName" value="{{fullName}}">
+	                  <input class="hidden form-control" name="fullName" value="{{..fullName}}">
                   </td>
-                  <td class="col-md-2 col-sm-2" data-contact-id="{{selfRef}}" data-key="jobTitle">
+                  <td class="col-md-2 col-sm-2" data-contact-id="{{..selfRef}}" data-key="jobTitle">
                     <span>{{jobTitle}}</span>
-                    <input class="hidden form-control" name="jobTitle" value="{{jobTitle}}">
+                    <input class="hidden form-control" name="jobTitle" value="{{..jobTitle}}">
                   </td>
-                  <td class="col-md-2 col-sm-2" data-contact-id="{{selfRef}}" data-key="email">
+                  <td class="col-md-2 col-sm-2" data-contact-id="{{..selfRef}}" data-key="email">
                     <span>{{email}}</span>
-                    <input class="hidden form-control" name="email" value="{{email}}">
+                    <input class="hidden form-control" name="email" value="{{..email}}">
                   </td>
-                  <td class="col-md-1 col-sm-1" data-contact-id="{{selfRef}}" data-key="phone1">
+                  <td class="col-md-1 col-sm-1" data-contact-id="{{..selfRef}}" data-key="phone1">
                     <span>{{phone1}}</span>
-                    <input class="hidden form-control" name="phone1" value="{{phone1}}">
+                    <input class="hidden form-control" name="phone1" value="{{..phone1}}">
                   </td>
                   <td class="btn-group-social">
 	                  <div class="btn-group" role="group" aria-label="...">
