@@ -285,7 +285,7 @@
             {{#tenant.show.declaredSource}}
               <li>
                 <label class="col-md-4 col-sm-4">{{#tenant.strings.source2}}{{tenant.strings.source2}}{{else}}How heard of us?{{/}}:</label>
-                <input class="form-control" id="curSource2" placeholder="Start typing to filter options" value="{{current.source2}}">
+                <input class="form-control" id="curSource2" placeholder="Start typing to filter options" {{ (matchRole('sales_manager') || matchRole('admin') || matchRole('power_user')) ? '' : 'readonly disabled' }} value="{{current.source2}}">
               </li>
             {{/}}
           </ul>
