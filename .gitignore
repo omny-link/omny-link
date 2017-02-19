@@ -25,3 +25,4 @@ hs_err_pid*
 
 # test output that should be moved to target
 *jrxml.html
+omny-link-server/*jrxml.html
