@@ -8,20 +8,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import link.omny.custmgmt.json.JsonCustomAccountFieldDeserializer;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
-import link.omny.custmgmt.model.Account;
-import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.CustomAccountField;
-import link.omny.custmgmt.model.Document;
-import link.omny.custmgmt.model.Note;
-import link.omny.custmgmt.repositories.AccountRepository;
-import link.omny.custmgmt.repositories.ContactRepository;
-import link.omny.custmgmt.repositories.DocumentRepository;
-import link.omny.custmgmt.repositories.NoteRepository;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -54,6 +40,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
+
+import link.omny.custmgmt.json.JsonCustomAccountFieldDeserializer;
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
+import link.omny.custmgmt.model.Account;
+import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.CustomAccountField;
+import link.omny.custmgmt.model.Document;
+import link.omny.custmgmt.model.Note;
+import link.omny.custmgmt.repositories.AccountRepository;
+import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.repositories.DocumentRepository;
+import link.omny.custmgmt.repositories.NoteRepository;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * REST web service for uploading and accessing a file of JSON Accounts (over
@@ -323,6 +323,7 @@ public class AccountController {
         private String countyOrCity;
         private String postCode;
         private String country;
+        private String address;
         private String twitter;
         private String facebook;
         private String linkedIn;
