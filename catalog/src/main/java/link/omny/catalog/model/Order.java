@@ -93,6 +93,10 @@ public class Order implements OrderWithSubEntities, Serializable {
     @JsonView(OrderViews.Summary.class)
     private BigDecimal price;
 
+    @JsonProperty
+    @JsonView(OrderViews.Summary.class)
+    private BigDecimal tax;
+
     // Although this annotation does not change the name, without it Jackson
     // gets confused and attempts to cast id:Long to String. Why this property
     // affects a completely different one is a mystery I have not investigated

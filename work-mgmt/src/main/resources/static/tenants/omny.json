@@ -14,7 +14,8 @@
   "contactActions": [
     { "feature":"workManagement", "name": "Add task", "ref": "SimpleToDo", "url": true },
     { "name": "Alert owner", "ref": "SendAlertToOwner"  },
-    { "name": "Send email", "ref": "SendMemo", "url": true  }
+    { "name": "Send email", "ref": "SendMemo", "url": true  },
+    { "name": "Preview template", "ref": "MergeMemoTemplate", "url": true  }
   ],
   "contactFields": [ 
     { "label": "Job Title", "key": "jobTitle"},
@@ -37,6 +38,7 @@
   "partials": [
     { "name": "omnyContactExtension", "url": "/partials/omny/contact-extension.html"},
     { "name": "omnyAccountExtension", "url": "/partials/account-extension.html"},
+    { "name": "omnyMergeMemoTemplate", "url": "/partials/pick-memo.html"},
     { "name": "omnyRegisterOmnyContact", "url": "/partials/register-user.html"},
     { "name": "omnySimpleToDo", "url": "/partials/simple-todo.html"},
     { "name": "omnySendMemo", "url": "/partials/pick-memo.html"},
@@ -50,6 +52,7 @@
     { "name": "Create contact and account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
     { "name": "De-duplicate contact and account", "ref": "DedupeContact", "url": "processes/link/omny/custmgmt/DedupeContact.bpmn" },
     { "name": "Import contact", "ref": "ImportContact", "url": "processes/link/omny/website/ImportContact.bpmn" },
+    { "name": "Merge memo", "ref": "MergeMemoTemplate", "url": "processes/link/omny/memos/MergeMemoTemplate.bpmn" },
     { "name": "Raise ticket", "ref": "RaiseTicket", "url": "processes/link/omny/support/RaiseTicket.bpmn" },
     { "name": "Record an enquiry", "ref": "RecordEnquiry", "url": "processes/link/omny/website/RecordEnquiry.bpmn" },
     { "name": "Register a user", "ref": "RegisterOmnyContact", "url": "processes/link/omny/website/RegisterOmnyContact.bpmn" },

@@ -121,6 +121,11 @@
       <version>1.4.2</version>
     </dependency>
     <dependency>
+	    <groupId>org.webjars</groupId>
+	    <artifactId>ckeditor</artifactId>
+	    <version>4.4.7</version><!--  4.5.11 -->
+    </dependency>
+    <dependency>
       <groupId>link.omny</groupId>
       <artifactId>fonts</artifactId>
       <version>1.0.0</version>

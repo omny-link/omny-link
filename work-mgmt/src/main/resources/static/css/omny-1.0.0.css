@@ -1718,6 +1718,15 @@ you can use the generic selector below, but it's slower:
 }
 /* END ANALYTICS */
 
+/* CKEDITOR OVERRIDES */
+
+.cke_top,
+.cke_bottom {
+  background-color: #ccc !important;
+  background-image: none !important;
+}
+
+/* PRINT */
 @media print {
   .beta,
   .omny-bar,

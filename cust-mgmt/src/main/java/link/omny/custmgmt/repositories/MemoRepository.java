@@ -14,6 +14,10 @@ import link.omny.custmgmt.model.Memo;
 @RepositoryRestResource(path = "/memos")
 public interface MemoRepository extends CrudRepository<Memo, Long> {
 
+    @Override
+    @Query("SELECT m FROM Memo m WHERE (m.status IS NULL OR m.status != 'deleted') AND m.id = :id")
+    Memo findOne(@Param("id") Long id);
+
     @Query("SELECT m FROM Memo m WHERE m.tenantId = :tenantId AND (status IS NULL OR status != 'deleted') ORDER BY m.lastUpdated DESC")
     List<Memo> findAllForTenant(@Param("tenantId") String tenantId);
 
@@ -21,7 +25,7 @@ public interface MemoRepository extends CrudRepository<Memo, Long> {
     List<Memo> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
-    @Query("SELECT m FROM Memo m WHERE m.tenantId = :tenantId AND m.name = :name")
+    @Query("SELECT m FROM Memo m WHERE m.tenantId = :tenantId AND m.name = :name AND (status IS NULL OR status != 'deleted')")
     Memo findByName(@Param("name") String name,
             @Param("tenantId") String tenantId);
     

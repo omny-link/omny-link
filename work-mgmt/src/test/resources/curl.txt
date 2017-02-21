@@ -58,3 +58,8 @@ curl -X POST -u tstephen:tstephen -H "Accept:application/json" \
     -H "Content-Type:application/json" \
     -d '{ "name":"Overview", "category": "http://omny.link/tests/", "processText": "1. +initiator User Task 1\n2. :mail +tim@knowprocess.com Mail Task 2\n3. +tim@knowprocess.com User Task 3" }' \
     http://localhost:8082/omny/process-definitions/
+    
+curl -X GET -u tstephen:tstephen -H "Accept:text/html" -v \
+    http://localhost:8082/omny/process-instances/22501/variables/result
+curl -X GET -u tstephen:tstephen -H "Accept:application/pdf" -v \
+    http://localhost:8082/omny/process-instances/22501/variables/result
