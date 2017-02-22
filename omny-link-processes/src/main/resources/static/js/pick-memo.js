@@ -61,7 +61,7 @@ function showMemoPreview() {
   
   var tmp = JSON.parse(JSON.stringify(ractive.get('instanceToStart')));
   tmp.processDefinitionId = 'MergeMemoTemplate';
-  if (tmp.processVariables.memoId == undefined || tmp.processVariables.memoId.length == 0) {
+  if (!document.forms['customActionForm'].checkValidity()) {
     ractive.showMessage('Please supply all the required fields');
     showMemoSpec();
     return;
@@ -120,7 +120,7 @@ function initOrdersAutocomplete() {
       ractive.set('instanceToStart.processVariables.orderId',d.id);
       ractive.set('instanceToStart.processVariables.orderName',d.name);
       var order = Array.findBy('orderId', d.id, ractive.get('orders'));
-      if (order['contactId']!=undefined) {
+      if (ractive.get('currentContact')==undefined && order['contactId']!=undefined) {
         ractive.set('instanceToStart.processVariables.contactId','/contacts/'+order['contactId']);
       }
     }
@@ -166,9 +166,6 @@ function fetchMemos() {
 }
 $(document).ready(function() {
   console.info('ready event on pick-memo');
-  $('#curMemoDisplay').val(undefined);
-//  ractive.customActionCallbacks = $.Callbacks();
-//  ractive.customActionCallbacks.add(openResponseWindow);
   
   if ($('#curOrderDisplay').length>0) {
     if (ractive.get('orders') == undefined || ractive.get('orders').length == 0) {

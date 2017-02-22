@@ -20,6 +20,11 @@
         <input id="curOrderName" type="hidden" value="{{instanceToStart.processVariables.orderName}}">
         <p class="help-block">You must select which order is under discussion.</p>
       </div>
+      <div class="form-group">
+        <label class="control-label">Contact:</label>
+        <input autocomplete="off" class="form-control" id="curContactDisplay" disabled readonly style="width:60%;" type="text" value="{{formatContactId(instanceToStart.processVariables.contactId)}}">
+        <p class="help-block">The contact to address.</p>
+      </div>
     {{else}}
       <div class="form-group form-inline">
         <label class="control-label">Send at:</label>
