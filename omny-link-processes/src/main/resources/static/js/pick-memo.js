@@ -107,7 +107,10 @@ function initOrdersAutocomplete() {
   ractive.set('ordersTypeahead',jQuery.map(ractive.get('orders'), function( n, i ) {
     //if (n.orderItems == undefined || n.orderItems.length == 0) return;
     console.log('n: '+n.selfRef+', '+n.id+', i:'+i);
-    return ( {id: ractive.shortId(n.selfRef), name: n['name']} );
+    return ( {
+      id: ractive.shortId(n.selfRef),
+      name: n['orderId']+''
+    } );
     //return ( {id: ractive.shortId(n.selfRef), name: Array.findBy('selfRef','/contacts/'+n.contactId,ractive.get('current.contacts')).fullName+' '+n.orderItems[0].customFields['date']} );
   }));
   

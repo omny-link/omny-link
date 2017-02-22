@@ -9,7 +9,8 @@
 		  <table class="active-table table table-striped">
 		    <thead>
 		      <tr>
-		        {{#1==2}}
+		        <th on-click="sortOrder:orderId" title="Order reference">Ref.<span class="sortable {{ sortedOrder('orderId') }} glyphicon "></th>
+            {{#1==2}}
 		          <th on-click="sortOrder:name">Name<span class="sortable {{ sortedOrder('name') }} glyphicon"></span></th>
 		        {{/}}
 		        {{#entityPath=='/accounts'}}
@@ -33,6 +34,9 @@
 		    <tbody>
 		      {{#each sort(orders,sortOrderColumn,sortOrderAsc):i}}
 		        <tr class="{{#if tenant.show.orderItems && orderItems}}alert-info{{elseif tenant.show.orderItems}}alert-warning{{/if}}">
+              <td data-order-id="{{selfRef}}" data-key="orderId">
+                <span>{{orderId}}</span>
+              </td>
 		          {{#1==2}}<td>{{name}}</td>{{/}}
               {{#entityPath=='/accounts'}}
                 <td data-order-id="{{selfRef}}" data-key="contactName">
