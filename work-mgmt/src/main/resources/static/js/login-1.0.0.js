@@ -679,7 +679,7 @@ $( document ).bind('keypress', function(e) {
     if (window['ractive'] && ractive['enter']) ractive['enter']();
     break;
   case 63:   // ? key
-    ractive.showHelp();
+    if (e.target.tagName.toLowerCase()!='textarea' && e.target.tagName.toLowerCase()!='input') ractive.showHelp();
     break;
   }
 });
