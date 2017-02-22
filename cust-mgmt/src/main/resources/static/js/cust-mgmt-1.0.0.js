@@ -65,6 +65,14 @@ var ractive = new AuthenticatedRactive({
       console.info('formatAge: '+timeString);
       return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
     },
+    formatContactId: function(contactId) {
+      console.info('formatContactId');
+      if (contactId == undefined) return 'n/a';
+      if (contactId == ractive.get('current.selfRef')) return ractive.get('current.fullName');
+
+      var contact = Array.findBy('selfRef',contactId,ractive.get('contacts'));
+      return contact == undefined ? 'n/a' : contact.fullName;
+    },
     formatContent: function(content) {
       console.info('formatContent');
       content = content.replace(/\n/g,'<br/>');

@@ -76,6 +76,13 @@ var ractive = new AuthenticatedRactive(
               .getDurationString(timeString)
               + ' ago';
         },
+        formatContactId: function(contactId) {
+          console.info('formatContactId');
+          if (contactId == undefined) return 'n/a';
+
+          var contact = Array.findBy('selfRef',contactId,ractive.get('current.contacts'));
+          return contact == undefined ? 'n/a' : contact.fullName;
+        },
         formatContent: function(content) {
           // console.info('formatContent');
           if (content == undefined)
