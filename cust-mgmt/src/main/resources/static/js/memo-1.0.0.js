@@ -349,7 +349,6 @@ var ractive = new AuthenticatedRactive({
         if (d.rel == 'self') message._links.self = { href:d.href };
       });
 	  }
-	  ractive.initEditor();
 	  if (message._links != undefined) {
 	    var url = ractive.tenantUri(message); // includes getServer
       if (url == undefined) {
@@ -363,6 +362,7 @@ var ractive = new AuthenticatedRactive({
         ractive.initControls();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
+        ractive.initEditor();
         if (ractive.get('current.status')=='Published') { 
           $('#currentForm input,#currentForm select,#currentForm textarea').prop('disabled',true).prop('readonly',true);
           $('.glyphicon-remove').hide();
