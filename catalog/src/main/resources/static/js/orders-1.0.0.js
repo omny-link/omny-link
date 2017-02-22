@@ -332,6 +332,11 @@ var ractive = new AuthenticatedRactive({
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
         ractive.set('searchMatched',$('#ordersTable tbody tr:visible').length);
+        if ($('#ordersTable tbody tr:visible').length==1) {
+          setTimeout(ractive.select, 500,
+              Array.findBy('selfRef',$('#ordersTable tbody tr:visible').data('href'), ractive.get('orders'))
+          );
+        }
         ractive.set('saveObserver', true);
       }
     });
