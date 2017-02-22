@@ -111,7 +111,6 @@ function initOrdersAutocomplete() {
       id: ractive.shortId(n.selfRef),
       name: n['orderId']+''
     } );
-    //return ( {id: ractive.shortId(n.selfRef), name: Array.findBy('selfRef','/contacts/'+n.contactId,ractive.get('current.contacts')).fullName+' '+n.orderItems[0].customFields['date']} );
   }));
   
   $('#curOrderDisplay').typeahead({ 
@@ -124,6 +123,7 @@ function initOrdersAutocomplete() {
       ractive.set('instanceToStart.processVariables.orderName',d.name);
       var order = Array.findBy('orderId', d.id, ractive.get('orders'));
       if (ractive.get('currentContact')==undefined && order['contactId']!=undefined) {
+      if (order['contactId']!=undefined) {
         ractive.set('instanceToStart.processVariables.contactId','/contacts/'+order['contactId']);
       }
     }
