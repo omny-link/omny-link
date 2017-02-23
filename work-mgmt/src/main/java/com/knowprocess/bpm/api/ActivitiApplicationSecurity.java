@@ -1,7 +1,5 @@
 package com.knowprocess.bpm.api;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -19,17 +17,17 @@ import com.knowprocess.bpm.impl.CorsFilter;
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class ActivitiApplicationSecurity extends WebSecurityConfigurerAdapter {
 
+    @Value("${security.enable-csrf:false}")
+    private String enableCsrf;
+    
+    @Value("${security.headers.frame:true}")
+    private String enableFrameOptionsHeader;
+    
     @Value("${omny.security.loginPage:/login}")
     protected String loginPage;
 
     @Value("${omny.security.loginFailureUrl:/login?error}")
     protected String loginFailureUrl;
-
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private SecurityProperties security;
 
     @Autowired
     private ActivitiUserDetailsService activitiUserDetailsService;
@@ -58,9 +56,17 @@ public class ActivitiApplicationSecurity extends WebSecurityConfigurerAdapter {
                         .hasRole("super_admin")
                 .anyRequest().authenticated().and()
                 .formLogin().loginPage(loginPage).failureUrl(loginFailureUrl)
-                .successHandler(getSuccessHandler()).permitAll().and().csrf()
-                .disable().httpBasic();
+                .successHandler(getSuccessHandler()).permitAll().and()
+                .httpBasic(); 
 
+        if ("false".equalsIgnoreCase(enableCsrf)) {
+            http.csrf().disable(); 
+        }
+        
+        if ("false".equalsIgnoreCase(enableFrameOptionsHeader)) {
+            http.headers().frameOptions().disable(); 
+        }
+        
         // .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         http.addFilterBefore(corsFilter, BasicAuthenticationFilter.class);
     }
