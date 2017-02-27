@@ -127,7 +127,7 @@ function initOrdersAutocomplete() {
         ractive.set('instanceToStart.processVariables.contactId','/contacts/'+order['contactId']);
       }
     }
-  });
+  }});
   $('#curOrderDisplay').on("click", function (ev) {
     newEv = $.Event("keydown");
     newEv.keyCode = newEv.which = 40;
