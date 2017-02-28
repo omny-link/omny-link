@@ -1,3 +1,4 @@
+const DELAY = 1500;
 function fetchPdf() {
   console.info('fetchPdf');
 
@@ -26,15 +27,15 @@ function fetchPreview(callback) {
       console.log('response: '+ jqXHR.status+", Location: "+location);
       ractive.set('memoHtml','Merging '+ractive.get('instanceToStart.processVariables.memoName')+' template for '+ractive.get('instanceToStart.businessKey'));
       ractive.set('instanceStarted', data);
-      setTimeout(fetchResult, 1000, location);
-      if (callback != undefined) setTimeout(callback, 1000, location);
+      setTimeout(fetchResult, DELAY, location);
+      if (callback != undefined) setTimeout(callback, DELAY, location);
     }
   });
 }
 function fetchResult(location) {
-  ractive.set('resultLocation', ractive.getServer()+'/'+ractive.get('tenant.id')+location+'/variables/result');
+  ractive.set('resultLocation', ractive.getServer()+'/'+ractive.get('tenant.id')+location+'/variables/memo');
   $.ajax({
-    url: ractive.getServer()+'/'+ractive.get('tenant.id')+location+'/variables/result',
+    url: ractive.getServer()+'/'+ractive.get('tenant.id')+location+'/variables/memo',
     headers: {
       'Accept': 'text/html'
     },
@@ -85,7 +86,8 @@ function initMemosSource() {
         var requiredVarList = n.requiredVars.split(',');
         for(idx in requiredVarList) {
           console.log('  do we have '+requiredVarList[idx]);
-          if (requiredVarList[idx].length>0 && ractive.get('instanceToStart.processVariables.'+requiredVarList[idx]) == undefined 
+          if (requiredVarList[idx].toLowerCase().indexOf('formatter')==-1 
+              && requiredVarList[idx].length>0 && ractive.get('instanceToStart.processVariables.'+requiredVarList[idx]) == undefined 
               && ractive.get('instanceToStart.processVariables.'+requiredVarList[idx]+'Id') == undefined) {
             console.log('  ... not all data available');
             return undefined;
@@ -125,6 +127,9 @@ function initOrdersAutocomplete() {
       if (ractive.get('currentContact')==undefined && order['contactId']!=undefined) {
       if (order['contactId']!=undefined) {
         ractive.set('instanceToStart.processVariables.contactId','/contacts/'+order['contactId']);
+      }
+      if (order['stockItem']!=undefined) {
+        ractive.set('instanceToStart.processVariables.stockItemId','/stock-items/'+order['stockItem']['id']);
       }
     }
   }});
@@ -180,6 +185,7 @@ $(document).ready(function() {
       if (ractive.get('instanceToStart.processVariables.contact') == undefined && ractive.get('instanceToStart.processVariables.contactId') == undefined) {
         ractive.set('instanceToStart.processVariables.contactId','TBD');
       }
+      ractive.set('instanceToStart.processVariables.stockItemId','TBD');
     }
     initOrdersAutocomplete();
   }
