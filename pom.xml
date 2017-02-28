@@ -23,6 +23,7 @@
   <properties>
     <build.number>SNAPSHOT</build.number>
     <java.version>1.8</java.version>
+    <javax-json.version>1.0.4.20170227</javax-json.version>
     <activiti.version>5.18.0.20151117</activiti.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>2.0.0-SNAPSHOT</omny-link.version>
@@ -48,6 +49,16 @@
     <connection>scm:git:git@github.com:OmnyLink/OmnyLink.git</connection>
     <developerConnection>scm:git:git@github.com:OmnyLink/OmnyLink.git</developerConnection>
   </scm>
+
+  <repositories>
+    <repository>
+      <id>javax.json-patch-mvn-repo</id>
+      <url>https://raw.github.com/tstephen/jsonp/maven-repo/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <dependencies>
    <dependency>
