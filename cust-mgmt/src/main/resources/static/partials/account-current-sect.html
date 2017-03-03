@@ -72,7 +72,7 @@
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{# tenant.strings.edubaseUrn}}{{tenant.strings.edubaseUrn}}{{else}}Edubase URN{{/}}:</label>
             <div class="input-group">
-              <input class="col-md-8 col-sm-8 form-control" id="curEdubaseUrn" pattern="[0-9]{6}" type="text" value="{{current.customFields['edubaseUrn']}}">
+              <input class="col-md-8 col-sm-8 form-control" id="curEdubaseUrn" pattern="[0-9]{6}" type="text" value="{{# current.customFields['edubaseUrn']!=undefined}}{{parseInt(current.customFields['edubaseUrn'])}}{{/}}">
               {{# current.customFields['edubaseUrn']!=undefined}}
                 <span class="input-group-addon">
                   <a href="http://www.education.gov.uk/edubase/establishment/summary.xhtml?urn={{parseInt(current.customFields['edubaseUrn'])}}" target="edubaseEstablishment"><span class="glyphicon glyphicon-new-window"></span></a>
