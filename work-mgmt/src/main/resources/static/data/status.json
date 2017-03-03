@@ -1,5 +1,5 @@
 [
-  {  "name": "Draft"  },
-  {  "name": "Pending Review"  },
-  {  "name": "Published"  }
+  {  "id": "Draft", "name": "Draft"  },
+  {  "id": "Pending Review", "name": "Pending Review"  },
+  {  "id": "Published", "name": "Published"  }
 ]
