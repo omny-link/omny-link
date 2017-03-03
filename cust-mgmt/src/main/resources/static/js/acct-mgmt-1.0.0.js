@@ -134,6 +134,29 @@ var ractive = new AuthenticatedRactive(
             return json;
           }
         },
+        formatSumOrderItemField: function(order,fieldName) {
+          var val=0;
+          for (idx in order.orderItems) {
+            if (order.orderItems[idx].customFields[fieldName]==undefined) continue;
+            var tmp = order.orderItems[idx].customFields[fieldName];
+            if (tmp != undefined) {
+              if (tmp!='-' && tmp!='n/a') val += parseInt(tmp);
+            }
+          }
+          return val;
+        },
+        formatUniqOrderItemField: function(order,fieldName) {
+          var val='';
+          for (idx in order.orderItems) {
+            if (order.orderItems[idx].customFields[fieldName]==undefined) continue;
+            var tmp = order.orderItems[idx].customFields[fieldName];
+            if (tmp != undefined && val.indexOf(tmp)==-1) {
+              if (val.length > 0 && tmp!='-' && tmp!='n/a') val += ',';
+              if (tmp!='-' && tmp!='n/a') val += tmp;
+            }
+          }
+          return val;
+        },
         formatStockItemIds: function(order) {
           // console.info('formatStockItemIds');
           return ractive.getStockItemNames(order);

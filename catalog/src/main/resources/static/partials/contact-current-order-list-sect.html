@@ -78,7 +78,18 @@
 	            {{/}}
               {{#tenant.orderFields}}
                 {{#if tenant.show.orderItems && orderItems && orderItems[0]!=undefined && index(orderItems[0],'customFields.'+key)!=undefined}}
-                  <td data-order-id="{{selfRef}}" title="{{hint}}">{{#if type=='number'}}{{sum('customFields.'+key,orderItems)}}{{else}}{{uniq('customFields.'+key,orderItems)}}{{/if}}</td>
+                  <td data-order-id="{{selfRef}}" title="{{hint}}">
+                    {{#if ..aggregation=='sum'}}
+                      <span>{{formatSumOrderItemField(orders[i],..name)}}</span>
+                    {{elseif ..aggregation=='uniq'}}
+                      <span>{{formatUniqOrderItemField(orders[i],..name)}}</span>
+                    {{/if}}
+                    {{#if aggregation}}
+                      {{evalAggregation(aggregation,'customFields.'+key,orderItems)}}
+                    {{else}}
+                      {{customFields[key]}}
+                    {{/if}}
+                  </td>
                 {{else}}
                   <td data-order-id="{{selfRef}}" title="{{hint}}">
                    <span title="{{hint}}">{{customFields[key]}}</span>

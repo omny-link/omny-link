@@ -9,11 +9,11 @@
         {{#each tenant.orderFields.slice(0,Math.ceil(tenant.orderFields.length/2)):j}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
-            {{#if current.orderItems && current.orderItems[0].customFields[name]}}
-              {{#if type=='number'}}
-                <span>{{formatOrderItemNumberField(current,name)}}</span>
-              {{else}}
-                <span>{{formatOrderItemTextField(current,name)}}</span>
+            {{#if current.orderItems && current.orderItems[0].customFields[name] && ..aggregation!=undefined}}
+              {{#if ..aggregation=='sum'}}
+                <span>{{formatSumOrderItemField(current,name)}}</span>
+              {{elseif ..aggregation=='uniq'}}
+                <span>{{formatUniqOrderItemField(current,name)}}</span>
               {{/if}}
             {{else}}
               <input class="form-control" id="cur{{name.toLeadingCaps()}}" value="{{current.customFields[name]}}">
@@ -28,11 +28,11 @@
         {{#each tenant.orderFields.slice(Math.ceil(tenant.orderFields.length/2),tenant.orderFields.length):j}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
-            {{#if current.orderItems && current.orderItems[0].customFields[name]}}
-              {{#if type=='number'}}
-                <span>{{formatOrderItemNumberField(current,name)}}</span>
-              {{else}}
-                <span>{{formatOrderItemTextField(current,name)}}</span>
+            {{#if current.orderItems && current.orderItems[0].customFields[name] && ..aggregation!=undefined}}
+              {{#if ..aggregation=='sum'}}
+                <span>{{formatSumOrderItemField(current,name)}}</span>
+              {{elseif ..aggregation=='uniq'}}
+                <span>{{formatUniqOrderItemField(current,name)}}</span>
               {{/if}}
             {{else}}
               <input class="form-control" id="cur{{name.toLeadingCaps()}}" value="{{current.customFields[name]}}">

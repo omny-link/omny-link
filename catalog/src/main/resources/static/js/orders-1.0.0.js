@@ -80,11 +80,8 @@ var ractive = new AuthenticatedRactive({
       }
     },
     formatOrderItemDates: function(order) {
-      //console.info('formatOrderItemDates for order: '+orderId);
-      
       var dates='';
       for (idx in order.orderItems) {
-        // TODO need standard not custom solution here
         if (order.orderItems[idx]['customFields']==undefined || order.orderItems[idx].customFields['date']==undefined) continue;
         var tmp = ractive.parseDate(order.orderItems[idx].customFields['date']).toLocaleDateString(navigator.languages);
         if (tmp != undefined && tmp != 'Invalid Date' && dates.indexOf(tmp)==-1) {
@@ -95,10 +92,9 @@ var ractive = new AuthenticatedRactive({
       if (dates.length==0) dates = 'Specify dates for each '+ractive.get('tenant.strings.orderItem').toLowerCase();
       return dates;
     },
-    formatOrderItemNumberField: function(order,fieldName) {
+    formatSumOrderItemField: function(order,fieldName) {
       var val=0;
       for (idx in order.orderItems) {
-        // TODO need standard not custom solution here
         if (order.orderItems[idx].customFields[fieldName]==undefined) continue;
         var tmp = order.orderItems[idx].customFields[fieldName];
         if (tmp != undefined) {
@@ -107,10 +103,9 @@ var ractive = new AuthenticatedRactive({
       }
       return val;
     },
-    formatOrderItemTextField: function(order,fieldName) {
+    formatUniqOrderItemField: function(order,fieldName) {
       var val='';
       for (idx in order.orderItems) {
-        // TODO need standard not custom solution here
         if (order.orderItems[idx].customFields[fieldName]==undefined) continue;
         var tmp = order.orderItems[idx].customFields[fieldName];
         if (tmp != undefined && val.indexOf(tmp)==-1) {
@@ -413,9 +408,6 @@ var ractive = new AuthenticatedRactive({
         delete tmp.stockItemId;
       }
       delete tmp.orderItems;
-      if (tmp.contact.fullName != undefined) {
-        tmp.contactId = ractive.id(Array.findBy('fullName',tmp.contact.fullName,ractive.get('contacts')));
-      }
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save order'+JSON.stringify(tmp)+' ...');
       $.ajax({
