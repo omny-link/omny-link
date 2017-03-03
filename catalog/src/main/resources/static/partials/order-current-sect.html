@@ -37,8 +37,17 @@
         {{/}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4 required">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}:</label>
-          <input class="form-control" list="contacts" onblur="ractive.updateContactId(this.value)" placeholder="Start typing to filter options" 
-              id="curContact" required value="{{#current.contactId}}{{formatContactId(current.contactId)}}{{/}}">
+          <div class="input-group">
+            <input class="form-control" list="contacts" onblur="ractive.updateContactId(this.value)" placeholder="Start typing to filter options"
+                id="curContact" required value="{{#current.contactId}}{{formatContactId(current.contactId)}}{{/}}">
+            <span class="input-group-addon">
+              {{#if tenant.show.accountView}}
+                <a href="accounts.html?searchTerm={{formatAccountId(current.contactId)}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+              {{else}}
+                <a href="contacts.html?searchTerm={{current.contactId}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+              {{/if}}
+            </span>
+          </div>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Person this {{tenant.strings.order.toLowerCase()}} is for</p>
         </li>
         <li class="form-group">
