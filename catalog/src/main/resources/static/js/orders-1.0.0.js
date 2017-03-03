@@ -37,6 +37,15 @@ var ractive = new AuthenticatedRactive({
       console.info('formatAge: '+timeString);
       return (timeString == "-1" || timeString==undefined) ? 'n/a' : i18n.getDurationString(timeString)+' ago';
     },
+    formatAccountId: function(contactId) {
+      console.info('formatAccountId for contact: '+contactId);
+      if (contactId == undefined) return;
+      var acctId;
+      $.each(Array.findBy('selfRef',contactId,ractive.get('contacts')).links, function(i,d) {
+        if (d.rel == 'account') acctId = d.href.substring(d.href.lastIndexOf('/')+1);
+      });
+      return acctId;
+    },
     formatContactId: function(contactId) {
       console.info('formatContactId');
       if (contactId == undefined) return contactId;

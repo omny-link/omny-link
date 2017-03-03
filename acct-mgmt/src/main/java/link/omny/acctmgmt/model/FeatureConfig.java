@@ -10,6 +10,7 @@ public class FeatureConfig {
     private boolean account = false;
     private boolean accountCompanyDetails = true;
     private boolean accountDescription = true;
+    private boolean accountView = false;
     private boolean activityAnalysis = false;
     private boolean activityTracker = false;
     private boolean addressAccount = false;
@@ -56,6 +57,9 @@ public class FeatureConfig {
             break;
         case "accountDescription":
             setAccountDescription(b);
+            break;
+        case "accountView":
+            setAccountView(b);
             break;
         case "activityAnalysis":
             setActivityAnalysis(b);
