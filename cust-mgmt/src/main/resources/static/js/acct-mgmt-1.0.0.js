@@ -664,7 +664,7 @@ var ractive = new AuthenticatedRactive(
             if (ractive.fetchCallbacks != null)
               ractive.fetchCallbacks.fire();
             ractive.fetchAccountsTypeahead();
-            ractive.set('searchMatched', $('#accountsTable tbody tr:visible').length);
+            ractive.showSearchMatched();
             ractive.set('saveObserver', true);
           }
         });
@@ -869,7 +869,7 @@ var ractive = new AuthenticatedRactive(
             $('.omny-dropdown.dropdown-menu li:nth-child('+filter[j].idx+')').addClass('selected');
           }
         }
-        ractive.set('searchMatched',$('#accountsTable tbody tr:visible').length);
+        ractive.showSearchMatched();
         $('input[type="search"]').blur();
       },
       /** @deprecated use findAny */
@@ -1593,6 +1593,14 @@ var ractive = new AuthenticatedRactive(
           queue: true
         });
       },
+      showSearchMatched: function() {
+        ractive.set('searchMatched',$('#accountsTable tbody tr').length);
+        if ($('#accountsTable tbody tr:visible').length==1) {
+          var accountId = $('#accountsTable tbody tr:visible').data('href')
+          var account = Array.findBy('selfRef',accountId,ractive.get('accounts'))
+          ractive.select( account );
+        }
+      },
       startAccountContactAcction: function(action, contactId) {
         ractive.set('currentContact',Array.findBy('selfRef',contactId,ractive.get('current.contacts')));
         ractive.set('instanceToStart.processVariables.contactId',contactId);
@@ -1815,7 +1823,7 @@ ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
   console.log('searchTerm changed');
   ractive.showResults();
   setTimeout(function() {
-    ractive.set('searchMatched', $('#accountsTable tbody tr').length);
+    ractive.showSearchMatched();
   }, 500);
 });
 
