@@ -9,19 +9,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import link.omny.catalog.internal.CatalogCsvImporter;
-import link.omny.catalog.model.CustomStockItemField;
-import link.omny.catalog.model.MediaResource;
-import link.omny.catalog.model.StockCategory;
-import link.omny.catalog.model.StockItem;
-import link.omny.catalog.repositories.CustomStockItemRepository;
-import link.omny.catalog.repositories.MediaResourceRepository;
-import link.omny.catalog.repositories.StockCategoryRepository;
-import link.omny.catalog.repositories.StockItemRepository;
-import link.omny.custmgmt.internal.NullAwareBeanUtils;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -49,8 +36,19 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
+
+import link.omny.catalog.internal.CatalogCsvImporter;
+import link.omny.catalog.model.CustomStockItemField;
+import link.omny.catalog.model.MediaResource;
+import link.omny.catalog.model.StockCategory;
+import link.omny.catalog.model.StockItem;
+import link.omny.catalog.repositories.MediaResourceRepository;
+import link.omny.catalog.repositories.StockCategoryRepository;
+import link.omny.catalog.repositories.StockItemRepository;
+import link.omny.custmgmt.internal.NullAwareBeanUtils;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * REST web service for accessing stock items.
@@ -68,16 +66,10 @@ public class StockItemController {
     private StockItemRepository stockItemRepo;
 
     @Autowired
-    private CustomStockItemRepository customStockItemRepo;
-
-    @Autowired
     private StockCategoryRepository stockCategoryRepo;
 
     @Autowired
     private MediaResourceRepository mediaResourceRepo;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     /**
      * Imports JSON representation of stockItems.
