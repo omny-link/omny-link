@@ -255,7 +255,7 @@
   {{/}}
 
   <div id="currentAccountTypeExtended" style="clear: both">
-    {{>(tenant.id+current.accountType+'Extension')}}
+    {{>(tenant.id+(current.accountType == undefined ? '' : current.accountType.replace(/ /g,''))+'Extension')}}
   </div>
 
 
