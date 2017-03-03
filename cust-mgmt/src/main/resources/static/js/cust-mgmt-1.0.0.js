@@ -453,7 +453,7 @@ var ractive = new AuthenticatedRactive({
         if (ractive.hasRole('power-user')) $('.power-user').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
         if (ractive.get('tenant.show.orders')) ractive.fetchStockItems();
-        ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
+        ractive.showSearchMatched();
         ractive.set('saveObserver', true);
       }
     });
@@ -593,7 +593,7 @@ var ractive = new AuthenticatedRactive({
       //console.log(j+': '+filter[j].idx);
       $('.omny-dropdown.dropdown-menu li:nth-child('+filter[j].idx+')').addClass('selected');
     }
-    ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
+    ractive.showSearchMatched();
     $('input[type="search"]').blur();
   },
   find: function(contactId) {
@@ -1159,6 +1159,14 @@ var ractive = new AuthenticatedRactive({
     $('#currentSect').slideUp();
     $('#contactsTable').slideDown({ queue: true });
   },
+  showSearchMatched: function() {
+    ractive.set('searchMatched',$('#contactsTable tbody tr').length);
+    if ($('#contactsTable tbody tr:visible').length==1) {
+      var contactId = $('#contactsTable tbody tr:visible').data('href')
+      var contact = Array.findBy('selfRef',contactId,ractive.get('contacts'))
+      ractive.select( contact );
+    }
+  },
   toggleAllNotes: function(btn) {
     console.info('toggleAllNotes');
     $('#notesTable tr.unfavorite').slideToggle();
@@ -1312,9 +1320,7 @@ ractive.observe('profile', function(newValue, oldValue, keypath) {
 ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
   console.log('searchTerm changed');
   ractive.showResults();
-  setTimeout(function() {
-    ractive.set('searchMatched',$('#contactsTable tbody tr').length);
-  }, 500);
+  setTimeout(ractive.showSearchMatched, 500);
 });
 
 
