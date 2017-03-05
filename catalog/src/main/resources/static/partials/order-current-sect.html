@@ -109,7 +109,14 @@
         </li>
       </ul>
     </div>
-
+    <div id="currentOrderDesc" class="col-md-12 col-sm-12 col-xs-12">
+        <ul class="form edit-form">
+          <li class="form-group">
+            <label class="textarea col-md-2 col-sm-4">{{#if tenant.strings.orderDescription}}{{tenant.strings.orderDescription}}{{else}}Additional info{{/if}}:</label>
+            <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#if tenant.strings.orderDescriptionHint}}{{tenant.strings.orderDescriptionHint}}{{else}}Additional info{{/if}}" value="{{current.description}}"></textarea>
+          </li>
+        </ul>
+    </div>
     {{#tenant.orderFields.length>0}}
       {{#if haveCustomExtension('OrderExtension')}}
         <div id="currentOrderExtended" style="clear: both">
