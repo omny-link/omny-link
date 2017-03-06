@@ -33,9 +33,9 @@ function fetchPreview(callback) {
   });
 }
 function fetchResult(location) {
-  ractive.set('resultLocation', ractive.getServer()+'/'+ractive.get('tenant.id')+location+'/variables/memo');
+  ractive.set('resultLocation', ractive.getServer()+'/'+ractive.get('tenant.id')+location+'/variables/mergedMemo');
   $.ajax({
-    url: ractive.getServer()+'/'+ractive.get('tenant.id')+location+'/variables/memo',
+    url: ractive.getServer()+'/'+ractive.get('tenant.id')+location+'/variables/mergedMemo',
     headers: {
       'Accept': 'text/html'
     },
@@ -62,6 +62,7 @@ function showMemoPreview() {
   
   var tmp = JSON.parse(JSON.stringify(ractive.get('instanceToStart')));
   tmp.processDefinitionId = 'MergeMemoTemplate';
+  validateOrder();
   if (!document.forms['customActionForm'].checkValidity()) {
     ractive.showMessage('Please supply all the required fields');
     showMemoSpec();
@@ -108,7 +109,7 @@ function initOrdersAutocomplete() {
   console.info('initOrdersAutocomplete');
   ractive.set('ordersTypeahead',jQuery.map(ractive.get('orders'), function( n, i ) {
     //if (n.orderItems == undefined || n.orderItems.length == 0) return;
-    console.log('n: '+n.selfRef+', '+n.id+', i:'+i);
+    console.log('n: '+n.selfRef+', i:'+i);
     return ( {
       id: ractive.shortId(n.selfRef),
       name: n['orderId']+''
@@ -172,6 +173,19 @@ function fetchMemos() {
     }     
   });
 }
+function validateOrder() {
+  console.info('validateOrder');
+  if (ractive.get('instanceToStart.processVariables.memoId')!=undefined) {
+    var memo = Array.findBy('selfRef', '/memos/'+ractive.get('instanceToStart.processVariables.memoId'), ractive.get('memos'));
+    if (memo['requiredVars']!=undefined && memo.requiredVars.indexOf('order')!=-1) {
+      if (ractive.get('instanceToStart.processVariables.orderId')=='TBD') {
+        $('#curOrderDisplay').attr('required','required').prev().addClass('required');
+      } else {
+        $('#curOrderDisplay').removeAttr('required').prev().removeClass('required');
+      }
+    }
+  }
+}
 $(document).ready(function() {
   console.info('ready event on pick-memo');
   
@@ -190,4 +204,5 @@ $(document).ready(function() {
     initOrdersAutocomplete();
   }
   fetchMemos();
+  $('#curMemoDisplay').on('blur', validateOrder);
 });
