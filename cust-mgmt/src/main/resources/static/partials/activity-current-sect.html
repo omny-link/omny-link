@@ -49,7 +49,7 @@
       <table id="activitiesTable" class="table table-striped"><tbody>
         {{#each current.activities:j}}
           <tr>
-            <td class="field-occurred">{{age(occurred)}} ({{formatDate(occurred)}})</td>
+            <td class="field-age">{{age(occurred)}} ({{formatDateTime(occurred)}})</td>
             <td class="field-type">{{type}}</td>
             <td class="field-text" id="activity{{j}}">{{{formatJson(content)}}}</td>
           </tr>

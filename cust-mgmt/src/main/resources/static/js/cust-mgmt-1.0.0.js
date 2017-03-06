@@ -86,7 +86,10 @@ var ractive = new AuthenticatedRactive({
     },
     formatDateTime: function(timeString) {
       if (timeString==undefined) return 'n/a';
-      return new Date(timeString).toLocaleString(navigator.languages);
+      var dts = new Date(timeString).toLocaleString(navigator.languages);
+      // remove secs
+      if (dts.split(':').length>1) dts = dts.substring(0, dts.lastIndexOf(':'));
+      return dts;
     },
     formatDueDate: function(date) {
       var diff = Date.parse(date)-new Date().getTime();
