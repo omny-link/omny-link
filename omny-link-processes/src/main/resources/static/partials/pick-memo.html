@@ -14,18 +14,19 @@
     </div>
     {{#if orders}}
       <div class="form-group">
-        <label class="control-label required">Order:</label>
-        <input autocomplete="off" class="form-control" id="curOrderDisplay" placeholder="Please select an order" required style="width:60%;" type="text" value="{{instanceToStart.processVariables.orderName}}">
+        <label class="control-label">Order:</label>
+        <input autocomplete="off" class="form-control" id="curOrderDisplay" placeholder="Please select an order" style="width:60%;" type="text" value="{{instanceToStart.processVariables.orderName}}">
         <input id="curOrderRef" type="hidden" value="{{instanceToStart.processVariables.orderId}}">
         <input id="curOrderName" type="hidden" value="{{instanceToStart.processVariables.orderName}}">
-        <p class="help-block">You must select which order is under discussion.</p>
+        <p class="help-block">You must select which {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} is under discussion for some templates.</p>
       </div>
-      <div class="form-group">
-        <label class="control-label">Contact:</label>
-        <input autocomplete="off" class="form-control" id="curContactDisplay" disabled readonly style="width:60%;" type="text" value="{{formatContactId(instanceToStart.processVariables.contactId)}}">
-        <p class="help-block">The contact to address.</p>
-      </div>
-    {{else}}
+    {{/if}}
+    <div class="form-group">
+      <label class="control-label">Contact:</label>
+      <input autocomplete="off" class="form-control" id="curContactDisplay" disabled readonly style="width:60%;" type="text" value="{{formatContactId(instanceToStart.processVariables.contactId)}}">
+      <p class="help-block">The contact to address.</p>
+    </div>
+    {{#if tenant.id=='firmgains' || tenant.id=='omny'}}
       <div class="form-group form-inline">
         <label class="control-label">Send at:</label>
         <div>

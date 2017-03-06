@@ -78,20 +78,26 @@
       <incoming>_14</incoming>
       <inputSet/>
     </endEvent>
-    <callActivity calledElement="MergeMemoTemplate" completionQuantity="1" id="_4" isForCompensation="false" name="Merge template" startQuantity="1">
+    <callActivity calledElement="MergeMemoTemplate" completionQuantity="1" id="mergeMemoTemplate" isForCompensation="false" name="Merge template" startQuantity="1">
       <extensionElements>
         <activiti:in source="memoName" target="memoName"/>
         <activiti:in source="contactId" target="contactId"/>
         <activiti:in source="toEmail" target="toEmail"/>
         <activiti:in source="orderId" target="orderId"/>
         <activiti:in source="tenantId" target="tenantId"/>
+        <activiti:out source="contact" target="contact"/>
         <activiti:out source="memo" target="memo"/>
+        <activiti:out source="order" target="order"/>
+        <activiti:out source="owner" target="owner"/>
+        <activiti:out source="plainContent" target="plainContent"/>
+        <activiti:out source="richContent" target="richContent"/>
+        <activiti:out source="stockItem" target="stockItem"/>
       </extensionElements>
       <incoming>_9</incoming>
       <outgoing>_11</outgoing>
     </callActivity>
-    <sequenceFlow id="_9" sourceRef="_2" targetRef="_4"/>
-    <sequenceFlow id="_11" sourceRef="_4" targetRef="sendMail"/>
+    <sequenceFlow id="_9" sourceRef="_2" targetRef="mergeMemoTemplate"/>
+    <sequenceFlow id="_11" sourceRef="mergeMemoTemplate" targetRef="sendMail"/>
     <textAnnotation id="_7" textFormat="text/plain">
       <text>Send memo to a single contact</text>
     </textAnnotation>
@@ -178,7 +184,7 @@
           <dc:Bounds height="18.8" width="47.0" x="39.36" y="553.2"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4" isExpanded="false">
+      <bpmndi:BPMNShape bpmnElement="mergeMemoTemplate" id="Yaoqiang-mergeMemoTemplate" isExpanded="false">
         <dc:Bounds height="74.0" width="105.0" x="148.27272727272745" y="160.44444444444449"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.8" width="95.0" x="153.27" y="190.04"/>
