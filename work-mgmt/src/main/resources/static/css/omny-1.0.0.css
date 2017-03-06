@@ -1144,32 +1144,19 @@ text.textAnnotation {
   -moz-osx-font-smoothing: grayscale;
 }
 
+
+.omny-icon-process-model:before {
+  content: "\e903";
+}
 .omny-icon-healthy:before {
   content: "\e902";
 }
-.omny-icon-office:before {
-  content: "\e903";
-}
-.omny-icon-coin-pound:before {
-  content: "\e93d";
-}
-.omny-icon-credit-card:before {
-  content: "\e93f";
-}
-.omny-icon-truck:before {
-  content: "\e9b0";
-}
+.omny-icon-office:before,
 .omny-icon-office-alt:before {
   content: "\e900";
 }
 .omny-icon-stock:before {
   content: "\e901";
-}
-.omny-icon-process-model:before {
-  content: "\e903";
-}
-.omny-icon-process-model-0:before {
-  content: "\e600";
 }
 .omny-icon-domain-model:before {
   content: "\e601";
@@ -1218,6 +1205,9 @@ text.textAnnotation {
 }
 .omny-icon-make-group:before {
   content: "\ea58";
+}
+.omny-icon-process-model2:before {
+  content: "\e600";
 }
 
 @font-face {
