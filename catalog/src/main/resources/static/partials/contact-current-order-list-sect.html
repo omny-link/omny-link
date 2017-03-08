@@ -23,7 +23,7 @@
 	          {{#tenant.show.stockPricing}}
 	            <th on-click="sortOrder:price" style="width: 5em;" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}<span class="sortable {{ sortedOrder('price') }} glyphicon "></th>
 	          {{/}}
-	          {{#tenant.orderFields}}
+	          {{#tenant.orderFields && tenant.orderFields.length<maxOrderFields}}
 	            <th on-click="sortOrder:{{key}}" title="{{hint}}">{{label == undefined ? key.toLabel() : label}}<span class="sortable {{ sortedOrder('{{key}}') }} glyphicon"></span></th>
 	          {{/}}
 	          <th on-click ="sortOrder:invoiceRef" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">Invoice Ref<span class="sortable {{ sortedOrder('invoiceRef') }} glyphicon "></th>
@@ -76,7 +76,7 @@
                   <input class="hidden form-control" placeholder="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}" {{^matchRole('sales_manager')}}readonly{{/}} title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}" type="number" value="{{price}}">
                 </td>
 	            {{/}}
-              {{#tenant.orderFields}}
+              {{#tenant.orderFields && tenant.orderFields.length<maxOrderFields}}
                 {{#if tenant.show.orderItems && orderItems && orderItems[0]!=undefined && index(orderItems[0],'customFields.'+key)!=undefined}}
                   <td data-order-id="{{selfRef}}" title="{{hint}}">
                     {{#if ..aggregation=='sum'}}

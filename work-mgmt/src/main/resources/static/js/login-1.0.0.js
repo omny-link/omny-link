@@ -236,6 +236,10 @@ var AuthenticatedRactive = Ractive.extend({
    * @deprecated Use html 5 datalist going forward.
    */
   initTypeaheadControl: function(d, data) {
+    if ($(d.selector)['typeahead']==undefined) {
+      console.warn('typeahead control not loaded, please use HTML5 datalist');
+      return;
+    }
     if (d.name!=undefined) ractive.set(d.name,data);
     $(d.selector).typeahead({ items:'all',minLength:0,source:data });
     $(d.selector).on("click", function (ev) {

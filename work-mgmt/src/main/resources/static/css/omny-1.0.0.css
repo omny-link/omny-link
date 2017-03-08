@@ -1206,9 +1206,6 @@ text.textAnnotation {
 .omny-icon-make-group:before {
   content: "\ea58";
 }
-.omny-icon-process-model2:before {
-  content: "\e600";
-}
 
 @font-face {
   font-family: 'knowprocess';

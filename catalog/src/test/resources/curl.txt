@@ -1,9 +1,24 @@
+# List all stock categories (properties) 
+curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/
+
+# GET a single stock category by id
+curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/32
+
+# PUT a single stock category
+curl -v -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -u tstephen:tstephen \
+-d '{"selfRef":"/stock-categories/84","name":"third","description":null,"address1":null,"address2":null,"town":null,"cityOrCounty":null,"postCode":null,"country":null,"distance":"0","tags":"","mapUrl":"http://www.google.com/maps/place/null","lat":null,"lng":null,"directionsByRoad":null,"directionsByPublicTransport":null,"directionsByAir":null,"videoCode":"","status":"","offerStatus":null,"offerTitle":null,"offerDescription":null,"offerCallToAction":null,"offerUrl":null,"created":"2017-03-06T22:08:39.000+0000","lastUpdated":"2017-03-06T22:08:39.000+0000","_links":{"self":{"href":"/stock-categories/84"}},"id":"84","tenantId":"heartsmart"}' \
+http://localhost:8082/heartsmart/stock-categories/84
+
+curl -X PUT -v  -H "Accept:application/json" -H "Content-Type:application/json" \
+  -d '{"accountId":"17","orderItems":[{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"09:00-10:00","year":"N"}},{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"10:00-11:00","year":"R"}}],"tenantId":"alife"}'\
+  -u tstephen:tstephen http://localhost:8082/alife/orders/73
+
 # List all stock items (individual lettings)
 curl -v -H "Accept:application/json" -u tstephen:tstephen https://api.omny.link/flexspace/stock-items/
 
 # Access a single stock item
 curl -v -H "Accept:application/json" -u tstephen:tstephen https://api.omny.link/stock-items/1535
-curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/stock-items/1095
+curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/stock-items/58416
 # Get timings
 curl --max-time 10000 -w "@omny-link-server/src/test/resources/curl-format.txt" \
   -H "Accept:application/json" -u iciTche0nS16HiNoBe:6E34DErsERSS5SeY57 \
@@ -42,7 +57,7 @@ curl --max-time 10000 -w "@catalog/src/test/resources/curl-format.txt" \
   -o /dev/null -s http://localhost:8082/alife/orders/
 
 # List orders for contact
-curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/findByContacts/25
+curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/findByContacts/16692
 
 # List orders for multiple contacts
 curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/findByContacts/40,45,48
@@ -66,6 +81,11 @@ curl -u tstephen:tstephen  -v 'http://localhost:8082/rowden/process-instances/' 
 curl -X PUT -v  -H "Accept:application/json" -H "Content-Type:application/json" \
   -d '{"accountId":"17","orderItems":[{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"09:00-10:00","year":"N"}},{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"10:00-11:00","year":"R"}}],"tenantId":"alife"}'\
   -u tstephen:tstephen http://localhost:8082/alife/orders/73
+
+# Update order WITHOUT order items
+curl -X PUT -v  -H "Accept:application/json" -H "Content-Type:application/json" \
+  -d '{"id":7090,"name":"Lease / License","description":null,"date":null,"dueDate":null,"stage":"Enquiry","price":null,"tax":null,"invoiceRef":null,"contactId":4077,"created":1489177722000,"lastUpdated":1489177722000,"tenantId":"flexspace","customFields":{},"feedback":null,"stockItem":"/stock-items/59191","contact":{"selfRef":"http://localhost:8082/contacts/4077","firstName":"Liam","lastName":"Lord","fullName":"Liam Lord","email":"sarah@knowprocess.com","accountName":"Platinum Mad","owner":"tim@omny.link","stage":"Complete","enquiryType":"Contact Us","accountType":"Customer","tags":"","alerts":[],"tenantId":"flexspace","firstContact":"2016-06-14T20:16:57.000+0000","lastUpdated":"2017-03-06T12:36:08.000+0000","links":[{"rel":"self","href":"http://localhost:8082/contacts/4077"},{"rel":"account","href":"/accounts/2773"}],"name":"Liam Lord"}}'\
+  -u tstephen:tstephen http://localhost:8082/flexspace/orders/7090
 
 # Set order stage
 curl -X POST -u tstephen:tstephen -v 'http://localhost:8082/alife/orders/214/stage' \

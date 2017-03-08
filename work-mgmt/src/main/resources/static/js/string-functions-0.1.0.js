@@ -18,14 +18,10 @@ String.prototype.toLabel = function() {
 
 String.prototype.toLeadingCaps = function() {
   if (this == undefined) return this;
-  return this.replace(/(&)?([a-z])([a-z]{2,})(;)?/ig, function(all, prefix, letter, word, suffix) {
-    if (prefix && suffix) {
-      return all;
-    }
-    return letter.toUpperCase() + word.toLowerCase();
+  return this.replace(/(\b[a-z])/g, function(leadingChar) {
+    return leadingChar.toUpperCase();
   });
 }
-
 
 String.prototype.toSlug = function() {
   if (this == undefined) return this;

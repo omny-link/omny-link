@@ -18,8 +18,13 @@
       <ul class="form edit-form">
         <li>
           <label class="col-md-4 col-sm-4">Status:</label>
-          <input class="form-control typeahead" placeholder="Start typing to filter options" id="curStatus" maxlength="20" value="{{current.status}}"/>
+          <input class="form-control" list="status" placeholder="Start typing to filter options" id="curStatus" maxlength="20" value="{{current.status}}"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Draft, Ready for review, Published etc.</p>
+        </li>
+        <li>
+          <label class="col-md-4 col-sm-4">{{#tenant.strings.productSheetUrl}}{{tenant.strings.productSheetUrl}}{{else}}Product Sheet{{/}}:</label>
+          <input class="form-control" id="curProductSheetUrl" placeholder="https://yourdomain.com/publicity.pdf" type="url" value="{{current.productSheetUrl}}"/>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">A product sheet or brochure location, often a PDF.</p>
         </li>
         {{#tenant.show.marketingDigital}}
           <li>
@@ -52,8 +57,8 @@
             <li><label class="col-md-4 col-sm-4"></label><input class="form-control" id="curAddress2" value="{{current.address2}}"/></li>
             <li><label class="col-md-4 col-sm-4"></label><input class="form-control" id="curTown" placeholder="Town or village" value="{{current.town}}"/></li>
             <li><label class="col-md-4 col-sm-4"></label><input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/></li>
-            <li><label class="required">Post Code:</label><input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" required value="{{current.postCode}}"></li>
-            <li><label class="col-md-4 col-sm-4">Country:</label><input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
+            <li><label class="col-md-4 col-sm-4 required">Post Code:</label><input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" required value="{{current.postCode}}"></li>
+            <li><label class="col-md-4 col-sm-4">Country:</label><input autocomplete="off" class="form-control" list="countries" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
             {{#current.postCode}}
               <li><label class="col-md-4 col-sm-4">Map:</label><a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
             {{/}}
@@ -69,14 +74,17 @@
             <li class="form-group">
               <label class="textarea col-md-2 col-sm-4">By Road:</label>
               <textarea class="col-md-10 col-sm-8 form-control" id="curDirectionsByRoad" value="{{current.directionsByRoad}}"></textarea>
+              <p class="col-md-offset-2 col-sm-offset-4 hidden-xs help-block">Finding us by road</p>
             </li>
             <li class="form-group">
               <label class="textarea col-md-2 col-sm-4">By Public Transport:</label>
               <textarea class="col-md-10 col-sm-8 form-control" id="curDirectionsByPublicTransport" value="{{current.directionsByPublicTransport}}"></textarea>
+              <p class="col-md-offset-2 col-sm-offset-4 hidden-xs help-block">Finding us by public transport</p>
             </li>
             <li class="form-group">
               <label class="textarea col-md-2 col-sm-4">By Air:</label>
               <textarea class="col-md-10 col-sm-8 form-control" id="curDirectionsByAir" value="{{current.directionsByAir}}"></textarea>
+              <p class="col-md-offset-2 col-sm-offset-4 hidden-xs help-block">Finding us by air</p>
             </li>
           </ul>
         </div>
@@ -94,7 +102,7 @@
           <ul class="form edit-form">
             <li class="form-group">
               <label class="col-md-4 col-sm-4">Status:</label>
-              <input class="form-control typeahead" placeholder="Start typing to filter options" id="curOfferStatus" maxlength="20" value="{{current.offerStatus}}"/>
+              <input class="form-control" list="status" placeholder="Start typing to filter options" id="curOfferStatus" maxlength="20" value="{{current.offerStatus}}"/>
               <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Draft, Ready for review, Published etc.</p>
             </li>
             <li class="form-group">

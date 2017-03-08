@@ -269,6 +269,22 @@ var ractive = new AuthenticatedRactive({
     });
     return c;
   },
+  initSelect: function() {
+    console.log('initSelect');
+    if (ractive.get('tenant.typeaheadControls')!=undefined && ractive.get('tenant.typeaheadControls').length>0) {
+      $.each(ractive.get('tenant.typeaheadControls'), function(i,d) {
+        //console.log('binding ' +d.url+' to typeahead control: '+d.selector);
+        if (d.url == undefined && d.selector!=undefined && $('select'+d.selector)!=undefined) {
+          $('select'+d.selector+' option').remove();
+          $.each(d.values, function (k,f) {
+            $('select'+d.selector).append('<option value="'+f.name+'">'+f.name+'</option>');
+          });
+        } else {
+          // no support needed for lists that aren't embedded in tenant file
+        }
+      });
+    }
+  },
   oninit: function() {
     console.log('oninit');
     this.ajaxSetup();
@@ -281,7 +297,10 @@ var ractive = new AuthenticatedRactive({
     if (document.getElementById('currentForm')==undefined) { 
       console.debug('still loading, safe to ignore');
     } else if (document.getElementById('currentForm').checkValidity()) {
+      ractive.updateFromSelect();
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
+      if (tmp.customFields==undefined) tmp.customFields = {};
+      
       delete tmp.images;
       delete tmp.stockItems;
       if (id != undefined && tmp.stockCategory != undefined && Object.keys(tmp.stockCategory).length > 0 && tmp.stockCategory.id != undefined) {
@@ -337,23 +356,26 @@ var ractive = new AuthenticatedRactive({
       });
 	  }
 	  if (stockCategory._links != undefined) {
-	    var url = ractive.stripProjection(stockCategory._links.self.href);
+	    var url = ractive.tenantUri(stockCategory);
 	    if (url == undefined) {
 	      ractive.showError('No stockCategory selected, please check link');
 	      return;
 	    }
 	    console.log('loading detail for '+url);
-	    $.getJSON(ractive.getServer()+url+'?projection=complete', function( data ) {
+	    $.getJSON(url, function( data ) {
         console.log('found stockCategory '+data);
         if (data['id'] == undefined) data.id = ractive.id(data);
         ractive.set('current', data);
         ractive.initControls();
+        ractive.initSelect(); // not (yet?) a standard control
+        setTimeout(ractive.updateSelect, 500); // yes really!
         ractive.initTags();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
 //        ractive.fetchNotes();
 //        ractive.fetchDocs();
         ractive.set('saveObserver',true);
+        $('.ajax-loader').hide();
       });
     } else { 
       console.log('Skipping load as no _links.'+stockCategory.lastName);
@@ -385,7 +407,35 @@ var ractive = new AuthenticatedRactive({
     console.log('updateField '+path+' to '+tmp);
     ractive.set(path,tmp);
     $(selector).css('border-width','0px').css('padding','0px');
-  },  
+  },
+  /**
+   * Set select[multiple] values (ractive binding only binds first value).
+   */
+  updateSelect: function() {
+    var d = ractive.get('tenant.typeaheadControls.3');
+    $('select'+d.selector).off('change').on('change',ractive.save); 
+    $('select'+d.selector+' option').removeAttr('selected');
+    var csVal = ractive.get('current.customFields.'+d.name);
+    if (csVal!=undefined) {
+      var vals = csVal.split(',');
+      $.each(vals, function (l,m) {
+        $('select'+d.selector+' option[value="'+m+'"]').attr('selected','selected');
+      });
+    }
+  },
+  updateFromSelect: function() {
+    var selects = $('select[multiple][data-key]');
+    for (var i = 0 ; i < selects.length ; i++) {
+      var d = selects[i];
+      tmp = '';
+      var options = $('#'+d.id + ' option:selected');
+      for (var j = 0 ; j < options.length ; j++) {
+        tmp += options[j].value;
+        if ((j+1) < options.length) tmp += ',';
+      };
+      ractive.set('current.customFields.'+[$(d).data('key')],tmp);
+    };
+  },
   upload: function (formId) {
     console.log('upload:'+formId);
     ractive.showMessage('Uploading ...');
