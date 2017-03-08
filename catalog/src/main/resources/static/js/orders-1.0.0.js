@@ -401,12 +401,14 @@ var ractive = new AuthenticatedRactive({
       console.debug('still loading, safe to ignore');
     } else if (document.getElementById('currentForm').checkValidity()) {
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
-      if (id != undefined && tmp.stockItem != undefined) {
-        tmp.stockItem = ractive.uri(Array.findBy('name',ractive.get('current.stockItem.name'),ractive.get('stockItems')));
-      } else {
-        delete tmp.stockItem;
-        delete tmp.stockItemId;
-      }
+//      if (id != undefined && tmp.stockItem != undefined) {
+//        tmp.stockItem = ractive.uri(Array.findBy('name',ractive.get('current.stockItem.name'),ractive.get('stockItems')));
+//      } else {
+//        delete tmp.stockItem;
+//        delete tmp.stockItemId;
+//      }
+      if (tmp.stockItem!=undefined && tmp.stockItem.selfRef!=undefined && tmp.stockItem.id==undefined) tmp.stockItem.id = ractive.id(tmp.stockItem)
+      delete tmp.contact;
       delete tmp.orderItems;
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save order'+JSON.stringify(tmp)+' ...');
@@ -430,7 +432,7 @@ var ractive = new AuthenticatedRactive({
             break;
             
           }
-          ractive.fetch();
+          //ractive.fetch();
           ractive.showMessage(ractive.get('tenant.strings.order')+' saved');
           ractive.set('saveObserver',true);
         }
@@ -500,9 +502,6 @@ var ractive = new AuthenticatedRactive({
       var tmp = ractive.get('current.orderItems.'+ractive.get('currentOrderItemIdx'));
       tmp.orderId = ractive.id(ractive.get('current'));
       tmp.tenantId = ractive.get('tenant.id');
-      if (tmp.stockItem != undefined && tmp.stockItem.name != undefined && tmp.stockItem.name.length >0) {
-          tmp.stockItem = Array.findBy('name', tmp.stockItem.name, ractive.get('stockItems')).selfRef;
-      }
       console.log('ready to save order item' + JSON.stringify(tmp) + ' ...');
       $.ajax({
         url: tmp.id === undefined

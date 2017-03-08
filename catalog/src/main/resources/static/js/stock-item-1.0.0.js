@@ -216,7 +216,7 @@ var ractive = new AuthenticatedRactive({
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/stock-items/?projection=complete',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/stock-items/',
       crossDomain: true,
       success: function( data ) {
         if (data['_embedded'] == undefined) {
@@ -388,13 +388,13 @@ var ractive = new AuthenticatedRactive({
       });
 	  }
 	  if (stockItem._links != undefined) {
-	    var url = ractive.stripProjection(stockItem._links.self.href);
+	    var url = ractive.tenantUri(stockItem);
 	    if (url == undefined) {
 	      ractive.showError('No stockItem selected, please check link');
 	      return;
 	    }
 	    console.log('loading detail for '+url);
-	    $.getJSON(ractive.getServer()+url+'?projection=incCategory', function( data ) {
+	    $.getJSON(url, function( data ) {
         console.log('found stockItem '+data);
         if (data['id'] == undefined) data.id = ractive.id(data);
         ractive.set('current', data);

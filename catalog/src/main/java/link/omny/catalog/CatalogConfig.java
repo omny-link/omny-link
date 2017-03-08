@@ -5,7 +5,7 @@ import javax.annotation.PostConstruct;
 import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
 import link.omny.catalog.web.GeoLocationService;
-import link.omny.catalog.web.StockCategoryController.ShortStockCategory;
+import link.omny.catalog.web.StockCategoryController.ShortStockCategoryResource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class CatalogConfig extends RepositoryRestMvcConfiguration {
     @Override
     protected void configureRepositoryRestConfiguration(
             RepositoryRestConfiguration config) {
-        config.exposeIdsFor(ShortStockCategory.class, StockItem.class,
+        config.exposeIdsFor(ShortStockCategoryResource.class, StockItem.class,
                 StockCategory.class);
     }
 

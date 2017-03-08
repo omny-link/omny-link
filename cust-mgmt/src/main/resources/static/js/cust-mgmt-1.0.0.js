@@ -13,6 +13,7 @@ var ractive = new AuthenticatedRactive({
     csrfToken: getCookie(CSRF_COOKIE),
     contacts: [],
     //saveObserver:false,
+    maxOrderFields: 5,
     title: 'Contact Management',
     username: localStorage['username'],
     age: function(timeString) {

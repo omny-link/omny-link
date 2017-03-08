@@ -11,7 +11,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.catalog.model.StockItem;
 
-@RepositoryRestResource(path = "/stock-items")
+@RepositoryRestResource(path = "/stock-items", exported = false)
 public interface StockItemRepository extends CrudRepository<StockItem, Long> {
 
     @Override

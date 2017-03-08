@@ -14,9 +14,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -26,7 +23,19 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import link.omny.catalog.json.JsonCustomStockCategoryFieldDeserializer;
+import link.omny.catalog.model.api.ShortStockCategory;
+import link.omny.catalog.views.StockCategoryViews;
+import link.omny.catalog.views.StockItemViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
 import lombok.AllArgsConstructor;
@@ -34,25 +43,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 @Entity
 @Table(name = "OL_STOCK_CAT")
-@NamedEntityGraphs({
-        @NamedEntityGraph(name = "stockCategoryWithCustomFields", attributeNodes = {
-            @NamedAttributeNode("customFields")
-        })
-})
 @Data
 @ToString(exclude = { "description", "stockItems" })
 @AllArgsConstructor
 @NoArgsConstructor
-public class StockCategory implements Serializable {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class StockCategory implements ShortStockCategory, Serializable {
 
     public static final int DEFAULT_IMAGE_COUNT = 8;
 
@@ -65,80 +63,110 @@ public class StockCategory implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
+    @JsonView(StockCategoryViews.Summary.class)
     private Long id;
 
     @JsonProperty
+    @JsonView({StockCategoryViews.Summary.class, StockItemViews.Detailed.class})
     @Column(unique = true)
     @NotNull
     private String name;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     @Lob
     private String description;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private String address1;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private String address2;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private String town;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private String countyOrCity;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Summary.class)
     private String postCode;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private String country;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private Double lat;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private Double lng;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     @Transient
     private String tags;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private String mapUrl;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     @Lob
     private String directionsByRoad;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     @Lob
     private String directionsByPublicTransport;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     @Lob
     private String directionsByAir;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private String videoCode;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     @Size(max = 20)
     private String status;
+    
+    /**
+     * A relative or absolute URL to a product sheet or brochure page, often a PDF.
+     */
+    @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
+    @Column(name="product_sheet")
+    private String productSheetUrl;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     @Size(max = 20)
     private String offerStatus;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     @Size(max = 35)
     private String offerTitle;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     @Size(max = 80)
     private String offerDescription;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     @Size(max = 30)
     private String offerCallToAction;
 
@@ -147,9 +175,11 @@ public class StockCategory implements Serializable {
      * to on click.
      */
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private String offerUrl;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     @Transient
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
     // "stockCategory")
@@ -159,24 +189,30 @@ public class StockCategory implements Serializable {
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private Date created = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private Date lastUpdated;
 
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private String tenantId;
 
     @Transient
     @JsonProperty
+    @JsonView(StockCategoryViews.Detailed.class)
     private double distance;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockCategory")
     @JsonDeserialize(using = JsonCustomStockCategoryFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
+    @JsonView(StockCategoryViews.Detailed.class)
     private List<CustomStockCategoryField> customFields;
 
+    @JsonView(StockCategoryViews.Detailed.class)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockCategory", targetEntity = StockItem.class)
     private List<StockItem> stockItems;
 
@@ -307,6 +343,9 @@ public class StockCategory implements Serializable {
     }
 
     public void setGeoPoint(GeoPoint point) {
+        if (point == null) {
+            return;
+        }
         setLat(point.getLat());
         setLng(point.getLng());
     }

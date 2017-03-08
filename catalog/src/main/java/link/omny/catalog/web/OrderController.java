@@ -48,12 +48,13 @@ import link.omny.catalog.model.CustomOrderItemField;
 import link.omny.catalog.model.Feedback;
 import link.omny.catalog.model.Order;
 import link.omny.catalog.model.OrderItem;
-import link.omny.catalog.model.StockItem;
 import link.omny.catalog.model.api.OrderWithSubEntities;
 import link.omny.catalog.model.api.ShortOrder;
+import link.omny.catalog.model.api.ShortStockItem;
 import link.omny.catalog.repositories.FeedbackRepository;
 import link.omny.catalog.repositories.OrderItemRepository;
 import link.omny.catalog.repositories.OrderRepository;
+import link.omny.catalog.repositories.StockItemRepository;
 import link.omny.catalog.views.OrderViews;
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
@@ -80,6 +81,9 @@ public class OrderController {
 
     @Autowired
     private OrderItemRepository orderItemRepo;
+    
+    @Autowired
+    private StockItemRepository stockItemRepo;
 
     /**
      * Return the specified order and its items and feedback.
@@ -231,6 +235,9 @@ public class OrderController {
         order.setTenantId(tenantId);
 
         fixUpOrderItems(tenantId, order);
+        if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
+            order.setStockItem(null);
+        }
 
         orderRepo.save(order);
 
@@ -259,22 +266,32 @@ public class OrderController {
             @RequestBody Order updatedOrder) {
         Order order = orderRepo.findOne(orderId);
 
-        NullAwareBeanUtils.copyNonNullProperties(updatedOrder, order, "id");
+        NullAwareBeanUtils.copyNonNullProperties(updatedOrder, order, "id", "stockItem");
+        mergeStockItem(updatedOrder, order);
 
         fixUpOrderItems(tenantId, order);
         orderRepo.save(order);
+    }
+
+    private void mergeStockItem(Order updatedOrder, Order order) {
+        if (updatedOrder.getStockItem() == null) {
+            order.setStockItem(null);
+        } else if (!updatedOrder.getStockItem().equals(order.getStockItem())) {
+            order.setStockItem(
+                    stockItemRepo.findOne(updatedOrder.getStockItem().getId()));
+        }
     }
 
     private void fixUpOrderItems(String tenantId, Order order) {
         for (OrderItem item : order.getOrderItems()) {
             item.setTenantId(tenantId);
             item.setOrder(order);
-            fixUpOrderItem(tenantId, item);
+            // HACK!
+            if (item.getCustomFieldValue("stockItemId") != null) {
+                item.setStockItem(stockItemRepo.findOne(
+                        Long.parseLong((String) item.getCustomFieldValue("stockItemId"))));
+            }
         }
-    }
-
-    private void fixUpOrderItem(String tenantId, OrderItem item) {
-        item.setTenantId(tenantId);
     }
 
     /**
@@ -291,6 +308,10 @@ public class OrderController {
 
         newItem.setTenantId(tenantId);
         newItem.setOrder(order);
+        if (newItem.getStockItem() != null && newItem.getStockItem().getId() != null) {
+            newItem.setStockItem(
+                    stockItemRepo.findOne(newItem.getStockItem().getId()));
+        }
 
         newItem = orderItemRepo.save(newItem);
         HashMap<String, String> vars = new HashMap<String, String>();
@@ -349,10 +370,18 @@ public class OrderController {
 
         NullAwareBeanUtils.copyNonNullProperties(updatedOrderItem, item, "id");
         item.setTenantId(tenantId);
-        fixUpOrderItem(tenantId, item);
-        // item.setOrder(order);
+        mergeStockItem(updatedOrderItem, item);
 
         orderItemRepo.save(item);
+    }
+
+    private void mergeStockItem(OrderItem updatedOrderItem, OrderItem item) {
+        if (updatedOrderItem.getStockItem() == null) {
+            item.setStockItem(null);
+        } else if (!updatedOrderItem.getStockItem().equals(item.getStockItem())) {
+            item.setStockItem(
+                    stockItemRepo.findOne(updatedOrderItem.getStockItem().getId()));
+        }
     }
 
     /**
@@ -411,9 +440,17 @@ public class OrderController {
     private ShortOrder wrapShort(Order order) {
         ShortOrderResource resource = new ShortOrderResource();
 
-        BeanUtils.copyProperties(order, resource, "feedback", "orderItems");
+        BeanUtils.copyProperties(order, resource, "feedback", "orderItems", "stockItem");
         resource.setContactId(order.getContactId());
         resource.setOrderId(order.getId());
+        if (order.getStockItem()!=null) {
+            StockCategoryController.ShortStockItemResource stockItem
+                    = new StockCategoryController.ShortStockItemResource();
+            BeanUtils.copyProperties(order.getStockItem(), stockItem);
+            stockItem.setPrice(order.getStockItem().getPrice() == null
+                    ? null : order.getStockItem().getPrice().toPlainString());
+            resource.setStockItem(stockItem);
+        }
 
         Link detail = linkTo(OrderRepository.class,
                 order.getId()).withSelfRel();
@@ -434,9 +471,28 @@ public class OrderController {
     private OrderResource wrap(Order order) {
         OrderResource orderResource = new OrderResource();
 
-        BeanUtils.copyProperties(order, orderResource);
+        // Have to handle sub-entities specially due to serialisation problems
+        BeanUtils.copyProperties(order, orderResource, "stockItem");
         orderResource.setContactId(order.getContactId());
         orderResource.setOrderId(order.getId());
+
+        if (order.getStockItem()!=null) {
+            StockCategoryController.ShortStockItemResource stockItem
+                    = new StockCategoryController.ShortStockItemResource();
+            BeanUtils.copyProperties(order.getStockItem(), stockItem);
+            stockItem.setPrice(order.getStockItem().getPrice() == null
+                    ? null : order.getStockItem().getPrice().toPlainString());
+            orderResource.setStockItem(stockItem);
+        }
+        ArrayList<OrderItem> orderItems = new ArrayList<OrderItem>();
+        for (OrderItem orderItem : order.getOrderItems()) {
+            OrderItem orderItemResource
+                    = new OrderItem();
+            // if include stock item JSON serialisation exception occurs
+            BeanUtils.copyProperties(orderItem, orderItemResource, "stockItem");
+            orderItems.add(orderItemResource);
+        }
+        orderResource.setOrderItems(orderItems);
 
         orderResource.setFeedback(feedbackRepo.findByOrder(order.getTenantId(),
                 order.getId()));
@@ -482,7 +538,6 @@ public class OrderController {
                 .path() + "/" + id);
     }
 
-    
     @Data
     @EqualsAndHashCode(callSuper = true)
     public static class OrderResource extends ShortOrderResource implements
@@ -510,7 +565,7 @@ public class OrderController {
         private String stage;
         private BigDecimal price;
         private String invoiceRef;
-        private StockItem stockItem;
+        private ShortStockItem stockItem;
         private Date created;
         private Date lastUpdated;
         private String tenantId;
