@@ -9,7 +9,15 @@
         {{#each tenant.stockCategoryFields.slice(0,Math.ceil(tenant.stockCategoryFields.length/2)):j}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
-            <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
+            {{#type=='select' || type=='multi-select'}}
+              {{! binding does not work for multiple selects}}
+              <select class="form-control" id="cur{{name.toLeadingCaps()}}" 
+                  {{#type=='multi-select'}}multiple="{{multiple}}" data-key="{{name}}" data-value="{{current.customFields[name]}}"
+                  {{else}}value="{{current.customFields[name]}}"
+                  {{/}}></select>
+            {{else}}
+              <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
+            {{/}}
             <p class="col-md-offset-4 col-sm-offset-4 help-block field-error">{{hint}}</p>
           </li>
         {{/each}}
@@ -20,7 +28,15 @@
         {{#tenant.stockCategoryFields.slice(Math.ceil(tenant.stockCategoryFields.length/2),tenant.stockCategoryFields.length):j}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
-            <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
+            {{#type=='select' || type=='multi-select'}}
+              {{! binding does not work for multiple selects}}
+              <select class="form-control" id="cur{{name.toLeadingCaps()}}" 
+                  {{#type=='multi-select'}}multiple="{{multiple}}" data-key="{{name}}" data-value="{{current.customFields[name]}}"
+                  {{else}}value="{{current.customFields[name]}}"
+                  {{/}}></select>
+            {{else}}
+              <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
+            {{/}}
             <p class="col-md-offset-4 col-sm-offset-4 help-block field-error">{{hint}}</p>
           </li>
         {{/}}

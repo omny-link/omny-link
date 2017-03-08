@@ -36,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 import link.omny.catalog.internal.CatalogCsvImporter;
@@ -46,6 +47,7 @@ import link.omny.catalog.model.StockItem;
 import link.omny.catalog.repositories.MediaResourceRepository;
 import link.omny.catalog.repositories.StockCategoryRepository;
 import link.omny.catalog.repositories.StockItemRepository;
+import link.omny.catalog.views.StockItemViews;
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -137,7 +139,7 @@ public class StockItemController {
         }
         LOGGER.info(String.format("Found %1$s stockItems", list.size()));
 
-        return wrap(list);
+        return wrapShort(list);
     }
 
     /**
@@ -163,7 +165,7 @@ public class StockItemController {
         }
         LOGGER.info(String.format("Found %1$s stockItems", list.size()));
 
-        return wrap(list);
+        return wrapShort(list);
     }
 
     /**
@@ -174,13 +176,22 @@ public class StockItemController {
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @Transactional
-    public @ResponseBody ShortStockItem findById(
+    @JsonView(StockItemViews.Detailed.class)
+    public @ResponseBody StockItem findById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id)
             throws BusinessEntityNotFoundException {
         LOGGER.debug(String.format("Find stock item for id %1$s", id));
 
-        return wrap(stockItemRepo.findOne(Long.parseLong(id)));
+//        return wrap(stockItemRepo.findOne(Long.parseLong(id)));
+        StockItem item = stockItemRepo.findOne(Long.parseLong(id));
+        // Ensure everything loaded, while still in transaction
+        LOGGER.info(String.format(
+                "Found item from category %1$s with %2$d custom fields",
+                item.getStockCategory().getName(),
+                item.getCustomFields().size()));
+
+        return item;
     }
 
     /**
@@ -198,7 +209,7 @@ public class StockItemController {
                     String.format("You must specify the category name to search for"));
         }
 
-        return wrap(stockItemRepo.findAllForCategoryName(
+        return wrapShort(stockItemRepo.findAllForCategoryName(
                 categoryName.toLowerCase(), tenantId));
     }
 
@@ -233,6 +244,7 @@ public class StockItemController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @Transactional
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long stockItemId,
             @RequestBody StockItem updatedStockItem) {
@@ -317,32 +329,22 @@ public class StockItemController {
         stockItemRepo.delete(stockItem);
     }
 
-    private List<ShortStockItem> wrap(List<StockItem> list) {
+    private List<ShortStockItem> wrapShort(List<StockItem> list) {
         List<ShortStockItem> resources = new ArrayList<ShortStockItem>(
                 list.size());
         for (StockItem stockItem : list) {
-            resources.add(wrap(stockItem));
+            resources.add(wrapShort(stockItem));
         }
         return resources;
     }
 
-    private ShortStockItem wrap(StockItem stockItem) {
+    private ShortStockItem wrapShort(StockItem stockItem) {
         ShortStockItem resource = new ShortStockItem();
-        BeanUtils.copyProperties(stockItem, resource);
+        BeanUtils.copyProperties(stockItem, resource, "stockCategory");
 
         if (stockItem.getStockCategory() != null) {
             resource.setStockCategoryName(stockItem.getStockCategory()
                     .getName());
-        }
-        resource.setPrice(stockItem.getPriceString());
-        if (stockItem.getStockCategory() != null) {
-            resource.setMapUrl(stockItem.getStockCategory().getMapUrl());
-            resource.setDirectionsByAir(stockItem.getStockCategory()
-                    .getDirectionsByAir());
-            resource.setDirectionsByPublicTransport(stockItem
-                    .getStockCategory().getDirectionsByPublicTransport());
-            resource.setDirectionsByRoad(stockItem.getStockCategory()
-                    .getDirectionsByRoad());
         }
 
         Link detail = linkTo(StockItemRepository.class, stockItem.getId())

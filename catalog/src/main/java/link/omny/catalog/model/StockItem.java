@@ -33,13 +33,16 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import link.omny.catalog.json.JsonCustomStockItemFieldDeserializer;
+import link.omny.catalog.model.api.ShortStockItem;
 import link.omny.catalog.views.OrderViews;
+import link.omny.catalog.views.StockItemViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
 import lombok.AllArgsConstructor;
@@ -54,7 +57,8 @@ import lombok.ToString;
 @Table(name = "OL_STOCK_ITEM")
 @AllArgsConstructor
 @NoArgsConstructor
-public class StockItem implements Serializable {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class StockItem implements ShortStockItem, Serializable {
 
     private static final long serialVersionUID = 6825862597448133674L;
 
@@ -67,29 +71,34 @@ public class StockItem implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
-    @JsonView(OrderViews.Detailed.class)
+    @JsonView({OrderViews.Summary.class, StockItemViews.Detailed.class})
     private Long id;
 
     @JsonProperty
-    @JsonView(OrderViews.Detailed.class)
+    @JsonView({OrderViews.Summary.class, StockItemViews.Detailed.class})
     @Column(unique = true)
     @NotNull
     private String name;
 
     @JsonProperty
+    @JsonView(StockItemViews.Detailed.class)
     private String description;
 
     @JsonProperty
+    @JsonView(StockItemViews.Detailed.class)
     private String size;
 
     @JsonProperty
+    @JsonView(StockItemViews.Detailed.class)
     @Transient
     private String sizeString;
 
     @JsonProperty
+    @JsonView(StockItemViews.Detailed.class)
     private String unit;
 
     @JsonProperty
+    @JsonView(StockItemViews.Summary.class)
     private BigDecimal price;
 
     // @JsonProperty
@@ -100,15 +109,18 @@ public class StockItem implements Serializable {
      * Comma separated set of tags for the item.
      */
     @JsonProperty
+    @JsonView(StockItemViews.Detailed.class)
     private String tags;
 
     @JsonProperty
+    @JsonView(StockItemViews.Summary.class)
     private String status;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
+    @JsonView(StockItemViews.Detailed.class)
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -116,13 +128,16 @@ public class StockItem implements Serializable {
     private Date lastUpdated;
 
     @JsonProperty
+    @JsonView(StockItemViews.Detailed.class)
     private String tenantId;
 
     @ManyToOne(targetEntity = StockCategory.class)
     @JoinColumn(name = "stock_cat_id")
+    @JsonView(StockItemViews.Detailed.class)
     private StockCategory stockCategory;
 
     @JsonProperty
+    @JsonView(StockItemViews.Detailed.class)
     @Transient
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
     // "stockItem")
@@ -131,6 +146,7 @@ public class StockItem implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockItem")
     @JsonDeserialize(using = JsonCustomStockItemFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
+    @JsonView(StockItemViews.Detailed.class)
     private List<CustomStockItemField> customFields;
 
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
@@ -169,7 +185,6 @@ public class StockItem implements Serializable {
             } catch (Exception e) {
             }
         }
-
     }
 
     public StockItem(String name, String tag) {
