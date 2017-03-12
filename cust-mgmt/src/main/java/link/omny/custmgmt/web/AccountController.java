@@ -314,6 +314,7 @@ public class AccountController {
         private String businessWebsite;
         private String email;
         private boolean emailConfirmed;
+        private boolean existingCustomer;
         private String emailHash;
         private String phone1;
         private String phone2;
