@@ -42,12 +42,17 @@
       </ul>
     </div>
 
-    {{#current.processVariables['contactId']}}
+    {{#current.processVariables['accountId']}}
       <div class="col-md-12">
-        <a href="/contacts.html?id={{current.processVariables['contactId']}}" target="_blank">Open contact<span class="glyphicon glyphicon-new-window"></span></a>
+        <a href="/accounts.html?searchTerm={{current.processVariables['accountId'].substring(current.processVariables['accountId'].lastIndexOf('/')+1)}}" target="_blank">Open {{#if tenant.strings.account}}{{tenant.strings.account.toLowerCase()}}{{else}}account{{/if}}<span class="glyphicon glyphicon-new-window"></span></a>
       </div>
     {{/}}
-
+    {{#current.processVariables['contactId']}}
+      <div class="col-md-12">
+        <a href="/contacts.html?id={{current.processVariables['contactId']}}" target="_blank">Open {{#if tenant.strings.contact}}{{tenant.strings.contact.toLowerCase()}}{{else}}contact{{/if}}<span class="glyphicon glyphicon-new-window"></span></a>
+      </div>
+    {{/}}
+    
     {{#current.formKey!=undefined}}
       {{>userForm { current: current } }}
     {{/}}
