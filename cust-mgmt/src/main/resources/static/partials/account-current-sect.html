@@ -107,12 +107,9 @@
           <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" value="{{current.owner}}">
         </li>
         <li class="form-group">
-          <label class="col-md-4 col-sm-4">Relationship:</label>
-          <label class="radio-inline">
-            <input type="radio" name="curExistingCustomer" id="inlineRadio1" checked="{{current.existingCustomer}}" value="true"><span class="hidden-md">Existing</span> Customer
-          </label>
-          <label class="radio-inline">
-            <input type="radio" name="curExistingCustomer" id="inlineRadio2" checked="{{!current.existingCustomer}}" value="false"><span class="hidden-md">New</span> Prospect
+          <label class="col-md-4 col-sm-4">Existing Customer?:</label>
+          <label class="checkbox-inline">
+            <input type="checkbox" checked="{{current.existingCustomer}}">{{#if current.existingCustomer}}Yes{{else}}No{{/if}}
           </label>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Is this an existing customer, even if we are in a new sales cycle?</p>
         </li>
