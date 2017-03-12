@@ -134,7 +134,7 @@
     <module>catalog</module>
     <module>cust-mgmt</module>
     <module>fonts</module>
-    <module>integration-tests</module>
+    <!--module>integration-tests</module-->
     <module>omny-link-server</module>
     <module>omny-link-processes</module>
     <module>rightmove</module>
