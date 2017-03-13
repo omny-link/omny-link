@@ -85,14 +85,11 @@
         </li>
         {{#tenant.show.marketing}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{#tenant.strings.relationship}}{{tenant.strings.relationship}}{{else}}Relationship{{/}}:</label>
-            <label class="radio-inline">
-              <input type="radio" name="curExistingCustomer" id="inlineRadio1" checked="{{current.existingCustomer}}" value="true"> Existing Customer
+            <label class="col-md-4 col-sm-4">Existing Customer?:</label>
+            <label class="checkbox-inline">
+              <input type="checkbox" checked="{{current.existingCustomer}}">{{#if current.existingCustomer}}Yes{{else}}No{{/if}}
             </label>
-            <label class="radio-inline">
-              <input type="radio" name="curExistingCustomer" id="inlineRadio2" checked="{{!current.existingCustomer}}" value="false"> New Prospect
-            </label>
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Is this an existing customer, even if we are in a new sales cycle?</p>
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Is this an existing customer, even if we are in a new sales cycle?</p>
           </li>
         {{/}}
         {{#tenant.show.marketing || tenant.show.stage}}
