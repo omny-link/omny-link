@@ -252,13 +252,10 @@ public class Account implements Serializable {
     }
 
     protected void setCustomField(CustomAccountField newField) {
-        try {
-            double d = Double.parseDouble(newField.getValue());
-            newField.setValue(decimalFormat.format(d));
-        } catch (NumberFormatException e) {
-            // that's ok, continue as string
+        if (newField == null || newField.getValue() == null
+                || newField.getValue().trim().length() == 0) {
+            return;
         }
-
         boolean found = false;
         for (CustomAccountField field : getCustomFields()) {
             if (field.getName().equals(newField.getName())) {
