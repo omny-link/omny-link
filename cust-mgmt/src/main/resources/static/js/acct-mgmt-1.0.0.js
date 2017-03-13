@@ -13,6 +13,7 @@ var ractive = new AuthenticatedRactive(
         entityPath: '/contacts',
         csrfToken: getCookie(CSRF_COOKIE),
         contacts: [],
+        orders: [],
         // saveObserver:false,
         maxOrderFields: 5,
         title: 'Account Management',
@@ -828,9 +829,13 @@ var ractive = new AuthenticatedRactive(
               data = data['_embedded'].accounts;
             }
             ractive.set('saveObserver', false);
-            ractive.set('orders', data);
-            console.log('fetched ' + data.length + ' orders');
-            ractive.update('orders');
+            try {
+              ractive.set('orders', data);
+              console.log('fetched ' + data.length + ' orders');
+              ractive.update('orders');
+            } catch (e) {
+              console.error(e);
+            }
             ractive.set('saveObserver', true);
           }
         });
