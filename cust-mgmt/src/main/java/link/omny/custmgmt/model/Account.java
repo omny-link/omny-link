@@ -252,6 +252,14 @@ public class Account implements Serializable {
     }
 
     protected void setCustomField(CustomAccountField newField) {
+        try {
+            double d = Double.parseDouble(newField.getValue());
+            if (newField.getValue().toLowerCase().contains("e")) {
+                newField.setValue(decimalFormat.format(d));
+            }
+        } catch (NumberFormatException e) {
+            // that's ok, continue as string
+        }
         if (newField == null || newField.getValue() == null
                 || newField.getValue().trim().length() == 0) {
             return;
