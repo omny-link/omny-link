@@ -1,6 +1,7 @@
 package com.knowprocess.bpm.web;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -11,6 +12,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +24,7 @@ import org.activiti.engine.history.HistoricProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -38,7 +41,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.Pipeline;
+import com.itextpdf.tool.xml.XMLWorker;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
+import com.itextpdf.tool.xml.exceptions.CssResolverException;
+import com.itextpdf.tool.xml.html.Tags;
+import com.itextpdf.tool.xml.parser.XMLParser;
+import com.itextpdf.tool.xml.pipeline.css.CSSResolver;
+import com.itextpdf.tool.xml.pipeline.css.CssResolverPipeline;
+import com.itextpdf.tool.xml.pipeline.end.PdfWriterPipeline;
+import com.itextpdf.tool.xml.pipeline.html.HtmlPipeline;
+import com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext;
+import com.itextpdf.tool.xml.pipeline.html.LinkProvider;
 import com.knowprocess.bpm.impl.UriHelper;
 import com.knowprocess.bpm.model.ProcessInstance;
 
@@ -57,7 +71,12 @@ public class ProcessInstanceController {
     @Autowired
     public ProcessEngine processEngine;
 
-    private String baseUrl = "https://api.omny.link";
+    @Value("${spring.data.rest.baseUri:https://api.omny.link}")
+    private String baseUrl;
+
+    private String bootstrapCss;
+
+    private String omnyCss;
 
     @RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<ProcessInstance> listJson() {
@@ -94,7 +113,7 @@ public class ProcessInstanceController {
     public @ResponseBody String getInstanceVar(
             @PathVariable("instanceId") String instanceId, 
             @PathVariable("varName") String varName) {
-        LOGGER.info("getInstanceVar");
+        LOGGER.info(String.format("getInstanceVar(%1$s, %2$s)", instanceId, varName));
         
         try {
             return processEngine.getRuntimeService()
@@ -102,17 +121,22 @@ public class ProcessInstanceController {
         } catch (NullPointerException e) {
             return "Still working...";
         } catch (ActivitiObjectNotFoundException e) {
-            return processEngine.getHistoryService()
-                    .createHistoricVariableInstanceQuery()
-                    .processInstanceId(instanceId)
-                    .variableName(varName)
-                    .singleResult().getValue().toString();
+            try {
+                return processEngine.getHistoryService()
+                        .createHistoricVariableInstanceQuery()
+                        .processInstanceId(instanceId)
+                        .variableName(varName)
+                        .singleResult().getValue().toString();
+            } catch (NullPointerException e2) {
+                return "Still working...";
+            }
         }
     }
     
     @RequestMapping(value = "/{instanceId}/variables/{varName}", method = RequestMethod.GET, headers = "Accept=application/pdf", produces = "application/pdf")
     public void getInstanceVarAsPdf(
             HttpServletResponse response,
+            @PathVariable("tenantId") String tenantId,
             @PathVariable("instanceId") String instanceId, 
             @PathVariable("varName") String varName) {
         LOGGER.info("getInstanceVar");
@@ -120,23 +144,53 @@ public class ProcessInstanceController {
 
         StringBuilder sb = new StringBuilder()
                 .append("<html><head>")
-                .append("<link href=\"").append(baseUrl).append("/webjars/bootstrap/3.3.5/css/bootstrap.min.css\" rel=\"stylesheet\"/>")
-                .append("<link href=\"").append(baseUrl).append("/css/omny-1.0.0.css\" rel=\"stylesheet\" type=\"text/css\" />")
                 .append("</head><body>")
                 .append(var.replaceAll("<br>", "<br/>"))
                 .append("</body></html>");
-        
+
         try {
             Document document = new Document();
             response.setContentType("application/pdf");
             PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
+            writer.setInitialLeading(12.5f);
             document.open();
-            XMLWorkerHelper.getInstance().parseXHtml(writer, document, new StringReader(sb.toString())); 
+
+            HtmlPipelineContext htmlContext = new HtmlPipelineContext(null);
+            htmlContext.setTagFactory(Tags.getHtmlTagProcessorFactory());
+//            htmlContext.setImageProvider(new AbstractImageProvider() {
+//                public String getImageRootPath() {
+//                    return "images/";
+//                }
+//            });
+
+            htmlContext.setLinkProvider(new LinkProvider() {
+                public String getLinkRoot() {
+                    return baseUrl;
+                }
+            });
+
+            CSSResolver cssResolver = 
+                    XMLWorkerHelper.getInstance().getDefaultCssResolver(false);
+            try {
+                cssResolver.addCss(getBootstrapCss("/META-INF/resources/webjars/bootstrap/3.3.5/css/bootstrap.min.css"), true);
+                cssResolver.addCss(getOmnyCss("/static/css/omny-1.0.0.css"), true);
+                cssResolver.addCss("ol { list-style: decimal !important; } ul { list-style: disc !important; }", true);
+            } catch (CssResolverException e) {
+                LOGGER.warn("Cannot add CSS to PDF pipeline", e);
+            }
+            Pipeline<?> pipeline = new CssResolverPipeline(cssResolver,
+                    new HtmlPipeline(htmlContext,
+                            new PdfWriterPipeline(document, writer)));
+            XMLWorker worker = new XMLWorker(pipeline, true);
+
+            XMLParser p = new XMLParser(worker);
+            p.parse(new StringReader(sb.toString()));
+
             document.close();
         
             LOGGER.debug(String.format("PDF Created for var %1$s of process instance %2$s", varName, instanceId));
         } catch (NoClassDefFoundError e) {
-            throw new IllegalStateException("PDf generation not currently enabled.");
+            throw new IllegalStateException("PDF generation not currently enabled.");
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
             throw new IllegalStateException(e);
@@ -145,7 +199,39 @@ public class ProcessInstanceController {
             throw new IllegalStateException("Probably a template problem.");
         }
     }
-    
+
+    private String getBootstrapCss(String resource) {
+        if (bootstrapCss == null) {
+            bootstrapCss = getClasspathResource(resource);
+        }
+        return bootstrapCss;
+    }
+
+    private String getOmnyCss(String resource) {
+        if (omnyCss == null) {
+            omnyCss = getClasspathResource(resource);
+        }
+        return omnyCss;
+    }
+
+    @SuppressWarnings("resource")
+    private String getClasspathResource(String resource) {
+        InputStream is = null;
+        try {
+            is = getClass().getResourceAsStream(resource);
+            return new Scanner(is).useDelimiter("\\A").next();
+        } catch (Exception e) {
+            LOGGER.warn(String.format("Unable to read CSS from %1$s", resource));
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+                ;
+            }
+        }
+        return "";
+    }
+
     @RequestMapping(value = "/findByVar/{varName}/{varValue}", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<ProcessInstance> listInstancesForVar(
             @PathVariable("varName") String varName,
