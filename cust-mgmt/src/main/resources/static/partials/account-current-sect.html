@@ -43,7 +43,7 @@
               </span>
             {{/if}}
         </span>
-        {{#if current.contacts}}
+        {{#if current.contacts && Array.findBy('mainContact',true,current.contacts) != undefined}}
           <span class="clearfix">
             <span>{{Array.findBy('mainContact',true,current.contacts).firstName}}</span>
             <span>{{Array.findBy('mainContact',true,current.contacts).lastName}}</span>
@@ -72,8 +72,8 @@
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{# tenant.strings.edubaseUrn}}{{tenant.strings.edubaseUrn}}{{else}}Edubase URN{{/}}:</label>
             <div class="input-group">
-              <input class="col-md-8 col-sm-8 form-control" id="curEdubaseUrn" pattern="[0-9]{6}" type="text" value="{{# current.customFields['edubaseUrn']!=undefined}}{{parseInt(current.customFields['edubaseUrn'])}}{{/}}">
-              {{# current.customFields['edubaseUrn']!=undefined}}
+              <input class="col-md-8 col-sm-8 form-control" id="curEdubaseUrn" pattern="[0-9]{6}" type="text" value="{{current.customFields['edubaseUrn']}}">
+              {{# current.customFields['edubaseUrn']!=undefined && current.customFields['edubaseUrn'].length>0}}
                 <span class="input-group-addon">
                   <a href="http://www.education.gov.uk/edubase/establishment/summary.xhtml?urn={{parseInt(current.customFields['edubaseUrn'])}}" target="edubaseEstablishment"><span class="glyphicon glyphicon-new-window"></span></a>
                 </span>
@@ -88,11 +88,11 @@
           <label class="col-md-4 col-sm-4">{{# tenant.strings.companyNumber}}{{tenant.strings.companyNumber}}{{else}}Company Number{{/}}:</label>
           <div class="input-group">
             <input autocomplete="off" class="typeahead col-md-8 col-sm-8 form-control" id="curCompanyNumber" pattern="[OCINS0-9]{0,2}[0-9]{4,6}" {{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.companyNumber}}">
-            {{# tenant.strings.companyNumber == 'Establishment Group' && current.companyNumber!=undefined}}
+            {{# tenant.strings.companyNumber == 'Establishment Group' && current.companyNumber!=undefined && current.companyNumber.length>0}}
               <span class="input-group-addon">
                 <a href="http://www.education.gov.uk/edubase/groups/group/summary.xhtml?id={{parseInt(current.companyNumber)}}" target="edubaseGroup"><span class="glyphicon glyphicon-new-window"></span></a>
               </span>
-            {{elseif current.companyNumber!=undefined}}
+            {{elseif current.companyNumber!=undefined && current.companyNumber.length>0}}
               <span class="input-group-addon">
                 <a href="https://beta.companieshouse.gov.uk/company/{{current.companyNumber}}" target="companiesHouse"><span class="glyphicon glyphicon-new-window" title="View Companies House Information"></span></a>
               </span>
