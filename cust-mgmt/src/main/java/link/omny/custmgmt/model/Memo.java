@@ -130,7 +130,7 @@ public class Memo implements Serializable {
 
     private void cleanHtml() {
         if (getRichContent()!=null) {
-          setRichContent(getRichContent().replace("&nbsp;", " ").replace("&#39;", "\'"));
+          setRichContent(getRichContent().replace("&#39;", "\'"));
         }
     }
 

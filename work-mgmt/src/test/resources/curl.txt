@@ -60,6 +60,6 @@ curl -X POST -u tstephen:tstephen -H "Accept:application/json" \
     http://localhost:8082/omny/process-definitions/
     
 curl -X GET -u tstephen:tstephen -H "Accept:text/html" -v \
-    http://localhost:8082/omny/process-instances/22501/variables/result
+    http://localhost:8082/omny/process-instances/22501/variables/mergedMemo
 curl -X GET -u tstephen:tstephen -H "Accept:application/pdf" -v \
-    http://localhost:8082/omny/process-instances/22501/variables/result
+    http://localhost:8082/alife/process-instances/135485/variables/mergedMemo
