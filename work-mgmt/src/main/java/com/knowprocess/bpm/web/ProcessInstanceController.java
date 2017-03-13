@@ -99,6 +99,8 @@ public class ProcessInstanceController {
         try {
             return processEngine.getRuntimeService()
                     .getVariable(instanceId, varName).toString();
+        } catch (NullPointerException e) {
+            return "Still working...";
         } catch (ActivitiObjectNotFoundException e) {
             return processEngine.getHistoryService()
                     .createHistoricVariableInstanceQuery()
