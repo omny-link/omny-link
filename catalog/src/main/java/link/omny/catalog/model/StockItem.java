@@ -42,6 +42,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import link.omny.catalog.json.JsonCustomStockItemFieldDeserializer;
 import link.omny.catalog.model.api.ShortStockItem;
 import link.omny.catalog.views.OrderViews;
+import link.omny.catalog.views.StockCategoryViews;
 import link.omny.catalog.views.StockItemViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
@@ -137,7 +138,7 @@ public class StockItem implements ShortStockItem, Serializable {
     private StockCategory stockCategory;
 
     @JsonProperty
-    @JsonView(StockItemViews.Detailed.class)
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     @Transient
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
     // "stockItem")

@@ -86,6 +86,19 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         }
     }
     
+    @Then("^(\\d+) units are included each with (\\d+) image urls$")
+    public void units_are_included_each_with_image_urls(int unitCount, int imageCount) throws Throwable {
+        StockCategory cat = ((StockCategory) latestResponse.latestObject());
+        assertNotNull(cat);
+        assertEquals(unitCount, cat.getStockItems().size());
+        for (StockItem item : cat.getStockItems()) {
+            assertNotNull(item);
+            for (MediaResource resource : item.getImages()) {
+                assertNotNull(resource.getUrl());
+            }
+        }
+    }
+    
     @When("^a search is made for an office near \"([^\"]*)\"$")
     public void a_search_is_made_for_an_office_near_post_code(String arg1) throws Throwable {
         executeGet(String.format("/%1$s/stock-categories/findByLocation?q=%2$s&&type=Office", tenantId, arg1));
@@ -124,11 +137,11 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         assertEquals("Caerphilly", item.getStockCategory().getName());
     }
     
-    @Then("^a single stock category is returned including all details$")
-    public void a_single_stock_category_is_returned_including_all_details() throws Throwable {
+    @Then("^category ([\\w]*) alone is returned including all details$")
+    public void the_single_stock_category_is_returned_including_all_details(String town) throws Throwable {
         latestResponse.statusCodeIs(HttpStatus.OK);
         StockCategory category = (StockCategory) latestResponse.parseObject(StockCategory.class);
-        assertEquals("Swindon", category.getName());
+        assertEquals(town, category.getName());
     }
 
 }
