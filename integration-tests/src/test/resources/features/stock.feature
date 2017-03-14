@@ -1,4 +1,4 @@
-Feature: A repository of different stock categories
+Feature: A repository of different stock in categories and units
  
   Scenario: List all stock categories
           Used by the maintenance pages
@@ -51,6 +51,7 @@ Feature: A repository of different stock categories
      When a request is made for Borehamwood
      Then category Borehamwood alone is returned including all details
       And the default of 8 image URLs are included for the specified category
+      And 4 units are included each with 4 image urls
       And the call took less than 300ms
       
   Scenario: Fetch details of a specific stock item

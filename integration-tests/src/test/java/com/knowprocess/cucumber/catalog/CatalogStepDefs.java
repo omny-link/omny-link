@@ -93,6 +93,7 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         assertEquals(unitCount, cat.getStockItems().size());
         for (StockItem item : cat.getStockItems()) {
             assertNotNull(item);
+            assertEquals(imageCount, item.getImages().size());
             for (MediaResource resource : item.getImages()) {
                 assertNotNull(resource.getUrl());
             }
