@@ -13,15 +13,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import link.omny.catalog.views.StockCategoryViews;
+import link.omny.catalog.views.StockItemViews;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -42,12 +45,15 @@ public class MediaResource implements Serializable {
     private Long id;
 
     @JsonProperty
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     private String author;
 
     @JsonProperty
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     private Date created;
 
     @JsonProperty
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     private String url;
 
     @ManyToOne(targetEntity = StockItem.class)
