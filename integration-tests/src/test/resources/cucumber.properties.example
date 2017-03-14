@@ -1,0 +1,4 @@
+kp.app.username = tim@omny.link
+kp.app.password = password
+kp.app.baseUrl = http://localhost:8080
+kp.app.tenantId = acme
