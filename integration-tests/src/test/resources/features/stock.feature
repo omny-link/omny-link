@@ -39,9 +39,9 @@ Feature: A repository of different stock in categories and units
     Given the server is available
       And the user is logged in
      When a request is made for Swindon
-     Then category Swindon alone is returned including all details
+     Then category Swindon alone is returned including name, description, status, address1, postcode, tags & directions
       And the default of 8 image URLs are included for the specified category
-      And 3 units are included each with 4 image urls
+      And 3 units are included each with 4 image urls, name, description, tags, and size
       And the call took less than 300ms
 
   Scenario: Retrieve details for Borehamwood
@@ -49,9 +49,9 @@ Feature: A repository of different stock in categories and units
     Given the server is available
       And the user is logged in
      When a request is made for Borehamwood
-     Then category Borehamwood alone is returned including all details
+     Then category Borehamwood alone is returned including name, description, status, address1, postcode, tags & directions
       And the default of 8 image URLs are included for the specified category
-      And 4 units are included each with 4 image urls
+      And 4 units are included each with 4 image urls, name, description, tags, and size
       And the call took less than 300ms
       
   Scenario: Fetch details of a specific stock item

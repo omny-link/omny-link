@@ -76,26 +76,31 @@ public class StockItem implements ShortStockItem, Serializable {
     private Long id;
 
     @JsonProperty
-    @JsonView({OrderViews.Summary.class, StockItemViews.Detailed.class})
+    @JsonView({ OrderViews.Summary.class, StockCategoryViews.Detailed.class,
+            StockItemViews.Detailed.class })
     @Column(unique = true)
     @NotNull
     private String name;
 
     @JsonProperty
-    @JsonView(StockItemViews.Detailed.class)
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     private String description;
 
     @JsonProperty
-    @JsonView(StockItemViews.Detailed.class)
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     private String size;
 
     @JsonProperty
-    @JsonView(StockItemViews.Detailed.class)
+        @JsonView({ StockCategoryViews.Detailed.class,
+            StockItemViews.Detailed.class })
     @Transient
     private String sizeString;
 
     @JsonProperty
-    @JsonView(StockItemViews.Detailed.class)
+        @JsonView({ StockCategoryViews.Detailed.class,
+            StockItemViews.Detailed.class })
     private String unit;
 
     @JsonProperty
@@ -110,31 +115,37 @@ public class StockItem implements ShortStockItem, Serializable {
      * Comma separated set of tags for the item.
      */
     @JsonProperty
-    @JsonView(StockItemViews.Detailed.class)
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     private String tags;
 
     @JsonProperty
-    @JsonView(StockItemViews.Summary.class)
+    @JsonView({ OrderViews.Summary.class, StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
+
     private String status;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
-    @JsonView(StockItemViews.Detailed.class)
+        @JsonView({ StockCategoryViews.Detailed.class,
+            StockItemViews.Detailed.class })
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonProperty
+    @JsonView({ OrderViews.Summary.class, StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     private Date lastUpdated;
 
     @JsonProperty
-    @JsonView(StockItemViews.Detailed.class)
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     private String tenantId;
 
     @ManyToOne(targetEntity = StockCategory.class)
     @JoinColumn(name = "stock_cat_id")
-    @JsonView(StockItemViews.Detailed.class)
+    @JsonView({ StockItemViews.Detailed.class })
     private StockCategory stockCategory;
 
     @JsonProperty
@@ -147,7 +158,8 @@ public class StockItem implements ShortStockItem, Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockItem")
     @JsonDeserialize(using = JsonCustomStockItemFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
-    @JsonView(StockItemViews.Detailed.class)
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     private List<CustomStockItemField> customFields;
 
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
