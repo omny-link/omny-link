@@ -86,13 +86,18 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         }
     }
     
-    @Then("^(\\d+) units are included each with (\\d+) image urls$")
+    @Then("^(\\d+) units are included each with (\\d+) image urls, name, description, tags, and size$")
     public void units_are_included_each_with_image_urls(int unitCount, int imageCount) throws Throwable {
         StockCategory cat = ((StockCategory) latestResponse.latestObject());
         assertNotNull(cat);
         assertEquals(unitCount, cat.getStockItems().size());
         for (StockItem item : cat.getStockItems()) {
             assertNotNull(item);
+            assertNotNull(item.getName());
+            assertNotNull(item.getPrimeTag());
+            assertNotNull(item.getSize());
+            assertNotNull(item.getSizeString());
+            assertNotNull(item.getCustomFields());
             assertEquals(imageCount, item.getImages().size());
             for (MediaResource resource : item.getImages()) {
                 assertNotNull(resource.getUrl());
@@ -125,7 +130,7 @@ public class CatalogStepDefs extends IntegrationTestSupport {
     }
 
     @Then("^Office \"([^\"]*)\" is returned including all details$")
-    public void office_in_Caerphilly_is_returned_including_all_details(String name) throws Throwable {
+    public void office_in_town_is_returned_including_all_details(String name) throws Throwable {
         latestResponse.statusCodeIs(HttpStatus.OK);
         StockItem item = (StockItem) latestResponse.parseObject(StockItem.class);
         assertEquals(name, item.getName());
@@ -138,11 +143,21 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         assertEquals("Caerphilly", item.getStockCategory().getName());
     }
     
-    @Then("^category ([\\w]*) alone is returned including all details$")
+    @Then("^category ([\\w]*) alone is returned including name, description, status, address1, postcode, tags & directions$")
     public void the_single_stock_category_is_returned_including_all_details(String town) throws Throwable {
         latestResponse.statusCodeIs(HttpStatus.OK);
         StockCategory category = (StockCategory) latestResponse.parseObject(StockCategory.class);
         assertEquals(town, category.getName());
+        assertNotNull(category.getName());
+        assertNotNull(category.getDescription());
+        assertNotNull(category.getStatus());
+        assertNotNull(category.getAddress1());
+        assertNotNull(category.getPostCode());
+        assertNotNull(category.getTags());
+        assertNotNull(category.getDirectionsByAir());
+        assertNotNull(category.getDirectionsByPublicTransport());
+        assertNotNull(category.getDirectionsByRoad());
+        assertNotNull(category.getCustomFields());
     }
 
 }
