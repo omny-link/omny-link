@@ -72,7 +72,8 @@ public class StockItem implements ShortStockItem, Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
-    @JsonView({OrderViews.Summary.class, StockItemViews.Detailed.class})
+    @JsonView({OrderViews.Summary.class, StockCategoryViews.Detailed.class,
+            StockItemViews.Detailed.class})
     private Long id;
 
     @JsonProperty
