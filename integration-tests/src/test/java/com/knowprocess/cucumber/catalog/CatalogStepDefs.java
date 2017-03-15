@@ -70,7 +70,7 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         assertNotNull(cat);
         assertEquals(imageCount, cat.getImages().size());
         for (MediaResource resource : cat.getImages()) {
-            System.out.println(resource.getUrl());
+            // Starts from /images/melksham/1.jpg thru to 8.jpg
             assertNotNull(resource.getUrl());
         }
     }
@@ -93,6 +93,7 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         assertEquals(unitCount, cat.getStockItems().size());
         for (StockItem item : cat.getStockItems()) {
             assertNotNull(item);
+            assertNotNull(item.getId());
             assertNotNull(item.getName());
             assertNotNull(item.getPrimeTag());
             assertNotNull(item.getSize());
