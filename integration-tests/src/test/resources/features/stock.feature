@@ -21,8 +21,8 @@ Feature: A repository of different stock in categories and units
     Given the server is available
       And the user is logged in
      When a search is made for Corsham
-     Then a list of 6 stock categories including all details is returned starting with Melksham
-      And the default of 8 image URLs are included for the nearest category
+     Then a list of 6 stock categories is returned with full details
+      And the first category is Melksham, which has the default of 8 image URLs and contains 3 items
       And the call took less than 300ms
     
   Scenario: Search stock categories by postcode
@@ -30,8 +30,8 @@ Feature: A repository of different stock in categories and units
     Given the server is available
       And the user is logged in
      When a search is made for an office near "CF71 7NQ"
-     Then a list of 1 stock category is returned with full details
-      And the default of 8 image URLs are included for the nearest category
+     Then a list of 5 stock categories is returned with full details
+      And the first category is Caerphilly, which has the default of 8 image URLs and contains 2 items
       And the call took less than 300ms
     
   Scenario: Retrieve a specific stock category by name
@@ -54,11 +54,27 @@ Feature: A repository of different stock in categories and units
       And 4 units are included each with 4 image urls, name, description, tags, and size
       And the call took less than 300ms
       
-  Scenario: Fetch details of a specific stock item
+  Scenario: Fetch and update details of a specific stock item
           Used by maintenance pages
     Given the server is available
       And the user is logged in
+     When a request is made for Caerphilly
+     Then category Caerphilly alone is returned including name, description, status, address1, postcode, tags & directions
+      And 2 units are included each with 4 image urls, name, description, tags, and size
      When a request is made for item 59287
      Then Office "1" is returned including all details
-      And the stock item's category is available
-      And the call took less than 300ms      
+      And the stock item's category Caerphilly is available
+      And the call took less than 300ms
+     When the item status is updated to "Pending Review"
+     Then success status is returned
+     When a request is made for Caerphilly
+     Then category Caerphilly alone is returned including name, description, status, address1, postcode, tags & directions
+      And the default of 8 image URLs are included for the specified category
+      And 1 units are included each with 4 image urls, name, description, tags, and size
+     When a request is made for item 59287
+     Then Office "1" is returned including all details
+     When the item status is updated to "Published"
+     Then success status is returned
+     When a request is made for Caerphilly
+     Then category Caerphilly alone is returned including name, description, status, address1, postcode, tags & directions
+      And 2 units are included each with 4 image urls, name, description, tags, and size
