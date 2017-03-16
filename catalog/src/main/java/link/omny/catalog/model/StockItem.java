@@ -33,6 +33,7 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -265,6 +266,7 @@ public class StockItem implements ShortStockItem, Serializable {
         }
     }
 
+    @JsonIgnore
     public List<String> getTagsAsList() {
         if (tags == null) {
             return Collections.emptyList();
@@ -273,6 +275,7 @@ public class StockItem implements ShortStockItem, Serializable {
         }
     }
 
+    @JsonIgnore
     public String getPrimeTag() {
         List<String> tagsAsList = getTagsAsList();
         if (tagsAsList.size() == 0) {
@@ -318,7 +321,7 @@ public class StockItem implements ShortStockItem, Serializable {
                             "/images/%1$s/%2$s/%3$d.jpg",
                             getStockCategory().getName().toLowerCase()
                                     .replaceAll(" ", "_"),
-                            getTagsAsList().get(0).toLowerCase()
+                            getPrimeTag().toLowerCase()
                                     .replaceAll(" ", "_"),
                             i + 1)));
                 }

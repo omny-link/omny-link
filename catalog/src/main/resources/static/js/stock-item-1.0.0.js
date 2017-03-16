@@ -312,12 +312,6 @@ var ractive = new AuthenticatedRactive({
     } else if (document.getElementById('currentForm').checkValidity()) {
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       delete tmp.images;
-      if (id != undefined && tmp.stockCategory != undefined) {
-        tmp.stockCategory = ractive.uri(Array.findBy('name',ractive.get('current.stockCategory.name'),ractive.get('stockCategories')));
-      } else {
-        delete tmp.stockCategory;
-        delete tmp.stockCategoryId;
-      }
       delete tmp.tagsAsList;
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save stockItem'+JSON.stringify(tmp)+' ...');

@@ -54,20 +54,20 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         executeGet(String.format("/%1$s/stock-categories/findByLocation?q=Corsham", tenantId));
     }
     
-    @Then("^a list of ([\\d+]*) stock categories including all details is returned starting with Melksham$")
-    public void a_list_of_stock_categories_including_all_details_is_returned(int expectedCategories) throws Throwable {
+    @Then("^a list of (\\d+) stock categories is returned with full details$")
+    public void a_list_of_stock_categories_is_returned(int catCount) throws Throwable {
         latestResponse.statusCodeIs(HttpStatus.OK);
         StockCategory[] categories = (StockCategory[]) latestResponse.parseArray(StockCategory.class);
-        assertEquals(expectedCategories, categories.length);
-        assertEquals("Melksham", categories[0].getName());
-        assertEquals(3, categories[0].getStockItems().size());
-        assertEquals("Swindon", categories[1].getName());
+        assertEquals(catCount, categories.length);
     }
-    
-    @Then("^the default of (\\d+) image URLs are included for the nearest category$")
-    public void the_default_of_image_URLs_are_included(int imageCount) throws Throwable {
+
+    @Then("^the first category is ([\\w]*), which has the default of (\\d+) image URLs and contains (\\d+) items$")
+    public void the_first_category_is_X_which_has_the_default_of_image_URLs_and_contains_items(
+            String categoryName, int imageCount, int itemCount) throws Throwable {
         StockCategory cat = ((StockCategory[]) latestResponse.latestObject())[0];
         assertNotNull(cat);
+        assertEquals(categoryName, cat.getName());
+        assertEquals(itemCount, cat.getStockItems().size());
         assertEquals(imageCount, cat.getImages().size());
         for (MediaResource resource : cat.getImages()) {
             // Starts from /images/melksham/1.jpg thru to 8.jpg
@@ -81,11 +81,10 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         assertNotNull(cat);
         assertEquals(imageCount, cat.getImages().size());
         for (MediaResource resource : cat.getImages()) {
-            System.out.println(resource.getUrl());
             assertNotNull(resource.getUrl());
         }
     }
-    
+
     @Then("^(\\d+) units are included each with (\\d+) image urls, name, description, tags, and size$")
     public void units_are_included_each_with_image_urls(int unitCount, int imageCount) throws Throwable {
         StockCategory cat = ((StockCategory) latestResponse.latestObject());
@@ -111,15 +110,6 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         executeGet(String.format("/%1$s/stock-categories/findByLocation?q=%2$s&&type=Office", tenantId, arg1));
     }
     
-    @Then("^a list of 1 stock category is returned with full details$")
-    public void a_list_of_5_stock_categories_including_all_details_is_returned() throws Throwable {
-        latestResponse.statusCodeIs(HttpStatus.OK);
-        StockCategory[] categories = (StockCategory[]) latestResponse.parseArray(StockCategory.class);
-        assertEquals(5, categories.length);
-        assertEquals("Caerphilly", categories[0].getName());
-        assertEquals(2, categories[0].getStockItems().size());
-    }
-    
     @When("^a request is made for ([\\w]*)$")
     public void a_request_is_made_for_category(String town) throws Throwable {
         executeGet(String.format("/%1$s/stock-categories/findByName?name=%2$s", tenantId, town));
@@ -137,11 +127,23 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         assertEquals(name, item.getName());
     }
     
-    @Then("^the stock item's category is available$")
-    public void the_stock_category_is_available() throws Throwable {
+    @Then("^the stock item's category ([\\w]*) is available$")
+    public void the_stock_category_is_available(String category) throws Throwable {
         StockItem item = (StockItem) latestResponse.parseObject(StockItem.class);
         assertNotNull(item.getStockCategory());
-        assertEquals("Caerphilly", item.getStockCategory().getName());
+        assertEquals(category, item.getStockCategory().getName());
+    }
+
+    @When("^the item status is updated to \"([^\"]*)\"$")
+    public void the_item_status_is_updated_to(String status) throws Throwable {
+        StockItem item = (StockItem) latestResponse.latestObject();
+        item.setStatus(status);
+        executePut(String.format("/%1$s/stock-items/%1$d", item.getId()), item);
+    }
+
+    @Then("^success status is returned$")
+    public void success_status_is_returned() throws Throwable {
+        latestResponse.statusCodeIs(HttpStatus.NO_CONTENT);
     }
     
     @Then("^category ([\\w]*) alone is returned including name, description, status, address1, postcode, tags & directions$")

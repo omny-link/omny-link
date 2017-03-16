@@ -251,7 +251,14 @@ public class StockItemController {
         StockItem stockItem = stockItemRepo.findOne(stockItemId);
 
         NullAwareBeanUtils.copyNonNullProperties(updatedStockItem, stockItem,
-                "id");
+                "id", "tagsAsList", "stockCategory");
+        // This is not a mechanism to update the category but only to link 
+        // item to a different category if necessary
+        if (updatedStockItem.getStockCategory() == null) {
+            stockItem.setStockCategory(null);
+        } else if (!updatedStockItem.getStockCategory().getId().equals(stockItem.getStockCategory().getId())){
+            stockItem.setStockCategory(stockCategoryRepo.findOne(updatedStockItem.getStockCategory().getId()));
+        }
 
         stockItem.setTenantId(tenantId);
         stockItemRepo.save(stockItem);
