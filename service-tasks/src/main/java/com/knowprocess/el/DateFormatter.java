@@ -26,10 +26,13 @@ public class DateFormatter {
     }
 
     public String toString(String source, String pattern) {
+        if (source == null || source.trim().length()==0) {
+            return "";
+        }
         try {
             return toString(isoDateFormatter.parse(source), pattern);
         } catch (ParseException e) {
-            LOGGER.error(String.format("When correcing %1$s to date: %2$s", 
+            LOGGER.error(String.format("When coercing %1$s to date: %2$s",
                     source, e.getMessage()));
             return source;
         }
