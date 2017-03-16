@@ -121,7 +121,7 @@ public class CatalogStepDefs extends IntegrationTestSupport {
     }
     
     @When("^a request is made for ([\\w]*)$")
-    public void a_request_is_made_for_Swindon(String town) throws Throwable {
+    public void a_request_is_made_for_category(String town) throws Throwable {
         executeGet(String.format("/%1$s/stock-categories/findByName?name=%2$s", tenantId, town));
     }
     
