@@ -342,6 +342,11 @@ var ractive = new AuthenticatedRactive({
       ractive.set('saveObserver',true);
     }
   },
+  search: function(searchTerm) {
+    ractive.set('searchTerm',searchTerm);
+    ractive.set('searchMatched',$('#stockCategoriesTable tbody tr:visible').length);
+    ractive.showResults();
+  },
   select: function(stockCategory) {
     console.log('select: '+JSON.stringify(stockCategory));
     ractive.set('saveObserver',false);
