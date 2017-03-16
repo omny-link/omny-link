@@ -121,6 +121,7 @@ var ractive = new AuthenticatedRactive({
           || (searchTerm.startsWith('created>') && new Date(obj.firstStockItem)>new Date(ractive.get('searchTerm').substring(8)))
           || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(ractive.get('searchTerm').substring(8)))
           || (searchTerm.startsWith('created<') && new Date(obj.firstStockItem)<new Date(ractive.get('searchTerm').substring(8)))
+          || (searchTerm.startsWith('#') && obj.tags.toLowerCase().indexOf(ractive.get('searchTerm').substring(1).toLowerCase())!=-1)
         );
       }
     },
@@ -367,6 +368,11 @@ var ractive = new AuthenticatedRactive({
         }
       });
     } 
+  },
+  search: function(searchTerm) {
+    ractive.set('searchTerm',searchTerm);
+    ractive.set('searchMatched',$('#stockItemsTable tbody tr:visible').length);
+    ractive.showResults();
   },
   select: function(stockItem) {
     console.log('select: '+JSON.stringify(stockItem));
