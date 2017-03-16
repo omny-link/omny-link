@@ -63,7 +63,7 @@ public class StockCategory implements ShortStockCategory, Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
-    @JsonView(StockCategoryViews.Summary.class)
+    @JsonView({StockCategoryViews.Summary.class, StockItemViews.Detailed.class})
     private Long id;
 
     @JsonProperty
