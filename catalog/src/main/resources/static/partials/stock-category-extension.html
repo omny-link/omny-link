@@ -15,6 +15,8 @@
                   {{#type=='multi-select'}}multiple="{{multiple}}" data-key="{{name}}" data-value="{{current.customFields[name]}}"
                   {{else}}value="{{current.customFields[name]}}"
                   {{/}}></select>
+            {{elseif type=='list'}}
+              <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}s" value="{{current.customFields[name]}}">
             {{else}}
               <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
             {{/}}
@@ -34,6 +36,8 @@
                   {{#type=='multi-select'}}multiple="{{multiple}}" data-key="{{name}}" data-value="{{current.customFields[name]}}"
                   {{else}}value="{{current.customFields[name]}}"
                   {{/}}></select>
+            {{elseif type=='list'}}
+              <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}s" value="{{current.customFields[name]}}">
             {{else}}
               <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
             {{/}}
