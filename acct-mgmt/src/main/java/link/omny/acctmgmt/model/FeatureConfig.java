@@ -36,6 +36,7 @@ public class FeatureConfig {
     private boolean orderItems = false;
     private boolean merge = false;
     private boolean poweredBy = true;
+    private boolean phone3 = false;
     @Column(name = "REFS")
     private boolean references = false;
     private boolean socialContact = true;
@@ -131,6 +132,9 @@ public class FeatureConfig {
             break;
         case "orderItems":
             setOrderItems(b);
+            break;
+        case "phone3":
+            setPhone3(b);
             break;
         case "poweredBy":
             setPoweredBy(b);

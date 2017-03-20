@@ -128,17 +128,17 @@ public class Contact implements Serializable {
     @JsonProperty
     private String uuid;
 
-    /**
-     */
     @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
     @JsonProperty
     private String phone1;
 
-    /**
-     */
     @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
     @JsonProperty
     private String phone2;
+
+    @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
+    @JsonProperty
+    private String phone3;
 
     @JsonProperty
     private String address1;

@@ -207,6 +207,12 @@
 	            <label class="col-md-4 col-sm-4">{{#tenant.strings.phone2}}{{tenant.strings.phone2}}{{else}}Alternate Phone{{/}}:</label>
 	            <input class="form-control" id="curPhone2" pattern="\+?[0-9, \-()]{0,15}" type="tel" value="{{current.phone2}}">
 	          </li>
+            {{#tenant.show.phone3}}
+              <li>
+                <label class="col-md-4 col-sm-4">{{#tenant.strings.phone3}}{{tenant.strings.phone3}}{{else}}Third Phone{{/}}:</label>
+                <input class="form-control" id="curPhone3" pattern="\+?[0-9, \-()]{0,15}" type="tel" value="{{current.phone3}}">
+              </li>
+            {{/}}
 	          {{#tenant.show.marketing}}
 	            <li>
 	              <label class="col-md-4 col-sm-4">{{#tenant.strings.doNotCall}}{{tenant.strings.doNotCall}}{{else}}Do Not Call{{/}}:</label>
