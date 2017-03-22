@@ -73,63 +73,63 @@ public class StockCategory implements ShortStockCategory, Serializable {
     private String name;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     @Lob
     private String description;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     private String address1;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     private String address2;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     private String town;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     private String countyOrCity;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Summary.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     private String postCode;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     private String country;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     private Double lat;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     private Double lng;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     @Transient
     private String tags;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     private String mapUrl;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     @Lob
     private String directionsByRoad;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     @Lob
     private String directionsByPublicTransport;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     @Lob
     private String directionsByAir;
 
@@ -138,7 +138,7 @@ public class StockCategory implements ShortStockCategory, Serializable {
     private String videoCode;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     @Size(max = 20)
     private String status;
     
@@ -146,7 +146,7 @@ public class StockCategory implements ShortStockCategory, Serializable {
      * A relative or absolute URL to a product sheet or brochure page, often a PDF.
      */
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     @Column(name="product_sheet")
     private String productSheetUrl;
 

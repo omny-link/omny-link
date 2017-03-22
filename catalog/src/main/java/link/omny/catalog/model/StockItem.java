@@ -124,7 +124,6 @@ public class StockItem implements ShortStockItem, Serializable {
     @JsonProperty
     @JsonView({ OrderViews.Summary.class, StockCategoryViews.Detailed.class,
         StockItemViews.Detailed.class })
-
     private String status;
 
     @Temporal(TemporalType.TIMESTAMP)
