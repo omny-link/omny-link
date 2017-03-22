@@ -16,6 +16,13 @@ import link.omny.catalog.model.StockItem;
 
 public class CatalogStepDefs extends IntegrationTestSupport {
 
+    private int stockItemCount;
+
+    public CatalogStepDefs() {
+        super();
+        stockItemCount = Integer.parseInt(properties.getProperty("kp.app.stockItemCount"));
+    }
+
     @Then("^the call took less than (\\d+)ms$")
     public void the_call_took_less_than_ms(int max) throws Throwable {
         assertTrue(latestTiming < max);
@@ -45,7 +52,7 @@ public class CatalogStepDefs extends IntegrationTestSupport {
     public void a_list_of_stock_item__summaries__is_returned() throws Throwable {
         latestResponse.statusCodeIs(HttpStatus.OK);
         StockItem[] items = (StockItem[]) latestResponse.parseArray(StockItem.class);
-        assertEquals(3891, items.length);
+        assertEquals(stockItemCount, items.length);
         assertEquals(0, items[0].getCustomFields().size());
     }
     
@@ -67,6 +74,8 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         StockCategory cat = ((StockCategory[]) latestResponse.latestObject())[0];
         assertNotNull(cat);
         assertEquals(categoryName, cat.getName());
+        assertStockCategoryFieldsPresent(cat);
+
         assertEquals(itemCount, cat.getStockItems().size());
         assertEquals(imageCount, cat.getImages().size());
         for (MediaResource resource : cat.getImages()) {
@@ -132,6 +141,7 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         StockItem item = (StockItem) latestResponse.parseObject(StockItem.class);
         assertNotNull(item.getStockCategory());
         assertEquals(category, item.getStockCategory().getName());
+        assertStockCategoryFieldsPresent(item.getStockCategory());
     }
 
     @When("^the item status is updated to \"([^\"]*)\"$")
@@ -151,16 +161,26 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         latestResponse.statusCodeIs(HttpStatus.OK);
         StockCategory category = (StockCategory) latestResponse.parseObject(StockCategory.class);
         assertEquals(town, category.getName());
-        assertNotNull(category.getName());
+        assertStockCategoryFieldsPresent(category);
+    }
+
+    private void assertStockCategoryFieldsPresent(StockCategory category) {
         assertNotNull(category.getDescription());
         assertNotNull(category.getStatus());
         assertNotNull(category.getAddress1());
         assertNotNull(category.getPostCode());
+        assertNotNull(category.getLat());
+        assertNotNull(category.getLng());
+        assertNotNull(category.getMapUrl());
         assertNotNull(category.getTags());
         assertNotNull(category.getDirectionsByAir());
         assertNotNull(category.getDirectionsByPublicTransport());
         assertNotNull(category.getDirectionsByRoad());
         assertNotNull(category.getCustomFields());
+
+//        assertNotNull(category.getCustomFieldValue("leaseType"));
+//        assertNotNull(category.getCustomFieldValue("licenceType"));
+ //       assertNotNull(category.getCustomFieldValue("facilityTags"));
     }
 
 }

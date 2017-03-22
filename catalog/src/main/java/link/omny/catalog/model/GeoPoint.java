@@ -1,9 +1,10 @@
 package link.omny.catalog.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.NoArgsConstructor;
 
 /**
  * A tuple to hold latitude and longitude of a location.
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class GeoPoint {
 
     @JsonProperty
