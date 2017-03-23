@@ -1035,6 +1035,22 @@ ul.json li label {
 
 /* SVG DIAGRAMS */
 
+div.bpmnDiagram {
+  overflow: auto;
+}
+
+rect.lane:nth-of-type(even) {
+  fill: #fff;
+}
+rect.lane:nth-of-type(odd) {
+	fill: #f9f9f9;
+}
+rect.participant {
+  fill: #b7b7b7;
+}
+ /*   grey 3:    939598;
+ *   grey 4:    b7b7b7*/
+
 text {
   font-family: Roboto, sans-serif;
   font-weight: 400;
@@ -1047,6 +1063,7 @@ text.startEvent {
 	/*fill: #0e9acd;*/
 	fill: #666;
 	stroke-width: 0px;
+
 }
 
 text.callActivity,
@@ -1056,6 +1073,7 @@ text.receiveTask,
 text.scriptTask,
 text.sendTask,
 text.serviceTask,
+text.task,
 text.userTask {
   fill: #fff;
   stroke-width: 0px;

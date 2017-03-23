@@ -15,8 +15,11 @@ public interface ProcessModelRepository extends
         CrudRepository<ProcessModel, String> {
 
     @Override
-    @Query("SELECT m FROM ProcessModel m INNER JOIN m.issues i WHERE m.id = ?1")
-    public ProcessModel findOne(String id);
+    @Query("SELECT m FROM ProcessModel m INNER JOIN m.issues i WHERE m.id = :id")
+    public ProcessModel findOne(@Param("id") String id);
+
+    @Query("SELECT m FROM ProcessModel m WHERE m.id LIKE CONCAT(:id,'%') AND m.tenantId = :tenantId AND m.version = (SELECT MAX(n.version) FROM ProcessModel n WHERE n.id LIKE CONCAT(:id,'%') AND n.tenantId = :tenantId)")
+    ProcessModel findLatestForTenant(@Param("id") String id, @Param("tenantId") String tenantId);
 
     @Query("SELECT c FROM ProcessModel c WHERE c.tenantId = :tenantId ORDER BY c.lastUpdated DESC")
     List<ProcessModel> findAllForTenant(@Param("tenantId") String tenantId);

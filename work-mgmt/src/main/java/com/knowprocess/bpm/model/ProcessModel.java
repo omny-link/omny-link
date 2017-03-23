@@ -15,10 +15,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Data
 @Entity
@@ -114,7 +114,6 @@ public class ProcessModel implements
     }
 
     public void setIssuesAsString(String issues2) {
-        System.out.println(issues2);
         String[] tmpIssues = issues2.split("\n");
         for (String issue : tmpIssues) {
             issue = issue.trim();

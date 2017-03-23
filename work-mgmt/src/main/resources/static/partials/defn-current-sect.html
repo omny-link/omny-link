@@ -25,7 +25,7 @@
       <tr>
         <th>Id</th>
         {{#current.category}}<th>Category</th>{{/}}
-        <th>Deployed At</th>
+        {{#current.deployment.deploymentTime}}<th>Deployed At</th>{{/}}
         <th>Hash</th>
         <th>Deployment Id</th>
         {{#current.deployment.name}}<th>Deployment</th>{{/}}
@@ -38,7 +38,7 @@
         {{#current.category}}<td>{{current.category}}</td>{{/}}
         {{#current.deployment.deploymentTime}}<td>{{formatDateTime(current.deployment.deploymentTime)}}</td>{{/}}
         <td>{{current.md5Hash}};</td>
-        {{#current.deploymentId}}<td>{{current.deploymentId}}</td>{{else}}Incomplete model cannot be run{{/}}
+        {{#current.deploymentId}}<td>{{current.deploymentId}}</td>{{else}}<td>Incomplete model cannot be run</td>{{/}}
         {{#current.deployment.name}}<td>{{current.deployment.name}}</td>{{/}}
         <td>{{!current.suspended}}</td>
       </tr>
@@ -50,46 +50,49 @@
     </ul>
   {{/}}
   {{#if current.id}}
-    <div id="curImage">{{{current.image}}}</div>
-    {{#if selectedBpmnObject}}
-      <h3>
-        <span>Properties</span>
-      </h3>
-      <table id="propertiesTable" style="width:100%">
-        <thead>
-          <tr>
-            {{#if hasRole('admin') }}<th class="a-secondary-label control-label">Id</th>{{/if}}
-            <th class="a-secondary-label control-label">Name</th>
-            <th class="a-secondary-label control-label">Type</th>
-            {{#selectedBpmnObject.calledElement}}<th class="a-secondary-label control-label">Calls</th>{{/}}
-            {{#selectedBpmnObject.condition}}<th class="a-secondary-label control-label">Condition</th>{{/}}
-            {{#selectedBpmnObject.resource}}<th class="a-secondary-label control-label">Resource</th>{{/}}
-            {{#selectedBpmnObject.script}}<th class="a-secondary-label control-label">Script</th>{{/}}
-            {{#selectedBpmnObject.serviceType}}<th class="a-secondary-label control-label">Service Type</th>{{/}}
-            {{#selectedBpmnObject.timerCycle}}<th class="a-secondary-label control-label">Timer Cycle</th>{{/}}
-            {{#selectedBpmnObject.timerDate}}<th class="a-secondary-label control-label">Timer Date</th>{{/}}
-            {{#selectedBpmnObject.timerDuration}}<th class="a-secondary-label control-label">Timer Duration</th>{{/}}
-            <!--th>Actions</th-->
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            {{#if hasRole('admin') }}<td class="col-md-1">{{selectedBpmnObject.id}}</td>{{/if}}
-            <td class="col-md-1">{{#selectedBpmnObject.name}}{{selectedBpmnObject.name}}{{else}}n/a{{/}}</td>
-            <td class="col-md-1">{{selectedBpmnObject.type}}</td>
-            {{#selectedBpmnObject.calledElement}}<td class="col-md-1">{{selectedBpmnObject.calledElement}}</td>{{/}}
-            {{#selectedBpmnObject.condition}}<td class="col-md-1">{{selectedBpmnObject.condition}}</td>{{/}}
-            {{#selectedBpmnObject.resource}}<td class="col-md-1">{{selectedBpmnObject.resource}}</td>{{/}}
-            {{#selectedBpmnObject.script}}<td class="col-md-4"><pre>{{selectedBpmnObject.script}}</pre></td>{{/}}
-            {{#selectedBpmnObject.serviceType}}<td class="col-md-1">{{selectedBpmnObject.serviceType}}</td>{{/}}
-            {{#selectedBpmnObject.timerCycle}}<td class="col-md-1">{{selectedBpmnObject.timerCycle}}</td>{{/}}
-            {{#selectedBpmnObject.timerDate}}<td class="col-md-1">{{selectedBpmnObject.timerDate}}</td>{{/}}
-            {{#selectedBpmnObject.timerDuration}}<td class="col-md-1">{{selectedBpmnObject.timerDuration}}</td>{{/}}
-            <!--td>&nbsp;</td-->
-          </tr>
-        </tbody>
-      </table>
-    {{/if}}
+    {{# current.diagrams:i}}
+      <h3>Diagram: {{current.diagrams[i].name}}</h3>
+      <div class="bpmnDiagram">{{{current.diagrams[i].image}}}</div>
+      {{#if selectedBpmnObject}}
+        <h3>
+          <span>Properties</span>
+        </h3>
+        <table id="propertiesTable" style="width:100%">
+          <thead>
+            <tr>
+              {{#if hasRole('admin') }}<th class="a-secondary-label control-label">Id</th>{{/if}}
+              <th class="a-secondary-label control-label">Name</th>
+              <th class="a-secondary-label control-label">Type</th>
+              {{#selectedBpmnObject.calledElement}}<th class="a-secondary-label control-label">Calls</th>{{/}}
+              {{#selectedBpmnObject.condition}}<th class="a-secondary-label control-label">Condition</th>{{/}}
+              {{#selectedBpmnObject.resource}}<th class="a-secondary-label control-label">Resource</th>{{/}}
+              {{#selectedBpmnObject.script}}<th class="a-secondary-label control-label">Script</th>{{/}}
+              {{#selectedBpmnObject.serviceType}}<th class="a-secondary-label control-label">Service Type</th>{{/}}
+              {{#selectedBpmnObject.timerCycle}}<th class="a-secondary-label control-label">Timer Cycle</th>{{/}}
+              {{#selectedBpmnObject.timerDate}}<th class="a-secondary-label control-label">Timer Date</th>{{/}}
+              {{#selectedBpmnObject.timerDuration}}<th class="a-secondary-label control-label">Timer Duration</th>{{/}}
+              <!--th>Actions</th-->
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {{#if hasRole('admin') }}<td class="col-md-1">{{selectedBpmnObject.id}}</td>{{/if}}
+              <td class="col-md-1">{{#selectedBpmnObject.name}}{{selectedBpmnObject.name}}{{else}}n/a{{/}}</td>
+              <td class="col-md-1">{{selectedBpmnObject.type}}</td>
+              {{#selectedBpmnObject.calledElement}}<td class="col-md-1">{{selectedBpmnObject.calledElement}}</td>{{/}}
+              {{#selectedBpmnObject.condition}}<td class="col-md-1">{{selectedBpmnObject.condition}}</td>{{/}}
+              {{#selectedBpmnObject.resource}}<td class="col-md-1">{{selectedBpmnObject.resource}}</td>{{/}}
+              {{#selectedBpmnObject.script}}<td class="col-md-4"><pre>{{selectedBpmnObject.script}}</pre></td>{{/}}
+              {{#selectedBpmnObject.serviceType}}<td class="col-md-1">{{selectedBpmnObject.serviceType}}</td>{{/}}
+              {{#selectedBpmnObject.timerCycle}}<td class="col-md-1">{{selectedBpmnObject.timerCycle}}</td>{{/}}
+              {{#selectedBpmnObject.timerDate}}<td class="col-md-1">{{selectedBpmnObject.timerDate}}</td>{{/}}
+              {{#selectedBpmnObject.timerDuration}}<td class="col-md-1">{{selectedBpmnObject.timerDuration}}</td>{{/}}
+              <!--td>&nbsp;</td-->
+            </tr>
+          </tbody>
+        </table>
+      {{/if}}
+    {{/}}
   {{/if current.id}}
   {{#current.deploymentId}}
     {{>instanceListSect}}

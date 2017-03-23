@@ -243,7 +243,6 @@ public class DeploymentController {
                 end = entry.getValue().indexOf("'", start);
             }
             String id = entry.getValue().substring(start, end);
-            model.setId(id);
             // model.setDeploymentId(deploymentId);
             model.setTenantId(tenantId);
 
@@ -252,6 +251,14 @@ public class DeploymentController {
                 LOGGER.debug("ISSUES: " + issues);
             }
             model.setIssuesAsString(issues);
+
+            ProcessModel latestExisting = processModelRepo.findLatestForTenant(id, tenantId);
+            if (latestExisting == null) {
+                model.setVersion(1);
+            } else {
+                model.setVersion(latestExisting.getVersion()+1);
+            }
+            model.setId(id+":"+model.getVersion());
 
             createModel(model);
         }

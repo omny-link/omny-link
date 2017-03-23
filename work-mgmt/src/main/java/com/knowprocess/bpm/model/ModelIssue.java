@@ -11,10 +11,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
@@ -23,6 +26,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ModelIssue implements Serializable {
 
     private static final long serialVersionUID = -6918729558177212977L;
+    
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(ModelIssue.class);
 
     @Id
     @Column(name = "id")
@@ -47,9 +53,14 @@ public class ModelIssue implements Serializable {
     private ProcessModel model;
 
     public ModelIssue(String issue) {
-        level = issue.substring(0, issue.indexOf(':')).trim();
-        description = issue.substring(issue.indexOf(':') + 1).trim();
-        modelRef = issue.substring(issue.lastIndexOf(':') + 1).trim();
+        try {
+            level = issue.substring(0, issue.indexOf(':')).trim();
+            description = issue.substring(issue.indexOf(':') + 1).trim();
+            modelRef = issue.substring(issue.lastIndexOf(':') + 1).trim();
+        } catch (IndexOutOfBoundsException e) { 
+            LOGGER.error(String.format("Unable to parse issue from %1$s", issue));
+            description = issue;
+        }
     }
 
 }
