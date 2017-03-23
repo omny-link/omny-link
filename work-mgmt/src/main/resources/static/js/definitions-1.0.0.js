@@ -105,6 +105,8 @@ var ractive = new AuthenticatedRactive({
           || (obj.description!=undefined && obj.description.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.id.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (searchTerm.startsWith('category:') && obj.category!=undefined && obj.category.indexOf(ractive.get('searchTerm').substring(9))!=-1)
+          || (searchTerm.startsWith('!executable') && (obj.deploymentId==undefined || obj.deploymentId==''))
+          || (searchTerm.startsWith('executable') && obj.deploymentId!=undefined && obj.deploymentId!='')
           || (searchTerm.startsWith('version:latest') && ractive.isLatestVersion(obj))
         );
       }
@@ -289,23 +291,31 @@ var ractive = new AuthenticatedRactive({
       }
     });
   },
-  fetchImage: function(definition) {
-    console.info('fetchImage');
-    $.get(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'.svg', function( data ) {
-      console.log('found image');
-      ractive.set('current.image',data);
-      $('.event').on('mouseover',ractive.showSelection);
-      $('.gateway').on('mouseover',ractive.showSelection);
-      $('.flow').on('mouseover',ractive.showSelection);
-      $('.task').on('mouseover',ractive.showSelection);
-      $('[data-called-element]').attr('class',$('[data-called-element]').attr('class')+' clickable');
-      $('[data-called-element]').click(function(ev) {
-        console.log('drill down to call activity');
-        console.log('selected: '+JSON.stringify($(ev.target)));
-        console.log('selected: '+ev.target.attributes['data-called-element'].value);
-        ractive.select(ractive.find(ev.target.attributes['data-called-element'].value));
-      });
-    }, 'text');
+  fetchDiagrams: function(definition) {
+    console.info('fetchDiagrams');
+    for (idx in ractive.get('current.diagramIds')) {
+      var diagId = ractive.get('current.diagramIds.'+idx);
+      console.log('  fetch diagram: '+diagId);
+      $.get(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'/'+diagId+'.svg', function( data, textStatus, jqXHR ) {
+        try {
+          var diagDoc = $.parseXML(data);
+          var diagId = diagDoc.getElementsByTagName('svg')[0].id;
+          var diagName = diagDoc.getElementsByTagName('svg')[0].attributes['name'].value;
+          console.log('found diagram: '+diagId);
+          ractive.splice('current.diagrams',ractive.get('current.diagramIds').indexOf(diagId),0, { id: diagId, name: diagName, image: data });
+          $('.event, .dataStoreReference, .flow, .gateway, .lane, .participant, .task').on('mouseover',ractive.showSelection);
+          $('[data-called-element]').attr('class',$('[data-called-element]').attr('class')+' clickable');
+          $('[data-called-element]').click(function(ev) {
+            console.log('drill down to call activity');
+            console.log('selected: '+JSON.stringify($(ev.target)));
+            console.log('selected: '+ev.target.attributes['data-called-element'].value);
+            ractive.select(ractive.find(ev.target.attributes['data-called-element'].value));
+          });
+        } catch (e) { 
+          console.error('  e:'+e);
+        }
+      }, 'text');
+    }
   },
   fetchInstances: function() {
     console.log('fetch instances');
@@ -358,9 +368,10 @@ var ractive = new AuthenticatedRactive({
 //    ractive.set('saveObserver',false);
     $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id, function( data ) {
       console.log('found definition '+JSON.stringify(data));
+      data.diagrams = [];
       ractive.set('current',data);
       ractive.toggleResults();
-      ractive.fetchImage(ractive.get('current'));
+      ractive.fetchDiagrams(ractive.get('current'));
       //      ractive.set('saveObserver',true);
       if (ractive.get('current').deploymentId==null) {
         ractive.fetchIssues(ractive.get('current'));

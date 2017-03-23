@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Nonnull;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -26,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TransformTask implements JavaDelegate {
-	private static final int MAX_VAR_LENGTH = 4000;
 	private static final TransformerFactory factory = TransformerFactory
 			.newInstance();
     protected static final Logger LOGGER = LoggerFactory
@@ -38,7 +39,7 @@ public class TransformTask implements JavaDelegate {
 	private FixedValue xsltParamsField;
 	private FixedValue xsltField;
 	private FixedValue outputField;
-	private Transformer[] transformers;
+	private Templates[] templates;
 
 	public TransformTask() {
 		super();
@@ -56,12 +57,13 @@ public class TransformTask implements JavaDelegate {
         LOGGER.info(String.format("Setting up pre-processors %1$s",
                 xsltResources));
         String[] resources = xsltResources.split(",");
-		transformers = new Transformer[resources.length];
+		templates = new Templates[resources.length];
 		for (int i = 0; i < resources.length; i++) {
 			InputStream is = null;
 			try {
 				is = getClass().getResourceAsStream(resources[i]);
-				transformers[i] = factory.newTransformer(new StreamSource(is));
+				templates[i] = factory.newTemplates(new StreamSource(is));
+				assert (templates[i]!=null);
 			} finally {
 				try {
 					is.close();
@@ -76,39 +78,35 @@ public class TransformTask implements JavaDelegate {
 		return transform(xml, new HashMap<String, String>());
 	}
 
-	public String transform(String xml, Map<String, String> params) {
+	public String transform(@Nonnull String xml, Map<String, String> params) {
 		try {
-			for (Transformer t : transformers) {
+			for (Templates t : templates) {
 				Source xmlSource = new StreamSource(
 						new StringReader(xml.trim()));
-				xml = transformOnce(t, xmlSource, params);
+				xml = transformOnce(t.newTransformer(), xmlSource, params);
 			}
-		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    throw new ActivitiException("Unable to perform XSLT transformation", e);
 		}
-		System.out.println("transform result: " + xml);
+		if (LOGGER.isDebugEnabled()) {
+		    LOGGER.debug("transform result: " + xml);
+		}
 		return xml;
 	}
 
 	public String transform(Source xmlSource, Map<String, String> params) {
 		String xml = null;
 		try {
-			for (Transformer t : transformers) {
-				xml = transformOnce(t, xmlSource, params);
+			for (Templates t : templates) {
+				xml = transformOnce(t.newTransformer(), xmlSource, params);
 				xmlSource = new StreamSource(new StringReader(xml.trim()));
 			}
-		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    throw new ActivitiException("Unable to perform XSLT transformation", e);
 		}
-		System.out.println("transform result: " + xml);
+		if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("transform result: " + xml);
+        }
 		return xml;
 	}
 
@@ -152,8 +150,10 @@ public class TransformTask implements JavaDelegate {
 		String outputVarName = outputField == null ? "resource" : outputField
 				.getExpressionText();
 		String result = transform(resource, params);
-		System.out.println("result: " + result);
-		// TODO GARBAGE! Cant do this in every case !
+		if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("transform result: " + result);
+        }
+		// TODO GARBAGE! Can't do this in every case !
 		String[] msgs = result.split("\n");
 		List<String> errors = new ArrayList<String>();
 		List<String> messages = new ArrayList<String>();
@@ -164,14 +164,6 @@ public class TransformTask implements JavaDelegate {
 				messages.add(msg.trim());
 			}
 		}
-		// if (result.length() > MAX_VAR_LENGTH) {
-		// // we have a problem, cannot store in the standard Activiti DB
-		//
-		// String msg = "Resource is too large (" + result.length()
-		// + " bytes) to store as a process variable: " + resource;
-		// System.out.println(msg);
-		// // throw new ActivitiException(msg);
-		// }
 		execution.setVariable(outputVarName, result.getBytes());
 		execution.setVariable("errors", errors);
 		execution.setVariable("messages", messages);
@@ -179,7 +171,7 @@ public class TransformTask implements JavaDelegate {
 
 	public Map<String, List<String>> parseResults(String result) {
 		String[] messages = result.split("\\n", 0);
-		System.out.println("messages found: " + messages.length);
+		LOGGER.info("messages found: %1$d", messages.length);
 		Map<String, List<String>> map = new HashMap<String, List<String>>();
 		List<String> ignored = new ArrayList<String>();
 		List<String> passed = new ArrayList<String>();
@@ -200,9 +192,8 @@ public class TransformTask implements JavaDelegate {
 				ignored.add(msg);
 			}
 		}
-		System.err.println("ERRORS:" + errors.size());
-		System.err.println("IGNORED:" + ignored.size());
-		System.err.println("PASSED:" + passed.size());
+		LOGGER.info("Issues found: ERRORS: %1$d, IGNORED: %2$d, PASSED: %3$d", 
+		        errors.size(), ignored.size(), passed.size());
 		return map;
 	}
 }

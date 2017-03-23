@@ -10,8 +10,6 @@ import java.util.Scanner;
 
 import javax.persistence.Id;
 
-import lombok.Data;
-
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.form.StartFormData;
@@ -21,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
 
 @Data
 @Component
@@ -88,6 +88,8 @@ public class ProcessDefinition implements Serializable {
 
     private String md5Hash;
 
+    private List<String> diagramIds;
+    
     private List<String> messageNames;
 
     private String tenantId;
@@ -123,6 +125,11 @@ public class ProcessDefinition implements Serializable {
         setDiagramResourceName(pd.getDiagramResourceName());
         setSuspended(pd.isSuspended());
         setTenantId(pd.getTenantId());
+    }
+    
+    public ProcessDefinition(ProcessModel pd) {
+        this((org.activiti.engine.repository.ProcessDefinition) pd);
+        setBpmn(pd.getBpmnString());
     }
 
     // Autowiring static fields is obviously dangerous, but should be ok in this

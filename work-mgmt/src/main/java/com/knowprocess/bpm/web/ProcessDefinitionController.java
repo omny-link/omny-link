@@ -2,7 +2,10 @@ package com.knowprocess.bpm.web;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.transform.TransformerConfigurationException;
 
@@ -34,6 +37,8 @@ public class ProcessDefinitionController {
             .getLogger(ProcessDefinitionController.class);
 
     private static final String MSG_INTROSPECTOR_RESOURCES = "/static/xslt/bpmn2msgs.xslt";
+    
+    private static final String DIAG_INTROSPECTOR_RESOURCES = "/static/xslt/bpmn2diags.xslt";
 
     private static final String RENDERER_RESOURCES = "/static/xslt/bpmn2svg.xslt";
 
@@ -44,8 +49,10 @@ public class ProcessDefinitionController {
     private ProcessModelRepository processModelRepo;
 
     private TransformTask messageIntrospector;
+    
+    private TransformTask diagramIntrospector;
 
-    private TransformTask renderer;
+    private static TransformTask renderer;
 
     @RequestMapping(value = "/", method = RequestMethod.POST, consumes = "application/json")
     public @ResponseBody ProcessDefinition define(
@@ -97,15 +104,14 @@ public class ProcessDefinitionController {
             pd = ProcessDefinition.findProcessDefinition(id);
 
             // TODO why no API to get event subscriptions of proc def
-            String bpmn = ProcessDefinition.findProcessDefinitionAsBpmn(id);
-            String[] msgNames = getMessageIntrospector().transform(bpmn).split(",");
+            pd.setBpmn(ProcessDefinition.findProcessDefinitionAsBpmn(id));
+            String[] msgNames = getMessageIntrospector().transform(
+                    pd.getBpmn()).split(",");
             for (String name : msgNames) {
                 if (name != null && name.length() > 0) {
                     pd.addMessageName(name);
                 }
             }
-
-            pd.setMd5Hash(Md5HashUtils.getHash(bpmn));
 
             pd.setDeployment(new Deployment(processEngine
                     .getRepositoryService().createDeploymentQuery()
@@ -116,6 +122,8 @@ public class ProcessDefinitionController {
             // assume this is an incomplete model....
             pd = new ProcessDefinition(processModelRepo.findOne(id));
         }
+        pd.setMd5Hash(Md5HashUtils.getHash(pd.getBpmn()));
+        pd.setDiagramIds(Arrays.asList(getDiagramIntrospector().transform(pd.getBpmn()).split(",")));
         return pd;
     }
 
@@ -185,12 +193,7 @@ public class ProcessDefinitionController {
         return processModelRepo.findOne(id).getIssues();
     }
 
-    @RequestMapping(value = "/{id}.bpmn", method = RequestMethod.GET, /*
-                                                                       * headers
-                                                                       * =
-                                                                       * "Accept=application/xml"
-                                                                       * ,
-                                                                       */produces = "application/xml")
+    @RequestMapping(value = "/{id}.bpmn", method = RequestMethod.GET, produces = "application/xml")
     public @ResponseBody String showBpmn(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id) {
@@ -209,12 +212,13 @@ public class ProcessDefinitionController {
         return ProcessDefinition.findProcessDefinitionDiagram(id);
     }
 
-    @RequestMapping(value = "/{id}.svg", method = RequestMethod.GET, produces = "image/svg+xml")
+    @RequestMapping(value = "/{id}/{diagramId}.svg", method = RequestMethod.GET, produces = "image/svg+xml")
     public @ResponseBody byte[] showBpmnDiagramAsSvg(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("id") String id) throws IOException {
-        LOGGER.info(String.format("%1$s BPMN with id %2$s", RequestMethod.GET,
-                id));
+            @PathVariable("id") String id, 
+            @PathVariable("diagramId") String diagramId) throws IOException {
+        LOGGER.info(String.format("%1$s BPMN with id %2$s, diagram: %3$s", 
+                RequestMethod.GET, id, diagramId));
 
         String bpmn = null;
         try {
@@ -222,47 +226,10 @@ public class ProcessDefinitionController {
         } catch (Exception e) {
             bpmn = processModelRepo.findOne(id).getBpmnString();
         }
-        // XPathFactory factory = XPathFactory.newInstance();
-        // XPath xpath = factory.newXPath();
-        // DocumentBuilderFactory documentBuilderFactory =
-        // DocumentBuilderFactory
-        // .newInstance();
-        // InputStream is = null;
-        // try {
-        // DocumentBuilder documentBuilder = documentBuilderFactory
-        // .newDocumentBuilder();
-        // is = new ByteArrayInputStream(bpmn.getBytes());
-        // Document document = documentBuilder.parse(is);
-        //
-        // XPathExpression lastParticipantExpr = xpath
-        // .compile("//bpmn:participant[position()=last()]/@id");
-        // String partId = (String) lastParticipantExpr.evaluate(document,
-        // XPathConstants.STRING);
-        // XPathExpression expr = xpath
-        // .compile(String
-        // .format("sum(//bpmndi:BPMNShape[@bpmnElement=bpmn:participant/@id]/dc:Bounds/@height)",
-        // partId));
-        // Object evaluate = expr.evaluate(document);
-        // System.out.println("  eval:" + evaluate);
-        // XPathExpression expr2 = xpath
-        // .compile(String
-        // .format("//bpmndi:BPMNShape[@bpmnElement=//bpmn:participant/@id]/dc:Bounds/@height",
-        // partId));
-        // NodeList evaluate2 = (NodeList) expr2
-        // .evaluate(document, XPathConstants.NODESET);
-        // for (int i = 0; i < evaluate2.getLength(); i++) {
-        // Node item = evaluate2.item(i);
-        // System.out.println("  item: " + item);
-        // }
-        // } catch (XPathExpressionException | ParserConfigurationException
-        // | SAXException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } finally {
-        // is.close();
-        // }
 
-        return getProcessRenderer().transform(bpmn).getBytes();
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("diagramId", diagramId);
+        return getProcessRenderer().transform(bpmn, params).getBytes();
     }
 
     private TransformTask getMessageIntrospector() {
@@ -281,8 +248,24 @@ public class ProcessDefinitionController {
         return messageIntrospector;
     }
 
-    private TransformTask getProcessRenderer() {
-        if (renderer == null) {
+    private TransformTask getDiagramIntrospector() {
+        if (diagramIntrospector == null) {
+            diagramIntrospector = new TransformTask();
+            try {
+                diagramIntrospector
+                        .setXsltResources(DIAG_INTROSPECTOR_RESOURCES);
+            } catch (TransformerConfigurationException e) {
+                LOGGER.error(
+                        String.format(
+                                "Unable to locate diagramIntrospector pre-processors: %1$s",
+                                RENDERER_RESOURCES), e);
+            }
+        }
+        return diagramIntrospector;
+    }
+    
+    private synchronized TransformTask getProcessRenderer() {
+//        if (renderer == null) {
             renderer = new TransformTask();
             try {
                 renderer.setXsltResources(RENDERER_RESOURCES);
@@ -291,7 +274,7 @@ public class ProcessDefinitionController {
                         "Unable to locate renderer pre-processors: %1$s",
                         RENDERER_RESOURCES), e);
             }
-        }
+//        }
         return renderer;
     }
 

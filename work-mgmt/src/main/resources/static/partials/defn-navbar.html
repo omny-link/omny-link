@@ -12,11 +12,15 @@
     <li on-click="search()">Show All</li>
     <li on-click="search('version:latest')">Latest Only</li>
     <li class="divider"></li>
+    <li on-click="search('category:alerts')">Alerts</li>
     <li on-click="search('category:custmgmt')">Contact</li>
     <li on-click="search('category:catalog')">Stock & Orders</li>
     <li on-click="search('category:support')">Support</li>
     <li on-click="search('category:website')">Web</li>
-    <li on-click="search('category:workmgmt')">Work</li>
+    <li on-click="search('category:casemgmt')">Work</li>
+    <li class="divider"></li>
+    <li on-click="search('!executable')">Documentation</li>
+    <li on-click="search('executable')">Executable</li>
     <li class="divider"></li>
     <li onclick="ractive.search('category:{{tenant.id}}')">{{tenant.id.toLabel()}} extensions</li>
   </ul>
