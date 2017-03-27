@@ -209,7 +209,7 @@ public class StockCategory implements ShortStockCategory, Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockCategory")
     @JsonDeserialize(using = JsonCustomStockCategoryFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     private List<CustomStockCategoryField> customFields;
 
     @JsonView(StockCategoryViews.Detailed.class)
