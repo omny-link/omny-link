@@ -39,9 +39,13 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 import link.omny.catalog.CatalogException;
+import link.omny.catalog.json.JsonCustomStockCategoryFieldDeserializer;
+import link.omny.catalog.model.CustomStockCategoryField;
 import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.MediaResource;
 import link.omny.catalog.model.StockCategory;
@@ -50,6 +54,7 @@ import link.omny.catalog.model.api.ShortStockCategory;
 import link.omny.catalog.model.api.ShortStockItem;
 import link.omny.catalog.repositories.StockCategoryRepository;
 import link.omny.catalog.views.StockCategoryViews;
+import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -488,6 +493,9 @@ public class StockCategoryController {
         private String country;
         private String distance;
         private List<? extends ShortStockItem> stockItems;
+        @JsonDeserialize(using = JsonCustomStockCategoryFieldDeserializer.class)
+        @JsonSerialize(using = JsonCustomFieldSerializer.class)
+        private List<CustomStockCategoryField> customFields;
         private List<MediaResource> images;
         private String tags;
         private String mapUrl;
