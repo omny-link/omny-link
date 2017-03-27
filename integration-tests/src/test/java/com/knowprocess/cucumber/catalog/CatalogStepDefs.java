@@ -16,13 +16,6 @@ import link.omny.catalog.model.StockItem;
 
 public class CatalogStepDefs extends IntegrationTestSupport {
 
-    private int stockItemCount;
-
-    public CatalogStepDefs() {
-        super();
-        stockItemCount = Integer.parseInt(properties.getProperty("kp.app.stockItemCount"));
-    }
-
     @Then("^the call took less than (\\d+)ms$")
     public void the_call_took_less_than_ms(int max) throws Throwable {
         assertTrue(latestTiming < max);
@@ -33,12 +26,12 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         executeGet(String.format("/%1$s/stock-categories/", tenantId));
     }
 
-    @Then("^a list of stock categories _summaries_ is returned$")
-    public void a_list_of_stock_categories__summaries__is_returned()
+    @Then("^a list of (\\d+) stock categories _summaries_ is returned$")
+    public void a_list_of_stock_categories__summaries__is_returned(int stockCategoryCount)
             throws Throwable {
         latestResponse.statusCodeIs(HttpStatus.OK);
         StockCategory[] categories = (StockCategory[]) latestResponse.parseArray(StockCategory.class);
-        assertEquals(59, categories.length);
+        assertEquals(stockCategoryCount, categories.length);
         assertEquals(0, categories[0].getStockItems().size());
         assertEquals(0, categories[0].getCustomFields().size());
     }
@@ -48,8 +41,8 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         executeGet(String.format("/%1$s/stock-items/", tenantId));
     }
     
-    @Then("^a list of stock item _summaries_ is returned$")
-    public void a_list_of_stock_item__summaries__is_returned() throws Throwable {
+    @Then("^a list of (\\d+) stock item _summaries_ is returned$")
+    public void a_list_of_stock_item__summaries__is_returned(int stockItemCount) throws Throwable {
         latestResponse.statusCodeIs(HttpStatus.OK);
         StockItem[] items = (StockItem[]) latestResponse.parseArray(StockItem.class);
         assertEquals(stockItemCount, items.length);
@@ -180,7 +173,7 @@ public class CatalogStepDefs extends IntegrationTestSupport {
 
 //        assertNotNull(category.getCustomFieldValue("leaseType"));
 //        assertNotNull(category.getCustomFieldValue("licenceType"));
- //       assertNotNull(category.getCustomFieldValue("facilityTags"));
+        assertNotNull(category.getCustomFieldValue("facilityTags"));
     }
 
 }
