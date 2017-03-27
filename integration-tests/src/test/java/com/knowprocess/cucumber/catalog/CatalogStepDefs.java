@@ -171,8 +171,8 @@ public class CatalogStepDefs extends IntegrationTestSupport {
         assertNotNull(category.getDirectionsByRoad());
         assertNotNull(category.getCustomFields());
 
-//        assertNotNull(category.getCustomFieldValue("leaseType"));
-//        assertNotNull(category.getCustomFieldValue("licenceType"));
+        assertNotNull(category.getCustomFieldValue("leaseType"));
+        assertNotNull(category.getCustomFieldValue("licenceType"));
         assertNotNull(category.getCustomFieldValue("facilityTags"));
     }
 
