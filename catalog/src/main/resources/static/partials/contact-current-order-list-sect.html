@@ -28,7 +28,9 @@
                 <th on-click="sortOrder:{{key}}" title="{{hint}}">{{label == undefined ? key.toLabel() : label}}<span class="sortable {{ sortedOrder('{{key}}') }} glyphicon"></span></th>
               {{/}}
             {{/if}}
-	          <th on-click ="sortOrder:invoiceRef" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">Invoice Ref<span class="sortable {{ sortedOrder('invoiceRef') }} glyphicon "></th>
+            {{#if tenant.show.orderInvoiceRef}}
+	            <th on-click ="sortOrder:invoiceRef" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">Invoice Ref<span class="sortable {{ sortedOrder('invoiceRef') }} glyphicon "></th>
+            {{/if}}
 	          {{#1==2}}<th on-click="sortOrder:created">Created<span class="sortable {{ sortedOrder('created') }} glyphicon "></th>{{/}}
 	          <th>Actions</th>
 	        </tr>
@@ -101,10 +103,12 @@
                   {{/if}}
                 {{/}}
               {{/if}}
-	            <td data-order-id="{{selfRef}}" data-key="invoiceRef">
-	              <span title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">{{invoiceRef}}</span>
-	              <input class="hidden form-control" placeholder="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}" value="{{invoiceRef}}"/>
-	            </td>
+              {{#if tenant.show.orderInvoiceRef}}
+                <td data-order-id="{{selfRef}}" data-key="invoiceRef">
+                  <span title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">{{invoiceRef}}</span>
+                  <input class="hidden form-control" placeholder="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}" value="{{invoiceRef}}"/>
+                </td>
+              {{/if}}
 		          <td class="actions">
 		            <a class="glyphicon glyphicon-pencil" aria-hidden="true" href="orders.html?searchTerm={{selfRef.substring(selfRef.lastIndexOf('/')+1)}}" target="_blank" title="Edit this record"></a>
                 <!--a class="glyphicon glyphicon-pencil" aria-hidden="true" on-click="toggleEditOrder(.)" title="Edit this record"></a-->

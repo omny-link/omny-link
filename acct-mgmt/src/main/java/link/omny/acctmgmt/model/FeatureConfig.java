@@ -33,6 +33,7 @@ public class FeatureConfig {
     private boolean offers = true;
     private boolean orders = false;
     private boolean orderDueDate = false;
+    private boolean orderInvoiceRef = true;
     private boolean orderItems = false;
     private boolean merge = false;
     private boolean poweredBy = true;
@@ -129,6 +130,9 @@ public class FeatureConfig {
             break;
         case "orderDueDate":
             setOrderDueDate(b);
+            break;
+        case "orderInvoiceRef":
+            setOrderInvoiceRef(b);
             break;
         case "orderItems":
             setOrderItems(b);
