@@ -375,6 +375,7 @@ var ractive = new AuthenticatedRactive({
     } else { 
       console.log('Skipping load as no _links.'+message.lastName);
       ractive.set('current', message);
+      ractive.initEditor();
       ractive.set('saveObserver',true);
     }
     ractive.toggleResults();
