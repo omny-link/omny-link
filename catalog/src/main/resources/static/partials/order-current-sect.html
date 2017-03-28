@@ -102,11 +102,13 @@
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.totalPriceHint}}{{tenant.strings.totalPriceHint}}{{else}}Total of price and VAT{{/}}</p>
           </li>
         {{/}}
-        <li class="form-group">
-          <label class="col-md-4 col-sm-4">Invoice Ref:</label>
-          <input class="form-control" id="curPrice" step="any" value="{{current.invoiceRef}}">
-          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference for {{tenant.strings.order.toLowerCase()}}{{/}}</p>
-        </li>
+        {{#if tenant.show.invoiceRef}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">Invoice Ref:</label>
+            <input class="form-control" id="curPrice" step="any" value="{{current.invoiceRef}}">
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference for {{tenant.strings.order.toLowerCase()}}{{/}}</p>
+          </li>
+        {{/if}}
       </ul>
     </div>
     <div id="currentOrderDesc" class="col-md-12 col-sm-12 col-xs-12">

@@ -25,7 +25,9 @@
         {{#tenant.show.stockPricing}}
           <th on-click="sort:price" style="width: 5em;" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}<span class="sortable {{ sorted('price') }} glyphicon "></th>
         {{/}}
-        <th on-click ="sort:invoiceRef" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">Invoice Ref<span class="sortable {{ sorted('invoiceRef') }} glyphicon "></th>
+        {{#if tenant.show.orderInvoiceRef}}
+          <th on-click ="sort:invoiceRef" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">Invoice Ref<span class="sortable {{ sorted('invoiceRef') }} glyphicon "></th>
+        {{/if}}
         <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon "></th>
         <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
         <th class="col-actions">Actions</th>
@@ -49,7 +51,9 @@
           {{#tenant.show.stockPricing}}
             <td on-click="edit(this)">{{price}}</td>
           {{/}}
-          <td on-click="edit(this)">{{invoiceRef}}</td>
+          {{#if tenant.show.invoiceRef}}
+            <td on-click="edit(this)">{{invoiceRef}}</td>
+          {{/if}}
           <td on-click="edit(this)">{{formatDate(created)}}</td>
           <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
           <td class="col-actions">
