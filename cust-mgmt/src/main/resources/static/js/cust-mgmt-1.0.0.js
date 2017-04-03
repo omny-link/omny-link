@@ -359,9 +359,9 @@ var ractive = new AuthenticatedRactive({
         msgs = 'An initial response is expected within '+ractive.get('tenant.serviceLevel.initialResponseThreshold')+' day(s) after which please update the stage.';
       }
     }
-    if (ractive.get('inactiveStages')().indexOf(ractive.get('current.stage').toLowerCase())==-1 && ractive.get('tenant.serviceLevel.inactivityThreshold')>0) {
-      if (new Date().getTime()-new Date(ractive.get('current.notes.0.created')).getTime()>(1000*60*60*24*ractive.get('tenant.serviceLevel.inactivityThreshold'))) {
-        var inactivityMsg = 'An updated note is expected every '+ractive.get('tenant.serviceLevel.inactivityThreshold')+' day(s) unless the lead is set inactive.';
+    if (ractive.get('inactiveStages')().indexOf(ractive.get('current.stage').toLowerCase())==-1 && ractive.get('tenant.serviceLevel.inactivityReminderThreshold')>0) {
+      if (new Date().getTime()-new Date(ractive.get('current.notes.0.created')).getTime()>(1000*60*60*24*ractive.get('tenant.serviceLevel.inactivityReminderThreshold'))) {
+        var inactivityMsg = 'An updated note is expected every '+ractive.get('tenant.serviceLevel.inactivityReminderThreshold')+' day(s) unless the lead is set inactive.';
         $('#notes').after('<div class="messages alert-danger">'+inactivityMsg+'</div>');
         if (msgs != undefined) msgs += '<br/>'; else msgs = '';
         msgs += inactivityMsg;

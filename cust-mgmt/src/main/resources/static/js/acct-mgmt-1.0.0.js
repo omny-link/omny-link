@@ -536,12 +536,12 @@ var ractive = new AuthenticatedRactive(
         }
         if (ractive.get('inactiveStages')().indexOf(
             ractive.get('current.stage').toLowerCase()) == -1
-            && ractive.get('tenant.serviceLevel.inactivityThreshold') > 0) {
+            && ractive.get('tenant.serviceLevel.inactivityReminderThreshold') > 0) {
           if (new Date().getTime()
               - new Date(ractive.get('current.notes.0.created')).getTime() > (1000 * 60 * 60 * 24 * ractive
-              .get('tenant.serviceLevel.inactivityThreshold'))) {
+              .get('tenant.serviceLevel.inactivityReminderThreshold'))) {
             var inactivityMsg = 'An updated note is expected every '
-                + ractive.get('tenant.serviceLevel.inactivityThreshold')
+                + ractive.get('tenant.serviceLevel.inactivityReminderThreshold')
                 + ' day(s) unless the lead is set inactive.';
             $('#notes').after(
                 '<div class="messages alert-danger">' + inactivityMsg
