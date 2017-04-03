@@ -68,7 +68,7 @@
 	  </thead>
 	  <tbody>
 	    {{#each sort(accounts,sortColumn,sortAsc):i}}
-	      {{# matchSearch(this) && matchFilter(this) }}
+	      {{# matchSearch(this) }}
 	        <tr class="{{stage.toSlug()}}" data-href="{{selfRef}}">
 	          <td on-click="edit(this)">{{i+1}}</td>
 	          {{#tenant.show.merge}}
