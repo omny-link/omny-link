@@ -14,15 +14,16 @@
     <li on-click="filter:{idx:1}">Show All</li>
     <li on-click="filter:{idx:2,field: 'stage', operator: '!in', value: {{inactiveStages()}}}">Show Active</li>
     <li on-click="filter:[{idx:3,field: 'stage', operator: '!in', value: {{inactiveStages()}}},{idx:3,field: 'owner', value: {{profile.id}}}]">Show Mine</li>
+    <li on-click="filter:[{idx:4,field: 'stage', operator: 'in', value: {{inactiveStages()}}},{idx:4,field: 'owner', value: {{profile.id}}}]">Show Mine (inactive)</li>
     {{#if tenant.show.stage}}
 	    <li class="divider"></li>
 	    {{#stages:i}}
-	      <li on-click="filter:{idx:{{5+i}},field: 'stage', value: '{{id}}'}">{{name}}</li>
+	      <li on-click="filter:{idx:{{6+i}},field: 'stage', value: '{{id}}'}">{{name}}</li>
 	    {{/stages}}
     {{/if}}
     <li class="divider"></li>
     {{#accountTypes:k}}
-      <li on-click="filter:{idx:{{5+(tenant.show.stage?1:0)+stages.length+k}},field: 'accountType', value: '{{id}}'}">{{name}}</li>
+      <li on-click="filter:{idx:{{6+(tenant.show.stage?1:0)+stages.length+k}},field: 'accountType', value: '{{id}}'}">{{name}}</li>
     {{/accountTypes}}
   </ul>
 </a>
