@@ -1,5 +1,6 @@
 package link.omny.custmgmt.repositories;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,10 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
     @Query("SELECT a FROM Account a WHERE (a.stage IS NULL OR a.stage != 'deleted') AND a.tenantId = :tenantId ORDER BY a.lastUpdated DESC")
     List<Account> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
+
+    @Query(value = "UPDATE Account a set a.stage = :stage WHERE (a.lastUpdated < :before OR a.lastUpdated IS NULL) AND a.stage != 'deleted'AND a.tenantId = :tenantId")
+    @Modifying(clearAutomatically = true)
+    int updateStage(@Param("stage") String stage, @Param("before") Date before, @Param("tenantId") String tenantId);
 
     @Override
     @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = :id")

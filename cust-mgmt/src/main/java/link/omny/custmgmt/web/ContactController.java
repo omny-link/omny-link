@@ -31,6 +31,7 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -50,6 +51,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.knowprocess.bpm.impl.DateUtils;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 import link.omny.custmgmt.internal.CsvImporter;
@@ -74,7 +76,7 @@ import lombok.EqualsAndHashCode;
 /**
  * REST web service for uploading and accessing a file of JSON Contacts (over
  * and above the CRUD offered by spring data).
- * 
+ *
  * @author Tim Stephenson
  */
 @Controller
@@ -113,10 +115,10 @@ public class ContactController extends BaseTenantAwareController{
 
     /**
      * Imports JSON representation of contacts.
-     * 
+     *
      * <p>
      * This is a handy link: http://shancarter.github.io/mr-data-converter/
-     * 
+     *
      * @param file
      *            A file posted in a multi-part request
      * @return The meta data of the added model
@@ -179,7 +181,7 @@ public class ContactController extends BaseTenantAwareController{
 
     /**
      * Return just the contacts for a specific tenant.
-     * 
+     *
      * @return contacts for that tenant.
      */
     @RequestMapping(value = "/contacts.csv", method = RequestMethod.GET, produces = "text/csv")
@@ -191,9 +193,24 @@ public class ContactController extends BaseTenantAwareController{
         return listForTenantAsCsv(tenantId, activeUser, page, limit);
     }
 
+    @RequestMapping(value = "/archive", method = RequestMethod.POST, headers = "Accept=application/json")
+    @Secured("ROLE_ADMIN")
+    @Transactional
+    public @ResponseBody Integer archiveContacts(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam(value = "before", required = false) String before) {
+        Date beforeDate = before == null
+                ? DateUtils.oneMonthAgo() : DateUtils.parseDate(before);
+        LOGGER.info(String.format(
+                "Place on hold contacts of %1$s older than %2$s", tenantId,
+                beforeDate.toString()));
+
+        return contactRepo.updateStage("On hold", beforeDate, tenantId);
+    }
+
     /**
      * Return just the contacts for a specific tenant.
-     * 
+     *
      * @return contacts for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
@@ -251,7 +268,7 @@ public class ContactController extends BaseTenantAwareController{
                     // contact.getMailsSent(),
                     contact.getTimeSinceValuation(), customFields.toString()));
         }
-        
+
         InputStreamResource inputStreamResource = new InputStreamResource(
                 new ByteArrayInputStream(sb.toString().getBytes()));
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -262,7 +279,7 @@ public class ContactController extends BaseTenantAwareController{
 
     /**
      * Return just the contacts for a specific tenant.
-     * 
+     *
      * @return contacts for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
@@ -313,7 +330,7 @@ public class ContactController extends BaseTenantAwareController{
 
     /**
      * Return just the 'mailable' contacts for a specific tenant.
-     * 
+     *
      * @return contacts for that tenant.
      */
     @RequestMapping(value = "/emailable", method = RequestMethod.GET)
@@ -339,7 +356,7 @@ public class ContactController extends BaseTenantAwareController{
     /**
      * Return just the matching contacts (probably will be one in almost every
      * case).
-     * 
+     *
      * @return contacts for that tenant.
      */
     @RequestMapping(value = "/searchByAccountNameLastNameFirstName", method = RequestMethod.GET, params = {
@@ -364,7 +381,7 @@ public class ContactController extends BaseTenantAwareController{
     /**
      * Return just the matching contacts (probably will be one in almost every
      * case).
-     * 
+     *
      * @return contacts for that tenant.
      */
     @RequestMapping(value = "/{lastName}/{firstName}/{accountName}", method = RequestMethod.GET)
@@ -381,7 +398,7 @@ public class ContactController extends BaseTenantAwareController{
     /**
      * Return just the matching contacts (probably will be one in almost every
      * case).
-     * 
+     *
      * @return contacts for that tenant with the specified email address.
      */
     @RequestMapping(value = "/searchByEmail", method = RequestMethod.GET, params = { "email" })
@@ -412,7 +429,7 @@ public class ContactController extends BaseTenantAwareController{
 
     /**
      * Return just the matching contacts.
-     * 
+     *
      * @return contacts for that tenant with the matching tag.
      */
     @RequestMapping(value = "/findByTag", method = RequestMethod.GET, params = { "tag" })
@@ -432,7 +449,7 @@ public class ContactController extends BaseTenantAwareController{
 
     /**
      * Return just the matching contact.
-     * 
+     *
      * @return the contact with this id.
      * @throws BusinessEntityNotFoundException
      */
@@ -449,7 +466,7 @@ public class ContactController extends BaseTenantAwareController{
 
     /**
      * Return all contacts associated with an account.
-     * 
+     *
      * @return contacts matching that account.
      * @throws BusinessEntityNotFoundException
      */
@@ -467,7 +484,7 @@ public class ContactController extends BaseTenantAwareController{
 
     /**
      * Return just the matching contact.
-     * 
+     *
      * @return contacts for that tenant with the matching tag.
      * @throws BusinessEntityNotFoundException
      */
@@ -486,11 +503,11 @@ public class ContactController extends BaseTenantAwareController{
 
     /**
      * Return contacts currently active on the site.
-     * 
+     *
      * <p>
      * TODO 'Currently' can be defined per tenant.
      * </p>
-     * 
+     *
      * @return contacts for that tenant with the matching tag.
      * @throws BusinessEntityNotFoundException
      */
@@ -532,7 +549,7 @@ public class ContactController extends BaseTenantAwareController{
 
     /**
      * Create a new contact.
-     * 
+     *
      * @return
      * @throws URISyntaxException
      */
@@ -840,11 +857,11 @@ public class ContactController extends BaseTenantAwareController{
 
     /**
      * Confirm a user's email by returning a code sent to that address.
-     * 
+     *
      * <p>
      * Note that this may be used interactively as well as API so return status
      * code 200 / 403 together with HTML for human consumption.
-     * 
+     *
      * @param tenantId
      *            The tenant this contact is associated with.
      * @param contactId

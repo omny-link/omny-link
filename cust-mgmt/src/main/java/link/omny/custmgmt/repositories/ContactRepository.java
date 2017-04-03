@@ -118,11 +118,15 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
 
     @Query(value = "UPDATE OL_CONTACT c set c.account_id = :accountId WHERE c.id = :contactId", nativeQuery = true)
     @Modifying(clearAutomatically = true)
-    public void setAccount(@Param("contactId") Long contactId, @Param("accountId") Long accountId);
+    void setAccount(@Param("contactId") Long contactId, @Param("accountId") Long accountId);
+
+    @Query(value = "UPDATE Contact c set c.stage = :stage WHERE (c.lastUpdated < :before OR c.lastUpdated IS NULL) AND c.stage != 'deleted' AND c.tenantId = :tenantId")
+    @Modifying(clearAutomatically = true)
+    int updateStage(@Param("stage") String stage, @Param("before") Date before, @Param("tenantId") String tenantId);
 
     @Override
     @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = :id")
     @Modifying(clearAutomatically = true)
-    public void delete(@Param("id") Long id);
+    void delete(@Param("id") Long id);
 
 }

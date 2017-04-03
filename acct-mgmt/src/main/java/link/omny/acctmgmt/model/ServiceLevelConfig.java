@@ -1,10 +1,10 @@
 package link.omny.acctmgmt.model;
 
-import lombok.Data;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+
+import lombok.Data;
 
 @Data
 public class ServiceLevelConfig {
@@ -14,6 +14,15 @@ public class ServiceLevelConfig {
 
     @Value("${omny.contact.inactiveStages:cold,complete,on hold,unqualified,waiting list" )
     private String[] inactiveStages;
+
+    /**
+     * Flag / alert when active records have this much inactivity.
+     */
+    private Integer inactivityReminderThreshold;
+
+    /**
+     * Set records to 'On holder' after this many days.
+     */
     private Integer inactivityThreshold;
     private Integer initialResponseThreshold;
 
@@ -21,6 +30,9 @@ public class ServiceLevelConfig {
         switch (name) {
         case "inactiveStages":
             setInactiveStages(((String) obj).split(","));
+            break;
+        case "inactivityReminderThreshold":
+            setInactivityReminderThreshold((Integer) obj);
             break;
         case "inactivityThreshold":
             setInactivityThreshold((Integer) obj);

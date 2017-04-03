@@ -91,4 +91,10 @@ curl -u tstephen:tstephen -v \
 curl -X POST -H 'Accept:application/json' -u tstephen:tstephen -v \
 -d 'json={ "lastName":"Burns", "firstName":"Charles Montgomery Third", "email":"mrburns@springfieldpower.com", "phone1":"44987654321", "type":"Enquiry", "message":"Hello there", "tenantId":"omny" }' \
 http://localhost:8082/msg/flexspace/omny.enquiry.json
-  
+
+# De-activate contacts
+curl -X POST -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/contacts/archive
+
+# De-activate accounts
+curl -X POST -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/accounts/archive
+

@@ -3,12 +3,7 @@ package com.knowprocess.bpm.web;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -53,6 +48,7 @@ import com.itextpdf.tool.xml.pipeline.end.PdfWriterPipeline;
 import com.itextpdf.tool.xml.pipeline.html.HtmlPipeline;
 import com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext;
 import com.itextpdf.tool.xml.pipeline.html.LinkProvider;
+import com.knowprocess.bpm.impl.DateUtils;
 import com.knowprocess.bpm.impl.UriHelper;
 import com.knowprocess.bpm.model.ProcessInstance;
 
@@ -62,8 +58,6 @@ public class ProcessInstanceController {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(ProcessInstanceController.class);
-
-    private DateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -111,10 +105,10 @@ public class ProcessInstanceController {
 
     @RequestMapping(value = "/{instanceId}/variables/{varName}", method = RequestMethod.GET, headers = "Accept=text/*")
     public @ResponseBody String getInstanceVar(
-            @PathVariable("instanceId") String instanceId, 
+            @PathVariable("instanceId") String instanceId,
             @PathVariable("varName") String varName) {
         LOGGER.info(String.format("getInstanceVar(%1$s, %2$s)", instanceId, varName));
-        
+
         try {
             return processEngine.getRuntimeService()
                     .getVariable(instanceId, varName).toString();
@@ -132,12 +126,12 @@ public class ProcessInstanceController {
             }
         }
     }
-    
+
     @RequestMapping(value = "/{instanceId}/variables/{varName}", method = RequestMethod.GET, headers = "Accept=application/pdf", produces = "application/pdf")
     public void getInstanceVarAsPdf(
             HttpServletResponse response,
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("instanceId") String instanceId, 
+            @PathVariable("instanceId") String instanceId,
             @PathVariable("varName") String varName) {
         LOGGER.info("getInstanceVar");
         String var = getInstanceVar(instanceId, varName);
@@ -169,7 +163,7 @@ public class ProcessInstanceController {
                 }
             });
 
-            CSSResolver cssResolver = 
+            CSSResolver cssResolver =
                     XMLWorkerHelper.getInstance().getDefaultCssResolver(false);
             try {
                 cssResolver.addCss(getBootstrapCss("/META-INF/resources/webjars/bootstrap/3.3.5/css/bootstrap.min.css"), true);
@@ -187,7 +181,7 @@ public class ProcessInstanceController {
             p.parse(new StringReader(sb.toString()));
 
             document.close();
-        
+
             LOGGER.debug(String.format("PDF Created for var %1$s of process instance %2$s", varName, instanceId));
         } catch (NoClassDefFoundError e) {
             throw new IllegalStateException("PDF generation not currently enabled.");
@@ -335,25 +329,11 @@ public class ProcessInstanceController {
     public @ResponseBody List<ProcessInstance> archiveInstances(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "before", required = false) String before) {
-        Date beforeDate = null;
-        if (before == null) {
-            GregorianCalendar oneMonthAgo = new GregorianCalendar();
-            oneMonthAgo.add(Calendar.MONTH, -1);
-            LOGGER.debug(String.format(
-                    "Archiving messages or %1$s older than %2$s", tenantId,
-                    oneMonthAgo.getTime().toString()));
-            beforeDate = oneMonthAgo.getTime();
-        } else {
-            try {
-                beforeDate = isoFormatter.parse(before);
-            } catch (ParseException e) {
-                throw new IllegalArgumentException(
-                        String.format(
-                                "Parameter 'before' must be an ISO 8601 date, not '%1$s'",
-                                before));
-            }
-        }
-
+        Date beforeDate = before == null
+                ? DateUtils.oneMonthAgo() : DateUtils.parseDate(before);
+        LOGGER.debug(String.format(
+                "Archiving instances of %1$s older than %2$s", tenantId,
+                beforeDate.toString()));
         List<HistoricProcessInstance> archivedInstances = processEngine
                 .getHistoryService()
                 .createHistoricProcessInstanceQuery()
