@@ -37,6 +37,9 @@ var ractive = new AuthenticatedRactive({
         return val;
       }
     },
+    daysAgo: function(noOfDays) {
+      return new Date(new Date().setDate(new Date().getDate() - noOfDays)).toISOString().substring(0,10);
+    },
     featureEnabled: function(feature) {
       console.log('featureEnabled: '+feature);
       if (feature==undefined || feature.length==0) return true;

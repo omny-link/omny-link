@@ -11,6 +11,8 @@
   <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
     <li on-click="filter:{idx:1}">Show All</li>
     <li class="divider"></li>
+    <li onclick="ractive.search('updated>'+new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().substring(0,10))">Recently updated</li>
+    <li class="divider"></li>
     {{#status:k}}
       <li on-click="filter:{idx:{{2+k}},field: 'status', value: '{{id}}'}">{{name}}</li>
     {{/}}
@@ -18,8 +20,6 @@
     {{#stockTypes:k}}
       <li onclick="ractive.search('#{{id}}')">{{name}}</li>
     {{/}}
-    <li class="divider"></li>
-    <li onclick="ractive.search('updated>'+new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().substring(0,10))">Recently updated</li>
   </ul>
 </a>
 <a class="clickable super-admin glyphicon glyphicon-cloud-upload" aria-hidden="true" on-click="showUpload()" style="display:none" title="Upload new stock items"></a>
