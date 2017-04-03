@@ -6,24 +6,30 @@
 <a class="clickable glyphicon glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
 <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
 <a class="glyphicon glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
-<a class="clickable dropdown" aria-hidden="true" id="filterBtn" title="Show filters">
+<a class="clickable dropdown filter" aria-hidden="true" id="filterBtn" title="Show filters">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     <a class="clickable glyphicon glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
   </a>
   <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
-    <li on-click="filter:{idx:1}">Show All</li>
-    <li on-click="filter:{idx:2,field: 'stage', operator: '!in', value: {{inactiveStages()}}}">Show Active</li>
-    <li on-click="filter:[{idx:3,field: 'stage', operator: '!in', value: {{inactiveStages()}}},{idx:3,field: 'owner', value: {{profile.id}}}]">Show Mine</li>
-    <li on-click="filter:[{idx:4,field: 'stage', operator: 'in', value: {{inactiveStages()}}},{idx:4,field: 'owner', value: {{profile.id}}}]">Show Mine (inactive)</li>
+    <li on-click="filter:{idx:1,value:''}">Show All</li>
+    <li on-click="filter:{idx:2,value:'active'}">Show Active</li>
+    <li on-click="filter:{idx:3,value:'active owner:{{profile.id}}'}">Show Mine</li>
+    <li on-click="filter:{idx:4,value:'!active owner:{{profile.id}}'}">Show Mine (inactive)</li>
     {{#if tenant.show.stage}}
 	    <li class="divider"></li>
 	    {{#stages:i}}
-	      <li on-click="filter:{idx:{{6+i}},field: 'stage', value: '{{id}}'}">{{name}}</li>
+	      <li on-click="filter:{idx:{{6+i}},value:'stage:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
 	    {{/stages}}
+    {{/if}}
+    {{#if tenant.show.enquiryType}}
+      <li class="divider"></li>
+      {{#enquiryTypes:j}}
+        <li on-click="filter:{idx:{{6+(tenant.show.stage?1:0)+stages.length+j}},value:'enquiry:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
+      {{/}}
     {{/if}}
     <li class="divider"></li>
     {{#accountTypes:k}}
-      <li on-click="filter:{idx:{{6+(tenant.show.stage?1:0)+stages.length+k}},field: 'accountType', value: '{{id}}'}">{{name}}</li>
+      <li on-click="filter:{idx:{{6+(tenant.show.stage?1:0)+(tenant.show.enquiryType?1:0)+stages.length+enquiryTypes.length+k}},value:'type:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
     {{/accountTypes}}
   </ul>
 </a>

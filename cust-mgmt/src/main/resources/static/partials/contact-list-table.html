@@ -24,7 +24,7 @@
   </thead>
   <tbody>
     {{#each sort(contacts,sortColumn,sortAsc):i}}
-      {{# matchSearch(this) && matchFilter(this) }}
+      {{# matchSearch(this) }}
         <tr class="{{stage.toSlug()}}" data-href="{{selfRef}}">
           <td on-click="edit(this)">{{i+1}}</td>
           {{#tenant.show.merge}}
