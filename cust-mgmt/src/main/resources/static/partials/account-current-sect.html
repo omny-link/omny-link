@@ -113,11 +113,13 @@
           </label>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Is this an existing customer, even if we are in a new sales cycle?</p>
         </li>
-        <li class="form-group">
-          <label class="col-md-4 col-sm-4">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Stage{{/}}:</label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
-          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">How far through the sales pipeline are you with this account?</p>
-        </li>
+        {{#if tenant.show.stage}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Stage{{/}}:</label>
+            <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">How far through the sales pipeline are you with this account?</p>
+          </li>
+        {{/if}}
         {{#if tenant.show.accountCompanyDetails}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Founded:</label>
