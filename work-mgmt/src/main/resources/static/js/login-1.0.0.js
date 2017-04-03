@@ -142,8 +142,8 @@ var AuthenticatedRactive = Ractive.extend({
   },
   getStockItemNames: function(order) {
     var stockItemIds = [];
-    if (order == undefined 
-        || (!ractive.get('tenant.show.orderItems') && order['stockItem'] == undefined) 
+    if (order == undefined
+        || (!ractive.get('tenant.show.orderItems') && order['stockItem'] == undefined)
         ||  (ractive.get('tenant.show.orderItems') && (order['orderItems'] == undefined || order.orderItems.length==0))) return;
     else if (!ractive.get('tenant.show.orderItems')) stockItemIds.push(order.stockItem.selfRef.substring(order.stockItem.selfRef.lastIndexOf('/')+1));
     else {
@@ -703,9 +703,17 @@ $(document).ready(function() {
     }
   });
 
+  ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
+    console.log('searchTerm changed');
+    if (typeof ractive['showResults'] == 'function') ractive.showResults();
+    setTimeout(ractive.showSearchMatched, 500);
+  });
+
   var params = getSearchParameters();
   if (params['searchTerm']!=undefined) {
     ractive.set('searchTerm',decodeURIComponent(params['searchTerm']));
+  } else if (params['q']!=undefined) {
+    ractive.set('searchTerm',decodeURIComponent(params['q']));
   }
 });
 
