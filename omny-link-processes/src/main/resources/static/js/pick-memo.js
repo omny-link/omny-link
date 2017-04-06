@@ -1,4 +1,4 @@
-const DELAY = 1500;
+const DELAY = 500;
 function fetchPdf() {
   console.info('fetchPdf');
 
@@ -40,8 +40,9 @@ function fetchResult(location) {
       'Accept': 'text/html'
     },
     success: function( data ) {
-      console.log('  retrieved merged memo');
+      console.log('  result starts: '+data.substring(0,16));
       ractive.set('memoHtml', data);
+      if ('Still working...' == data) setTimeout(fetchResult, DELAY, location);
     },
     error: function(jqXHR, textStatus, errorThrown) {
       console.log('  error');
