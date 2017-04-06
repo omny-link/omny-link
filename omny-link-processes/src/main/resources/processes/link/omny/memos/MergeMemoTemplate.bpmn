@@ -72,7 +72,11 @@ execution.setVariable('richContent',richContent);
 var contactId = execution.getVariable('contactId');
 //System.out.println('contactId: '+contactId);
 if (contactId.indexOf('://')==-1) contactId = "userInfo('cust-mgmt-url')/"+contactId;
-execution.setVariable('contactId',contactId);]]></script>
+execution.setVariable('contactId',contactId);
+// Accounts page does not populate this
+if (execution.getVariable('contactShortId')==undefined) execution.setVariable('contactShortId',contactId.substring(contactId.lastIndexOf('/')+1));
+//System.out.println("We're done");
+]]></script>
     </scriptTask>
     <sequenceFlow id="_11" sourceRef="getMemo" targetRef="cacheTemplate"/>
     <sequenceFlow id="_9" sourceRef="_2" targetRef="getMemo"/>
@@ -96,7 +100,7 @@ execution.setVariable('contactId',contactId);]]></script>
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>${contactId}?projection=complete</activiti:expression>
+          <activiti:expression>https://api.omny.link/${tenantId}/contacts/${contactShortId}</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Accept:application/json</activiti:string>
