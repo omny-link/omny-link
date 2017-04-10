@@ -1,8 +1,11 @@
 package com.knowprocess.bpm;
 
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
@@ -131,6 +134,14 @@ public class BpmConfiguration extends AbstractProcessEngineAutoConfiguration {
         PropertiesFactoryBean fact = new PropertiesFactoryBean();
         fact.setLocation(new ClassPathResource("messageAliases.properties"));
         return fact;
+    }
+
+    @Bean
+    protected NumberFormat gbpFormatter() {
+        NumberFormat gbpFormatter = NumberFormat.getCurrencyInstance(Locale.UK);
+        gbpFormatter.setMinimumFractionDigits(2);
+        gbpFormatter.setRoundingMode(RoundingMode.HALF_UP);
+        return gbpFormatter;
     }
 
     @Bean
