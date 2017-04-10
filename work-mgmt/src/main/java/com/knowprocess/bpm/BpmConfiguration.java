@@ -81,6 +81,9 @@ public class BpmConfiguration extends AbstractProcessEngineAutoConfiguration {
         mappers.add(TaskAllocationMapper.class);
         config.setCustomMybatisMappers(mappers);
 
+        // instead diagrams created 'on the fly' by ProcessDefinitionController
+        config.getProcessEngineConfiguration().setCreateDiagramOnDeploy(false);
+
         return config;
     }
 

@@ -15,3 +15,9 @@ group by tenant_id_, def;
 
 -- Report which definitions are actually being used by tenant
 select distinct(proc_def_id_)  from ACT_RU_EXECUTION  where tenant_id_ = 'flexspace';
+
+-- Find space used for process images
+select sum(length(bytes_))/1024/1024 as Mb from ACT_GE_BYTEARRAY where generated_ = 1;
+
+-- Remove generated process images
+DELETE from ACT_GE_BYTEARRAY where generated_ = 1;
