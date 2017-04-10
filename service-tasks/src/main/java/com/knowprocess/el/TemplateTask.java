@@ -1,5 +1,7 @@
 package com.knowprocess.el;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -71,6 +73,7 @@ public class TemplateTask implements JavaDelegate {
         
         // 'Built-in' expressions
         context.getVariableMapper().setVariable("dateFormatter", factory.createValueExpression(new DateFormatter(), DateFormatter.class));
+        context.getVariableMapper().setVariable("gbpFormatter", factory.createValueExpression(DecimalFormat.getCurrencyInstance(), NumberFormat.class));
         
         ValueExpression expr = factory.createValueExpression(context, template, String.class);
         return (String) expr.getValue(context);
