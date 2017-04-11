@@ -12,6 +12,7 @@
       <outputSet/>
     </ioSpecification>
     <startEvent id="startEvent" isInterrupting="true" name="omny.orderConfirmation" parallelMultiple="false">
+      <documentation id="startEvent_D_1" textFormat="text/plain"><![CDATA[The message arrives from the web site]]></documentation>
       <extensionElements>
         <yaoqiang:label offset-x="1.0" offset-y="-6.0"/>
       </extensionElements>
@@ -20,6 +21,7 @@
       <messageEventDefinition id="startEvent_ED_1" messageRef="omny.orderConfirmation"/>
     </startEvent>
     <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="setOrderConfirmed" implementation="##WebService" isForCompensation="false" name="Set status to confirmed" startQuantity="1">
+      <documentation id="setOrderConfirmed_D_1" textFormat="text/plain"><![CDATA[The order's status is set to 'confirmed' and order date to today.]]></documentation>
       <extensionElements>
         <activiti:field name="resourceUsername">
           <activiti:string>userInfo('tenant-bot')</activiti:string>
@@ -38,148 +40,192 @@
         </activiti:field>
       </extensionElements>
       <incoming>_4</incoming>
-      <outgoing>_7</outgoing>
+      <outgoing>_2</outgoing>
     </serviceTask>
-    <userTask activiti:candidateGroups="${omny_orderConfirmation.getString('tenantId')}_office" completionQuantity="1" id="callBack" implementation="##unspecified" isForCompensation="false" name="Call back" startQuantity="1">
-      <documentation id="callBack_D_1" textFormat="text/plain"><![CDATA[
-          Please contact to discuss. 
-      ]]></documentation>
+    <userTask activiti:candidateGroups="${omny_orderConfirmation.getString('tenantId')}_office" completionQuantity="1" id="callBack" implementation="##unspecified" isForCompensation="false" name="Review and&#10;potentially &#10;call back" startQuantity="1">
+      <documentation id="callBack_D_1" textFormat="text/plain"><![CDATA[This occurs whenever the response is not 'accepted'.]]></documentation>
       <extensionElements>
         <activiti:formProperty expression="${omny_orderConfirmation.getString('orderId')}" id="orderId" name="Order"/>
-        <activiti:formProperty expression="${omny_orderConfirmation.getString('contactId')}" id="contactId" name="Contact"/>
+        <activiti:formProperty expression="${order.getJsonNumber('contactId').toString()}" id="contactId" name="Contact"/>
       </extensionElements>
       <incoming>notAccepted</incoming>
       <outgoing>sequenceFlow-1ae7554a-53cd-495e-9689-8185417bad7a</outgoing>
     </userTask>
-    <endEvent id="endEvent">
+    <endEvent id="endEvent" name="End after&#10;callback">
+      <extensionElements>
+        <yaoqiang:label offset-x="1.0" offset-y="6.0"/>
+      </extensionElements>
       <incoming>sequenceFlow-1ae7554a-53cd-495e-9689-8185417bad7a</incoming>
       <inputSet/>
     </endEvent>
     <sequenceFlow id="sequenceFlow-1ae7554a-53cd-495e-9689-8185417bad7a" sourceRef="callBack" targetRef="endEvent"/>
     <exclusiveGateway default="notAccepted" gatewayDirection="Diverging" id="isAccepted" name="Accepted?">
-      <incoming>_3</incoming>
+      <documentation id="isAccepted_D_1" textFormat="text/plain"><![CDATA[Was the proposal accepted?]]></documentation>
+      <incoming>_5</incoming>
       <outgoing>notAccepted</outgoing>
       <outgoing>_4</outgoing>
     </exclusiveGateway>
-    <sequenceFlow id="notAccepted" name="No" sourceRef="isAccepted" targetRef="callBack"/>
-    <callActivity activiti:async="true" calledElement="SendMemo" completionQuantity="1" id="_6" isForCompensation="false" name="Send&#10;confirmation" startQuantity="1">
+    <sequenceFlow id="notAccepted" name="No" sourceRef="isAccepted" targetRef="callBack">
       <extensionElements>
-        <activiti:in sourceExpression="BookingConfirmation" target="memoName"/>
+        <yaoqiang:label offset-x="-37.0" offset-y="-42.0" x="0.0" y="53.0"/>
+      </extensionElements>
+    </sequenceFlow>
+    <callActivity activiti:async="true" calledElement="SendMemo" completionQuantity="1" id="_6" isForCompensation="false" name="Send&#10;confirmation" startQuantity="1">
+      <documentation id="_6_D_1" textFormat="text/plain"><![CDATA[Send out an order confirmation email.]]></documentation>
+      <extensionElements>
+        <activiti:in sourceExpression="ThanksForBooking" target="memoName"/>
         <activiti:in sourceExpression="${omny_orderConfirmation.getString('tenantId')}" target="tenantId"/>
-        <activiti:in sourceExpression="/contacts/${omny_orderConfirmation.getString('contactId')}" target="contactId"/>
+        <activiti:in sourceExpression="/contacts/${order.getJsonNumber('contactId').toString()}" target="contactId"/>
         <activiti:in sourceExpression="${omny_orderConfirmation.getString('orderId')}" target="orderId"/>
         <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
-      <incoming>_7</incoming>
+      <incoming>_2</incoming>
       <outgoing>_9</outgoing>
     </callActivity>
-    <sequenceFlow id="_7" sourceRef="setOrderConfirmed" targetRef="_6"/>
-    <sequenceFlow id="_3" sourceRef="startEvent" targetRef="isAccepted"/>
+    <sequenceFlow id="_3" sourceRef="startEvent" targetRef="_10"/>
     <sequenceFlow id="_4" name="Yes" sourceRef="isAccepted" targetRef="setOrderConfirmed">
+      <extensionElements>
+        <yaoqiang:label offset-x="-5.0" offset-y="0.0" x="0.0" y="4.0"/>
+      </extensionElements>
       <conditionExpression><![CDATA[${omny_orderConfirmation.getString('response').toLowerCase() == "accepted"}]]></conditionExpression>
     </sequenceFlow>
-    <endEvent id="_8" name="End Event">
+    <endEvent id="_8" name="End accepted">
       <incoming>_9</incoming>
       <inputSet/>
     </endEvent>
     <sequenceFlow id="_9" sourceRef="_6" targetRef="_8"/>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="_10" implementation="##WebService" isForCompensation="false" name="Read order's contact" startQuantity="1">
+      <documentation id="_10_D_1" textFormat="text/plain"><![CDATA[Read who the contact is for the order in order to send confirmation email.]]></documentation>
+      <extensionElements>
+        <activiti:field name="resourceUsername">
+          <activiti:string>userInfo('tenant-bot')</activiti:string>
+        </activiti:field>
+        <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="globalResource">
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/orders/${omny_orderConfirmation.getString('orderId')}</activiti:expression>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field expression="order" name="responseVar"/>
+      </extensionElements>
+      <incoming>_3</incoming>
+      <outgoing>_5</outgoing>
+    </serviceTask>
+    <sequenceFlow id="_2" sourceRef="setOrderConfirmed" targetRef="_6"/>
+    <sequenceFlow id="_5" sourceRef="_10" targetRef="isAccepted"/>
     <textAnnotation id="_11" textFormat="text/plain">
       <text>CONFIRM ORDER</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-ConfirmOrder" name="Untitled Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-ConfirmOrder" name="Confirm order (or otherwise)" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="ConfirmOrder">
       <bpmndi:BPMNShape bpmnElement="callBack" id="Yaoqiang-callBack">
-        <omgdc:Bounds height="73.0" width="105.0" x="289.0" y="291.5"/>
+        <omgdc:Bounds height="73.0" width="105.0" x="389.0" y="291.5"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="57.0" x="313.0" y="320.59765625"/>
+          <omgdc:Bounds height="46.8" width="70.0" x="406.5" y="306.6"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
-        <omgdc:Bounds height="32.0" width="32.0" x="627.0" y="312.0"/>
+        <omgdc:Bounds height="32.0" width="32.0" x="662.0" y="312.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="6.0" x="639.0" y="330.5859375"/>
+          <omgdc:Bounds height="32.8" width="58.0" x="650.0" y="351.6"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="setOrderConfirmed" id="Yaoqiang-setOrderConfirmed">
-        <omgdc:Bounds height="73.0" width="105.0" x="289.0" y="186.5"/>
+        <omgdc:Bounds height="73.0" width="105.0" x="389.0" y="184.83333333333331"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="32.8046875" width="80.0" x="301.5" y="208.59765625"/>
+          <omgdc:Bounds height="32.8" width="80.0" x="401.5" y="206.93"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="isAccepted" id="Yaoqiang-isAccepted" isMarkerVisible="true">
-        <omgdc:Bounds height="42.0" width="42.0" x="196.66666666666669" y="202.0"/>
+        <omgdc:Bounds height="42.0" width="42.0" x="296.6666666666667" y="200.33333333333331"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="63.0" x="186.16666666666669" y="246.0"/>
+          <omgdc:Bounds height="18.8" width="63.0" x="286.17" y="244.33"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6" isExpanded="false">
-        <omgdc:Bounds height="73.0" width="105.0" x="465.0" y="186.5"/>
+        <omgdc:Bounds height="73.0" width="105.0" x="525.0" y="184.83333333333331"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="32.8046875" width="77.0" x="479.0" y="208.59765625"/>
+          <omgdc:Bounds height="32.8" width="77.0" x="539.0" y="206.93"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
-        <omgdc:Bounds height="32.0" width="32.0" x="73.0" y="207.0"/>
+        <omgdc:Bounds height="32.0" width="32.0" x="58.83333333333334" y="205.33333333333331"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="145.0" x="17.5" y="241.59765625"/>
+          <omgdc:Bounds height="18.8" width="145.0" x="3.33" y="239.93"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_8" id="Yaoqiang-_8">
-        <omgdc:Bounds height="32.0" width="32.0" x="627.0" y="207.0"/>
+        <omgdc:Bounds height="32.0" width="32.0" x="662.0" y="205.33333333333331"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="62.0" x="612.0" y="247.98828125"/>
+          <omgdc:Bounds height="18.8" width="82.0" x="637.0" y="246.64"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
-        <omgdc:Bounds height="31.0" width="135.0" x="73.0" y="102.0"/>
+        <omgdc:Bounds height="31.0" width="135.0" x="58.83333333333334" y="102.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="98.0" x="73.0" y="110.09765625"/>
+          <omgdc:Bounds height="18.8" width="98.0" x="58.83" y="110.1"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="notAccepted" id="Yaoqiang-notAccepted">
-        <omgdi:waypoint x="218.0" y="243.83333333333337"/>
-        <omgdi:waypoint x="218.0" y="334.0"/>
-        <omgdi:waypoint x="289.0" y="334.0"/>
+      <bpmndi:BPMNShape bpmnElement="_10" id="Yaoqiang-_10">
+        <omgdc:Bounds height="73.0" width="105.0" x="156.72222222222217" y="184.83333333333331"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="21.0" x="207.5" y="315.0143229166667"/>
+          <omgdc:Bounds height="32.8" width="79.0" x="169.72" y="206.93"/>
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9">
-        <omgdi:waypoint x="570.0" y="223.0"/>
-        <omgdi:waypoint x="627.0008680791043" y="223.0"/>
+        <omgdi:waypoint x="629.9444444444445" y="221.33333333333331"/>
+        <omgdi:waypoint x="661.9468558915977" y="221.33333333333331"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="6.0" x="595.5004340395521" y="213.59765625"/>
+          <omgdc:Bounds height="18.8" width="6.0" x="642.95" y="211.93"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_7" id="Yaoqiang-_7">
-        <omgdi:waypoint x="394.0" y="223.0"/>
-        <omgdi:waypoint x="465.0" y="223.0"/>
+      <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
+        <omgdi:waypoint x="261.94444444444446" y="221.33333333333331"/>
+        <omgdi:waypoint x="297.22222222222223" y="221.33333333333331"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="6.0" x="426.5" y="213.59765625"/>
+          <omgdc:Bounds height="18.8" width="6.0" x="276.58" y="211.93"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_4" id="Yaoqiang-_4">
-        <omgdi:waypoint x="238.83333333333337" y="223.0"/>
-        <omgdi:waypoint x="289.0" y="223.0"/>
+        <omgdi:waypoint x="338.6666666666667" y="221.33333333333331"/>
+        <omgdi:waypoint x="388.94444444444446" y="221.33333333333331"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="27.0" x="250.41666666666669" y="213.59765625"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="sequenceFlow-1ae7554a-53cd-495e-9689-8185417bad7a" id="Yaoqiang-sequenceFlow-1ae7554a-53cd-495e-9689-8185417bad7a">
-        <omgdi:waypoint x="394.0" y="328.0"/>
-        <omgdi:waypoint x="394.0" y="327.0"/>
-        <omgdi:waypoint x="394.0" y="327.0"/>
-        <omgdi:waypoint x="627.0008680791043" y="328.0"/>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="6.0" x="507.50043403955215" y="318.59765625"/>
+          <omgdc:Bounds height="18.8" width="27.0" x="345.31" y="207.93"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
-        <omgdi:waypoint x="104.99913192089565" y="223.0"/>
-        <omgdi:waypoint x="197.16666666666663" y="223.0"/>
+        <omgdi:waypoint x="90.9420329972912" y="221.33333333333331"/>
+        <omgdi:waypoint x="156.94444444444446" y="221.33333333333331"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="6.0" x="148.08289929378114" y="213.59765625"/>
+          <omgdc:Bounds height="18.8" width="6.0" x="120.94" y="211.93"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_2" id="Yaoqiang-_2">
+        <omgdi:waypoint x="493.94444444444446" y="221.33333333333331"/>
+        <omgdi:waypoint x="524.9444444444445" y="221.33333333333331"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.8" width="6.0" x="506.44" y="211.93"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="notAccepted" id="Yaoqiang-notAccepted">
+        <omgdi:waypoint x="318.0" y="242.0"/>
+        <omgdi:waypoint x="318.0" y="334.0"/>
+        <omgdi:waypoint x="388.94444444444446" y="334.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.8" width="21.0" x="323.5" y="272.07"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sequenceFlow-1ae7554a-53cd-495e-9689-8185417bad7a" id="Yaoqiang-sequenceFlow-1ae7554a-53cd-495e-9689-8185417bad7a">
+        <omgdi:waypoint x="493.94444444444446" y="327.0"/>
+        <omgdi:waypoint x="529.0" y="327.0"/>
+        <omgdi:waypoint x="529.0" y="327.0"/>
+        <omgdi:waypoint x="661.9793010855786" y="327.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.8" width="6.0" x="574.96" y="317.6"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
