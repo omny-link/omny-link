@@ -279,9 +279,11 @@ public class MessageController {
             }
         } catch (ActivitiObjectNotFoundException e) {
             if (e.getMessage().contains("no subscription to message with name")) {
+                LOGGER.error(e.getMessage());
                 return startCatchAllProcess(tenantId, vars, bizKey, e);
             } else if (e.getMessage()
                     .contains("no processes deployed with key")) {
+                LOGGER.error(e.getMessage());
                 return startCatchAllProcess(tenantId, vars, bizKey, e);
             } else {
                 LOGGER.error("The ObjectNotFound below is NOT a missing process exception");

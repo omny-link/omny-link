@@ -53,7 +53,7 @@
     <callActivity calledElement="CreateContactAndAccount" completionQuantity="1" id="createContactAndAccount" isForCompensation="false" name="Create Contact and &#10;Account in CRM" startQuantity="1">
       <extensionElements>
         <activiti:in source="contact" target="json"/>
-        <activiti:in sourceExpression="omny" target="tenantId"/>
+        <activiti:in sourceExpression="${contact.getString('tenantId')}" target="tenantId"/>
         <activiti:out source="contactId" target="contactId"/>
         <activiti:out source="contactEmail" target="contactEmail"/>
         <activiti:out source="contactPwd" target="contactPwd"/>

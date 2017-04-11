@@ -397,6 +397,7 @@ public class OrderController {
 
         Order order = orderRepo.findOne(orderId);
         order.setStage(stage);
+        order.setDate(new Date());
         orderRepo.save(order);
     }
 
