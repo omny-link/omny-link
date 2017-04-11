@@ -51,7 +51,7 @@
           {{#tenant.show.stockPricing}}
             <td on-click="edit(this)">{{price}}</td>
           {{/}}
-          {{#if tenant.show.invoiceRef}}
+          {{#if tenant.show.orderInvoiceRef}}
             <td on-click="edit(this)">{{invoiceRef}}</td>
           {{/if}}
           <td on-click="edit(this)">{{formatDate(created)}}</td>
