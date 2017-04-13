@@ -12,6 +12,7 @@
     <thead>
       <tr>
         <th></th>
+        <th on-click="sort:orderId">Id<span class="sortable {{ sorted('orderId') }} glyphicon "></th>
         {{#1==2}}
           <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
         {{/}}
@@ -38,6 +39,7 @@
       {{# matchSearch(this) && matchFilter(this) }}
         <tr data-href="{{selfRef}}">
           <td on-click="edit(this)">{{i+1}}</td>
+          <td on-click="edit(this)">{{orderId}}</td>
           {{#1==2}}
             <td on-click="edit(this)">{{name}}</td>
           {{/}}

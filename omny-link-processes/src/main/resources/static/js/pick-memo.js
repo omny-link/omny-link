@@ -202,7 +202,19 @@ $(document).ready(function() {
       }
       ractive.set('instanceToStart.processVariables.stockItemId','TBD');
     }
-    initOrdersAutocomplete();
+    if (ractive.entityName(ractive.get('current'))=='orders') {
+      var order = ractive.get('current');
+      if (order['contactId']==undefined || order['stockItem']==undefined) {
+        ractive.showError('You must specify both Contact and '+ractive.get('tenant.strings.stockItem')+' first');
+      }
+      ractive.set('instanceToStart.processVariables.contactId','/contacts/'+order['contactId']);
+      ractive.set('instanceToStart.processVariables.stockItemId','/stock-items/'+order['stockItem']['id']);
+      ractive.set('instanceToStart.processVariables.orderId',ractive.id(order));
+      ractive.set('instanceToStart.processVariables.orderName',ractive.id(order));
+      $('#curOrderDisplay').attr('readonly','readonly').attr('disabled','disabled');
+    } else {
+      initOrdersAutocomplete();
+    }
   }
   fetchMemos();
   $('#curMemoDisplay').on('blur', validateOrder);
