@@ -57,7 +57,7 @@
         </li>
         <li class="form-group">
           <label class="col-md-4 col-sm-4">Stage:</label>
-          <input class="form-control" list="stages" placeholder="Start typing to filter options" id="curOrderStage" value="{{current.stage}}"/>
+          <input autocomplete="off" class="form-control" list="orderStages" placeholder="Start typing to filter options" id="curOrderStage" value="{{current.stage}}"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.stageHint}}{{tenant.strings.stageHint}}{{else}}Stage the order has reached{{/}}</p>
         </li>
         {{#tenant.show.orderDueDate}}
