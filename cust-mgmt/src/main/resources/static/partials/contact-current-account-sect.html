@@ -26,21 +26,21 @@
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
           </li>
         {{/}}
-        <li class="form-group">
-          <label class="col-md-4 col-sm-4" style="line-height: 1.2em">{{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}}:</label>
-          <select class="col-md-8 col-sm-8 form-control" id="curNoOfEmployees" placeholder="Please choose the number of {{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}} you have">
-             <option value="Please select" selected="selected">Please select</option>
-             <option value="under10">less than 10</option> 
-             <option value="10-49">10-49</option> 
-             <option value="50-99">50-99</option>
-             <option value="100-249">100-249</option>
-             <option value="250-499">250-499</option>
-             <option value="500-999">500-999</option>
-             <option value="1000+">over 1000</option>
-           </select>
-           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">An approximate indication of the size of the {{#tenant.strings.account}}{{tenant.strings.account.toLowerCase()}}{{else}}account{{/}}</p>
-        </li>
         {{#if tenant.show.accountCompanyDetails}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4" style="line-height: 1.2em">{{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}}:</label>
+            <select class="col-md-8 col-sm-8 form-control" id="curNoOfEmployees" placeholder="Please choose the number of {{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}} you have">
+               <option value="Please select" selected="selected">Please select</option>
+               <option value="under10">less than 10</option>
+               <option value="10-49">10-49</option>
+               <option value="50-99">50-99</option>
+               <option value="100-249">100-249</option>
+               <option value="250-499">250-499</option>
+               <option value="500-999">500-999</option>
+               <option value="1000+">over 1000</option>
+             </select>
+             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">An approximate indication of the size of the {{#tenant.strings.account}}{{tenant.strings.account.toLowerCase()}}{{else}}account{{/}}</p>
+          </li>
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Founded:</label>
             <input autocomplete="off" class="form-control" id="curIncorporationYear" pattern="[0-9]{4}" placeholder="yyyy" value="{{current.account.incorporationYear}}"/>
@@ -166,7 +166,7 @@
   </section>
 
   {{>(tenant.id+'AccountExtension')}}
-  
+
   <div id="currentAccountTypeExtended" style="clear: both">
     {{>(tenant.id+current.accountType+'Extension')}}
   </div>
