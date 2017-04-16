@@ -1039,6 +1039,12 @@ div.bpmnDiagram {
   overflow: auto;
 }
 
+path.association,
+path.flow,
+rect.dataStoreReference {
+  fill: transparent;
+}
+
 rect.lane:nth-of-type(even) {
   fill: #fff;
 }
@@ -1048,8 +1054,6 @@ rect.lane:nth-of-type(odd) {
 rect.participant {
   fill: #b7b7b7;
 }
- /*   grey 3:    939598;
- *   grey 4:    b7b7b7*/
 
 text {
   font-family: Roboto, sans-serif;
@@ -1060,10 +1064,8 @@ text.endEvent,
 text.intermediateCatchEvent,
 text.intermediateThrowEvent,
 text.startEvent {
-	/*fill: #0e9acd;*/
-	fill: #666;
-	stroke-width: 0px;
-
+  fill: #666;
+  stroke-width: 0px;
 }
 
 text.callActivity,

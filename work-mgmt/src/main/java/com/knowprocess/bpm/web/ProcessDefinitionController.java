@@ -1,7 +1,11 @@
 package com.knowprocess.bpm.web;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +14,11 @@ import java.util.Map;
 import javax.xml.transform.TransformerConfigurationException;
 
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.history.HistoricProcessInstanceQuery;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.knowprocess.bpm.model.Deployment;
@@ -79,6 +89,13 @@ public class ProcessDefinitionController {
 
         List<ProcessDefinition> list = ProcessDefinition
                 .findAllProcessDefinitions(tenantId);
+        for (ProcessDefinition defn : list) {
+            defn.setInstanceCount(processEngine.getHistoryService()
+                    .createHistoricProcessInstanceQuery()
+                    .processInstanceTenantId(tenantId)
+                    .processDefinitionId(defn.getId())
+                    .count());
+        }
         LOGGER.info("Deployed definitions: " + list.size());
 
         List<ProcessModel> incompleteModels = processModelRepo
@@ -104,7 +121,7 @@ public class ProcessDefinitionController {
             pd = ProcessDefinition.findProcessDefinition(id);
 
             // TODO why no API to get event subscriptions of proc def
-            pd.setBpmn(ProcessDefinition.findProcessDefinitionAsBpmn(id));
+            pd.setBpmn(getBpmn(id));
             String[] msgNames = getMessageIntrospector().transform(
                     pd.getBpmn()).split(",");
             for (String name : msgNames) {
@@ -176,11 +193,25 @@ public class ProcessDefinitionController {
     @RequestMapping(value = "/{id}/instances", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<ProcessInstance> showInstancesJson(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("id") String id) {
-        LOGGER.info(String.format("%1$s definition with %2$s",
+            @PathVariable("id") String id,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        LOGGER.info(String.format("%1$s instances for definition %2$s",
                 RequestMethod.GET, id));
 
-        return ProcessInstance.findAllProcessInstancesForDefinition(id);
+        List<ProcessInstance> instances = new ArrayList<ProcessInstance>();
+        HistoricProcessInstanceQuery query = processEngine
+                .getHistoryService().createHistoricProcessInstanceQuery()
+                .processDefinitionId(id);
+        if (limit == null) {
+            instances.addAll(ProcessInstance.wrap(query.list()));
+        } else {
+            if (page == null) {
+                page = 0;
+            }
+            instances.addAll(ProcessInstance.wrap(query.listPage(page*limit, limit)));
+        }
+        return instances;
     }
 
     @RequestMapping(value = "/{id}/issues", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -200,16 +231,44 @@ public class ProcessDefinitionController {
         LOGGER.info(String.format("%1$s BPMN with id %2$s", RequestMethod.GET,
                 id));
 
-        return ProcessDefinition.findProcessDefinitionAsBpmn(id);
+        return getBpmn(id);
     }
 
-    @RequestMapping(value = "/{id}.png", method = RequestMethod.GET, produces = "image/png")
+    @RequestMapping(value = "/{id}/{diagramId}.png", method = RequestMethod.GET, produces = "image/png")
     public @ResponseBody byte[] showBpmnDiagram(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("id") String id) throws IOException {
-        LOGGER.info(String.format("%1$s BPMN with id %2$s", RequestMethod.GET,
-                id));
-        return ProcessDefinition.findProcessDefinitionDiagram(id);
+            @PathVariable("id") String id,
+            @PathVariable("diagramId") String diagramId) throws IOException {
+        LOGGER.info(
+                String.format("%1$s image of BPMN with id %2$s, diagram: %3$s",
+                RequestMethod.GET, id, diagramId));
+
+        return svgToPng(getBpmnDiagramAsSvg(tenantId, id, diagramId));
+    }
+
+    protected byte[] svgToPng(String bpmnDiagramAsSvg) {
+        InputStream svgFileStream = null;
+        try {
+            svgFileStream = new ByteArrayInputStream(bpmnDiagramAsSvg.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            svgFileStream = new ByteArrayInputStream(bpmnDiagramAsSvg.getBytes());
+            LOGGER.warn("Could not get StringBytes in UTF-8");
+        }
+        TranscoderInput inputSvgImage = new TranscoderInput(svgFileStream);
+        PNGTranscoder converter = new PNGTranscoder();
+        // TODO This appears to have no effect
+//        converter.addTranscodingHint(PNGTranscoder.KEY_FORCE_TRANSPARENT_WHITE, true);
+        ByteArrayOutputStream pngStream = new ByteArrayOutputStream();
+        TranscoderOutput outputPngImage = new TranscoderOutput(pngStream);
+
+        try {
+            converter.transcode(inputSvgImage, outputPngImage);
+        } catch (TranscoderException e) {
+            String msg = "Error while converting SVG to PNG";
+            LOGGER.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
+        return pngStream.toByteArray();
     }
 
     @RequestMapping(value = "/{id}/{diagramId}.svg", method = RequestMethod.GET, produces = "image/svg+xml")
@@ -217,22 +276,30 @@ public class ProcessDefinitionController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id, 
             @PathVariable("diagramId") String diagramId) throws IOException {
-        LOGGER.info(String.format("%1$s BPMN with id %2$s, diagram: %3$s", 
-                RequestMethod.GET, id, diagramId));
+        return getBpmnDiagramAsSvg(tenantId, id, diagramId).getBytes();
+    }
 
+    protected String getBpmnDiagramAsSvg(String tenantId, String id,
+            String diagramId) throws IOException {
+        LOGGER.info(String.format("Get BPMN with id %1$s, diagram: %2$s", id,
+                diagramId));
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("diagramId", diagramId);
+        return getProcessRenderer().transform(getBpmn(id), params);
+    }
+
+    protected String getBpmn(String id) {
         String bpmn = null;
         try {
             bpmn = ProcessDefinition.findProcessDefinitionAsBpmn(id);
         } catch (Exception e) {
             bpmn = processModelRepo.findOne(id).getBpmnString();
         }
-
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("diagramId", diagramId);
-        return getProcessRenderer().transform(bpmn, params).getBytes();
+        return bpmn;
     }
 
-    private TransformTask getMessageIntrospector() {
+    protected TransformTask getMessageIntrospector() {
         if (messageIntrospector == null) {
             messageIntrospector = new TransformTask();
             try {
@@ -248,7 +315,7 @@ public class ProcessDefinitionController {
         return messageIntrospector;
     }
 
-    private TransformTask getDiagramIntrospector() {
+    protected TransformTask getDiagramIntrospector() {
         if (diagramIntrospector == null) {
             diagramIntrospector = new TransformTask();
             try {
@@ -264,7 +331,7 @@ public class ProcessDefinitionController {
         return diagramIntrospector;
     }
     
-    private synchronized TransformTask getProcessRenderer() {
+    protected TransformTask getProcessRenderer() {
 //        if (renderer == null) {
             renderer = new TransformTask();
             try {

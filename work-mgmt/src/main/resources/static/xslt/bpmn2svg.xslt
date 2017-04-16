@@ -20,15 +20,17 @@
   <xsl:variable name="lineSpacing">3</xsl:variable>
   <xsl:variable name="showBounds">false</xsl:variable>
   <xsl:variable name="debug">false</xsl:variable>
+  <xsl:variable name="diagram" select="//bpmndi:BPMNDiagram[@id=$diagramId]"/>
+  <xsl:variable name="firstParticipant" select="//bpmn:participant[@id=$diagram//@bpmnElement][position()=1]/@id"/>
+  <xsl:variable name="lastParticipant" select="//bpmn:participant[@id=$diagram//@bpmnElement][position()=last()]/@id"/>
 
   <xsl:template match="/">
-    <xsl:variable name="firstParticipant" select="//bpmn:participant[//bpmndi:BPMNDiagram[@id=$diagramId]//@bpmnElement=@id][position()=1]/@id"/>
-    <xsl:variable name="lastParticipant" select="//bpmn:participant[//bpmndi:BPMNDiagram[@id=$diagramId]//@bpmnElement=@id][position()=last()]/@id"/>
     <xsl:if test="$debug='true'">
-	    <xsl:comment> first participant id: <xsl:value-of select="$firstParticipant"/></xsl:comment>
-	    <xsl:comment> last participant id: <xsl:value-of select="$lastParticipant"/></xsl:comment>
+      <xsl:comment> # of participants: <xsl:value-of select="count(//bpmn:participant)"/></xsl:comment>
+      <xsl:comment> # of participants: <xsl:value-of select="count(//participant)"/></xsl:comment>
+      <xsl:comment> first participant id: <xsl:value-of select="$firstParticipant"/></xsl:comment>
+      <xsl:comment> last participant id: <xsl:value-of select="$lastParticipant"/></xsl:comment>
     </xsl:if>
-    
     <xsl:element name="svg">
       <xsl:attribute name="id"><xsl:value-of select="$diagramId"/></xsl:attribute>
       <xsl:attribute name="name"><xsl:value-of select="//bpmndi:BPMNDiagram[@id=$diagramId]/@name"/></xsl:attribute>
@@ -56,6 +58,9 @@
         </xsl:otherwise>
       </xsl:choose>
      <defs>
+        <marker id="backslash" markerWidth="6" markerHeight="6" refX="3" refY="0" markerUnits="strokeWidth">
+          <path d="M 0,0 10,10" stroke="#666" stroke-width="1px"/>
+        </marker>
 	      <marker id="filled-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
 		      <path d="M0,0 L0,6 L9,3 z" fill="#666" />
 		    </marker>
@@ -215,10 +220,18 @@
     </xsl:variable>
 
     <xsl:element name="rect">
-      <xsl:attribute name="class"><xsl:value-of select="local-name(.)"/></xsl:attribute>
+      <xsl:attribute name="class">
+        <xsl:if test="$showBounds='true'">bounds </xsl:if>
+        <xsl:value-of select="local-name(.)"/>
+      </xsl:attribute>
       <xsl:attribute name="data-name"><xsl:value-of select="@name"/></xsl:attribute>
       <xsl:attribute name="data-type"><xsl:value-of select="local-name(.)"/></xsl:attribute>
-      <xsl:attribute name="fill">transparent</xsl:attribute>
+      <xsl:attribute name="fill">
+        <xsl:choose>
+          <xsl:when test="$showBounds='true'">#5F5</xsl:when>
+          <xsl:otherwise>white</xsl:otherwise>
+        </xsl:choose>
+      </xsl:attribute>
       <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
       <xsl:attribute name="height">
         <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height"/>
@@ -238,7 +251,14 @@
         <xsl:attribute name="class">icon <xsl:value-of select="local-name(.)"/>Icon</xsl:attribute>
 	      <xsl:attribute name="data-name"><xsl:value-of select="@name"/></xsl:attribute>
 	      <xsl:attribute name="data-type"><xsl:value-of select="local-name(.)"/></xsl:attribute>
-        <xsl:attribute name="transform">translate(<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x)+5"/>,<xsl:value-of select="number($y)-15"/>) scale(0.04)</xsl:attribute>
+        <xsl:choose>
+          <xsl:when test="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height &gt; 30">
+            <xsl:attribute name="transform">translate(<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x)+5"/>,<xsl:value-of select="number($y)-15"/>) scale(0.04)</xsl:attribute>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:attribute name="transform">translate(<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x)+5"/>,<xsl:value-of select="number($y)"/>) scale(0.02)</xsl:attribute>
+          </xsl:otherwise>
+        </xsl:choose>
         <xsl:element name="path">
           <xsl:attribute name="d">
             <xsl:value-of select="$dataStoreIcon"/>
@@ -553,6 +573,9 @@
       <xsl:attribute name="fill">#fff</xsl:attribute>
       <xsl:attribute name="stroke">#666</xsl:attribute>
       <xsl:attribute name="stroke-width">1.0</xsl:attribute>
+      <xsl:if test="bpmn:documentation">
+        <title><xsl:value-of select="bpmn:documentation/text()"/></title>
+      </xsl:if>
     </xsl:element>
 
     <xsl:call-template name="label">
@@ -617,7 +640,7 @@
       <xsl:attribute name="class">participant</xsl:attribute>
       <xsl:attribute name="data-name"><xsl:value-of select="@name"/></xsl:attribute>
       <xsl:attribute name="data-type"><xsl:value-of select="local-name(.)"/></xsl:attribute>
-      <xsl:attribute name="fill">#999</xsl:attribute>
+      <xsl:attribute name="fill">white</xsl:attribute>
       <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
       <xsl:attribute name="height">
         <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height"/>
@@ -653,14 +676,14 @@
 
     <xsl:if test="$debug='true'">
 	    <xsl:comment>
-	      <xsl:text>Participant dimensions: </xsl:text>
+	      <xsl:text>Participant dimensions (x,y,height,width): </xsl:text>
 	      <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x"/>,
 	      <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@y"/>_
 	      <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height"/>_
 	      <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@width"/>
 	    </xsl:comment>
 	    <xsl:comment>
-	      <xsl:text>Participant label dimensions: </xsl:text>
+	      <xsl:text>Participant label dimensions (x,y,height,width): </xsl:text>
 	      <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/bpmndi:BPMNLabel/dc:Bounds/@x"/>,
 	      <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/bpmndi:BPMNLabel/dc:Bounds/@y"/>_
 	      <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/bpmndi:BPMNLabel/dc:Bounds/@height"/>_
@@ -691,10 +714,15 @@
     <xsl:variable name="id" select="@id"/>
 
     <xsl:element name="rect">
-      <xsl:attribute name="class">lane</xsl:attribute>
+      <xsl:attribute name="class"><xsl:if test="$showBounds='true'">bounds </xsl:if>lane</xsl:attribute>
       <xsl:attribute name="data-name"><xsl:value-of select="@name"/></xsl:attribute>
       <xsl:attribute name="data-type"><xsl:value-of select="local-name(.)"/></xsl:attribute>
-      <xsl:attribute name="fill">#ccc</xsl:attribute>
+      <xsl:attribute name="fill">
+        <xsl:choose>
+          <xsl:when test="$showBounds='true'">#5F5</xsl:when>
+          <xsl:otherwise>white</xsl:otherwise>
+        </xsl:choose>
+      </xsl:attribute>
       <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
       <xsl:attribute name="height">
         <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height"/>
@@ -710,6 +738,19 @@
         <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@y"/>
       </xsl:attribute>
     </xsl:element>
+
+    <xsl:if test="$debug='true'">
+      <xsl:comment>
+        Lane Height: <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x"/>
+        Lane Y: <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@y"/>
+        Lane Height: <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@width"/>
+        Lane Height: <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height"/>
+        Label X: <xsl:value-of select="-//bpmndi:BPMNShape[@bpmnElement=$id]/bpmndi:BPMNLabel/dc:Bounds/@x"/>
+        Label Y: <xsl:value-of select="-//bpmndi:BPMNShape[@bpmnElement=$id]/bpmndi:BPMNLabel/dc:Bounds/@y"/>
+        Label Width: <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/bpmndi:BPMNLabel/dc:Bounds/@width"/>
+        Label Height: <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/bpmndi:BPMNLabel/dc:Bounds/@height"/>
+      </xsl:comment>
+    </xsl:if>
 
     <xsl:call-template name="label">
       <xsl:with-param name="id" select="$id"/>
@@ -734,6 +775,9 @@
     <xsl:apply-templates select="bpmn:dataOutputAssociation"/>
 
     <xsl:element name="g">
+      <xsl:if test="bpmn:documentation">
+        <title><xsl:value-of select="bpmn:documentation/text()"/></title>
+      </xsl:if>
 	    <xsl:element name="rect">
 	      <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
 	      <xsl:attribute name="class">task <xsl:value-of select="local-name(.)"/></xsl:attribute>
@@ -776,7 +820,14 @@
             <xsl:attribute name="stroke-width">1px</xsl:attribute>
 		      </xsl:otherwise>
 		    </xsl:choose>
-	      <xsl:attribute name="fill">#0f98ce</xsl:attribute>
+        <xsl:choose>
+          <xsl:when test="(local-name(.)='subProcess' or local-name(.)='callActivity') and (//bpmndi:BPMNShape[@bpmnElement=$id]/@isExpanded='true')">
+            <xsl:attribute name="fill">white</xsl:attribute>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:attribute name="fill">#0f98ce</xsl:attribute>
+          </xsl:otherwise>
+        </xsl:choose>
 	      <xsl:attribute name="height">
 	        <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height"/>
 	      </xsl:attribute>
@@ -839,6 +890,7 @@
 	      <xsl:with-param name="tx">0</xsl:with-param>
 	      <xsl:with-param name="ty">0</xsl:with-param>
 	      <xsl:with-param name="r">0</xsl:with-param>
+	      <xsl:with-param name="fill">#fff</xsl:with-param>
 	    </xsl:call-template>
 
       <!-- Activity markers -->
@@ -970,7 +1022,7 @@
       <xsl:with-param name="text" select="bpmn:text/text()"></xsl:with-param>
       <xsl:with-param name="class">textAnnotation</xsl:with-param>
       <xsl:with-param name="id" select="$id"/>
-      <xsl:with-param name="stroke">#666</xsl:with-param>
+      <xsl:with-param name="diElement" select="//bpmndi:BPMNShape[@bpmnElement=$id]"/>
       <xsl:with-param name="x">
         <xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x+($fontSize div 2)"/>
       </xsl:with-param>
@@ -1104,6 +1156,7 @@
     <xsl:element name="path">
       <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
       <xsl:attribute name="class">
+        <xsl:if test="//bpmn:exclusiveGateway[@default=$id] or //exclusiveGateway[@default=$id]">default </xsl:if>
         <xsl:value-of select="$baseType"/>
         <xsl:text> </xsl:text>
         <xsl:value-of select="local-name($this)"/>
@@ -1111,52 +1164,28 @@
       <xsl:attribute name="data-type"><xsl:value-of select="local-name($this)"/></xsl:attribute>
       <xsl:attribute name="d">
         <xsl:text>M </xsl:text>
-        <!-- Determine start point according to departure side -->
-        <xsl:choose>
-          <!-- LEAVE LEFT with allowance of couple of pixels difference
-          <xsl:when test="($srcElement/dc:Bounds/@x - $trgtElement/dc:Bounds/@x &lt; 5) and ($srcElement/dc:Bounds/@y &lt; $trgtElement/dc:Bounds/@y)">
-          -->
-          <xsl:when test="false">
-            <xsl:value-of select="$srcElement/dc:Bounds/@x"/>
-            <xsl:text> </xsl:text>
-            <xsl:value-of select="$srcElement/dc:Bounds/@y"/>
-          </xsl:when>
-          <xsl:when test="false"><!-- LEAVE BOTTOM -->
-            <xsl:value-of select="$srcElement/dc:Bounds/@x"/>
-            <xsl:text> </xsl:text>
-            <xsl:value-of select="$srcElement/dc:Bounds/@y+$srcElement/dc:Bounds/@height"/>
-          </xsl:when>
-          <xsl:when test="false"><!-- LEAVE TOP -->
-            <xsl:value-of select="$srcElement/dc:Bounds/@x+($srcElement/dc:Bounds/@width div 2)"/>
-            <xsl:text> </xsl:text>
-            <xsl:value-of select="$srcElement/dc:Bounds/@y"/>
-          </xsl:when>
-          <xsl:when test="$srcElement/dc:Bounds"><!-- LEAVE RIGHT -->
-            <xsl:value-of select="$srcElement/dc:Bounds/@x+$srcElement/dc:Bounds/@width"/>
-            <xsl:text> </xsl:text>
-            <xsl:value-of select="$srcElement/dc:Bounds/@y+($srcElement/dc:Bounds/@height div 2)"/>
-          </xsl:when>
-          <xsl:otherwise><!-- LEAVE RIGHT -->
-            <!-- No bounds -->
-          </xsl:otherwise>
-        </xsl:choose>
 
         <xsl:for-each select="$bpmnElement/di:waypoint">
-          <xsl:text> L </xsl:text>
+          <xsl:if test="position() &gt; 1">
+            <xsl:text> L </xsl:text>
+          </xsl:if>
           <xsl:value-of select="@x"/>
           <xsl:text> </xsl:text>
           <xsl:value-of select="@y"/>
         </xsl:for-each>
 
       </xsl:attribute>
-      <xsl:attribute name="fill">transparent</xsl:attribute>
+      <xsl:attribute name="fill">white</xsl:attribute>
       <xsl:attribute name="stroke">#666</xsl:attribute>
       <xsl:attribute name="stroke-width">2.0</xsl:attribute>
       <xsl:choose>
-	      <xsl:when test="$baseType='flow'">
-	        <xsl:attribute name="style">marker-end:url(#filled-arrow)</xsl:attribute>
-	      </xsl:when>
-        <xsl:when test="$baseType='association'">
+        <xsl:when test="$baseType='flow'">
+          <xsl:attribute name="style">
+            <xsl:if test="//bpmn:exclusiveGateway[@default=$id] or //exclusiveGateway[@default=$id]">marker-start:url(#backslash);</xsl:if>
+            <xsl:text> marker-end:url(#filled-arrow)</xsl:text>
+          </xsl:attribute>
+        </xsl:when>
+        <xsl:when test="$baseType='association' and local-name($this)!='association'">
           <xsl:attribute name="style">marker-end:url(#open-arrow)</xsl:attribute>
         </xsl:when>
 	    </xsl:choose>
@@ -1184,6 +1213,9 @@
           </xsl:attribute>
         </xsl:when>
       </xsl:choose>
+      <xsl:if test="bpmn:documentation">
+        <title><xsl:value-of select="bpmn:documentation/text()"/></title>
+      </xsl:if>
     </xsl:element>
   </xsl:template>
 
@@ -1192,6 +1224,7 @@
     <xsl:param name="r"/>
     <xsl:param name="tx"/>
     <xsl:param name="ty">0</xsl:param>
+    <xsl:param name="fill">#666</xsl:param>
     
     <xsl:variable name="len" select="string-length(@name)"/>
     <xsl:variable name="cutBefore" select="contains(substring(@name,0,$len div 2),' ')*(string-length(substring-before(substring(@name,0,$len div 2),' ')))"/>
@@ -1267,7 +1300,8 @@
         <xsl:element name="text">
           <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
           <xsl:attribute name="id"><xsl:value-of select="$id"/>_label</xsl:attribute>
-          <xsl:attribute name="stroke">#fff</xsl:attribute>
+          <xsl:attribute name="fill"><xsl:value-of select="$fill"/></xsl:attribute>
+          <xsl:attribute name="stroke-width">0</xsl:attribute>
           <xsl:attribute name="transform">rotate(<xsl:value-of select="$r"/>) translate(<xsl:value-of select="$tx"/>,<xsl:value-of select="$ty"/>)</xsl:attribute>
           <xsl:attribute name="x">
             <xsl:value-of select="$labelX"/>
@@ -1279,7 +1313,8 @@
         </xsl:element>
         <xsl:element name="text">
           <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
-          <xsl:attribute name="stroke">#fff</xsl:attribute>
+          <xsl:attribute name="fill"><xsl:value-of select="$fill"/></xsl:attribute>
+          <xsl:attribute name="stroke-width">0</xsl:attribute>
           <xsl:attribute name="transform">rotate(<xsl:value-of select="$r"/>) translate(<xsl:value-of select="$tx"/>,<xsl:value-of select="$ty"/>)</xsl:attribute>
           <xsl:attribute name="x">
             <xsl:value-of select="$labelX"/>
@@ -1296,7 +1331,7 @@
 		      <xsl:with-param name="depth" select="0"/>
 		      <xsl:with-param name="diElement" select="$diElement"/>
 		      <xsl:with-param name="id" select="$id"/>
-		      <xsl:with-param name="stroke">#fff</xsl:with-param>
+		      <xsl:with-param name="fill"><xsl:value-of select="$fill"/></xsl:with-param>
 		      <xsl:with-param name="text">
 		        <xsl:value-of select="@name"/>
 		      </xsl:with-param>
@@ -1326,7 +1361,7 @@
     <xsl:param name="depth">0</xsl:param>
     <xsl:param name="diElement"/>
     <xsl:param name="id"/>
-    <xsl:param name="stroke"/>
+    <xsl:param name="fill">#666</xsl:param>
     <xsl:param name="text"/>
     <xsl:param name="r">0</xsl:param>
     <xsl:param name="x"/>
@@ -1344,7 +1379,7 @@
         <xsl:element name="text">
           <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
           <xsl:attribute name="id"><xsl:value-of select="$id"/>_label</xsl:attribute>
-          <xsl:attribute name="stroke"><xsl:value-of select="$stroke"/></xsl:attribute>
+          <xsl:attribute name="fill"><xsl:value-of select="$fill"/></xsl:attribute>
           <xsl:attribute name="transform">rotate(<xsl:value-of select="$r"/>) translate(0, <xsl:value-of select="$depth*($fontSize+$lineSpacing)"/>)</xsl:attribute>
           <xsl:attribute name="x"><xsl:value-of select="$x"/></xsl:attribute>
           <xsl:attribute name="y"><xsl:value-of select="$y"/></xsl:attribute>
@@ -1354,8 +1389,9 @@
         <xsl:call-template name="multiLineText">
           <xsl:with-param name="class" select="$class"/>
           <xsl:with-param name="depth" select="$depth+1"/>
+          <xsl:with-param name="diElement" select="$diElement"/>
           <xsl:with-param name="id" select="$id"/>
-          <xsl:with-param name="stroke" select="$stroke"/>
+          <xsl:with-param name="fill" select="$fill"/>
           <xsl:with-param name="text">
             <xsl:value-of select="substring-after($text,'&#10;')"/>
           </xsl:with-param>
@@ -1368,14 +1404,16 @@
         <xsl:element name="text">
           <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
           <xsl:attribute name="id"><xsl:value-of select="$id"/>_label</xsl:attribute>
-          <xsl:attribute name="stroke"><xsl:value-of select="$stroke"/></xsl:attribute>
+          <xsl:attribute name="fill"><xsl:value-of select="$fill"/></xsl:attribute>
+          <!-- We ALWAYS want text to have stroke width 0 else unreadable and regular sizes-->
+          <xsl:attribute name="stroke-width">0</xsl:attribute>
           <xsl:choose>
-            <xsl:when test="$r = -90">
+            <xsl:when test="$r = -90"><!-- i.e. Participants and Lanes -->
               <!-- Guesstimate length of text in pixels -->
               <xsl:variable name="textLength"><xsl:value-of select="string-length($text)*3"/></xsl:variable>
-              <xsl:attribute name="transform"> translate(0, <xsl:value-of select="($diElement/dc:Bounds/@height div 2)+$prevLanesHeight+$textLength"/>) rotate(<xsl:value-of select="$r"/><xsl:text> </xsl:text><xsl:value-of select="$x+$fontSize"/><xsl:text> </xsl:text><xsl:value-of select="0"/>)</xsl:attribute>
-		          <xsl:attribute name="x"><xsl:value-of select="$x"/></xsl:attribute>
-		          <xsl:attribute name="y">0</xsl:attribute>
+              <xsl:attribute name="transform">rotate(<xsl:value-of select="$r"/>) translate(<xsl:value-of select="-($diElement/bpmndi:BPMNLabel/dc:Bounds/@y + $diElement/bpmndi:BPMNLabel/dc:Bounds/@height)"/>, <xsl:value-of select="$diElement/bpmndi:BPMNLabel/dc:Bounds/@x+(($depth+1)*($fontSize+$lineSpacing))"/>) </xsl:attribute>
+              <xsl:attribute name="x">0</xsl:attribute>
+              <xsl:attribute name="y">0</xsl:attribute>
             </xsl:when>
             <xsl:otherwise>
               <xsl:attribute name="transform">rotate(<xsl:value-of select="$r"/>) translate(0, <xsl:value-of select="$depth*($fontSize+$lineSpacing)"/>)</xsl:attribute>

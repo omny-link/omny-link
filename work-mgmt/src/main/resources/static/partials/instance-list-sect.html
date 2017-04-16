@@ -113,7 +113,7 @@
 	        </tbody>
 	      {{/each}}
 	    <tfoot>
-	      <tr><th colspan="5">Total of {{current.instances.length}} instances</th></tr>
+	      <tr><th colspan="5">Fetched {{current.instances.length}} instances of {{Array.findBy('id',current.id,definitions).instanceCount}} total</th></tr>
 	    </tfoot>
 	  </table>
 	</div>
