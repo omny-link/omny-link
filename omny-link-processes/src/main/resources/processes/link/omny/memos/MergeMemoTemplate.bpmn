@@ -38,6 +38,7 @@
       <outputSet/>
     </startEvent>
     <serviceTask activiti:async="true" activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="getMemo" implementation="##WebService" isForCompensation="false" name="Read memo" startQuantity="1">
+      <documentation id="getMemo_D_1" textFormat="text/plain"><![CDATA[READ MEMO DOCS]]></documentation>
       <extensionElements>
         <activiti:field name="resourceUsername">
           <activiti:string>userInfo('tenant-bot')</activiti:string>
@@ -161,7 +162,9 @@ if (execution.getVariable('contactShortId')==undefined) execution.setVariable('c
       </extensionElements>
       <conditionExpression><![CDATA[${!empty orderId}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="_27" name="No" sourceRef="_22" targetRef="mergeTemplate"/>
+    <sequenceFlow id="_27" name="No" sourceRef="_22" targetRef="mergeTemplate">
+      <documentation id="_27_D_1" textFormat="text/plain"><![CDATA[No order to load proceed directly to merge the template]]></documentation>
+    </sequenceFlow>
     <callActivity calledElement="TransformOrderToHtml" completionQuantity="1" id="transformOrder" isForCompensation="false" name="Transform&#10;order&#10;to HTML" startQuantity="1">
       <extensionElements>
         <activiti:in source="order" target="order"/>
@@ -175,6 +178,7 @@ if (execution.getVariable('contactShortId')==undefined) execution.setVariable('c
     <sequenceFlow id="_29" sourceRef="transformOrder" targetRef="mergeTemplate"/>
     <sequenceFlow id="_16" sourceRef="mergeTemplate" targetRef="endEvent"/>
     <exclusiveGateway default="_27" gatewayDirection="Diverging" id="_22" name="Have order id?">
+      <documentation id="_22_D_1" textFormat="text/plain"><![CDATA[Do we need to load an order for this template?]]></documentation>
       <extensionElements>
         <yaoqiang:label offset-x="4.0" offset-y="-70.0"/>
       </extensionElements>
@@ -229,7 +233,7 @@ if (execution.getVariable('contactShortId')==undefined) execution.setVariable('c
       <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
         <dc:Bounds height="32.0" width="32.0" x="46.863636363636424" y="211.27272727272728"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="69.0" x="28.36" y="253.47"/>
+          <dc:Bounds height="18.8" width="69.0" x="28.36" y="253.55"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7">
@@ -283,7 +287,7 @@ if (execution.getVariable('contactShortId')==undefined) execution.setVariable('c
       <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
         <dc:Bounds height="32.0" width="32.0" x="1101.5000000000005" y="211.27272727272728"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="62.0" x="1086.5" y="252.82"/>
+          <dc:Bounds height="18.8" width="62.0" x="1086.5" y="252.9"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6">
@@ -347,51 +351,58 @@ if (execution.getVariable('contactShortId')==undefined) execution.setVariable('c
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_29" id="Yaoqiang-_29">
-        <di:waypoint x="936.0" y="305.0"/>
+        <di:waypoint x="936.0" y="305.05555555555554"/>
         <di:waypoint x="936.0" y="341.0"/>
         <di:waypoint x="952.0" y="227.27272727272728"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="6.0" x="933.0" y="248.73"/>
+          <dc:Bounds height="18.8" width="6.0" x="933.0" y="248.76"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_27" id="Yaoqiang-_27">
-        <di:waypoint x="685.7272727272727" y="227.27272727272728"/>
+        <di:waypoint x="685.7828282828283" y="227.27272727272728"/>
         <di:waypoint x="952.0" y="227.27272727272728"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="21.0" x="808.36" y="217.87"/>
+          <dc:Bounds height="18.8" width="21.0" x="808.39" y="217.87"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_26" id="Yaoqiang-_26">
-        <di:waypoint x="665.0555555555557" y="247.94444444444434"/>
+        <di:waypoint x="665.0555555555557" y="247.9999999999999"/>
         <di:waypoint x="665.0" y="339.0"/>
-        <di:waypoint x="665.0555555555557" y="305.0"/>
+        <di:waypoint x="665.0555555555557" y="305.05555555555554"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="27.0" x="651.56" y="248.07"/>
+          <dc:Bounds height="18.8" width="27.0" x="651.56" y="248.13"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_25" id="Yaoqiang-_25">
-        <di:waypoint x="827.0" y="342.0"/>
+        <di:waypoint x="826.9444444444445" y="342.0"/>
         <di:waypoint x="876.0" y="342.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="21.0" x="841.0" y="332.6"/>
+          <dc:Bounds height="18.8" width="21.0" x="840.97" y="332.6"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_24" id="Yaoqiang-_24">
         <di:waypoint x="616.0" y="227.27272727272728"/>
-        <di:waypoint x="644.2727272727273" y="227.27272727272728"/>
+        <di:waypoint x="644.2171717171717" y="227.27272727272728"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="6.0" x="627.14" y="217.87"/>
+          <dc:Bounds height="18.8" width="6.0" x="627.11" y="217.87"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_23" id="Yaoqiang-_23">
-        <di:waypoint x="806.0" y="363.0"/>
-        <di:waypoint x="806.0" y="429.0"/>
+        <di:waypoint x="806.0" y="363.05555555555554"/>
+        <di:waypoint x="806.0" y="429.05555555555554"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="27.0" x="792.5" y="386.6"/>
+          <dc:Bounds height="18.8" width="27.0" x="792.5" y="386.65"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_21" id="Yaoqiang-_21">
+        <di:waypoint x="77.0" y="532.1042725737093"/>
+        <di:waypoint x="132.0" y="532.289061263258"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="101.5" y="522.79"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9">
-        <di:waypoint x="78.99767545097446" y="227.27272727272728"/>
+        <di:waypoint x="78.99852607102481" y="227.27272727272728"/>
         <di:waypoint x="117.0" y="227.27272727272728"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.8" width="6.0" x="95.0" y="217.87"/>
@@ -399,9 +410,9 @@ if (execution.getVariable('contactShortId')==undefined) execution.setVariable('c
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_19" id="Yaoqiang-_19">
         <di:waypoint x="734.0" y="342.0"/>
-        <di:waypoint x="785.0" y="342.0"/>
+        <di:waypoint x="785.0555555555555" y="342.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="6.0" x="756.5" y="332.6"/>
+          <dc:Bounds height="18.8" width="6.0" x="756.53" y="332.6"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_18" id="Yaoqiang-_18">
@@ -411,9 +422,16 @@ if (execution.getVariable('contactShortId')==undefined) execution.setVariable('c
           <dc:Bounds height="18.8" width="6.0" x="494.5" y="217.87"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_17" id="Yaoqiang-_17">
+        <di:waypoint x="77.0" y="462.0072385340105"/>
+        <di:waypoint x="132.0" y="461.8239670729777"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="101.5" y="452.51"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_16" id="Yaoqiang-_16">
         <di:waypoint x="1057.0" y="227.27272727272728"/>
-        <di:waypoint x="1102.0023245490256" y="227.27272727272728"/>
+        <di:waypoint x="1102.0014739289752" y="227.27272727272728"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.8" width="6.0" x="1076.5" y="217.87"/>
         </bpmndi:BPMNLabel>
@@ -421,9 +439,9 @@ if (execution.getVariable('contactShortId')==undefined) execution.setVariable('c
       <bpmndi:BPMNEdge bpmnElement="_14" id="Yaoqiang-_14">
         <di:waypoint x="853.0" y="466.22222222222223"/>
         <di:waypoint x="907.0" y="406.0"/>
-        <di:waypoint x="907.0" y="379.0"/>
+        <di:waypoint x="907.0" y="379.05555555555554"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="6.0" x="904.0" y="440.21"/>
+          <dc:Bounds height="18.8" width="6.0" x="904.0" y="440.24"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
@@ -438,20 +456,6 @@ if (execution.getVariable('contactShortId')==undefined) execution.setVariable('c
         <di:waypoint x="248.0" y="227.27272727272728"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.8" width="6.0" x="232.0" y="217.87"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_21" id="Yaoqiang-_21">
-        <di:waypoint x="77.0" y="532.057516943545"/>
-        <di:waypoint x="132.0" y="532.2756846604401"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="6.0" x="101.5" y="522.76"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_17" id="Yaoqiang-_17">
-        <di:waypoint x="77.0" y="461.9604829038463"/>
-        <di:waypoint x="132.0" y="461.8105904701599"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="6.0" x="101.5" y="452.48"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

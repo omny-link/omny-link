@@ -3,6 +3,7 @@ var fadeOutMessages = true;
 var ractive = new AuthenticatedRactive({
   el: 'container',
   template: '#template',
+  parser: new DOMParser(),
   partials: { simpleTodoFormExtension: function(x) {
     return 'HELLO'+x
   } },
@@ -291,6 +292,14 @@ var ractive = new AuthenticatedRactive({
       }
     });
   },
+  fetchBpmn: function() {
+    console.log('fetch bpmn');
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+ractive.get('current.id')+'.bpmn', function( data ) {
+      console.log('found bpmn '+data);
+      var bpmnDoc = ractive.parser.parseFromString(data, "text/xml");
+      ractive.set('current.bpmn',bpmnDoc);
+    });
+  },
   fetchDiagrams: function(definition) {
     console.info('fetchDiagrams');
     for (idx in ractive.get('current.diagramIds')) {
@@ -310,6 +319,7 @@ var ractive = new AuthenticatedRactive({
             console.log('selected: '+JSON.stringify($(ev.target)));
             console.log('selected: '+ev.target.attributes['data-called-element'].value);
             ractive.select(ractive.find(ev.target.attributes['data-called-element'].value));
+            $('[data-toggle="tooltip"]').tooltip();
           });
         } catch (e) { 
           console.error('  e:'+e);
@@ -319,7 +329,7 @@ var ractive = new AuthenticatedRactive({
   },
   fetchInstances: function() {
     console.log('fetch instances');
-    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+ractive.get('current.id')+'/instances', function( data ) {
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+ractive.get('current.id')+'/instances?limit=20', function( data ) {
       console.log('found instances '+data.length);
       ractive.set('current.instances',data);
     });
@@ -378,6 +388,7 @@ var ractive = new AuthenticatedRactive({
       } else {
         ractive.fetchInstances();
       }
+      ractive.fetchBpmn();
       if (ractive.hasRole('admin')) $('.admin').show();
     });
     
@@ -413,6 +424,11 @@ var ractive = new AuthenticatedRactive({
     if ($('.selected').length>0)
         $('.selected').attr('class', $('.selected').attr('class').replace(/selected/,''))
     $('#'+ev.target.id).attr('class',$('#'+ev.target.id).attr('class')+' selected');
+
+    if (typeof ractive.get('current.bpmn') == 'string') {
+      ractive.set('current.bpmn',ractive.parser.parseFromString(ractive.get('current.bpmn'), "text/xml"));
+    }
+
     ractive.set('selected',ev.target.id);
     ractive.set('selectedBpmnObject', { 
       id: ev.target.id, 
@@ -428,6 +444,28 @@ var ractive = new AuthenticatedRactive({
       timerDate: $('#'+ev.target.id).data('timer-date'),
       timerDuration: $('#'+ev.target.id).data('timer-duration')
     });
+
+    switch (ractive.get('selectedBpmnObject.serviceType')) {
+    case 'com.knowprocess.resource.spi.RestDelete':
+      ractive.set('selectedBpmnObject.serviceType', 'REST DELETE');
+      break;
+    case 'com.knowprocess.resource.spi.RestGet':
+      ractive.set('selectedBpmnObject.serviceType', 'REST GET');
+      break;
+    case 'com.knowprocess.resource.spi.RestPost':
+      ractive.set('selectedBpmnObject.serviceType', 'REST POST');
+//        ractive.set('selectedBpmnObject.serviceTypeDetails', 'TODO');
+      break;
+    case 'com.knowprocess.resource.spi.RestPut':
+      ractive.set('selectedBpmnObject.serviceType', 'REST PUT');
+      break;
+    case 'com.knowprocess.el.TemplateTask':
+      ractive.set('selectedBpmnObject.serviceType', 'Merge template');
+      break;
+    case 'com.knowprocess.xslt.TransformTask':
+      ractive.set('selectedBpmnObject.serviceType', 'XSLT');
+      break;
+    }
   },
 //  showUserTaskPropertySect: function(ev) {
 //    console.info('showUserTaskPropertySect at x,y:'+ev.clientX+','+ev.clientY);

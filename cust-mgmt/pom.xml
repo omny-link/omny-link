@@ -130,6 +130,14 @@
       <artifactId>fonts</artifactId>
       <version>1.0.0</version>
     </dependency>    
+
+    <!-- Without this get Sax 2 parser exception on Batik transcoder -->
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.5.0</version>
+    </dependency>
+
   </dependencies>
 
   <dependencyManagement>

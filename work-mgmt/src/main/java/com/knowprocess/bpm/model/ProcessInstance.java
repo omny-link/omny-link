@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Data;
-
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ManagementService;
 import org.activiti.engine.ProcessEngine;
@@ -20,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.knowprocess.bpm.impl.TaskAllocationMapper;
+
+import lombok.Data;
 
 @Data
 @Component
@@ -130,34 +130,6 @@ public class ProcessInstance extends Execution
         instances.addAll(wrap(processEngine.getHistoryService()
                 .createHistoricProcessInstanceQuery().list()));
         return instances;
-    }
-
-    public static List<ProcessInstance> findAllProcessInstancesForDefinition(
-            String procDefId) {
-        List<ProcessInstance> instances = new ArrayList<ProcessInstance>();
-        instances.addAll(wrap(processEngine.getRuntimeService()
-                .createProcessInstanceQuery().processDefinitionId(procDefId)
-                .list()));
-        List<HistoricProcessInstance> historicInstances = processEngine
-                .getHistoryService().createHistoricProcessInstanceQuery()
-                .processDefinitionId(procDefId).list();
-        for (HistoricProcessInstance instance : historicInstances) {
-            if (instance.getEndTime() == null) {
-                merge(instances, instance);
-            } else {
-                instances.add(new ProcessInstance(instance));
-            }
-        }
-        return instances;
-    }
-
-    private static void merge(List<ProcessInstance> instances,
-            HistoricProcessInstance instance) {
-        for (ProcessInstance pi : instances) {
-            if (instance.getId().equals(pi.getId())) {
-                pi.setStartTime(instance.getStartTime());
-            }
-        }
     }
 
     public static ProcessInstance findProcessInstance(String id) {

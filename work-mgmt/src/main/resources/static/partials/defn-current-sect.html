@@ -17,7 +17,7 @@
       {{^current.deploymentId}}
         <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('{{current.id}}')" title="Delete this definition"></a>
       {{/}}
-    </div>          
+    </div>
   </h2>
   <p>{{current.description}}</p>
   <table class="table">
@@ -51,7 +51,10 @@
   {{/}}
   {{#if current.id}}
     {{# current.diagrams:i}}
-      <h3>Diagram: {{current.diagrams[i].name}}</h3>
+      <h3>
+        <span>Diagram: {{current.diagrams[i].name}}</span>
+        <a class="glyphicon glyphicon-picture pull-right" href="{{context}}/{{tenant.id}}/process-definitions/{{current.id}}/{{current.diagrams[i].id}}.png" style="margin-top:-15px" target="_blank" title="Image of process diagram '{{current.diagrams[i].name}}'"></a>
+      </h3>
       <div class="bpmnDiagram">{{{current.diagrams[i].image}}}</div>
       {{#if selectedBpmnObject}}
         <h3>
@@ -83,7 +86,9 @@
               {{#selectedBpmnObject.condition}}<td class="col-md-1">{{selectedBpmnObject.condition}}</td>{{/}}
               {{#selectedBpmnObject.resource}}<td class="col-md-1">{{selectedBpmnObject.resource}}</td>{{/}}
               {{#selectedBpmnObject.script}}<td class="col-md-4"><pre>{{selectedBpmnObject.script}}</pre></td>{{/}}
-              {{#selectedBpmnObject.serviceType}}<td class="col-md-1">{{selectedBpmnObject.serviceType}}</td>{{/}}
+              {{#selectedBpmnObject.serviceType}}
+                <td class="col-md-1">{{selectedBpmnObject.serviceType}}<br/>{{selectedBpmnObject.serviceTypeDetails}}</td>
+              {{/}}
               {{#selectedBpmnObject.timerCycle}}<td class="col-md-1">{{selectedBpmnObject.timerCycle}}</td>{{/}}
               {{#selectedBpmnObject.timerDate}}<td class="col-md-1">{{selectedBpmnObject.timerDate}}</td>{{/}}
               {{#selectedBpmnObject.timerDuration}}<td class="col-md-1">{{selectedBpmnObject.timerDuration}}</td>{{/}}

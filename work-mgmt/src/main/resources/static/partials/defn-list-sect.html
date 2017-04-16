@@ -35,7 +35,8 @@
         <th class="col-md-3 col-sm-5 col-xs-2" on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
         <!--th class="col-md-2 col-sm-2 col-xs-3" on-click="sort:description">Description<span class="sortable {{ sorted('description') }} glyphicon "></th-->
         <th class="col-md-2 hidden-sm hidden-xs" on-click="sort:category">Category<span class="sortable {{ sorted('category') }} glyphicon "></th>
-        <th class="col-md-2 hidden-sm hidden-xs" on-click="sort:deploymentId">Deployment Bundle<span class="sortable {{ sorted('deploymentId') }} glyphicon "></th>
+        <th class="col-md-1 hidden-sm hidden-xs" on-click="sort:instanceCount"># Instances<span class="sortable {{ sorted('instanceCount') }} glyphicon "></th>
+        <th class="col-md-1 hidden-sm hidden-xs" on-click="sort:deploymentId">Deployment Bundle<span class="sortable {{ sorted('deploymentId') }} glyphicon "></th>
         <th on-click="sort:version">Version<span class="sortable {{ sorted('version') }} glyphicon "></th>
         <th class="col-md-3 col-sm-3 col-xs-3 col-actions">Actions</th>
       </tr>
@@ -52,7 +53,8 @@
           </td>-->
           <!--td class="col-md-2 col-sm-2 col-xs-2" on-click="select(this)">{{description}}</td-->
           <td class="col-md-2 hidden-sm hidden-xs" on-click="select(this)">{{category}}</td>
-          <td class="col-md-2 hidden-sm hidden-xs" on-click="select(this)">{{deploymentId}}</td>
+          <td class="col-md-1 hidden-sm hidden-xs" on-click="select(this)">{{instanceCount}}</td>
+          <td class="col-md-1 hidden-sm hidden-xs" on-click="select(this)">{{deploymentId}}</td>
           <td on-click="select(this)">{{version}}</td>
           <td class="col-md-3 col-sm-3 col-xs-3 col-actions">
             {{#deploymentId}}
@@ -65,8 +67,6 @@
             {{/}}
             <a href="/{{tenant.id}}/process-definitions/{{id}}.bpmn" target="_newtab">
               <a class="glyphicon glyphicon-cloud-download" aria-hidden="true"></a></a>
-            <a href="/{{tenant.id}}/process-definitions/{{id}}.svg" target="_newtab">
-              <a class="glyphicon glyphicon-picture" aria-hidden="true"></a></a>
             {{#deploymentId}}
               <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this.deploymentId)" title="Delete this definition"></a>
             {{/}}
