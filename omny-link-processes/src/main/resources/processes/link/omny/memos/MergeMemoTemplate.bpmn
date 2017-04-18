@@ -74,8 +74,12 @@ var contactId = execution.getVariable('contactId');
 //System.out.println('contactId: '+contactId);
 if (contactId.indexOf('://')==-1) contactId = "userInfo('cust-mgmt-url')/"+contactId;
 execution.setVariable('contactId',contactId);
-// Accounts page does not populate this
+// Accounts page does not populate contactShortId
 if (execution.getVariable('contactShortId')==undefined) execution.setVariable('contactShortId',contactId.substring(contactId.lastIndexOf('/')+1));
+// Prepare 'short' id for reading order
+if (execution.getVariable('orderId')!=undefined && execution.getVariable('orderId').indexOf('/')!=-1) {
+  execution.setVariable('orderShortId',execution.getVariable('orderId').substring(execution.getVariable('orderId').lastIndexOf('/')+1));
+}
 //System.out.println("We're done");
 ]]></script>
     </scriptTask>
@@ -145,7 +149,7 @@ if (execution.getVariable('contactShortId')==undefined) execution.setVariable('c
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/orders/${orderId}</activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/orders/${orderShortId}</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Accept:application/json</activiti:string>
