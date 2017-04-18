@@ -57,8 +57,9 @@
         <activiti:out source="contactId" target="contactId"/>
         <activiti:out source="contactEmail" target="contactEmail"/>
         <activiti:out source="contactPwd" target="contactPwd"/>
-        <activiti:out source="accountId" target="accountId"/>
         <activiti:out source="contact" target="contact"/>
+        <activiti:out source="accountId" target="accountId"/>
+        <activiti:out source="orderId" target="orderId"/>
       </extensionElements>
       <incoming>_12</incoming>
       <incoming>_13</incoming>

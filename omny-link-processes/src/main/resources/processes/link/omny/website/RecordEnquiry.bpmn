@@ -30,6 +30,8 @@
         <activiti:in sourceExpression="${omny_enquiry.getString('tenantId')}" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
         <activiti:in sourceExpression="${omny_enquiry.getString('email')}" target="toEmail"/>
+        <activiti:in source="accountId" target="accountId"/>
+        <activiti:in source="orderId" target="orderId"/>
         <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_19</incoming>
@@ -108,8 +110,9 @@ try {
     <callActivity calledElement="DedupeContact" completionQuantity="1" id="_3" isForCompensation="false" name="Read or &#10;create contact" startQuantity="1">
       <extensionElements>
         <activiti:in source="omny_enquiry" target="contact"/>
-        <activiti:out source="contact" target="omny_enquiry"/>
         <activiti:out source="contactId" target="contactId"/>
+        <activiti:out source="accountId" target="accountId"/>
+        <activiti:out source="orderId" target="orderId"/>
       </extensionElements>
       <incoming>_4</incoming>
       <outgoing>_5</outgoing>
