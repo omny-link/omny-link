@@ -225,6 +225,10 @@ public class StockItemController {
             @PathVariable("tenantId") String tenantId,
             @RequestBody StockItem stockItem) {
         stockItem.setTenantId(tenantId);
+        if (stockItem.getStockCategory() != null) {
+            stockItem.setStockCategory(stockCategoryRepo.findByName(
+                    stockItem.getStockCategory().getName(), tenantId));
+        }
         stockItemRepo.save(stockItem);
 
         UriComponentsBuilder builder = MvcUriComponentsBuilder
@@ -256,8 +260,9 @@ public class StockItemController {
         // item to a different category if necessary
         if (updatedStockItem.getStockCategory() == null) {
             stockItem.setStockCategory(null);
-        } else if (!updatedStockItem.getStockCategory().getId().equals(stockItem.getStockCategory().getId())){
-            stockItem.setStockCategory(stockCategoryRepo.findOne(updatedStockItem.getStockCategory().getId()));
+        } else if (!stockItem.getStockCategory().getId().equals(updatedStockItem.getStockCategory().getId())) {
+            // During creation stock cat name may be set whilst id is not
+            stockItem.setStockCategory(stockCategoryRepo.findByName(updatedStockItem.getStockCategory().getName(), tenantId));
         }
 
         stockItem.setTenantId(tenantId);
@@ -328,12 +333,10 @@ public class StockItemController {
      * Delete an existing stockItem.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = { "application/json" })
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long stockItemId) {
-        StockItem stockItem = stockItemRepo.findOne(stockItemId);
-
-        stockItemRepo.delete(stockItem);
+        stockItemRepo.delete(stockItemId);
     }
 
     private List<ShortStockItem> wrapShort(List<StockItem> list) {
