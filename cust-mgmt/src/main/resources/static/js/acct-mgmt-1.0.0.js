@@ -1819,7 +1819,8 @@ var ractive = new AuthenticatedRactive(
                 + ' records');
           },
           error: function(jqXHR, textStatus, errorThrown) {
-            ractive.handleError(jqXHR, textStatus, errorThrown);
+            console.error(textStatus+': '+errorThrown);
+            ractive.showError('Something went wrong with that upload, please talk to your administrator');
           }
         });
       }

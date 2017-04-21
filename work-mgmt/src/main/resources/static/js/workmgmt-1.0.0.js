@@ -368,7 +368,8 @@ var ractive = new AuthenticatedRactive({
           ractive.set('saveObserver',true);
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-          ractive.handleError(jqXHR,textStatus,errorThrown);
+          console.error(textStatus+': '+errorThrown);
+          ractive.showError('So sorry, we can\'t save at this time, please refresh the page and try again');
         }
       });
     } else {

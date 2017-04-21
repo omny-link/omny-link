@@ -166,20 +166,18 @@ var ractive = new AuthenticatedRactive({
     ractive.initTags();
   },
   delete: function (obj) {
-    console.log('delete '+obj+'...');
-    var url = obj.links != undefined
-        ? obj.links.filter(function(d) { console.log('this:'+d);if (d['rel']=='self') return d;})[0].href
-        : obj._links.self.href;
+    var url = ractive.tenantUri(obj);
+    console.info('delete '+obj+'...');
     $.ajax({
         url: url,
         type: 'DELETE',
         success: completeHandler = function(data) {
           ractive.fetch();
-          ractive.toggleResults();
+          ractive.showResults();
         },
-        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-          console.error('XX: '+errorThrown);
-          ractive.handleError(jqXHR,textStatus,errorThrown);
+        error: function(jqXHR, textStatus, errorThrown) {
+          console.error(textStatus+': '+errorThrown);
+          ractive.showError('Unable to delete '+obj.name+' at this time');
         }
     });
     return false; // cancel bubbling to prevent edit as well as delete
@@ -462,7 +460,8 @@ var ractive = new AuthenticatedRactive({
           ractive.showMessage('Successfully uploaded '+response.length+' records');
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          ractive.handleError(jqXHR, textStatus, errorThrown);
+          console.error(textStatus+': '+errorThrown);
+          ractive.showError('Sorry! We\'re unable to upload your categories at this time');
         }
       });
   }

@@ -291,8 +291,8 @@ var ractive = new AuthenticatedRactive({
           ractive.showResults();
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-          console.error('XX: '+errorThrown);
-          ractive.handleError(jqXHR,textStatus,errorThrown);
+          console.error(textStatus+': '+errorThrown);
+          ractive.showError("I'm afraid we can't delete "+order.id+" at this time");
         }
     });
     return false; // cancel bubbling to prevent edit as well as delete

@@ -400,7 +400,7 @@ public class StockCategoryController {
      * Delete an existing stockCategory.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = { "application/json" })
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long stockCategoryId) {
         stockCategoryRepo.delete(stockCategoryId);
