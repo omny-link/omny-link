@@ -431,7 +431,8 @@ var ractive = new AuthenticatedRactive({
 
     ractive.set('selected',ev.target.id);
     ractive.set('selectedBpmnObject', { 
-      id: ev.target.id, 
+      id: ev.target.id,
+      element: ractive.get('current.bpmn').getElementById(ev.target.id),
       name: $('#'+ev.target.id).data('name'), 
       type: $('#'+ev.target.id).data('type')==undefined ? '' : $('#'+ev.target.id).data('type').toLabel(), 
 
@@ -466,6 +467,20 @@ var ractive = new AuthenticatedRactive({
       ractive.set('selectedBpmnObject.serviceType', 'XSLT');
       break;
     }
+    var fields = ractive.get('selectedBpmnObject.element').querySelectorAll('field');
+    var extDetails = '';
+    for (idx in fields) {
+      if (fields[idx].attributes!=undefined) {
+        extDetails += '&nbsp;&nbsp;<em>'+fields[idx].attributes.getNamedItem('name').value.toLabel()+':</em>';
+        if (fields[idx].attributes.getNamedItem('expression') != undefined) {
+          extDetails += fields[idx].attributes.getNamedItem('expression').value;
+        } else {
+          extDetails += fields[idx].textContent.trim();
+        }
+        extDetails += '<br/>';
+      }
+    }
+    ractive.set('selectedBpmnObject.extensionDetails', extDetails);
   },
 //  showUserTaskPropertySect: function(ev) {
 //    console.info('showUserTaskPropertySect at x,y:'+ev.clientX+','+ev.clientY);
