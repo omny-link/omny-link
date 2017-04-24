@@ -69,8 +69,8 @@
               {{#selectedBpmnObject.calledElement}}<th class="a-secondary-label control-label">Calls</th>{{/}}
               {{#selectedBpmnObject.condition}}<th class="a-secondary-label control-label">Condition</th>{{/}}
               {{#selectedBpmnObject.resource}}<th class="a-secondary-label control-label">Resource</th>{{/}}
-              {{#selectedBpmnObject.script}}<th class="a-secondary-label control-label">Script</th>{{/}}
-              {{#selectedBpmnObject.serviceType}}<th class="a-secondary-label control-label">Service Type</th>{{/}}
+              {{#selectedBpmnObject.script}}<th class="a-secondary-label control-label col-md-6 col-sm-6 col-xs-12">Script</th>{{/}}
+              {{#selectedBpmnObject.serviceType}}<th class="a-secondary-label control-label col-md-6 col-sm-6 col-xs-12">Service Type</th>{{/}}
               {{#selectedBpmnObject.timerCycle}}<th class="a-secondary-label control-label">Timer Cycle</th>{{/}}
               {{#selectedBpmnObject.timerDate}}<th class="a-secondary-label control-label">Timer Date</th>{{/}}
               {{#selectedBpmnObject.timerDuration}}<th class="a-secondary-label control-label">Timer Duration</th>{{/}}
@@ -85,9 +85,9 @@
               {{#selectedBpmnObject.calledElement}}<td class="col-md-1">{{selectedBpmnObject.calledElement}}</td>{{/}}
               {{#selectedBpmnObject.condition}}<td class="col-md-1">{{selectedBpmnObject.condition}}</td>{{/}}
               {{#selectedBpmnObject.resource}}<td class="col-md-1">{{selectedBpmnObject.resource}}</td>{{/}}
-              {{#selectedBpmnObject.script}}<td class="col-md-4"><pre>{{selectedBpmnObject.script}}</pre></td>{{/}}
+              {{#selectedBpmnObject.script}}<td class="col-md-6"><pre>{{selectedBpmnObject.script}}</pre></td>{{/}}
               {{#selectedBpmnObject.serviceType}}
-                <td class="col-md-1">{{selectedBpmnObject.serviceType}}<br/>{{selectedBpmnObject.serviceTypeDetails}}</td>
+                <td class="col-md-6">{{selectedBpmnObject.serviceType}}<br/>{{{selectedBpmnObject.extensionDetails}}}</td>
               {{/}}
               {{#selectedBpmnObject.timerCycle}}<td class="col-md-1">{{selectedBpmnObject.timerCycle}}</td>{{/}}
               {{#selectedBpmnObject.timerDate}}<td class="col-md-1">{{selectedBpmnObject.timerDate}}</td>{{/}}
