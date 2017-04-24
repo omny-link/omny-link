@@ -21,15 +21,4 @@
     </li>
   {{/each}}
 </ul>
-<script type="text/javascript">
-  $(document).ready(function() {
-    if (ractive.customActionCallbacks==undefined) ractive.customActionCallbacks = $.Callbacks();
-    ractive.customActionCallbacks.add(function() { ractive.select(ractive.get('current')) });
-  });
-  ractive.observe('instanceToStart.processVariables.orderItem.stockItemName', function(newValue, oldValue, keypath) {
-    console.log('stock item changing from '+oldValue+' to '+newValue);
-    if (newValue!=undefined && newValue!='' && newValue.length >0) {
-      ractive.set('instanceToStart.processVariables.orderItem.stockItem',Array.findBy('name', newValue, ractive.get('stockItems')).selfRef);
-    }
-  });
-</script>
+<script type="text/javascript" src="js/add-order-item.js"></script>
