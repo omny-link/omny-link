@@ -49,15 +49,15 @@ var ractive = new AuthenticatedRactive({
     formatContactId: function(contactId) {
       console.info('formatContactId');
       if (contactId == undefined) return contactId;
-      
+
       var contact = Array.findBy('selfRef','/contacts/' + contactId,ractive.get('contacts'));
       return contact == undefined ? 'n/a' : contact.fullName;
-    },    
+    },
     formatDate: function(timeString) {
       if (timeString == undefined || timeString.length==0) return 'n/a';
       var date = ractive.parseDate(timeString);
-      if (date == 'Invalid Date') { 
-        return timeString; 
+      if (date == 'Invalid Date') {
+        return timeString;
       } else {
         return date.toLocaleDateString(navigator.languages);
       }
@@ -65,7 +65,7 @@ var ractive = new AuthenticatedRactive({
     formatId: function(entity) {
       return ractive.id(entity);
     },
-    formatJson: function(json) { 
+    formatJson: function(json) {
       //console.info('formatJson: '+json);
       try {
         var obj = JSON.parse(json);
@@ -275,7 +275,7 @@ var ractive = new AuthenticatedRactive({
 //    } else {
       ractive.push('current.orderItems', tmp);
 //    }
-    
+
     ractive.saveOrderItem();
     ractive.select(ractive.get('current'));
   },
@@ -316,7 +316,7 @@ var ractive = new AuthenticatedRactive({
   },
   edit: function (order) {
     console.info('edit: '+ractive.uri(order)+'...');
-    
+
     ractive.set('currentIdx',ractive.get('orders').indexOf(order));
     ractive.select( order );
   },
@@ -361,11 +361,11 @@ var ractive = new AuthenticatedRactive({
         } else {
           ractive.merge('contacts', data['_embedded'].contacts);
         }
-        var kvArray = [{key: 1, value: 10}, 
-          {key: 2, value: 20}, 
+        var kvArray = [{key: 1, value: 10},
+          {key: 2, value: 20},
           {key: 3, value: 30}];
 
-        ractive.set('contacts',ractive.get('contacts').map(function(obj) { 
+        ractive.set('contacts',ractive.get('contacts').map(function(obj) {
             obj.name = obj.fullName;
             return obj;
           })
@@ -397,7 +397,7 @@ var ractive = new AuthenticatedRactive({
     console.info('save order: '+ractive.get('current.name')+'...');
     ractive.set('saveObserver',false);
     var id = ractive.uri(ractive.get('current'));
-    if (document.getElementById('currentForm')==undefined) { 
+    if (document.getElementById('currentForm')==undefined) {
       console.debug('still loading, safe to ignore');
     } else if (document.getElementById('currentForm').checkValidity()) {
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
@@ -423,14 +423,14 @@ var ractive = new AuthenticatedRactive({
           ractive.set('saveObserver',false);
           if (location != undefined) ractive.set('current._links.self.href',location);
           switch (jqXHR.status) {
-          case 201: 
+          case 201:
             var currentIdx = ractive.get('orders').push(ractive.get('current'))-1;
             ractive.set('currentIdx',currentIdx);
             break;
-          case 204: 
+          case 204:
 //            ractive.splice('orders',ractive.get('currentIdx'),1,ractive.get('current'));
             break;
-            
+
           }
           //ractive.fetch();
           ractive.showMessage(ractive.get('tenant.strings.order')+' saved');
@@ -469,15 +469,15 @@ var ractive = new AuthenticatedRactive({
           if (location != undefined) ractive.set('orders.'+ractive.get('currentOrderIdx')+'.orderItems._links.self.href',location);
           switch (jqXHR.status) {
           case 201:
-            
+
             // TODO selecting the order works for refreshing the order items but messes up subsequent edits which are applied to the wrong item
          // TODO cannot select directly as have no hateos links
             //ractive.select(Array.findBy('selfRef', ractive.get('current.id'), ractive.get('orders')));
-//          
+//
             var currentIdx = ractive.get('orders').push(ractive.get('current'))-1;
 //            ractive.set('currentIdx',currentIdx);
             break;
-          case 204: 
+          case 204:
 //            ractive.splice('orders',ractive.get('currentIdx'),1,ractive.get('current'));
             break;
           }
@@ -496,6 +496,10 @@ var ractive = new AuthenticatedRactive({
   saveOrderItem: function() {
     console.info('saveOrderItem: ...');
     ractive.set('saveObserver', false);
+    if (ractive.get('currentOrderItemIdx')!= undefined) {
+      ractive.set('current.orderItems.'+ractive.get('currentOrderItemIdx')+'.stockItem',
+          Array.findBy('name', ractive.get('current.orderItems.'+ractive.get('currentOrderItemIdx')+'.stockItem.name'), ractive.get('stockItems')));
+    }
     if (document.getElementById('currentOrderItemForm') == undefined) {
       console.debug('still loading, safe to ignore');
     } else if (document.getElementById('currentOrderItemForm').checkValidity()) {
@@ -517,15 +521,15 @@ var ractive = new AuthenticatedRactive({
           if (location != undefined) ractive.set('current.orderItems._links.self.href',location);
 //          switch (jqXHR.status) {
 //          case 201:
-//            
+//
 //            // TODO selecting the order works for refreshing the order items but messes up subsequent edits which are applied to the wrong item
 //         // TODO cannot select directly as have no hateos links
 //            //ractive.select(Array.findBy('selfRef', ractive.get('current.id'), ractive.get('orders')));
-////          
+////
 //            var currentIdx = ractive.get('current.orderItems').push(ractive.get('current'))-1;
 ////            ractive.set('currentIdx',currentIdx);
 //            break;
-//          case 204: 
+//          case 204:
 ////            ractive.splice('orders',ractive.get('currentIdx'),1,ractive.get('current'));
 //            break;
 //          }
@@ -557,13 +561,13 @@ var ractive = new AuthenticatedRactive({
         ractive.initTags();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
-        
+
         if (ractive.get('currentOrderItemId')!=undefined) {
           ractive.toggleEditOrderItem(Array.findBy('id',ractive.get('currentOrderItemId'),ractive.get('current.orderItems')));
         }
         ractive.set('saveObserver',true);
       });
-    } else { 
+    } else {
       console.log('Skipping load as has no identifier.'+order.name);
       ractive.set('current', order);
       ractive.set('saveObserver',true);
@@ -581,15 +585,15 @@ var ractive = new AuthenticatedRactive({
   },
   toggleEditOrderItem: function(orderItem, j) {
     console.info('editOrderItem '+(orderItem['id']==undefined ? 'new item?' : orderItem.id)+'...');
-    
+
 //    ractive.set('currentOrderItemId', orderItem.id);
     ractive.set('currentOrderItemIdx',ractive.get('current.orderItems').indexOf(orderItem));
 //    ractive.set('currentOrderItem',Array.findBy('id',orderItem.id,ractive.get('current.orderItems')));
-    
+
 //    $('.currentOrderItemSect').hide();
     $($('.currentOrderItemSect')[j]).toggle();
 //    ractive.selectOrderItem( orderItem );
-    
+
   },
   toggleResults: function() {
     console.info('toggleResults');
@@ -623,8 +627,8 @@ ractive.observe('tenant.strings.orders', function(newValue, oldValue, keypath) {
 });
 
 // Save on model change
-// done this way rather than with on-* attributes because autocomplete 
-// controls done that way save the oldValue 
+// done this way rather than with on-* attributes because autocomplete
+// controls done that way save the oldValue
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
   console.info('current prop change: '+newValue +','+oldValue+' '+keypath);
   if (!ractive.get('saveObserver')) {
@@ -642,7 +646,7 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
     ractive.saveOrderItem();
   } else if (ractive.get('saveObserver') && keypath.indexOf('current.feedback')!=-1) {
     ractive.saveFeedback();
-  } else { 
+  } else {
     console.warn('Skipped order save of '+keypath);
     //console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
     //console.log('  saveObserver: '+ractive.get('saveObserver'));
@@ -655,7 +659,7 @@ ractive.on( 'filter', function ( event, filter ) {
 });
 ractive.on( 'sort', function ( event, column ) {
   console.info('sort on '+column);
-  // if already sorted by this column reverse order 
+  // if already sorted by this column reverse order
   if (this.get('sortColumn')==column) this.set('sortAsc', !this.get('sortAsc'));
   this.set( 'sortColumn', column );
 });
