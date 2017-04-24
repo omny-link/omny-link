@@ -368,7 +368,7 @@ public class OrderController {
             @RequestBody OrderItem updatedOrderItem) {
         OrderItem item = orderItemRepo.findOne(orderItemId);
 
-        NullAwareBeanUtils.copyNonNullProperties(updatedOrderItem, item, "id");
+        NullAwareBeanUtils.copyNonNullProperties(updatedOrderItem, item, "id", "stockItem");
         item.setTenantId(tenantId);
         mergeStockItem(updatedOrderItem, item);
 
@@ -380,7 +380,7 @@ public class OrderController {
             item.setStockItem(null);
         } else if (!updatedOrderItem.getStockItem().equals(item.getStockItem())) {
             item.setStockItem(
-                    stockItemRepo.findOne(updatedOrderItem.getStockItem().getId()));
+                    stockItemRepo.findByName(updatedOrderItem.getStockItem().getName()));
         }
     }
 
