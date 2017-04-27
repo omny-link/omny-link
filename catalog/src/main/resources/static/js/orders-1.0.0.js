@@ -653,6 +653,11 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
   }
 });
 
+ractive.observe('current.price', function(newValue, oldValue, keypath) {
+  console.info('current price change: '+newValue +','+oldValue);
+  if (newValue!=undefined) ractive.set('current.tax', parseFloat(newValue*0.2));
+});
+
 ractive.on( 'filter', function ( event, filter ) {
   console.info('filter on '+JSON.stringify(event)+','+filter.idx);
   ractive.filter(filter);
