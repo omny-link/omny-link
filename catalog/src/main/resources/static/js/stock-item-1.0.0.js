@@ -114,7 +114,8 @@ var ractive = new AuthenticatedRactive({
       if (searchTerm==undefined || searchTerm.length==0) {
         return true;
       } else {
-        return ( (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+        return ( (obj.selfRef.indexOf(searchTerm.toLowerCase())>=0)
+          || (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.stockCategoryName!=undefined && obj.stockCategoryName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.status!=undefined && obj.status.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
@@ -225,7 +226,7 @@ var ractive = new AuthenticatedRactive({
         }
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
-        ractive.set('searchMatched',$('#stockItemsTable tbody tr:visible').length);
+        ractive.showSearchMatched();
         ractive.set('saveObserver', true);
       }
     });
@@ -423,6 +424,14 @@ var ractive = new AuthenticatedRactive({
     console.log('toggleResults');
     $('#stockItemsTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
     $('#stockItemsTable').slideToggle();
+  },
+  showSearchMatched: function() {
+    ractive.set('searchMatched',$('#stockItemsTable tbody tr').length);
+    if ($('#stockItemsTable tbody tr:visible').length==1) {
+      var stockItemId = $('#stockItemsTable tbody tr:visible').data('href')
+      var stockItem = Array.findBy('selfRef',stockItemId,ractive.get('stockItems'))
+      ractive.select( stockItem );
+    }
   },
   /**
    * Inverse of editField.
