@@ -14,14 +14,14 @@ import javax.persistence.Embedded;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * A single tenant's configuration.
@@ -221,13 +221,21 @@ public class TenantConfig implements Serializable {
         return features;
     }
 
-    public void setFeature(String string, boolean b) {
-        getFeatures().set("account", true);
+    public void setFeature(String feature, boolean b) {
+        getFeatures().set(feature, b);
+    }
+
+    public void setFeature(String feature, int i) {
+        getFeatures().set(feature, i);
+    }
+
+    public void setFeature(String feature, String value) {
+        getFeatures().set(feature, value);
     }
 
     /**
      * Convert from legacy property name.
-     * 
+     *
      * @deprecated Use setFeatures instead.
      */
     public void setShow(FeatureConfig features) {
@@ -236,7 +244,7 @@ public class TenantConfig implements Serializable {
 
     /**
      * Convert from legacy property name.
-     * 
+     *
      * @deprecated Use getFeatures instead.
      */
     public FeatureConfig getShow() {
@@ -329,7 +337,7 @@ public class TenantConfig implements Serializable {
 
     /**
      * Convert from legacy property name.
-     * 
+     *
      * @deprecated Use setContactActions instead.
      */
     public void setCustomerActions(List<TenantAction> actions) {
@@ -338,7 +346,7 @@ public class TenantConfig implements Serializable {
 
     /**
      * Convert from legacy property name.
-     * 
+     *
      * @deprecated Use getContactActions instead.
      */
     public List<TenantAction> getCustomerActions() {
@@ -347,7 +355,7 @@ public class TenantConfig implements Serializable {
 
     /**
      * Convert from legacy property name.
-     * 
+     *
      * @deprecated Use setToolbar instead.
      */
     public void setOmnyBar(List<TenantToolbarEntry> entries) {
@@ -356,7 +364,7 @@ public class TenantConfig implements Serializable {
 
     /**
      * Convert from legacy property name.
-     * 
+     *
      * @deprecated Use setToolbar instead.
      */
     public List<TenantToolbarEntry> getOmnyBar() {
@@ -365,7 +373,7 @@ public class TenantConfig implements Serializable {
 
     /**
      * Convert from legacy property name.
-     * 
+     *
      * @deprecated Use setProcesses instead.
      */
     public void setStandardOperatingProcedures(List<TenantProcess> entries) {
@@ -374,7 +382,7 @@ public class TenantConfig implements Serializable {
 
     /**
      * Convert from legacy property name.
-     * 
+     *
      * @deprecated Use getProcesses instead.
      */
     public List<TenantProcess> getStandardOperatingProcedures() {

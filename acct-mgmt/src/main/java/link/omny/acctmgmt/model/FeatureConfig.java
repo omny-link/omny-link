@@ -2,10 +2,16 @@ package link.omny.acctmgmt.model;
 
 import javax.persistence.Column;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import lombok.Data;
 
 @Data
 public class FeatureConfig {
+
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(TenantConfig.class);
 
     private boolean account = false;
     private boolean accountCompanyDetails = true;
@@ -48,6 +54,8 @@ public class FeatureConfig {
     private boolean stage = true;
     private boolean supportBar = true;
     private boolean workManagement = true;
+
+    private String orderFieldsOnContact;
 
     public void set(String name, boolean b) {
         switch (name) {
@@ -171,8 +179,24 @@ public class FeatureConfig {
             setWorkManagement(b);
             break;
         default:
-            System.err.println("Unsupported feature: " + name);
+            LOGGER.warn("Unsupported feature: " + name);
         }
     }
 
+    public void set(String feature, int i) {
+        switch (feature) {
+        default:
+            LOGGER.warn("Unsupported feature: " + feature);
+        }
+    }
+
+    public void set(String feature, String value) {
+        switch (feature) {
+        case "orderFieldsOnContact":
+            orderFieldsOnContact = value;
+            break;
+        default:
+            LOGGER.warn("Unsupported feature: " + feature);
+        }
+    }
 }
