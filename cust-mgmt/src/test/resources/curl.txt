@@ -38,8 +38,8 @@ curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen http://local
 # Get memo expanding any tags to individual recipient addresses
 curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen http://localhost:8082/omny/memo-distributions/1/expandedTags
 
-# GET sales funnel 
-curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://localhost:8082/omny/analytics/funnel
+# GET sales funnel (contacts driven)
+curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://localhost:8082/alife/analytics/contacts/funnel
 
 # GET all tenant's contacts (JSON)
 curl -H 'Accept:application/json' -u tstephen:tstephen -v http://localhost:8082/corshamprimary/contacts/

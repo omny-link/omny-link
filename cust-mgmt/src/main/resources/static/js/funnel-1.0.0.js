@@ -14,12 +14,14 @@ var ractive = new AuthenticatedRactive({
     title: 'Sales Funnel',
     username: localStorage['username'],
     contacts:[],
+    data: [],
+    searchMatched: 0,
+    searchTerm: '',
     featureEnabled: function(feature) {
       console.log('featureEnabled: '+feature);
       if (feature==undefined || feature.length==0) return true;
       else return ractive.get('tenant.show.'+feature);
     },
-    filter: { field2: 'owner' },
     formatAge: function(timeString) {
       console.log('formatAge: '+timeString);
       return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
@@ -73,14 +75,11 @@ var ractive = new AuthenticatedRactive({
             block: function(d) {
               console.log('<' + d.label.raw + '> selected.');
               if (ractive.get('contacts').length==0) ractive.fetchContacts();
-              ractive.set('filter.field','stage');
-              ractive.set('filter.value',d.label.raw);
-              ractive.filter(ractive.get('filter'));
+              ractive.search(ractive.get('searchTerm').replace(/ stage:[!\S]+/g,'')+' stage:'+d.label.raw);
             },
           },
         }
-      },
-      data: []
+      }  
     },
     gravatar: function(email) {
       if (email == undefined) return '';
@@ -92,25 +91,6 @@ var ractive = new AuthenticatedRactive({
       return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
     helpUrl: '//omny.link/user-help/funnel/#the_title',
-    matchFilter: function(obj) {
-      var filter = ractive.get('filter');
-      //console.info('matchFilter: '+JSON.stringify(filter));
-      if (filter==undefined || obj[filter.field]==undefined) {
-        return false;
-      } else {
-        try {
-          if (filter.operator==undefined) filter.operator='==';
-          var matchField = true;
-          if (filter['value']!=undefined) matchField = eval("'"+filter.value.toLowerCase()+"'"+filter.operator+"'"+obj[filter.field].toLowerCase()+"'");
-          var matchField2 = true;
-          if (filter['value2']!=undefined&& filter.value2!='') matchField2 = eval("'"+filter.value2.toLowerCase()+"'"+filter.operator+"'"+obj[filter.field2].toLowerCase()+"'");
-          return matchField && matchField2;
-        } catch (e) {
-          console.error('Exception during filter');
-          return true;
-        }
-      }
-    },
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {
@@ -121,7 +101,37 @@ var ractive = new AuthenticatedRactive({
       }
     },
     matchSearch: function(obj) {
+      //console.info('matchSearch: '+searchTerm);
+      if (ractive.get('searchTerm')==undefined || ractive.get('searchTerm').length==0) {
         return true;
+      } else {
+        var search = ractive.get('searchTerm').split(' ');
+        for (idx in search) {
+          var searchTerm = search[idx].toLowerCase();
+          var match = ( (obj.selfRef.indexOf(searchTerm)>=0)
+            || (obj.firstName.toLowerCase().indexOf(searchTerm)>=0)
+            || (obj.lastName.toLowerCase().indexOf(searchTerm)>=0)
+            || (searchTerm.indexOf('@')!=-1 && obj.email.toLowerCase().indexOf(searchTerm)>=0)
+            || (obj.phone1!=undefined && obj.phone1.indexOf(searchTerm)>=0)
+            || (obj.phone2!=undefined && obj.phone2.indexOf(searchTerm)>=0)
+            || (obj.accountName!=undefined && obj.accountName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+            || (searchTerm.startsWith('type:') && obj.accountType!=undefined && obj.accountType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(5))==0)
+            || (searchTerm.startsWith('enquiry:') && obj.enquiryType!=undefined && obj.enquiryType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(8))==0)
+            || (searchTerm.startsWith('stage:') && obj.stage!=undefined && obj.stage.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(6))==0)
+            || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(searchTerm.substring(8)))
+            || (searchTerm.startsWith('created>') && new Date(obj.firstContact)>new Date(searchTerm.substring(8)))
+            || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(searchTerm.substring(8)))
+            || (searchTerm.startsWith('created<') && new Date(obj.firstContact)<new Date(searchTerm.substring(8)))
+            || (searchTerm.startsWith('#') && obj.tags.indexOf(searchTerm.substring(1))!=-1)
+            || (searchTerm.startsWith('owner:') && obj.owner.indexOf(searchTerm.substring(6))!=-1)
+            || (searchTerm.startsWith('active') && (obj.stage==undefined || obj.stage.length==0 || ractive.inactiveStages().indexOf(obj.stage.toLowerCase())==-1))
+            || (searchTerm.startsWith('!active') && ractive.inactiveStages().indexOf(obj.stage.toLowerCase())!=-1)
+          );
+          // no match is definitive but matches may fail other terms (AND logic)
+          if (!match) return false;
+        }
+        return true;
+      }
     },
     sort: function (array, column, asc) {
       console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);
@@ -147,11 +157,12 @@ var ractive = new AuthenticatedRactive({
     },
     stdPartials: [
       { "name": "helpModal", "url": "/partials/help-modal.html"},
+      { "name": "navbar", "url": "/partials/funnel-navbar.html"},
       { "name": "poweredBy", "url": "/partials/powered-by.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
-      { "name": "contactFunnelSect", "url": "/partials/contact-funnel-sect.html"},
+      { "name": "funnelSect", "url": "/partials/funnel-sect.html"},
       { "name": "contactListTable", "url": "/partials/contact-list-table.html"}
     ],
   },
@@ -168,7 +179,7 @@ var ractive = new AuthenticatedRactive({
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/analytics/contacts/funnel',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/contacts',
       crossDomain: true,
       success: function( data ) {
         ractive.set('funnel.raw', data);
@@ -178,10 +189,9 @@ var ractive = new AuthenticatedRactive({
         } else {
           ractive.renderChart();
         }
-        ractive.fetchContacts();
+//        ractive.fetchContacts();
       }
     });
-
   },
   fetchContacts: function () {
     console.info('fetchContacts...');
@@ -203,13 +213,6 @@ var ractive = new AuthenticatedRactive({
         ractive.set('saveObserver', true);
       }
     });
-  },
-  filter: function(filter) {
-    console.log('filter: '+JSON.stringify(filter));
-    ractive.set('filter',filter);
-    ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
-    $('.col-actions .glyphicon-pencil').hide();
-    $('.col-actions .glyphicon-new-window').show();
   },
   inactiveStages: function() {
     console.info('inactiveStages');
@@ -249,6 +252,61 @@ var ractive = new AuthenticatedRactive({
     } else {
       ractive.showMessage('No records in your funnel, check stage field is set correctly.');
     }
+  },
+  search: function(searchTerm) {
+    console.log('search: '+searchTerm);
+    ractive.set('searchTerm',searchTerm);
+    setTimeout(function() {
+      ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
+    }, 500);
+    $('.col-actions .glyphicon-pencil').hide();
+    $('.col-actions .glyphicon-new-window').show();
+  }
+});
+
+ractive.observe('owner', function(newValue, oldValue, keypath) {
+  console.log('owner changed from '+oldValue+' to '+newValue);
+  if (newValue!=undefined && newValue!='') ractive.search(ractive.get('searchTerm').replace(/ owner:[!\S]+/g,'')+' owner:'+newValue);
+});
+
+ractive.observe('created', function(newValue, oldValue, keypath) {
+  console.log('created changed from '+oldValue+' to '+newValue);
+  if (newValue!=undefined) {
+    var createdExpr;
+    switch (newValue) {
+    case 'Past 7 days':
+      createdExpr = ' created>'+(new Date(new Date().getTime()-(7*24*60*60*1000)).toISOString());
+      break;
+    case 'This month':
+      createdExpr = ' created>'+(new Date(new Date().getFullYear(),new Date().getMonth(),1).toISOString());
+      break;
+    case 'This year':
+      createdExpr = ' created>'+(new Date(new Date().getFullYear(),0,1).toISOString());
+      break;
+    default:
+      createdExpr = newValue;
+    }
+    ractive.search(ractive.get('searchTerm').replace(/ created[<>][!\S]+/g,'')+' '+createdExpr);
+  }
+});
+ractive.observe('updated', function(newValue, oldValue, keypath) {
+  console.log('updated changed from '+oldValue+' to '+newValue);
+  if (newValue!=undefined) {
+    var updatedExpr;
+    switch (newValue) {
+    case 'Past 7 days':
+      updatedExpr = ' updated>'+(new Date(new Date().getTime()-(7*24*60*60*1000)).toISOString());
+      break;
+    case 'This month':
+      updatedExpr = ' updated>'+(new Date(new Date().getFullYear(),new Date().getMonth(),1).toISOString());
+      break;
+    case 'This year':
+      updatedExpr = ' updated>'+(new Date(new Date().getFullYear(),0,1).toISOString());
+      break;
+    default:
+      updatedExpr = newValue;
+    }
+    ractive.search(ractive.get('searchTerm').replace(/ updated[<>][!\S]+/g,'')+' '+updatedExpr);
   }
 });
 
