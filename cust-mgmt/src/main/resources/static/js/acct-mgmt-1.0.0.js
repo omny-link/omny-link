@@ -321,79 +321,29 @@ var ractive = new AuthenticatedRactive(
           else
             return 'hidden';
         },
-        stdPartials: [ {
-          "name": "accountFinancials",
-          "url": "/partials/account-financials.html"
-        }, {
-          "name": "accountListSect",
-          "url": "/partials/account-list-sect.html"
-        }, {
-          "name": "contactListSect",
-          "url": "/partials/contact-list-sect.html"
-        }, {
-          "name": "contactListTable",
-          "url": "/partials/contact-list-table.html"
-        }, {
-          "name": "currentAccountSect",
-          "url": "/partials/account-current-sect.html"
-        }, {
-          "name": "currentContactSect",
-          "url": "/partials/contact-current-sect.html"
-        }, {
-          "name": "currentContactAccountSect",
-          "url": "/partials/contact-current-account-sect.html"
-        }, {
-          "name": "currentCompanyBackground",
-          "url": "/partials/contact-company-sect.html"
-        }, {
-          "name": "currentDocumentListSect",
-          "url": "/partials/contact-current-document-list-sect.html"
-        }, {
-          "name": "currentNoteListSect",
-          "url": "/partials/contact-current-note-list-sect.html"
-        }, {
-          "name": "currentOrderListSect",
-          "url": "/partials/contact-current-order-list-sect.html"
-        }, {
-          "name": "currentTaskListSect",
-          "url": "/partials/task-list-sect.html"
-        }, {
-          "name": "customActionModal",
-          "url": "/partials/custom-action-modal.html"
-        }, {
-          "name": "helpModal",
-          "url": "/partials/help-modal.html"
-        }, {
-          "name": "instanceListSect",
-          "url": "/partials/instance-list-sect.html"
-        }, {
-          "name": "poweredBy",
-          "url": "/partials/powered-by.html"
-        }, {
-          "name": "profileArea",
-          "url": "/partials/profile-area.html"
-        }, {
-          "name": "socialControls",
-          "url": "/partials/social-controls.html"
-        }, {
-          "name": "sidebar",
-          "url": "/partials/sidebar.html"
-        }, {
-          "name": "titleArea",
-          "url": "/partials/title-area.html"
-        }, {
-          "name": "mergeModal",
-          "url": "/partials/contact-merge-sect.html"
-        }, {
-          "name": "navbar",
-          "url": "/partials/account-navbar.html"
-        }, {
-          "name": "supportBar",
-          "url": "/partials/support-bar.html"
-        }, {
-          "name": "taskListTable",
-          "url": "/partials/task-list-table.html"
-        } ],
+        stdPartials: [
+          { "name": "accountFinancials", "url": "/partials/account-financials.html" },
+          { "name": "accountListSect", "url": "/partials/account-list-sect.html" },
+          { "name": "accountListTable", "url": "/partials/account-list-table.html" },
+          { "name": "currentAccountSect", "url": "/partials/account-current-sect.html" },
+          { "name": "currentContactAccountSect", "url": "/partials/contact-current-account-sect.html" },
+          { "name": "currentCompanyBackground", "url": "/partials/contact-company-sect.html" },
+          { "name": "currentDocumentListSect", "url": "/partials/contact-current-document-list-sect.html" },
+          { "name": "currentNoteListSect", "url": "/partials/contact-current-note-list-sect.html" },
+          { "name": "currentOrderListSect", "url": "/partials/contact-current-order-list-sect.html" },
+          { "name": "currentTaskListSect", "url": "/partials/task-list-sect.html" },
+          { "name": "customActionModal", "url": "/partials/custom-action-modal.html" },
+          { "name": "helpModal", "url": "/partials/help-modal.html" },
+          { "name": "instanceListSect", "url": "/partials/instance-list-sect.html" },
+          { "name": "profileArea", "url": "/partials/profile-area.html" },
+          { "name": "socialControls", "url": "/partials/social-controls.html" },
+          { "name": "sidebar", "url": "/partials/sidebar.html" },
+          { "name": "titleArea", "url": "/partials/title-area.html" },
+          /*{ "name": "mergeModal", "url": "/partials/contact-merge-sect.html" },*/
+          { "name": "navbar", "url": "/partials/account-navbar.html" },
+          { "name": "supportBar", "url": "/partials/support-bar.html" },
+          { "name": "taskListTable", "url": "/partials/task-list-table.html" }
+        ],
         uniq: function(fieldName, arr) {
           return Array.uniq(fieldName, arr);
         }

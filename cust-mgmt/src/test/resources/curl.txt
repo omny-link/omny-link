@@ -39,7 +39,9 @@ curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen http://local
 curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen http://localhost:8082/omny/memo-distributions/1/expandedTags
 
 # GET sales funnel (contacts driven)
-curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen -v http://localhost:8082/alife/analytics/contacts/funnel
+curl -X GET -H 'Content-Type:application/json' -u tstephen:bJzHd253lmLh -v http://localhost:8082/gardenatics/funnel/contacts
+# GET sales funnel (accounts driven)
+curl -X GET -H 'Content-Type:application/json' -u tstephen:bJzHd253lmLh -v http://localhost:8082/alife/funnel/accounts
 
 # GET all tenant's contacts (JSON)
 curl -H 'Accept:application/json' -u tstephen:tstephen -v http://localhost:8082/corshamprimary/contacts/

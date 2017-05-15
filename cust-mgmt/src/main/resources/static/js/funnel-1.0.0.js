@@ -13,6 +13,7 @@ var ractive = new AuthenticatedRactive({
   data: {
     title: 'Sales Funnel',
     username: localStorage['username'],
+    accounts:[],
     contacts:[],
     data: [],
     searchMatched: 0,
@@ -74,8 +75,14 @@ var ractive = new AuthenticatedRactive({
           click: {
             block: function(d) {
               console.log('<' + d.label.raw + '> selected.');
-              if (ractive.get('contacts').length==0) ractive.fetchContacts();
-              ractive.search(ractive.get('searchTerm').replace(/ stage:[!\S]+/g,'')+' stage:'+d.label.raw);
+              if (ractive.get('tenant.features.accountView')) {
+                ractive.set('entityPath','/accounts');
+                if (ractive.get('accounts').length==0) ractive.fetchAccounts();
+              } else {
+                ractive.set('entityPath','/contacts');
+                if (ractive.get('contacts').length==0) ractive.fetchContacts();
+              }
+              ractive.search(ractive.get('searchTerm').replace(/ stage:[!\S]+/g,'')+' stage:'+d.label.raw.replace(/ /g,'_'));
             },
           },
         }
@@ -105,15 +112,16 @@ var ractive = new AuthenticatedRactive({
       if (ractive.get('searchTerm')==undefined || ractive.get('searchTerm').length==0) {
         return true;
       } else {
-        var search = ractive.get('searchTerm').split(' ');
+        var search = ractive.get('searchTerm').trim().split(' ');
         for (idx in search) {
           var searchTerm = search[idx].toLowerCase();
           var match = ( (obj.selfRef.indexOf(searchTerm)>=0)
-            || (obj.firstName.toLowerCase().indexOf(searchTerm)>=0)
-            || (obj.lastName.toLowerCase().indexOf(searchTerm)>=0)
+            || (obj.firstName!=undefined && obj.firstName.toLowerCase().indexOf(searchTerm)>=0)
+            || (obj.lastName!=undefined && obj.lastName.toLowerCase().indexOf(searchTerm)>=0)
             || (searchTerm.indexOf('@')!=-1 && obj.email.toLowerCase().indexOf(searchTerm)>=0)
             || (obj.phone1!=undefined && obj.phone1.indexOf(searchTerm)>=0)
             || (obj.phone2!=undefined && obj.phone2.indexOf(searchTerm)>=0)
+            || (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm)>=0)
             || (obj.accountName!=undefined && obj.accountName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
             || (searchTerm.startsWith('type:') && obj.accountType!=undefined && obj.accountType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(5))==0)
             || (searchTerm.startsWith('enquiry:') && obj.enquiryType!=undefined && obj.enquiryType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(8))==0)
@@ -163,6 +171,7 @@ var ractive = new AuthenticatedRactive({
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "funnelSect", "url": "/partials/funnel-sect.html"},
+      { "name": "accountListTable", "url": "/partials/account-list-table.html" },
       { "name": "contactListTable", "url": "/partials/contact-list-table.html"}
     ],
   },
@@ -177,9 +186,14 @@ var ractive = new AuthenticatedRactive({
   fetch: function () {
     console.info('fetch...');
     ractive.set('saveObserver', false);
+    if (ractive.get('tenant.features.accountView')) {
+      var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/accounts'
+    } else {
+      var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/contacts'
+    }
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/contacts',
+      url: url,
       crossDomain: true,
       success: function( data ) {
         ractive.set('funnel.raw', data);
@@ -193,12 +207,33 @@ var ractive = new AuthenticatedRactive({
       }
     });
   },
+  fetchAccounts: function () {
+    console.info('fetchAccounts...');
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/accounts/',
+      crossDomain: true,
+      success: function( data ) {
+        if (data['_embedded'] == undefined) {
+          ractive.merge('accounts', data);
+        } else {
+          ractive.merge('accounts', data['_embedded'].accounts);
+        }
+        if (ractive.hasRole('admin')) $('.admin').show();
+        if (ractive.hasRole('power-user')) $('.power-user').show();
+        if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
+        ractive.set('searchMatched',$('#accountsTable tbody tr:visible').length);
+        ractive.set('saveObserver', true);
+      }
+    });
+  },
   fetchContacts: function () {
     console.info('fetchContacts...');
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/contacts/?projection=complete',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/contacts/',
       crossDomain: true,
       success: function( data ) {
         if (data['_embedded'] == undefined) {
@@ -229,7 +264,11 @@ var ractive = new AuthenticatedRactive({
   },
   openInNewWindow: function(obj) {
     console.info('openInNewWindow');
-    window.open('/contacts.html?id='+ractive.uri(obj));
+    if (ractive.get('tenant.features.accountView')) {
+      window.open('/accounts.html?q='+ractive.id(obj));
+    } else {
+      window.open('/contacts.html?id='+ractive.uri(obj));
+    }
   },
   renderChart: function() {
     console.info('renderChart');
@@ -257,10 +296,14 @@ var ractive = new AuthenticatedRactive({
     console.log('search: '+searchTerm);
     ractive.set('searchTerm',searchTerm);
     setTimeout(function() {
-      ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
+      if (ractive.get('tenant.features.accountView')) {
+        ractive.set('searchMatched',$('#accountsTable tbody tr:visible').length);
+      } else {
+        ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
+      }
+      $('.col-actions .glyphicon-pencil').hide();
+      $('.col-actions .glyphicon-new-window').show();
     }, 500);
-    $('.col-actions .glyphicon-pencil').hide();
-    $('.col-actions .glyphicon-new-window').show();
   }
 });
 

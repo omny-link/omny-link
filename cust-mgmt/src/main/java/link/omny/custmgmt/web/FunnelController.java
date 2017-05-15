@@ -4,10 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import link.omny.custmgmt.repositories.ContactRepository;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +16,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import link.omny.custmgmt.repositories.AccountRepository;
+import link.omny.custmgmt.repositories.ContactRepository;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 /**
  * REST web service for fetching contacts aggregated in a way convenient for
  * reporting.
@@ -27,25 +28,45 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Tim Stephenson
  */
 @Controller
-@RequestMapping(value = "/{tenantId}/analytics/contacts")
-public class ContactAnalyticsController {
+@RequestMapping(value = "/{tenantId}/funnel")
+public class FunnelController {
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(ContactAnalyticsController.class);
+            .getLogger(FunnelController.class);
+
+    @Autowired
+    private AccountRepository accountRepo;
 
     @Autowired
     private ContactRepository contactRepo;
 
-
     /**
-     * Return funnel report data.
-     * 
-     * @return contacts for that tenant.
+     * @return Funnel report based on account stage for the specified tenant.
      */
-    @RequestMapping(value = "/funnel", method = RequestMethod.GET)
-    public @ResponseBody FunnelReport listForTenant(
+    @RequestMapping(value = "/accounts", method = RequestMethod.GET)
+    public @ResponseBody FunnelReport reportTenantByAccount(
             @PathVariable("tenantId") String tenantId) {
-        LOGGER.info(String.format("List contacts for tenant %1$s", tenantId));
+        LOGGER.info(String.format("List account funnel for tenant %1$s", tenantId));
+
+        FunnelReport rpt = new FunnelReport();
+        List<Object[]> list = accountRepo
+                .findAllForTenantGroupByStage(tenantId);
+        LOGGER.debug(String.format("Found %1$s stages", list.size()));
+
+        for (Object[] objects : list) {
+            rpt.addStage((String) objects[0], (Number) objects[1]);
+        }
+
+        return rpt;
+    }
+    
+    /**
+     * @return Funnel report based on contact stage for the specified tenant.
+     */
+    @RequestMapping(value = "/contacts", method = RequestMethod.GET)
+    public @ResponseBody FunnelReport reportTenantByContact(
+            @PathVariable("tenantId") String tenantId) {
+        LOGGER.info(String.format("List contact funnel for tenant %1$s", tenantId));
 
         FunnelReport rpt = new FunnelReport();
         List<Object[]> list = contactRepo
