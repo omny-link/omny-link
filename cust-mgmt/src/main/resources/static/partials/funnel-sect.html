@@ -29,5 +29,9 @@
 
 <div style="clear:both;"></div>
 <section id="funnelResultTableSect">
-  {{>contactListTable}}
+  {{#if tenant.features.accountView}}
+    {{>accountListTable}}
+  {{else}}
+    {{>contactListTable}}
+  {{/if}}
 </section>
