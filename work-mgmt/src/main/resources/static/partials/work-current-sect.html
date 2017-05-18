@@ -20,7 +20,7 @@
       <ul class="form edit-form">
         <li class="form-group">
           <label class="col-md-4">Due:</label>
-          <div class="input-group date" data-provide="datepicker" data-date-format="dd/mm/yyyy" data-date="{{current.dueDate}}" data-date-autoclose="true" data-date-start-date="1d" style="float: right; top: 3px">
+          <div class="input-group date" data-provide="datepicker" data-date-format="dd/mm/yyyy" data-date="{{current.dueDate}}" data-date-autoclose="true" data-date-start-date="1d" data-date-today-highlight="true" style="float: right; top: 3px">
             <input class="form-control" id="curDueDate" placeholder="dd/mm/yyyy" {{#current.processVariables.initiator!=profile.email}}readonly disabled{{/}}>
             <div class="input-group-addon">
               <span class="glyphicon glyphicon-th"></span>
@@ -61,6 +61,7 @@
     {{/}}
   </form>
 
+  <button class="btn" on-click="submitTask()" type="button">Return To List</button>
   <div class="btn-group">
     <button class="btn btn-warning dropdown-toggle" id="remindBtn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Remind Me ... <span class="caret"></span></button>
     <ul class="dropdown-menu btn-warning has-warning" aria-labelledby="remindBtn">

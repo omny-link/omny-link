@@ -314,11 +314,20 @@ public class ProcessInstanceController {
             }
         }
 
-        ProcessInstance pi = new ProcessInstance(processEngine
-                .getRuntimeService().startProcessInstanceByKeyAndTenantId(
-                        instanceToStart.getProcessDefinitionId(),
-                        instanceToStart.getBusinessKey(),
-                        instanceToStart.getProcessVariables(), tenantId));
+        ProcessInstance pi;
+        if (instanceToStart.getProcessDefinitionId()==null) {
+            pi = new ProcessInstance(processEngine
+                    .getRuntimeService().startProcessInstanceByKeyAndTenantId(
+                            instanceToStart.getProcessDefinitionKey(),
+                            instanceToStart.getBusinessKey(),
+                            instanceToStart.getProcessVariables(), tenantId));
+        } else {
+            pi = new ProcessInstance(processEngine
+                    .getRuntimeService().startProcessInstanceById(
+                            instanceToStart.getProcessDefinitionId(),
+                            instanceToStart.getBusinessKey(),
+                            instanceToStart.getProcessVariables()));
+        }
         resp.setHeader("Location",
                 "/process-instances/" + pi.getProcessInstanceId());
         return pi;

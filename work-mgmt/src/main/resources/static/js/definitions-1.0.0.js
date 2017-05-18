@@ -25,7 +25,7 @@ var ractive = new AuthenticatedRactive({
       if (timeString==undefined) return 'n/a';
       return new Date(timeString).toLocaleString(navigator.languages);
     },
-    formatJson: function(json) { 
+    formatJson: function(json) {
       console.log('formatJson: '+json);
       try {
         var obj = JSON.parse(json);
@@ -159,8 +159,8 @@ var ractive = new AuthenticatedRactive({
     title: 'Process Definitions',
     username: localStorage['username'],
   },
-  simpleTodoFormExtension: function(x) { 
-    console.log('simpleTodoFormExtension: '+JSON.stringify(x));    
+  simpleTodoFormExtension: function(x) {
+    console.log('simpleTodoFormExtension: '+JSON.stringify(x));
   },
   activate: function(key) {
     console.log('activate: '+key);
@@ -312,7 +312,7 @@ var ractive = new AuthenticatedRactive({
           var diagName = diagDoc.getElementsByTagName('svg')[0].attributes['name'].value;
           console.log('found diagram: '+diagId);
           ractive.splice('current.diagrams',ractive.get('current.diagramIds').indexOf(diagId),0, { id: diagId, name: diagName, image: data });
-          $('.event, .dataStoreReference, .flow, .gateway, .lane, .participant, .task').on('mouseover',ractive.showSelection);
+          $('.event, .dataStoreReference, .flow, .gateway, .lane, .participant, .task').on('click',ractive.showSelection);
           $('[data-called-element]').attr('class',$('[data-called-element]').attr('class')+' clickable');
           $('[data-called-element]').click(function(ev) {
             console.log('drill down to call activity');
@@ -321,7 +321,8 @@ var ractive = new AuthenticatedRactive({
             ractive.select(ractive.find(ev.target.attributes['data-called-element'].value));
             $('[data-toggle="tooltip"]').tooltip();
           });
-        } catch (e) { 
+          $('[data-ref]').click(function(ev) { ractive.showSelectedId($(ev.target).data('ref')); });
+        } catch (e) {
           console.error('  e:'+e);
         }
       }, 'text');
@@ -391,7 +392,7 @@ var ractive = new AuthenticatedRactive({
       ractive.fetchBpmn();
       if (ractive.hasRole('admin')) $('.admin').show();
     });
-    
+
     $('#currentSect').slideDown();
   },
   showIssues: function() {
@@ -419,31 +420,33 @@ var ractive = new AuthenticatedRactive({
     $('#definitionsTable').slideDown();
   },
   showSelection: function(ev) {
-    console.log('showSelection:'+ev.target.id);
+    ractive.showSelectedId(ev.target.id);
+  },
+  showSelectedId: function(id) {
+    console.log('showSelectedId:'+id);
     // jQuery does not have SVG support for add/removeClass
     if ($('.selected').length>0)
         $('.selected').attr('class', $('.selected').attr('class').replace(/selected/,''))
-    $('#'+ev.target.id).attr('class',$('#'+ev.target.id).attr('class')+' selected');
+    $('#'+id).attr('class',$('#'+id).attr('class')+' selected');
 
     if (typeof ractive.get('current.bpmn') == 'string') {
       ractive.set('current.bpmn',ractive.parser.parseFromString(ractive.get('current.bpmn'), "text/xml"));
     }
 
-    ractive.set('selected',ev.target.id);
-    ractive.set('selectedBpmnObject', { 
-      id: ev.target.id,
-      element: ractive.get('current.bpmn').getElementById(ev.target.id),
-      name: $('#'+ev.target.id).data('name'), 
-      type: $('#'+ev.target.id).data('type')==undefined ? '' : $('#'+ev.target.id).data('type').toLabel(), 
+    ractive.set('selected',id);
+    ractive.set('selectedBpmnObject', {
+      id: id,
+      element: ractive.get('current.bpmn').getElementById(id),
+      name: $('#'+id).data('name'),
+      type: $('#'+id).data('type')==undefined ? '' : $('#'+id).data('type').toLabel(),
 
-      calledElement: $('#'+ev.target.id).data('called-element'),
-      condition: $('#'+ev.target.id).data('condition'),
-      resource: $('#'+ev.target.id).data('resource'),
-      script: $('#'+ev.target.id).data('script'),
-      serviceType: $('#'+ev.target.id).data('service-type'),
-      timerCycle: $('#'+ev.target.id).data('timer-cycle'),
-      timerDate: $('#'+ev.target.id).data('timer-date'),
-      timerDuration: $('#'+ev.target.id).data('timer-duration')
+      condition: $('#'+id).data('condition'),
+      resource: $('#'+id).data('resource'),
+      script: $('#'+id).data('script'),
+      serviceType: $('#'+id).data('service-type'),
+      timerCycle: $('#'+id).data('timer-cycle'),
+      timerDate: $('#'+id).data('timer-date'),
+      timerDuration: $('#'+id).data('timer-duration')
     });
 
     switch (ractive.get('selectedBpmnObject.serviceType')) {
@@ -502,14 +505,14 @@ var ractive = new AuthenticatedRactive({
 //      $('#propertySect').css('right',0);
 //    }*/
 //  },
-  startInstance: function(key, label, bizKey) {
-    console.log('startInstance: '+key+' for '+bizKey);
+  startInstance: function(id, label, bizKey) {
+    console.log('startInstance: '+id+' for '+bizKey);
     $.ajax({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify({
-        processDefinitionId: key,
+        processDefinitionId: id,
         businessKey: bizKey
       }),
       success: completeHandler = function(data,textStatus,jqXHR) {
@@ -519,16 +522,16 @@ var ractive = new AuthenticatedRactive({
       },
     });
   },
-  suspend: function(key) {
-    console.log('suspend: '+key);
+  suspend: function(id) {
+    console.log('suspend: '+id);
     $.ajax({
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+key+'/suspend',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+id+'/suspend',
       type: 'POST',
       contentType: 'application/json',
       success: completeHandler = function(data,textStatus,jqXHR) {
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
         ractive.fetch();
-        ractive.showMessage('Suspended workflow "'+key+'"');
+        ractive.showMessage('Suspended workflow "'+id+'"');
         ractive.showResults();
       },
     });

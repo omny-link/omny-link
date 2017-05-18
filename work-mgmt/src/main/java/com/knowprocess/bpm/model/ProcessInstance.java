@@ -36,6 +36,8 @@ public class ProcessInstance extends Execution
      */
     private String processDefinitionId;
 
+    private String processDefinitionKey;
+
     /**
      */
     private Boolean suspended;

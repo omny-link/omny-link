@@ -7,6 +7,7 @@
   <title>Work Management</title>
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
+  <link href="http://localhost:8082/webjars/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker3.css" rel="stylesheet">
   <link href="css/omny-1.0.0.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
@@ -28,7 +29,7 @@
   </script>
 
   <script id="enumTemplate" type="text/html">
-    <label class="col-md-offset-2 col-sm-offset-2">{{name}}</label>
+    <label class="col-md-offset-2 col-sm-offset-2">{{name.toLabel()}}</label>
     <select id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
       <option></option>  
     </select>
@@ -37,7 +38,7 @@
     <img src="{{value}}"/>
   </script>
   <script id="jsonTemplate" type="text/html">
-    <fieldset><legend class="col-md-12">{{name}}</legend>
+    <fieldset><legend class="col-md-12">{{name.toLabel()}}</legend>
       <div class="clearfix"></div>
       <ul class="form edit-form">
         {{# keys}}
@@ -54,7 +55,7 @@
     <a class="col-md-offset-3 col-sm-offset-3" href="{{value}}" target="_newtab">{{name == undefined ? id : name}}</a>
   </script>
   <script id="defaultTemplate" type="text/html">
-    <label class="col-md-3 col-sm-3">{{name}}: </label>
+    <label class="col-md-3 col-sm-3">{{name.toLabel()}}: </label>
     <input class="form-control" id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
   </script>
 
