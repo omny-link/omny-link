@@ -410,6 +410,8 @@ var ractive = new AuthenticatedRactive({
       if (tmp.stockItem!=undefined && tmp.stockItem.selfRef!=undefined && tmp.stockItem.id==undefined) tmp.stockItem.id = ractive.id(tmp.stockItem)
       delete tmp.contact;
       delete tmp.orderItems;
+      // without time json will not reach endpoint
+      if (tmp.date != null) tmp.date += 'T00:00:00';
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save order'+JSON.stringify(tmp)+' ...');
       $.ajax({
@@ -433,7 +435,9 @@ var ractive = new AuthenticatedRactive({
 
           }
           //ractive.fetch();
-          ractive.showMessage(ractive.get('tenant.strings.order')+' saved');
+          ractive.showMessage((ractive.get('tenant.strings.order')==undefined
+              ? 'Order' : ractive.get('tenant.strings.order'))
+              +' saved');
           ractive.set('saveObserver',true);
         }
       });

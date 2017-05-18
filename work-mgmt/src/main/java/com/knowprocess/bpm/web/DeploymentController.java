@@ -11,6 +11,7 @@ import javax.xml.transform.TransformerConfigurationException;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.identity.Group;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
 import org.activiti.engine.impl.persistence.entity.ResourceEntity;
 import org.activiti.engine.repository.DeploymentBuilder;
@@ -41,6 +42,8 @@ public class DeploymentController {
 
     private static final String PREPROCESSOR_RESOURCES = "/xslt/ExecutableTweaker.xsl";
 
+    private static final String BPMN_RESOURCE_RESOURCES = "/static/xslt/bpmn2resources.xslt";
+
     private static final String VALIDATOR_RESOURCES = "/xslt/KpSupportRules.xsl";
 
     /**
@@ -55,6 +58,8 @@ public class DeploymentController {
     private ProcessModelRepository processModelRepo;
 
     private TransformTask preProcessor;
+
+    private TransformTask resourceExtractor;
 
     private TransformTask validator;
 
@@ -130,6 +135,9 @@ public class DeploymentController {
                     "Completed deployment: %1$s(%2$s) at %3$s", deployment
                             .getName(), deployment.getId(), deployment
                             .getDeploymentTime().toString()));
+
+            runResourceCreator(processes);
+
             return deployment;
         } catch (ActivitiException e) {
             LOGGER.warn(String
@@ -195,6 +203,9 @@ public class DeploymentController {
                         .getResources().entrySet()) {
                     LOGGER.debug("  ...including: " + entry.getKey());
                 }
+
+                runResourceCreator(processes);
+
                 return deployment;
             } catch (ActivitiException e) {
                 LOGGER.warn(String
@@ -219,14 +230,41 @@ public class DeploymentController {
             Map<String, String> processes) throws UnsupportedEncodingException {
         HashMap<String, String> tweakedProcesses = new HashMap<String, String>();
         for (Entry<String, String> entry : processes.entrySet()) {
-            String bpmn = getPreProcessor().transform(
-                    new String(entry.getValue().getBytes(), "UTF-8"));
+            // workaround: if start <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            // we'll get SystemId Unknown; Line #1; Column #1; Content is not allowed in prolog
+            String bpmn = entry.getValue();
+            if (bpmn.startsWith("<?xml")) {
+                bpmn = bpmn.substring(bpmn.indexOf("?>")+2);
+            }
+            bpmn = getPreProcessor().transform(entry.getValue());
             if (LOGGER.isDebugEnabled() && verbose) {
                 LOGGER.debug("BPMN: " + bpmn);
             }
             tweakedProcesses.put(entry.getKey(), bpmn);
         }
         return tweakedProcesses;
+    }
+
+    private void runResourceCreator(
+            Map<String, String> processes) throws UnsupportedEncodingException {
+        for (Entry<String, String> entry : processes.entrySet()) {
+            // workaround: if start <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            // we'll get SystemId Unknown; Line #1; Column #1; Content is not allowed in prolog
+            String bpmn = entry.getValue();
+            if (bpmn.startsWith("<?xml")) {
+                bpmn = bpmn.substring(bpmn.indexOf("?>")+2);
+            }
+            String[] resources = getResourceExtractor().transform(entry.getValue()).split(",");
+            for (String resource : resources) {
+                Group group = processEngine.getIdentityService().newGroup(resource);
+                group.setName(resource);
+                try {
+                    processEngine.getIdentityService().saveGroup(group);
+                } catch (RuntimeException e) {
+                    LOGGER.warn("Ignoring error creating group '{}', presumably already exists", resource);
+                }
+            }
+        }
     }
 
     private void handleIncompleteModel(String tenantId,
@@ -265,21 +303,35 @@ public class DeploymentController {
     }
 
     private TransformTask getPreProcessor() {
-        if (preProcessor == null) {
+//        if (preProcessor == null) {
             preProcessor = new TransformTask();
             try {
                 preProcessor.setXsltResources(PREPROCESSOR_RESOURCES);
             } catch (TransformerConfigurationException e) {
                 LOGGER.error(String.format(
-                        "Unable to location deployment pre-processors: %1$s",
+                        "Unable to locate deployment pre-processors: %1$s",
                         PREPROCESSOR_RESOURCES), e);
             }
-        }
+//        }
         return preProcessor;
     }
 
+    private TransformTask getResourceExtractor() {
+//      if (resourceExtractor == null) {
+          resourceExtractor = new TransformTask();
+          try {
+              resourceExtractor.setXsltResources(BPMN_RESOURCE_RESOURCES);
+          } catch (TransformerConfigurationException e) {
+              LOGGER.error(String.format(
+                      "Unable to locate resource extractor: %1$s",
+                      BPMN_RESOURCE_RESOURCES), e);
+          }
+//      }
+      return resourceExtractor;
+  }
+
     private TransformTask getValidator() {
-        if (validator == null) {
+//        if (validator == null) {
             validator = new TransformTask();
             try {
                 validator.setXsltResources(VALIDATOR_RESOURCES);
@@ -288,7 +340,7 @@ public class DeploymentController {
                         "Unable to locate deployment validator: %1$s",
                         VALIDATOR_RESOURCES), e);
             }
-        }
+//        }
         return validator;
     }
     private boolean isValid(Map<String, String> processes) {

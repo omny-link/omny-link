@@ -26,6 +26,12 @@
         <xsl:text>' with Activiti extension: </xsl:text>
         <xsl:value-of select="@activiti:class"/>
       </xsl:when>
+      <xsl:when test="starts-with(@activiti:class,'com.knowprocess.logging.LoggingService')">
+        <xsl:text>INFO: Can handle service task '</xsl:text>
+        <xsl:value-of select="./@id"/>
+        <xsl:text>' with Activiti extension: </xsl:text>
+        <xsl:value-of select="@activiti:class"/>
+      </xsl:when>
       <xsl:when test="starts-with(@activiti:class,'com.knowprocess.mk')">
         <xsl:text>INFO: Can handle service task '</xsl:text>
         <xsl:value-of select="./@id"/>

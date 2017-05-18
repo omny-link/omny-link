@@ -440,6 +440,8 @@ var ractive = new AuthenticatedRactive({
 //          });
 //        }
 //      });
+      // avoid getting 1 Jan 1970
+      if (data.dueDate==undefined) data.dueDate='';
       ractive.set('current', data);
 
       // Remove previous initiators (one added with each select, possible ractive binding bug)
@@ -455,11 +457,6 @@ var ractive = new AuthenticatedRactive({
       // due date handling
       if ($('#curDueDate').datepicker()!=undefined) $('#curDueDate').datepicker('destroy');
       $('#curDueDate').datepicker('update',new Date(ractive.get('current.dueDate')));
-      $('#curDueDate').datepicker().on('changeDate', function(e) {
-        console.log('date changed:'+JSON.stringify(e));
-        ractive.set('current.dueDate', $('#curDueDate').datepicker('getDate'));
-        ractive.save();
-      });
     });
 //    ractive.fetchUserNotes();
     ractive.showTask();
@@ -507,6 +504,8 @@ var ractive = new AuthenticatedRactive({
     
     var id = ractive.get('current').id;
     $('#currentSect').hide();
+    var due = $('#curDueDate').val();
+    ractive.set('current.dueDate', new Date(due.substring(6),due.substring(3,5)-1,due.substring(0,2)).toISOString());
     var t = ractive.get('current');
     t.tenantId = ractive.get('tenant.id');
     $.ajax({

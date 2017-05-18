@@ -13,7 +13,7 @@ String.prototype.toCamelCase = function() {
 
 String.prototype.toLabel = function() {
   if (this == undefined) return this;
-  return this.replace(/([A-Z])/, function(v) { return '_'+v; }).replace(/_/g, ' ').toLeadingCaps();
+  return this.replace(/([A-Z])/g, function(v) { return '_'+v; }).replace(/_/g, ' ').toLeadingCaps();
 };
 
 String.prototype.toLeadingCaps = function() {

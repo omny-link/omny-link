@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.knowprocess.bpm.model.FormProperty;
 import com.knowprocess.bpm.model.Task;
 import com.rometools.rome.feed.atom.Entry;
 import com.rometools.rome.feed.atom.Feed;
@@ -73,14 +74,6 @@ public class TaskController {
                     t.getProcessVariables()));
             processEngine.getTaskService().complete(taskId,
                     t.getProcessVariables());
-        } else if (defer != null) {
-            try {
-                processEngine.getTaskService().setVariableLocal(taskId,
-                        "deferUntil", isoDateParser.parse(defer));
-            } catch (ParseException e) {
-                processEngine.getTaskService().setVariableLocal(taskId,
-                        "deferUntil", getRelativeDate(defer));
-            }
         } else {
             org.activiti.engine.task.Task dest = processEngine.getTaskService()
                     .createTaskQuery().taskId(taskId).singleResult();
@@ -93,6 +86,21 @@ public class TaskController {
             dest.setDueDate(cal.getTime());
 
             processEngine.getTaskService().saveTask(dest);
+
+            for (FormProperty fp : t.getFormProperties()) {
+                processEngine.getTaskService().setVariable(
+                        taskId, fp.getName(), fp.getValue());
+            }
+
+            if (defer != null) {
+                try {
+                    processEngine.getTaskService().setVariableLocal(taskId,
+                            "deferUntil", isoDateParser.parse(defer));
+                } catch (ParseException e) {
+                    processEngine.getTaskService().setVariableLocal(taskId,
+                            "deferUntil", getRelativeDate(defer));
+                }
+            }            
         }
         return t;
     }

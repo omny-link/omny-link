@@ -782,7 +782,7 @@
 	      <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
 	      <xsl:attribute name="class">task <xsl:value-of select="local-name(.)"/></xsl:attribute>
 	      <xsl:attribute name="data-name"><xsl:value-of select="@name"/></xsl:attribute>
-	      <xsl:if test="local-name(.)='userTask'">
+	      <xsl:if test="local-name(.)='manualTask' or local-name(.)='userTask'">
 		      <xsl:choose>
             <xsl:when test="@activiti:candidateGroups">
               <xsl:attribute name="data-resource"><xsl:value-of select="@activiti:candidateGroups"/></xsl:attribute>
@@ -814,7 +814,6 @@
 	      <xsl:choose>
 		      <xsl:when test="local-name(.)='callActivity'">
 		        <xsl:attribute name="stroke-width">3px</xsl:attribute>
-		        <xsl:attribute name="data-called-element"><xsl:value-of select="@calledElement"/></xsl:attribute>
 		      </xsl:when>
 		      <xsl:otherwise>
             <xsl:attribute name="stroke-width">1px</xsl:attribute>
