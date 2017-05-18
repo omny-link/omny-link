@@ -36,6 +36,18 @@ var AuthenticatedRactive = Ractive.extend({
       headers: { 'X-CSRF-TOKEN': this.getCookie(CSRF_COOKIE) }
     });
   },
+  analyzeEmailActivity: function(activities) {
+    if (activities.length > 0) {
+      var count = 0;
+      for (idx in activities) {
+        if (activities[idx].type == 'email') {
+          count++;
+          if (idx == 0) ractive.set('current.timeSinceEmail',(new Date().getTime() - Date.parse(activities[idx].occurred)));
+        }
+      }
+      ractive.set('current.emailsSent',count);
+    }
+  },
   applyBranding: function() {
     if (ractive.get('profile')==undefined) return ;
     var tenant = ractive.get('profile').tenant;
