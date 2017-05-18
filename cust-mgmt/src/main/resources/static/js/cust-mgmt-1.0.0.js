@@ -66,8 +66,9 @@ var ractive = new AuthenticatedRactive({
       console.info('findDocName: '+docId);
     },
     formatAge: function(timeString) {
-      console.info('formatAge: '+timeString);
-      return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
+      console.info('formatAge: ' + timeString);
+      if (timeString == "-1" || isNaN(timeString)) return 'n/a';
+      else return i18n.getDurationString(timeString) + ' ago';
     },
     formatContactId: function(contactId) {
       console.info('formatContactId');
@@ -480,6 +481,7 @@ var ractive = new AuthenticatedRactive({
         ractive.set('saveObserver', false);
         ractive.set('current.activities',data);
         console.log('fetched '+data.length+' activities for contact');
+        ractive.analyzeEmailActivity(data);
         ractive.set('saveObserver', true);
       }
     });
