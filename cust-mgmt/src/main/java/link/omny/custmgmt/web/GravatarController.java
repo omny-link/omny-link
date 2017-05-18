@@ -4,10 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import link.omny.custmgmt.internal.ContactAvatarService;
-import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.repositories.ContactRepository;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import link.omny.custmgmt.internal.ContactAvatarService;
+import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.repositories.ContactRepository;
 
 @Controller
 @RequestMapping(value = "/{tenantId}/gravatars")
@@ -45,7 +45,11 @@ public class GravatarController {
                 tenantId);
 
         try {
+            response.setContentType(MediaType.IMAGE_PNG_VALUE);
             if (contacts == null || contacts.size() < 1) {
+                LOGGER.warn(String.format(
+                        "Unable to find contact for email hash %1$s, displaying N/A",
+                        emailHash));
                 avatarSvc.create("N/A",
                         response.getOutputStream());
             } else {
