@@ -72,14 +72,10 @@ var ractive = new AuthenticatedRactive(
         findDocName: function(docId) {
           console.info('findDocName: ' + docId);
         },
-        findDocName: function(docId) {
-          console.info('findDocName: ' + docId);
-        },
         formatAge: function(timeString) {
           console.info('formatAge: ' + timeString);
-          return timeString == "-1" ? 'n/a': i18n
-              .getDurationString(timeString)
-              + ' ago';
+          if (timeString == "-1" || isNaN(timeString)) return 'n/a';
+          else return i18n.getDurationString(timeString) + ' ago';
         },
         formatContactId: function(contactId) {
           console.info('formatContactId');
@@ -322,6 +318,7 @@ var ractive = new AuthenticatedRactive(
             return 'hidden';
         },
         stdPartials: [
+          { "name": "activityCurrentSect", "url": "/partials/activity-current-sect.html"},
           { "name": "accountFinancials", "url": "/partials/account-financials.html" },
           { "name": "accountListSect", "url": "/partials/account-list-sect.html" },
           { "name": "accountListTable", "url": "/partials/account-list-table.html" },
@@ -679,6 +676,22 @@ var ractive = new AuthenticatedRactive(
             ractive.set('saveObserver', true);
             if (ractive.get('tenant.show.orders'))
               ractive.fetchOrders(ractive.get('current'));
+          }
+        });
+      },
+      fetchActivities: function() {
+        console.info('fetchActivities...');
+        ractive.set('saveObserver', false);
+        $.ajax({
+          dataType: "json",
+          url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/activities/findByAccountId/'+ractive.id(ractive.get('current')),
+          crossDomain: true,
+          success: function( data ) {
+            ractive.set('saveObserver', false);
+            ractive.set('current.activities',data);
+            console.log('fetched '+data.length+' activities for account');
+            ractive.analyzeEmailActivity(data);
+            ractive.set('saveObserver', true);
           }
         });
       },
@@ -1447,13 +1460,16 @@ var ractive = new AuthenticatedRactive(
               // who knows why this is needed, but it is, at least for
               // first time rendering
               $('.autoNumeric').autoNumeric('update', {});
+              if (ractive.get('tenant.show.activityAnalysis') || ractive.get('tenant.show.activityTracker')) ractive.fetchActivities();
               ractive.addServiceLevelAlerts();
+              if (ractive.get('current.activities') != undefined)
+                ractive.sortChildren('activities', 'occurred', false);
+              ractive.sortChildren('documents','created',false);
+              if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
               ractive.fetchNotes();
               if (ractive.get('tenant.show.documents')) ractive.fetchDocs();
               if (ractive.get('current.companyNumber') != undefined)
                 ractive.fetchCompaniesHouseInfo();
-              if (ractive.get('current.activities') != undefined)
-                ractive.sortChildren('activities', 'occurred', false);
               if (ractive.hasRole('admin')) $('.admin').show();
               ractive.set('saveObserver', true);
             });

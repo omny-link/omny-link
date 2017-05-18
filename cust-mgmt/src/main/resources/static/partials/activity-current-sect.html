@@ -7,13 +7,13 @@
     </h2>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
       <ul class="form edit-form">
-        {{#tenant.show.marketing}}
+        {{#tenant.show.marketing || current.emailsSent>0}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Since email:</label>
             <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceEmail" disabled readonly value="{{formatAge(current.timeSinceEmail)}}">
           </li>
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">Mails sent:</label>
+            <label class="col-md-4 col-sm-4">Emails sent:</label>
             <input class="col-md-8 col-sm-8 form-control" id="curEmailsSent" disabled readonly value="{{current.emailsSent}}">
           </li>
         {{/}}
@@ -25,18 +25,20 @@
         {{/}}
       </ul>
     </div>
-    <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
-      <ul class="form edit-form">
-        <li class="form-group">
-          <label class="col-md-4 col-sm-4">Since login:</label>
-          <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceLogin" disabled readonly value="{{formatAge(current.timeSinceLogin)}}">
-        </li>
-        <li class="form-group">
-          <label class="col-md-4 col-sm-4">Since {{#tenant.strings.registration}}{{tenant.strings.registration}}{{else}}registration{{/}}:</label>
-          <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceRegistration" disabled readonly value="{{formatAge(current.timeSinceRegistered)}}">
-        </li>
-      </ul>
-    </div>
+    {{#if window.location.href.endsWith('contacts.html') }}
+      <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
+        <ul class="form edit-form">
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">Since login:</label>
+            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceLogin" disabled readonly value="{{formatAge(current.timeSinceLogin)}}">
+          </li>
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">Since {{#tenant.strings.registration}}{{tenant.strings.registration}}{{else}}registration{{/}}:</label>
+            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceRegistration" disabled readonly value="{{formatAge(current.timeSinceRegistered)}}">
+          </li>
+        </ul>
+      </div>
+    {{/if}}
   </section>
 
   <section id="activitySect" style="clear: both">

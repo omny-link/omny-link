@@ -19,6 +19,7 @@ function I18nController() {
     }
   };
   this.getDurationString = function(millis) {
+      if (isNaN(millis)) return 'n/a';
       secs = millis / 1000;
       mins = secs / 60;
       hours = mins / 60;

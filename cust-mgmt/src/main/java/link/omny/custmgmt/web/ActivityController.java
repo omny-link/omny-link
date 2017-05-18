@@ -7,11 +7,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import link.omny.custmgmt.model.Activity;
-import link.omny.custmgmt.repositories.ActivityRepository;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -32,10 +27,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
+import link.omny.custmgmt.model.Activity;
+import link.omny.custmgmt.repositories.ActivityRepository;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 /**
  * REST web service for uploading and accessing a file of JSON Activities (over
  * and above the CRUD offered by spring data).
- * 
+ *
  * @author Tim Stephenson
  */
 @Controller
@@ -53,10 +53,10 @@ public class ActivityController {
 
     /**
      * Imports JSON representation of accounts.
-     * 
+     *
      * <p>
      * This is a handy link: http://shancarter.github.io/mr-data-converter/
-     * 
+     *
      * @param file
      *            A file posted in a multi-part request
      * @return The meta data of the added model
@@ -83,9 +83,27 @@ public class ActivityController {
     }
 
     /**
+     * Return all activities associated with an account.
+     *
+     * @return activities matching the specified account.
+     * @throws BusinessEntityNotFoundException
+     */
+    @RequestMapping(value = "/findByAccountId/{accountId}", method = RequestMethod.GET)
+    @Transactional
+    public @ResponseBody List<ShortActivity> findByAccountId(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") String accountId)
+            throws BusinessEntityNotFoundException {
+        LOGGER.debug(String.format("Find activities for account %1$s",
+                accountId));
+
+        return wrapShort(repo.findByAccountId(Long.parseLong(accountId)));
+    }
+
+    /**
      * Return all activities associated with a contact.
-     * 
-     * @return contacts matching that contact.
+     *
+     * @return activities matching the specified contact.
      * @throws BusinessEntityNotFoundException
      */
     @RequestMapping(value = "/findByContactId/{contactId}", method = RequestMethod.GET)
