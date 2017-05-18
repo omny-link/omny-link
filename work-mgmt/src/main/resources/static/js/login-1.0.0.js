@@ -489,7 +489,7 @@ var AuthenticatedRactive = Ractive.extend({
     console.log('startCustomAction: '+key+(object == undefined ? '' : ' for '+object.id));
     var instanceToStart = ractive.get('instanceToStart');
     if (instanceToStart==undefined) instanceToStart = {processVariables:{}};
-    instanceToStart.processDefinitionId = key;
+    instanceToStart.processDefinitionKey = key;
     instanceToStart.businessKey = businessKey == undefined ? label : businessKey;
     instanceToStart.label = label;
     instanceToStart.processVariables.initiator = ractive.get('username');
