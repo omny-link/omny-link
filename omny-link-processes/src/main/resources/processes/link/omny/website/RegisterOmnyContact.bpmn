@@ -60,10 +60,13 @@ if (contact.getString('roles') != undefined) {
   var roles = contact.getString('roles').split(',');
   for (idx in roles) {
     try {
-      var g = execution.getEngineServices().getIdentityService().newGroup(roles[idx].trim().toLowerCase());
-      g.setName(roles[idx]);
-      execution.getEngineServices().getIdentityService().saveGroup(g);
-    } catch (e) {
+      var count = execution.getEngineServices().getIdentityService().createGroupQuery().groupId(roles[idx].trim().toLowerCase()).count();
+      if (count == 0) {
+	      var g = execution.getEngineServices().getIdentityService().newGroup(roles[idx].trim().toLowerCase());
+	      g.setName(roles[idx]);
+	      execution.getEngineServices().getIdentityService().saveGroup(g);
+	    }
+    } catch (e) { // unfortunately it seems this is not actually caught, hence count above
       ; // group must already exist
     }
     execution.getEngineServices().getIdentityService().createMembership(userId, roles[idx].trim().toLowerCase());
@@ -80,7 +83,7 @@ execution.setVariable('Location',execution.getVariable('contactId'));]]></script
       <text>REGISTER OMNY LINK ACCOUNT</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-RegisterOmnyContact" name="Untitled Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-RegisterOmnyContact" name="Register Omny user" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="RegisterOmnyContact">
       <bpmndi:BPMNShape bpmnElement="startFromOmnyRegistrationMsg" id="Yaoqiang-startFromOmnyRegistrationMsg">
         <dc:Bounds height="32.0" width="32.0" x="75.0" y="204.83333333333334"/>
