@@ -1,32 +1,42 @@
 <ul class="form edit-form">
   <li class="form-group">
-    <label class="col-md-4 col-sm-4 required" for="curFirstName">First Name: </label>
-    <input class="form-control col-md-8 col-sm-8" id="curFirstName" placeholder="First name" required value="{{instanceToStart.processVariables.omny_registration['firstName']}}"/>
+    <label class="col-md-4 col-sm-4 required" for="firstName">First Name: </label>
+    <input class="form-control col-md-8 col-sm-8" id="firstName" placeholder="First name" required value="{{instanceToStart.processVariables.omny_registration['firstName']}}"/>
     <p class="col-md-offset-4 col-sm-offset-4 help-block field-hint field-error">Please provide the user's first name</p>
   </li>
   <li class="form-group">
-    <label class="col-md-4 col-sm-4 required" for="curLastName">Last Name: </label>
-    <input class="form-control col-md-8 col-sm-8" id="curLastName" placeholder="Last or family name" required value="{{instanceToStart.processVariables.omny_registration['lastName']}}"/>
+    <label class="col-md-4 col-sm-4 required" for="lastName">Last Name: </label>
+    <input class="form-control col-md-8 col-sm-8" id="lastName" placeholder="Last or family name" required value="{{instanceToStart.processVariables.omny_registration['lastName']}}"/>
     <p class="col-md-offset-4 col-sm-offset-4 help-block field-hint field-error">Please provide the user's last name</p>
   </li>
   <li class="form-group">
-    <label class="col-md-4 col-sm-4 required" for="curEmail">Email: </label>
-    <input class="form-control col-md-8 col-sm-8" id="curEmail" placeholder="Email address of the new user" type="email" value="{{instanceToStart.processVariables.omny_registration['email']}}"/>
+    <label class="col-md-4 col-sm-4 required" for="email">Email: </label>
+    <input class="form-control col-md-8 col-sm-8" id="email" placeholder="Email address of the new user" type="email" value="{{instanceToStart.processVariables.omny_registration['email']}}"/>
     <p class="col-md-offset-4 col-sm-offset-4 help-block field-hint field-error">Please provide the user's email</p>
   </li>
   <li class="curPhone1">
-    <label class="col-md-4 col-sm-4" for="what">Phone: </label>
-    <input class="form-control col-md-8 col-sm-8" id="curPhone1" placeholder="Best contact number for the new user" value="{{instanceToStart.processVariables.omny_registration['phone1']}}"/>
+    <label class="col-md-4 col-sm-4" for="phone1">Phone: </label>
+    <input class="form-control col-md-8 col-sm-8" id="phone1" placeholder="Best contact number for the new user" value="{{instanceToStart.processVariables.omny_registration['phone1']}}"/>
     <p class="col-md-offset-4 col-sm-offset-4 help-block field-hint field-error">Please provide the best number to contact the user on</p>
   </li>
   <li class="form-group">
-    <label class="col-md-4 col-sm-4 required" for="what">Tenant: </label>
+    <label class="col-md-4 col-sm-4 required" for="tenantId">Tenant: </label>
     <input class="form-control col-md-8 col-sm-8" id="tenantId" placeholder="Tenant this user should have access too" value="{{instanceToStart.processVariables.omny_registration['tenantId']}}"/>
     <p class="col-md-offset-4 col-sm-offset-4 help-block field-hint field-error">Please specify the tenant id, for example 'omny'</p>
   </li>
   <li class="form-group">
-    <label class="col-md-4 col-sm-4 required" for="what">Additional roles: </label>
-    <input class="form-control col-md-8 col-sm-8" id="tenantId" placeholder="Comma-separated list of additional roles" value="{{instanceToStart.processVariables.omny_registration['roles']}}"/>
+    <label class="col-md-4 col-sm-4 required" for="roles">Additional roles: </label>
+    <input class="form-control col-md-8 col-sm-8" id="roles" placeholder="Comma-separated list of additional roles" value="{{instanceToStart.processVariables.omny_registration['roles']}}"/>
     <p class="col-md-offset-4 col-sm-offset-4 help-block field-hint field-error">Any additional roles. Everyone is given 'user' and the tenant role</p>
+  </li>
+    <li class="curOwner">
+    <label class="col-md-4 col-sm-4" for="owner">Owner: </label>
+    <input class="form-control col-md-8 col-sm-8" id="owner" placeholder="manager@example.com" value="{{instanceToStart.processVariables.omny_registration['owner']}}"/>
+    <p class="col-md-offset-4 col-sm-offset-4 help-block field-hint field-error">Line manager or other owner of the new user</p>
+  </li>
+  <li class="curAccountType">
+    <label class="col-md-4 col-sm-4" for="accountType">Account Type: </label>
+    <input class="form-control col-md-8 col-sm-8" id="accountType" placeholder="Staff, Customer, etc" value="{{instanceToStart.processVariables.omny_registration['accountType']}}"/>
+    <p class="col-md-offset-4 col-sm-offset-4 help-block field-hint field-error">The relationship this user will have to the tenant</p>
   </li>
 </ul>
