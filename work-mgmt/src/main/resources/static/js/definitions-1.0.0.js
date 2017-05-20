@@ -12,6 +12,8 @@ var ractive = new AuthenticatedRactive({
       return i18n.getDurationString(new Date(timeString))
     },
     definitions: [],
+    diagPanZoomHandlers: [],
+    showDetails: false,
     duration: function(timeString) {
       return i18n.getDurationString(new Date(timeString))
     },
@@ -67,6 +69,8 @@ var ractive = new AuthenticatedRactive({
         return 'bpmn-icon-gateway-or';
       case 'intermediateThrowEvent':
         return 'bpmn-icon-intermediate-event-none';
+      case 'intermediateSignalThrow':
+        return 'bpmn-icon-intermediate-event-throw-signal';
       case 'messageStartEvent':
         return 'bpmn-icon-start-event-message';
       case 'parallelGateway':
@@ -322,6 +326,16 @@ var ractive = new AuthenticatedRactive({
             $('[data-toggle="tooltip"]').tooltip();
           });
           $('[data-ref]').click(function(ev) { ractive.showSelectedId($(ev.target).data('ref')); });
+          ractive.splice('diagPanZoomHandlers', idx, 0, svgPanZoom('#'+diagId));
+
+          var diagEl = document.querySelector('.bpmnDiagram'); // element to make resizable
+          diagEl.addEventListener('mouseup', function(e) {
+            $('svg').attr('width', ($(e.target).css('width')-50));
+            $('svg').attr('height', ($(e.target).css('height')-50));
+            ractive.get('diagPanZoomHandlers.0').resize(); // update SVG cached size and controls positions
+            ractive.get('diagPanZoomHandlers.0').fit();
+            ractive.get('diagPanZoomHandlers.0').center();
+          }, false);
         } catch (e) {
           console.error('  e:'+e);
         }
@@ -554,6 +568,11 @@ var ractive = new AuthenticatedRactive({
         $('.instanceSect[data-instance-id='+instance.id+']').slideDown();
       });
     }
+  },
+  toggleDetails: function() {
+    console.info('toggleDetails');
+    ractive.set('showDetails', !ractive.get('showDetails'));
+    $('.details-control').toggleClass('glyphicon-eye-open').toggleClass('glyphicon-eye-close');
   },
   toggleResults: function() {
     console.log('toggleResults');

@@ -187,9 +187,14 @@ section h2 .search {
     min-width: 15em;
   }
 }
-section h2 .glyphicon {
+section h2 .glyphicon,
+section h3 .glyphicon {
   height: 34px;
   margin: -6px 0px 2px 0px;
+}
+section h3 a.glyphicon {
+	margin-top:-10px;
+	margin-right: 2px;
 }
 section h2 .glyphicon-search {
   border-bottom-left-radius: 0;
@@ -413,7 +418,7 @@ h2 a.glyphicon:visited {
   color: #939598;
   text-decoration: none;
 }
-a.glyphicon-remove {
+h2 a.glyphicon-remove {
 	padding: 4px 7px;
 }
 .input-group-addon .glyphicon {
@@ -1055,7 +1060,9 @@ ul.json li label {
 /* SVG DIAGRAMS */
 
 div.bpmnDiagram {
+  border: 1px solid #ccc;
   overflow: auto;
+  resize: both;
 }
 
 path.association,
