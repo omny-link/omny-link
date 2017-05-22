@@ -198,14 +198,18 @@ public class ContactController extends BaseTenantAwareController{
     @Transactional
     public @ResponseBody Integer archiveContacts(
             @PathVariable("tenantId") String tenantId,
-            @RequestParam(value = "before", required = false) String before) {
+            @RequestParam(value = "before", required = false) String before,
+            @RequestParam(value = "stage", required = false) String stage) {
         Date beforeDate = before == null
                 ? DateUtils.oneMonthAgo() : DateUtils.parseDate(before);
+        if (stage == null || stage.length() == 0) {
+            stage = "On hold";
+        }
         LOGGER.info(String.format(
-                "Place on hold contacts of %1$s older than %2$s", tenantId,
-                beforeDate.toString()));
+                "Set contacts of %1$s older than %2$s to '%3$s'", tenantId,
+                beforeDate.toString(), stage));
 
-        return contactRepo.updateStage("On hold", beforeDate, tenantId);
+        return contactRepo.updateStage(stage, beforeDate, tenantId);
     }
 
     /**
