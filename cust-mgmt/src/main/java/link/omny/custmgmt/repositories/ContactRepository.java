@@ -120,7 +120,7 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     @Modifying(clearAutomatically = true)
     void setAccount(@Param("contactId") Long contactId, @Param("accountId") Long accountId);
 
-    @Query(value = "UPDATE Contact c set c.stage = :stage WHERE (c.lastUpdated < :before OR c.lastUpdated IS NULL) AND c.stage != 'deleted' AND c.tenantId = :tenantId")
+    @Query(value = "UPDATE Contact c set c.stage = :stage WHERE (c.lastUpdated < :before OR c.lastUpdated IS NULL) AND c.stage NOT IN ('deleted','Cold') AND c.tenantId = :tenantId")
     @Modifying(clearAutomatically = true)
     int updateStage(@Param("stage") String stage, @Param("before") Date before, @Param("tenantId") String tenantId);
 
