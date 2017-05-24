@@ -49,8 +49,7 @@ var ractive = new AuthenticatedRactive({
     formatContactId: function(contactId) {
       console.info('formatContactId');
       if (contactId == undefined) return contactId;
-
-      var contact = Array.findBy('selfRef','/contacts/' + contactId,ractive.get('contacts'));
+      var contact = Array.findBy('selfRef','/contacts/'+contactId,ractive.get('contacts'));
       return contact == undefined ? 'n/a' : contact.fullName;
     },
     formatDate: function(timeString) {
@@ -346,6 +345,7 @@ var ractive = new AuthenticatedRactive({
     });
     ractive.fetchContacts();
     ractive.fetchStockItems();
+    //ractive.fetchStockCategories();
   },
   fetchContacts: function () {
     console.info('fetchContacts...');
@@ -371,6 +371,20 @@ var ractive = new AuthenticatedRactive({
           })
         );
         ractive.addDataList({ name: 'contacts' }, ractive.get('contacts'));
+        ractive.set('saveObserver', true);
+      }
+    });
+  },
+  fetchStockCategory: function(stockCategoryName) {
+    console.info('fetchStockCategory...');
+    $.ajax({
+      dataType : "json",
+      method: 'GET',
+      url : ractive.getServer() + '/' + ractive.get('tenant.id') + '/stock-categories/findByName?name='+stockCategoryName,
+      crossDomain : true,
+      success : function(data) {
+        ractive.set('saveObserver', false);
+        ractive.set('current.stockCategory', data);
         ractive.set('saveObserver', true);
       }
     });
@@ -623,6 +637,16 @@ ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
   setTimeout(function() {
     ractive.set('searchMatched',$('#ordersTable tbody tr').length);
   }, 500);
+});
+
+ractive.observe('current.stockItem.id', function(newValue, oldValue, keypath) {
+  console.info('stock item changed from '+oldValue+' to '+newValue);
+  if (newValue != undefined) {
+    var stockItem = Array.findBy('selfRef','/stock-items/'+newValue,ractive.get('stockItems'));
+    if (stockItem != undefined) {
+      ractive.fetchStockCategory(stockItem.stockCategoryName);
+    }
+  }
 });
 
 ractive.observe('tenant.strings.orders', function(newValue, oldValue, keypath) {
