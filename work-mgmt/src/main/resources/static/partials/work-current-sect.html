@@ -41,24 +41,9 @@
         </li>
       </ul>
     </div>
-
-    {{#current.processVariables['accountId']}}
-      <div class="col-md-12">
-        <a href="/accounts.html?searchTerm={{current.processVariables['accountId'].substring(current.processVariables['accountId'].lastIndexOf('/')+1)}}" target="_blank">Open {{#if tenant.strings.account}}{{tenant.strings.account.toLowerCase()}}{{else}}account{{/if}}<span class="glyphicon glyphicon-new-window"></span></a>
-      </div>
-    {{/}}
-    {{#current.processVariables['contactId']}}
-      <div class="col-md-12">
-        <a href="/contacts.html?id={{current.processVariables['contactId']}}" target="_blank">Open {{#if tenant.strings.contact}}{{tenant.strings.contact.toLowerCase()}}{{else}}contact{{/if}}<span class="glyphicon glyphicon-new-window"></span></a>
-      </div>
-    {{/}}
     
-    {{#current.formKey!=undefined}}
-      {{>userForm { current: current } }}
-    {{/}}
-    {{#current.formKey==undefined && current.formProperties.length>0}}
-      {{>userForm { current: current } }}
-    {{/}}
+    {{! NOTE THAT the userForm may have been re-defined by current.formKey }}
+    {{>userForm { current: current } }}
   </form>
 
   <button class="btn" on-click="submitTask()" type="button">Return To List</button>

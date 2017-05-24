@@ -113,6 +113,31 @@ var AuthenticatedRactive = Ractive.extend({
       }
     });
   },
+  fetchStockCategories: function() {
+    if (ractive.get('tenant.features.stockCategory')!=true) return;
+    console.info('fetchCategories...');
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType : "json",
+      url : ractive.getServer() + '/' + ractive.get('tenant.id') + '/stock-categories/',
+      crossDomain : true,
+      success : function(data) {
+        if (data['_embedded'] != undefined) {
+          data = data['_embedded'].stockCategories;
+        }
+        ractive.set('stockCategories', data);
+        console.log('fetched ' + data.length + ' stock categories');
+        // HTML5 style only
+        $('datalist#stockCategories').remove();
+        $('body').append('<datalist id="stockCategories">');
+        $.each(ractive.get('stockCategories'), function (i,d) {
+          $('datalist#stockCategories').append('<option value="'+d.name+'">'+d.name+'</option>');
+        });
+
+        ractive.set('saveObserver', true);
+      }
+    });
+  },
   fetchStockItems: function() {
     console.info('fetchStockItems...');
     ractive.set('saveObserver', false);

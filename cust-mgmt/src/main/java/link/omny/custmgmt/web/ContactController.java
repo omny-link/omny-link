@@ -804,26 +804,38 @@ public class ContactController extends BaseTenantAwareController{
     /**
      * Change the sale stage the contact is at.
      */
-    // TODO should be POST and not specify 'consumes'
     @RequestMapping(value = "/{contactId}/stage", method = RequestMethod.PUT, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody void setStage(
+    public @ResponseBody void setStageDeprecated2(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam("stage") String stage) {
+        LOGGER.warn(String.format("PUT stage is deprecated, please switch to POST"));
+        setStage(tenantId, contactId, stage);
+    }
+
+    /**
+     * Change the sale stage the contact is at.
+     */
+    @RequestMapping(value = "/{contactId}/stage/{stage}", method = RequestMethod.POST)
+    public @ResponseBody void setStage(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("contactId") Long contactId,
+            @PathVariable("stage") String stage) {
         LOGGER.info(String.format("Setting contact %1$s to stage %2$s",
                 contactId, stage));
 
         Contact contact = contactRepo.findOne(contactId);
+        String oldStage = contact.getStage();
         contact.setStage(stage);
         contactRepo.save(contact);
 
         addActivity(tenantId, contactId, "transition-to-stage",
-                String.format("Waiting for %1$s", stage));
+                String.format("From %1$s to %2$s", oldStage, stage));
 
         // return contact;
     }
 
-    /**
+        /**
      * Change the sale stage the contact is at.
      */
     @RequestMapping(value = "/{contactId}/account", method = RequestMethod.PUT, consumes = "text/uri-list")

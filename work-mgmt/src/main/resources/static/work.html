@@ -56,7 +56,9 @@
   </script>
   <script id="defaultTemplate" type="text/html">
     <label class="col-md-3 col-sm-3">{{name.toLabel()}}: </label>
-    <input class="form-control" id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
+    <input class="form-control" id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}}
+      onblur="ractive.set('current.processVariables.{{..id}}',{{#if type=='boolean'}}this.value=='on'{{else}}this.value{{/if}})"
+      {{#if type=='boolean'}}type="checkbox" {{elseif type=='long'}}type="number" value="{{..value}}"{{else}} value="{{..value}}"{{/if}}>
   </script>
 
   <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>

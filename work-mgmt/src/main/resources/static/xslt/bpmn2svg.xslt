@@ -31,6 +31,7 @@
   <xsl:variable name="firstParticipant" select="//bpmn:participant[@id=$diagram//@bpmnElement][position()=1]/@id"/>
   <xsl:variable name="lastParticipant" select="//bpmn:participant[@id=$diagram//@bpmnElement][position()=last()]/@id"/>
   <xsl:variable name="noParticipants" select="count(//bpmn:participant[@id=$diagram//@bpmnElement])"/>
+  <xsl:variable name="totalNoParticipants" select="count(//bpmn:participant)"/>
 
   <xsl:template match="/">
     <xsl:if test="$debug='true'">
@@ -39,6 +40,7 @@
       <xsl:comment> first participant id: <xsl:value-of select="$firstParticipant"/></xsl:comment>
       <xsl:comment> last participant id: <xsl:value-of select="$lastParticipant"/></xsl:comment>
       <xsl:comment> no. participants in diag: <xsl:value-of select="$noParticipants"/></xsl:comment>
+      <xsl:comment> total no. participants in collab: <xsl:value-of select="$totalNoParticipants"/></xsl:comment>
       <xsl:comment> font size: <xsl:value-of select="$fontSize"/></xsl:comment>
     </xsl:if>
     <xsl:element name="svg">
@@ -96,8 +98,6 @@
           <path d="M 0,0 C 4.514306,2.8087928 4.7790399,2.7522338 0,6 M 0,6 9,3 0,0"  fill="#666" />
 			  </marker>
       </defs>
-
-      <!--rect class="background" fill="#333" height="1080" width="1920" x="0" y="0"/-->
 
       <!-- LANES -->
       <xsl:apply-templates select="//bpmn:participant[//bpmndi:BPMNDiagram[@id=$diagramId]//@bpmnElement=@id]"/>
@@ -203,13 +203,23 @@
           <xsl:attribute name="fill">#ccc</xsl:attribute>
           <xsl:attribute name="transform">translate(<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x)-5"/>,<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@y)-10"/>) scale(0.035)</xsl:attribute>
         </xsl:element>
-		
-				<xsl:call-template name="label">
-		      <xsl:with-param name="id" select="$id"></xsl:with-param>
-		      <xsl:with-param name="r">0</xsl:with-param>
-		      <xsl:with-param name="tx">0</xsl:with-param>
-		      <xsl:with-param name="ty">0</xsl:with-param>
-		    </xsl:call-template>
+
+        <xsl:variable name="dataObjectRef" select="@dataObjectRef"/>
+        <xsl:call-template name="label">
+          <xsl:with-param name="id" select="$id"/>
+          <xsl:with-param name="r">0</xsl:with-param>
+          <xsl:with-param name="text">
+            <xsl:choose>
+              <xsl:when test="local-name(.)='dataObjectReference'">
+                <xsl:value-of select="//bpmn:dataObject[@id=$dataObjectRef]/@name"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="@name"/></xsl:otherwise>
+            </xsl:choose>
+          </xsl:with-param>
+          <xsl:with-param name="tx">0</xsl:with-param>
+          <xsl:with-param name="ty">0</xsl:with-param>
+        </xsl:call-template>
 		  </xsl:when>
 		  <xsl:otherwise>
 		    <xsl:if test="$debug='true'">
@@ -1276,13 +1286,13 @@
     <xsl:param name="tx"/>
     <xsl:param name="ty">0</xsl:param>
     <xsl:param name="fill">#666</xsl:param>
+    <xsl:param name="text"><xsl:value-of select="@name"/></xsl:param>
     
-    <xsl:variable name="len" select="string-length(@name)"/>
-    <xsl:variable name="cutBefore" select="contains(substring(@name,0,$len div 2),' ')*(string-length(substring-before(substring(@name,0,$len div 2),' ')))"/>
-    <xsl:variable name="cutAfter" select="contains(substring(@name,($len) div 2),' ')*(string-length(substring-before(substring(@name,($len) div 2),' ')))"/>
-    <xsl:variable name="lenBefore" select="string-length(substring(@name,$len div 2)) - $cutBefore"/>
-    <xsl:variable name="lenAfter" select="string-length(substring(@name,$len div 2)) + $cutAfter"/>
-
+    <xsl:variable name="len" select="string-length($text)"/>
+    <xsl:variable name="cutBefore" select="contains(substring($text,0,$len div 2),' ')*(string-length(substring-before(substring($text,0,$len div 2),' ')))"/>
+    <xsl:variable name="cutAfter" select="contains(substring($text,($len) div 2),' ')*(string-length(substring-before(substring($text,($len) div 2),' ')))"/>
+    <xsl:variable name="lenBefore" select="string-length(substring($text,$len div 2)) - $cutBefore"/>
+    <xsl:variable name="lenAfter" select="string-length(substring($text,$len div 2)) + $cutAfter"/>
     <xsl:variable name="diElement" select="//bpmndi:*[@bpmnElement=$id]"/>
     
     <!-- Set label x,y to bounds if we have and otherwise make an educated guess -->
@@ -1292,6 +1302,9 @@
           <xsl:value-of select="$diElement/bpmndi:BPMNLabel/dc:Bounds/@x"/>
         </xsl:when>
         <xsl:when test="contains(local-name(.),'callActivity') or contains(local-name(.),'subProcess') or contains(local-name(.),'task') or contains(local-name(.),'Task')">
+          <xsl:value-of select="$diElement/dc:Bounds/@x+$fontSize"/>
+        </xsl:when>
+        <xsl:when test="contains(local-name(.),'dataObjectReference')">
           <xsl:value-of select="$diElement/dc:Bounds/@x+$fontSize"/>
         </xsl:when>
         <xsl:when test="local-name($diElement)='BPMNEdge' and not(bpmndi:BPMNLabel/dc:Bounds)">
@@ -1308,6 +1321,9 @@
           <xsl:value-of select="$diElement/bpmndi:BPMNLabel/dc:Bounds/@y"/>
         </xsl:when>
         <xsl:when test="contains(local-name(.),'callActivity') or contains(local-name(.),'subProcess') or contains(local-name(.),'task') or contains(local-name(.),'Task')">
+          <xsl:value-of select="$diElement/dc:Bounds/@y+($diElement/dc:Bounds/@height div 2)"/>
+        </xsl:when>
+        <xsl:when test="contains(local-name(.),'dataObjectReference')">
           <xsl:value-of select="$diElement/dc:Bounds/@y+($diElement/dc:Bounds/@height div 2)"/>
         </xsl:when>
         <xsl:when test="local-name($diElement)='BPMNEdge' and not(bpmndi:BPMNLabel/dc:Bounds)">
@@ -1346,7 +1362,7 @@
       Strategy here is to first honour line breaks and otherwise try a crude split into 2 lines. 
       The latter covers many cases so is judged 'good enough' -->
     <xsl:choose>
-      <xsl:when test="not(contains(@name,'&#10;')) and $cutBefore!=0 and $cutAfter!=0 and number($diElement/dc:Bounds/@height) &gt;= (2.75*$fontSize)">
+      <xsl:when test="not(contains($text,'&#10;')) and $cutBefore!=0 and $cutAfter!=0 and number($diElement/dc:Bounds/@height) &gt;= (2.75*$fontSize)">
       <!-- xsl:when test="1=2"-->
         <xsl:element name="text">
           <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
@@ -1361,7 +1377,7 @@
           <xsl:attribute name="y">
             <xsl:value-of select="$labelY+$fontSize"/>
           </xsl:attribute>
-          <xsl:value-of select="substring(@name,0,($len div 2) + $cutAfter)"/>
+          <xsl:value-of select="substring($text,0,($len div 2) + $cutAfter)"/>
         </xsl:element>
         <xsl:element name="text">
           <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
@@ -1375,7 +1391,7 @@
           <xsl:attribute name="y">
             <xsl:value-of select="$labelY+(2.2*$fontSize)"/>
           </xsl:attribute>
-          <xsl:value-of select="substring(@name,($len div 2) + $cutAfter)"/>
+          <xsl:value-of select="substring($text,($len div 2) + $cutAfter)"/>
         </xsl:element>
       </xsl:when>
       <xsl:otherwise>
@@ -1386,7 +1402,7 @@
 		      <xsl:with-param name="id" select="$id"/>
 		      <xsl:with-param name="fill"><xsl:value-of select="$fill"/></xsl:with-param>
 		      <xsl:with-param name="text">
-		        <xsl:value-of select="@name"/>
+		        <xsl:value-of select="$text"/>
 		      </xsl:with-param>
 		      <xsl:with-param name="r" select="$r"/>
 		      <xsl:with-param name="x" select="$labelX"/>
