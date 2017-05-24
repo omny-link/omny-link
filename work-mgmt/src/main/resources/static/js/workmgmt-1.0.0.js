@@ -40,6 +40,7 @@ var ractive = new AuthenticatedRactive({
         if (ractive != undefined) ractive.resetPartial('userForm',partial);
         ractive.initControls();
 
+        // TODO Seems this doesn't work, race condition?
         if (ractive.get('current.processVariables.contactId') != undefined) {
           $.getJSON(ractive.get('current.processVariables.contactId'), function (data) {
             ractive.set('current.processVariables.contact',data);

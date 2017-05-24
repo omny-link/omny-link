@@ -2,6 +2,24 @@
   <h3>Data</h3>
   <form class="inline-form form" id="currentForm">
     <ul class="form edit-form" style="">
+      {{#current.processVariables['accountId']}}
+        <li class="form-group">
+          <label class="col-md-3 col-sm-3">{{#if tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/if}}: </label>
+          <a href="/accounts.html?q={{current.processVariables['accountId'].substring(current.processVariables['accountId'].lastIndexOf('/')+1)}}" target="_blank">Open <span class="glyphicon glyphicon-new-window"></span></a>
+        </li>
+      {{/}}
+      {{#current.processVariables['contactId']}}
+        <li class="form-group">
+          <label class="col-md-3 col-sm-3">{{#if tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/if}}: </label>
+          <a href="/contacts.html?q={{current.processVariables['contactId'].substring(current.processVariables['contactId'].lastIndexOf('/')+1)}}" target="_blank">Open <span class="glyphicon glyphicon-new-window"></span></a>
+        </li>
+      {{/}}
+      {{#current.processVariables['orderId']}}
+        <li class="form-group">
+          <label class="col-md-3 col-sm-3">{{#if tenant.strings.order}}{{tenant.strings.order}}{{else}}Order{{/if}}: </label>
+          <a href="/orders.html?q={{current.processVariables['orderId'].substring(current.processVariables['orderId'].lastIndexOf('/')+1)}}" target="_blank">Open <span class="glyphicon glyphicon-new-window"></span></a>
+        </li>
+      {{/}}
       {{#current.formProperties:i}}
         <li class="form-group">
           {{# renderAs(.) == 'enum' }} {{> enumCtrl }} {{/}}

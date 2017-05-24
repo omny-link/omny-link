@@ -73,7 +73,7 @@
           <xsl:apply-templates select="participant[@name=$processParticipantToExecute]"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:apply-templates select="participant"/>
+          <xsl:apply-templates select="semantic:participant|participant|semantic:messageFlow|messageFlow"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:copy>
@@ -102,18 +102,20 @@
   <xsl:template match="semantic:dataInput|dataInput|semantic:dataOutput|dataOutput" mode="formProperty">
     <xsl:variable name="name">
       <xsl:choose>
-        <xsl:when test="name"><xsl:value-of select="@name"/></xsl:when>
+        <xsl:when test="@name"><xsl:value-of select="@name"/></xsl:when>
         <xsl:when test="@itemSubjectRef and starts-with(@itemSubjectRef, 'itemDef')">
           <xsl:value-of select="substring-after(@itemSubjectRef,'itemDef')"/>
         </xsl:when>
         <xsl:when test="@itemSubjectRef">
           <xsl:value-of select="@itemSubjectRef"/>
         </xsl:when>
-        <xsl:otherwise></xsl:otherwise>
+        <xsl:otherwise>
+          <xsl:comment>No name found for data object with id <xsl:value-of select="@id"/></xsl:comment>
+        </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
     <xsl:element name="activiti:formProperty">
-      <xsl:attribute name="id"><xsl:value-of select="$name"/></xsl:attribute>
+      <xsl:attribute name="id"><xsl:value-of select="translate($name,' ','_')"/></xsl:attribute>
       <xsl:attribute name="name">
         <xsl:value-of select="translate(substring($name,1,1), $lcase, $ucase)" />
         <xsl:value-of select="substring($name,2)" />
@@ -122,19 +124,19 @@
       <xsl:attribute name="writeable">true</xsl:attribute>
       <!-- Some conventions to allow type to be set for simple XSD types -->
       <xsl:choose>
-        <xsl:when test="@itemSubjectRef='xsdBool'">
+        <xsl:when test="@itemSubjectRef='xsdBool' or @itemSubjectRef='xsd:boolean'">
           <xsl:attribute name="type">boolean</xsl:attribute>
         </xsl:when>
-        <xsl:when test="@itemSubjectRef='xsdDate'">
+        <xsl:when test="@itemSubjectRef='xsdDate' or @itemSubjectRef='xsd:date'">
           <xsl:attribute name="type">date</xsl:attribute>
         </xsl:when>
-        <xsl:when test="@itemSubjectRef='xsdDatetime'">
+        <xsl:when test="@itemSubjectRef='xsdDatetime' or @itemSubjectRef='xsd:datetime'">
           <xsl:attribute name="type">datetime</xsl:attribute>
         </xsl:when>
-        <xsl:when test="@itemSubjectRef='xsdInt'">
+        <xsl:when test="@itemSubjectRef='xsdInt' or @itemSubjectRef='xsd:int'">
           <xsl:attribute name="type">long</xsl:attribute>
         </xsl:when>
-        <xsl:when test="@itemSubjectRef='xsdLong'">
+        <xsl:when test="@itemSubjectRef='xsdLong' or @itemSubjectRef='xsd:long'">
           <xsl:attribute name="type">long</xsl:attribute>
         </xsl:when>
         <xsl:when test="@itemSubjectRef='xsdString'">
@@ -269,7 +271,7 @@
     </xsl:element>
   </xsl:template>-->
 
-  <!--
+  <!-- -->
   <xsl:template match="semantic:startEvent|startEvent">
     <xsl:copy>
       <xsl:if test="not(@activiti:initiator)">
@@ -280,7 +282,7 @@
       <xsl:apply-templates select="@*"/>
       <xsl:apply-templates/>
     </xsl:copy>
-  </xsl:template>-->
+  </xsl:template>
 
   <!--
     Convert all manual and unspecified tasks into user tasks.
@@ -522,13 +524,14 @@
         <xsl:comment>Creating extensionElements</xsl:comment>
         <xsl:copy>
           <xsl:apply-templates select="@*"/>
+          <xsl:apply-templates select="semantic:documentation|documentation"/>
           <xsl:element name="extensionElements">
             <xsl:apply-templates select="semantic:ioSpecification/semantic:dataInput" mode="formProperty"/>
             <xsl:apply-templates select="ioSpecification/dataInput" mode="formProperty"/>
             <xsl:apply-templates select="semantic:ioSpecification/semantic:dataOutput" mode="formProperty"/>
             <xsl:apply-templates select="ioSpecification/dataOutput" mode="formProperty"/>
           </xsl:element>
-          <xsl:apply-templates select="*"/>
+          <xsl:apply-templates select="*[not(local-name(.)='documentation')]"/>
         </xsl:copy>
       </xsl:otherwise>
     </xsl:choose>

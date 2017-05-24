@@ -208,15 +208,16 @@ public class DeploymentController {
 
                 return deployment;
             } catch (ActivitiException e) {
-                LOGGER.warn(String
-                        .format("Processes rejected for execution, continue as non-executable. Reason: %1$s",
-                                e.getMessage()));
+                LOGGER.warn("Processes rejected for execution, continue as non-executable. Reason: {}",
+                                e.getMessage());
+                if (e.getCause() != null) {
+                    LOGGER.warn("  cause reported: {}", e.getCause().getMessage());
+                }
                 handleIncompleteModel(tenantId, processes);
                 return null;
             } catch (Exception e) {
-                LOGGER.error(String
-                        .format("Unable to read file, attempt to continue as non-executable. Reason: %1$s",
-                                e.getMessage()));
+                LOGGER.error("Unable to read file, attempt to continue as non-executable. Reason: {}",
+                                e.getMessage(), e);
                 handleIncompleteModel(tenantId, processes);
                 return null;
             }
@@ -230,13 +231,8 @@ public class DeploymentController {
             Map<String, String> processes) throws UnsupportedEncodingException {
         HashMap<String, String> tweakedProcesses = new HashMap<String, String>();
         for (Entry<String, String> entry : processes.entrySet()) {
-            // workaround: if start <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-            // we'll get SystemId Unknown; Line #1; Column #1; Content is not allowed in prolog
-            String bpmn = entry.getValue();
-            if (bpmn.startsWith("<?xml")) {
-                bpmn = bpmn.substring(bpmn.indexOf("?>")+2);
-            }
-            bpmn = getPreProcessor().transform(entry.getValue());
+            String bpmn = fixContentInProlog(entry.getValue());
+            bpmn = getPreProcessor().transform(bpmn);
             if (LOGGER.isDebugEnabled() && verbose) {
                 LOGGER.debug("BPMN: " + bpmn);
             }
@@ -245,16 +241,22 @@ public class DeploymentController {
         return tweakedProcesses;
     }
 
+    private String fixContentInProlog(String xml) {
+        // workaround: if start <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        // we'll get SystemId Unknown; Line #1; Column #1; Content is not allowed in prolog
+        // Apparently this is an invisible character known as the Unicode byte order mark (<U+FEFF>)
+        String bpmn = xml.trim();
+        if (bpmn.startsWith("<?xml") || bpmn.substring(0, 100).contains("<?xml")) {
+            bpmn = bpmn.substring(bpmn.indexOf("?>")+2).trim();
+        }
+        return bpmn;
+    }
+
     private void runResourceCreator(
             Map<String, String> processes) throws UnsupportedEncodingException {
         for (Entry<String, String> entry : processes.entrySet()) {
-            // workaround: if start <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-            // we'll get SystemId Unknown; Line #1; Column #1; Content is not allowed in prolog
-            String bpmn = entry.getValue();
-            if (bpmn.startsWith("<?xml")) {
-                bpmn = bpmn.substring(bpmn.indexOf("?>")+2);
-            }
-            String[] resources = getResourceExtractor().transform(entry.getValue()).split(",");
+            String bpmn = fixContentInProlog(entry.getValue());
+            String[] resources = getResourceExtractor().transform(bpmn).split(",");
             for (String resource : resources) {
                 Group group = processEngine.getIdentityService().newGroup(resource);
                 group.setName(resource);
@@ -272,7 +274,7 @@ public class DeploymentController {
         for (Entry<String, String> entry : processes.entrySet()) {
             ProcessModel model = new ProcessModel();
             model.setName(entry.getKey());
-            model.setBpmnString(entry.getValue());
+            model.setBpmnString(fixContentInProlog(entry.getValue()));
             // First id="xyz" is our id
             int start = entry.getValue().indexOf("id=") + 4;
             int end = entry.getValue().indexOf("\"", start);

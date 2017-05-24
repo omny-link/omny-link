@@ -26,8 +26,10 @@ public class FieldInjectionListener implements ExecutionListener {
     public void notify(DelegateExecution execution) throws Exception {
         if (execution.getVariable(varName.getValue(execution).toString()) == null) {
             String usr = getUserInfoHelper().lookupBotName(execution);
-            String val = getUserInfoHelper().lookup(execution, usr,
-                    dynamicValue);
+            Object val = dynamicValue.getValue(execution);
+            if (val instanceof String && ((String) val).length() > 0 && ((String) val).contains("userInfo")) {
+                val = getUserInfoHelper().lookup(execution, usr, dynamicValue);
+            }
             execution.setVariable(varName.getValue(execution).toString(), val);
         }
     }

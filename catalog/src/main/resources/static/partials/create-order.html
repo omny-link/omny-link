@@ -1,7 +1,7 @@
   <ul class="form edit-form">
     <li class="form-group">
       <label class="col-md-2 col-sm-2">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}:</label>
-      <input class="form-control" id="curOrderContact" value="{{instanceToStart.processVariables.order.contactId}}">
+      <input autocomplete="off" class="form-control" id="curOrderContact" disabled readonly value="{{formatContactId(instanceToStart.processVariables.order.contactId)}}">
       <p class="col-md-offset-2 col-sm-offset-2 help-block field-error">{{#tenant.strings.contactHint}}{{tenant.strings.contactHint}}{{else}}&nbsp;{{/}}</p>
     </li>
     <li class="form-group">
