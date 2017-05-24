@@ -3,7 +3,7 @@ function fetchPdf() {
   console.info('fetchPdf');
 
   var tmp = JSON.parse(JSON.stringify(ractive.get('instanceToStart')));
-  tmp.processDefinitionId = 'MergeMemoTemplate';
+  tmp.processDefinitionKey = 'MergeMemoTemplate';
   if (tmp.processVariables.memoId == undefined || tmp.processVariables.memoId.length == 0) {
     ractive.showMessage('Please supply all the required fields');
     showMemoSpec();
@@ -16,7 +16,7 @@ function fetchPdf() {
 }
 function fetchPreview(callback) {
   var tmp = JSON.parse(JSON.stringify(ractive.get('instanceToStart')));
-  tmp.processDefinitionId = 'MergeMemoTemplate';
+  tmp.processDefinitionKey = 'MergeMemoTemplate';
   $.ajax({
     url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
     type: 'POST',
@@ -62,7 +62,7 @@ function showMemoPreview() {
   $('#pickMemo section').toggle();
   
   var tmp = JSON.parse(JSON.stringify(ractive.get('instanceToStart')));
-  tmp.processDefinitionId = 'MergeMemoTemplate';
+  tmp.processDefinitionKey = 'MergeMemoTemplate';
   validateOrder();
   if (!document.forms['customActionForm'].checkValidity()) {
     ractive.showMessage('Please supply all the required fields');

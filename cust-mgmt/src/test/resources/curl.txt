@@ -16,6 +16,9 @@ curl -X PUT -H 'Content-Type:application/json' -u tstephen:tstephen -d '{"id" : 
 # Selective update contact 
 curl -X PUT -H 'Content-Type:application/json' -u tstephen:tstephen -d '{"customFields":{"price":200,"pricePriority": 300}}' http://localhost:8082/omny/contacts/3955
 
+# Set contact's stage
+curl -X POSTT -H 'Content-Type:application/json' -u tstephen:tstephen -d '' http://localhost:8083/flexspace/contacts/19242/stage/Cold
+
 # GET contacts for tenant
 curl -X GET -H 'Content-Type:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/contacts/
 curl --max-time 10000 -w "@omny-link-server/src/test/resources/curl-format.txt" \

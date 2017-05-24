@@ -79,6 +79,8 @@ if (execution.getVariable('contactShortId')==undefined) execution.setVariable('c
 // Prepare 'short' id for reading order
 if (execution.getVariable('orderId')!=undefined && execution.getVariable('orderId').indexOf('/')!=-1) {
   execution.setVariable('orderShortId',execution.getVariable('orderId').substring(execution.getVariable('orderId').lastIndexOf('/')+1));
+} else {
+  execution.setVariable('orderShortId',execution.getVariable('orderId'));
 }
 //System.out.println("We're done");
 ]]></script>
