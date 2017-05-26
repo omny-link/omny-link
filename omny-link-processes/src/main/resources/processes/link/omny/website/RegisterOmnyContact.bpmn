@@ -50,6 +50,7 @@ var contact = execution.getVariable('contact');
 var user = execution.getEngineServices().getIdentityService().newUser(userId);
 user.setFirstName(contact.getString('firstName'));
 user.setLastName(contact.getString('lastName'));
+user.setEmail(userId);
 user.setPassword(org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(12));
 execution.getEngineServices().getIdentityService().saveUser(user);
 
@@ -73,6 +74,8 @@ if (contact.getString('roles') != undefined) {
   }
 }
 execution.getEngineServices().getIdentityService().setUserInfo(userId, 'tenant', contact.getString('tenantId'));
+execution.getEngineServices().getIdentityService().setUserInfo(userId, 'comms_preference', 'Email only');
+execution.getEngineServices().getIdentityService().setUserInfo(userId, 'phone', contact.getString('phone1'));
 
 execution.setVariable('pwd',user.getPassword());
 execution.setVariable('Location',execution.getVariable('contactId'));]]></script>
