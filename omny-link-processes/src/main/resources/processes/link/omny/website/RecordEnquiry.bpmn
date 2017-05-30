@@ -56,9 +56,12 @@
         <activiti:in sourceExpression="New Enquiry" target="type"/>
         <activiti:in sourceExpression="NotifyEnquiry" target="memoName"/>
         <activiti:in source="addressee" target="addressee"/>
+        <!-- TODO Only used for Slack alerts, should convert to have them read memo too -->
         <activiti:in sourceExpression="Please review here: &lt;https://api.omny.link/contacts.html|Click to open contact manager&gt;" target="message"/>
         <activiti:in sourceExpression="${omny_enquiry.getString('tenantId')}" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
+        <activiti:in source="accountId" target="accountId"/>
+        <activiti:in source="orderId" target="orderId"/>
         <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_18</incoming>
