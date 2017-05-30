@@ -68,7 +68,7 @@
     <dependency>
       <groupId>io.onedecision</groupId>
       <artifactId>onedecision-engine</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
+      <version>${onedecision.version}</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/batik/batik-transcoder -->
     <dependency>

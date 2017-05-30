@@ -116,11 +116,11 @@
       <artifactId>mk</artifactId>
       <version>0.2.0</version>
     </dependency>-->
-    <dependency>
+    <!-- dependency>
       <groupId>com.firmgains.decisions</groupId>
       <artifactId>firmgains-decisions</artifactId>
       <version>0.9.0-SNAPSHOT</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>com.firmgains</groupId>
       <artifactId>firmgains-omny</artifactId>
@@ -166,11 +166,11 @@
       <artifactId>circom-omny</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
+    <!-- dependency>
       <groupId>uk.co.performancetelecom</groupId>
       <artifactId>performance-telecom-omny</artifactId>
       <version>1.0-SNAPSHOT</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>uk.co.discovernorthsomerset</groupId>
       <artifactId>nsomerset-omny</artifactId>
