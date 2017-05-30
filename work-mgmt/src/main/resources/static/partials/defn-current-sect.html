@@ -54,67 +54,70 @@
     {{# current.diagrams:i}}
       <section id="{{current.diagrams[i].id}}Sect">
         <h3>
+          <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
           <span>Diagram: {{current.diagrams[i].name}}</span>
           <a class="glyphicon glyphicon-picture pull-right" href="{{context}}/{{tenant.id}}/process-definitions/{{current.id}}/{{current.diagrams[i].id}}.png" target="_blank" title="Image of process diagram '{{current.diagrams[i].name}}'"></a>
           <!--a class="glyphicon glyphicon-zoom-in pull-right" title="Zoom in diagram '{{current.diagrams[i].name}}'"></a>
           <a class="glyphicon glyphicon-zoom-out pull-right" title="Zoom out process diagram '{{current.diagrams[i].name}}'"></a-->
         </h3>
-        <div class="bpmnDiagram">{{{current.diagrams[i].image}}}</div>
-        {{#if selectedBpmnObject}}
-          <h3>
-            <span>Properties</span>
-          </h3>
-          <table id="propertiesTable" class="table">
-            <thead>
-              <tr>
-                {{#if hasRole('admin') && showDetails}}<th class="a-secondary-label control-label">Id</th>{{/if}}
-                <th class="a-secondary-label control-label">Name</th>
-                <th class="a-secondary-label control-label">Type</th>
-                <th class="a-secondary-label control-label">{{selectedBpmnObject.element.localName.toLabel()}} Definition</th>
-                <!--th>Actions</th-->
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                {{#if hasRole('admin') && showDetails}}<td class="col-md-1">{{selectedBpmnObject.id}}</td>{{/if}}
-                <td class="col-md-1">{{#selectedBpmnObject.name}}{{selectedBpmnObject.name}}{{else}}n/a{{/}}</td>
-                <td class="col-md-1">{{selectedBpmnObject.type.toLabel()}}</td>
-                <td class="col-md-6">
-                  {{#if selectedBpmnObject.element.localName == 'boundaryEvent' && selectedBpmnObject.element.querySelectorAll('timerEventDefinition').length>0}}
-                    {{#selectedBpmnObject.timerCycle}}<label>Timer Cycle: </label>{{selectedBpmnObject.timerCycle}}{{/}}
-                    {{#selectedBpmnObject.timerDate}}<label>Timer Date: </label>{{selectedBpmnObject.timerDate}}{{/}}
-                    {{#selectedBpmnObject.timerDuration}}<label>Timer Duration: </label>{{selectedBpmnObject.timerDuration}}{{/}}
-                  {{elseif selectedBpmnObject.element.localName == 'callActivity'}}
-                    <label>Sub-Process: </label> {{selectedBpmnObject.element.getAttribute('calledElement')}}
-                  {{elseif selectedBpmnObject.element.localName == 'dataStoreReference'}}
-                    <label>Data Store: </label> {{current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('name')}}<br/>
-                    <label>Capacity: </label>
-                      {{#if current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('isUnlimited') && current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('isUnlimited')=='true'}}
-                        unlimited
-                      {{else}}
-                        {{current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('capacity')}}
-                      {{/if}}
-                  {{elseif selectedBpmnObject.element.localName.indexOf('Event')!=-1 && selectedBpmnObject.element.querySelectorAll('signalEventDefinition').length>0}}
-                    <label>Signal: </label>{{current.bpmn.querySelectorAll('signal[id="'+selectedBpmnObject.element.querySelectorAll('signalEventDefinition')[0].getAttribute('signalRef')+'"]')[0].getAttribute('name')}}<br/>
-                  {{elseif selectedBpmnObject.element.localName == 'scriptTask'}}
-                    <pre>{{selectedBpmnObject.script}}</pre>
-                  {{elseif selectedBpmnObject.element.localName == 'sequenceFlow' && selectedBpmnObject.element.querySelectorAll('conditionExpression').length>0}}
-                    <pre>{{selectedBpmnObject.condition}}</pre>
-                  {{elseif selectedBpmnObject.element.localName == 'serviceTask'}}
-                    {{selectedBpmnObject.serviceType}}<br/>{{{selectedBpmnObject.extensionDetails}}}
-                  {{elseif (selectedBpmnObject.element.localName == 'userTask' || selectedBpmnObject.element.localName == 'manualTask')}}
-                    {{#selectedBpmnObject.element.getAttribute('activiti:assignee')!=undefined}}<label>Assign to: </label>{{selectedBpmnObject.element.getAttribute('activiti:assignee')}}<br/>{{/}}
-                    {{#selectedBpmnObject.element.getAttribute('activiti:candidateUsers')!=undefined}}<label>Offer to user: </label>{{selectedBpmnObject.element.getAttribute('activiti:candidateUsers')}}<br/>{{/}}
-                    {{#selectedBpmnObject.element.getAttribute('activiti:candidateGroups')!=undefined}}<label>Offer to group: </label>{{selectedBpmnObject.element.getAttribute('activiti:candidateGroups')}}<br/>{{/}}
-                    {{#selectedBpmnObject.element.querySelectorAll('resourceRef').length>0}}<label>Offer to: </label>{{current.bpmn.querySelectorAll('resource[id="'+selectedBpmnObject.element.querySelectorAll('resourceRef')[0].textContent+'"]')[0].getAttribute('name')}}<br/>{{/}}
-                    {{#selectedBpmnObject.element.querySelectorAll('formalExpression').length>0}}<label>Offer to: </label>{{selectedBpmnObject.element.querySelectorAll('formalExpression')[0].textContent}}<br/>{{/}}
-                  {{/if}}
-                </td>
-                <!--td>&nbsp;</td-->
-              </tr>
-            </tbody>
-          </table>
-        {{/if}}
+        <div style="display:none">
+          <div class="bpmnDiagram">{{{current.diagrams[i].image}}}</div>
+          {{#if selectedBpmnObject}}
+            <h4>
+              <span>Properties</span>
+            </h4>
+            <table id="propertiesTable" class="table">
+              <thead>
+                <tr>
+                  {{#if hasRole('admin') && showDetails}}<th class="a-secondary-label control-label">Id</th>{{/if}}
+                  <th class="a-secondary-label control-label">Name</th>
+                  <th class="a-secondary-label control-label">Type</th>
+                  <th class="a-secondary-label control-label">{{selectedBpmnObject.element.localName.toLabel()}} Definition</th>
+                  <!--th>Actions</th-->
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {{#if hasRole('admin') && showDetails}}<td class="col-md-1">{{selectedBpmnObject.id}}</td>{{/if}}
+                  <td class="col-md-3">{{#selectedBpmnObject.name}}{{selectedBpmnObject.name}}{{else}}n/a{{/}}</td>
+                  <td class="col-md-1">{{selectedBpmnObject.type.toLabel()}}</td>
+                  <td class="col-md-6">
+                    {{#if selectedBpmnObject.element.localName == 'boundaryEvent' && selectedBpmnObject.element.querySelectorAll('timerEventDefinition').length>0}}
+                      {{#selectedBpmnObject.timerCycle}}<label>Timer Cycle: </label>{{selectedBpmnObject.timerCycle}}{{/}}
+                      {{#selectedBpmnObject.timerDate}}<label>Timer Date: </label>{{selectedBpmnObject.timerDate}}{{/}}
+                      {{#selectedBpmnObject.timerDuration}}<label>Timer Duration: </label>{{selectedBpmnObject.timerDuration}}{{/}}
+                    {{elseif selectedBpmnObject.element.localName == 'callActivity'}}
+                      <label>Sub-Process: </label> {{selectedBpmnObject.element.getAttribute('calledElement')}}
+                    {{elseif selectedBpmnObject.element.localName == 'dataStoreReference'}}
+                      <label>Data Store: </label> {{current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('name')}}<br/>
+                      <label>Capacity: </label>
+                        {{#if current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('isUnlimited') && current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('isUnlimited')=='true'}}
+                          unlimited
+                        {{else}}
+                          {{current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('capacity')}}
+                        {{/if}}
+                    {{elseif selectedBpmnObject.element.localName.indexOf('Event')!=-1 && selectedBpmnObject.element.querySelectorAll('signalEventDefinition').length>0}}
+                      <label>Signal: </label>{{current.bpmn.querySelectorAll('signal[id="'+selectedBpmnObject.element.querySelectorAll('signalEventDefinition')[0].getAttribute('signalRef')+'"]')[0].getAttribute('name')}}<br/>
+                    {{elseif selectedBpmnObject.element.localName == 'scriptTask'}}
+                      <pre>{{selectedBpmnObject.script}}</pre>
+                    {{elseif selectedBpmnObject.element.localName == 'sequenceFlow' && selectedBpmnObject.element.querySelectorAll('conditionExpression').length>0}}
+                      <pre>{{selectedBpmnObject.condition}}</pre>
+                    {{elseif selectedBpmnObject.element.localName == 'serviceTask'}}
+                      {{selectedBpmnObject.serviceType}}<br/>{{{selectedBpmnObject.extensionDetails}}}
+                    {{elseif (selectedBpmnObject.element.localName == 'userTask' || selectedBpmnObject.element.localName == 'manualTask')}}
+                      {{#selectedBpmnObject.element.getAttribute('activiti:assignee')!=undefined}}<label>Assign to: </label>{{selectedBpmnObject.element.getAttribute('activiti:assignee')}}<br/>{{/}}
+                      {{#selectedBpmnObject.element.getAttribute('activiti:candidateUsers')!=undefined}}<label>Offer to user: </label>{{selectedBpmnObject.element.getAttribute('activiti:candidateUsers')}}<br/>{{/}}
+                      {{#selectedBpmnObject.element.getAttribute('activiti:candidateGroups')!=undefined}}<label>Offer to group: </label>{{selectedBpmnObject.element.getAttribute('activiti:candidateGroups')}}<br/>{{/}}
+                      {{#selectedBpmnObject.element.querySelectorAll('resourceRef').length>0}}<label>Offer to: </label>{{current.bpmn.querySelectorAll('resource[id="'+selectedBpmnObject.element.querySelectorAll('resourceRef')[0].textContent+'"]')[0].getAttribute('name')}}<br/>{{/}}
+                      {{#selectedBpmnObject.element.querySelectorAll('formalExpression').length>0}}<label>Offer to: </label>{{selectedBpmnObject.element.querySelectorAll('formalExpression')[0].textContent}}<br/>{{/}}
+                    {{/if}}
+                  </td>
+                  <!--td>&nbsp;</td-->
+                </tr>
+              </tbody>
+            </table>
+          {{/if}}
+        </div>
       </section>
     {{/}}
   {{#current.deploymentId}}
