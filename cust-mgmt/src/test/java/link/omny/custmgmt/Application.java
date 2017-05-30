@@ -1,9 +1,7 @@
 package link.omny.custmgmt;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,7 +17,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-
+@EnableAutoConfiguration
 @Configuration
 @Import({ CustMgmtConfig.class })
 @ComponentScan(basePackages = { "link.omny.custmgmt", "io.onedecision.engine" })
@@ -41,12 +39,6 @@ public class Application extends WebMvcConfigurerAdapter {
     @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
     protected static class ApplicationSecurity extends
             WebSecurityConfigurerAdapter {
-
-        @Autowired
-        private DataSource dataSource;
-
-        @Autowired
-        private SecurityProperties security;
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
