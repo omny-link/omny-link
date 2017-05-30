@@ -2,15 +2,9 @@ package link.omny.catalog;
 
 import javax.annotation.PostConstruct;
 
-import link.omny.catalog.model.StockCategory;
-import link.omny.catalog.model.StockItem;
-import link.omny.catalog.web.GeoLocationService;
-import link.omny.catalog.web.StockCategoryController.ShortStockCategoryResource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,8 +17,12 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import link.omny.catalog.model.StockCategory;
+import link.omny.catalog.model.StockItem;
+import link.omny.catalog.web.GeoLocationService;
+import link.omny.catalog.web.StockCategoryController.ShortStockCategoryResource;
+
 @Configuration
-@EnableAutoConfiguration
 @ComponentScan(basePackages = { "link.omny.catalog" })
 @EntityScan({ "link.omny.catalog.model" })
 @EnableJpaRepositories({ "link.omny.catalog.repositories" })

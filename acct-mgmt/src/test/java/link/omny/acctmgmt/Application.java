@@ -1,15 +1,17 @@
 package link.omny.acctmgmt;
 
-import io.onedecision.engine.OneDecisionConfig;
-import link.omny.custmgmt.CustMgmtConfig;
-
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import io.onedecision.engine.OneDecisionConfig;
+import link.omny.custmgmt.CustMgmtConfig;
+
+@EnableAutoConfiguration
 @Configuration
 @ComponentScan
 @Import({ AcctMgmtConfig.class, CustMgmtConfig.class, OneDecisionConfig.class })

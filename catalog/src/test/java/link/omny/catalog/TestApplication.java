@@ -1,11 +1,7 @@
 package link.omny.catalog;
 
-import javax.sql.DataSource;
-
-import link.omny.catalog.CatalogConfig;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,7 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-
+@EnableAutoConfiguration
 @Configuration
 @Import({ CatalogConfig.class })
 @ComponentScan(basePackages = { "link.omny.catalog" })
@@ -40,12 +36,6 @@ public class TestApplication extends WebMvcConfigurerAdapter {
     @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
     protected static class ApplicationSecurity extends
             WebSecurityConfigurerAdapter {
-
-        @Autowired
-        private DataSource dataSource;
-
-        @Autowired
-        private SecurityProperties security;
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {

@@ -1,10 +1,8 @@
 package com.knowprocess.bpm;
 
-import javax.persistence.EntityManagerFactory;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -16,12 +14,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import com.knowprocess.bpm.api.ActivitiApplicationSecurity;
 import com.knowprocess.bpm.impl.JsonManager;
 
+@EnableAutoConfiguration
 @Configuration
 @Import({ BpmConfiguration.class })
 public class Application extends WebMvcConfigurerAdapter {
-
-    @Autowired
-    private EntityManagerFactory entityManagerFactory;
 
     @Bean
     public JsonManager jsonManager() {
