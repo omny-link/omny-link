@@ -27,7 +27,6 @@ import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +43,6 @@ import com.knowprocess.bpm.impl.TaskAllocationMapper;
 @Configuration
 @ComponentScan(basePackages = { "com.knowprocess.bpm",
         "com.knowprocess.decisions", "link.omny.acctmgmt" })
-@EnableAutoConfiguration
 @EntityScan({ "com.knowprocess.bpm", "link.omny.acctmgmt.model" })
 @EnableJpaRepositories({ "com.knowprocess.decisions.repositories",
         "com.knowprocess.bpm.repositories", "link.omny.acctmgmt.repositories" })
