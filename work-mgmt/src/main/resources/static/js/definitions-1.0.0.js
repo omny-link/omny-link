@@ -484,15 +484,44 @@ var ractive = new AuthenticatedRactive({
       ractive.set('selectedBpmnObject.serviceType', 'XSLT');
       break;
     }
-    var fields = ractive.get('selectedBpmnObject.element').querySelectorAll('field');
+    // for service tasks and user tasks
+    var fields = ractive.get('selectedBpmnObject.element').querySelectorAll('field, formProperty');
     var extDetails = '';
     for (idx in fields) {
       if (fields[idx].attributes!=undefined) {
-        extDetails += '&nbsp;&nbsp;<em>'+fields[idx].attributes.getNamedItem('name').value.toLabel()+':</em>';
+        extDetails += '&nbsp;&nbsp;<em>'+fields[idx].attributes.getNamedItem('name').value.toLabel()+'</em>';
+        // service tasks only
         if (fields[idx].attributes.getNamedItem('expression') != undefined) {
-          extDetails += fields[idx].attributes.getNamedItem('expression').value;
-        } else {
-          extDetails += fields[idx].textContent.trim();
+          extDetails += '<span>: '+fields[idx].attributes.getNamedItem('expression').value+'</span>';
+        } else if (fields[idx].textContent != undefined && fields[idx].textContent.trim().length > 0){
+          extDetails += '<span>: '+fields[idx].textContent.trim()+'</span>';
+        }
+        extDetails += '<br/>';
+      }
+    }
+    // for call activities
+    var intoActivity = ractive.get('selectedBpmnObject.element').querySelectorAll('in');
+    if (intoActivity.length > 0) extDetails += '<br/><label>To activity</label><br/>';
+    for (idx in intoActivity) {
+      if (intoActivity[idx].attributes!=undefined) {
+        extDetails += '&nbsp;&nbsp;<em>'+intoActivity[idx].attributes.getNamedItem('target').value.toLabel()+'</em>';
+        if (intoActivity[idx].attributes.getNamedItem('source') != undefined && intoActivity[idx].attributes.getNamedItem('target').value != intoActivity[idx].attributes.getNamedItem('source').value) {
+          extDetails += '<em>: '+intoActivity[idx].attributes.getNamedItem('source').value.toLabel()+'</em>';
+        } else if (intoActivity[idx].attributes.getNamedItem('sourceExpression') != undefined) {
+          extDetails += '<span>: '+intoActivity[idx].attributes.getNamedItem('sourceExpression').value.toLabel()+'</span>';
+        }
+        extDetails += '<br/>';
+      }
+    }
+    var outOfActivity = ractive.get('selectedBpmnObject.element').querySelectorAll('out');
+    if (outOfActivity.length > 0) extDetails += '<br/><label>From activity</label><br/>';
+    for (idx in outOfActivity) {
+      if (outOfActivity[idx].attributes!=undefined) {
+        extDetails += '&nbsp;&nbsp;<em>'+outOfActivity[idx].attributes.getNamedItem('target').value.toLabel()+'</em>';
+        if (outOfActivity[idx].attributes.getNamedItem('source') != undefined && outOfActivity[idx].attributes.getNamedItem('target').value != outOfActivity[idx].attributes.getNamedItem('source').value) {
+          extDetails += '<em>: '+outOfActivity[idx].attributes.getNamedItem('source').value.toLabel()+'</em>';
+        } else if (outOfActivity[idx].attributes.getNamedItem('sourceExpression') != undefined) {
+          extDetails += '<span>: '+outOfActivity[idx].attributes.getNamedItem('sourceExpression').value.toLabel()+'</span>';
         }
         extDetails += '<br/>';
       }
