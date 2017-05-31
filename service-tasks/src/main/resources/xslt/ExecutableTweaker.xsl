@@ -19,6 +19,7 @@
   - Suppress incomplete start events (e.g. signalEvent without signalRef)
   - Suppress message/@itemRef (to avoid Activiti validation: [Validation set: 'activiti-executable-process' | Problem: 'activiti-message-invalid-item-ref'] : Item reference is invalid: not found - [Extra info : ] ( line: 6, column: 104))
   - When dataInput/dataOutput has no name infer one from itemSubjectRef for activiti:formProperty
+  - Add form property extensions for Data Inputs and Outputs just as done already for Data Objects
 -->
 <xsl:stylesheet version="1.0"
   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
@@ -271,19 +272,6 @@
     </xsl:element>
   </xsl:template>-->
 
-  <!-- -->
-  <xsl:template match="semantic:startEvent|startEvent">
-    <xsl:copy>
-      <xsl:if test="not(@activiti:initiator)">
-        <xsl:attribute name="activiti:initiator">
-          <xsl:text>initiator</xsl:text>
-        </xsl:attribute>
-      </xsl:if>
-      <xsl:apply-templates select="@*"/>
-      <xsl:apply-templates/>
-    </xsl:copy>
-  </xsl:template>
-
   <!--
     Convert all manual and unspecified tasks into user tasks.
   -->
@@ -312,11 +300,19 @@
           </xsl:attribute>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:attribute name="activiti:assignee">${initiator}</xsl:attribute>
+          <xsl:choose>
+            <xsl:when test="semantic:performer|performer">
+              <xsl:variable name="resourceRef" select="semantic:performer/semantic:resourceRef/text()"/>
+              <xsl:attribute name="activiti:assignee"><xsl:value-of select="//semantic:resource[@id=$resourceRef]/@name"/></xsl:attribute>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:attribute name="activiti:assignee">${initiator}</xsl:attribute>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:otherwise>
       </xsl:choose>
       <xsl:apply-templates select="@*"/>
-      <xsl:apply-templates/>
+      <xsl:apply-templates select="*"/>
     </xsl:element>
   </xsl:template>
 
@@ -478,13 +474,18 @@
     Suppress incomplete start events
     Arose in 2016 Reston demo
   -->
-  <xsl:template match="semantic:startEvent">
+  <xsl:template match="semantic:startEvent|startEvent">
     <xsl:choose>
       <xsl:when test="semantic:signalEventDefinition[not(@signalRef)]">
         <xsl:comment>Suppress incomplete signal start event (without signal reference)</xsl:comment>
       </xsl:when>
       <xsl:otherwise>
         <xsl:copy>
+	        <xsl:if test="not(@activiti:initiator)">
+		        <xsl:attribute name="activiti:initiator" xmlns="http://activiti.org/bpmn">
+		          <xsl:text>initiator</xsl:text>
+		        </xsl:attribute>
+		      </xsl:if>
           <xsl:apply-templates select="@*|*"/>
         </xsl:copy>
       </xsl:otherwise>
@@ -513,6 +514,8 @@
     See if there are more extensions we can infer from standards-based elements
   -->
   <xsl:template match="semantic:userTask|userTask">
+    <xsl:variable name="currentProcessId" select="ancestor::semantic:process/@id|ancestor::process/@id"/>
+
     <xsl:comment>user task <xsl:value-of select="@id"/> has extensions: <xsl:choose><xsl:when test="semantic:extensionElements|extensionElements">Yes</xsl:when><xsl:otherwise>No</xsl:otherwise></xsl:choose></xsl:comment>
     <xsl:choose>
       <xsl:when test="semantic:extensionElements|extensionElements">
@@ -526,6 +529,13 @@
           <xsl:apply-templates select="@*"/>
           <xsl:apply-templates select="semantic:documentation|documentation"/>
           <xsl:element name="extensionElements">
+            <!-- Process level specific -->
+            <xsl:apply-templates select="//semantic:process[@id=$currentProcessId]/semantic:ioSpecification/semantic:dataInput" mode="formProperty"/>
+            <xsl:apply-templates select="//process[@id=$currentProcessId]/ioSpecification/dataInput" mode="formProperty"/>
+            <xsl:apply-templates select="//semantic:process[@id=$currentProcessId]/semantic:ioSpecification/semantic:dataOutput" mode="formProperty"/>
+            <xsl:apply-templates select="//process[@id=$currentProcessId]/ioSpecification/dataOutput" mode="formProperty"/>
+
+            <!-- Task specific -->
             <xsl:apply-templates select="semantic:ioSpecification/semantic:dataInput" mode="formProperty"/>
             <xsl:apply-templates select="ioSpecification/dataInput" mode="formProperty"/>
             <xsl:apply-templates select="semantic:ioSpecification/semantic:dataOutput" mode="formProperty"/>
@@ -538,9 +548,16 @@
   </xsl:template>
 
   <xsl:template match="semantic:userTask/semantic:extensionElements|userTask/extensionElements">
-    <xsl:comment>Extending extensionElements</xsl:comment>
+    <xsl:variable name="currentProcessId" select="ancestor::semantic:process/@id|ancestor::process/@id"/>
+    <xsl:comment>Extending extensionElements of task '<xsl:value-of select="../@id"/>' in process '<xsl:value-of select="$currentProcessId"/>'</xsl:comment>
     <xsl:copy>
       <xsl:apply-templates select="@*|*"/>
+      <!-- Process level specific -->
+      <xsl:apply-templates select="//semantic:process[@id=$currentProcessId]/semantic:ioSpecification/semantic:dataInput" mode="formProperty"/>
+      <xsl:apply-templates select="//semantic:process[@id=$currentProcessId]/ioSpecification/dataInput" mode="formProperty"/>
+      <xsl:apply-templates select="//semantic:process[@id=$currentProcessId]/semantic:ioSpecification/semantic:dataOutput" mode="formProperty"/>
+      <xsl:apply-templates select="//semantic:process[@id=$currentProcessId]/ioSpecification/dataOutput" mode="formProperty"/>
+
       <xsl:apply-templates select="../semantic:ioSpecification/semantic:dataInput" mode="formProperty"/>
       <xsl:apply-templates select="../ioSpecification/dataInput" mode="formProperty"/>
       <xsl:apply-templates select="../semantic:ioSpecification/semantic:dataOutput" mode="formProperty"/>

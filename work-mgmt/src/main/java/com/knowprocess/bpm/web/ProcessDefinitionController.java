@@ -332,7 +332,7 @@ public class ProcessDefinitionController {
     }
     
     protected TransformTask getProcessRenderer() {
-//        if (renderer == null) {
+        if (renderer == null) {
             renderer = new TransformTask();
             try {
                 renderer.setXsltResources(RENDERER_RESOURCES);
@@ -341,7 +341,7 @@ public class ProcessDefinitionController {
                         "Unable to locate renderer pre-processors: %1$s",
                         RENDERER_RESOURCES), e);
             }
-//        }
+        }
         return renderer;
     }
 
