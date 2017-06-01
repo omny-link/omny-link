@@ -52,7 +52,9 @@ import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
 import link.omny.catalog.model.api.ShortStockCategory;
 import link.omny.catalog.model.api.ShortStockItem;
+import link.omny.catalog.repositories.MediaResourceRepository;
 import link.omny.catalog.repositories.StockCategoryRepository;
+import link.omny.catalog.views.MediaResourceViews;
 import link.omny.catalog.views.StockCategoryViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import lombok.Data;
@@ -79,6 +81,9 @@ public class StockCategoryController {
 
     @Autowired
     private StockCategoryRepository stockCategoryRepo;
+
+    @Autowired
+    private MediaResourceRepository mediaResourceRepo;
 
     @Autowired
     private GeoLocationService geo;
@@ -154,6 +159,21 @@ public class StockCategoryController {
     }
 
     /**
+     * @return List of media resource for the specified stock category.
+     */
+    @JsonView(MediaResourceViews.Summary.class)
+    @RequestMapping(value = "/{stockCategoryId}/images", method = RequestMethod.GET)
+    public @ResponseBody List<MediaResource> listImages(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockCategoryId") Long stockCategoryId) {
+         List<MediaResource> resources = mediaResourceRepo.findByStockCategoryId(stockCategoryId);
+         for (MediaResource resource : resources) {
+             addLinks(tenantId, stockCategoryId, resource);
+         }
+         return resources;
+    }
+
+    /**
      * Return just the matching stock category.
      * 
      * @return stock category for that tenant with the matching id.
@@ -168,7 +188,8 @@ public class StockCategoryController {
             throws BusinessEntityNotFoundException {
         LOGGER.debug(String.format("Find stock category for id %1$s", id));
 
-        return stockCategoryRepo.findOne(Long.parseLong(id));
+        StockCategory category = stockCategoryRepo.findOne(Long.parseLong(id));
+        return category;
     }
     
     @RequestMapping(value = "/findByName", method = RequestMethod.GET)
@@ -375,6 +396,33 @@ public class StockCategoryController {
     }
 
     /**
+     * Add a media resource to the specified category.
+     */
+    @RequestMapping(value = "/{stockCategoryId}/images", method = RequestMethod.POST)
+    public @ResponseBody void addImage(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockCategoryId") Long stockCategoryId,
+            @RequestParam("author") String author,
+            @RequestParam("url") String url) {
+        addMediaResource(tenantId, stockCategoryId, new MediaResource(author, url));
+    }
+
+    /**
+     * Add a media resource to the specified stock category.
+     */
+    public @ResponseBody void addMediaResource(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockCategoryId") Long stockCategoryId,
+            @RequestBody MediaResource mediaResource) {
+        StockCategory stockCategory = stockCategoryRepo.findOne(stockCategoryId);
+        mediaResource.setStockCategory(stockCategory);
+        mediaResourceRepo.save(mediaResource);
+        // necessary to force a save
+        stockCategory.setLastUpdated(new Date());
+        stockCategoryRepo.save(stockCategory);
+    }
+
+    /**
      * Update an existing stockCategory.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -397,6 +445,22 @@ public class StockCategoryController {
     }
 
     /**
+     * Update a media resource to the specified category.
+     */
+    @RequestMapping(value = "/{stockCategoryId}/images/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    public @ResponseBody void updateImage(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockCategoryId") Long stockCategoryId,
+            @PathVariable("id") Long resourceId,
+            @RequestBody MediaResource updatedResource) {
+        MediaResource resource = mediaResourceRepo
+                .findOne(resourceId);
+        BeanUtils.copyProperties(updatedResource, resource, "id", "stockCategory");
+        mediaResourceRepo.save(resource);
+    }
+
+
+    /**
      * Delete an existing stockCategory.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -404,6 +468,17 @@ public class StockCategoryController {
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long stockCategoryId) {
         stockCategoryRepo.delete(stockCategoryId);
+    }
+
+    /**
+     * Delete a stock category's image.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{stockCategoryId}/images/{id}", method = RequestMethod.DELETE)
+    public @ResponseBody void deleteImage(@PathVariable("tenantId") String tenantId,
+            @PathVariable("stockCategoryId") Long stockCategoryId,
+            @PathVariable("id") Long imageId) {
+        mediaResourceRepo.delete(imageId);
     }
 
     private List<? extends ShortStockCategory> wrapShort(List<StockCategory> list) {
@@ -541,5 +616,12 @@ public class StockCategoryController {
         private Date lastUpdated;
         private String tenantId;
         private List<MediaResource> images;
+    }
+
+    private void addLinks(String tenantId, Long stockCategoryId, MediaResource resource) {
+        List<Link> links = new ArrayList<Link>();
+        links.add(new Link(String.format("/%1$s/stock-categories/%2$s/images/%3$s",
+                tenantId, stockCategoryId, resource.getId())));
+        resource.setLinks(links);
     }
 }
