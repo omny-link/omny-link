@@ -199,6 +199,7 @@ var ractive = new AuthenticatedRactive({
           || (searchTerm.startsWith('created<') && new Date(obj.created)<new Date(ractive.get('searchTerm').substring(8)))
           || (searchTerm.startsWith('contactId:') && ractive.get('searchTerm').substring(10).replace(/ /g,'')==''+obj.contactId)
           || (searchTerm.startsWith('contactId in') && ractive.get('searchTerm').substring(12).replace(/ /g,'').split(',').indexOf(''+obj.contactId)!=-1)
+          || (searchTerm.startsWith('stockItemId:') && ractive.get('searchTerm').substring(12).replace(/ /g,'')==ractive.shortId(obj.stockItem.selfRef))
         );
       }
     },

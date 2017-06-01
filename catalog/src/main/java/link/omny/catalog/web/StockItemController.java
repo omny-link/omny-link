@@ -47,6 +47,7 @@ import link.omny.catalog.model.StockItem;
 import link.omny.catalog.repositories.MediaResourceRepository;
 import link.omny.catalog.repositories.StockCategoryRepository;
 import link.omny.catalog.repositories.StockItemRepository;
+import link.omny.catalog.views.MediaResourceViews;
 import link.omny.catalog.views.StockItemViews;
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import lombok.Data;
@@ -188,7 +189,7 @@ public class StockItemController {
         // Ensure everything loaded, while still in transaction
         LOGGER.info(String.format(
                 "Found item from category %1$s with %2$d custom fields",
-                item.getStockCategory().getName(),
+                (item.getStockCategory() == null ? "n/a" : item.getStockCategory().getName()),
                 item.getCustomFields().size()));
 
         return item;
@@ -286,15 +287,44 @@ public class StockItemController {
     }
 
     /**
+     * Update a media resource to the specified item.
+     */
+    @RequestMapping(value = "/{stockItemId}/images/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    public @ResponseBody void updateImage(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockItemId") Long stockItemId,
+            @PathVariable("id") Long resourceId,
+            @RequestBody MediaResource updatedResource) {
+        MediaResource resource = mediaResourceRepo
+                .findOne(resourceId);
+        BeanUtils.copyProperties(updatedResource, resource, "id", "stockItem");
+        mediaResourceRepo.save(resource);
+    }
+
+    /**
+     * @return List of media resource for the specified stock item.
+     */
+    @JsonView(MediaResourceViews.Summary.class)
+    @RequestMapping(value = "/{stockItemId}/images", method = RequestMethod.GET)
+    public @ResponseBody List<MediaResource> listImages(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockItemId") Long stockItemId) {
+         List<MediaResource> resources = mediaResourceRepo.findByStockItemId(stockItemId);
+         for (MediaResource resource : resources) {
+             addLinks(tenantId, stockItemId, resource);
+         }
+         return resources;
+    }
+
+    /**
      * Add a media resource to the specified stockItem.
      */
     @RequestMapping(value = "/{stockItemId}/images", method = RequestMethod.POST)
-    public @ResponseBody void addDocument(
+    public @ResponseBody void addImage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockItemId") Long stockItemId,
             @RequestParam("author") String author,
             @RequestParam("url") String url) {
-
         addMediaResource(tenantId, stockItemId, new MediaResource(author, url));
     }
 
@@ -337,6 +367,17 @@ public class StockItemController {
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long stockItemId) {
         stockItemRepo.delete(stockItemId);
+    }
+
+    /**
+     * Delete a stock item's image.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{stockItemId}/images/{id}", method = RequestMethod.DELETE)
+    public @ResponseBody void deleteImage(@PathVariable("tenantId") String tenantId,
+            @PathVariable("stockItemId") Long stockItemId,
+            @PathVariable("id") Long imageId) {
+        mediaResourceRepo.delete(imageId);
     }
 
     private List<ShortStockItem> wrapShort(List<StockItem> list) {
@@ -393,5 +434,12 @@ public class StockItemController {
         private Date lastUpdated;
         private StockCategory stockCategory;
         private List<MediaResource> images;
+    }
+
+    private void addLinks(String tenantId, Long stockItemId, MediaResource resource) {
+        List<Link> links = new ArrayList<Link>();
+        links.add(new Link(String.format("/%1$s/stock-items/%2$s/images/%3$s",
+                tenantId, stockItemId, resource.getId())));
+        resource.setLinks(links);
     }
 }

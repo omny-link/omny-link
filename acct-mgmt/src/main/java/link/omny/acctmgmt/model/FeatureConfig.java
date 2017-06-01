@@ -36,7 +36,8 @@ public class FeatureConfig {
     private boolean multiNational = false;
     private boolean declaredSource = false;
     private boolean documents = false;
-    private boolean offers = true;
+    private boolean documentsOnStockItem = false;
+    private boolean documentsOnStockCategory = false;
     private boolean orders = false;
     private boolean orderDueDate = false;
     private boolean orderInvoiceRef = true;
@@ -49,6 +50,12 @@ public class FeatureConfig {
     private boolean socialContact = true;
     private boolean socialAccount = true;
     private boolean stockCategory = false;
+    private boolean stockCategoryImages = false;
+    private boolean stockCategoryOffers = true;
+    /** @deprecated Use stockCategoryOffers */
+    private boolean offers = stockCategoryOffers;
+    private boolean stockItemImages = false;
+    private boolean stockItemOffers = false;
     private boolean stockLocation = false;
     private boolean stockPricing = true;
     private boolean stage = true;
@@ -109,6 +116,12 @@ public class FeatureConfig {
         case "documents":
             setDocuments(b);
             break;
+        case "documentsOnStockCategory":
+            setDocumentsOnStockCategory(b);
+            break;
+        case "documentsOnStockItem":
+            setDocumentsOnStockItem(b);
+            break;
         case "enquiryType":
             setEnquiryType(b);
             break;
@@ -131,7 +144,7 @@ public class FeatureConfig {
             setMultiNational(b);
             break;
         case "offers":
-            setOffers(b);
+            setStockCategoryOffers(b);
             break;
         case "orders":
             setOrders(b);
@@ -165,6 +178,18 @@ public class FeatureConfig {
             break;
         case "stockCategory":
             setStockCategory(b);
+            break;
+        case "stockCategoryImages":
+            setStockCategoryImages(b);
+            break;
+        case "stockCategoryOffers":
+            setStockCategoryOffers(b);
+            break;
+        case "stockItemImages":
+            setStockItemImages(b);
+            break;
+        case "stockItemOffers":
+            setStockItemOffers(b);
             break;
         case "stockLocation":
             setStockLocation(b);

@@ -29,6 +29,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,9 +123,41 @@ public class StockItem implements ShortStockItem, Serializable {
     private String tags;
 
     @JsonProperty
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    private String videoCode;
+
+    @JsonProperty
     @JsonView({ OrderViews.Summary.class, StockCategoryViews.Detailed.class,
         StockItemViews.Detailed.class })
     private String status;
+
+    @JsonProperty
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @Size(max = 20)
+    private String offerStatus;
+
+    @JsonProperty
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @Size(max = 35)
+    private String offerTitle;
+
+    @JsonProperty
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @Size(max = 80)
+    private String offerDescription;
+
+    @JsonProperty
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @Size(max = 30)
+    private String offerCallToAction;
+
+    /**
+     * A relative or absolute URL associated with the offer, i.e. where it goes
+     * to on click.
+     */
+    @JsonProperty
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    private String offerUrl;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable

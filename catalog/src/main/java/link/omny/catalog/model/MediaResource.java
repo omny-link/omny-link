@@ -2,6 +2,7 @@ package link.omny.catalog.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,15 +12,22 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.hateoas.Link;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import link.omny.catalog.views.MediaResourceViews;
 import link.omny.catalog.views.StockCategoryViews;
 import link.omny.catalog.views.StockItemViews;
 import lombok.AllArgsConstructor;
@@ -45,18 +53,33 @@ public class MediaResource implements Serializable {
     private Long id;
 
     @JsonProperty
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @JsonView({ MediaResourceViews.Summary.class,
+        StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    private boolean main;
+
+    @JsonProperty
+    @JsonView({ MediaResourceViews.Summary.class,
+        StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     private String author;
 
     @JsonProperty
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @JsonView({ MediaResourceViews.Summary.class,
+        StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @JsonView({ MediaResourceViews.Summary.class,
+        StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    private Date lastUpdated;
+
+    @JsonProperty
+    @JsonView({ MediaResourceViews.Summary.class,
+        StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     private String url;
 
-    @ManyToOne(targetEntity = StockItem.class)
+    @ManyToOne(targetEntity = StockCategory.class)
     @JoinColumn(name = "stock_cat_id")
     @RestResource(rel = "media")
     private StockCategory stockCategory;
@@ -66,6 +89,12 @@ public class MediaResource implements Serializable {
     @RestResource(rel = "media")
     private StockItem stockItem;
 
+    @Transient
+    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
+    @JsonProperty("links")
+    @JsonView(MediaResourceViews.Summary.class)
+    private List<Link> links;
+
     public MediaResource(String author, String url) {
         setAuthor(author);
         setUrl(url);
@@ -74,6 +103,15 @@ public class MediaResource implements Serializable {
     @PrePersist
     void preInsert() {
         created = new Date();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if (LOGGER.isWarnEnabled() && lastUpdated != null) {
+            LOGGER.warn(String.format(
+                    "Overwriting update date %1$s with 'now'.", lastUpdated));
+        }
+        lastUpdated = new Date();
     }
 
     @Override
