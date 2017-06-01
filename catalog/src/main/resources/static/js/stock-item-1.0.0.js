@@ -35,11 +35,19 @@ var ractive = new AuthenticatedRactive({
     },
     formatAge: function(timeString) {
       console.log('formatAge: '+timeString);
-      return (timeString == "-1" || timeString==undefined) ? 'n/a' : i18n.getDurationString(timeString)+' ago';
+      if (timeString == "-1" || isNaN(timeString)) return 'n/a';
+      else return i18n.getDurationString(timeString) + ' ago';
     },
     formatDate: function(timeString) {
       if (timeString==undefined) return 'n/a';
       return new Date(timeString).toLocaleDateString(navigator.languages);
+    },
+    formatDateTime: function(timeString) {
+      if (timeString==undefined) return 'n/a';
+      var dts = new Date(timeString).toLocaleString(navigator.languages);
+      // remove secs
+      if (dts.split(':').length>1) dts = dts.substring(0, dts.lastIndexOf(':'));
+      return dts;
     },
     formatJson: function(json) { 
       console.log('formatJson: '+json);
@@ -159,6 +167,7 @@ var ractive = new AuthenticatedRactive({
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "stockItemListSect", "url": "/partials/stock-item-list-sect.html"},
       { "name": "currentImageSect", "url": "/partials/image-current-sect.html"},
+      { "name": "currentOfferSect", "url": "/partials/offer-current-sect.html"},
       { "name": "currentStockItemSect", "url": "/partials/stock-item-current-sect.html"},
       { "name": "currentStockItemExtensionSect", "url": "/partials/stock-item-extension.html"}
     ],
@@ -200,6 +209,22 @@ var ractive = new AuthenticatedRactive({
     });
     return false; // cancel bubbling to prevent edit as well as delete
   },
+  deleteImage: function (obj) {
+    var url = ractive.tenantUri(obj);
+    console.info('delete '+obj+'...');
+    $.ajax({
+        url: url,
+        type: 'DELETE',
+        success: completeHandler = function(data) {
+          ractive.fetchImages();
+        },
+        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
+          console.error(textStatus+': '+errorThrown);
+          ractive.showError('Unable to delete '+image.url+' at this time');
+        }
+    });
+    return false; // cancel bubbling to prevent edit as well as delete
+  },
   edit: function (stockItem) {
     console.log('edit'+stockItem+'...');
     $('h2.edit-form,h2.edit-field').show();
@@ -232,15 +257,17 @@ var ractive = new AuthenticatedRactive({
     });
     ractive.fetchStockCategories();
   },
-  fetchImages: function() { 
-    $.getJSON(ractive.getId(ractive.get('current'))+'/images',  function( data ) {
+  fetchImages: function() {
+    $.getJSON(ractive.tenantUri(ractive.get('current'))+'/images',  function( data ) {
       ractive.set('saveObserver',false);
-      if (data['_embedded'] != undefined) {
-        console.log('found images '+data);
-        ractive.merge('current.images', data['_embedded'].documents);
-        // sort most recent first
-        ractive.get('current.images').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-      }
+      console.log('found '+data.length+' images');
+      ractive.set('current.images', data);
+      $.each(ractive.get('current.images'), function(i,d) {
+        if (typeof d.created == 'string') d.created = Date.parse(d.created);
+        d.age = new Date()-d.created;
+      });
+      // sort most recent first
+      ractive.get('current.images').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
       ractive.set('saveObserver',true);
     });
   },
@@ -345,17 +372,14 @@ var ractive = new AuthenticatedRactive({
       ractive.set('saveObserver',true);
     }
   },
-  saveImage: function () {
-    console.log('saveImage '+JSON.stringify(ractive.get('current.image'))+' ...');
+  saveNewImage: function () {
+    console.log('saveNewImage '+JSON.stringify(ractive.get('current.image'))+' ...');
     var n = ractive.get('current.image');
     n.url = $('#image').val();
-    var url = ractive.getId(ractive.get('current'))+'/images';
-    url = url.replace(ractive.entityName(ractive.get('current')),ractive.get('tenant.id')+'/'+ractive.entityName(ractive.get('current')));
+    var url = ractive.tenantUri(ractive.get('current'))+'/images';
     if (n.url.trim().length > 0) { 
       $('#imagesTable tr:nth-child(1)').slideUp();
       $.ajax({
-        /*url: '/documents',
-        contentType: 'application/json',*/
         url: url,
         type: 'POST',
         data: n,
@@ -367,6 +391,20 @@ var ractive = new AuthenticatedRactive({
         }
       });
     } 
+  },
+  saveImage: function (obj) {
+    console.log('saveImage '+JSON.stringify(obj)+' ...');
+    $.ajax({
+      url: ractive.tenantUri(obj),
+      type: 'PUT',
+      contentType: 'application/json',
+      data: JSON.stringify(obj),
+      success: completeHandler = function(data) {
+        console.log('data: '+ data);
+        ractive.showMessage('Image link saved successfully');
+        ractive.fetchImages();
+      }
+    });
   },
   search: function(searchTerm) {
     ractive.set('searchTerm',searchTerm);
@@ -395,8 +433,10 @@ var ractive = new AuthenticatedRactive({
 	    console.log('loading detail for '+url);
 	    $.getJSON(url, function( data ) {
         console.log('found stockItem '+data);
+        ractive.set('saveObserver',false);
         if (data['id'] == undefined) data.id = ractive.id(data);
         ractive.set('current', data);
+        if ('tenant.features.stockItemImages') ractive.fetchImages();
         ractive.initControls();
         ractive.initTags();
         // who knows why this is needed, but it is, at least for first time rendering

@@ -40,6 +40,13 @@ var ractive = new AuthenticatedRactive({
       if (timeString==undefined) return 'n/a';
       return new Date(timeString).toLocaleDateString(navigator.languages);
     },
+    formatDateTime: function(timeString) {
+      if (timeString==undefined) return 'n/a';
+      var dts = new Date(timeString).toLocaleString(navigator.languages);
+      // remove secs
+      if (dts.split(':').length>1) dts = dts.substring(0, dts.lastIndexOf(':'));
+      return dts;
+    },
     formatJson: function(json) { 
       console.log('formatJson: '+json);
       try {
@@ -153,6 +160,7 @@ var ractive = new AuthenticatedRactive({
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "stockCategoryListSect", "url": "/partials/stock-category-list-sect.html"},
       { "name": "currentImageSect", "url": "/partials/image-current-sect.html"},
+      { "name": "currentOfferSect", "url": "/partials/offer-current-sect.html"},
       { "name": "currentStockCategorySect", "url": "/partials/stock-category-current-sect.html"},
       { "name": "currentStockCategoryExtensionSect", "url": "/partials/stock-category-extension.html"}
     ],
@@ -164,6 +172,15 @@ var ractive = new AuthenticatedRactive({
     var stockCategory = { stockCategory: {}, author:ractive.get('username'), tenantId: ractive.get('tenant.id'), url: undefined };
     ractive.select( stockCategory );
     ractive.initTags();
+  },
+  addImage: function (stockItem) {
+    console.log('addImage '+stockItem+' ...');
+    if (stockItem==undefined || stockItem == '') {
+      ractive.showMessage('You must have created your '+ractive.get('tenant.strings.stockItem')+' before adding images');
+      return;
+    }
+    ractive.set('current.image', { author:ractive.get('username'), stockItem: ractive.uri(stockItem), url: undefined});
+    $('#imagesTable tr:nth-child(1)').slideDown();
   },
   delete: function (obj) {
     var url = ractive.tenantUri(obj);
@@ -178,6 +195,22 @@ var ractive = new AuthenticatedRactive({
         error: function(jqXHR, textStatus, errorThrown) {
           console.error(textStatus+': '+errorThrown);
           ractive.showError('Unable to delete '+obj.name+' at this time');
+        }
+    });
+    return false; // cancel bubbling to prevent edit as well as delete
+  },
+  deleteImage: function (obj) {
+    var url = ractive.tenantUri(obj);
+    console.info('delete '+obj+'...');
+    $.ajax({
+        url: url,
+        type: 'DELETE',
+        success: completeHandler = function(data) {
+          ractive.fetchImages();
+        },
+        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
+          console.error(textStatus+': '+errorThrown);
+          ractive.showError('Unable to delete '+image.url+' at this time');
         }
     });
     return false; // cancel bubbling to prevent edit as well as delete
@@ -208,9 +241,23 @@ var ractive = new AuthenticatedRactive({
         }
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
-        ractive.set('searchMatched',$('#stockCategoriesTable tbody tr:visible').length);
+        ractive.showSearchMatched();
         ractive.set('saveObserver', true);
       }
+    });
+  },
+  fetchImages: function() { 
+    $.getJSON(ractive.tenantUri(ractive.get('current'))+'/images',  function( data ) {
+      ractive.set('saveObserver',false);
+      console.log('found '+data.length+' images');
+      ractive.set('current.images', data);
+      $.each(ractive.get('current.images'), function(i,d) { 
+        if (typeof d.created == 'string') d.created = Date.parse(d.created);
+        d.age = new Date()-d.created;
+      });
+      // sort most recent first
+      ractive.get('current.images').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
+      ractive.set('saveObserver',true);
     });
   },
   fetchStockCategories: function () {
@@ -254,7 +301,7 @@ var ractive = new AuthenticatedRactive({
     ractive.set('filter',filter);
     $('.omny-dropdown.dropdown-menu li').removeClass('selected')
     $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
-    ractive.set('searchMatched',$('#stockCategoriesTable tbody tr:visible').length);
+    ractive.showSearchMatched();
     $('input[type="search"]').blur();
   },
   find: function(stockCategoryId) { 
@@ -340,15 +387,48 @@ var ractive = new AuthenticatedRactive({
       ractive.set('saveObserver',true);
     }
   },
+  saveNewImage: function () {
+    console.log('saveNewImage '+JSON.stringify(ractive.get('current.image'))+' ...');
+    var n = ractive.get('current.image');
+    n.url = $('#image').val();
+    var url = ractive.tenantUri(ractive.get('current'))+'/images';
+    if (n.url.trim().length > 0) { 
+      $('#imagesTable tr:nth-child(1)').slideUp();
+      $.ajax({
+        url: url,
+        type: 'POST',
+        data: n,
+        success: completeHandler = function(data) {
+          console.log('data: '+ data);
+          ractive.showMessage('Image link saved successfully');
+          ractive.fetchImages();
+          $('#image').val(undefined);
+        }
+      });
+    } 
+  },
+  saveImage: function (obj) {
+    console.log('saveImage '+JSON.stringify(obj)+' ...');
+    $.ajax({
+      url: ractive.tenantUri(obj),
+      type: 'PUT',
+      contentType: 'application/json',
+      data: JSON.stringify(obj),
+      success: completeHandler = function(data) {
+        console.log('data: '+ data);
+        ractive.showMessage('Image link saved successfully');
+        ractive.fetchImages();
+      }
+    });
+  },
   search: function(searchTerm) {
     ractive.set('searchTerm',searchTerm);
-    ractive.set('searchMatched',$('#stockCategoriesTable tbody tr:visible').length);
+    ractive.showSearchMatched();
     ractive.showResults();
   },
   select: function(stockCategory) {
     console.log('select: '+JSON.stringify(stockCategory));
     ractive.set('saveObserver',false);
-    if (stockCategory.stockCategory == undefined || stockCategory.stockCategory == '') stockCategory.stockCategory = new Object();
     // default owner to current user
     if (stockCategory.owner == undefined || stockCategory.owner == '') stockCategory.owner = ractive.get('username');
 	  // adapt between Spring Hateos and Spring Data Rest
@@ -367,6 +447,7 @@ var ractive = new AuthenticatedRactive({
 	    console.log('loading detail for '+url);
 	    $.getJSON(url, function( data ) {
         console.log('found stockCategory '+data);
+        ractive.set('saveObserver',false);
         if (data['id'] == undefined) data.id = ractive.id(data);
         ractive.set('current', data);
         ractive.initControls();
@@ -375,8 +456,9 @@ var ractive = new AuthenticatedRactive({
         ractive.initTags();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
-//        ractive.fetchNotes();
-//        ractive.fetchDocs();
+        if ('tenant.features.stockCategoryImages') ractive.fetchImages();
+//        if ('tenant.features.notesOnStockCategory') ractive.fetchNotes();
+//        if ('tenant.features.documentsOnStockCategory') ractive.fetchDocs();
         ractive.set('saveObserver',true);
         $('.ajax-loader').hide();
       });
@@ -396,6 +478,14 @@ var ractive = new AuthenticatedRactive({
     $('#stockCategoriesTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
     $('#currentSect').slideUp();
     $('#stockCategoriesTable').slideDown({ queue: true });
+  },
+  showSearchMatched: function() {
+    ractive.set('searchMatched',$('#stockCategoriesTable tbody tr').length);
+    if ($('#stockCategoriesTable tbody tr:visible').length==1) {
+      var stockCategoryId = $('#stockCategoriesTable tbody tr:visible').data('href')
+      var stockCategory = Array.findBy('selfRef',stockCategoryId,ractive.get('stockCategories'))
+      ractive.select( stockCategory );
+    }
   },
   toggleResults: function() {
     console.log('toggleResults');
@@ -470,23 +560,19 @@ var ractive = new AuthenticatedRactive({
 ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
   console.log('searchTerm changed');
   ractive.showResults();
-  setTimeout(function() {
-    ractive.set('searchMatched',$('#stockCategoriesTable tbody tr').length);
-  }, 500);
+  setTimeout(function() { ractive.showSearchMatched(); }, 500);
 });
 
 // Save on model change
 // done this way rather than with on-* attributes because autocomplete 
 // controls done that way save the oldValue 
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
-  ignored=['current.documents','current.doc','current.notes','current.note'];
+  ignored=['current.documents','current.doc','current.images','current.image','current.notes','current.note'];
   if (ractive.get('saveObserver') && ignored.indexOf(keypath)==-1) {
     console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
     ractive.save();
-  } else { 
+  } else {
     console.warn  ('Skipped stockCategory save of '+keypath);
-    //console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
-    //console.log('  saveObserver: '+ractive.get('saveObserver'));
   }
 });
 
