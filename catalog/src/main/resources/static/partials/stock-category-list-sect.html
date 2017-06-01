@@ -12,10 +12,10 @@
     <thead>
       <tr>
         <th></th>
-        <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
-        <th on-click="sort:status">Status<span class="sortable {{ sorted('status') }} glyphicon "></th>
-        <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon"></th>
-        <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
+        <th on-click="sort:name">{{#tenant.strings.stockCategoryName}}{{tenant.strings.stockCategoryName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon "></th>
+        <th on-click="sort:status">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}<span class="sortable {{ sorted('status') }} glyphicon "></th>
+        <th on-click="sort:created">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}Created{{/}}<span class="sortable {{ sorted('created') }} glyphicon"></th>
+        <th class="" on-click="sort:lastUpdated">{{#tenant.strings.latUpdated}}{{tenant.strings.lastUpdated}}{{else}}Last Updated{{/}}<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
         <th class="col-actions">Actions</th>
       </tr>
     </thead>
