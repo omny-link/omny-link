@@ -21,26 +21,26 @@
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         <li>
-          <label class="col-md-4 col-sm-4">Status:</label>
+          <label class="col-md-4 col-sm-4">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}:</label>
           <input class="form-control" list="status" placeholder="Start typing to filter options" id="curStatus" maxlength="20" value="{{current.status}}"/>
-          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Draft, Ready for review, Published etc.</p>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.statusHint}}{{tenant.strings.statusHint}}{{else}}Draft, Ready for review, Published etc.{{/}}</p>
         </li>
         <li>
-          <label class="col-md-4 col-sm-4">{{#tenant.strings.productSheetUrl}}{{tenant.strings.productSheetUrl}}{{else}}Product Sheet{{/}}:</label>
+          <label class="col-md-4 col-sm-4">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Product Sheet{{/}}:</label>
           <input class="form-control" id="curProductSheetUrl" placeholder="https://yourdomain.com/publicity.pdf" type="url" value="{{current.productSheetUrl}}"/>
-          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">A product sheet or brochure location, often a PDF.</p>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.productSheetUrlHint}}{{tenant.strings.productSheetUrlHint}}{{else}}A product sheet or brochure location, often a PDF.{{/}}</p>
         </li>
         <li>
-          <label class="col-md-4 col-sm-4">Video Code:</label>
+          <label class="col-md-4 col-sm-4">{{#tenant.strings.videoCode}}{{tenant.strings.videoCode}}{{else}}Video Code{{/}}:</label>
           <input class="form-control" id="curVideoCode" value="{{current.videoCode}}"/>
-          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">This might be either embed code from YouTube, Vimeo etc. or simply a URL but must match API client code.</p>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.videoCodeHint}}{{tenant.strings.videoCodeHint}}{{else}}This might be either embed code from YouTube, Vimeo etc. or simply a URL but must match API client code.{{/}}</p>
         </li>
       </ul>
     </div>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         <li class="form-group">
-          <label class="col-md-2 col-sm-4 textarea">Description:</label>
+          <label class="col-md-2 col-sm-4 textarea">{{#tenant.strings.stockCategoryDescription}}{{tenant.strings.stockCategoryDescription}}{{else}}Description{{/}}:</label>
           <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" rows="8" value="{{current.description}}"></textarea>
         </li>
       </ul>
@@ -60,7 +60,9 @@
             <li><label class="col-md-4 col-sm-4"></label><input class="form-control" id="curTown" placeholder="Town or village" value="{{current.town}}"/></li>
             <li><label class="col-md-4 col-sm-4"></label><input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/></li>
             <li><label class="col-md-4 col-sm-4 required">Post Code:</label><input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" required value="{{current.postCode}}"></li>
-            <li><label class="col-md-4 col-sm-4">Country:</label><input autocomplete="off" class="form-control" list="countries" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
+            {{#tenant.features.multiNational}}
+              <li><label class="col-md-4 col-sm-4">Country:</label><input autocomplete="off" class="form-control" list="countries" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
+            {{/}}
             {{#current.postCode}}
               <li><label class="col-md-4 col-sm-4">Map:</label><a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
             {{/}}
