@@ -3,6 +3,7 @@
     <h2 class="">
       <span contenteditable id="curName2" on-focus="editField('#curName2','current.name')" on-blur="updateField('#curName2','current.name')" value="{{current.name}}"></span>
       <span class="pull-right">
+        <a class="glyphicon glyphicon-new-window" aria-hidden="true" href="orders.html?q=stockItemId:{{current.id}}" target="orders" title="View related {{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}orders{{/}}"></a>
         <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
         {{#if tenant.stockItemActions!=undefined && tenant.stockItemActions.length>0 }}
           <span class="clickable dropdown" aria-hidden="true" title="Start Process">
@@ -22,7 +23,7 @@
         {{/if}}
       </span>
     </h2>
-    
+
     <div class="currentBody col-md-6 col-sm-12">
       <ul class="form edit-form">
         {{#tenant.show.stockCategory}}
@@ -43,6 +44,11 @@
           <label class="col-md-4 col-sm-4">Status:</label>
           <input class="form-control typeahead" placeholder="Start typing to filter options" id="curStatus" value="{{current.status}}"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Draft, Ready for review, Published etc.</p>
+        </li>
+        <li>
+          <label class="col-md-4 col-sm-4">Video Code:</label>
+          <input class="form-control" id="curVideoCode" value="{{current.videoCode}}"/>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">This might be either embed code from YouTube, Vimeo etc. or simply a URL but must match API client code.</p>
         </li>
       </ul>
     </div>
@@ -77,6 +83,10 @@
       </ul>
     </div>
 
+    {{#tenant.show.stockItemOffers}}
+      {{>currentOfferSect}}
+    {{/}}
+
     {{#tenant.stockItemFields.length>0}}
       {{#if haveCustomExtension('StockItemExtension')}}
         <div id="currentStockItemExtended" style="clear: both">
@@ -89,7 +99,9 @@
       {{/if}}
     {{/}}
   </form>
-  
-  {{!>currentImageSect}}
-    
+
+  {{#if tenant.features.stockItemImages}}
+    {{>currentImageSect}}
+  {{/if}}
+
 </section>
