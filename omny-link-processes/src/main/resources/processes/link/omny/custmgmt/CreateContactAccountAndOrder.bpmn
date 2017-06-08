@@ -77,9 +77,11 @@ if (account != undefined) {
 
 // ORDER
 var order = extContact.order;
-if (order.owner == undefined) order.owner = extContact['admin_email'];
-if (order.stage == undefined) order.stage = contact.stage;
-order.tenantId = execution.tenantId;
+if (order != undefined) {
+  if (order.owner == undefined) order.owner = extContact['admin_email'];
+  if (order.stage == undefined) order.stage = contact.stage;
+  order.tenantId = execution.tenantId;
+}
 
 contact.account = undefined;
 contact.order = undefined;
