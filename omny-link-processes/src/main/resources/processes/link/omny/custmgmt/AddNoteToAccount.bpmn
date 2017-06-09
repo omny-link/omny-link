@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/custmgmt" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1422450380149" name="" targetNamespace="http://omny.link/custmgmt" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
-  <process id="AddNoteToContact" isClosed="false" isExecutable="true" name="Create Note and attach to a Contact" processType="None">
-    <documentation id="AddNoteToContact_D_1" textFormat="text/plain"><![CDATA[Record a note against a contact]]></documentation>
+  <process id="AddNoteToAccount" isClosed="false" isExecutable="true" name="Create note and attach to an account" processType="None">
+    <documentation id="AddNoteToAccount_D_1" textFormat="text/plain"><![CDATA[Record a note against an account]]></documentation>
     <extensionElements>
       <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
     </extensionElements>
     <ioSpecification>
-      <dataInput id="_4" isCollection="false" name="contact"/>
+      <dataInput id="_4" isCollection="false" name="account"/>
       <dataInput id="_5" isCollection="false" name="noteContent"/>
-      <dataInput id="_13" isCollection="false" name="contactId"/>
+      <dataInput id="_13" isCollection="false" name="accountId"/>
       <dataOutput id="_6" isCollection="false" name="noteId"/>
       <inputSet>
         <dataInputRefs>_4</dataInputRefs>
@@ -39,14 +39,14 @@
           <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
         </activiti:field>
         <activiti:field name="data">
-          <activiti:expression>{"author":"${contact.getString('email')}","content":"${noteContent}", "favorite":true}</activiti:expression>
+          <activiti:expression>{"author":"${account.getString('email')}","content":"${noteContent}", "favorite":true}</activiti:expression>
         </activiti:field>
         <activiti:field expression="noteId=Location" name="responseHeaders"/>
       </extensionElements>
       <incoming>_3</incoming>
       <outgoing>_10</outgoing>
     </serviceTask>
-    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPut" completionQuantity="1" id="_9" implementation="##WebService" isForCompensation="false" name="PUT association&#10; from note to contact" startQuantity="1">
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPut" completionQuantity="1" id="_9" implementation="##WebService" isForCompensation="false" name="PUT association&#10; from note to account" startQuantity="1">
       <extensionElements>
         <activiti:field name="resourceUsername">
           <activiti:string>userInfo('tenant-bot')</activiti:string>
@@ -55,13 +55,13 @@
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>${noteId}/contact</activiti:expression>
+          <activiti:expression>${noteId}/account</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Content-Type:text/uri-list,Accept:application/json</activiti:string>
         </activiti:field>
         <activiti:field name="data">
-          <activiti:expression>${contactId}</activiti:expression>
+          <activiti:expression>${accountId}</activiti:expression>
         </activiti:field>
         <activiti:field name="responseVar">
           <activiti:expression>textResponse</activiti:expression>
@@ -78,84 +78,84 @@
     <sequenceFlow id="_12" sourceRef="_9" targetRef="_11"/>
     <sequenceFlow id="_3" sourceRef="_2" targetRef="_7"/>
     <textAnnotation id="_8" textFormat="text/plain">
-      <text>ADD NOTE TO CONTACT</text>
+      <text>ADD NOTE TO ACCOUNT</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddNoteToContact" name="Add note to contact" resolution="96.0">
-    <bpmndi:BPMNPlane bpmnElement="AddNoteToContact">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddNoteToAccount" name="Add note to account" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="AddNoteToAccount">
       <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
-        <dc:Bounds height="32.0" width="32.0" x="60.0" y="262.3636363636364"/>
+        <dc:Bounds height="32.0" width="32.0" x="60.0" y="197.36363636363637"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="69.0" x="41.5" y="303.83"/>
+          <dc:Bounds height="18.8" width="69.0" x="41.5" y="238.83"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7">
-        <dc:Bounds height="81.0" width="116.0" x="221.29254079254082" y="237.86363636363637"/>
+        <dc:Bounds height="81.0" width="116.0" x="221.29254079254082" y="172.86363636363637"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="67.0" x="245.79" y="270.96"/>
+          <dc:Bounds height="18.8" width="67.0" x="245.79" y="205.96"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_9" id="Yaoqiang-_9">
-        <dc:Bounds height="81.0" width="116.0" x="413.6235431235432" y="237.86363636363637"/>
+        <dc:Bounds height="81.0" width="116.0" x="413.6235431235432" y="172.86363636363637"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="46.8" width="97.0" x="423.12" y="256.96"/>
+          <dc:Bounds height="46.8" width="97.0" x="423.12" y="191.96"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
-        <dc:Bounds height="32.0" width="32.0" x="647.9545454545455" y="262.3636363636364"/>
+        <dc:Bounds height="32.0" width="32.0" x="647.9545454545455" y="197.36363636363637"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="62.0" x="632.95" y="303.83"/>
+          <dc:Bounds height="18.8" width="62.0" x="632.95" y="238.83"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4">
-        <dc:Bounds height="38.0" width="29.0" x="60.0" y="404.50000000000006"/>
+        <dc:Bounds height="38.0" width="29.0" x="60.0" y="344.50000000000006"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="47.0" x="51.0" y="444.5"/>
+          <dc:Bounds height="18.8" width="50.0" x="49.5" y="384.5"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_5" id="Yaoqiang-_5">
-        <dc:Bounds height="38.0" width="29.0" x="60.0" y="471.1923076923078"/>
+        <dc:Bounds height="38.0" width="29.0" x="60.0" y="406.1923076923078"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="75.0" x="37.0" y="511.19"/>
+          <dc:Bounds height="18.8" width="75.0" x="37.0" y="446.19"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6">
-        <dc:Bounds height="38.0" width="29.0" x="60.0" y="537.8846153846155"/>
+        <dc:Bounds height="38.0" width="29.0" x="60.0" y="467.88461538461553"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="41.0" x="54.0" y="577.88"/>
+          <dc:Bounds height="18.8" width="41.0" x="54.0" y="507.88"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_8" id="Yaoqiang-_8">
         <dc:Bounds height="55.0" width="238.0" x="60.0" y="38.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="142.0" x="60.0" y="58.1"/>
+          <dc:Bounds height="18.8" width="143.0" x="60.0" y="58.1"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_13" id="Yaoqiang-_13">
-        <dc:Bounds height="38.0" width="29.0" x="60.0" y="337.8076923076923"/>
+        <dc:Bounds height="38.0" width="29.0" x="60.0" y="282.8076923076923"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="57.0" x="46.0" y="377.81"/>
+          <dc:Bounds height="18.8" width="60.0" x="44.5" y="322.81"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
-        <di:waypoint x="529.5588235294117" y="278.3636363636364"/>
-        <di:waypoint x="647.5594046350056" y="278.3636363636364"/>
+        <di:waypoint x="529.5588235294117" y="213.36363636363637"/>
+        <di:waypoint x="647.5594046350056" y="213.36363636363637"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="6.0" x="585.56" y="268.96"/>
+          <dc:Bounds height="18.8" width="6.0" x="585.56" y="203.96"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_10" id="Yaoqiang-_10">
-        <di:waypoint x="337.5588235294117" y="278.3636363636364"/>
-        <di:waypoint x="413.5588235294117" y="278.3636363636364"/>
+        <di:waypoint x="337.5588235294117" y="213.36363636363637"/>
+        <di:waypoint x="413.5588235294117" y="213.36363636363637"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="6.0" x="372.56" y="268.96"/>
+          <dc:Bounds height="18.8" width="6.0" x="372.56" y="203.96"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
-        <di:waypoint x="91.55824242381777" y="278.3636363636364"/>
-        <di:waypoint x="221.5588235294117" y="278.3636363636364"/>
+        <di:waypoint x="91.55824242381777" y="213.36363636363637"/>
+        <di:waypoint x="221.5588235294117" y="213.36363636363637"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="6.0" x="153.56" y="268.96"/>
+          <dc:Bounds height="18.8" width="6.0" x="153.56" y="203.96"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
