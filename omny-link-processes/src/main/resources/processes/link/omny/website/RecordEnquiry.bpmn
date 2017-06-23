@@ -52,7 +52,7 @@
     <sequenceFlow id="_21" sourceRef="_16" targetRef="selectEnquiryResponse"/>
     <callActivity calledElement="SendAlert" completionQuantity="1" id="notifyInternalUsers" isForCompensation="false" name="Notify internal users" startQuantity="1">
       <extensionElements>
-        <activiti:in sourceExpression="New Enquiry from ${omny_enquiry.getString('firstName')} ${omny_enquiry.getString('lastName')}" target="subject"/>
+        <activiti:in sourceExpression="New Enquiry from ${omny_enquiry.getString('firstName', 'Unknown')} ${omny_enquiry.getString('lastName', 'Unknown')}" target="subject"/>
         <activiti:in sourceExpression="New Enquiry" target="type"/>
         <activiti:in sourceExpression="NotifyEnquiry" target="memoName"/>
         <activiti:in source="addressee" target="addressee"/>
