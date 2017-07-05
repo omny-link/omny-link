@@ -1,14 +1,14 @@
 <!doctype html>
 <html lang='en-GB'>
 <head>
-  <meta http-equiv="x-ua-compatible" content="IE=Edge"/> 
-  <!-- as the **very** first line just after head-->  
+  <meta http-equiv="x-ua-compatible" content="IE=Edge"/>
+  <!-- as the **very** first line just after head-->
   <meta charset='utf-8'>
   <title>Work Management</title>
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
-  <link href="http://localhost:8082/webjars/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker3.css" rel="stylesheet">
-  <link href="css/omny-1.0.0.css" rel="stylesheet">
+  <link href="/webjars/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker3.css" rel="stylesheet">
+  <link href="/workmgmt/2.2.0/css/base.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 <body>
@@ -17,11 +17,11 @@
   <script id='template' type='text/ractive'>
     {{>profileArea}}
     {{>titleArea}}
-  
+    {{>loginSect}}
+
     {{>workListSect}}
     {{>workCurrentSect}}
-  
-    {{>poweredBy}}
+
     {{>sidebar { active: 'work.html' }}}
     {{>helpModal}}
     {{>customActionModal}}
@@ -31,7 +31,7 @@
   <script id="enumTemplate" type="text/html">
     <label class="col-md-offset-2 col-sm-offset-2">{{name.toLabel()}}</label>
     <select id="{{..id}}" {{..writeable==false ? 'readonly disabled' : ''}} onblur="ractive.get('current').processVariables[this.id]=this.value" value="{{..value}}">
-      <option></option>  
+      <option></option>
     </select>
   </script>
   <script id="imageTemplate" type="text/html">
@@ -66,16 +66,19 @@
   <script src="/webjars/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
   <script src="/webjars/Bootstrap-3-Typeahead/3.1.1/bootstrap3-typeahead.js"></script>
   <script src="/webjars/ractive/0.7.3/ractive.min.js"></script>
-  
-  <script src="js/html2canvas/html2canvas.js"></script>
+
+  <script src="/html2canvas/0.5.0-alpha1/js/html2canvas.js"></script>
   <script src="js/autoNumeric.js"></script>
   <script src="js/md5.min.js"></script>
-  <script src="js/activity-1.0.0.js"></script>
-  <script src="js/string-functions-0.1.0.js"></script>
-  <script src="js/login-1.0.0.js"></script>
-  <script src="js/i18n.js"></script>
-  <script src="js/workmgmt-1.0.0.js"></script>
-  <script src="js/omny-1.0.0.js"></script>
-  <script src="js/support-1.0.0.js"></script>
+
+  <script src="js/env.js"></script>
+  <script src="workmgmt/2.2.0/js/activity.js"></script>
+  <script src="workmgmt/2.2.0/js/string-functions.js"></script>
+  <script src="workmgmt/2.2.0/js/i18n.js"></script>
+
+  <script src="workmgmt/2.2.0/js/base.js"></script>
+  <script src="workmgmt/2.2.0/js/workmgmt.js"></script>
+  <script src="webjars/auth/1.0.0/js/auth.js"></script>
+  <script src="workmgmt/2.2.0/js/support.js"></script>
 </body>
 </html>

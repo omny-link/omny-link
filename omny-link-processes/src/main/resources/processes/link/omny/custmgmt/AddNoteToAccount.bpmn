@@ -32,6 +32,9 @@
         <activiti:field name="resourcePassword">
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')/notes</activiti:expression>
+        </activiti:field>
         <activiti:field name="globalResource">
           <activiti:expression>userInfo('cust-mgmt-url')/notes</activiti:expression>
         </activiti:field>

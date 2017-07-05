@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/custmgmt" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1497799034910" name="" targetNamespace="http://omny.link/custmgmt" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <process id="CreateContactAndAccount" isClosed="false" isExecutable="true" name="Create contact only" processType="None">
+    <documentation id="CreateContactAndAccount_D_1" textFormat="text/plain"><![CDATA[Reusable process to create contact and account from a single JSON message.]]></documentation>
+    <extensionElements>
+      <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <ioSpecification>
+      <dataInput id="_15" isCollection="false" name="contact"/>
+      <dataOutput id="_17" isCollection="false" name="contact"/>
+      <inputSet>
+        <dataInputRefs>_15</dataInputRefs>
+      </inputSet>
+      <outputSet>
+        <dataOutputRefs>_17</dataOutputRefs>
+      </outputSet>
+    </ioSpecification>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="postContact" implementation="##WebService" isForCompensation="false" name="POST contact" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername">
+          <activiti:string>userInfo('tenant-bot')</activiti:string>
+        </activiti:field>
+        <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="globalResource">
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/</activiti:expression>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field name="data">
+          <activiti:expression>${json}</activiti:expression>
+        </activiti:field>
+        <activiti:field expression="contactId=Location" name="responseHeaders"/>
+        <activiti:field expression="contact" name="responseVar"/>
+      </extensionElements>
+      <incoming>_3</incoming>
+      <outgoing>_4</outgoing>
+      <ioSpecification>
+        <dataInput id="DinpostContact_15" isCollection="false" name="contact"/>
+        <dataOutput id="DoutpostContact_17" isCollection="false" name="Omny Contact"/>
+        <inputSet>
+          <dataInputRefs>DinpostContact_15</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>DoutpostContact_17</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="_16">
+        <sourceRef>_15</sourceRef>
+        <targetRef>DinpostContact_15</targetRef>
+      </dataInputAssociation>
+      <dataOutputAssociation id="_5">
+        <sourceRef>DoutpostContact_17</sourceRef>
+        <targetRef>_17</targetRef>
+      </dataOutputAssociation>
+    </serviceTask>
+    <endEvent id="_11" name="End Event">
+      <incoming>_4</incoming>
+      <inputSet/>
+    </endEvent>
+    <startEvent id="_2" isInterrupting="true" name="Start Event" parallelMultiple="false">
+      <outgoing>_3</outgoing>
+      <outputSet/>
+    </startEvent>
+    <sequenceFlow id="_3" sourceRef="_2" targetRef="postContact"/>
+    <sequenceFlow id="_4" sourceRef="postContact" targetRef="_11"/>
+  </process>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-CreateContactAndAccount" name="Create contact" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="CreateContactAndAccount">
+      <bpmndi:BPMNShape bpmnElement="postContact" id="Yaoqiang-postContact">
+        <dc:Bounds height="81.0" width="116.0" x="283.30769230769226" y="260.9090909090909"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="82.0" x="300.31" y="294.01"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_15" id="Yaoqiang-_15">
+        <dc:Bounds height="38.0" width="29.0" x="121.42307692307693" y="152.8076923076923"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="47.0" x="112.42" y="192.81"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_17" id="Yaoqiang-_17">
+        <dc:Bounds height="38.0" width="29.0" x="510.5769230769231" y="152.8076923076923"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="47.0" x="501.58" y="192.81"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
+        <dc:Bounds height="32.0" width="32.0" x="643.8636363636365" y="285.4090909090909"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="62.0" x="628.86" y="327.01"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
+        <dc:Bounds height="32.0" width="32.0" x="34.96153846153848" y="285.4090909090909"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="69.0" x="16.46" y="327.01"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_16" id="Yaoqiang-_16">
+        <di:waypoint x="150.5588235294117" y="171.8076923076923"/>
+        <di:waypoint x="283.5588235294117" y="301.4090909090909"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="213.87" y="227.4"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
+        <di:waypoint x="399.5588235294117" y="301.4090909090909"/>
+        <di:waypoint x="510.5588235294117" y="171.8076923076923"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="451.94" y="227.09"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_4" id="Yaoqiang-_4">
+        <di:waypoint x="399.5588235294117" y="301.4090909090909"/>
+        <di:waypoint x="643.559081795959" y="301.4090909090909"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="518.56" y="292.01"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
+        <di:waypoint x="66.55856526286448" y="301.4090909090909"/>
+        <di:waypoint x="283.5588235294117" y="301.4090909090909"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="172.06" y="292.01"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

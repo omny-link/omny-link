@@ -24,7 +24,10 @@
           <activiti:string>userInfo('tenant-bot')</activiti:string>
         </activiti:field>
         <activiti:field name="resourcePassword">
-          <activiti:expression><![CDATA[userInfo('cust-mgmt-secret')]]></activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
           <activiti:expression><![CDATA[userInfo('cust-mgmt-url')/${omny_orderConfirmation.getString('tenantId')}/orders/${omny_orderConfirmation.getString('orderId')}/stage]]></activiti:expression>

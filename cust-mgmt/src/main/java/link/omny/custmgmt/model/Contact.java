@@ -17,6 +17,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
@@ -31,19 +32,24 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.hateoas.Link;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
+import link.omny.custmgmt.model.views.ContactViews;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -55,7 +61,8 @@ import lombok.NoArgsConstructor;
         @NamedEntityGraph(name = "contactWithAccount", attributeNodes = {
                 @NamedAttributeNode("account"),
                 @NamedAttributeNode("customFields") }),
-        @NamedEntityGraph(name = "contactWithActivities", attributeNodes = { @NamedAttributeNode("activity") }) })
+        @NamedEntityGraph(name = "contactWithActivities", attributeNodes = {
+                @NamedAttributeNode("activity") }) })
 @Data
 @EqualsAndHashCode(exclude = { "fullName" })
 @AllArgsConstructor
@@ -73,6 +80,7 @@ public class Contact implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     private Long id;
 
     /**
@@ -86,39 +94,48 @@ public class Contact implements Serializable {
 
     // @NotNull
     @JsonProperty
-    // @Column(nullable = false)
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "first_name")
     private String firstName;
 
-    /**
-     */
     // @NotNull
     @JsonProperty
-    // @Column(nullable = false)
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "last_name")
     private String lastName;
 
     /**
      * Whether this is the primary contact for an account.
      */
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "main_contact")
     private boolean mainContact;
 
-    /**
-     */
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "title")
     private String title;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "job_title")
     private String jobTitle;
 
-    /**
-     */
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "email")
     private String email;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "email_confirmed")
     private boolean emailConfirmed;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 32)
+    @Column(name = "email_hash")
     private String emailHash;
 
     /**
@@ -126,76 +143,133 @@ public class Contact implements Serializable {
      * 'click to activate' email.
      */
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 36)
+    @Column(name = "uuid")
     private String uuid;
 
     @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
+    @Size(max = 15)
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "phone1")
     private String phone1;
 
     @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
+    @Size(max = 15)
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "phone2")
     private String phone2;
 
     @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     private String phone3;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "address1")
     private String address1;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "address2")
     private String address2;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 60)
+    @Column(name = "town")
     private String town;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 60)
+    @Column(name = "county_or_city")
     private String countyOrCity;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 10)
+    @Column(name = "post_code")
     private String postCode;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 60)
+    @Column(name = "country")
     private String country;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "existing_customer")
     private boolean existingCustomer;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 30)
+    @Column(name = "stage")
     private String stage;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "stage_reason")
     private String stageReason;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "stage_date")
     private Date stageDate;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 100)
+    @Column(name = "enquiry_type")
     private String enquiryType;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 30)
+    @Column(name = "account_type")
     private String accountType;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 50)
+    @Column(name = "owner")
     private String owner;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "do_not_call")
     private boolean doNotCall;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "do_not_email")
     private boolean doNotEmail;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 16)
+    @Column(name = "twitter")
     private String twitter;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "facebook")
     private String facebook;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "linked_in")
     private String linkedIn;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     @Lob
+    @Column(name = "description")
     private String description;
 
     /**
@@ -203,68 +277,93 @@ public class Contact implements Serializable {
      * cases the contact will declare the source.
      */
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 30)
+    @Column(name = "source")
     private String source;
 
     /**
      * In order to allow both Analytics source and a client declared one.
      */
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "source2")
     private String source2;
 
     /**
      * Intended to capture the medium of the lead from Analytics.
      */
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 30)
+    @Column(name = "medium")
     private String medium;
 
     /**
      * Intended to capture the campaign of the lead from Analytics.
      */
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 30)
+    @Column(name = "campaign")
     private String campaign;
 
     /**
      * Intended to capture the keyword of the lead from Analytics.
      */
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 30)
+    @Column(name = "keyword")
     private String keyword;
 
     /**
      * Comma-separated set of alerts for the contact.
      */
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "alerts")
     private String alerts;
 
     /**
      * Comma-separated set of arbitrary tags for the contact.
      */
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "tags")
     private String tags;
 
     /**
      * The time the contact is created.
-     * 
+     *
      * Generally this field is managed by the application but this is not
      * rigidly enforced as exceptions such as data migration do exist.
      */
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "first_contact", updatable = false)
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     private Date firstContact;
 
-    /**
-     */
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "last_updated")
     private Date lastUpdated;
 
-    /**
-     */
     @NotNull
     @JsonProperty
-    @Column(nullable = false)
+    @JsonView({ ContactViews.Detailed.class })
+    @Size(max = 30)
+    @Column(name = "tenant_id", nullable = false)
     private String tenantId;
+
+    @Transient
+    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
+    @JsonProperty("links")
+    @JsonView({ ContactViews.Summary.class })
+    private List<Link> links;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contact", targetEntity = CustomContactField.class)
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
@@ -303,8 +402,8 @@ public class Contact implements Serializable {
         boolean found = false;
         for (CustomContactField field : getCustomFields()) {
             if (field.getName().equals(newField.getName())) {
-                field.setValue(newField.getValue() == null ? null : newField
-                        .getValue().toString());
+                field.setValue(newField.getValue() == null ? null
+                        : newField.getValue().toString());
                 found = true;
             }
         }
@@ -315,6 +414,7 @@ public class Contact implements Serializable {
     }
 
     @JsonProperty
+    @JsonView({ ContactViews.Summary.class })
     @ManyToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.EAGER)
     @NotFound(action = NotFoundAction.IGNORE)
     // TODO this fixes the inifite recursion but instead we get
@@ -333,6 +433,7 @@ public class Contact implements Serializable {
     private Account account;
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     private transient Long accountId;
 
     public Long getAccountId() {
@@ -340,13 +441,26 @@ public class Contact implements Serializable {
                 : getAccount().getId();
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
+    @JsonProperty
+    @JsonView({ ContactViews.Summary.class })
+    public String getSelfRef() {
+        return id == null ? null
+                : String.format("/%1$s/contacts/%2$d", tenantId, id);
+    }
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "contact_id")
+    @JsonView({ ContactViews.Detailed.class })
     private List<Note> notes;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contact")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "contact_id")
+    @JsonView({ ContactViews.Detailed.class })
     private List<Activity> activity;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact")
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "contact_id")
+    @JsonView({ ContactViews.Detailed.class })
     private List<Document> documents;
 
     @Transient
@@ -456,18 +570,20 @@ public class Contact implements Serializable {
 
     private void initEmailHash() {
         // Can happen in the event of anon contacts
-        if (email==null) {
+        if (email == null) {
             return;
         }
         try {
-            byte[] bytes = MessageDigest.getInstance("MD5").digest(email.getBytes());
+            byte[] bytes = MessageDigest.getInstance("MD5")
+                    .digest(email.getBytes());
 
-          //convert the byte to hex format method 1
+            // convert the byte to hex format method 1
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < bytes.length; i++) {
-              sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16)
+                        .substring(1));
             }
-            emailHash=sb.toString();
+            emailHash = sb.toString();
         } catch (NoSuchAlgorithmException e) {
             // JDK required to support MD5
             // http://docs.oracle.com/javase/8/docs/api/java/security/MessageDigest.html
@@ -496,24 +612,25 @@ public class Contact implements Serializable {
     }
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     public String getAddress() {
         StringBuilder sb = new StringBuilder();
-        if (address1 != null && address1.length()>0) {
+        if (address1 != null && address1.length() > 0) {
             sb.append(address1).append(", ");
         }
-        if (address2 != null && address2.length()>0) {
+        if (address2 != null && address2.length() > 0) {
             sb.append(address2).append(", ");
         }
-        if (town != null && town.length()>0) {
+        if (town != null && town.length() > 0) {
             sb.append(town).append(", ");
         }
-        if (countyOrCity != null && countyOrCity.length()>0) {
+        if (countyOrCity != null && countyOrCity.length() > 0) {
             sb.append(countyOrCity).append(", ");
         }
-        if (postCode != null && postCode.length()>0) {
+        if (postCode != null && postCode.length() > 0) {
             sb.append(postCode).append(". ");
         }
-        if (country != null && country.length()>0) {
+        if (country != null && country.length() > 0) {
             sb.append(country).append(".");
         }
         return sb.toString();
@@ -523,16 +640,15 @@ public class Contact implements Serializable {
         long time = -1;
         try {
             Activity lastEmail = getLastActivityOfType(type);
-            time = lastEmail == null ? -1 : getNow().getTime()
-                    - lastEmail.getOccurred().getTime();
+            time = lastEmail == null ? -1
+                    : getNow().getTime() - lastEmail.getOccurred().getTime();
         } catch (NullPointerException e) {
-            LOGGER.warn(
-                    String.format(
-                            "Exception in getTimeSinceLast('%1$s'), assume no such activity",
-                            type), e);
+            LOGGER.warn(String.format(
+                    "Exception in getTimeSinceLast('%1$s'), assume no such activity",
+                    type), e);
         }
-        LOGGER.info(String.format("determined time since %1$s: %2$d", type,
-                time));
+        LOGGER.info(
+                String.format("determined time since %1$s: %2$d", type, time));
         return time;
     }
 
@@ -540,16 +656,15 @@ public class Contact implements Serializable {
         long time = -1;
         try {
             Activity lastEmail = getFirstActivityOfType(type);
-            time = lastEmail == null ? -1 : getNow().getTime()
-                    - lastEmail.getOccurred().getTime();
+            time = lastEmail == null ? -1
+                    : getNow().getTime() - lastEmail.getOccurred().getTime();
         } catch (NullPointerException e) {
-            LOGGER.warn(
-                    String.format(
-                            "Exception in getTimeSinceLast('%1$s'), assume no such activity",
-                            type), e);
+            LOGGER.warn(String.format(
+                    "Exception in getTimeSinceLast('%1$s'), assume no such activity",
+                    type), e);
         }
-        LOGGER.info(String.format("determined time since %1$s: %2$d", type,
-                time));
+        LOGGER.info(
+                String.format("determined time since %1$s: %2$d", type, time));
         return time;
     }
 
@@ -598,13 +713,14 @@ public class Contact implements Serializable {
     }
 
     @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     @Transient
     public int getEmailsSent() {
         try {
             return getActivitiesOfType("email").size();
         } catch (RuntimeException e) {
-            LOGGER.warn(String.format(
-                    "No activities available for contact %1$d", id));
+            LOGGER.warn(String
+                    .format("No activities available for contact %1$d", id));
             return 0;
         }
     }
@@ -627,28 +743,34 @@ public class Contact implements Serializable {
     public Activity getLastActivityOfType(String type) {
         LOGGER.info("getLastActivityOfType: " + type);
         Activity lastAct = null;
-        for (Activity act : getActivities()) {
-            if (type.equalsIgnoreCase(act.getType())
-                    && (lastAct == null || lastAct.getOccurred().before(
-                            act.getOccurred()))) {
-                lastAct = act;
+        try {
+            for (Activity act : getActivities()) {
+                if (type.equalsIgnoreCase(act.getType()) && (lastAct == null
+                        || lastAct.getOccurred().before(act.getOccurred()))) {
+                    lastAct = act;
+                }
             }
+            LOGGER.info("  found last activity: " + lastAct);
+        } catch (Exception e) {
+            LOGGER.debug("  no activity of type: {} found", type);
         }
-        LOGGER.info("  found last activity: " + lastAct);
         return lastAct;
     }
 
     public Activity getFirstActivityOfType(String type) {
         LOGGER.info("getFirstActivityOfType: " + type);
         Activity firstAct = null;
-        for (Activity act : getActivities()) {
-            if (type.equalsIgnoreCase(act.getType())
-                    && (firstAct == null || firstAct.getOccurred().after(
-                            act.getOccurred()))) {
-                firstAct = act;
+        try {
+            for (Activity act : getActivities()) {
+                if (type.equalsIgnoreCase(act.getType()) && (firstAct == null
+                        || firstAct.getOccurred().after(act.getOccurred()))) {
+                    firstAct = act;
+                }
             }
+            LOGGER.info("  found last activity: " + firstAct);
+        } catch (Exception e) {
+            LOGGER.debug("  no activity of type: {} found", type);
         }
-        LOGGER.info("  found last activity: " + firstAct);
         return firstAct;
     }
 
@@ -691,16 +813,14 @@ public class Contact implements Serializable {
 
     @Override
     public String toString() {
-        return String
-                .format("Contact [id=%s, firstName=%s, lastName=%s, title=%s, jobTitle=%s, email=%s, emailConfirmed=%s, emailConfirmationCode=%s, phone1=%s, phone2=%s, address1=%s, address2=%s, town=%s, countyOrCity=%s, postCode=%s, country=%s, stage=%s, enquiryType=%s, accountType=%s, owner=%s, doNotCall=%s, doNotEmail=%s, source=%s, medium=%s, campaign=%s, keyword=%s, alerts=%s, tags=%s, firstContact=%s, lastUpdated=%s, tenantId=%s, customFields=%s, account=%d]",
-                        id, firstName, lastName, title, jobTitle, email,
-                        emailConfirmed, uuid, phone1, phone2, address1,
-                        address2, town, countyOrCity, postCode, country, stage,
-                        enquiryType, accountType, owner, doNotCall, doNotEmail,
-                        source, medium, campaign, keyword, alerts, tags,
-                        firstContact,
-                        lastUpdated, tenantId, customFields,
-                        account == null ? null : account.getId());
+        return String.format(
+                "Contact [id=%s, firstName=%s, lastName=%s, title=%s, jobTitle=%s, email=%s, emailConfirmed=%s, emailConfirmationCode=%s, phone1=%s, phone2=%s, address1=%s, address2=%s, town=%s, countyOrCity=%s, postCode=%s, country=%s, stage=%s, enquiryType=%s, accountType=%s, owner=%s, doNotCall=%s, doNotEmail=%s, source=%s, medium=%s, campaign=%s, keyword=%s, alerts=%s, tags=%s, firstContact=%s, lastUpdated=%s, tenantId=%s, customFields=%s, account=%d]",
+                id, firstName, lastName, title, jobTitle, email, emailConfirmed,
+                uuid, phone1, phone2, address1, address2, town, countyOrCity,
+                postCode, country, stage, enquiryType, accountType, owner,
+                doNotCall, doNotEmail, source, medium, campaign, keyword,
+                alerts, tags, firstContact, lastUpdated, tenantId, customFields,
+                account == null ? null : account.getId());
     }
 
 }

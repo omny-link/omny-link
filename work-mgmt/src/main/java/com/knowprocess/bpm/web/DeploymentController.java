@@ -258,12 +258,16 @@ public class DeploymentController {
             String bpmn = fixContentInProlog(entry.getValue());
             String[] resources = getResourceExtractor().transform(bpmn).split(",");
             for (String resource : resources) {
-                Group group = processEngine.getIdentityService().newGroup(resource);
-                group.setName(resource);
-                try {
-                    processEngine.getIdentityService().saveGroup(group);
-                } catch (RuntimeException e) {
-                    LOGGER.warn("Ignoring error creating group '{}', presumably already exists", resource);
+                if (resource == null || resource.trim().length() < 1) {
+                    LOGGER.info("Ignoring empty resource '{}'", resource);
+                } else {
+                    Group group = processEngine.getIdentityService().newGroup(resource);
+                    group.setName(resource);
+                    try {
+                        processEngine.getIdentityService().saveGroup(group);
+                    } catch (RuntimeException e) {
+                        LOGGER.warn("Ignoring error creating group '{}', presumably already exists", resource);
+                    }
                 }
             }
         }

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.knowprocess.beans.model.AccountInfo;
@@ -18,10 +18,10 @@ import com.knowprocess.sugarcrm.api.SugarLead;
 
 public class ModeledConversionTest {
 
-    private ModelBasedConversionService conversionService;
+    private static ModelBasedConversionService conversionService;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUpClass() throws Exception {
         conversionService = new ModelBasedConversionService();
         conversionService.init("/uml2/domain.xml", "Sugar",
                 "com.knowprocess.beans.model", "com.knowprocess.sugarcrm.api");

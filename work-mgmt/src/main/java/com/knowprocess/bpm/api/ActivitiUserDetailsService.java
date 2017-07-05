@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.knowprocess.bpm.model.UserRecord;
 
+@Deprecated
 public class ActivitiUserDetailsService implements UserDetailsService
 /* , ApplicationListener<InteractiveAuthenticationSuccessEvent> */{
 

@@ -22,6 +22,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
@@ -29,13 +36,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * A picture of performance for a cohort across a number of metrics.
@@ -62,13 +62,16 @@ public class CohortPerformance implements Serializable {
     private Long id;
 
     @JsonProperty
+    @Column(name = "subject_name")
     private String subjectName;
 
     @JsonProperty
+    @Column(name = "subject_email")
     private String subjectEmail;
 
     @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
     @JsonProperty
+    @Column(name = "subject_phone")
     private String subjectPhone;
 
     @JsonProperty
@@ -88,7 +91,7 @@ public class CohortPerformance implements Serializable {
     /**
      * The time the survey is created (may or may not be the same as the time
      * the performance applies to).
-     * 
+     *
      * Generally this field is managed by the application but this is not
      * rigidly enforced as exceptions such as data migration do exist.
      */

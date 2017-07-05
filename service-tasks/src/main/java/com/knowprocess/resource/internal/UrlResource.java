@@ -25,9 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.knowprocess.resource.spi.Resource;
+import com.knowprocess.resource.spi.model.JwtUserPrincipal;
 
 public class UrlResource implements Resource {
     public static final String HEADER_CONTENT_TYPE = "Content-Type";
+
+    private static final Map<String, String> EMPTY_MAP = new HashMap<String, String>();
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(UrlResource.class);
@@ -37,7 +40,11 @@ public class UrlResource implements Resource {
 
     private String password;
     private String username;
-    private static final Map<String, String> EMPTY_MAP = new HashMap<String, String>();
+
+    private String authMethod;
+    private String jwtLoginUrl;
+    private String jwtToken;
+
 
     public UrlResource() {
         super();
@@ -45,7 +52,7 @@ public class UrlResource implements Resource {
 
     /**
      * Represents a URL resource protected with HTTP Basic authentication.
-     * 
+     *
      * @param username
      * @param password
      */
@@ -53,6 +60,55 @@ public class UrlResource implements Resource {
         this();
         this.username = username.trim();
         this.password = password.trim();
+        this.authMethod = "BASIC";
+    }
+
+    /**
+     * Represents a URL resource protected with JWT authentication .
+     * @param principal TODO
+     *
+     * @throws IOException If unable to authenticate
+     */
+    public UrlResource(JwtUserPrincipal principal) {
+        this();
+        this.username = principal.getName();
+        this.password = principal.getPassword();
+        this.authMethod = "JWT";
+        this.jwtLoginUrl = principal.getJwtLoginUrl();
+    }
+
+    protected void applyAuthMethod(final Map<String, String> headers) throws IOException {
+        switch (authMethod.toUpperCase()) {
+        case "BASIC":
+            headers.put("Authorization",
+                    getBasicAuthorizationHeader(username, password));
+            break;
+        case "JWT":
+            headers.put("X-Requested-With", "XMLHttpRequest");
+            if (jwtToken == null) {
+                login();
+                headers.put("X-Authorization", "Bearer " + jwtToken);
+            }
+            break;
+        default:
+            LOGGER.warn("unknown authentication method %1$s", authMethod);
+        }
+    }
+
+    protected void login() throws IOException {
+        final Map<String, String> headers = new HashMap<String, String>();
+        headers.put("X-Requested-With", "XMLHttpRequest");
+        headers.put("Content-Type", "application/json");
+        headers.put("Accept", "application/json");
+        final String data = String.format("{\"username\":\"%1$s\",\"password\":\"%2$s\"}", username, password);
+        final Map<String, List<String>> responseHeaders = new HashMap<String, List<String>>();
+        try (InputStream is = getResource(jwtLoginUrl, "POST", headers, responseHeaders, data)) {
+            @SuppressWarnings("resource")
+            String response = new Scanner(is).useDelimiter("\\A").next();
+            LOGGER.debug("Response: " + response);
+            int start = response.indexOf("\"", response.indexOf("\"token\"")+7);
+            jwtToken = response.substring(start+1, response.indexOf(',', start)-1);
+        }
     }
 
     private String urlEncode(Map<String, String> data)
@@ -69,7 +125,7 @@ public class UrlResource implements Resource {
     }
 
     public InputStream getResource(String sUrl) throws IOException {
-        return getResource(sUrl, "GET", "text/html", "text/html", EMPTY_MAP);
+        return getResource(sUrl, "GET", EMPTY_MAP, EMPTY_MAP);
     }
 
     /**
@@ -121,9 +177,8 @@ public class UrlResource implements Resource {
                 headers.put("User-Agent", "KnowProcess Agent");
             }
 
-            if (username != null) {
-                headers.put("Authorization",
-                        getBasicAuthorizationHeader(username, password));
+            if (username != null && !sUrl.equals(jwtLoginUrl)) {
+                applyAuthMethod(headers);
             }
 
             logHeaders(headers);
@@ -209,10 +264,10 @@ public class UrlResource implements Resource {
             URISyntaxException {
         URL u = new URL(sUrl);
         return new URI(
-                u.getProtocol(), 
-                u.getAuthority(), 
+                u.getProtocol(),
+                u.getAuthority(),
                 u.getPath(),
-                u.getQuery(), 
+                u.getQuery(),
                 u.getRef()).
                 toURL();
     }

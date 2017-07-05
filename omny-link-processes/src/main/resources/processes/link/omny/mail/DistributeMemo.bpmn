@@ -29,6 +29,9 @@
         <activiti:field name="resourcePassword">
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
         <activiti:field name="globalResource">
           <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/memo-distributions/${distributionId}/expandedTags</activiti:expression>
         </activiti:field>
@@ -47,6 +50,9 @@
         </activiti:field>
         <activiti:field name="resourcePassword">
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
           <activiti:expression>userInfo('cust-mgmt-url')/memos/${distribution.getString('memoRef')}/</activiti:expression>
@@ -77,7 +83,10 @@
             <activiti:string>userInfo('tenant-bot')</activiti:string>
           </activiti:field>
           <activiti:field name="resourcePassword">
-            <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+          </activiti:field>
+          <activiti:field name="jwtLoginResource">
+            <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
           </activiti:field>
           <activiti:field name="globalResource">
             <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/searchByEmail/?email=${contactEmail}</activiti:expression>
@@ -123,7 +132,6 @@
       <sequenceFlow id="_18" sourceRef="addMailActivityToContact" targetRef="endSubProc"/>
       <callActivity calledElement="AddActivityToContact" completionQuantity="1" id="addMailActivityToContact" isForCompensation="false" name="Add activity to contact" startQuantity="1">
         <extensionElements>
-          <activiti:in sourceExpression="${contacts.getJsonObject(0)}" target="contact"/>
           <activiti:in sourceExpression="email" target="activityType"/>
           <activiti:in sourceExpression="${memo.getString('title')}" target="subject"/>
           <activiti:in source="richContent" target="richContent"/>

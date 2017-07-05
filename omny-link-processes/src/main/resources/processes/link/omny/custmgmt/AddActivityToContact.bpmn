@@ -7,21 +7,16 @@
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
     </extensionElements>
     <ioSpecification>
-      <dataInput id="_4" isCollection="false" name="contact"/>
       <dataInput id="_5" isCollection="false" name="activityContent"/>
       <dataInput id="_6" isCollection="false" name="activityType"/>
       <dataInput id="_7" isCollection="false" name="contactId"/>
       <inputSet>
-        <dataInputRefs>_4</dataInputRefs>
         <dataInputRefs>_5</dataInputRefs>
         <dataInputRefs>_6</dataInputRefs>
         <dataInputRefs>_7</dataInputRefs>
       </inputSet>
       <outputSet/>
     </ioSpecification>
-    <sequenceFlow id="_10" sourceRef="postActivity" targetRef="linkActivityToContact"/>
-    <sequenceFlow id="_12" sourceRef="linkActivityToContact" targetRef="end"/>
-    
     <sequenceFlow id="_3" sourceRef="start" targetRef="postActivity"/>
     <startEvent id="start" isInterrupting="true" name="Start Event" parallelMultiple="false">
       <outgoing>_3</outgoing>
@@ -35,8 +30,11 @@
         <activiti:field name="resourcePassword">
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/activities</activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/${bpmnRest.uriToDbId(contactId)}/activities</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
@@ -47,115 +45,73 @@
         <activiti:field expression="activityId=Location" name="responseHeaders"/>
       </extensionElements>
       <incoming>_3</incoming>
-      <outgoing>_10</outgoing>
-    </serviceTask>
-    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPut" completionQuantity="1" id="linkActivityToContact" implementation="##WebService" isForCompensation="false" name="PUT association&#10; from activity to contact" startQuantity="1">
-      <extensionElements>
-        <activiti:field name="resourceUsername">
-          <activiti:string>userInfo('tenant-bot')</activiti:string>
-        </activiti:field>
-        <activiti:field name="resourcePassword">
-          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="globalResource">
-          <activiti:expression>${activityId}/contact</activiti:expression>
-        </activiti:field>
-        <activiti:field name="headers">
-          <activiti:string>Content-Type:text/uri-list,Accept:application/json</activiti:string>
-        </activiti:field>
-        <activiti:field name="data">
-          <activiti:expression>${contactId}</activiti:expression>
-        </activiti:field>
-        <activiti:field name="responseVar">
-          <activiti:expression>textResponse</activiti:expression>
-        </activiti:field>
-      </extensionElements>
-      <incoming>_10</incoming>
-      <outgoing>_12</outgoing>
+      <outgoing>_8</outgoing>
     </serviceTask>
     <endEvent id="end" name="End Event">
-      <incoming>_12</incoming>
+      <incoming>_8</incoming>
       <inputSet/>
     </endEvent>
+    <sequenceFlow id="_8" sourceRef="postActivity" targetRef="end"/>
     <textAnnotation id="_2" textFormat="text/plain">
       <text>ADD ACTIVITY TO CONTACT</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddActivityToContact" name="Add activity to contact" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="AddActivityToContact">
       <bpmndi:BPMNShape bpmnElement="start" id="Yaoqiang-start">
-        <dc:Bounds height="32.0" width="32.0" x="62.77272727272734" y="262.3636363636364"/>
+        <dc:Bounds height="32.0" width="32.0" x="62.77272727272734" y="212.36363636363637"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="63.0" x="47.27272727272731" y="303.6370738636364"/>
+          <dc:Bounds height="18.64" width="63.0" x="47.27" y="254.12"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="postActivity" id="Yaoqiang-postActivity">
-        <dc:Bounds height="81.0" width="116.0" x="221.29254079254082" y="237.86363636363637"/>
+        <dc:Bounds height="81.0" width="116.0" x="221.29254079254082" y="187.86363636363637"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="77.0" x="240.79254079254082" y="270.8860973011364"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="linkActivityToContact" id="Yaoqiang-linkActivityToContact">
-        <dc:Bounds height="81.0" width="116.0" x="413.6235431235432" y="237.86363636363637"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="46.955078125" width="91.0" x="426.1235431235432" y="256.8860973011364"/>
+          <dc:Bounds height="18.64" width="74.0" x="242.29" y="221.04"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="end" id="Yaoqiang-end">
-        <dc:Bounds height="32.0" width="32.0" x="647.9545454545455" y="262.3636363636364"/>
+        <dc:Bounds height="32.0" width="32.0" x="467.9545454545455" y="212.36363636363637"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="58.0" x="634.9545454545455" y="303.6370738636364"/>
+          <dc:Bounds height="18.64" width="55.0" x="456.45" y="254.12"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
         <dc:Bounds height="40.0" width="216.0" x="63.0" y="52.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="160.0" x="63.0" y="64.5224609375"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4">
-        <dc:Bounds height="38.0" width="29.0" x="62.77272727272734" y="346.6931818181818"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="46.0" x="54.27272727272734" y="386.6931818181818"/>
+          <dc:Bounds height="18.64" width="144.0" x="63.0" y="64.68"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_5" id="Yaoqiang-_5">
-        <dc:Bounds height="38.0" width="29.0" x="62.77272727272734" y="434.02272727272725"/>
+        <dc:Bounds height="38.0" width="29.0" x="62.77272727272734" y="304.02272727272725"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="87.0" x="33.77272727272734" y="474.02272727272725"/>
+          <dc:Bounds height="18.64" width="84.0" x="35.27" y="344.02"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6">
-        <dc:Bounds height="38.0" width="29.0" x="62.77272727272734" y="521.3522727272727"/>
+        <dc:Bounds height="38.0" width="29.0" x="62.77272727272734" y="391.35227272727275"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="70.0" x="42.27272727272734" y="561.3522727272727"/>
+          <dc:Bounds height="18.64" width="65.0" x="44.77" y="431.35"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7">
-        <dc:Bounds height="38.0" width="29.0" x="62.77272727272734" y="608.6818181818182"/>
+        <dc:Bounds height="38.0" width="29.0" x="62.77272727272734" y="478.68181818181824"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="56.0" x="49.27272727272734" y="648.6818181818182"/>
+          <dc:Bounds height="18.64" width="53.0" x="50.77" y="518.68"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
-        <di:waypoint x="529.5" y="278.3636363636364"/>
-        <di:waypoint x="647.5041327651471" y="278.3636363636364"/>
+      <bpmndi:BPMNEdge bpmnElement="_8" id="Yaoqiang-_8">
+        <di:waypoint x="337.2058823529411" y="228.36363636363637"/>
+        <di:waypoint x="468.20646345853504" y="228.36363636363637"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="585.5020663825735" y="268.8860973011364"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_10" id="Yaoqiang-_10">
-        <di:waypoint x="337.5" y="278.3636363636364"/>
-        <di:waypoint x="413.5" y="278.3636363636364"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="372.5" y="268.8860973011364"/>
+          <dc:Bounds height="18.64" width="6.0" x="399.71" y="219.04"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
-        <di:waypoint x="94.49586723485292" y="278.3636363636364"/>
-        <di:waypoint x="221.5" y="278.3636363636364"/>
+        <di:waypoint x="95.20530124734717" y="228.36363636363637"/>
+        <di:waypoint x="221.2058823529411" y="228.36363636363637"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="154.99793361742647" y="268.8860973011364"/>
+          <dc:Bounds height="18.64" width="6.0" x="155.21" y="219.04"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

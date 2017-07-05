@@ -77,7 +77,7 @@ public class GDriveRepository implements Repository,
                         .startsWith("Enter ")) {
             System.out
                     .println("Enter Client ID and Secret from https://code.google.com/apis/console/?api=drive "
-                            + "into drive-cmdline-sample/src/main/resources/client_secrets.json");
+                            + "into client_secret.json somewhere on the classpath");
             System.exit(1);
         }
         // set up file credential store

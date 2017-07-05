@@ -2,9 +2,6 @@ package link.omny.acctmgmt.web;
 
 import java.io.IOException;
 
-import link.omny.acctmgmt.model.SystemConfig;
-import link.omny.acctmgmt.model.TenantConfig;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.knowprocess.resource.spi.RestGet;
+import com.knowprocess.resource.spi.Fetcher;
+
+import link.omny.acctmgmt.model.TenantConfig;
 
 @Controller
 public class CssController {
@@ -24,9 +23,6 @@ public class CssController {
             .getLogger(CssController.class);
 
     private static final String STATIC_BASE = "/static";
-
-    @Autowired
-    private SystemConfig systemConfig;
 
     @Autowired
     protected TenantConfigController tenantConfigController;
@@ -38,7 +34,7 @@ public class CssController {
      *            The id of an existing tenant.
      * @return The CSS for that tenant.
      */
-    @RequestMapping(value = "/css/{tenantId}-{semVar}.css", method = RequestMethod.GET, headers = "Accept=text/css")
+    @RequestMapping(value = "/css/{tenantId}-{semVer}.css", method = RequestMethod.GET, headers = "Accept=text/css")
     public @ResponseBody String showTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(required = false, defaultValue = "1.0.0") String semVer) {
@@ -51,7 +47,7 @@ public class CssController {
                 && tenantConfig.getTheme().getCssUrl() != null
                 && tenantConfig.getTheme().getCssUrl().startsWith("http")) {
             String theme = null;
-            RestGet get = new RestGet();
+            Fetcher get = new Fetcher();
             try {
                 theme = get.fetchToString(tenantConfig.getTheme()
                         .getCssUrl());
@@ -70,8 +66,7 @@ public class CssController {
             return TenantConfig.readResource(resourceUrl);
         } else {
             // Defaults exist for everything but log warning
-            String msg = "Please specify either CSS url or theme color properties in tenant file";
-            LOGGER.warn(msg);
+            LOGGER.warn("Please specify either CSS url or theme color properties in {} tenant configuration", tenantId);
             return getDefaultCss(tenantConfig);
         }
     }

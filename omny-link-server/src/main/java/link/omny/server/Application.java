@@ -1,28 +1,37 @@
 package link.omny.server;
 
+import java.util.List;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.hateoas.Link;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knowprocess.auth.AuthConfig;
 import com.knowprocess.bpm.BpmConfiguration;
-import com.knowprocess.bpm.api.ActivitiApplicationSecurity;
 
 import io.onedecision.engine.OneDecisionConfig;
+import io.onedecision.engine.domain.OneDecisionDomainConfig;
 import link.omny.acctmgmt.AcctMgmtConfig;
 import link.omny.acctmgmt.model.SystemConfig;
 import link.omny.analytics.AnalyticsConfig;
 import link.omny.catalog.CatalogConfig;
 import link.omny.custmgmt.CustMgmtConfig;
+import link.omny.server.model.mixins.OmnyLinkMixIn;
 
 @Configuration
 @EnableAutoConfiguration
-@Import({ OneDecisionConfig.class, AnalyticsConfig.class, AcctMgmtConfig.class,
+@Import({ AuthConfig.class, OneDecisionConfig.class, OneDecisionDomainConfig.class,
+        AnalyticsConfig.class, AcctMgmtConfig.class,
         BpmConfiguration.class, CustMgmtConfig.class, CatalogConfig.class })
 @ComponentScan(basePackages = { "link.omny.acctmgmt", "link.omny.analytics",
         "link.omny.catalog", "link.omny.custmgmt", "link.omny.server",
@@ -37,12 +46,18 @@ public class Application extends WebMvcConfigurerAdapter {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("index");
-        registry.addViewController("/login").setViewName("login");
+        // #405 migration
+        registry.addRedirectViewController("/login", "/");
     }
 
-    @Bean
-    public WebSecurityConfigurerAdapter applicationSecurity() {
-        return new ActivitiApplicationSecurity();
+    @Override
+    public void configureMessageConverters(
+            List<HttpMessageConverter<?>> converters) {
+        ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
+                .mixIn(Link.class, OmnyLinkMixIn.class)
+                .build();
+        converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
+        super.configureMessageConverters(converters);
     }
 
     public static void main(String[] args) {

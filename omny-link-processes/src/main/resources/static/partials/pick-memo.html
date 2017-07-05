@@ -1,8 +1,8 @@
 <section id="pickMemo">
   <ul class="nav nav-tabs">
-    <li role="presentation" class="active"><a href="#" onclick="showMemoSpec()">Specify</a></li>
-    <li role="presentation"><a href="#" onclick="showMemoPreview()">Preview</a></li>
-    <li role="presentation"><a href="#" onclick="fetchPdf()">Download PDF</a></li>
+    <li role="presentation" class="active"><a href="#">Specify</a></li>
+    <li role="presentation"><a href="#">Preview</a></li>
+    <li role="presentation"><a href="#">Download PDF</a></li>
   </ul>
   <section>
     <div class="form-group">
@@ -23,7 +23,7 @@
     {{/if}}
     <div class="form-group">
       <label class="control-label">Contact:</label>
-      <input autocomplete="off" class="form-control" id="curContactDisplay" disabled readonly style="width:60%;" type="text" value="{{formatContactId(instanceToStart.processVariables.contactId)}}">
+      <input autocomplete="off" class="form-control" id="curContactDisplay" disabled readonly style="width:60%;" twoway="false" type="text" value="{{formatContactId(instanceToStart.processVariables.contactId)}}">
       <p class="help-block">The contact to address.</p>
     </div>
     {{#if tenant.id=='firmgains' || tenant.id=='omny'}}

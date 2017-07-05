@@ -26,7 +26,7 @@ public class JSConverter implements GenericConverter,
     private Class<?> targetType;
     private Class<?> sourceType;
 
-    public JSConverter(Class<?> sourceType, Class<?> targetType, String script) {
+    public <S, T> JSConverter(Class<S> sourceType, Class<T> targetType, String script) {
         super();
         LOGGER.info("Define converter using script:\n" + script);
         this.script = script;

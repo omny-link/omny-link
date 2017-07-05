@@ -315,6 +315,9 @@ public class MessageController {
                 // return new ResponseEntity<String>(e2.toJson(), headers,
                 // HttpStatus.SERVICE_UNAVAILABLE);
             }
+        } catch (Throwable e) {
+            LOGGER.error("Process exception: {}", e.getMessage());
+            throw e;
         } finally {
             Authentication.setAuthenticatedUserId(null);
         }

@@ -20,6 +20,7 @@ public abstract class BaseUserAwareTask implements JavaDelegate {
 
     protected Expression resourceUsername;
     protected Expression resourcePassword;
+    protected Expression jwtLoginResource;
 
     protected UserInfoHelper getUserInfoHelper() {
         if (userInfoHelper == null) {

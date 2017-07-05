@@ -8,20 +8,21 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import javax.validation.constraints.Size;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import link.omny.custmgmt.model.views.AccountViews;
+import link.omny.custmgmt.model.views.ContactViews;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -39,29 +40,30 @@ public class Document implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     private Long id;
 
     @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
+    @Size(max = 50)
+    @Column(name = "author")
     private String author;
 
     @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
+    @Column(name = "created")
     private Date created;
 
     @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
+    @Size(max = 30)
+    @Column(name = "name")
     private String name;
 
     @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
+    @Column(name = "url")
     private String url;
-
-    @RestResource(rel = "documentAccount")
-    @ManyToOne(targetEntity = Account.class)
-    @JoinColumn(name = "account_id")
-    private Account account;
-
-    @RestResource(rel = "documentContact")
-    @ManyToOne(targetEntity = Contact.class)
-    @JoinColumn(name = "contact_id")
-    private Contact contact;
 
     public Document(String author, String url) {
         setAuthor(author);

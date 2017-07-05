@@ -8,7 +8,7 @@
       <div class="modal-body">
         <div class="messages alert-info" style="display: none;"></div>
         <form id="customActionForm">
-          {{#if instanceToStart!=undefined}}
+          {{#if instanceToStart!=undefined && instanceToStart.processDefinitionKey!=undefined}}
             {{>tenant.id+instanceToStart.processDefinitionKey}}
           {{/if}}
         </form>

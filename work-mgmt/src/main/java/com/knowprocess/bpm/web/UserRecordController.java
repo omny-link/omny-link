@@ -7,9 +7,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
@@ -34,6 +31,10 @@ import com.knowprocess.bpm.model.UserGroup;
 import com.knowprocess.bpm.model.UserInfo;
 import com.knowprocess.bpm.model.UserInfoKeys;
 import com.knowprocess.bpm.model.UserRecord;
+import com.knowprocess.bpmn.BusinessEntityNotFoundException;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Controller
 @RequestMapping("/users")
@@ -106,7 +107,7 @@ public class UserRecordController {
                     "Password must be either null or match the confirmPassword field on registration");
         }
         IdentityService idSvc = processEngine.getIdentityService();
-        User user = idSvc.newUser(userRecord.getId());
+        User user = idSvc.newUser(userRecord.getId().toLowerCase().trim());
         idSvc.saveUser(user);
         return updateFromJson(userRecord, userRecord.getId());
     }
@@ -123,10 +124,12 @@ public class UserRecordController {
         // UserRecord user = UserRecord.findUserRecord(id);
         IdentityService idSvc = processEngine.getIdentityService();
         User user = idSvc.createUserQuery().userId(id).singleResult();
+        if (user == null) throw new BusinessEntityNotFoundException("User", id);
+
         LOGGER.info("Found user to update: " + user);
         if (userRecord.getEmail() != null
                 && userRecord.getEmail().trim().length() > 0) {
-            user.setEmail(userRecord.getEmail());
+            user.setEmail(userRecord.getEmail().toLowerCase().trim());
         }
         if (userRecord.getFirstName() != null
                 && userRecord.getFirstName().trim().length() > 0) {
@@ -251,6 +254,16 @@ public class UserRecordController {
         resource.add(detail);
         resource.setSelfRef(detail.getHref());
         return resource;
+    }
+
+    @RequestMapping(value = "/{id}/groups/{group}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public @ResponseBody void deleteGroupMembership(@PathVariable("id") String id,
+            @PathVariable("group") String group) {
+        LOGGER.info(String.format("Delete group %2$s to profile of %1$s", id,
+                group));
+
+        IdentityService idSvc = processEngine.getIdentityService();
+        idSvc.deleteMembership(id, group.toLowerCase());
     }
 
     protected URI getGlobalUri(UserRecord user) {

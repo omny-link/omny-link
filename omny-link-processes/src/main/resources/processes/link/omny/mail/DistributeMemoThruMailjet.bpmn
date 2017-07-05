@@ -23,6 +23,10 @@
         <activiti:field name="resourcePassword">
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
+
         <activiti:field name="globalResource">
           <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/memo-distributions/${distributionId}/expandedTags</activiti:expression>
         </activiti:field>
@@ -42,6 +46,10 @@
         <activiti:field name="resourcePassword">
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
+
         <activiti:field name="globalResource">
           <activiti:expression>userInfo('cust-mgmt-url')/memos/${distribution.getString('memoRef')}/</activiti:expression>
         </activiti:field>

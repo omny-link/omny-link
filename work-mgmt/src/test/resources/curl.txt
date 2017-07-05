@@ -1,3 +1,6 @@
+# GET profile for user
+curl -X GET -u tstephen:tstephen -H "Accept:application/json" http://localhost:8083/users/tim@trakeo.com
+
 curl -X GET -H "Accept:application/xml" http://localhost:8082/process-definitions/CreateContactAndAccount:1:22552/model
 
 curl -X POST -u tstephen:tstephen -d 'json={ "description":"do something","performer":"gardenatics","checker": "tstephen" }' http://localhost:9090/gardenatics/msg/omny.todo.json
@@ -5,10 +8,10 @@ curl -X POST -u tstephen:tstephen -d 'json={ "description":"do something","perfo
 # GET notes for user
 curl -X GET -u tstephen:tstephen -H "Accept:application/json" http://localhost:8082/omny/contacts/8682/notes
 
-# GET tasks for user (JSON) 
+# GET tasks for user (JSON)
 curl -X GET -u tstephen:tstephen -H "Accept:application/json" http://localhost:8082/omny/tasks/tstephen/
 
-# GET tasks for user (ATOM) 
+# GET tasks for user (ATOM)
 curl -X GET -u tstephen:tstephen -H "Accept:application/json" http://localhost:8082/omny/tasks/tstephen/
 
 # GET single task
@@ -16,10 +19,14 @@ curl -X GET -u tstephen:tstephen -H "Accept:application/json" http://localhost:9
 
 curl -X POST -H 'Content-Type:application/json' -u tstephen:tstephen \
   -d '{ "name": "gardenatics", "contactFields": [{ "label": "Partner", "key": "partner"},{ "label": "Appointment Date", "key": "appointmentDate"}],"typeaheadControls": [{ "selector": "#curEnquiryType", "url": "/data/gardenatics/enquiry-types.json"},{ "selector": "#curMedium", "url": "/data/media.json"},{ "selector": "#curOwner", "url": "/data/gardenatics/owners.json"},{ "selector": "#curPartner", "url": "/data/gardenatics/partners.json"},{ "selector": "#curSource", "url": "/data/sources.json"},{ "selector": "#curStage", "url": "/data/stages.json"}]}' http://localhost:8082/tenants
-  
+
 # Spam messages
 curl -X POST -u tstephen:tstephen -H "Accept:application/json" -v \
     -d 'json={ "id":"" }' http://localhost:8082/msg/firmgains/firmgains.contact.json
+
+# GET single process instance
+curl -X GET -u tim@omny.link:928nuffn -H "Accept:application/json" -v \
+    https://api.omny.link/process-instances/25352397
 
 # DELETE single process instance
 curl -X DELETE -u tstephen:tstephen -H "Accept:application/json" -v \
@@ -31,11 +38,16 @@ curl -X GET -u tstephen:tstephen -H "Accept:application/json" -v \
 curl -X GET -u tstephen:tstephen -H "Accept:application/json" -v \
     https://api.omny.link/carquake/process-instances/archive
 
- 
+
 # Reset Password
  curl -X POST -u tstephen:tstephen -H "Accept:application/json" -v \
    -d'password=foo' -d'password2=foo' \
    http://localhost:8083/users/jdoe/reset-password
+
+# GET instances for definition
+curl -X GET -u tim@omny.link:928nuffn -H "Accept:application/json" -v \
+    https://api.omny.link/circom/process-definitions/RecordEnquiry:5:25072512/instances/
+
 
 # list process instances for variable
 curl -X GET -u tstephen:tstephen -H "Accept:application/json" -v \
@@ -52,13 +64,13 @@ curl -X POST -u tstephen:tstephen -H "Accept:application/json" \
     -H "Content-Type:application/json" \
     -d '{ "decisionName":"CheckServiceLevels" }' \
     http://localhost:8082/circom/messages/omny.decisionInvocation.json
-    
+
 # Define process with markdown type approach
 curl -X POST -u tstephen:tstephen -H "Accept:application/json" \
     -H "Content-Type:application/json" \
     -d '{ "name":"Overview", "category": "http://omny.link/tests/", "processText": "1. +initiator User Task 1\n2. :mail +tim@knowprocess.com Mail Task 2\n3. +tim@knowprocess.com User Task 3" }' \
     http://localhost:8082/omny/process-definitions/
-    
+
 curl -X GET -u tstephen:tstephen -H "Accept:text/html" -v \
     http://localhost:8082/omny/process-instances/22501/variables/mergedMemo
 curl -X GET -u tstephen:tstephen -H "Accept:application/pdf" -v \

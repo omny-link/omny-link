@@ -32,6 +32,10 @@
         <activiti:field name="resourcePassword">
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
+
         <activiti:field name="globalResource">
           <activiti:expression>userInfo('cust-mgmt-url')/${omny_userActivity.getString('tenantId')}/contacts/findByUuid?uuid=${omny_userActivity.getString('uuid')}</activiti:expression>
         </activiti:field>
@@ -51,6 +55,10 @@
         <activiti:field name="resourcePassword">
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
+
         <activiti:field name="globalResource">
           <activiti:expression>userInfo('cust-mgmt-url')/contacts</activiti:expression>
         </activiti:field>
@@ -72,7 +80,6 @@
     </startEvent>
     <callActivity calledElement="AddActivityToContact" completionQuantity="1" id="addActivityToContact" isForCompensation="false" name="Add activity &#10;to contact" startQuantity="1">
       <extensionElements>
-        <activiti:in source="omny_userActivity" target="contact"/>
         <activiti:in sourceExpression="${omny_userActivity.getString('type')}" target="activityType"/>
         <activiti:in sourceExpression="${omny_userActivity.getString('content')}" target="activityContent"/>
         <activiti:in sourceExpression="${contact.getString('selfRef')}" target="contactId"/>
@@ -85,7 +92,6 @@
     <sequenceFlow id="_2" sourceRef="fetchContact" targetRef="addActivityToContact"/>
     <callActivity calledElement="AddActivityToContact" completionQuantity="1" id="_3" isForCompensation="false" name="Add activity &#10;to contact" startQuantity="1">
       <extensionElements>
-        <activiti:in source="omny_userActivity" target="contact"/>
         <activiti:in sourceExpression="${omny_userActivity.getString('type')}" target="activityType"/>
         <activiti:in sourceExpression="${omny_userActivity.getString('content')}" target="activityContent"/>
         <activiti:in sourceExpression="${contactId}" target="contactId"/>

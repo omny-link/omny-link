@@ -72,7 +72,6 @@
     </userTask>
     <callActivity calledElement="AddActivityToContact" completionQuantity="1" id="addResolvedActivity" isForCompensation="false" name="Add resolution to contact" startQuantity="1">
       <extensionElements>
-        <activiti:in source="omny_complaint" target="contact"/>
         <activiti:in sourceExpression="complaint" target="activityType"/>
         <activiti:in source="resolution" target="activityContent"/>
         <activiti:in source="contactId" target="contactId"/>
@@ -87,7 +86,6 @@
     </userTask>
     <callActivity calledElement="AddActivityToContact" completionQuantity="1" id="addEscalationActivity" isForCompensation="false" name="Add activity to contact" startQuantity="1">
       <extensionElements>
-        <activiti:in source="omny_complaint" target="contact"/>
         <activiti:in sourceExpression="complaint" target="activityType"/>
         <activiti:in source="resolution" target="activityContent"/>
         <activiti:in source="contactId" target="contactId"/>
@@ -109,7 +107,6 @@
     </sequenceFlow>
     <callActivity calledElement="AddActivityToContact" completionQuantity="1" id="_2" isForCompensation="false" name="Record complaint" startQuantity="1">
       <extensionElements>
-        <activiti:in source="omny_complaint" target="contact"/>
         <activiti:in sourceExpression="complaint" target="activityType"/>
         <activiti:in sourceExpression="${omny_complaint.getString('message')}" target="activityContent"/>
         <activiti:in source="contactId" target="contactId"/>

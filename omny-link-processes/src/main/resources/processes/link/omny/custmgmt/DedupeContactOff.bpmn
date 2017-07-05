@@ -24,7 +24,7 @@
     <callActivity calledElement="CreateContactAndAccount" completionQuantity="1" id="createContactAndAccount" isForCompensation="false" name="Create Contact and &#10;Account in CRM" startQuantity="1">
       <extensionElements>
         <activiti:in source="contact" target="json"/>
-        <activiti:in sourceExpression="omny" target="tenantId"/>
+        <activiti:in sourceExpression="${contact.getString('tenantId','')}" target="tenantId"/>
         <activiti:out source="contactId" target="contactId"/>
         <activiti:out source="contactEmail" target="contactEmail"/>
         <activiti:out source="contactPwd" target="contactPwd"/>
@@ -47,56 +47,56 @@
 No de-duplication, always create a new contact</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-DedupeContact" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-DedupeContact" name="De-duplication off" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="DedupeContact">
       <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
         <dc:Bounds height="55.0" width="441.0" x="46.0" y="41.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="46.8046875" width="274.0" x="46.0" y="47.09765625"/>
+          <dc:Bounds height="46.8" width="274.0" x="46.0" y="47.1"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
         <dc:Bounds height="32.0" width="32.0" x="46.0" y="189.33333333333337"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="34.0" x="44.999999999999986" y="232.11555989583337"/>
+          <dc:Bounds height="18.8" width="34.0" x="45.0" y="232.19"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="createContactAndAccount" id="Yaoqiang-createContactAndAccount" isExpanded="false">
         <dc:Bounds height="91.0" width="119.0" x="195.71428571428572" y="159.83333333333337"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="46.8046875" width="92.0" x="209.21428571428572" y="183.93098958333337"/>
+          <dc:Bounds height="46.8" width="92.0" x="209.21" y="183.93"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
         <dc:Bounds height="32.0" width="32.0" x="436.0" y="189.33333333333337"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="62.0" x="421.0" y="230.12630208333337"/>
+          <dc:Bounds height="18.8" width="62.0" x="421.0" y="230.2"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_17" id="Yaoqiang-_17">
         <dc:Bounds height="38.0" width="29.0" x="46.0" y="280.50000000000006"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="47.0" x="37.0" y="320.50000000000006"/>
+          <dc:Bounds height="18.8" width="47.0" x="37.0" y="320.5"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_18" id="Yaoqiang-_18">
         <dc:Bounds height="38.0" width="29.0" x="46.0" y="352.72222222222223"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="47.0" x="37.0" y="392.72222222222223"/>
+          <dc:Bounds height="18.8" width="47.0" x="37.0" y="392.72"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_4" id="Yaoqiang-_4">
-        <di:waypoint x="315.0" y="205.33333333333337"/>
-        <di:waypoint x="436.0078144082805" y="205.33333333333337"/>
+        <di:waypoint x="314.5588235294117" y="205.33333333333337"/>
+        <di:waypoint x="435.55969160851606" y="205.33333333333337"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="6.0" x="372.50390720414026" y="195.93098958333337"/>
+          <dc:Bounds height="18.8" width="6.0" x="372.06" y="195.93"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
-        <di:waypoint x="77.99218559171948" y="205.33333333333337"/>
-        <di:waypoint x="196.0" y="205.33333333333337"/>
+        <di:waypoint x="77.55795545030736" y="205.33333333333337"/>
+        <di:waypoint x="195.5588235294117" y="205.33333333333337"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="6.0" x="133.99609279585974" y="195.93098958333337"/>
+          <dc:Bounds height="18.8" width="6.0" x="133.56" y="195.93"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

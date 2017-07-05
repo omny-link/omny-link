@@ -17,16 +17,19 @@
       <outputSet/>
     </ioSpecification>
     <startEvent id="startEvent" isInterrupting="true" name="Start Event" parallelMultiple="false">
-<outgoing>_4</outgoing>
-<outputSet/>
-</startEvent>
+      <outgoing>_4</outgoing>
+      <outputSet/>
+    </startEvent>
     <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="postOrderItem" implementation="##WebService" isForCompensation="false" name="POST order item" startQuantity="1">
       <extensionElements>
         <activiti:field name="resourceUsername">
           <activiti:string>userInfo('tenant-bot')</activiti:string>
         </activiti:field>
         <activiti:field name="resourcePassword">
-          <activiti:expression><![CDATA[userInfo('cust-mgmt-secret')]]></activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
           <activiti:expression><![CDATA[userInfo('cust-mgmt-url')/${tenantId}/orders/${orderShortId}/order-items]]></activiti:expression>
@@ -54,7 +57,7 @@
       <text>ADD ORDER ITEMS TO ORDER</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddOrderItems" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddOrderItems" name="Add items to order" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="AddOrderItems">
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
         <dc:Bounds height="32.0" width="32.0" x="61.500000000000014" y="212.99999999999994"/>

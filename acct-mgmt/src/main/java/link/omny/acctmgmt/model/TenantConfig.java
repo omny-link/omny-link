@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Id;
 import javax.persistence.Transient;
@@ -85,6 +86,7 @@ public class TenantConfig implements Serializable {
     private ThemeConfig theme;
 
     @Embedded
+    @Column(name = "service_level")
     private ServiceLevelConfig serviceLevel;
 
     @Transient

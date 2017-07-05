@@ -1,8 +1,6 @@
-.*
-.settings/
-.classpath
+*/.*
 .project
-.springBeans
+.settings/
 *.bak
 *.class
 *.log*

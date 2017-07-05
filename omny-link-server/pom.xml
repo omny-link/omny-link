@@ -12,7 +12,7 @@
   <parent>
     <groupId>link.omny</groupId>
     <artifactId>omny-link-root</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.1.0-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -48,9 +48,9 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.14.8</version>
       <scope>provided</scope>
     </dependency>
+
     <!-- Generates REST documentation -->
     <dependency>
         <groupId>io.springfox</groupId>
@@ -65,7 +65,7 @@
     <dependency>
       <groupId>io.onedecision</groupId>
       <artifactId>onedecision-engine</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
+      <version>${onedecision.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>ractive</artifactId>
@@ -100,16 +100,15 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>link.omny.rightmove</groupId>
-      <artifactId>rightmove</artifactId>
-      <version>${project.version}</version>
+      <groupId>com.knowprocess</groupId>
+      <artifactId>auth</artifactId>
+      <version>${kp-auth.version}</version>
     </dependency>
     <dependency>
       <groupId>com.knowprocess.bpm</groupId>
       <artifactId>work-mgmt</artifactId>
       <version>${work-mgmt.version}</version>
     </dependency>
-    
     <!-- Tenant jars -->
     <!-- <dependency>
       <groupId>com.knowprocess.mk</groupId>
@@ -210,11 +209,6 @@
   </build>
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>link.omny</groupId>
-        <artifactId>fonts</artifactId>
-        <version>1.1.0</version>
-      </dependency>
       <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>javax.json</artifactId>

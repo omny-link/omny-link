@@ -10,7 +10,7 @@
         {{#tenant.show.marketing || current.emailsSent>0}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Since email:</label>
-            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceEmail" disabled readonly value="{{formatAge(current.timeSinceEmail)}}">
+            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceEmail" disabled readonly twoway="false" value="{{formatAge(current.timeSinceEmail)}}">
           </li>
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Emails sent:</label>
@@ -20,21 +20,21 @@
         {{#tenant.id == 'firmgains'}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Since valuation:</label>
-            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceValuation" disabled readonly value="{{formatAge(current.timeSinceValuation)}}">
+            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceValuation" disabled readonly twoway="false" value="{{formatAge(current.timeSinceValuation)}}">
           </li>
         {{/}}
       </ul>
     </div>
-    {{#if window.location.href.endsWith('contacts.html') }}
+    {{#if matchPage('contacts.html') }}
       <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
         <ul class="form edit-form">
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Since login:</label>
-            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceLogin" disabled readonly value="{{formatAge(current.timeSinceLogin)}}">
+            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceLogin" disabled readonly twoway="false" value="{{formatAge(current.timeSinceLogin)}}">
           </li>
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Since {{#tenant.strings.registration}}{{tenant.strings.registration}}{{else}}registration{{/}}:</label>
-            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceRegistration" disabled readonly value="{{formatAge(current.timeSinceRegistered)}}">
+            <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceRegistration" disabled readonly twoway="false" value="{{formatAge(current.timeSinceRegistered)}}">
           </li>
         </ul>
       </div>

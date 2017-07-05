@@ -18,11 +18,7 @@
     <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
       <ul class="form edit-form">
         {{#each tenant.orderFields.slice(Math.ceil(tenant.orderFields.length/2),tenant.orderFields.length):j}}
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
-            <input class="form-control" id="cur{{name.toLeadingCaps()}}" value="{{current.customFields[name]}}">
-            <p class="col-md-offset-4 col-sm-offset-4 help-block field-error"></p>
-          </li>
+          {{>field-extension}}
         {{/each}}
       </ul>
     </div>

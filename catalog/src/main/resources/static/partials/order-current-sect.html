@@ -53,12 +53,12 @@
         <li class="form-group">
           <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}:</label>
           <input class="form-control col-md-8 col-sm-8 col-xs-8" id="curDate" type="date" value="{{current.date}}"/>
-          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}</p>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} placed{{/}}</p>
         </li>
         <li class="form-group">
-          <label class="col-md-4 col-sm-4">Stage:</label>
+          <label class="col-md-4 col-sm-4">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}:</label>
           <input autocomplete="off" class="form-control" list="orderStages" placeholder="Start typing to filter options" id="curOrderStage" value="{{current.stage}}"/>
-          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.stageHint}}{{tenant.strings.stageHint}}{{else}}Stage the order has reached{{/}}</p>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}Stage the {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} has reached{{/}}</p>
         </li>
         {{#tenant.show.orderDueDate}}
           <li class="form-group">
@@ -68,7 +68,7 @@
             {{else}}
               <input class="form-control col-md-8 col-sm-8 col-xs-8" id="curDueDate" {{#if !tenant.show.orderItems}}type="date" {{/if}}value="{{current.dueDate}}"/>
             {{/if}}
-            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Date order due to be delivered{{/}}</p>
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Date {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} due to be delivered{{/}}</p>
           </li>
         {{/}}
       </ul>

@@ -13,6 +13,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.w3c.dom.Document;
@@ -32,8 +33,6 @@ public class ModelBasedConversionService extends GenericConversionService
 
     private XPathExpression assocStereotypeMappingExpr;
 
-    private XPathExpression assocStereotypeProfileMappingExpr;
-
     protected XPathFactory xFactory = XPathFactory.newInstance();
 
     protected XPath xPath = xFactory.newXPath();
@@ -46,11 +45,8 @@ public class ModelBasedConversionService extends GenericConversionService
 
     private XPathExpression mappingExpr;
 
-    // private Map<String, Class<?>> mappings;
-
     public ModelBasedConversionService() {
         super();
-        // mappings = new HashMap<String, Class<?>>();
     }
 
     public ModelBasedConversionService(String modelResource, String domain,
@@ -87,7 +83,7 @@ public class ModelBasedConversionService extends GenericConversionService
 
                         String entityId = entity.getAttributes()
                                 .getNamedItem("id").getNodeValue();
-                        System.out.println("Searching for associations to: "
+                        LOGGER.debug("Searching for associations to: "
                                 + entityId);
                         String entityToProfileScript = createToProfileScript(
                                 domain,
@@ -98,11 +94,8 @@ public class ModelBasedConversionService extends GenericConversionService
                                 document,
                                 (NodeList) getAttrMappingExpr().evaluate(
                                         entity, XPathConstants.NODESET),
-                                (NodeList) getEntityMappingExpr(
-                                        entityId)
-                                        .evaluate(
-entity,
-                                                XPathConstants.NODESET),
+                                (NodeList) getEntityMappingExpr(entityId)
+                                        .evaluate(entity, XPathConstants.NODESET),
                                 entityId);
                         addConverter(srcType, trgtType, entityToProfileScript);
 
@@ -120,10 +113,6 @@ entity,
                                 .format("No class found for one or both of source %1$s or target %2$s defined in model %3$s, detail: %4$s.",
                                         srcName, trgtName, modelResource,
                                         e.getMessage()));
-                        e.printStackTrace();
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug(e.getMessage(), e);
-                        }
                     }
                 }
             }
@@ -137,15 +126,16 @@ entity,
 
     }
 
-    private void addConverter(Class<?> srcType, Class<?> trgtType,
+    private <S, T> void addConverter(Class<S> srcType, Class<T> trgtType,
             String entityToProfileScript) {
         LOGGER.info(String.format("Registering converter from %1$s to %2$s.",
                 srcType.getName(), trgtType.getName()));
 
-        JSConverter converter = new JSConverter(srcType, trgtType,
-                entityToProfileScript);
-        addConverter(srcType, trgtType, converter);
-        // mappings.put(srcType.getName(), trgtType);
+        @SuppressWarnings("unchecked")
+        Converter<? super S, ? extends T> converter
+                = (Converter<? super S, ? extends T>)
+                new JSConverter(srcType, trgtType, entityToProfileScript);
+        super.addConverter(srcType, trgtType, converter);
     }
 
     private XPathExpression getValueMappingExpr()
@@ -171,15 +161,6 @@ entity,
                     + "']");
         }
         return entityMappingExpr;
-    }
-
-    private XPathExpression getAssociationStereotypeProfileMappingExpr()
-            throws XPathExpressionException {
-        if (assocStereotypeProfileMappingExpr == null) {
-            assocStereotypeProfileMappingExpr = xPath
-                    .compile("superitem[@id='stereotype']/item/@value");
-        }
-        return assocStereotypeProfileMappingExpr;
     }
 
     private XPathExpression getAssociationStereotypeMappingExpr(String id)

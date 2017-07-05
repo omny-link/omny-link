@@ -6,33 +6,29 @@
 	   <span class="clickable glyphicon glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')" title="Add a new Document"></span>
 	   <span class="alert-counter {{#alerts.documents}}alert-danger{{else}}alert-hidden{{/}}"> {{alerts.documents}}</span>
 	 </h2>
-	 <div class="currentBody col-md-12" style="display:none">
+	 <div style="display:none">
 		 <table id="docsTable" class="table table-striped">
-		   <thead>
-		     <tr style="display:none;width:100%;">
-		       <td colspan="1">
-		         <input class="form-control" id="docName" placeholder="Name or title" required value="{{current.doc.name}}"/>
-		       </td>
-		       <td colspan="2">
-		         <input class="form-control" id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required value="{{current.doc.url}}"/>
-		       </td>
-		       <td colspan="1">
-		         <a onclick="$('#docsTable tr:nth-child(1)').slideUp();">Cancel</a>
-		       </td>
-		     </tr>
-		   </thead>
 		   <tbody>
 		     {{#each current.documents:k}}
 		       <tr>
 		         <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
 		         <td class="field-author">{{{gravatar(author)}}}</td>
-		         <td class="field-text">{{name}}</td>
-		         <td class="field-url"><a href="{{url}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a></td>
+             {{#created}}
+               <td class="field-text">{{name}}</td>
+               <td class="field-url"><a href="{{url}}" target="_newtab"><span class="glyphicon glyphicon-new-window"></span></a></td>
+             {{else}}
+               <td class="field-text" colspan="1">
+                 <input class="form-control" id="docName" placeholder="Name or title" required value="{{..name}}"/>
+                 <input class="form-control" id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required value="{{..url}}"/>
+                 <br/>
+                 <a on-click="cancelDoc()">Cancel</a>
+               </td>
+             {{/}}
 		       </tr>
 		     {{/each}}
 		     {{^ current.documents }}
 		       <tr><td>None</td></tr>
-		     {{/ current.documents }}
+		     {{/}}
 		    </tbody>
 		  </table>
 		</div>

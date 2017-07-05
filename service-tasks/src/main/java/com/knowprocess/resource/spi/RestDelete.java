@@ -1,15 +1,14 @@
 package com.knowprocess.resource.spi;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.security.Principal;
 
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.knowprocess.resource.internal.UrlResource;
+import com.knowprocess.resource.spi.model.PasswordUserPrincipal;
 
 public class RestDelete extends RestService implements JavaDelegate {
     protected static final Logger LOGGER = LoggerFactory
@@ -17,46 +16,32 @@ public class RestDelete extends RestService implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
-        String usr = getUsername(execution);
-        String resource = evalExpr(execution,
-                lookup(execution, usr, globalResource));
-        String pwd = getPassword(execution, usr);
-
-        delete(resource, usr, pwd, (String) headers.getValue(execution), data.getValue(execution));
-    }
-
-    public void delete(String resource, String usr,
-            String pwd, String headers, Object data) throws IOException {
-        LOGGER.info(String.format("DELETEing %1$s as %2$s", resource, usr));
-
-        URL url;
-        HttpURLConnection connection = null;
+        Principal principal = null;
+        String resource = null;
         try {
-            url = UrlResource.getUrl(resource);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("DELETE");
+            principal = getPrincipal(execution);
+            resource = evalExpr(execution,
+                lookup(execution, principal.getName(), globalResource));
 
-            setHeaders(connection, headers);
-            setAuthorization(usr, pwd, connection);
-
-            connection.setUseCaches(false);
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-
-            sendData(connection, data);
-
-            int code = connection.getResponseCode();
-            LOGGER.debug("Response code = " + code);
-            if (code >= HttpURLConnection.HTTP_BAD_REQUEST) {
-                throwException(connection, code);
-            }
-        } catch (IOException e) {
-            throw e;
+            delete(resource, (String) headers.getValue(execution), principal);
         } catch (Exception e) {
-            String msg = "Exception during DELETE of " + resource + " as "
-                    + usr;
-            LOGGER.error(msg, e);
-            throw new IOException(msg, e);
+            throwTaskException(execution, principal, "PUT", resource, e);
         }
     }
+
+    /**
+     * @deprecated
+     */
+    public void delete(String resource, String usr,
+            String pwd, String headers, Object data) throws IOException {
+        super.execute("DELETE", resource, headers, null, new String[0],
+                new PasswordUserPrincipal(usr, pwd));
+    }
+
+    public void delete(String resource, String headerStr, Principal principal)
+            throws Exception {
+        super.execute("DELETE", resource, headerStr, null, new String[0],
+                principal);
+    }
+
 }
