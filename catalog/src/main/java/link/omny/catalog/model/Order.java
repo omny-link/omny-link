@@ -13,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -20,12 +21,15 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.hateoas.Link;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -63,7 +67,7 @@ public class Order implements OrderWithSubEntities, Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
 //    @JsonFormat(shape= JsonFormat.Shape.NUMBER)
-    @JsonView(OrderViews.Detailed.class)
+    @JsonView(OrderViews.Summary.class)
     private Long id;
 
     @JsonProperty
@@ -82,10 +86,11 @@ public class Order implements OrderWithSubEntities, Serializable {
     @JsonProperty
     @Size(max = 20)
     @JsonView(OrderViews.Summary.class)
+    @Column(name = "due_date")
     private String dueDate;
 
     @JsonProperty
-    @Size(max = 30)
+    @Size(max = 60)
     @JsonView(OrderViews.Summary.class)
     private String stage = "New enquiry";
 
@@ -102,17 +107,20 @@ public class Order implements OrderWithSubEntities, Serializable {
     // affects a completely different one is a mystery I have not investigated
     @JsonProperty("stockItem")
     @JsonView(OrderViews.Detailed.class)
-    @ManyToOne(fetch = FetchType.EAGER)
     @RestResource(rel = "stockItem")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "stock_item_id")
     private StockItem stockItem;
 
     @JsonProperty
     @Size(max = 30)
     @JsonView(OrderViews.Summary.class)
+    @Column(name = "invoice_ref")
     private String invoiceRef;
 
     @JsonProperty
     @JsonView(OrderViews.Summary.class)
+    @Column(name = "contact_id")
     private Long contactId;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -125,10 +133,12 @@ public class Order implements OrderWithSubEntities, Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
     @JsonView(OrderViews.Summary.class)
+    @Column(name = "last_updated")
     private Date lastUpdated;
 
     @JsonProperty
     @JsonView(OrderViews.Summary.class)
+    @Column(name = "tenant_id")
     private String tenantId;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
@@ -142,8 +152,14 @@ public class Order implements OrderWithSubEntities, Serializable {
     private List<OrderItem> orderItems;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JsonView( { OrderViews.Summary.class, OrderViews.Detailed.class } )
+    @JsonView( { OrderViews.Detailed.class } )
     private Feedback feedback;
+
+    @Transient
+    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
+    @JsonProperty("links")
+    @JsonView({ OrderViews.Summary.class })
+    private List<Link> links;
 
     public Order(String name) {
         this();

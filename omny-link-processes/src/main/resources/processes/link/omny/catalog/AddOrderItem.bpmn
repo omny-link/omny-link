@@ -27,7 +27,10 @@
           <activiti:string>userInfo('tenant-bot')</activiti:string>
         </activiti:field>
         <activiti:field name="resourcePassword">
-          <activiti:expression><![CDATA[userInfo('cust-mgmt-secret')]]></activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
           <activiti:expression><![CDATA[userInfo('cust-mgmt-url')/${tenantId}/orders/${orderShortId}/order-items]]></activiti:expression>
@@ -54,7 +57,7 @@
       <text>ADD SINGLE ORDER ITEM TO ORDER</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddOrderItem" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddOrderItem" name="Add order item" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="AddOrderItem">
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
         <dc:Bounds height="32.0" width="32.0" x="61.500000000000014" y="212.99999999999994"/>

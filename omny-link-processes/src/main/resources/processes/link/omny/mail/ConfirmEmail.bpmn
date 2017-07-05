@@ -22,6 +22,11 @@
           <activiti:string><![CDATA[userInfo('tenant-bot')]]></activiti:string>
         </activiti:field>
         <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+<activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
           <activiti:expression><![CDATA[userInfo('cust-mgmt-secret')]]></activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
@@ -41,6 +46,11 @@
           <activiti:string><![CDATA[userInfo('tenant-bot')]]></activiti:string>
         </activiti:field>
         <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+<activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
           <activiti:expression><![CDATA[userInfo('cust-mgmt-secret')]]></activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
@@ -94,6 +104,11 @@
           <activiti:string><![CDATA[userInfo('tenant-bot')]]></activiti:string>
         </activiti:field>
         <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+<activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
           <activiti:expression><![CDATA[userInfo('cust-mgmt-secret')]]></activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">

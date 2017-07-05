@@ -14,14 +14,14 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Encapsulate a single metric (key performance indicator) for a tenant.
@@ -46,6 +46,7 @@ public class Metric implements Serializable {
 
     @NotNull
     @JsonProperty
+    @Column(name = "tenant_id")
     protected String tenantId;
 
     @NotNull

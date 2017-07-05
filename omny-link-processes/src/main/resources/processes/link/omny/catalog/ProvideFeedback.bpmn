@@ -27,6 +27,10 @@
         <activiti:field name="resourcePassword">
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
+
         <activiti:field name="globalResource">
           <activiti:expression>userInfo('cust-mgmt-url')/${omny_feedback.getString('tenantId')}/orders/${omny_feedback.getString('orderId')}/feedback</activiti:expression>
         </activiti:field>
@@ -64,6 +68,9 @@
         </activiti:field>
         <activiti:field name="resourcePassword">
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
           <activiti:expression>userInfo('cust-mgmt-url')/${omny_feedback.getString('tenantId')}/orders/${omny_feedback.getString('orderId')}/stage</activiti:expression>

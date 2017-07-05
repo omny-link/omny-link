@@ -1,0 +1,22 @@
+<li class="form-group">
+  <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
+  {{#type=='select' || type=='multi-select'}}
+    {{! binding does not work for multiple selects}}
+    <select class="form-control" id="cur{{name.toLeadingCaps()}}"
+        {{#type=='multi-select'}}multiple="{{multiple}}" data-key="{{name}}" data-value="{{current.customFields[name]}}"
+        {{else}}value="{{current.customFields[name]}}"
+        {{/}}></select>
+  {{elseif type=='list'}}
+    <input autocomplete="off" class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}s" value="{{current.customFields[name]}}">
+  {{else}}
+    <div {{#if type=="url" && current.customFields[name] != undefined}}class="input-group"{{/if}}>
+      <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
+      {{#if type=="url" && current.customFields[name] != undefined}}
+        <span class="input-group-addon">
+          <a href="{{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+        </span>
+      {{/if}}
+    </div>
+  {{/}}
+  <p class="col-md-offset-4 col-sm-offset-4 help-block field-error">{{hint}}</p>
+</li>

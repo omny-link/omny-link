@@ -1,6 +1,7 @@
 package link.omny.custmgmt.web;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,24 +37,21 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.knowprocess.bpm.impl.DateUtils;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
-import link.omny.custmgmt.json.JsonCustomAccountFieldDeserializer;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.Account;
+import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomAccountField;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
+import link.omny.custmgmt.model.views.AccountViews;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
-import link.omny.custmgmt.repositories.DocumentRepository;
-import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -77,14 +75,44 @@ public class AccountController {
     private ContactRepository contactRepo;
 
     @Autowired
-    private DocumentRepository docRepo;
-
-    @Autowired
-    private NoteRepository noteRepo;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * Add activity to the specified account.
+     * @return the created activity.
+     */
+    @RequestMapping(value = "/{accountId}/activities", method = RequestMethod.POST)
+    @Transactional
+    public @ResponseBody ResponseEntity<Activity> addActivity(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId, @RequestBody Activity activity) {
+        Account account = accountRepo.findOne(accountId);
+        account.getActivities().add(activity);
+        accountRepo.save(account);
+        activity = account.getActivities().get(account.getActivities().size()-1);
+
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                .path("/{id}/activities/{activityId}")
+                .buildAndExpand(tenantId, account.getId(), activity.getId())
+                .toUri();
+        headers.setLocation(uri);
+
+        return new ResponseEntity<Activity>(activity, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Add an activity to the specified account.
+     * @return the created activity.
+     */
+    @RequestMapping(value = "/{accountId}/activities", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    public @ResponseBody ResponseEntity<Activity> addActivity(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId,
+            @RequestParam("type") String type,
+            @RequestParam("content") String content) {
+        return addActivity(tenantId, accountId, new Activity(type, new Date(), content));
+    }
 
     /**
      * Imports JSON representation of accounts.
@@ -153,7 +181,7 @@ public class AccountController {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
             list = accountRepo.findPageForTenant(tenantId, pageable);
         }
-        LOGGER.info(String.format("Found %1$s contacts", list.size()));
+        LOGGER.info(String.format("Found %1$s accounts", list.size()));
 
         return wrap(list);
     }
@@ -170,6 +198,9 @@ public class AccountController {
             @PathVariable("tenantId") String tenantId,
             @RequestBody Account account) {
         account.setTenantId(tenantId);
+        for (CustomAccountField field : account.getCustomFields()) {
+            field.setAccount(account);
+        }
         accountRepo.save(account);
 
         UriComponentsBuilder builder2 = MvcUriComponentsBuilder
@@ -185,20 +216,23 @@ public class AccountController {
     }
 
     /**
-     * Return just the matching contact.
+     * Return just the matching account.
      *
-     * @return the contact with this id.
+     * @return the account with this id.
      * @throws BusinessEntityNotFoundException
      */
+    @JsonView(AccountViews.Detailed.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @Transactional
-    public @ResponseBody ShortAccount findById(
+    public @ResponseBody Account findById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id)
             throws BusinessEntityNotFoundException {
         LOGGER.debug(String.format("Find account for id %1$s", id));
 
-        return wrap(accountRepo.findOne(Long.parseLong(id)));
+        Account account = accountRepo.findOne(Long.parseLong(id));
+        account.getActivities(); // force load
+
+        return addLinks(tenantId, account);
     }
 
     /**
@@ -217,66 +251,84 @@ public class AccountController {
     }
 
     /**
-     * Add a document to the specified contact.
+     * Add a document to the specified account.
      */
-    // Jackson cannot deserialise document because of contact reference
-    // @RequestMapping(value = "/{contactId}/documents", method =
-    // RequestMethod.PUT)
-    public @ResponseBody void addDocument(
+    @RequestMapping(value = "/{accountId}/documents", method = RequestMethod.PUT)
+    public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Document doc) {
-        Account account = accountRepo.findOne(accountId);
-        doc.setAccount(account);
-        docRepo.save(doc);
-        // necessary to force a save
-        account.setLastUpdated(new Date());
-        accountRepo.save(account);
-        // Similarly cannot return object until solve Jackson object cycle
-        // return doc;
+         Account account = accountRepo.findOne(accountId);
+         account.getDocuments().add(doc);
+         accountRepo.save(account);
+         doc = account.getDocuments().get(account.getDocuments().size()-1);
+
+         HttpHeaders headers = new HttpHeaders();
+         URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                 .path("/{id}/notes/{noteId}")
+                 .buildAndExpand(tenantId, account.getId(), doc.getId())
+                 .toUri();
+         headers.setLocation(uri);
+
+         return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
     }
 
     /**
-     * Add a document to the specified contact.
+     * Add a document to the specified account.
+     *      *
+     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
+     * @return
+     *
+     * @return The document created.
      */
     @RequestMapping(value = "/{accountId}/documents", method = RequestMethod.POST)
-    public @ResponseBody void addDocument(
+    public @ResponseBody Document addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestParam("author") String author,
-            @RequestParam("name") String name, @RequestParam("url") String url) {
+            @RequestParam("name") String name,
+            @RequestParam("url") String url) {
 
-        addDocument(tenantId, accountId, new Document(author, name, url));
+        return addDocument(tenantId, accountId, new Document(author, name, url)).getBody();
     }
 
     /**
-     * Add a note to the specified contact.
+     * Add a note to the specified account.
+     * @return the created note.
      */
-    // TODO Jackson cannot deserialise document because of contact reference
-    // @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.PUT)
-    public @ResponseBody void addNote(
+    @RequestMapping(value = "/{accountId}/notes", method = RequestMethod.PUT)
+    public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Note note) {
         Account account = accountRepo.findOne(accountId);
-        note.setAccount(account);
-        noteRepo.save(note);
-        // necessary to force a save
-        account.setLastUpdated(new Date());
+        account.getNotes().add(note);
         accountRepo.save(account);
-        // Similarly cannot return object until solve Jackson object cycle
-        // return note;
+        note = account.getNotes().get(account.getNotes().size()-1);
+
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                .path("/{id}/notes/{noteId}")
+                .buildAndExpand(tenantId, account.getId(), note.getId())
+                .toUri();
+        headers.setLocation(uri);
+
+        return new ResponseEntity<Note>(note, headers, HttpStatus.CREATED);
     }
 
     /**
-     * Add a note to the specified contact.
+     * Add a note to the specified account from its parts.
+     *
+     * <p>This is just a convenience method, see {@link #addNote(String, Long, Note)}
+     *
+     * @return The note created.
      */
     @RequestMapping(value = "/{accountId}/notes", method = RequestMethod.POST)
-    public @ResponseBody void addNote(
+    public @ResponseBody Note addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestParam("author") String author,
             @RequestParam("favorite") boolean favorite,
             @RequestParam("content") String content) {
-        addNote(tenantId, accountId, new Note(author, content, favorite));
+        return addNote(tenantId, accountId, new Note(author, content, favorite)).getBody();
     }
 
     /**
@@ -306,6 +358,7 @@ public class AccountController {
     private ShortAccount wrap(Account account) {
         ShortAccount resource = new ShortAccount();
         BeanUtils.copyProperties(account, resource);
+
         Link detail = linkTo(AccountRepository.class, account.getId())
                 .withSelfRel();
         resource.add(detail);
@@ -326,42 +379,26 @@ public class AccountController {
         private String selfRef;
         private String name;
         private String companyNumber;
-        private String sic;
-        private String aliases;
         private String businessWebsite;
         private String email;
-        private boolean emailConfirmed;
-        private boolean existingCustomer;
-        private String emailHash;
+        private String owner;
         private String phone1;
-        private String phone2;
-        private String address1;
-        private String address2;
-        private String town;
-        private String countyOrCity;
-        private String postCode;
-        private String country;
-        private String address;
-        private String twitter;
-        private String facebook;
-        private String linkedIn;
-        private String shortDesc;
-        private String description;
-        private Integer incorporationYear;
-        private String noOfEmployees;
+        private String parentOrg;
         private String stage;
-        private String stageReason;
-        private Date stageDate;
         private String enquiryType;
         private String accountType;
-        private String owner;
         private String alerts;
         private String tags;
-        @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)
-        @JsonSerialize(using = JsonCustomFieldSerializer.class)
-        private List<CustomAccountField> customFields;
         private Date firstContact;
         private Date lastUpdated;
+    }
+
+    private Account addLinks(String tenantId, Account account) {
+        List<Link> links = new ArrayList<Link>();
+        links.add(new Link(String.format("/%1$s/accounts/%2$s",
+                tenantId, account.getId())));
+        account.setLinks(links);
+        return account;
     }
 }
 

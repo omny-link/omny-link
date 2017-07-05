@@ -26,7 +26,7 @@
           <activiti:string>userInfo('companies-house-key')</activiti:string>
         </activiti:field>
         <activiti:field name="resourcePassword">
-          <activiti:expression>userInfo('companies-house-secret')</activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Accept:application/json</activiti:string>

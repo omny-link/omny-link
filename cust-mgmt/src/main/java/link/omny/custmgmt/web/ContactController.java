@@ -3,6 +3,7 @@ package link.omny.custmgmt.web;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,9 +45,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -65,11 +68,9 @@ import link.omny.custmgmt.model.CustomContactField;
 import link.omny.custmgmt.model.CustomField;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
+import link.omny.custmgmt.model.views.ContactViews;
 import link.omny.custmgmt.repositories.AccountRepository;
-import link.omny.custmgmt.repositories.ActivityRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
-import link.omny.custmgmt.repositories.DocumentRepository;
-import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -89,20 +90,8 @@ public class ContactController extends BaseTenantAwareController{
     @Autowired
     private ContactRepository contactRepo;
 
-//    @Autowired
-//    private CustomContactFieldRepository customContactRepo;
-
     @Autowired
     private AccountRepository accountRepo;
-
-    @Autowired
-    private DocumentRepository docRepo;
-
-    @Autowired
-    private NoteRepository noteRepo;
-
-    @Autowired
-    private ActivityRepository activityRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -421,12 +410,12 @@ public class ContactController extends BaseTenantAwareController{
                     .format("Loading activities for %1$d contacts, this may be a bottleneck",
                             list.size()));
         }
-        for (Contact contact : list) {
-            contact.setActivities(activityRepo.findByContactId(contact.getId()));
-            LOGGER.debug(String.format(
-                    "  loaded %1$d activities for contact %2$d",
-                    contact.getActivities().size(), contact.getId()));
-        }
+//        for (Contact contact : list) {
+//            contact.setActivities(activityRepo.findByContactId(contact.getId()));
+//            LOGGER.debug(String.format(
+//                    "  loaded %1$d activities for contact %2$d",
+//                    contact.getActivities().size(), contact.getId()));
+//        }
 
         return wrap(list);
     }
@@ -458,14 +447,13 @@ public class ContactController extends BaseTenantAwareController{
      * @throws BusinessEntityNotFoundException
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @Transactional
-    public @ResponseBody ContactResource findById(
+    @JsonView(ContactViews.Detailed.class)
+    public @ResponseBody Contact findById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id)
             throws BusinessEntityNotFoundException {
         LOGGER.debug(String.format("Find contact for id %1$s", id));
-        return (ContactResource) wrap(contactRepo.findOne(Long.parseLong(id)),
-                new ContactResource());
+        return addLinks(tenantId, contactRepo.findOne(Long.parseLong(id)));
     }
 
     /**
@@ -568,9 +556,10 @@ public class ContactController extends BaseTenantAwareController{
         if (contact.getAccountId() != null) {
             contact.setAccount(accountRepo.findOne(contact.getAccountId()));
         }
-
+        for (CustomContactField field : contact.getCustomFields()) {
+            field.setContact(contact);
+        }
         contact = contactRepo.save(contact);
-
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(getGlobalUri(contact.getId()));
@@ -619,7 +608,7 @@ public class ContactController extends BaseTenantAwareController{
      * Link anonymous contact to a known one.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{email}/", method = RequestMethod.POST, produces = { "application/json" })
+    @RequestMapping(value = "/merge/{email}/", method = RequestMethod.POST, produces = { "application/json" })
     @Transactional(value = TxType.REQUIRED)
     public @ResponseBody void linkToKnownContact(
             @PathVariable("tenantId") String tenantId,
@@ -642,16 +631,16 @@ public class ContactController extends BaseTenantAwareController{
             Activity entity = new Activity("login", new Date(), String.format(
                     "User %1$s (%2$d) logged in", anonContact.getFullName(),
                     anonContact.getId()));
-            entity.setContact(anonContact);
-            activityRepo.save(entity);
-
+            anonContact.getActivities().add(entity);
+            contactRepo.save(anonContact);
         }
     }
 
     // @Transactional(value = TxType.REQUIRES_NEW)
     public void updateActivities(Contact anonContact, List<Contact> contacts) {
         for (Contact contact : contacts) {
-            activityRepo.updateContact(anonContact, contact);
+            throw new IllegalStateException("Not yet implemented");
+//            activityRepo.updateContact(anonContact, contact);
         }
     }
 
@@ -667,8 +656,8 @@ public class ContactController extends BaseTenantAwareController{
                     String.format("Linked %1$s (%2$d) to user %3$s (%4$d)",
                             anonContact.getUuid(), anonContact.getId(),
                             contact.getFullName(), contact.getId()));
-            entity.setContact(contact);
-            activityRepo.save(entity);
+            anonContact.getActivities().add(entity);
+            contactRepo.save(anonContact);
         }
         if (contacts.size() > 0) {
             contactRepo.delete(anonContact.getId());
@@ -679,7 +668,7 @@ public class ContactController extends BaseTenantAwareController{
      * Link anonymous contact's activities to the specified known contact.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{email}/activities", method = RequestMethod.POST, produces = { "application/json" })
+    @RequestMapping(value = "/merge/{email}/activities", method = RequestMethod.POST, produces = { "application/json" })
     @Transactional(value = TxType.REQUIRES_NEW)
     public @ResponseBody void linkActivitiesToKnownContact(
             @PathVariable("tenantId") String tenantId,
@@ -697,7 +686,8 @@ public class ContactController extends BaseTenantAwareController{
 
         for (Contact contact : contacts) {
             for (Contact anonContact : anonContacts) {
-                activityRepo.updateContact(anonContact, contact);
+                throw new IllegalStateException("Not yet implemented");
+//                activityRepo.updateContact(anonContact, contact);
             }
         }
     }
@@ -717,88 +707,84 @@ public class ContactController extends BaseTenantAwareController{
     /**
      * Add a document to the specified contact.
      */
-    // Jackson cannot deserialise document because of contact reference
-    // @RequestMapping(value = "/{contactId}/documents", method =
-    // RequestMethod.PUT)
-    public @ResponseBody void addDocument(
+    @RequestMapping(value = "/{contactId}/documents", method = RequestMethod.POST)
+    @Transactional
+    public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId, @RequestBody Document doc) {
-        Contact contact = contactRepo.findOne(contactId);
-        doc.setContact(contact);
-        docRepo.save(doc);
-        // necessary to force a save
-        contact.setLastUpdated(new Date());
-        contactRepo.save(contact);
-        // Similarly cannot return object until solve Jackson object cycle
-        // return doc;
+         Contact contact = contactRepo.findOne(contactId);
+         contact.getDocuments().add(doc);
+         contactRepo.save(contact);
+         doc = contact.getDocuments().get(contact.getDocuments().size()-1);
+
+         HttpHeaders headers = new HttpHeaders();
+         URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                 .path("/{id}/documents/{docId}")
+                 .buildAndExpand(tenantId, contact.getId(), doc.getId())
+                 .toUri();
+         headers.setLocation(uri);
+
+         return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
     }
 
     /**
      * Add a document to the specified contact.
+     *      *
+     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
+     * @return
+     *
+     * @return The document created.
      */
-    @RequestMapping(value = "/{contactId}/documents", method = RequestMethod.POST)
-    public @ResponseBody void addDocument(
+    @RequestMapping(value = "/{contactId}/documents", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    public @ResponseBody Document addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam("author") String author,
             @RequestParam("name") String name,
             @RequestParam("url") String url) {
 
-        addDocument(tenantId, contactId, new Document(author, name, url));
+        return addDocument(tenantId, contactId, new Document(author, name, url)).getBody();
     }
 
     /**
      * Add a note to the specified contact.
+     * @return the created note.
      */
-    // TODO Jackson cannot deserialise document because of contact reference
-    // @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.PUT)
-    public @ResponseBody void addNote(
+    @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.POST)
+    @Transactional
+    public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId, @RequestBody Note note) {
         Contact contact = contactRepo.findOne(contactId);
-        note.setContact(contact);
-        noteRepo.save(note);
-        // necessary to force a save
-        contact.setLastUpdated(new Date());
+        contact.getNotes().add(note);
         contactRepo.save(contact);
-        // Similarly cannot return object until solve Jackson object cycle
-        // return note;
+        note = contact.getNotes().get(contact.getNotes().size()-1);
+
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                .path("/{id}/notes/{noteId}")
+                .buildAndExpand(tenantId, contact.getId(), note.getId())
+                .toUri();
+        headers.setLocation(uri);
+
+        return new ResponseEntity<Note>(note, headers, HttpStatus.CREATED);
     }
 
     /**
-     * Add a note to the specified contact.
+     * Add a note to the specified contact from its parts.
+     *
+     * <p>This is just a convenience method, see {@link #addNote(String, Long, Note)}
+     *
+     * @return The note created.
      */
-    @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.POST)
-    public @ResponseBody void addNote(
+    @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    public @ResponseBody Note addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam("author") String author,
             @RequestParam("favorite") boolean favorite,
             @RequestParam("content") String content) {
-        addNote(tenantId, contactId, new Note(author, content, favorite));
-    }
-
-    /**
-     * @deprecated This method does not follow conventions, leading to a clash
-     *             with {@link #update}.
-     * @see {@link #setStage}
-     */
-    @RequestMapping(value = "/{contactId}", method = RequestMethod.PUT, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody void setStageDeprecated(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId,
-            @RequestParam("stage") String stage) {
-        LOGGER.info(String.format("Setting contact %1$s to stage %2$s",
-                contactId, stage));
-
-        Contact contact = contactRepo.findOne(contactId);
-        contact.setStage(stage);
-        contactRepo.save(contact);
-
-        addActivity(tenantId, contactId, "transition-to-stage",
-                String.format("Waiting for %1$s", stage));
-
-        // return contact;
+        return addNote(tenantId, contactId, new Note(author, content, favorite)).getBody();
     }
 
     /**
@@ -857,18 +843,40 @@ public class ContactController extends BaseTenantAwareController{
     }
 
     /**
-     * Add an activity to the specified contact.
+     * Add activity to the specified contact.
+     * @return the created activity.
      */
     @RequestMapping(value = "/{contactId}/activities", method = RequestMethod.POST)
-    public @ResponseBody void addActivity(
+    @Transactional
+    public @ResponseBody ResponseEntity<Activity> addActivity(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("contactId") Long contactId, @RequestBody Activity activity) {
+        Contact contact = contactRepo.findOne(contactId);
+        contact.getActivities().add(activity);
+        contactRepo.save(contact);
+        activity = contact.getActivities().get(contact.getActivities().size()-1);
+
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                .path("/{id}/activities/{activityId}")
+                .buildAndExpand(tenantId, contact.getId(), activity.getId())
+                .toUri();
+        headers.setLocation(uri);
+
+        return new ResponseEntity<Activity>(activity, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Add an activity to the specified contact.
+     * @return the created activity.
+     */
+    @RequestMapping(value = "/{contactId}/activities", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    public @ResponseBody ResponseEntity<Activity> addActivity(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam("type") String type,
             @RequestParam("content") String content) {
-
-        Activity activity = new Activity(type, new Date(), content);
-        activity.setContact(contactRepo.findOne(contactId));
-        activityRepo.save(activity);
+        return addActivity(tenantId, contactId, new Activity(type, new Date(), content));
     }
 
     /**
@@ -974,6 +982,16 @@ public class ContactController extends BaseTenantAwareController{
 
     private ResourceSupport wrap(Contact contact, ResourceSupport resource) {
         BeanUtils.copyProperties(contact, resource);
+
+        // 03 Jun 17 inexplicably Jackson started getting infinite recursion issue
+        // maybe due to Spring introspection changes implied by #511?
+        if (resource instanceof ContactResource) {
+            ContactResource c = ((ContactResource) resource);
+            if (c.getAccount()!=null) {
+                c.getAccount().setContact(null);
+            }
+        }
+
         Link detail = new Link(getGlobalUri(contact.getId()).toString());
         resource.add(detail);
         if (contact.getAccount() != null) {
@@ -1077,6 +1095,7 @@ public class ContactController extends BaseTenantAwareController{
         private Account account;
         private List<Activity> activities;
         private List<Note> notes;
+        private List<Document> documents;
 
         public Object getCustomFieldValue(@NotNull String fieldName) {
             for (CustomField field : getCustomFields()) {
@@ -1096,6 +1115,8 @@ public class ContactController extends BaseTenantAwareController{
         private String lastName;
         private String fullName;
         private String email;
+        private String phone1;
+        private String jobTitle;
         private String accountName;
         private String owner;
         private String stage;
@@ -1108,4 +1129,11 @@ public class ContactController extends BaseTenantAwareController{
         private Date lastUpdated;
     }
 
+    private Contact addLinks(String tenantId, Contact contact) {
+        List<Link> links = new ArrayList<Link>();
+        links.add(new Link(String.format("/%1$s/contacts/%2$s",
+                tenantId, contact.getId())));
+        contact.setLinks(links);
+        return contact;
+    }
 }

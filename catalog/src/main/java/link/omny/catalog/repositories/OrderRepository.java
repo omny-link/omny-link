@@ -17,10 +17,10 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     @Override
     Order findOne(Long id);
 
-    @Query("SELECT o FROM Order o WHERE o.stage != 'deleted' AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
+    @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
     List<Order> findAllForTenant(@Param("tenantId") String tenantId);
 
-    @Query("SELECT o FROM Order o WHERE o.stage != 'deleted' AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
+    @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
     List<Order> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
@@ -28,16 +28,16 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     List<Order> findByStageForTenant(@Param("tenantId") String tenantId,
             @Param("stage") String stage);
 
-    @Query("SELECT o FROM Order o WHERE o.stage != 'deleted' AND o.tenantId = :tenantId AND o.contactId = :contactId ORDER BY o.lastUpdated DESC")
+    @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId = :contactId ORDER BY o.lastUpdated DESC")
     List<Order> findAllForContact(@Param("tenantId") String tenantId,
             @Param("contactId") Long contactId);
 
-    @Query("SELECT o FROM Order o WHERE o.stage != 'deleted' AND o.tenantId = :tenantId AND o.contactId = :contactId ORDER BY o.lastUpdated DESC")
+    @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId = :contactId ORDER BY o.lastUpdated DESC")
     List<Order> findPageForContact(@Param("tenantId") String tenantId,
             @Param("contactId") Long contactId,
             Pageable pageable);
 
-    @Query("SELECT o FROM Order o WHERE o.stage != 'deleted' AND o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
+    @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
     List<Order> findAllForContacts(@Param("tenantId") String tenantId,
             @Param("contactIds") Long[] contactIds);
 
@@ -46,9 +46,9 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
             @Param("contactIds") Long[] contactIds, Pageable pageable);
 
     @Override
-    @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = :orderId")
+    @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = :id")
     @Modifying(clearAutomatically = true)
-    public void delete(@Param("orderId") Long id);
+    public void delete(@Param("id") Long id);
 
     @Query("DELETE FROM CustomOrderItemField i WHERE i.orderItem.id = :orderItemId")
     @Modifying(clearAutomatically = true)

@@ -7,14 +7,14 @@
         {{/}}
         {{#tenant.show.account}}<th on-click="sort:accountName">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
         {{#tenant.show.marketing || tenant.show.stage}}
-          <th on-click="sort:stage">Stage<span class="sortable {{ sorted('stage') }} glyphicon"></th>
+          <th on-click="sort:stage">{{#tenant.strings.accountStage}}{{tenant.strings.accountStage}}{{else}}Stage{{/}}<span class="sortable {{ sorted('stage') }} glyphicon"></th>
         {{/}}
-        <th on-click="sort:accountType">Account Type<span class="sortable {{ sorted('accountType') }} glyphicon"></th>
-        <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon"></th>
+        <th on-click="sort:accountType">{{#tenant.strings.accountType}}{{tenant.strings.accountType}}{{else}}Account Type{{/}}<span class="sortable {{ sorted('accountType') }} glyphicon"></th>
+        <th on-click="sort:owner">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owned by{{/}}<span class="sortable {{ sorted('owner') }} glyphicon"></th>
         <th on-click="sort:firstContact">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}First Contact{{/}}<span class="sortable {{ sorted('firstContact') }} glyphicon"></th>
-        <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
-        <th>Alerts</th>
-        <th>Tags</th>
+        <th class="" on-click="sort:lastUpdated">{{#tenant.strings.lastUpdated}}{{tenant.strings.lastUpdated}}{{else}}Last Updated{{/}}<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
+        <th>{{#tenant.strings.alerts}}{{tenant.strings.alerts}}{{else}}Alerts{{/}}</th>
+        <th>{{#tenant.strings.tags}}{{tenant.strings.tags}}{{else}}Tags{{/}}</th>
         <th class="col-actions">Actions</th>
       </tr>
     </thead>
@@ -47,6 +47,17 @@
     {{/each}}
   </tbody>
   <tfoot>
-    <tr><th colspan="12">{{searchMatched == 0 ? 'No' : searchMatched}} matching {{#entityPath=='/accounts'}}{{#tenant.strings.account}}{{tenant.strings.account.toLowerCase()}}{{else}}account{{/}}{{else}}{{#tenant.strings.contact}}{{tenant.strings.contact.toLowerCase()}}{{else}}contact{{/}}{{/}}{{searchMatched==1 ? '' : 's'}}</th></tr>
+    <tr><th colspan="12">
+      {{searchMatched == 0 ? 'No' : searchMatched}} matching
+      {{#if entityPath=='/accounts' && searchMatched==1}}
+        {{#tenant.strings.account}}{{tenant.strings.account.toLowerCase()}}{{/}}
+      {{elseif entityPath=='/accounts' && searchMatched!=1}}
+        {{#tenant.strings.accounts}}{{tenant.strings.accounts.toLowerCase()}}{{/}}
+      {{elseif searchMatched==1}}
+        {{#tenant.strings.contact}}{{tenant.strings.contact.toLowerCase()}}{{else}}contact{{/}}
+      {{else}}
+        {{#tenant.strings.contacts}}{{tenant.strings.contacts.toLowerCase()}}{{else}}contacts{{/}}
+      {{/if}}
+    </th></tr>
   </tfoot>
 </table>

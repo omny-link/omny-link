@@ -2,6 +2,7 @@ package link.omny.catalog.web;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,7 +43,6 @@ import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 import link.omny.catalog.internal.CatalogCsvImporter;
 import link.omny.catalog.model.CustomStockItemField;
 import link.omny.catalog.model.MediaResource;
-import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
 import link.omny.catalog.repositories.MediaResourceRepository;
 import link.omny.catalog.repositories.StockCategoryRepository;
@@ -55,7 +55,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * REST web service for accessing stock items.
- * 
+ *
  * @author Tim Stephenson
  */
 @Controller
@@ -120,7 +120,7 @@ public class StockItemController {
 
     /**
      * Return just the stockItems for a specific tenant.
-     * 
+     *
      * @return stockItems for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -171,7 +171,7 @@ public class StockItemController {
 
     /**
      * Return just the matching stock item.
-     * 
+     *
      * @return stock item for that tenant with the matching id.
      * @throws BusinessEntityNotFoundException
      */
@@ -192,12 +192,13 @@ public class StockItemController {
                 (item.getStockCategory() == null ? "n/a" : item.getStockCategory().getName()),
                 item.getCustomFields().size()));
 
+        addLinks(tenantId, item);
         return item;
     }
 
     /**
      * Return just the stock items for a given stock category name.
-     * 
+     *
      * @return stockItems for that tenant and stock category.
      */
     @RequestMapping(value = "/findByStockCategoryName/{categoryName}", method = RequestMethod.GET)
@@ -216,7 +217,7 @@ public class StockItemController {
 
     /**
      * Create a new stockItem.
-     * 
+     *
      * @return
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -229,6 +230,9 @@ public class StockItemController {
         if (stockItem.getStockCategory() != null) {
             stockItem.setStockCategory(stockCategoryRepo.findByName(
                     stockItem.getStockCategory().getName(), tenantId));
+        }
+        for (CustomStockItemField field : stockItem.getCustomFields()) {
+            field.setStockItem(stockItem);
         }
         stockItemRepo.save(stockItem);
 
@@ -257,11 +261,12 @@ public class StockItemController {
 
         NullAwareBeanUtils.copyNonNullProperties(updatedStockItem, stockItem,
                 "id", "tagsAsList", "stockCategory");
-        // This is not a mechanism to update the category but only to link 
+        // This is not a mechanism to update the category but only to link
         // item to a different category if necessary
         if (updatedStockItem.getStockCategory() == null) {
             stockItem.setStockCategory(null);
-        } else if (!stockItem.getStockCategory().getId().equals(updatedStockItem.getStockCategory().getId())) {
+        } else if (updatedStockItem.getStockCategory().getId() != null
+                && !updatedStockItem.getStockCategory().getId().equals(stockItem.getStockCategory().getId())) {
             // During creation stock cat name may be set whilst id is not
             stockItem.setStockCategory(stockCategoryRepo.findByName(updatedStockItem.getStockCategory().getName(), tenantId));
         }
@@ -421,7 +426,7 @@ public class StockItemController {
         private String size;
         private String sizeString;
         private String unit;
-        private String price;
+        private BigDecimal price;
         private String tags;
         private String tenantId;
         private String stockCategoryName;
@@ -432,8 +437,14 @@ public class StockItemController {
         private String status;
         private Date created;
         private Date lastUpdated;
-        private StockCategory stockCategory;
         private List<MediaResource> images;
+    }
+
+    private void addLinks(String tenantId, StockItem item) {
+        List<Link> links = new ArrayList<Link>();
+        links.add(new Link(String.format("/%1$s/stock-items/%2$s",
+                tenantId, item.getId())));
+        item.setLinks(links);
     }
 
     private void addLinks(String tenantId, Long stockItemId, MediaResource resource) {

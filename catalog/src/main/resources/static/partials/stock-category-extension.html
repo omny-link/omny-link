@@ -7,42 +7,14 @@
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         {{#each tenant.stockCategoryFields.slice(0,Math.ceil(tenant.stockCategoryFields.length/2)):j}}
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
-            {{#type=='select' || type=='multi-select'}}
-              {{! binding does not work for multiple selects}}
-              <select class="form-control" id="cur{{name.toLeadingCaps()}}" 
-                  {{#type=='multi-select'}}multiple="{{multiple}}" data-key="{{name}}" data-value="{{current.customFields[name]}}"
-                  {{else}}value="{{current.customFields[name]}}"
-                  {{/}}></select>
-            {{elseif type=='list'}}
-              <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}s" value="{{current.customFields[name]}}">
-            {{else}}
-              <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
-            {{/}}
-            <p class="col-md-offset-4 col-sm-offset-4 help-block field-error">{{hint}}</p>
-          </li>
+          {{>fieldExtension}}
         {{/each}}
       </ul>
     </div>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         {{#tenant.stockCategoryFields.slice(Math.ceil(tenant.stockCategoryFields.length/2),tenant.stockCategoryFields.length):j}}
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
-            {{#type=='select' || type=='multi-select'}}
-              {{! binding does not work for multiple selects}}
-              <select class="form-control" id="cur{{name.toLeadingCaps()}}" 
-                  {{#type=='multi-select'}}multiple="{{multiple}}" data-key="{{name}}" data-value="{{current.customFields[name]}}"
-                  {{else}}value="{{current.customFields[name]}}"
-                  {{/}}></select>
-            {{elseif type=='list'}}
-              <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}s" value="{{current.customFields[name]}}">
-            {{else}}
-              <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
-            {{/}}
-            <p class="col-md-offset-4 col-sm-offset-4 help-block field-error">{{hint}}</p>
-          </li>
+          {{>fieldExtension}}
         {{/}}
       </ul>
     </div>

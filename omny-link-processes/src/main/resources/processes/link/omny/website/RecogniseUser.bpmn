@@ -30,6 +30,10 @@
         <activiti:field name="resourcePassword">
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
+
         <activiti:field name="globalResource">
           <activiti:expression>userInfo('cust-mgmt-url')/${omny_userRecognition.getString('tenantId')}/contacts/findByUuid?uuid=${omny_userRecognition.getString('uuid')}</activiti:expression>
         </activiti:field>
@@ -59,6 +63,10 @@
         <activiti:field name="resourcePassword">
           <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
         </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
+
         <activiti:field name="globalResource">
           <activiti:string>userInfo('cust-mgmt-url')/${omny_userRecognition.getString('tenantId')}/contacts/${omny_userRecognition.getString('email')}/</activiti:string>
         </activiti:field>

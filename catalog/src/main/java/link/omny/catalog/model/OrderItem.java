@@ -13,18 +13,22 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.hateoas.Link;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -95,10 +99,12 @@ public class OrderItem implements Serializable {
     // appears relevant switching to jackson-databind-2.7.3 made no difference
     //@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd")
     //@JsonFormat(shape=JsonFormat.Shape.OBJECT)
+    @Column(name = "last_updated")
     private Date lastUpdated;
 
     @JsonProperty
     @JsonView(OrderViews.Detailed.class)
+    @Column(name = "tenant_id")
     private String tenantId;
 
     @ManyToOne
@@ -109,6 +115,7 @@ public class OrderItem implements Serializable {
     @JsonView(OrderViews.Detailed.class)
     @ManyToOne(fetch = FetchType.EAGER)
     @RestResource(rel = "stockItem")
+    @JoinColumn(name = "stock_item_id")
     private StockItem stockItem;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "orderItem", orphanRemoval = true)
@@ -116,6 +123,12 @@ public class OrderItem implements Serializable {
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     @JsonView(OrderViews.Detailed.class)
     private List<CustomOrderItemField> customFields;
+
+    @Transient
+    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
+    @JsonProperty("links")
+    @JsonView({ OrderViews.Detailed.class })
+    private List<Link> links;
 
     public OrderItem(String type) {
         this();

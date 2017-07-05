@@ -72,6 +72,7 @@ public class MediaResource implements Serializable {
     @JsonProperty
     @JsonView({ MediaResourceViews.Summary.class,
         StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @Column(name = "last_updated")
     private Date lastUpdated;
 
     @JsonProperty
