@@ -62,7 +62,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * REST web service for accessing stock items.
- * 
+ *
  * @author Tim Stephenson
  */
 @RestController
@@ -135,7 +135,7 @@ public class StockCategoryController {
 
     /**
      * Return just the stock categories for a specific tenant.
-     * 
+     *
      * @return stockCategories for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -175,7 +175,7 @@ public class StockCategoryController {
 
     /**
      * Return just the matching stock category.
-     * 
+     *
      * @return stock category for that tenant with the matching id.
      * @throws BusinessEntityNotFoundException
      */
@@ -189,9 +189,10 @@ public class StockCategoryController {
         LOGGER.debug(String.format("Find stock category for id %1$s", id));
 
         StockCategory category = stockCategoryRepo.findOne(Long.parseLong(id));
+        addLinks(tenantId, category);
         return category;
     }
-    
+
     @RequestMapping(value = "/findByName", method = RequestMethod.GET)
     @Transactional(readOnly = true)
     @JsonView(StockCategoryViews.Detailed.class)
@@ -223,7 +224,7 @@ public class StockCategoryController {
     /**
      * Return Stock Categories for a specific tenant within a given distance of
      * the search location.
-     * 
+     *
      * @return stockCategories for that tenant.
      * @throws IOException
      *             If unable to contact the geo-coding service or it in turn
@@ -343,7 +344,7 @@ public class StockCategoryController {
         }
         return tags;
     }
-    
+
     private void filter(final StockCategory stockCategory,
             final List<String> tags) {
         ArrayList<StockItem> filteredItems = new ArrayList<StockItem>();
@@ -372,7 +373,7 @@ public class StockCategoryController {
 
     /**
      * Create a new stock category.
-     * 
+     *
      * @return
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -382,6 +383,14 @@ public class StockCategoryController {
             @PathVariable("tenantId") String tenantId,
             @RequestBody StockCategory stockCategory) {
         stockCategory.setTenantId(tenantId);
+
+        for (CustomStockCategoryField field : stockCategory.getCustomFields()) {
+            field.setStockCategory(stockCategory);
+        }
+        for (StockItem item : stockCategory.getStockItems()) {
+            item.setStockCategory(stockCategory);
+        }
+
         stockCategoryRepo.save(stockCategory);
 
         UriComponentsBuilder builder = MvcUriComponentsBuilder
@@ -506,7 +515,7 @@ public class StockCategoryController {
         resource.setSelfRef(detail.getHref());
         return resource;
     }
-    
+
     private List<ShortStockCategoryResource> wrap(List<StockCategory> list) {
         List<ShortStockCategoryResource> resources = new ArrayList<ShortStockCategoryResource>(
                 list.size());
@@ -616,6 +625,13 @@ public class StockCategoryController {
         private Date lastUpdated;
         private String tenantId;
         private List<MediaResource> images;
+    }
+
+    private void addLinks(String tenantId, StockCategory category) {
+        List<Link> links = new ArrayList<Link>();
+        links.add(new Link(String.format("/%1$s/stock-categories/%2$s",
+                tenantId, category.getId())));
+        category.setLinks(links);
     }
 
     private void addLinks(String tenantId, Long stockCategoryId, MediaResource resource) {

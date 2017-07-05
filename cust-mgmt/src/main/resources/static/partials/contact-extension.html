@@ -7,22 +7,14 @@
     <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
       <ul class="form edit-form">
         {{#each tenant.contactFields.slice(0,Math.ceil(tenant.contactFields.length/2)):j}}
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
-            <input class="form-control" id="cur{{name.toLeadingCaps()}}" value="{{current.customFields[name]}}">
-            <p class="col-md-offset-4 col-sm-offset-4 help-block field-error"></p>
-          </li>
+          {{>fieldExtension}}
         {{/each}}
       </ul>
     </div>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
       <ul class="form edit-form">
         {{#each tenant.contactFields.slice(Math.ceil(tenant.contactFields.length/2),tenant.contactFields.length):j}}
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
-            <input class="form-control" id="cur{{name.toLeadingCaps()}}" value="{{current.customFields[name]}}">
-            <p class="col-md-offset-4 col-sm-offset-4 help-block field-error"></p>
-          </li>
+          {{>fieldExtension}}
         {{/each}}
       </ul>
     </div>

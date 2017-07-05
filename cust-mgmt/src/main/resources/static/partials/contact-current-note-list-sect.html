@@ -14,12 +14,12 @@
 	        <td class="field-age">{{age(created)}} ({{formatDateTime(created)}})</td>
 	        <td class="field-author">{{{gravatar(author)}}}</td>
 	        {{#created}}
-	          <td class="field-text" {{# lessThan24hAgo(created)}}notyetcontenteditable{{/}}>{{{formatContent(content)}}}</td>
+	          <td class="field-text" {{# lessThan24hAgo(created)}}notyetcontenteditable{{/}}>{{{formatContent(..content)}}}</td>
 	        {{else}}
 	          <td class="field-text">
-	            <textarea id="note" on-blur="saveNote(this)" placeholder="Type your note here" required style="width:100%;" value={{content}}></textarea>
+	            <textarea id="note" on-blur="saveNote()" placeholder="Type your note here" required style="width:100%;" value={{..content}}></textarea>
 	            <br/>
-	            <a onclick="ractive.cancelNote()">Cancel</a>
+	            <a on-click="cancelNote()">Cancel</a>
 	          </td>
 	        {{/}}
 	        <td class="pull-right field-favorite" on-click="toggleFavorite(j)">

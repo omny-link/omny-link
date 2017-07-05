@@ -8,10 +8,12 @@ import javax.persistence.Table;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "OL_ACCOUNT_CUSTOM")
 @Data
+@ToString(exclude = "account")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
 public class CustomAccountField extends CustomField {

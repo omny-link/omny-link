@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
@@ -39,6 +40,7 @@ import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.model.Memo;
 import link.omny.custmgmt.model.Note;
+import link.omny.custmgmt.model.views.MemoViews;
 import link.omny.custmgmt.repositories.MemoRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
@@ -112,7 +114,6 @@ public class MemoController extends BaseTenantAwareController {
 
         memo = memoRepo.save(memo);
 
-
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(getGlobalUri(memo.getId()));
 
@@ -155,8 +156,9 @@ public class MemoController extends BaseTenantAwareController {
      * @throws BusinessEntityNotFoundException
      */
     @RequestMapping(value = "/{idOrName}", method = RequestMethod.GET)
-    @Transactional
-    public @ResponseBody ResourceSupport findById(
+//    @Transactional
+    @JsonView(MemoViews.Detailed.class)
+    public @ResponseBody Memo findById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("idOrName") String idOrName)
             throws BusinessEntityNotFoundException {
@@ -173,7 +175,8 @@ public class MemoController extends BaseTenantAwareController {
                     idOrName));
             throw new BusinessEntityNotFoundException("Memo", idOrName);
         }
-        return wrap(memo, new MemoResource());
+        return memo;
+//        return wrap(memo, new MemoResource());
     }
 
     /**
@@ -186,7 +189,8 @@ public class MemoController extends BaseTenantAwareController {
      */
     @RequestMapping(value = "/{idOrName}/clone", method = RequestMethod.POST)
     @Transactional
-    public @ResponseBody ResourceSupport clone(
+    @JsonView(MemoViews.Detailed.class)
+    public @ResponseBody Memo clone(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("idOrName") String idOrName)
             throws BusinessEntityNotFoundException {
@@ -207,7 +211,9 @@ public class MemoController extends BaseTenantAwareController {
         BeanUtils.copyProperties(memo, resource, "id");
         resource.setName(memo.getName() + "Copy");
         memoRepo.save(resource);
-        return wrap(resource, new MemoResource());
+        addLinks(tenantId, resource);
+        return resource;
+//        return wrap(resource, new MemoResource());
     }
 
     /**
@@ -288,10 +294,10 @@ public class MemoController extends BaseTenantAwareController {
 
     private ResourceSupport wrap(Memo message, ResourceSupport resource) {
         BeanUtils.copyProperties(message, resource);
-        Link detail = linkTo(MemoRepository.class, message.getId())
-                .withSelfRel();
-        resource.add(detail);
         try {
+            Link detail = linkTo(MemoRepository.class, message.getId())
+                    .withSelfRel();
+            resource.add(detail);
             Method method = resource.getClass().getMethod("setSelfRef", String.class);
             method.invoke(resource, detail.getHref());
         } catch (NoSuchMethodException | IllegalAccessException
@@ -322,19 +328,10 @@ public class MemoController extends BaseTenantAwareController {
         private Date lastUpdated;
       }
 
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class MemoResource extends ResourceSupport {
-        private String selfRef;
-        private String name;
-        private String title;
-        private String plainContent;
-        private String richContent;
-        private String shortContent;
-        private String status;
-        private String owner;
-        private String requiredVars;
-        private Date created;
-        private Date lastUpdated;
+    private void addLinks(String tenantId, Memo memo) {
+        List<Link> links = new ArrayList<Link>();
+        links.add(new Link(String.format("/%1$s/memos/%2$s",
+                tenantId, memo.getId())));
+        memo.setLinks(links);
     }
 }

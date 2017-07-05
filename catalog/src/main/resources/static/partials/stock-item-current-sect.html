@@ -29,8 +29,13 @@
         {{#tenant.show.stockCategory}}
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}:</label>
-	          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.stockCategory.name}}">
-	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>
+	          <div class="input-group">
+              <input class="form-control" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.stockCategory.name}}">
+	            <span class="input-group-addon">
+                <a href="stock-categories.html?q={{current.stockCategory.id}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+              </span>
+            </div>
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>
 	        </li>
 	      {{/}}
 	      {{#if stockTypes!=undefined}}
@@ -42,7 +47,7 @@
 	      {{/if}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}:</label>
-          <input class="form-control typeahead" placeholder="Start typing to filter options" id="curStatus" value="{{current.status}}"/>
+          <input class="form-control" id="curStatus" list="status" placeholder="Start typing to filter options" value="{{current.status}}"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.statusHint}}{{tenant.strings.statusHint}}{{else}}Draft, Ready for review, Published etc.{{/}}</p>
         </li>
         <li>
@@ -58,17 +63,17 @@
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">{{#tenant.strings.unitPrice}}{{tenant.strings.unitPrice}}{{else}}Unit Price{{/}}:</label>
 	          <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
-	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price of the {{tenant.strings.stockItem}}{{/}}:</p>
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price of the {{tenant.strings.stockItem.toLowerCase()}}{{/}}</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">{{#tenant.strings.unit}}{{tenant.strings.unit}}{{else}}Unit of Measure{{/}}:</label>
 	          <input class="form-control" id="curUnit" value="{{current.unit}}">
-	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.unitHint}}{{tenant.strings.unitHint}}{{else}}Relevant unit of measure for the {{#if tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/if}}{{/}}:</p>
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.unitHint}}{{tenant.strings.unitHint}}{{else}}Relevant unit of measure for the {{#if tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/if}}{{/}}</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">{{#tenant.strings.size}}{{tenant.strings.size}}{{else}}Size{{/}}:</label>
 	          <input class="form-control" id="curSize" type="number" value="{{current.size}}">
-	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.sizeHint}}{{tenant.strings.sizeHint}}{{else}}Number of UOMs in this {{tenant.strings.stockItem}}{{/}}</p>
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.sizeHint}}{{tenant.strings.sizeHint}}{{else}}Number of UOMs in this {{tenant.strings.stockItem.toLowerCase()}}{{/}}</p>
 	        </li>
 	      </ul>
 	    </div>

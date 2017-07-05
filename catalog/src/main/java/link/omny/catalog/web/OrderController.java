@@ -106,10 +106,8 @@ public class OrderController {
                 order.getFeedback() == null ? "DOES NOT" : "DOES"));
         
         order.setFeedback(feedbackRepo.findByOrder(tenantId, orderId));
-
+        addLinks(tenantId, order);
         return order;
-//        CompleteOrder orderResource = wrap(order);
-//        return orderResource;
     }
 
     /**
@@ -198,9 +196,8 @@ public class OrderController {
      * @return orders.
      */
     @RequestMapping(value = "/findByContacts/{contactIds}", method = RequestMethod.GET)
-//    @JsonView(OrderViews.Detailed.class)
-    //[2017-02-09 17:03:08.735] boot - 22032  WARN [http-nio-8082-exec-1] --- DefaultHandlerExceptionResolver: Failed to write HTTP message: org.springframework.http.converter.HttpMessageNotWritableException: Could not write content: Can not override serializer (through reference chain: java.util.ArrayList[0]); nested exception is com.fasterxml.jackson.databind.JsonMappingException: Can not override serializer (through reference chain: java.util.ArrayList[0])
-    public @ResponseBody List<OrderWithSubEntities> listForContacts(
+    @JsonView(OrderViews.Detailed.class)
+    public @ResponseBody List<Order> listForContacts(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactIds") Long[] contactIds,
             @RequestParam(value = "page", required = false) Integer page,
@@ -219,7 +216,7 @@ public class OrderController {
         }
         LOGGER.info(String.format("Found %1$s orders", list.size()));
 
-        return wrap(list);
+        return list;
     }
 
     /**
@@ -237,6 +234,9 @@ public class OrderController {
         fixUpOrderItems(tenantId, order);
         if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
             order.setStockItem(null);
+        }
+        for (CustomOrderField field : order.getCustomFields()) {
+            field.setOrder(order);
         }
 
         orderRepo.save(order);
@@ -306,18 +306,22 @@ public class OrderController {
             @PathVariable("id") Long orderId, @RequestBody OrderItem newItem) {
         Order order = orderRepo.findOne(orderId);
 
-        newItem.setTenantId(tenantId);
-        newItem.setOrder(order);
+        for (CustomOrderItemField coif : newItem.getCustomFields()) {
+            coif.setOrderItem(newItem);
+        }
         if (newItem.getStockItem() != null && newItem.getStockItem().getId() != null) {
             newItem.setStockItem(
                     stockItemRepo.findOne(newItem.getStockItem().getId()));
         }
 
-        newItem = orderItemRepo.save(newItem);
+        order.addOrderItem(newItem);
+        order = orderRepo.save(order);
         HashMap<String, String> vars = new HashMap<String, String>();
         vars.put("tenantId", tenantId);
         vars.put("id", order.getId().toString());
-        vars.put("itemId", newItem.getId().toString());
+        List<OrderItem> items = order.getOrderItems();
+        items.sort((o1,o2) -> o1.getId().compareTo(o2.getId()));
+        vars.put("itemId", items.get(0).getId().toString());
         
         return getCreatedResponseEntity("/{id}/order-items/{itemId}", vars);
     }
@@ -614,5 +618,12 @@ public class OrderController {
         private Date created;
         private Date lastUpdated;
         private String tenantId;
+    }
+
+    private void addLinks(String tenantId, Order order) {
+        List<Link> links = new ArrayList<Link>();
+        links.add(new Link(String.format("/%1$s/orders/%2$s",
+                tenantId, order.getId())));
+        order.setLinks(links);
     }
 }
