@@ -43,6 +43,7 @@ public class ModelIssue implements Serializable {
     private String description;
 
     @JsonProperty
+    @Column(name = "model_ref")
     private String modelRef;
 
     @JsonProperty

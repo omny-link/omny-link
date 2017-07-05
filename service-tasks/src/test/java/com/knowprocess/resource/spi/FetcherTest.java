@@ -131,7 +131,7 @@ public class FetcherTest {
 
     @Test
     public void testFetchResourcePart() {
-        String resource = "http://omny.link/user-help/contacts";
+        String resource = "https://omny.link/user-help/contacts";
         try {
             Map<String, String> headers = new HashMap<String, String>();
             String result = svc.fetchToString(resource, headers,

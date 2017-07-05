@@ -1,20 +1,7 @@
 package link.omny.custmgmt.web;
 
-import io.onedecision.engine.decisions.web.DecisionController;
-
 import java.util.Map;
 import java.util.Map.Entry;
-
-import link.omny.custmgmt.model.Account;
-import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.CustomAccountField;
-import link.omny.custmgmt.model.CustomContactField;
-import link.omny.custmgmt.repositories.AccountRepository;
-import link.omny.custmgmt.repositories.ContactRepository;
-import link.omny.custmgmt.repositories.NoteRepository;
-import link.omny.custmgmt.web.fg.ValuationDecision;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +19,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import io.onedecision.engine.decisions.web.DecisionController;
+import link.omny.custmgmt.model.Account;
+import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.CustomAccountField;
+import link.omny.custmgmt.model.CustomContactField;
+import link.omny.custmgmt.repositories.AccountRepository;
+import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.web.fg.ValuationDecision;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 /**
  * Temporary stand-in for DMN based implementation
  * 
@@ -43,15 +41,6 @@ public class DecisionsController extends DecisionController {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(DecisionsController.class);
-
-    @Autowired
-    private ContactRepository repo;
-
-    @Autowired
-    private AccountRepository accountRepo;
-
-    @Autowired
-    private NoteRepository noteRepo;
 
     @Autowired
     private ConversionService mvcConversionService;

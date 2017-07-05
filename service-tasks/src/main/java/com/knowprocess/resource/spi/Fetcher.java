@@ -54,7 +54,6 @@ public class Fetcher extends RestService implements JavaDelegate {
 
     public static final String MIME_XML = "text/xml";
     protected static final String RESOURCE_KEY = "resource";
-    private static final int MAX_VAR_LENGTH = 4000;
     public static final String PROTOCOL = "classpath://";
 
     private RepositoryService repositoryService;

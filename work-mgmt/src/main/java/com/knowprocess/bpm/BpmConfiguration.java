@@ -3,9 +3,11 @@ package com.knowprocess.bpm;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
@@ -16,6 +18,7 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.identity.User;
+import org.activiti.engine.impl.bpmn.parser.factory.ActivityBehaviorFactory;
 import org.activiti.spring.SpringAsyncExecutor;
 import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.activiti.spring.boot.AbstractProcessEngineAutoConfiguration;
@@ -37,8 +40,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.knowprocess.bpm.api.ActivitiUserDetailsService;
+import com.knowprocess.bpm.impl.CustomActivityBehaviorFactory;
 import com.knowprocess.bpm.impl.JsonManager;
 import com.knowprocess.bpm.impl.TaskAllocationMapper;
+import com.knowprocess.bpmn.BpmnRestHelper;
 
 @Configuration
 @ComponentScan(basePackages = { "com.knowprocess.bpm",
@@ -65,8 +70,6 @@ public class BpmConfiguration extends AbstractProcessEngineAutoConfiguration {
             PlatformTransactionManager transactionManager,
             SpringAsyncExecutor springAsyncExecutor) throws IOException {
 
-        // setActivitiProperties(overrideProperties);
-
         SpringProcessEngineConfiguration config = this
                 .baseSpringProcessEngineConfiguration(activitiDataSource,
                         transactionManager, springAsyncExecutor);
@@ -85,7 +88,19 @@ public class BpmConfiguration extends AbstractProcessEngineAutoConfiguration {
         // instead diagrams created 'on the fly' by ProcessDefinitionController
         config.getProcessEngineConfiguration().setCreateDiagramOnDeploy(false);
 
+        // override activity implementations
+        config.setActivityBehaviorFactory(activityBehaviorFactory());
+
+        Map<Object, Object> beans = new HashMap<Object, Object>();
+        beans.put(BpmnRestHelper.ID, new BpmnRestHelper());
+        config.setBeans(beans);
+
         return config;
+    }
+
+    @Bean
+    public ActivityBehaviorFactory activityBehaviorFactory() {
+        return new CustomActivityBehaviorFactory();
     }
 
     // TODO use separate datasource for activiti?

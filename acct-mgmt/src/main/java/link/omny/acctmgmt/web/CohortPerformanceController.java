@@ -13,22 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
-
-import link.omny.custmgmt.internal.CsvImporter;
-import link.omny.custmgmt.internal.NullAwareBeanUtils;
-import link.omny.custmgmt.model.Account;
-import link.omny.custmgmt.model.Activity;
-import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.Document;
-import link.omny.custmgmt.model.Note;
-import link.omny.custmgmt.repositories.AccountRepository;
-import link.omny.custmgmt.repositories.ActivityRepository;
-import link.omny.custmgmt.repositories.ContactRepository;
-import link.omny.custmgmt.repositories.DocumentRepository;
-import link.omny.custmgmt.repositories.NoteRepository;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
@@ -65,6 +49,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
+import link.omny.custmgmt.internal.CsvImporter;
+import link.omny.custmgmt.internal.NullAwareBeanUtils;
+import link.omny.custmgmt.model.Account;
+import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.repositories.AccountRepository;
+import link.omny.custmgmt.repositories.ContactRepository;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 /**
  * REST web service for uploading and accessing a file of JSON Contacts (over
  * and above the CRUD offered by spring data).
@@ -83,15 +76,6 @@ public class CohortPerformanceController {
 
     @Autowired
     private AccountRepository accountRepo;
-
-    @Autowired
-    private DocumentRepository docRepo;
-
-    @Autowired
-    private NoteRepository noteRepo;
-
-    @Autowired
-    private ActivityRepository activityRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -484,93 +468,6 @@ public class CohortPerformanceController {
 
 
     /**
-     * Link anonymous contact to a known one.
-     */
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{email}/", method = RequestMethod.POST, produces = { "application/json" })
-    @Transactional(value = TxType.REQUIRED)
-    public @ResponseBody void linkToKnownContact(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("email") String email,
-            @RequestParam("uuid") String uuid) {
-        // Almost certainly only one contact but apparently we're not 100%
-        List<Contact> contacts = contactRepo.findByEmail(email, tenantId);
-
-        Contact anonContact = consolidateContactsWithUuid(uuid, tenantId);
-        if (anonContact.getEmail() == null) {
-            updateActivities(anonContact, contacts);
-
-            // move uuid and activities to existing un-anonymous contact
-            updateKnownContact(tenantId, uuid, contacts, anonContact);
-
-        } else {
-            LOGGER.info(String
-                    .format("UUID %1$s already linked to known contact %2$s, record login.",
-                            uuid, anonContact.getFullName()));
-            Activity entity = new Activity("login", new Date(), String.format(
-                    "User %1$s (%2$d) logged in", anonContact.getFullName(),
-                    anonContact.getId()));
-            entity.setContact(anonContact);
-            activityRepo.save(entity);
-
-        }
-    }
-
-    // @Transactional(value = TxType.REQUIRES_NEW)
-    public void updateActivities(Contact anonContact, List<Contact> contacts) {
-        for (Contact contact : contacts) {
-            activityRepo.updateContact(anonContact, contact);
-        }
-    }
-
-    // @Transactional(value = TxType.REQUIRES_NEW)
-    public void updateKnownContact(String tenantId, String uuid,
-            List<Contact> contacts, Contact anonContact) {
-        for (Contact contact : contacts) {
-            contact.setUuid(uuid);
-            contact.setTenantId(tenantId);
-            contactRepo.save(contact);
-
-            Activity entity = new Activity("linkToKnownContact", new Date(),
-                    String.format("Linked %1$s (%2$d) to user %3$s (%4$d)",
-                            anonContact.getUuid(), anonContact.getId(),
-                            contact.getFullName(), contact.getId()));
-            entity.setContact(contact);
-            activityRepo.save(entity);
-        }
-        if (contacts.size() > 0) {
-            contactRepo.delete(anonContact.getId());
-        }
-    }
-
-    /**
-     * Link anonymous contact's activities to the specified known contact.
-     */
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{email}/activities", method = RequestMethod.POST, produces = { "application/json" })
-    @Transactional(value = TxType.REQUIRES_NEW)
-    public @ResponseBody void linkActivitiesToKnownContact(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("email") String email,
-            @RequestParam("uuid") String uuid) {
-        LOGGER.info(String.format(
-                "linkActivitiesToKnownContact %1$s %2$s %3$s", tenantId, email,
-                uuid));
-
-        // Almost certainly only one contact but apparently we're not 100%
-        List<Contact> contacts = contactRepo.findByEmail(email, tenantId);
-
-        List<Contact> anonContacts = contactRepo.findAnonByUuid(uuid, tenantId);
-        // Contact anonContact = consolidateContactsWithUuid(uuid, tenantId);
-
-        for (Contact contact : contacts) {
-            for (Contact anonContact : anonContacts) {
-                activityRepo.updateContact(anonContact, contact);
-            }
-        }
-    }
-
-    /**
      * Delete an existing contact.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -580,148 +477,6 @@ public class CohortPerformanceController {
         Contact contact = contactRepo.findOne(contactId);
 
         contactRepo.delete(contact);
-    }
-
-    /**
-     * Add a document to the specified contact.
-     */
-    // Jackson cannot deserialise document because of contact reference
-    // @RequestMapping(value = "/{contactId}/documents", method =
-    // RequestMethod.PUT)
-    public @ResponseBody void addDocument(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId, @RequestBody Document doc) {
-        Contact contact = contactRepo.findOne(contactId);
-        doc.setContact(contact);
-        docRepo.save(doc);
-        // necessary to force a save
-        contact.setLastUpdated(new Date());
-        contactRepo.save(contact);
-        // Similarly cannot return object until solve Jackson object cycle
-        // return doc;
-    }
-
-    /**
-     * Add a document to the specified contact.
-     */
-    @RequestMapping(value = "/{contactId}/documents", method = RequestMethod.POST)
-    public @ResponseBody void addDocument(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId,
-            @RequestParam("author") String author,
-            @RequestParam("url") String url) {
-
-        addDocument(tenantId, contactId, new Document(author, url));
-    }
-
-    /**
-     * Add a note to the specified contact.
-     */
-    // TODO Jackson cannot deserialise document because of contact reference
-    // @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.PUT)
-    public @ResponseBody void addNote(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId, @RequestBody Note note) {
-        Contact contact = contactRepo.findOne(contactId);
-        note.setContact(contact);
-        noteRepo.save(note);
-        // necessary to force a save
-        contact.setLastUpdated(new Date());
-        contactRepo.save(contact);
-        // Similarly cannot return object until solve Jackson object cycle
-        // return note;
-    }
-
-    /**
-     * Add a note to the specified contact.
-     */
-    @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.POST)
-    public @ResponseBody void addNote(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId,
-            @RequestParam("author") String author,
-            @RequestParam("content") String content) {
-        addNote(tenantId, contactId, new Note(author, content));
-    }
-
-    /**
-     * @deprecated This method does not follow conventions, leading to a clash
-     *             with {@link #update}.
-     * @see {@link #setStage}
-     */
-    @RequestMapping(value = "/{contactId}", method = RequestMethod.PUT, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody void setStageDeprecated(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId,
-            @RequestParam("stage") String stage) {
-        LOGGER.info(String.format("Setting contact %1$s to stage %2$s",
-                contactId, stage));
-
-        Contact contact = contactRepo.findOne(contactId);
-        contact.setStage(stage);
-        contactRepo.save(contact);
-
-        addActivity(tenantId, contactId, "transition-to-stage",
-                String.format("Waiting for %1$s", stage));
-
-        // return contact;
-    }
-
-    /**
-     * Change the sale stage the contact is at.
-     */
-    @RequestMapping(value = "/{contactId}/stage", method = RequestMethod.PUT, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody void setStage(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId,
-            @RequestParam("stage") String stage) {
-        LOGGER.info(String.format("Setting contact %1$s to stage %2$s",
-                contactId, stage));
-
-        Contact contact = contactRepo.findOne(contactId);
-        contact.setStage(stage);
-        contactRepo.save(contact);
-
-        addActivity(tenantId, contactId, "transition-to-stage",
-                String.format("Waiting for %1$s", stage));
-
-        // return contact;
-    }
-
-    /**
-     * Change the sale stage the contact is at.
-     */
-    @RequestMapping(value = "/{contactId}/account", method = RequestMethod.PUT, consumes = "text/uri-list")
-    @Transactional
-    public @ResponseBody void setAccount(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId,
-            @RequestBody String accountUri) {
-        LOGGER.info(String.format("Linking account %2$s to contact %1$s",
-                contactId, accountUri));
-
-        Long acctId = Long.parseLong(accountUri.substring(accountUri
-                .lastIndexOf('/') + 1));
-
-        contactRepo.setAccount(contactId, acctId);
-
-        addActivity(tenantId, contactId, "link-account",
-                String.format("Linked for %1$s", accountUri));
-    }
-
-    /**
-     * Add an activity to the specified contact.
-     */
-    @RequestMapping(value = "/{contactId}/activities", method = RequestMethod.POST)
-    public @ResponseBody void addActivity(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId,
-            @RequestParam("type") String type,
-            @RequestParam("content") String content) {
-
-        Activity activity = new Activity(type, new Date(), content);
-        activity.setContact(contactRepo.findOne(contactId));
-        activityRepo.save(activity);
     }
 
     /**

@@ -12,9 +12,10 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import com.knowprocess.bpm.impl.CorsFilter;
+import com.knowprocess.auth.web.filters.CorsFilter;
 
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+@Deprecated
 public class ActivitiApplicationSecurity extends WebSecurityConfigurerAdapter {
 
     @Value("${security.enable-csrf:false}")
@@ -42,8 +43,10 @@ public class ActivitiApplicationSecurity extends WebSecurityConfigurerAdapter {
                         .permitAll()
                 .antMatchers(HttpMethod.GET, "/tenants/*.json")
                         .permitAll()
-                .antMatchers("/*.html", "/css/**", "/data/**", "/fonts/**",
-                        "/*/gravatars/*","/images/**", "/js/**", "/msg/**", "/partials/**",
+                .antMatchers("/*.html", "/*/css/**", "/data/**", "/error",
+                        "/fonts/**", "/*/gravatars/*", "/images/**",
+                        "/*/js/**", "/login", "/msg/**",
+                        "/partials/**",
                         "/public/**", "/sdu/**", "/webjars/**")
                         .permitAll()
                 .antMatchers(/* "/*.html", */"/process-instances/**",

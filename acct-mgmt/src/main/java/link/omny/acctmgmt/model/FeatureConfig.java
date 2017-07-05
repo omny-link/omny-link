@@ -14,6 +14,7 @@ public class FeatureConfig {
             .getLogger(TenantConfig.class);
 
     private boolean account = false;
+    private boolean accountCode = false;
     private boolean accountCompanyDetails = true;
     private boolean accountDescription = true;
     private boolean accountView = false;
@@ -43,6 +44,7 @@ public class FeatureConfig {
     private boolean orderInvoiceRef = true;
     private boolean orderItems = false;
     private boolean merge = false;
+    private boolean parentOrg = false;
     private boolean poweredBy = true;
     private boolean phone3 = false;
     @Column(name = "REFS")
@@ -68,6 +70,9 @@ public class FeatureConfig {
         switch (name) {
         case "account":
             setAccount(b);
+            break;
+        case "accountCode":
+            setAccountCode(b);
             break;
         case "accountCompanyDetails":
             setAccountCompanyDetails(b);
@@ -157,6 +162,9 @@ public class FeatureConfig {
             break;
         case "orderItems":
             setOrderItems(b);
+            break;
+        case "parentOrg":
+            setParentOrg(b);
             break;
         case "phone3":
             setPhone3(b);

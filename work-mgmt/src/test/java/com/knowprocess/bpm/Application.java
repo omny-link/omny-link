@@ -11,12 +11,12 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.knowprocess.bpm.api.ActivitiApplicationSecurity;
+import com.knowprocess.auth.AuthConfig;
 import com.knowprocess.bpm.impl.JsonManager;
 
 @EnableAutoConfiguration
 @Configuration
-@Import({ BpmConfiguration.class })
+@Import({ AuthConfig.class, BpmConfiguration.class })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Bean
@@ -40,11 +40,6 @@ public class Application extends WebMvcConfigurerAdapter {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/loginError").setViewName("loginError");
-    }
-
-    @Bean
-    public ActivitiApplicationSecurity applicationSecurity() {
-        return new ActivitiApplicationSecurity();
     }
 
     public static void main(String[] args) {

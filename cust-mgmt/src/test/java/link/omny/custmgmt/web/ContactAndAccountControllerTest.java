@@ -2,20 +2,10 @@ package link.omny.custmgmt.web;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.List;
-
-import link.omny.custmgmt.Application;
-import link.omny.custmgmt.model.Account;
-import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.CustomContactField;
-import link.omny.custmgmt.model.CustomField;
-import link.omny.custmgmt.repositories.AccountRepository;
-import link.omny.custmgmt.repositories.ContactRepository;
-import link.omny.custmgmt.repositories.CustomContactFieldRepository;
-import link.omny.custmgmt.web.ContactController.ContactResource;
-import link.omny.custmgmt.web.ContactController.ShortContact;
 
 import org.junit.After;
 import org.junit.Test;
@@ -29,6 +19,16 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import link.omny.custmgmt.Application;
+import link.omny.custmgmt.model.Account;
+import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.CustomContactField;
+import link.omny.custmgmt.model.CustomField;
+import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.repositories.CustomContactFieldRepository;
+import link.omny.custmgmt.web.ContactController.ContactResource;
+import link.omny.custmgmt.web.ContactController.ShortContact;
 
 /**
  * @author Tim Stephenson
@@ -48,9 +48,6 @@ public class ContactAndAccountControllerTest {
 
     @Autowired
     private CustomContactFieldRepository customContactRepo;
-
-    @Autowired
-    private AccountRepository accountRepo;
 
     @Autowired
     private ContactController contactController;
@@ -95,14 +92,13 @@ public class ContactAndAccountControllerTest {
         contactController.setAccount(TENANT_ID, contactId, "/accounts/"
                 + acctId);
 
-        List<ContactResource> contactResults = contactController.searchByEmail(
-                TENANT_ID, contact.getEmail());
-        assertEquals(1, contactResults.size());
+        Contact contactResults = contactController.findById(
+                TENANT_ID, contact.getId().toString());
         assertContactEquals(contact, acct, contactResults);
 
         Contact contact2 = contactRepo.findOne(contactId);
         assertNotNull(contact2.getFirstContact());
-        assertNotNull(contact2.getLastUpdated());
+        assertNull(contact2.getLastUpdated());
 
         // SIMULATE REST UPDATE BEHAVIOUR
         contact2.setAccount(null);
@@ -111,6 +107,7 @@ public class ContactAndAccountControllerTest {
         assertNotNull("Update has de-linked contact and account",
                 contact2.getAccount());
         assertEquals(acct.getName(), contact2.getAccount().getName());
+        assertNotNull(contact2.getLastUpdated());
 
         // FETCH ALL CONTACTS
         List<ShortContact> contacts = contactController.listForTenantAsJson(
@@ -142,9 +139,8 @@ public class ContactAndAccountControllerTest {
         contactId = Long.parseLong(locationHdrs.get(0).substring(
                 locationHdrs.get(0).lastIndexOf('/') + 1));
 
-        List<ContactResource> contactResults = contactController.searchByEmail(
-                TENANT_ID, contact.getEmail());
-        assertEquals(1, contactResults.size());
+        Contact contactResults = contactController.findById(
+                TENANT_ID, contact.getId().toString());
         assertContactEquals(contact, acct, contactResults);
 
         Contact contact2 = contactRepo.findOne(contactId);
@@ -169,10 +165,10 @@ public class ContactAndAccountControllerTest {
         contactController.update(TENANT_ID, contactId, contact);
 
         // CHECK UPDATED CONTACT
-        contactResults = contactController.searchByEmail(TENANT_ID,
+        List<ContactResource> contactList = contactController.searchByEmail(TENANT_ID,
                 contact.getEmail());
-        assertEquals(1, contactResults.size());
-        assertContactEquals(contact, acct, contactResults);
+        assertEquals(1, contactList.size());
+        assertContactEquals(contact, acct, contactList.get(0));
 
         contact2 = contactRepo.findOne(contactId);
         assertNotNull(contact2.getFirstContact());
@@ -180,13 +176,23 @@ public class ContactAndAccountControllerTest {
     }
 
     private void assertContactEquals(Contact contact, Account acct,
-            List<ContactResource> contactResults) {
-        assertEquals(contact.getFullName(), contactResults.get(0).getFullName());
-        assertEquals(contact.getEmail(), contactResults.get(0).getEmail());
-        assertEquals(1, contactResults.get(0).getCustomFields().size());
+            Contact contactResults) {
+        assertEquals(contact.getFullName(), contactResults.getFullName());
+        assertEquals(contact.getEmail(), contactResults.getEmail());
+        assertEquals(1, contactResults.getCustomFields().size());
         assertEquals("blue",
-                contactResults.get(0).getCustomFieldValue("eyeColor"));
-        assertEquals(acct.getName(), contactResults.get(0).getAccountName());
+                contactResults.getCustomFieldValue("eyeColor"));
+        assertEquals(acct.getName(), contactResults.getAccount().getName());
+    }
+    
+    private void assertContactEquals(Contact contact, Account acct,
+            ContactResource contactResource) {
+        assertEquals(contact.getFullName(), contactResource.getFullName());
+        assertEquals(contact.getEmail(), contactResource.getEmail());
+        assertEquals(1, contactResource.getCustomFields().size());
+        assertEquals("blue",
+                contactResource.getCustomFieldValue("eyeColor"));
+        assertEquals(acct.getName(), contactResource.getAccount().getName());
     }
 
     protected Contact getContact() throws IOException {

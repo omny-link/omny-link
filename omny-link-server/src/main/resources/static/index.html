@@ -5,23 +5,23 @@
   <meta charset='utf-8'>
   <title>Omny Link</title>
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/omny-1.0.0.css" rel="stylesheet">
+  <link href="/workmgmt/2.2.0/css/base.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 <body>
   <div class="clearfix" id="messages"></div>
   <div class="container" id="container"></div>
   <script id='template' type='text/ractive'>
- 
+
     {{>profileArea}}
-    {{>poweredBy}}
     {{>sidebar { active: 'index.html' }}}
     {{>titleArea}}
+    {{>loginSect}}
     {{>helpModal}}
 
-    <section>
+    <section class="resultsSect">
       <p>&nbsp;</p>
-      <h2>{{title2}}</h2>
+      <h2>{{tagLine}}</h2>
       <p>{{{intro}}}</p>
       <ul style="list-style:none;">
         {{#tenant.toolbar}}
@@ -42,16 +42,20 @@
 
   <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
   <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <script src="/webjars/Bootstrap-3-Typeahead/3.1.1/bootstrap3-typeahead.js"></script>
   <script src="/webjars/ractive/0.7.3/ractive.min.js"></script>
 
-  <script src="js/autoNumeric.js"></script>
-  <script src="js/md5.min.js"></script>
-  <script src="js/activity-1.0.0.js"></script>
-  <script src="js/login-1.0.0.js"></script>
-  <script src="js/i18n.js"></script>
-  <script src="js/index-1.0.0.js"></script>
-  <script src="js/omny-1.0.0.js"></script>
-  
+  <script src="/js/autoNumeric.js"></script>
+  <script src="/js/md5.min.js"></script>
+
+  <script src="js/env.js"></script>
+  <script src="/workmgmt/2.2.0/js/activity.js"></script>
+  <script src="/workmgmt/2.2.0/js/string-functions.js"></script>
+  <script src="/workmgmt/2.2.0/js/support.js"></script>
+  <script src="/workmgmt/2.2.0/js/i18n.js"></script>
+
+  <script src="/workmgmt/2.2.0/js/base.js"></script>
+  <script src="/omny/2.1.0/js/index.js"></script>
+  <script src="/webjars/auth/1.0.0/js/auth.js"></script>
+
 </body>
 </html>

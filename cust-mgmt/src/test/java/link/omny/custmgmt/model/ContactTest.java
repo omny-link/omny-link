@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.Scanner;
 
@@ -154,6 +153,12 @@ public class ContactTest {
     }
 
     @Test
+    public void testCalculatedActivityFields() {
+        Contact contact = new Contact();
+        assertEquals(null, contact.getLastActivityOfType("foo"));
+    }
+
+    @Test
     public void testParseJsonContact() {
         String jsonInString = readFromClasspath("/omny.enquiry.json");
         assertNotNull(jsonInString);
@@ -176,10 +181,8 @@ public class ContactTest {
     }
 
     private static String readFromClasspath(String resourceName) {
-        InputStream is = null;
-        try {
-            is = ProcessDefinition.class.getResourceAsStream(resourceName);
-            return new Scanner(is).useDelimiter("\\A").next();
+        try (Scanner scanner = new Scanner(ProcessDefinition.class.getResourceAsStream(resourceName))) {
+            return scanner.useDelimiter("\\A").next();
         } catch (Exception e) {
             throw e;
         }

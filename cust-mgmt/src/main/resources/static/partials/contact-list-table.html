@@ -8,7 +8,7 @@
       <th on-click="sort:fullName">Full Name<span class="sortable {{ sorted('fullName') }} glyphicon "></th>
       {{#tenant.show.account}}<th on-click="sort:accountName">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
       {{#tenant.show.marketing || tenant.show.stage}}
-        <th on-click="sort:stage">Stage<span class="sortable {{ sorted('stage') }} glyphicon"></th>
+        <th on-click="sort:stage">{{#tenant.strings.contactStage}}{{tenant.strings.contactStage}}{{else}}Stage{{/}}<span class="sortable {{ sorted('stage') }} glyphicon"></th>
       {{/}}
       {{#tenant.show.marketing || tenant.show.enquiryType}}
         <th on-click="sort:enquiryType">Enquiry Type<span class="sortable {{ sorted('enquiryType') }} glyphicon"></th>

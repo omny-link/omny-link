@@ -1,0 +1,279 @@
+{
+  "id": "nautilus",
+  "name": "Nautilus",
+  "theme": {
+    "logoUrl": "//omny.link/wp-content/uploads/2017/05/Nautilus-200x50.png",
+    "iconUrl": "//omny.link/wp-content/uploads/2017/05/Nautilus-Icon_opt.png",
+    "headingColor": "#000",
+    "subHeadingColor": "#3a3a3a",
+    "bodyColor": "#000",
+    "accentColor": "#EE2024",
+    "iconColor": "#EE2024"
+  },
+  "features": {
+    "account": false,
+    "accountCompanyDetails": false,
+    "accountDescription": true,
+    "activityAnalysis": true,
+    "activityTracker": false,
+    "addressAccount": true,
+    "addressContact": false,
+    "budget": false,
+    "contactDescription": true,
+    "declaredSource": false,
+    "documents": true,
+    "marketing": false,
+    "marketingDigital": false,
+    "orders": true,
+    "orderDueDate": true,
+    "references": false,
+    "socialAccount": true,
+    "socialContact": true,
+    "stage": true,
+    "stockCategory": true,
+    "multiNational": true,
+    "orderInvoiceRef": false,
+    "orderFieldsOnContact": "noStudents",
+    "stockPricing": true,
+    "stockItemImages": true,
+    "stockItemOffers": true,
+    "stockCategoryImages": true,
+    "stockCategoryOffers": false
+  },
+  "accountActions": [
+    { "name": "Add task", "ref": "SimpleToDo", "url": true },
+    { "name": "Add contact", "ref": "AddContactToAccount", "url": true }
+  ],
+  "accountFields": [
+  ],
+  "contactFields": [
+  ],
+  "contactActions": [
+    { "name": "Add task", "ref": "SimpleToDo", "url": true  },
+    { "name": "Send email", "ref": "SendMemo", "url": true  }
+  ],
+  "toolbar": [
+    { "url": "accounts.html", "classes": "glyphicon omny-icon-address-book", "description": "Find and manage a particular account", "title": "Account Management" },
+    { "url": "orders.html", "classes": "glyphicon-barcode", "description": "Find and manage bookings", "title": "Bookings" },
+    { "url": "contacts.html", "classes": "glyphicon omny-icon-address-book", "description": "Find and manage a particular contact", "title": "Contact Management" },
+    { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View your sales funnel", "name": "Funnel" },
+    { "url": "stock-items.html", "classes": "glyphicon-barcode", "role": "power_user", "description": "View and manage scheduled courses here", "title": "Scheduled Courses" },
+    { "url": "stock-categories.html", "classes": "glyphicon-barcode", "role": "power_user", "description": "View and manage boats here", "title": "Boats" },
+    { "url": "memo.html", "classes": "glyphicon glyphicon-envelope", "title": "Templates", "role": "super_user", "description": "Create and edit your message templates"  },
+    { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
+    { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "role": "nautilus_admin", "description": "View your process definitions here", "title": "Process Definitions" },
+    { "url": "status.html", "classes": "glyphicon-thumbs-up", "role": "nautilus_admin", "description": "View and check the tenant configuration", "title": "Status" }
+  ],
+  "orderFields": [
+    { "name": "noStudents", "label": "# Students", "hint": "" }
+  ],
+  "orderItemFields": [
+  ],
+  "partials": [
+    { "name": "nautilusSendMemo", "url": "/partials/pick-memo.html"},
+    { "name": "nautilusSimpleToDo", "url": "/partials/simple-todo.html"},
+    { "name": "nautilusAddContactToAccount", "url": "/partials/add-contact-to-account.html"}
+  ],
+  "processes": [
+    { "name": "Add Activity To Contact", "ref": "AddActivityToContact", "url": "processes/link/omny/custmgmt/AddActivityToContact.bpmn" },
+    { "name": "Add Contact to Account", "ref": "AddContactToAccount", "url": "processes/link/omny/custmgmt/AddContactToAccount.bpmn" },
+    { "name": "AddOrderItems", "ref": "CreateOrder", "url": "processes/link/omny/catalog/AddOrderItems.bpmn" },
+    { "name": "Add Note To Contact", "ref": "AddNoteToContact", "url": "processes/link/omny/custmgmt/AddNoteToContact.bpmn" },
+    { "name": "Add task", "ref": "SimpleToDo", "url": "processes/link/omny/casemgmt/SimpleToDo.bpmn" },
+    { "name": "Check service levels", "ref": "RunDecisionLogicForAllContacts", "url": "processes/link/omny/custmgmt/RunDecisionLogicForAllContacts.bpmn" },
+    { "name": "Create Contact and Account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
+    { "name": "Create Order", "ref": "CreateOrder", "url": "processes/link/omny/catalog/CreateOrder.bpmn" },
+    { "name": "Record an enquiry", "ref": "RecordEnquiry", "url": "processes/link/omny/website/RecordEnquiry.bpmn" },
+    { "name": "Register an Omny user", "ref": "RegisterOmnyContact", "url": "processes/link/omny/website/RegisterOmnyContact.bpmn" },
+    { "name": "Reset user's password", "ref": "ResetPassword", "url": "processes/link/omny/support/ResetPassword.bpmn" },
+    { "name": "Select Enquiry Response", "ref": "SelectEnquiryResponse", "url": "processes/uk/co/circumcisioncentre/mail/SelectEnquiryResponseFromAge.bpmn" },
+    { "name": "Send memo", "ref": "SendMemo", "url": "processes/link/omny/mail/SendMemo.bpmn" },
+    { "name": "Send alert", "ref": "SendAlert", "url": "processes/link/omny/alerts/SendAlertMemo.bpmn" },
+    { "name": "Catch All", "ref": "CatchAllProcess", "url": "processes/link/omny/support/CatchAllProcessPostToSlack.bpmn" },
+    { "name": "Update contact with decision logic", "ref": "UpdateContactWithDecisionLogic", "url": "processes/link/omny/custmgmt/UpdateContactWithDecisionLogic.bpmn" },
+    { "name": "Overview", "ref": "Overview", "url": "processes/uk/co/new.nautilussailing.com/documentation/Overview.bpmn" }
+  ],
+  "serviceLevel": {
+    "inactivityThreshold":14,
+    "initialResponseThreshold":3
+  },
+  "stockCategoryFields": [
+     { "name": "location", "label": "Location", "hint": "", "placeholder": "Start typing to filter options" },
+     { "name": "noOfCabins", "label": "Number of Cabins", "hint": "" },
+     { "name": "cabin1Name", "label": "Cabin1 Name", "hint": "" },
+     { "name": "cabin2Name", "label": "Cabin2 Name", "hint": "" },
+     { "name": "cabin3Name", "label": "Cabin3 Name", "hint": "" }
+  ],
+  "stockItemFields": [
+     { "name": "location", "label": "Location", "hint": "", "placeholder": "Start typing to filter options" },
+     { "name": "course", "label": "Course", "hint": "", "placeholder": "Start typing to filter options" },
+     { "name": "courseStartDate", "label": "Start Date", "hint": "", "type": "date" },
+     { "name": "courseEndDate", "label": "End Date", "hint": "", "type": "date" },
+     { "name": "availability", "label": "Availability", "hint": "Number of spots left on this course" },
+     { "name": "instructor", "label": "Instructor", "hint": "", "placeholder": "Start typing to filter options" },
+     { "name": "priceDesc", "label": "Trip costs description", "hint": "" },
+     { "name": "coupleDiscount", "label": "Couple discount", "hint": "" },
+     { "name": "coupleDiscountDesc", "label": "Couple discount description", "hint": "" },
+     { "name": "coupleDiscountAmount", "label": "Couple discount amount", "hint": "" },
+     { "name": "itinerary", "label": "Example itinerary", "hint": "" },
+     { "name": "map", "label": "Example map", "hint": "" }
+  ],
+  "stockItemActions": [
+  ],
+  "strings": {
+    "account": "Account",
+    "accountDescriptionHint": "",
+    "AccountManagement": "Account Management",
+    "accounts": "Accounts",
+    "contact": "Contact",
+    "contactDescription": "Summary",
+    "contactDescriptionHint": "",
+    "contacts": "Contacts",
+    "dueDate":"Course Date",
+    "order": "Order",
+    "orders": "Bookings",
+    "orderItem": "Item",
+    "orderItems": "Item",
+    "phone1": "Phone",
+    "stage": "Status",
+    "stockCategories": "Boats",
+    "stockCategory": "Boat name",
+    "stockItem": "Sailing Course",
+    "stockItems": "Scheduled Courses",
+    "price": "Trip Costs",
+    "offerStatus": "Screaming Deal",
+    "offerDescription": "Screaming Deal description",
+    "offerCallToAction": "Screaming Deal cost"
+  },
+  "templates": [
+    { "name": "NotifyEnquiry", "ref": "NotifyEnquiry" },
+    { "name": "ResetPassword", "ref": "ResetPassword" },
+    { "name": "Thank You For Enquiry", "ref": "ThankYouForEnquiry" },
+    { "name": "WelcomeNewUser", "ref": "WelcomeNewUser" }
+  ],
+  "typeaheadControls": [
+    { "name": "accountTypes", "selector": "#curAccountType", "values": [
+        {  "id": "prospect", "name": "Prospect"  },
+        {  "id": "customer", "name": "Customer" },
+        {  "id": "alumni", "name": "Alumni" },
+        {  "id": "supplier", "name": "Supplier" },
+        {  "id": "staff", "name": "Staff" },
+        {  "id": "instructors", "name": "Instructors" },
+        {  "id": "other", "name": "Other" }
+      ]
+    },
+    { "name": "declaredSources", "selector": "#curSource2", "values": [
+        {  "id": "Referral", "name": "Referral"  }
+      ]
+    },
+    { "name": "locations", "selector": "#curLocation", "values": [
+        {  "name": "Sea of Cortez, Mexico"  },
+        {  "name": "Grenadines, Caribbean"  },
+        {  "name": "Spanish Virgin Islands, Caribbean"  },
+        {  "name": "Tahiti, South Pacific"  },
+        {  "name": "Alumni Adventures"  }
+      ]
+    },
+    { "name": "instructors", "selector": "#curInstructor", "values": [
+         {  "name": "Tim Geisler"  },
+         {  "name": "Kevin Murphy"  },
+         {  "name": "Shaun Tarr"  },
+         {  "name": "Ben Martin"  },
+         {  "name": "Ted Barrett"  },
+         {  "name": "Len Molloy"  },
+         {  "name": "Jamie Alyssa Brown"  }
+       ]
+    },
+    { "name": "cabinNames", "selector": "#curCabin1Name", "values": [
+          {  "name": "Owners Cabin Forward"  },
+          {  "name": "Owners Cabin Aft Starboard"  },
+          {  "name": "Owners Cabin Aft Port"  },
+          {  "name": "Stern Starboard Cabin"  },
+          {  "name": "Stern Port Cabin"  }
+        ]
+    },
+    { "name": "cabinNames", "selector": "#curCabin2Name", "values": [
+          {  "name": "Owners Cabin Forward"  },
+          {  "name": "Owners Cabin Aft Starboard"  },
+          {  "name": "Owners Cabin Aft Port"  },
+          {  "name": "Stern Starboard Cabin"  },
+          {  "name": "Stern Port Cabin"  }
+       ]
+    },
+    { "name": "cabinNames", "selector": "#curCabin3Name", "values": [
+          {  "name": "Owners Cabin Forward"  },
+          {  "name": "Owners Cabin Aft Starboard"  },
+          {  "name": "Owners Cabin Aft Port"  },
+          {  "name": "Stern Starboard Cabin"  },
+          {  "name": "Stern Port Cabin"  }
+        ]
+    },
+    { "name": "courses", "selector": "#curCourse", "values": [
+         {  "name": "ASA 101-104"  },
+         {  "name": "ASA 101-104, 114 Catamaran"  },
+         {  "name": "Alumni"  }
+      ]
+    },
+    { "name": "enquiryTypes", "selector": "#curEnquiryType", "values": [
+        {  "id": "SeaofCortezMH", "name": "Sea of Cortez - MH"  },
+        {  "id": "SeaofCortezCAT", "name": "Sea of Cortez - CAT"  },
+        {  "id": "GrenadinesMH", "name": "Grenadines - MH"  },
+        {  "id": "GrenadinesCAT", "name": "Grenadines - CAT"  },
+        {  "id": "SpanishVirginIslandsMH", "name": "Spanish Virgin Islands - MH"  },
+        {  "id": "SpanishVirginIslandsCAT", "name": "Spanish Virgin Islands - CAT"  },
+        {  "id": "TahitiMH", "name": "Tahiti - MH"  },
+        {  "id": "TahitiCAT", "name": "Tahiti - CAT"  },
+        {  "id": "AlumniAdventuresMH", "name": "Alumni Adventures - MH"  },
+        {  "id": "AlumniAdventuresCAT", "name": "Alumni Adventures - CAT"  }
+      ]
+    },
+    { "name": "genders", "selector": "#curGender", "url": "/data/genders.json"},
+    { "name": "invoiceStatus", "selector": "#invoice", "values": [
+        {  "id": "Issued", "name": "Issued"  },
+        {  "id": "Paid", "name": "Paid"  }
+      ]
+    },
+    { "name": "jobTitles", "selector": "#curJobTitle", "values": [
+        {  "id": "Unknown", "name": "Unknown"  }
+      ]
+    },
+    { "name": "media", "selector": "#curMedium", "url": "/data/media.json"},
+    { "name": "owners", "selector": "#curOwner", "values": [
+        {  "id": "tim@nautilussailing.com", "name": "tim@nautilussailing.com"  }
+      ]
+    },
+    { "name": "owners", "selector": "#who", "values": [
+        {  "id": "tim@nautilussailing.com", "name": "tim@nautilussailing.com"  }
+      ]
+    },
+    { "name": "sources", "selector": "#curSource", "values": [
+        {  "id": "Other", "name": "Other"  },
+        {  "id": "Supplier", "name": "Supplier"  }
+      ]
+    },
+    { "name": "stages", "selector": "#curStage", "values": [
+        {  "idx": 0, "id": "target", "name": "Target" },
+        {  "idx": 1, "id": "active", "name": "Active" },
+        {  "idx": 2, "id": "on_hold", "name": "On Hold" },
+        {  "idx": -1, "id": "cold", "name": "Cold" }
+      ]
+    },
+    { "name": "orderStages", "selector": "#curOrderStage", "values": [
+        {  "idx": 0, "id": "target", "name": "Target" },
+        {  "idx": 1, "id": "active", "name": "Active" },
+        {  "idx": 2, "id": "on_hold", "name": "On Hold" },
+        {  "idx": -1, "id": "cold", "name": "Cold" }
+      ]
+    },
+    { "name": "status", "selector": "#curStatus", "values": [
+        { "id": "draft", "name": "Draft" },
+        { "id": "readyForReview", "name": "Ready For Review" },
+        { "id": "published", "name": "Published" }
+      ]
+    },
+    { "name": "stockTypes", "selector": "#curStockType", "values": [
+        {  "id": "Resource", "name": "Resource"  }
+      ]
+    }
+  ]
+}

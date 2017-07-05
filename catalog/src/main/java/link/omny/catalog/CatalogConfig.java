@@ -1,7 +1,5 @@
 package link.omny.catalog;
 
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -15,16 +13,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
-import org.springframework.hateoas.Link;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
-import link.omny.catalog.model.mixins.LinkMixIn;
 import link.omny.catalog.web.GeoLocationService;
 import link.omny.catalog.web.StockCategoryController.ShortStockCategoryResource;
 
@@ -103,12 +97,4 @@ public class CatalogConfig extends RepositoryRestMvcConfiguration {
         return geoLocationService;
     }
 
-    @Override
-    public void configureMessageConverters(
-            List<HttpMessageConverter<?>> converters) {
-        ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
-                .mixIn(Link.class, LinkMixIn.class).build();
-        converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
-        super.configureMessageConverters(converters);
-    }
 }

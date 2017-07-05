@@ -17,14 +17,19 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.jsoup.Jsoup;
+import org.springframework.hateoas.Link;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
+import link.omny.custmgmt.model.views.MemoViews;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -40,51 +45,81 @@ public class Memo implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
+    @JsonView({ MemoViews.Summary.class })
     private Long id;
     
     @JsonProperty
+    @JsonView({ MemoViews.Detailed.class })
+    @Size(max = 50)
+    @Column(name = "owner")
     private String owner;
 
     @JsonProperty
+    @JsonView({ MemoViews.Summary.class })
     @NotNull
+    @Size(max = 50)
+    @Column(name = "name")
     private String name;
 
     @JsonProperty
+    @JsonView({ MemoViews.Detailed.class })
+    @Size(max = 50)
+    @Column(name = "title")
     private String title;
 
     @JsonProperty
+    @JsonView({ MemoViews.Detailed.class })
+    @Column(name = "required_vars")
     private String requiredVars;
 
     @JsonProperty
+    @JsonView({ MemoViews.Detailed.class })
     @Lob
+    @Column(name = "rich_content")
     private String richContent;
 
     @JsonProperty
+    @JsonView({ MemoViews.Detailed.class })
     @Lob
+    @Column(name = "plain_content")
     private String plainContent;
 
     @JsonProperty
+    @JsonView({ MemoViews.Detailed.class })
     @Size(max = 140)
+    @Column(name = "short_content")
     private String shortContent;
 
     @NotNull
     @JsonProperty
-    @Column(nullable = false)
+    @JsonView({ MemoViews.Summary.class })
+    @Column(name = "tenant_id", nullable = false)
     private String tenantId;
 
     @JsonProperty
+    @JsonView({ MemoViews.Summary.class })
+    @Size(max = 30)
+    @Column(name = "status")
     private String status;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "created", updatable = false)
     @JsonProperty
+    @JsonView({ MemoViews.Summary.class })
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(columnDefinition = "TIMESTAMP", updatable = true)
     @JsonProperty
+    @JsonView({ MemoViews.Summary.class })
+    @Column(name = "last_updated")
     private Date lastUpdated;
+
+    @Transient
+    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
+    @JsonProperty("links")
+    @JsonView({ MemoViews.Summary.class })
+    private List<Link> links;
 
     public Memo() {
         created = new Date();

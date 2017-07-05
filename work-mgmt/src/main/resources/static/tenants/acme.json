@@ -42,7 +42,7 @@
     { "name": "acmeAccountExtension", "url": "/partials/account-extension.html"},
     { "name": "acmeOrderExtension", "url": "/partials/order-extension.html"},
 
-    { "name": "acmeAddOrderToContact", "url": "/partials/add-order.html"},
+    { "name": "acmeAddOrderToContact", "url": "/partials/create-order.html"},
     { "name": "acmeSimpleToDo", "url": "/partials/simple-todo.html"},
     { "name": "acmeSendMemo", "url": "/partials/pick-memo.html"},
     { "name": "acmeWorkflowWizard", "url": "/partials/workflow-wizard.html"}
@@ -52,7 +52,7 @@
     { "name": "Add order to contact", "ref": "AddOrderToContact", "url": "processes/link/omny/catalog/AddOrderToContact.bpmn" },
     { "name": "Add note to contact", "ref": "AddNoteToContact", "url": "processes/link/omny/custmgmt/AddNoteToContact.bpmn" },
     { "name": "Ad-Hoc Task from external", "ref": "HandleAdHocTask", "url": "processes/link/omny/casemgmt/HandleAdHocTask.bpmn" },
-    { "name": "Create contact and account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
+    { "name": "Create contact and account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAccountAndOrder.bpmn" },
     { "name": "De-duplicate contact and account", "ref": "DedupeContact", "url": "processes/link/omny/custmgmt/DedupeContact.bpmn" },
     { "name": "Import contact", "ref": "ImportContact", "url": "processes/link/omny/website/ImportContact.bpmn" },
     { "name": "Record an enquiry", "ref": "RecordEnquiry", "url": "processes/link/omny/website/RecordEnquiry.bpmn" },
@@ -71,10 +71,13 @@
     "inactiveStages":["discovery","review"],
     "initialResponseThreshold":7
   },
+  "strings": {
+  },
   "templates": [
     { "name": "ContactAlert", "ref": "ContactAlert" },
     { "name": "NotifyEnquiry", "ref": "NotifyEnquiry" },
-    { "name": "NotifyToDo", "ref": "NotifyToDo" },
+    { "name": "Notify new task", "ref": "NotifyToDo" },
+    { "name": "Notify outstanding work", "ref": "NotifyToDoOutstanding" },
     { "name": "ResetPassword", "ref": "ResetPassword" },
     { "name": "ThankYouForEnquiry", "ref": "ThankYouForEnquiry" },
     { "name": "WelcomeNewUser", "ref": "WelcomeNewUser" }

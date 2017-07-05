@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -22,9 +23,11 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.hateoas.Link;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -79,22 +82,29 @@ public class StockCategory implements ShortStockCategory, Serializable {
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @Size(max = 60)
     private String address1;
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @Size(max = 60)
     private String address2;
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @Size(max = 60)
     private String town;
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @Size(max = 60)
+    @Column(name = "county_or_city")
     private String countyOrCity;
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @Size(max = 10)
+    @Column(name = "post_code")
     private String postCode;
 
     @JsonProperty
@@ -116,32 +126,37 @@ public class StockCategory implements ShortStockCategory, Serializable {
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @Column(name = "map_url")
     private String mapUrl;
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     @Lob
+    @Column(name = "directions_by_road")
     private String directionsByRoad;
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     @Lob
+    @Column(name = "directions_by_public_transport")
     private String directionsByPublicTransport;
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     @Lob
+    @Column(name = "directions_by_air")
     private String directionsByAir;
 
     @JsonProperty
     @JsonView(StockCategoryViews.Detailed.class)
+    @Column(name = "video_code")
     private String videoCode;
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     @Size(max = 20)
     private String status;
-    
+
     /**
      * A relative or absolute URL to a product sheet or brochure page, often a PDF.
      */
@@ -153,21 +168,25 @@ public class StockCategory implements ShortStockCategory, Serializable {
     @JsonProperty
     @JsonView(StockCategoryViews.Detailed.class)
     @Size(max = 20)
+    @Column(name = "offer_status")
     private String offerStatus;
 
     @JsonProperty
     @JsonView(StockCategoryViews.Detailed.class)
     @Size(max = 35)
+    @Column(name = "offer_title")
     private String offerTitle;
 
     @JsonProperty
     @JsonView(StockCategoryViews.Detailed.class)
     @Size(max = 80)
+    @Column(name = "offer_description")
     private String offerDescription;
 
     @JsonProperty
     @JsonView(StockCategoryViews.Detailed.class)
     @Size(max = 30)
+    @Column(name = "offer_call_to_action")
     private String offerCallToAction;
 
     /**
@@ -176,6 +195,7 @@ public class StockCategory implements ShortStockCategory, Serializable {
      */
     @JsonProperty
     @JsonView(StockCategoryViews.Detailed.class)
+    @Column(name = "offer_url")
     private String offerUrl;
 
     @JsonProperty
@@ -195,10 +215,12 @@ public class StockCategory implements ShortStockCategory, Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
     @JsonView(StockCategoryViews.Detailed.class)
+    @Column(name = "last_updated")
     private Date lastUpdated;
 
     @JsonProperty
     @JsonView(StockCategoryViews.Detailed.class)
+    @Column(name = "tenant_id")
     private String tenantId;
 
     @Transient
@@ -215,6 +237,12 @@ public class StockCategory implements ShortStockCategory, Serializable {
     @JsonView(StockCategoryViews.Detailed.class)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockCategory", targetEntity = StockItem.class)
     private List<StockItem> stockItems;
+
+    @Transient
+    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
+    @JsonProperty("links")
+    @JsonView(StockCategoryViews.Summary.class)
+    private List<Link> links;
 
     public StockCategory(String name) {
         this();
@@ -348,6 +376,15 @@ public class StockCategory implements ShortStockCategory, Serializable {
         }
         setLat(point.getLat());
         setLng(point.getLng());
+    }
+
+    @PrePersist
+    public void preInsert() {
+        if (LOGGER.isWarnEnabled() && created != null) {
+            LOGGER.warn(String.format(
+                    "Overwriting creation date %1$s with 'now'.", created));
+        }
+        created = new Date();
     }
 
     @PreUpdate

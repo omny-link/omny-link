@@ -75,10 +75,12 @@
     "inactiveStages":["discovery","review"],
     "initialResponseThreshold":7
   },
+  "strings": {
+  },
   "templates": [
     { "name": "ContactAlert", "ref": "ContactAlert" },
     { "name": "NotifyEnquiry", "ref": "NotifyEnquiry" },
-    { "name": "NotifyToDo", "ref": "NotifyToDo" },
+    { "name": "Notify new task", "ref": "NotifyToDo" },
     { "name": "NotifyTicket", "ref": "NotifyTicket" },
     { "name": "ResetPassword", "ref": "ResetPassword" },
     { "name": "ThankYouForEnquiry", "ref": "ThankYouForEnquiry" },

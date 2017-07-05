@@ -15,11 +15,12 @@
     <groupId>link.omny</groupId>
     <artifactId>omny-link-root</artifactId>
     <relativePath>..</relativePath>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.1.0-SNAPSHOT</version>
   </parent>
 
   <properties>
     <start-class>link.omny.acctmgmt.Application</start-class>
+    <kp-auth.version>1.0</kp-auth.version>
   </properties>
 
   <repositories>
@@ -54,7 +55,6 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.14.8</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -67,7 +67,7 @@
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
     </dependency>
-    
+
     <!-- Generates REST documentation -->
     <dependency>
         <groupId>io.springfox</groupId>
@@ -79,29 +79,29 @@
         <artifactId>springfox-swagger-ui</artifactId>
         <version>2.0.0</version>
     </dependency>
-    
+
     <dependency>
       <groupId>io.onedecision</groupId>
-      <artifactId>onedecision-engine</artifactId>
+      <artifactId>onedecision-domain</artifactId>
       <version>${onedecision.version}</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>ractive</artifactId>
-          <groupId>org.webjars</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
+
     <dependency>
       <groupId>link.omny.custmgmt</groupId>
       <artifactId>custmgmt</artifactId>
       <version>${omny-link.version}</version>
     </dependency>
     <dependency>
-	    <groupId>com.knowprocess.bpm</groupId>
-	    <artifactId>work-mgmt</artifactId>
-	    <version>${work-mgmt.version}</version>
+      <groupId>com.knowprocess.bpm</groupId>
+      <artifactId>work-mgmt</artifactId>
+      <version>${work-mgmt.version}</version>
     </dependency>
-    
+    <dependency>
+	    <groupId>com.knowprocess</groupId>
+	    <artifactId>auth</artifactId>
+	    <version>${kp-auth.version}</version>
+    </dependency>
+
     <!-- Web jars -->
     <dependency>
       <groupId>org.webjars</groupId>
@@ -136,8 +136,8 @@
     <dependency>
       <groupId>link.omny</groupId>
       <artifactId>fonts</artifactId>
-      <version>1.0.0</version>
-    </dependency>    
+      <version>${omny-link.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -158,4 +158,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>

@@ -8,18 +8,6 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import link.omny.acctmgmt.model.BotConfig;
-import link.omny.acctmgmt.model.SystemConfig;
-import link.omny.acctmgmt.model.Tenant;
-import link.omny.acctmgmt.model.TenantConfig;
-import link.omny.acctmgmt.model.TenantExtension;
-import link.omny.acctmgmt.model.TenantProcess;
-import link.omny.acctmgmt.model.ThemeConfig;
-import link.omny.acctmgmt.repositories.TenantRepository;
-import link.omny.custmgmt.repositories.ContactRepository;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.identity.User;
@@ -45,15 +33,23 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.knowprocess.bpm.api.ReportableException;
 
+import link.omny.acctmgmt.model.BotConfig;
+import link.omny.acctmgmt.model.Tenant;
+import link.omny.acctmgmt.model.TenantConfig;
+import link.omny.acctmgmt.model.TenantExtension;
+import link.omny.acctmgmt.model.TenantProcess;
+import link.omny.acctmgmt.model.ThemeConfig;
+import link.omny.acctmgmt.repositories.TenantRepository;
+import link.omny.custmgmt.repositories.ContactRepository;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 @Controller
 @RequestMapping(value = "/admin/tenants")
 public class TenantController {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(TenantController.class);
-
-    @Autowired
-    private SystemConfig systemConfig;
 
     @Autowired
     protected ContactRepository contactRepo;

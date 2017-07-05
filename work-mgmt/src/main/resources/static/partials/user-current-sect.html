@@ -2,14 +2,19 @@
   <h2>
     {{#current.id == profile.id}}Welcome!{{else}}User:{{/}} 
     {{current.firstName}} {{current.lastName}} ({{current.id}})
+    <span class="pull-right">
+      {{#matchRole('admin')}}
+        <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current.selfRef)" title="Delete this user"></a>
+      {{/}}
+    </span>
   </h2>
   <div class="form col-md-12 col-sm-12">
   <div class="currentBody col-md-6 col-sm-12">
     <form id="userForm">
       <ul class="form edit-form">
-        <li class="create-field">
-          <label class="col-md-4 col-sm-4 required">Username:</label>
-          <input class="form-control" id="curUsername" on-blur="save()" required value="{{current.id}}">
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4 required">Email:</label>
+          <input class="no-update-field form-control" id="curEmail" on-blur="save()" required type="email" value="{{current.email}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
         <li class="form-group">
@@ -23,20 +28,17 @@
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
         <li class="form-group">
-          <label class="col-md-4 col-sm-4 required">Email:</label>
-          <input class="no-update-field form-control" id="curEmail" on-blur="save()" required type="email" value="{{current.email}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
-        </li>
-        <li class="form-group">
           <label class="col-md-4 col-sm-4">Phone:</label>
           <input class="form-control" id="curPhone" on-blur="save()" pattern="\+?[0-9, ]{8,13}" type="tel" value="{{current.phone}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
         </li>
-        <li class="form-group">
-          <label class="col-md-4 col-sm-4 required">Preferred:</label>
-          <input class="typeahead form-control" id="curCommsPreference" on-blur="save()" required value="{{current.commsPreference}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
-        </li>
+        {{# current.commsPreference}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4 required">Preferred:</label>
+            <input class="typeahead form-control" id="curCommsPreference" on-blur="save()" required value="{{current.commsPreference}}">
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+          </li>
+        {{/}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4 required">Tenant:</label>
           <input class="no-update-field typeahead form-control" id="curTenant" on-blur="save()" required type="text" value="{{current.tenant}}">
@@ -52,11 +54,7 @@
         <ul class="form edit-form">
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Groups:</label>
-            <span id="curGroups">
-              {{#each current.groups:j}}<span>{{name}}, </span>{{/each}}
-              <input id="curNewGroup" class="hidden form-control" on-blur="addUserToGroup()" value="{{current.newGroup}}">
-              <span class="clickable glyphicon glyphicon-plus admin super-admin" aria-hidden="true" onclick="ractive.addGroup()"></span>
-            </span>
+            <ul class="tagit form-control col-md-8 col-sm-8 col-xs-8" id="curGroups"></ul>
           </li>
           <li style="clear:both">
             <button class="col-md-offset-4 col-sm-offset-4 btn" id="resetPwdBtn" on-click="togglePwdFields()">Reset Password</button>

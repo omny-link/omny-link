@@ -8,13 +8,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import io.onedecision.engine.OneDecisionConfig;
 import link.omny.custmgmt.CustMgmtConfig;
 
 @EnableAutoConfiguration
 @Configuration
 @ComponentScan
-@Import({ AcctMgmtConfig.class, CustMgmtConfig.class, OneDecisionConfig.class })
+@Import({ AcctMgmtConfig.class, CustMgmtConfig.class })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Override

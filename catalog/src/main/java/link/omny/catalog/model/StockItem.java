@@ -30,9 +30,11 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.hateoas.Link;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -110,10 +112,6 @@ public class StockItem implements ShortStockItem, Serializable {
     @JsonView(StockItemViews.Summary.class)
     private BigDecimal price;
 
-    // @JsonProperty
-    // @Transient
-    // private String priceString;
-
     /**
      * Comma separated set of tags for the item.
      */
@@ -124,6 +122,7 @@ public class StockItem implements ShortStockItem, Serializable {
 
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @Column(name = "video_code")
     private String videoCode;
 
     @JsonProperty
@@ -134,21 +133,25 @@ public class StockItem implements ShortStockItem, Serializable {
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     @Size(max = 20)
+    @Column(name = "offer_status")
     private String offerStatus;
 
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     @Size(max = 35)
+    @Column(name = "offer_title")
     private String offerTitle;
 
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     @Size(max = 80)
+    @Column(name = "offer_desc")
     private String offerDescription;
 
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     @Size(max = 30)
+    @Column(name = "offer_cta")
     private String offerCallToAction;
 
     /**
@@ -157,27 +160,29 @@ public class StockItem implements ShortStockItem, Serializable {
      */
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @Column(name = "offer_url")
     private String offerUrl;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
-        @JsonView({ StockCategoryViews.Detailed.class,
-            StockItemViews.Detailed.class })
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonView({ OrderViews.Summary.class, StockCategoryViews.Detailed.class,
         StockItemViews.Detailed.class })
+    @Column(name = "last_updated")
     private Date lastUpdated;
 
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class,
         StockItemViews.Detailed.class })
+    @Column(name = "tenant_id")
     private String tenantId;
 
-    @ManyToOne(targetEntity = StockCategory.class)
+    @ManyToOne(optional = true, targetEntity = StockCategory.class)
     @JoinColumn(name = "stock_cat_id")
     @JsonView({ StockItemViews.Detailed.class })
     private StockCategory stockCategory;
@@ -192,9 +197,14 @@ public class StockItem implements ShortStockItem, Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockItem")
     @JsonDeserialize(using = JsonCustomStockItemFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
-    @JsonView({ StockCategoryViews.Detailed.class,
-        StockItemViews.Detailed.class })
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     private List<CustomStockItemField> customFields;
+
+    @Transient
+    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
+    @JsonProperty("links")
+    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    private List<Link> links;
 
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
     // "stockItem", targetEntity = OrderItem.class)

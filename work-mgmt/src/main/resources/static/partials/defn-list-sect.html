@@ -4,7 +4,7 @@
     {{>profileArea}}
   </h2>
 </section>
-<section id="definitionSect">
+<section class="resultsSect" id="definitionSect">
   <h2 class="navbar-top">
     {{>navbar}}
     <a class="clickable glyphicon glyphicon-cloud-upload pull-right hidden-xs" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
@@ -80,6 +80,6 @@
     </tbody>
     <tfoot>
       <tr><th colspan="12">{{searchMatched == 0 ? 'No' : searchMatched}} matching definition{{searchMatched==1 ? '' : 's'}}</th></tr>
-    </tfoot>    
+    </tfoot>
   </table>
 </section>

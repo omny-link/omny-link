@@ -46,13 +46,16 @@ public class ProcessModel implements
     private int version;
 
     @JsonProperty
+    @Column(name = "resource_name")
     private String resourceName;
 
     @JsonProperty
+    @Column(name = "deployment_id")
     private Integer deploymentId;
 
     @Lob
     @JsonProperty
+    @Column(name = "diag_resource_name")
     private String diagramResourceName;
 
     @Column(name = "PROC_KEY")
@@ -61,6 +64,7 @@ public class ProcessModel implements
 
     @Lob
     @JsonProperty
+    @Column(name = "bpmn_string")
     private String bpmnString;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -71,9 +75,11 @@ public class ProcessModel implements
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
+    @Column(name = "last_updated")
     private Date lastUpdated;
 
     @JsonProperty
+    @Column(name = "tenant_id")
     private String tenantId;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "model")

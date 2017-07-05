@@ -1,14 +1,14 @@
 <!doctype html>
 <html lang='en-GB'>
 <head>
-  <meta http-equiv="x-ua-compatible" content="IE=Edge"/> 
-  <!-- as the **very** first line just after head-->  
+  <meta http-equiv="x-ua-compatible" content="IE=Edge"/>
+  <!-- as the **very** first line just after head-->
   <meta charset='utf-8'>
   <title>Process Definitions</title>
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
-  <link href="css/omny-1.0.0.css" rel="stylesheet">
-  <link href="css/bpmn-icons/css/bpmn.css" rel="stylesheet">
+  <link href="/workmgmt/2.2.0/css/base.css" rel="stylesheet">
+  <link href="/bpmn-icons/css/bpmn.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 <body>
@@ -17,12 +17,12 @@
   <script id='template' type='text/ractive'>
     {{>profileArea}}
     {{>titleArea}}
-  
+    {{>loginSect}}
+
     {{>defnListSect}}
     {{>defnCurrentSect}}
     {{>defnPropSect}}
-  
-    {{>poweredBy}}
+
     {{>sidebar { active: 'definitions.html' }}}
     {{>helpModal}}
   </script>
@@ -35,11 +35,16 @@
 
   <script src="js/autoNumeric.min.js"></script>
   <script src="js/md5.min.js"></script>
-  <script src="js/activity-1.0.0.js"></script>
-  <script src="js/string-functions-0.1.0.js"></script>
-  <script src="js/login-1.0.0.js"></script>
-  <script src="js/i18n.js"></script>
-  <script src="js/definitions-1.0.0.js"></script>
-  <script src="js/omny-1.0.0.js"></script>
+
+  <script src="/html2canvas/0.5.0-alpha1/js/html2canvas.js"></script>
+  <script src="js/env.js"></script>
+  <script src="workmgmt/2.2.0/js/activity.js"></script>
+  <script src="workmgmt/2.2.0/js/string-functions.js"></script>
+  <script src="workmgmt/2.2.0/js/i18n.js"></script>
+
+  <script src="workmgmt/2.2.0/js/base.js"></script>
+  <script src="workmgmt/2.2.0/js/definitions.js"></script>
+  <script src="webjars/auth/1.0.0/js/auth.js"></script>
+  <script src="workmgmt/2.2.0/js/support.js"></script>
 </body>
 </html>

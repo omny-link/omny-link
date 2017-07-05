@@ -68,18 +68,18 @@
 
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form inline-form edit-form">
-        {{# tenant.strings.companyNumber == 'Establishment Group'}}
+        {{# tenant.features.parentOrg}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{# tenant.strings.edubaseUrn}}{{tenant.strings.edubaseUrn}}{{else}}Edubase URN{{/}}:</label>
+            <label class="col-md-4 col-sm-4">{{# tenant.strings.parentOrg}}{{tenant.strings.parentOrg}}{{else}}Parent Group{{/}}:</label>
             <div class="input-group">
-              <input class="col-md-8 col-sm-8 form-control" id="curEdubaseUrn" pattern="[0-9]{6}" type="text" value="{{current.customFields['edubaseUrn']}}">
-              {{# current.customFields['edubaseUrn']!=undefined && current.customFields['edubaseUrn'].length>0}}
+              <input class="col-md-8 col-sm-8 form-control" id="curParentOrg" {{# tenant.strings.parentOrgPattern}}{{tenant.strings.parentOrgPattern}}pattern="{{tenant.strings.parentOrgPattern}}"{{/}} type="text" value="{{current.parentOrg}}">
                 <span class="input-group-addon">
-                  <a href="http://www.education.gov.uk/edubase/establishment/summary.xhtml?urn={{parseInt(current.customFields['edubaseUrn'])}}" target="edubaseEstablishment"><span class="glyphicon glyphicon-new-window"></span></a>
-                </span>
-              {{else}}
-                <span class="input-group-addon">N/A</span>
-              {{/}}
+                {{# current.parentOrg==undefined || current.parentOrg.length==0}}
+                  <span>N/A</span>
+                {{else}}
+                  {{>(formatParentLeiLink(current))}}
+                {{/}}
+              </span>
             </div>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
           </li>
@@ -87,18 +87,14 @@
         <li class="form-group">
           <label class="col-md-4 col-sm-4">{{# tenant.strings.companyNumber}}{{tenant.strings.companyNumber}}{{else}}Company Number{{/}}:</label>
           <div class="input-group">
-            <input autocomplete="off" class="typeahead col-md-8 col-sm-8 form-control" id="curCompanyNumber" pattern="[OCINS0-9]{0,2}[0-9]{4,6}" {{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.companyNumber}}">
-            {{# tenant.strings.companyNumber == 'Establishment Group' && current.companyNumber!=undefined && current.companyNumber.length>0}}
+            <input autocomplete="off" class="typeahead col-md-8 col-sm-8 form-control" id="curCompanyNumber" {{#if tenant.strings.companyNumber == undefined}}pattern="[OCINS0-9]{0,2}[0-9]{4,6}" {{/if}}{{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.companyNumber}}">
               <span class="input-group-addon">
-                <a href="http://www.education.gov.uk/edubase/groups/group/summary.xhtml?id={{parseInt(current.companyNumber)}}" target="edubaseGroup"><span class="glyphicon glyphicon-new-window"></span></a>
+                {{#if current.companyNumber==undefined || current.companyNumber.length==0}}
+                  <span>N/A</span>
+                {{else}}
+                  {{>(formatLeiLink(current))}}
+                {{/if}}
               </span>
-            {{elseif current.companyNumber!=undefined && current.companyNumber.length>0}}
-              <span class="input-group-addon">
-                <a href="https://beta.companieshouse.gov.uk/company/{{current.companyNumber}}" target="companiesHouse"><span class="glyphicon glyphicon-new-window" title="View Companies House Information"></span></a>
-              </span>
-            {{else}}
-              <span class="input-group-addon">N/A</span>
-            {{/}}
           </div>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
         </li>
@@ -107,7 +103,7 @@
           <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" {{#if !matchRole('power_user')}}readonly disabled{{/if}} value="{{current.owner}}">
         </li>
         <li class="form-group">
-          <label class="col-md-4 col-sm-4">Existing Customer?:</label>
+          <label class="col-md-4 col-sm-4">{{#tenant.strings.existingCustomer}}{{tenant.strings.existingCustomer}}{{else}}Existing Customer?{{/}}:</label>
           <label class="checkbox-inline">
             <input type="checkbox" checked="{{current.existingCustomer}}">{{#if current.existingCustomer}}Yes{{else}}No{{/if}}
           </label>
@@ -115,30 +111,37 @@
         </li>
         {{#if tenant.show.stage}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Stage{{/}}:</label>
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.accountStage}}{{tenant.strings.accountStage}}{{else}}Stage{{/}}:</label>
             <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">How far through the sales pipeline are you with this account?</p>
           </li>
         {{/if}}
         {{#if tenant.show.accountCompanyDetails}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">Founded:</label>
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.founded}}{{tenant.strings.founded}}{{else}}Founded{{/}}:</label>
             <input autocomplete="off" class="form-control" id="curIncorporationYear" pattern="[0-9]{4}" placeholder="yyyy" value="{{current.incorporationYear}}"/>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
           </li>
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">SIC:</label>
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.sic}}{{tenant.strings.sic}}{{else}}SIC{{/}}:</label>
             <input autocomplete="off" class="typeahead form-control" id="curSic" type="text" value="{{current.sic}}"/>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Standard industrial classification of economic activities (SIC)</p>
           </li>
         {{/if}}
         <li class="form-group">
-          <label class="col-md-4 col-sm-4 col-xs-4">Account Type:</label>
+          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.accountType}}{{tenant.strings.accountType}}{{else}}Account Type{{/}}:</label>
           <input class="typeahead form-control" placeholder="Start typing to filter options" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
-          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Defines the nature of the relationship with this contact</p>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Defines the nature of the relationship with this client</p>
         </li>
+        {{#tenant.features.enquiryType}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.enquiryType}}{{tenant.strings.enquiryType}}{{else}}Enquiry Type{{/}}:</label>
+            <input class="typeahead form-control" placeholder="Start typing to filter options" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Defines this client is looking for</p>
+          </li>
+        {{/}}
         <li class="form-group">
-          <label class="col-md-4 col-sm-4 col-xs-4">Tags:</label>
+          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.tags}}{{tenant.strings.tags}}{{else}}Tags{{/}}:</label>
           <input class="tag-ctrl form-control col-md-8 col-sm-8 col-xs-8" id="curTags" data-bind="current.tags"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block" style="margin-top:0">Tags are arbitrary labels you apply to a record. Tip: to find all records tagged 'green' use #green in search</p>
         </li>
@@ -161,7 +164,7 @@
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form inline-form edit-form">
         <li class="form-group">
-          <label class="col-md-4 col-sm-4">Website:</label>
+          <label class="col-md-4 col-sm-4">{{#tenant.strings.website}}{{tenant.strings.website}}{{else}}Website{{/}}:</label>
           <div class="input-group">
             <input class="col-md-8 col-sm-8 form-control" id="curBusinessWebsite" type="url" value="{{current.businessWebsite}}"/>
             <span class="input-group-addon">
@@ -171,7 +174,7 @@
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Remember to include http:// (or https://)</p>
         </li>
         <li class="form-group">
-          <label class="col-md-4 col-sm-4">Email:</label>
+          <label class="col-md-4 col-sm-4">{{#tenant.strings.email}}{{tenant.strings.email}}{{else}}Email{{/}}:</label>
           <input class="form-control" id="curEmail" type="email" value="{{current.email}}">
         </li>
          <li class="form-group">
@@ -186,7 +189,7 @@
         </li>
         {{#if tenant.show.addressAccount}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">Address:</label>
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.address}}{{tenant.strings.address}}{{else}}Address{{/}}:</label>
             <input class="col-md-8 col-sm-8 form-control" id="curAddress1" value="{{current.address1}}"/>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
           </li>
@@ -206,7 +209,7 @@
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
           </li>
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">Post Code:</label>
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.postCode}}{{tenant.strings.postCode}}{{else}}Post Code{{/}}:</label>
             <div class="input-group">
               <input class="col-md-8 col-sm-8 form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}">
               <span class="input-group-addon">
@@ -226,7 +229,7 @@
           </li>
           {{#tenant.show.multiNational}}
             <li class="form-group">
-              <label class="col-md-4 col-sm-4">Country:</label>
+              <label class="col-md-4 col-sm-4">{{#tenant.strings.country}}{{tenant.strings.country}}{{else}}Country{{/}}:</label>
               <input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}">
             </li>
           {{/}}
@@ -241,8 +244,8 @@
       <div id="currentAccountDesc" class="col-md-12 col-sm-12 col-xs-12">
           <ul class="form edit-form">
             <li class="form-group">
-              <label class="textarea col-md-2 col-sm-4">{{#if tenant.strings.contactDescription}}{{tenant.strings.contactDescription}}{{else}}Additional info{{/if}}:</label>
-              <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#if tenant.strings.contactDescriptionHint}}{{tenant.strings.contactDescriptionHint}}{{else}}Additional info{{/if}}" value="{{current.description}}"></textarea>
+              <label class="textarea col-md-2 col-sm-4">{{#if tenant.strings.accountDescription}}{{tenant.strings.accountDescription}}{{else}}Additional info{{/if}}:</label>
+              <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#if tenant.strings.accountDescriptionHint}}{{tenant.strings.accountDescriptionHint}}{{else}}Additional info{{/if}}" value="{{current.description}}"></textarea>
             </li>
           </ul>
       </div>
@@ -254,7 +257,9 @@
   {{/}}
 
   <div id="currentAccountTypeExtended" style="clear: both">
-    {{>(tenant.id+(current.accountType == undefined ? '' : current.accountType.replace(/ /g,''))+'Extension')}}
+    {{# tenant.id && current}}
+      {{>(tenant.id+(current.accountType == undefined ? '' : current.accountType.replace(/ /g,''))+'Extension')}}
+    {{/}}
   </div>
 
 
@@ -266,7 +271,7 @@
    <section id="accountContactsSect">
      <h3>
        <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
-       <span> Contacts</span>
+       <span> {{#tenant.strings.contacts}}{{tenant.strings.contacts}}{{else}}Contacts{{/}}</span>
      </h3>
      <div class="col-md-12" style="display:none">
        <form id="currentContactForm">
@@ -292,7 +297,7 @@
                   <td class="hidden">
                     <span>{{..selfRef}}</span>
                   </td>
-                  <td><input class="radio" name="mainContact" type="radio" checked="{{mainContact}}" on-change="setMainContact(selfRef)"/></td>
+                  <td><input class="radio" name="mainContact" twoway="false" type="radio" checked="{{mainContact}}" on-change="setMainContact(selfRef)"/></td>
                   <td class="col-md-2 col-sm-2" data-contact-id="{{..selfRef}}" data-key="fullName">
 	                  <span>{{fullName}}</span>
 	                  <input class="hidden form-control" name="fullName" value="{{..fullName}}">

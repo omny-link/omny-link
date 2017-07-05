@@ -31,7 +31,6 @@ import link.omny.catalog.model.StockItem;
 import link.omny.catalog.model.api.ShortStockCategory;
 import link.omny.catalog.model.api.ShortStockItem;
 import link.omny.catalog.repositories.StockCategoryRepository;
-import link.omny.catalog.repositories.StockItemRepository;
 import link.omny.catalog.web.StockCategoryController.ShortStockCategoryResource;
 import link.omny.catalog.web.StockCategoryController.ShortStockItemResource;
 
@@ -52,9 +51,6 @@ public class StockControllerTest {
 
     @Autowired
     private StockCategoryRepository categoryRepo;
-
-    @Autowired
-    private StockItemRepository itemRepo;
 
     @Autowired
     private StockCategoryController categoryController;
@@ -96,8 +92,6 @@ public class StockControllerTest {
 
         StockCategory category2 = categoryRepo.findOne(categoryId);
         assertNotNull(category2.getCreated());
-        // TODO h2 test db not supporting default?
-        // assertNotNull(category2.getLastUpdated());
 
 //        findAll(category, officeItem, warehouseItem);
         findNearReading(borehamwoodCat, officeItem);

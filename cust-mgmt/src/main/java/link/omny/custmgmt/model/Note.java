@@ -8,20 +8,21 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import javax.validation.constraints.Size;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import link.omny.custmgmt.model.views.AccountViews;
+import link.omny.custmgmt.model.views.ContactViews;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -47,34 +48,47 @@ public class Note implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     private Long id;
 
     @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
+    @Size(max = 50)
+    @Column(name = "author")
     private String author;
 
     @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
+    @Column(name = "created")
     private Date created;
 
     @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
+    @Column(name = "content")
     private String content;
 
     @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
+    @Column(name = "favorite")
     private boolean favorite;
-
 
     // This advises to avoid back reference in a composition relationship
     // http://stackoverflow.com/questions/25311978/posting-a-onetomany-sub-resource-association-in-spring-data-rest/25451662#25451662
     // However doing so means we are trapped in the POST sub-entity + PUT
     // association trap, hence doing it this way
-    @RestResource(rel = "noteAccount")
-    @ManyToOne(targetEntity = Account.class)
-    @JoinColumn(name = "account_id")
-    private Account account;
-
-    @RestResource(rel = "noteContact")
-    @ManyToOne(targetEntity = Contact.class)
-    @JoinColumn(name = "contact_id")
-    private Contact contact;
+    // @RestResource(rel = "noteAccount")
+    // @ManyToOne(targetEntity = Account.class)
+    // @JoinColumn(name = "account_id")
+    //// @JsonIgnore
+    //// @JsonBackReference
+    // private Account account;
+    //
+    // @RestResource(rel = "noteContact")
+    // @ManyToOne(targetEntity = Contact.class)
+    // @JoinColumn(name = "contact_id")
+    //// @JsonIgnore
+    //// @JsonBackReference
+    // private Contact contact;
 
     @PrePersist
     void preInsert() {
@@ -88,7 +102,7 @@ public class Note implements Serializable {
         setAuthor(author);
         setContent(content);
     }
-    
+
     public Note(String author, String content, boolean favorite) {
         this(author, content);
         setFavorite(favorite);
@@ -96,7 +110,8 @@ public class Note implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Note [id=%s, author=%s, created=%s, favorite=%b, content=%s]",
+        return String.format(
+                "Note [id=%s, author=%s, created=%s, favorite=%b, content=%s]",
                 id, author, created, favorite, content);
     }
 

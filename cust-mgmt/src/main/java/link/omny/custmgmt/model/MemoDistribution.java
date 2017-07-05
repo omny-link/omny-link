@@ -27,15 +27,16 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Relates a Memo Template to its recipients.
- * 
+ *
  * @author Tim Stephenson
  */
 @Entity
@@ -49,6 +50,7 @@ public class MemoDistribution implements Serializable {
     protected static DateFormat isoDateFormat = new SimpleDateFormat(
             "yyyy-MM-dd");
     protected static DateFormat isoTimeFormat = new SimpleDateFormat("HH:mm");
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -56,19 +58,28 @@ public class MemoDistribution implements Serializable {
     private Long id;
 
     @JsonProperty
+    @Size(max = 50)
+    @Column(name = "name")
     private String name;
 
     @JsonProperty
+    @Size(max = 50)
+    @Column(name = "owner")
     private String owner;
-    
+
     @JsonProperty
     @Lob
+    @Column(name = "recipients")
     private String recipients;
 
     @JsonProperty
+    @Size(max = 30)
+    @Column(name = "status")
     private String status;
 
     @JsonProperty
+    @Size(max = 30)
+    @Column(name = "memo_ref")
     private String memoRef;
 
     @Transient
@@ -76,15 +87,19 @@ public class MemoDistribution implements Serializable {
     private Date sendAt;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "send_at_date")
     private Date sendAtDate;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "send_at_time")
     private Date sendAtTime;
 
     /**
      * @see java.util.TimeZone.getAvailableIDs()
      */
     @JsonProperty
+    @Size(max = 30)
+    @Column(name = "send_at_tz")
     private String sendAtTZ;
 
     /**
@@ -96,22 +111,25 @@ public class MemoDistribution implements Serializable {
      * For example with Mailjet this would be the campaign id.
      */
     @JsonProperty
+    @Size(max = 30)
+    @Column(name = "provider_ref")
     private String providerRef;
 
     @NotNull
     @JsonProperty
-    @Column(nullable = false)
+    @Size(max = 30)
+    @Column(name = "tenant_id", nullable = false)
     private String tenantId;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "created", updatable = false)
     @JsonProperty
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(columnDefinition = "TIMESTAMP", updatable = true)
     @JsonProperty
+    @Column(name = "last_updated")
     private Date lastUpdated;
 
     public MemoDistribution() {

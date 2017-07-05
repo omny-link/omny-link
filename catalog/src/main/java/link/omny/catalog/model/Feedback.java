@@ -18,11 +18,14 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.hateoas.Link;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -30,6 +33,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import link.omny.catalog.json.JsonCustomFeedbackFieldDeserializer;
+import link.omny.catalog.views.FeedbackViews;
 import link.omny.catalog.views.OrderViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
@@ -79,11 +83,13 @@ public class Feedback implements Serializable {
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="last_updated")
     @JsonProperty
     // See OrderItem.lastUpdated for explanation
     //@JsonView(OrderViews.Detailed.class)
     private Date lastUpdated;
 
+    @Column(name="tenant_id")
     @JsonProperty
     @JsonView(OrderViews.Detailed.class)
     private String tenantId;
@@ -97,6 +103,12 @@ public class Feedback implements Serializable {
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     @JsonView(OrderViews.Detailed.class)
     private List<CustomFeedbackField> customFields;
+
+    @Transient
+    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
+    @JsonProperty("links")
+    @JsonView({ OrderViews.Detailed.class, FeedbackViews.Summary.class })
+    private List<Link> links;
 
     public Feedback(String desc, String type) {
         this();

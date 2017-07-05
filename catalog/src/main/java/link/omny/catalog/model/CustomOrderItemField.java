@@ -3,15 +3,16 @@ package link.omny.catalog.model;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.springframework.data.rest.core.annotation.RestResource;
 
 import link.omny.custmgmt.model.CustomField;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import org.springframework.data.rest.core.annotation.RestResource;
 
 @Entity
 @Table(name = "OL_ORDER_ITEM_CUSTOM")
@@ -25,6 +26,7 @@ public class CustomOrderItemField extends CustomField {
 
     @ManyToOne(optional = false, targetEntity = OrderItem.class)
     @RestResource(rel = "customOrderItem")
+    @JoinColumn(name = "order_item_id")
     private OrderItem orderItem;
 
     public CustomOrderItemField(String key, Object object) {

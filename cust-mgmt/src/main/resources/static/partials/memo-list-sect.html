@@ -4,7 +4,7 @@
     {{>profileArea}}
   </h2>
 </section>
-<section id="memosSect">
+<section class="resultsSect" id="memosSect">
   <h2 class="navbar-top">
     {{>navbar}}
   </h2>
@@ -24,7 +24,7 @@
     <tbody>
     {{#each sort(memos,sortColumn,sortAsc):i}}
       {{# matchSearch(this) && matchFilter(this) }}
-        <tr data-href="{{links[rel=='self'].href}}" on-click="edit(i,this)">
+        <tr data-href="{{selfRef}}" on-click="edit(i,this)">
           <td>{{i+1}}</td>
           <td>{{name}}</td>
           <td>{{status}}</td>

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpm.web.Md5HashUtils;
-import com.knowprocess.resource.spi.RestGet;
+import com.knowprocess.resource.spi.Fetcher;
 
 import link.omny.acctmgmt.model.BotConfig;
 import link.omny.acctmgmt.model.Tenant;
@@ -92,7 +92,7 @@ public class TenantConfigController {
                         resource));
             }
         } else {
-            RestGet get = new RestGet();
+            Fetcher get = new Fetcher();
             try {
                 LOGGER.info(String.format(
                         "About to read config for %1$s from %2$s", id,
@@ -204,8 +204,12 @@ public class TenantConfigController {
         }
 
         for (TenantPartial partial : tenantConfig.getPartials()) {
-            partial.setValid(TenantConfig.resourceExists(STATIC_BASE
-                    + partial.getUrl()));
+            if (partial.getUrl().matches("https?://.*")) {
+                partial.setStatus("remote");
+            } else {
+                partial.setValid(TenantConfig.resourceExists(STATIC_BASE
+                        + partial.getUrl()));
+            }
         }
 
         List<Memo> memos = memoRepo.findAllForTenant(id);

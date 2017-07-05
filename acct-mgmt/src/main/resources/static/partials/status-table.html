@@ -23,11 +23,17 @@
           {{else}}
             {{#if status=='warning'}}
               <span class="glyphicon glyphicon-warning-sign alert-warning" title="Warning"></span>
+            {{elseif status=='remote'}}
+              <a href="{{url}}" target="partial">
+                <span class="glyphicon glyphicon-new-window alert-warning" title="Remote partials are not checked for performance reasons, click to open"></span>
+              </a>
             {{else}}
               <span class="glyphicon glyphicon-remove-sign alert-danger" title="Missing or out of date"></span>
             {{/if}}
           {{/}}
-          {{#if property == 'processes'}}
+          {{#if property == 'templates' && status == 'false'}}
+            <span class="glyphicon glyphicon-repeat" on-click="deployTemplate(this)" title="Create a stub of the template"></span>
+          {{elseif (property == 'processes')}}
             <span class="glyphicon glyphicon-repeat" on-click="deployProcess(this)" title="(Re)Deploy the process"></span>
           {{/if}}
         </td>

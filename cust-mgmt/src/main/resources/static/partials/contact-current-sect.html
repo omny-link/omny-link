@@ -72,9 +72,9 @@
           <li>
             <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.id}}{{tenant.strings.id}}{{else}}Ref{{/}}:</label>
             <div class="input-group">
-              <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curShortId" readonly disabled value="{{shortId(current.selfRef)}}"/>
+              <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curShortId" readonly disabled twoway="false" value="{{shortId(current.selfRef)}}"/>
               <span class="input-group-addon">
-                <a href="contacts.html?searchTerm={{current.selfRef.substring(current.selfRef.lastIndexOf('/')+1)}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+                <a href="contacts.html?searchTerm={{shortId(current.selfRef)}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
               </span>
             </div>
           </li>
@@ -94,9 +94,9 @@
         {{/}}
         {{#tenant.show.marketing || tenant.show.stage}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Stage{{/}}:</label>
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.contactStage}}{{tenant.strings.contactStage}}{{else}}Stage{{/}}:</label>
             <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" on-blur="initAutoComplete()" value="{{current.stage}}">
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.stageHint}}{{tenant.strings.stageHint}}{{else}}How far through the sales pipeline are you with this contact?{{/}}</p>
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.contactStageHint}}{{tenant.strings.contactStageHint}}{{else}}How far through the sales pipeline are you with this contact?{{/}}</p>
           </li>
           {{# haveStageReasons() }}
             <li class="form-group">
@@ -124,7 +124,7 @@
         {{/}}
         <li>
           <label class="col-md-4 col-sm-4 col-xs-4">Account Type:</label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
+          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Defines the nature of the relationship with this contact</p>
         </li>
         <li>
@@ -288,7 +288,7 @@
             {{#tenant.show.declaredSource}}
               <li>
                 <label class="col-md-4 col-sm-4">{{#tenant.strings.source2}}{{tenant.strings.source2}}{{else}}How heard of us?{{/}}:</label>
-                <input class="form-control" id="curSource2" placeholder="Start typing to filter options" {{ (matchRole('sales_manager') || matchRole('admin') || matchRole('power_user')) ? '' : 'readonly disabled' }} value="{{current.source2}}">
+                <input class="typeahead form-control" id="curSource2" placeholder="Start typing to filter options" {{ (matchRole('sales_manager') || matchRole('admin') || matchRole('power_user')) ? '' : 'readonly disabled' }} value="{{current.source2}}">
               </li>
             {{/}}
           </ul>
@@ -306,11 +306,11 @@
               {{/if}}
               <li>
                 <label class="col-md-4 col-sm-4">{{#tenant.strings.pageSubmitted}}{{tenant.strings.pageSubmitted}}{{else}}Page Submitted{{/}}:</label>
-                <input class="form-control" id="curPageSubmitted" disabled readonly value="{{customField(current, 'pageSubmitted')}}">
+                <input class="form-control" id="curPageSubmitted" disabled readonly twoway="false" value="{{customField(current, 'pageSubmitted')}}">
               </li>
               <li>
                 <label class="col-md-4 col-sm-4">{{#tenant.strings.ipAddress}}{{tenant.strings.ipAddress}}{{else}}IP Address{{/}}:</label>
-                <input class="form-control" id="curIpAddress" disabled readonly value="{{customField(current, 'ip')}}">
+                <input class="form-control" id="curIpAddress" disabled readonly twoway="false" value="{{customField(current, 'ip')}}">
               </li>
             {{/}}
           </ul>

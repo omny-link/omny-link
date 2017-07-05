@@ -5,11 +5,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import link.omny.acctmgmt.model.Metric;
-import link.omny.acctmgmt.model.SystemConfig;
-import link.omny.acctmgmt.repositories.MetricRepository;
-import link.omny.acctmgmt.web.TenantController.TenantSummary;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +21,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import link.omny.acctmgmt.model.Metric;
+import link.omny.acctmgmt.repositories.MetricRepository;
+import link.omny.acctmgmt.web.TenantController.TenantSummary;
+
 @Controller
 public class MetricController {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(MetricController.class);
-
-    @Autowired
-    private SystemConfig systemConfig;
 
     @Autowired
     protected TenantController tenantController;

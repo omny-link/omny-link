@@ -36,4 +36,7 @@
     {{/}}
   {{/each}}
   </tbody>
+  <tfoot>
+    <tr><th colspan="12">{{searchMatched == 0 ? 'No' : searchMatched}} matching task{{searchMatched==1 ? '' : 's'}}</th></tr>
+  </tfoot>
 </table>

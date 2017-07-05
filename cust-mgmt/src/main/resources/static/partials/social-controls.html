@@ -11,24 +11,26 @@
   <a class="glyphicon glyphicon-pencil" on-click="showSocial('facebook','current.facebook')"></a>
 </div>           
 
-<div class="modal fade" id="socialModalSect" tabindex="-1" role="dialog" aria-labelledby="socialModalLabel">
-	<div class="modal-dialog" role="document">
-	  <div class="modal-content">
-	    <div class="modal-header">
-	      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	      <h1 class="modal-title" id="socialModalLabel">Set {{network.name.toLabel()}} details</h1>
-	    </div>
-	    <div class="modal-body">
-	      <form id="socialForm">
-	        <label class="col-md-2 col-sm-4">{{network.name.toLabel()}}:</label>
-	        <input class="col-md-10 col-sm-8 form-control" value="{{network.value}}"/>
-	        <p class="col-md-offset-2 col-sm-offset-4 hidden-xs help-block">Remember to include {{#network.name=='twitter'}} @{{else}} https://{{/}}</p>
-	      </form>
-	    </div>
-	    <div class="modal-footer">
-	      <button id="cancelSocialForm" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-	      <button id="submitSocialForm" type="button" class="btn btn-primary" on-click="submitSocial(network)">Set {{network.name.toLabel()}}</button>
+{{#network}}
+  <div class="modal fade" id="socialModalSect" tabindex="-1" role="dialog" aria-labelledby="socialModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h1 class="modal-title" id="socialModalLabel">Set {{network.name.toLabel()}} details</h1>
+        </div>
+        <div class="modal-body">
+          <form id="socialForm">
+            <label class="col-md-2 col-sm-4">{{network.name.toLabel()}}:</label>
+            <input class="col-md-10 col-sm-8 form-control" value="{{network.value}}"/>
+            <p class="col-md-offset-2 col-sm-offset-4 hidden-xs help-block">Remember to include {{#network.name=='twitter'}} @{{else}} https://{{/}}</p>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="cancelSocialForm" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button id="submitSocialForm" type="button" class="btn btn-primary" on-click="submitSocial(network)">Set {{network.name.toLabel()}}</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+{{/}}

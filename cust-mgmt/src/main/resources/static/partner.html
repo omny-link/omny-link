@@ -7,10 +7,10 @@
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
   <link href="css/jquery.tagit.css" rel="stylesheet" type="text/css">
-  
-  <link href="css/omny-1.0.0.css" rel="stylesheet">
+
+  <link href="/workmgmt/2.2.0/css/base.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
-  <!-- nice blocky yet tall font 
+  <!-- nice blocky yet tall font
   <link rel='stylesheet' id='google-fonts-css'  href='//fonts.googleapis.com/css?family=Oswald%3A400%7CNoto+Sans&#038;ver=2.1.2' type='text/css' media='all' />
   -->
 </head>
@@ -20,7 +20,8 @@
   <script id='template' type='text/ractive'>
     {{>profileArea}}
     {{>titleArea}}
-    
+    {{>loginSect}}
+
     {{>currentContactSect { "tenant": { "id": tenant.id, "show": { "account":true, "activityAnalysis":false, "marketing":false } }}}}
     {{>poweredBy}}
     {{>sidebar { active: 'partner.html' }}}
@@ -34,24 +35,19 @@
   <script src="js/tag-it.js" type="text/javascript" charset="utf-8"></script>
   <script src="/webjars/ractive/0.7.3/ractive.min.js"></script>
 
+  <script src="/html2canvas/0.5.0-alpha1/js/html2canvas.js"></script>
   <script src="js/autoNumeric.js"></script>
   <script src="js/md5.min.js"></script>
-  <script src="js/activity-1.0.0.js"></script>
-  <script src="js/login-1.0.0.js"></script>
-  <script src="js/i18n.js"></script>
-  <script src="js/cust-mgmt-1.0.0.js"></script>
-  <script src="js/omny-1.0.0.js"></script>
-  <script type="text/javascript">
-    $(document).ready(function() {
-      if (ractive.fetchCallbacks==null) ractive.fetchCallbacks = $.Callbacks();
-      ractive.fetchCallbacks.add(function() {
-        ractive.set('title','Partner');
-        ractive.set('saveObserver',false);
-        var contactId = ractive.get('searchId');
-        ractive.select({_links:{self:{href:contactId}}});
-      });
-    });
-  </script>
-  
+
+  <script src="js/env.js"></script>
+  <script src="workmgmt/2.2.0/js/activity.js"></script>
+  <script src="workmgmt/2.2.0/js/string-functions.js"></script>
+  <script src="workmgmt/2.2.0/js/i18n.js"></script>
+
+  <script src="workmgmt/2.2.0/js/base.js"></script>
+  <script src="custmgmt/2.1.0/js/cust-mgmt.js"></script>
+  <script src="webjars/auth/1.0.0/js/auth.js"></script>
+  <script src="workmgmt/2.2.0/js/support.js"></script>
+
 </body>
 </html>

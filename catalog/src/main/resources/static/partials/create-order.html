@@ -1,7 +1,7 @@
   <ul class="form edit-form">
     <li class="form-group">
       <label class="col-md-2 col-sm-2">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}:</label>
-      <input autocomplete="off" class="form-control" id="curOrderContact" disabled readonly value="{{formatContactId(instanceToStart.processVariables.order.contactId)}}">
+      <input autocomplete="off" class="form-control" id="curOrderContact" disabled readonly twoway="false" value="{{formatContactId(instanceToStart.processVariables.order.contactId)}}">
       <p class="col-md-offset-2 col-sm-offset-2 help-block field-error">{{#tenant.strings.contactHint}}{{tenant.strings.contactHint}}{{else}}&nbsp;{{/}}</p>
     </li>
     <li class="form-group">
@@ -15,9 +15,9 @@
       <p class="col-md-offset-2 col-sm-offset-2 help-block field-error">{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}&nbsp;{{/}}</p>
     </li>
     <li class="form-group">
-      <label class="col-md-2 col-sm-2">{{#tenant.strings.stage}}{{tenant.strings.stage}}{{else}}Stage{{/}}:</label>
-      <input class="form-control" list="stages" id="curOrderStage" value="{{instanceToStart.processVariables.order.stage}}">
-      <p class="col-md-offset-2 col-sm-offset-2 help-block field-error">{{#tenant.strings.stageHint}}{{tenant.strings.stageHint}}{{else}}&nbsp;{{/}}</p>
+      <label class="col-md-2 col-sm-2">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}:</label>
+      <input class="form-control" list="orderStages" id="curOrderStage" value="{{instanceToStart.processVariables.order.stage}}">
+      <p class="col-md-offset-2 col-sm-offset-2 help-block field-error">{{#tenant.strings.orderStageHint}}{{tenant.strings.stageHint}}{{else}}&nbsp;{{/}}</p>
     </li>
     <li class="form-group">
       <label class="col-md-2 col-sm-2">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}:</label>
