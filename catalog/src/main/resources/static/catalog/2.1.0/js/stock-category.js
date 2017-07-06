@@ -420,11 +420,6 @@ var ractive = new BaseRactive({
       }
     });
   },
-  search: function(searchTerm) {
-    ractive.set('searchTerm',searchTerm);
-    ractive.showSearchMatched();
-    ractive.showResults();
-  },
   select: function(stockCategory) {
     console.log('select: '+JSON.stringify(stockCategory));
     ractive.set('saveObserver',false);

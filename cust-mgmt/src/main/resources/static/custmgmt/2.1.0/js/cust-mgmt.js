@@ -186,10 +186,10 @@ var ractive = new BaseRactive({
             || (searchTerm.indexOf('@')!=-1 && obj.email.toLowerCase().indexOf(searchTerm)>=0)
             || (obj.phone1!=undefined && obj.phone1.indexOf(searchTerm)>=0)
             || (obj.phone2!=undefined && obj.phone2.indexOf(searchTerm)>=0)
-            || (obj.accountName!=undefined && obj.accountName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-            || (searchTerm.startsWith('type:') && obj.accountType!=undefined && obj.accountType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(5))==0)
-            || (searchTerm.startsWith('enquiry:') && obj.enquiryType!=undefined && obj.enquiryType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(8))==0)
-            || (searchTerm.startsWith('stage:') && obj.stage!=undefined && obj.stage.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(6))==0)
+            || (obj.accountName!=undefined && obj.accountName.toLowerCase().indexOf(searchTerm)>=0)
+            || (searchTerm.startsWith('type:') && obj.accountType!=undefined && obj.accountType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.replace(/ /g,'_').substring(5))==0)
+            || (searchTerm.startsWith('enquiry:') && obj.enquiryType!=undefined && obj.enquiryType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.replace(/ /g,'_').substring(8))==0)
+            || (searchTerm.startsWith('stage:') && obj.stage!=undefined && obj.stage.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.replace(/ /g,'_').substring(6))==0)
             || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(searchTerm.substring(8)))
             || (searchTerm.startsWith('created>') && new Date(obj.firstContact)>new Date(searchTerm.substring(8)))
             || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(searchTerm.substring(8)))
@@ -212,6 +212,7 @@ var ractive = new BaseRactive({
       return ractive.shortId(selfRef);
     },
     sort: function (array, column, asc) {
+      if (array == undefined) return;
       console.info('sort array of '+(array == undefined ? 0 : array.length)+' items '+(asc ? 'ascending' : 'descending')+' on: '+column);
       array = array.slice(); // clone, so we don't modify the underlying data
 
@@ -274,6 +275,7 @@ var ractive = new BaseRactive({
     activityCurrentSect: '',
     contactListTable: '',
     contactListSect: '',
+    currentContactExtensionSect: '',
     currentContactSect: '',
     currentOrderListSect: '',
     currentNoteListSect: '',
@@ -288,8 +290,8 @@ var ractive = new BaseRactive({
     titleArea: '',
     supportBar: ''
   },
-  add: function () {
-    console.log('add...');
+  addContact: function () {
+    console.log('addContact...');
     $('h2.edit-form,h2.edit-field').hide();
     $('.create-form,create-field').show();
     var contact = { account: {}, author:$auth.getClaim('sub'), tenantId: ractive.get('tenant.id'), url: undefined };
@@ -425,9 +427,9 @@ var ractive = new BaseRactive({
       success: function( data ) {
         ractive.set('saveObserver', false);
         if (data['_embedded'] == undefined) {
-          ractive.merge('contacts', data);
+          ractive.set('contacts', data);
         } else {
-          ractive.merge('contacts', data['_embedded'].contacts);
+          ractive.set('contacts', data['_embedded'].contacts);
         }
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.hasRole('power-user')) $('.power-user').show();
@@ -548,8 +550,8 @@ var ractive = new BaseRactive({
       }
     });
   },
-  find: function(contactId) {
-    console.log('find: '+contactId);
+  findContact: function(contactId) {
+    console.log('findContact: '+contactId);
     var c;
     $.each(ractive.get('contacts'), function(i,d) {
       if (contactId.endsWith(ractive.id(d))) {
@@ -652,6 +654,20 @@ var ractive = new BaseRactive({
   },
   oninit: function() {
     console.log('oninit');
+    this.on( 'filter', function ( event, filter ) {
+      console.info('filter on '+JSON.stringify(event)+','+filter.idx);
+      $('.omny-dropdown.dropdown-menu li').removeClass('selected');
+      $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
+      ractive.search(filter.value);
+    });
+    this.on( 'sortOrder', function ( event, column ) {
+      console.info('sortOrder on '+column);
+      $( "#ajax-loader" ).show();
+      // if already sorted by this column reverse order
+      if (this.get('sortOrderColumn')==column) this.set('sortOrderAsc', !this.get('sortOrderAsc'));
+      this.set( 'sortOrderColumn', column );
+      $( "#ajax-loader" ).hide();
+    });
   },
   pasteInit: function() {
     ractive.set('pasteData',undefined);
@@ -949,11 +965,6 @@ var ractive = new BaseRactive({
       ractive.showMessage(msg);
       ractive.set('saveObserver', true);
     }
-  },
-  search: function(searchTerm) {
-    ractive.set('searchTerm',searchTerm);
-    ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
-    ractive.showResults();
   },
   searchCompaniesHouse: function() {
     if (ractive.get('tenant.features.companyBackground')==undefined || ractive.get('tenant.features.companyBackground')==false) return;
@@ -1348,15 +1359,3 @@ function significantDifference(newValue,oldValue) {
   console.debug('sig diff between  '+newVal+' and '+oldVal+ ': '+(newVal!=oldVal));
   return newValue != oldValue;
 }
-ractive.on( 'filter', function ( event, filter ) {
-  console.info('filter on '+JSON.stringify(event)+','+filter.idx);
-  $('.omny-dropdown.dropdown-menu li').removeClass('selected');
-  $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
-  ractive.search(filter.value);
-});
-ractive.on( 'sortOrder', function ( event, column ) {
-  console.info('sortOrder on '+column);
-  // if already sorted by this column reverse order
-  if (this.get('sortOrderColumn')==column) this.set('sortOrderAsc', !this.get('sortOrderAsc'));
-  this.set( 'sortOrderColumn', column );
-});
