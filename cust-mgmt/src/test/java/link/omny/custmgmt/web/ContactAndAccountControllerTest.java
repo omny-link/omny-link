@@ -2,9 +2,10 @@ package link.omny.custmgmt.web;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.After;
@@ -98,7 +99,8 @@ public class ContactAndAccountControllerTest {
 
         Contact contact2 = contactRepo.findOne(contactId);
         assertNotNull(contact2.getFirstContact());
-        assertNull(contact2.getLastUpdated());
+        Date lastUpdated = contact2.getLastUpdated();
+        assertNotNull(lastUpdated); // Set when account linked
 
         // SIMULATE REST UPDATE BEHAVIOUR
         contact2.setAccount(null);
@@ -107,7 +109,7 @@ public class ContactAndAccountControllerTest {
         assertNotNull("Update has de-linked contact and account",
                 contact2.getAccount());
         assertEquals(acct.getName(), contact2.getAccount().getName());
-        assertNotNull(contact2.getLastUpdated());
+        assertTrue(lastUpdated.getTime() <= contact2.getLastUpdated().getTime());
 
         // FETCH ALL CONTACTS
         List<ShortContact> contacts = contactController.listForTenantAsJson(
