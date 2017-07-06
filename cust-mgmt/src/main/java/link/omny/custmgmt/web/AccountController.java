@@ -88,6 +88,7 @@ public class AccountController {
             @PathVariable("accountId") Long accountId, @RequestBody Activity activity) {
         Account account = accountRepo.findOne(accountId);
         account.getActivities().add(activity);
+        account.setLastUpdated(new Date());
         accountRepo.save(account);
         activity = account.getActivities().get(account.getActivities().size()-1);
 
@@ -259,6 +260,7 @@ public class AccountController {
             @PathVariable("accountId") Long accountId, @RequestBody Document doc) {
          Account account = accountRepo.findOne(accountId);
          account.getDocuments().add(doc);
+         account.setLastUpdated(new Date());
          accountRepo.save(account);
          doc = account.getDocuments().get(account.getDocuments().size()-1);
 
@@ -301,6 +303,7 @@ public class AccountController {
             @PathVariable("accountId") Long accountId, @RequestBody Note note) {
         Account account = accountRepo.findOne(accountId);
         account.getNotes().add(note);
+        account.setLastUpdated(new Date());
         accountRepo.save(account);
         note = account.getNotes().get(account.getNotes().size()-1);
 
