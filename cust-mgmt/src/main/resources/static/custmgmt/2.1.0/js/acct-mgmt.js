@@ -1340,11 +1340,6 @@ var ractive = new BaseRactive({
           ractive.set('saveObserver', true);
         }
       },
-      search: function(searchTerm) {
-        ractive.set('searchTerm',searchTerm);
-        ractive.set('searchMatched',$('#accountsTable tbody tr:visible').length);
-        ractive.showResults();
-      },
       searchCompaniesHouse: function() {
         if (ractive.get('tenant.features.companyBackground') == undefined
             || ractive.get('tenant.features.companyBackground') == false)

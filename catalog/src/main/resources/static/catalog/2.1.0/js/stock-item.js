@@ -407,11 +407,6 @@ var ractive = new BaseRactive({
       }
     });
   },
-  search: function(searchTerm) {
-    ractive.set('searchTerm',searchTerm);
-    ractive.set('searchMatched',$('#stockItemsTable tbody tr:visible').length);
-    ractive.showResults();
-  },
   select: function(stockItem) {
     console.log('select: '+JSON.stringify(stockItem));
     ractive.set('saveObserver',false);

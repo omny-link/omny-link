@@ -295,19 +295,6 @@ var ractive = new BaseRactive({
     } else {
       ractive.showMessage('No records in your funnel, check stage field is set correctly.');
     }
-  },
-  search: function(searchTerm) {
-    console.log('search: '+searchTerm);
-    ractive.set('searchTerm',searchTerm);
-    setTimeout(function() {
-      if (ractive.get('tenant.features.accountView')) {
-        ractive.set('searchMatched',$('#accountsTable tbody tr:visible').length);
-      } else {
-        ractive.set('searchMatched',$('#contactsTable tbody tr:visible').length);
-      }
-      $('.col-actions .glyphicon-pencil').hide();
-      $('.col-actions .glyphicon-new-window').show();
-    }, 500);
   }
 });
 
