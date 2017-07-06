@@ -184,13 +184,15 @@ public class StockItemController {
             throws BusinessEntityNotFoundException {
         LOGGER.debug(String.format("Find stock item for id %1$s", id));
 
-//        return wrap(stockItemRepo.findOne(Long.parseLong(id)));
         StockItem item = stockItemRepo.findOne(Long.parseLong(id));
+        if (item == null) {
+            throw new BusinessEntityNotFoundException("Stock item", id);
+        }
         // Ensure everything loaded, while still in transaction
-        LOGGER.info(String.format(
-                "Found item from category %1$s with %2$d custom fields",
+        item.getStockCategory();
+        LOGGER.info("Found item from category {} with {} custom fields",
                 (item.getStockCategory() == null ? "n/a" : item.getStockCategory().getName()),
-                item.getCustomFields().size()));
+                item.getCustomFields().size());
 
         addLinks(tenantId, item);
         return item;
