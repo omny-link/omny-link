@@ -315,6 +315,7 @@ public class OrderController {
         }
 
         order.addOrderItem(newItem);
+        order.setLastUpdated(new Date());
         order = orderRepo.save(order);
         HashMap<String, String> vars = new HashMap<String, String>();
         vars.put("tenantId", tenantId);
@@ -344,6 +345,7 @@ public class OrderController {
             feedback = feedbackRepo.save(feedback);
 
             order.setFeedback(feedback);
+            order.setLastUpdated(new Date());
             orderRepo.save(order);
         } else {
             NullAwareBeanUtils

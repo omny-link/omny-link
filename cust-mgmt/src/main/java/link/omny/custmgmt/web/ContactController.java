@@ -589,6 +589,7 @@ public class ContactController extends BaseTenantAwareController{
         NullAwareBeanUtils.copyNonNullProperties(updatedContact, contact, "id",
                 "account");
         contact.setTenantId(tenantId);
+        contact.setLastUpdated(new Date());
         contactRepo.save(contact);
 
         // For some reason contact never has account deserialised even though it
@@ -714,6 +715,7 @@ public class ContactController extends BaseTenantAwareController{
             @PathVariable("contactId") Long contactId, @RequestBody Document doc) {
          Contact contact = contactRepo.findOne(contactId);
          contact.getDocuments().add(doc);
+         contact.setLastUpdated(new Date());
          contactRepo.save(contact);
          doc = contact.getDocuments().get(contact.getDocuments().size()-1);
 
@@ -757,6 +759,7 @@ public class ContactController extends BaseTenantAwareController{
             @PathVariable("contactId") Long contactId, @RequestBody Note note) {
         Contact contact = contactRepo.findOne(contactId);
         contact.getNotes().add(note);
+        contact.setLastUpdated(new Date());
         contactRepo.save(contact);
         note = contact.getNotes().get(contact.getNotes().size()-1);
 
@@ -853,6 +856,7 @@ public class ContactController extends BaseTenantAwareController{
             @PathVariable("contactId") Long contactId, @RequestBody Activity activity) {
         Contact contact = contactRepo.findOne(contactId);
         contact.getActivities().add(activity);
+        contact.setLastUpdated(new Date());
         contactRepo.save(contact);
         activity = contact.getActivities().get(contact.getActivities().size()-1);
 
