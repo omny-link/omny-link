@@ -29,7 +29,6 @@ var newLineRegEx = /\n/g;
  */
 var BaseRactive = Ractive.extend({
   _autolinker: undefined,
-  CSRF_TOKEN: 'XSRF-TOKEN',
   addDataList: function(d, data) {
     if (d.name == undefined) {
       console.warn('Data list with selector "'+d.ref+'" has no name, please add one to use as a datalist');
@@ -123,7 +122,7 @@ var BaseRactive = Ractive.extend({
         $.get(d.url, function(response){
 //          console.log('partial '+d.url+' response: '+response);
           try {
-          ractive.resetPartial(d.name,response);
+            ractive.resetPartial(d.name,response);
           } catch (e) {
             console.error('Unable to reset partial '+d.name+': '+e);
           }
@@ -537,6 +536,15 @@ var BaseRactive = Ractive.extend({
       });
     }
   },
+  search: function(searchTerm) {
+    $( "#ajax-loader" ).show();
+    setTimeout(function() {
+      ractive.set('searchTerm',searchTerm);
+      ractive.set('searchMatched',$('.resultsSect .table tbody tr:visible').length);
+      if (ractive['showResults'] != undefined) ractive.showResults();
+      $( "#ajax-loader" ).hide();
+    }, EASING_DURATION);
+  },
   shortId: function(uri) {
     if (uri == undefined) return;
     else return uri.substring(uri.lastIndexOf('/')+1);
@@ -609,7 +617,7 @@ var BaseRactive = Ractive.extend({
   sortChildren: function(childArray, sortBy, asc) {
     console.info('sortChildren');
     if (ractive.get('current.'+childArray)==undefined) return 0;
-    ractive.get('current.'+childArray).sort(function(a,b) {
+    ractive.sort('current.'+childArray, function(a,b) {
       if (a[sortBy] > b[sortBy]) {
         return asc ? 1 : -1;
       }
@@ -839,11 +847,9 @@ $(document).ready(function() {
   //ajax loader
   if ($('#ajax-loader').length==0) $('body').append('<div id="ajax-loader"><img class="ajax-loader" src="'+ractive.getServer()+'/images/ajax-loader.gif" style="width:10%" alt="Loading..."/></div>');
   $( document ).ajaxStart(function() {
-    console.warn('AJAX START');
     $( "#ajax-loader" ).show();
   });
   $( document ).ajaxStop(function() {
-    console.warn('AJAX STOP');
     $( "#ajax-loader" ).hide();
   });
 
@@ -876,7 +882,10 @@ $(document).ready(function() {
 
   ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
     console.log('searchTerm changed');
-    if (typeof ractive['showResults'] == 'function') ractive.showResults();
+    if (typeof ractive['showResults'] == 'function') {
+      $( "#ajax-loader" ).show();
+      ractive.showResults();
+    }
     setTimeout(ractive.showSearchMatched, 1000);
   });
 

@@ -380,23 +380,17 @@ var ractive = new BaseRactive({
     return defn.version==latestVsn ? true : false;
   },
   oninit: function() {
-//    this.loadStandardPartials(this.get('stdPartials'));
-  },
-  search: function(searchTerm) {
-    ractive.set('searchTerm',searchTerm);
-    ractive.set('searchMatched',$('#definitionsTable tbody tr:visible').length);
-    ractive.showResults();
   },
   select: function(definition) {
     ractive.set('current', definition);
-//    ractive.set('saveObserver',false);
     $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id, function( data ) {
       console.log('found definition '+JSON.stringify(data));
+      ractive.set('saveObserver',false);
       data.diagrams = [];
       ractive.set('current',data);
       ractive.toggleResults();
       ractive.fetchDiagrams(ractive.get('current'));
-      //      ractive.set('saveObserver',true);
+      ractive.set('saveObserver',true);
       if (ractive.get('current').deploymentId==null) {
         ractive.fetchIssues(ractive.get('current'));
       } else {

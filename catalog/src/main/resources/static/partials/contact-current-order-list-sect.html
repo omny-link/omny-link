@@ -9,32 +9,32 @@
 		  <table class="active-table table table-striped">
 		    <thead>
 		      <tr>
-		        <th on-click="sortOrder:orderId" title="Order reference">Ref.<span class="sortable {{ sortedOrder('orderId') }} glyphicon "></th>
+		        <th on-click="['sortOrder',orderId]" title="Order reference">Ref.<span class="sortable {{ sortedOrder('orderId') }} glyphicon "></th>
             {{#1==2}}
-		          <th on-click="sortOrder:name">Name<span class="sortable {{ sortedOrder('name') }} glyphicon"></span></th>
+		          <th on-click="['sortOrder',name]">Name<span class="sortable {{ sortedOrder('name') }} glyphicon"></span></th>
 		        {{/}}
 		        {{#entityPath=='/accounts'}}
-		          <th on-click="sortOrder:contactName">Contact<span class="sortable {{ sortedOrder('contactName') }} glyphicon"></span></th>
+		          <th on-click="['sortOrder',contactName]">Contact<span class="sortable {{ sortedOrder('contactName') }} glyphicon"></span></th>
 		        {{/}}
-		        <th on-click="sortOrder:date" style="width: 11em;" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}<span class="sortable {{ sortedOrder('date') }} glyphicon "></th>
-		        <th on-click="sortOrder:dueDate" style="width: 11em;" title="{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Expected delivery date{{/}}">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}<span class="sortable {{ sortedOrder('dueDate') }} glyphicon "></th>
-		        <th on-click="sortOrder:stage" title="{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}Stage the order has reached{{/}}">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}<span class="sortable {{ sortedOrder('stage') }} glyphicon "></th>
-		        <th on-click="sortOrder:stockItemName" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}<span class="sortable {{ sortedOrder('stockItemName') }} glyphicon "></th>
+		        <th on-click="['sortOrder',date]" style="width: 11em;" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}<span class="sortable {{ sortedOrder('date') }} glyphicon "></th>
+		        <th on-click="['sortOrder',dueDate]" style="width: 11em;" title="{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Expected delivery date{{/}}">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}<span class="sortable {{ sortedOrder('dueDate') }} glyphicon "></th>
+		        <th on-click="['sortOrder',stage]" title="{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}Stage the order has reached{{/}}">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}<span class="sortable {{ sortedOrder('stage') }} glyphicon "></th>
+		        <th on-click="['sortOrder',stockItemName]" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}<span class="sortable {{ sortedOrder('stockItemName') }} glyphicon "></th>
 	          {{#tenant.show.stockPricing}}
-	            <th on-click="sortOrder:price" style="width: 5em;" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}<span class="sortable {{ sortedOrder('price') }} glyphicon "></th>
+	            <th on-click="['sortOrder',price]" style="width: 5em;" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}<span class="sortable {{ sortedOrder('price') }} glyphicon "></th>
 	          {{/}}
 	          {{#if tenant.orderFields && tenant.show.orderFieldsOnContact != undefined}}
               {{#tenant.orderFields}}
               <!-- /*tenant.show.orderFieldsOnContact != undefined && tenant.show.orderFieldsOnContact.indexOf(key) != -1*/ -->
                 {{#if tenant.show.orderFieldsOnContact != undefined && tenant.show.orderFieldsOnContact.indexOf(key) != -1 && tenant.show.orderFieldsOnContact.indexOf(key) != -1}}
-                  <th on-click="sortOrder:{{key}}" title="{{hint}}">{{label == undefined ? key.toLabel() : label}}<span class="sortable {{ sortedOrder('{{key}}') }} glyphicon"></span></th>
+                  <th on-click="['sortOrder',key]" title="{{hint}}">{{label == undefined ? key.toLabel() : label}}<span class="sortable {{ sortedOrder('{{key}}') }} glyphicon"></span></th>
                 {{/if}}
               {{/}}
             {{/if}}
             {{#if tenant.show.orderInvoiceRef}}
-	            <th on-click ="sortOrder:invoiceRef" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">Invoice Ref<span class="sortable {{ sortedOrder('invoiceRef') }} glyphicon "></th>
+	            <th on-click="['sortOrder',invoiceRef]" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">Invoice Ref<span class="sortable {{ sortedOrder('invoiceRef') }} glyphicon "></th>
             {{/if}}
-	          {{#1==2}}<th on-click="sortOrder:created">Created<span class="sortable {{ sortedOrder('created') }} glyphicon "></th>{{/}}
+	          {{#1==2}}<th on-click="['sortOrder',created]">Created<span class="sortable {{ sortedOrder('created') }} glyphicon "></th>{{/}}
 	          <th>Actions</th>
 	        </tr>
 		    </thead>

@@ -147,6 +147,10 @@ label.required::after {
   color: red;
   content: '*';
 }
+/* problematic 'cos stage is applied as a class in contacts table */
+.lead {
+  font-size: inherit;
+}
 section {
 	clear: both;
 }
@@ -298,6 +302,9 @@ tfoot th {
   display: none;
   font-size: 16px;
 }
+#ajax-loader, .ajax-loader {
+  display: inline;
+}
 #ajax-loader img.ajax-loader {
   position: fixed;
   left: 43%;
@@ -310,6 +317,24 @@ tfoot th {
   position: fixed;
   top: 45%;
   z-index: 200;
+}
+.ajax-loader {
+  /*ALTERNATIVE animation: blinker 1s linear infinite;*/
+  animation-name: spin;
+  animation-duration: 4000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes blinker {
+  50% { opacity: 0; }
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  } to {
+    transform: rotate(360deg);
+  }
 }
 .beta {
   border: solid 1px #ff6c06;

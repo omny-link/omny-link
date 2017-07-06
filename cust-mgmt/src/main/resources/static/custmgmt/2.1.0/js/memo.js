@@ -338,11 +338,6 @@ var ractive = new BaseRactive({
       ractive.showMessage('Cannot save yet as message is incomplete');
     }
   },
-  search: function(searchTerm) {
-    ractive.set('searchTerm',searchTerm);
-    ractive.set('searchMatched',$('#memosTable tbody tr:visible').length);
-    ractive.showResults();
-  },
   select: function(idx,message) {
     console.log('select: '+JSON.stringify(message));
     ractive.set('currentIdx',idx);
