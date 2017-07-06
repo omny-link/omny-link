@@ -122,10 +122,12 @@ var BaseRactive = Ractive.extend({
         $.get(d.url, function(response){
 //          console.log('partial '+d.url+' response: '+response);
           try {
+            ractive.set('saveObserver', false);
             ractive.resetPartial(d.name,response);
           } catch (e) {
             console.error('Unable to reset partial '+d.name+': '+e);
           }
+          ractive.set('saveObserver', true);
         });
       });
       ractive.applyAccessControl();
