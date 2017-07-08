@@ -1,9 +1,8 @@
 <!doctype html>
 <html lang='en-GB'>
 <head>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset='utf-8'>
-  <title>Domain Model</title>
+  <title>Decisions Repository</title>
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <link href="/workmgmt/2.2.0/css/base.css" rel="stylesheet">
   <link href="/onedecision/1.2.0/css/onedecision.css" rel="stylesheet">
@@ -17,9 +16,10 @@
     {{>profileArea}}
     {{>titleArea}}
     {{>loginSect}}
-    {{>domainSect}}
+    {{>dmnListSect}}
+    {{>dmnCurrentSect}}
     {{>poweredBy}}
-    {{>sidebar { active: 'domain.html' }}}
+    {{>sidebar}}
   </script>
 
   <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
@@ -27,14 +27,14 @@
   <!--script src="https://cdnjs.cloudflare.com/ajax/libs/ractive/1.0.0-build-9/ractive.js"></script-->
   <script src="/webjars/ractive/0.7.3/ractive.min.js"></script>
 
-  <script src="js/md5.min.js"></script>
-  <script src="workmgmt/2.2.0/js/string-functions.js"></script>
-  <script src="js/env.js"></script>
+  <script src="/js/md5.min.js"></script>
+  <script src="/workmgmt/2.2.0/js/string-functions.js"></script>
+  <script src="/js/env.js"></script>
 
-  <script src="onedecision/1.2.0/js/i18n.js"></script>
-  <script src="workmgmt/2.2.0/js/base.js"></script>
-  <script src="onedecision/1.2.0/js/domain.js"></script>
+  <script src="/onedecision/1.2.0/js/i18n.js"></script>
+  <script src="/workmgmt/2.2.0/js/base.js"></script>
+  <script src="/onedecision/1.2.0/js/decisions-repo.js"></script>
   <script src="/webjars/auth/1.0.0/js/auth.js"></script>
-
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/highlight.min.js"></script>
 </body>
 </html>

@@ -64,7 +64,17 @@
     </dependency>
     <dependency>
       <groupId>io.onedecision</groupId>
+      <artifactId>onedecision-domain</artifactId>
+      <version>${onedecision.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.onedecision</groupId>
       <artifactId>onedecision-engine</artifactId>
+      <version>${onedecision.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.onedecision</groupId>
+      <artifactId>onedecision-ui</artifactId>
       <version>${onedecision.version}</version>
       <exclusions>
         <exclusion>

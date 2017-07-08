@@ -26,7 +26,7 @@
     { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
     { "url": "omny/analytics/contacts/contacts1", "icon": "omny-icon-address-book", "description": "A simple tabular report of contacts", "name": "First Contact Report" },
     { "url": "domain.html", "icon": "omny-icon-domain-model", "name": "Domain Model", "description": "Business glossary", "role": "super_admin" },
-    { "url": "decisions-dmn.html", "icon": "glyphicon-list-alt", "name": "Decisions Repository", "description": "Home of your Decision Models", "role": "super_admin" },
+    { "url": "decisions-repo.html", "icon": "glyphicon-list-alt", "name": "Decisions Repository", "description": "Home of your Decision Models", "role": "super_admin" },
     { "url": "memo-distribution.html", "icon": "glyphicon-send", "name": "Distribution Centre", "description": "Send messages to groups of contacts", "role": "admin" },
     { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates", "role": "admin"  },
     { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View your sales funnel", "name": "Funnel" },
