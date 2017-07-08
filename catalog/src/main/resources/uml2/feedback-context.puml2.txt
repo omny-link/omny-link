@@ -1,0 +1,10 @@
+@startuml
+!include stylesheet.puml.txt
+
+class Feedback << C, ff6c06 >>
+class Order << C, ff6c06 >>
+class OrderItem << C, ff6c06 >>
+
+Feedback "*" -left-*  Order : relates to
+Order *-right- "*" OrderItem : contains
+@enduml

@@ -12,7 +12,7 @@ public class ServiceLevelConfig {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(ServiceLevelConfig.class);
 
-    @Value("${omny.contact.inactiveStages:cold,complete,on hold,unqualified,waiting list" )
+    @Value("${omny.contact.inactiveStages:cold,complete,on hold,unqualified,waiting list}" )
     private String[] inactiveStages;
 
     /**

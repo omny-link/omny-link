@@ -481,8 +481,7 @@ h2 a.glyphicon:hover {
   font-size: 0.65em;
   font-style: italic;
   line-height: 1em;
-  margin-bottom: 0.1em;
-  margin-top: -0.8em;
+  margin-top: 2px;
   padding-left: 5px;
 }
 .modal .help-block {

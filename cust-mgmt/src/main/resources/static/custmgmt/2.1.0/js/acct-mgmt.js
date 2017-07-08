@@ -1763,14 +1763,6 @@ ractive.observe('profile', function(newValue, oldValue, keypath) {
   }
 });
 
-ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
-  console.log('searchTerm changed');
-  ractive.showResults();
-  setTimeout(function() {
-    ractive.showSearchMatched();
-  }, 500);
-});
-
 // Save on model change
 // done this way rather than with on-* attributes because autocomplete
 // controls done that way save the oldValue

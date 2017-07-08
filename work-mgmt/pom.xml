@@ -299,11 +299,11 @@
       <version>2.2</version>
     </dependency-->
 
-    <!-- Without this get Sax 2 parser exception on Batik transcoder -->
+    <!-- Without at least 2.5.0 get Sax 2 parser exception on Batik transcoder -->
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
-      <version>2.5.0</version>
+      <version>${xerces.version}</version>
     </dependency>
 
     <!-- Web jars -->
