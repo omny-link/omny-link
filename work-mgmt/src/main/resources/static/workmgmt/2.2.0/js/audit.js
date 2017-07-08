@@ -140,19 +140,9 @@ var ractive = new BaseRactive({
       else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc'
       else return 'hidden';
     },
-    sortInstanceAsc: false,
-    sortInstanceColumn: 'startTime',
-    sortedInstance: function(column) {
-      console.info('sortedInstance');
-      if (ractive.get('sortInstanceColumn') == column && ractive.get('sortInstanceAsc')) return 'sort-asc';
-      else if (ractive.get('sortInstanceColumn') == column && !ractive.get('sortInstanceAsc')) return 'sort-desc'
-      else return 'hidden';
-    },
     stdPartials: [
       { "name": "defnCurrentSect", "url": "/partials/defn-current-sect.html"},
-      { "name": "defnListSect", "url": "/partials/defn-list-sect.html"},
       { "name": "defnPropSect", "url": "/partials/defn-property-sect.html"},
-      { "name": "designerSect", "url": "/partials/designer-sect.html"},
       { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "instanceListSect", "url": "/partials/instance-list-sect.html"},
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
@@ -161,91 +151,10 @@ var ractive = new BaseRactive({
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"}
     ],
-    title: 'Process Definitions'
+    title: 'Audit Trail'
   },
   simpleTodoFormExtension: function(x) {
     console.log('simpleTodoFormExtension: '+JSON.stringify(x));
-  },
-  activate: function(key) {
-    console.log('activate: '+key);
-    $.ajax({
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+key+'/activate',
-      type: 'POST',
-      contentType: 'application/json',
-      success: completeHandler = function(data,textStatus,jqXHR) {
-        console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
-        ractive.fetch();
-        ractive.showMessage('Activated workflow "'+key+'"');
-        ractive.showResults();
-      },
-    });
-  },
-  add: function () {
-    console.log('add...');
-    $('#upload').slideDown();
-  },
-  addDeploymentResource: function () {
-    console.log('add...');
-    //$('#upload fieldset').append($('#resourceControl').html());
-    $("#resourceFile").click();
-  },
-  addProcess: function () {
-    console.info('addProcess...');
-    $('#designer').slideDown();
-  },
-  collapseAdd: function () {
-    console.log('collapseAdd...');
-    $('#upload').slideUp();
-  },
-  collapseDesigner: function () {
-    console.log('collapseDesigner...');
-    $('#designer').slideUp();
-  },
-  define: function(defn) {
-    console.info('define');
-    ractive.set('saveObserver',false);
-    if (document.getElementById('defnForm')==undefined) {
-      console.debug('still loading, safe to ignore');
-    } else if (document.getElementById('defnForm').checkValidity()) {
-      $.ajax({
-          url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/',
-          type: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify(defn),
-          success: completeHandler = function(data) {
-            console.log('  Success, received: '+data);
-            ractive.set('defn', data);
-            ractive.set('saveObserver',true);
-          }
-      });
-    } else {
-      console.warn('Unfortunately the process text is invalid');
-      $('#defnForm :invalid').addClass('field-error');
-      ractive.showMessage('Cannot save yet as contact is incomplete');
-      ractive.set('saveObserver',true);
-    }
-  },
-  delete: function (deploymentId) {
-    console.log('delete '+deploymentId+'...');
-    $.ajax({
-        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/deployments/'+deploymentId,
-        type: 'DELETE',
-        success: completeHandler = function(data) {
-          ractive.fetch();
-          ractive.showResults();
-        }
-    });
-    return false; // cancel bubbling to prevent edit as well as delete
-  },
-  deleteSelectedInstances: function() {
-    console.info('deleteSelectedInstances');
-    $.each(ractive.get('current.instances'), function(i,d) {
-      if (d.selected) {
-        console.log('delete:  '+d.processs);
-        ractive.deleteInstance(d,i);
-      }
-    });
-    ractive.fetchInstances();
   },
   deleteInstance: function (instance,idx) {
     console.info('deleteInstance '+instance.id+'...');
@@ -258,43 +167,6 @@ var ractive = new BaseRactive({
         }
     });
     return false; // cancel bubbling to prevent edit as well as delete
-  },
-  deploy: function(formId) {
-    console.info('deploy');
-    ractive.set('saveObserver',false);
-    if (document.getElementById(formId)==undefined) {
-      console.debug('still loading, safe to ignore');
-    } else if (document.getElementById(formId).checkValidity()) {
-      var defn = $('#'+formId).serializeArray();
-      $.ajax({
-          url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/deployments/',
-          type: 'POST',
-          data: defn,
-          success: completeHandler = function(data) {
-            console.log('  Success, received: '+data);
-            ractive.set('defn', data);
-            ractive.set('saveObserver',true);
-            ractive.collapseDesigner();
-            ractive.showMessage('Deployed successfully');
-          }
-      });
-    } else {
-      console.warn('Unfortunately the process text is invalid');
-      $('#defnForm :invalid').addClass('field-error');
-      ractive.showMessage('Cannot save yet as contact is incomplete');
-      ractive.set('saveObserver',true);
-    }
-  },
-  fetch: function () {
-    console.log('fetch...');
-    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions', function( data ) {
-      ractive.merge('definitions', data);
-      ractive.set('searchMatched',$('#definitionsTable tbody tr:visible').length);
-      if (ractive.get('searchMatched')==1) {
-        var id = $($('#definitionsTable tbody tr:visible')[0]).data('id');
-        ractive.select(Array.findBy('id', id, ractive.get('definitions')));
-      }
-    });
   },
   fetchBpmn: function() {
     console.log('fetch bpmn');
@@ -342,35 +214,6 @@ var ractive = new BaseRactive({
       }, 'text');
     });
   },
-  fetchInstances: function() {
-    console.log('fetch instances');
-    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+ractive.get('current.id')+'/instances?limit=20', function( data ) {
-      console.log('found instances '+data.length);
-      ractive.set('current.instances',data);
-    });
-  },
-  fetchIssues: function(definition) {
-    console.log('fetch issues');
-    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'/issues', function( data ) {
-      console.log('found issues '+data.length);
-      ractive.set('current.issues',data);
-    });
-  },
-  find: function(defnKey) {
-    console.info('find');
-    var found, foundIdx = -1;
-    $.each(ractive.get('definitions'), function(i,d) {
-      if (d.key==defnKey && (found==undefined || d.id > found.id)) {
-        found = d;
-        foundIdx = i;
-      }
-    });
-    return found;
-  },
-  hidePropertySect: function() {
-    console.info('hidePropertySect');
-    $('#propertySect').slideUp();
-  },
   isLatestVersion: function(defn) {
     var defns = ractive.get('definitions');
     var latestVsn = 0;
@@ -378,54 +221,6 @@ var ractive = new BaseRactive({
       if (defns[idx].key == defn.key && defns[idx].version>latestVsn) latestVsn = defns[idx].version;
     }
     return defn.version==latestVsn ? true : false;
-  },
-  oninit: function() {
-  },
-  select: function(definition) {
-    ractive.set('current', definition);
-    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id, function( data ) {
-      console.log('found definition '+JSON.stringify(data));
-      ractive.set('saveObserver',false);
-      data.diagrams = [];
-      ractive.set('current',data);
-      ractive.toggleResults();
-      ractive.fetchDiagrams(ractive.get('current'));
-      ractive.set('saveObserver',true);
-      if (ractive.get('current').deploymentId==null) {
-        ractive.fetchIssues(ractive.get('current'));
-      } else {
-        ractive.fetchInstances();
-      }
-      ractive.fetchBpmn();
-      if (ractive.hasRole('admin')) $('.admin').show();
-    });
-
-    $('#currentSect').slideDown();
-  },
-  showIssues: function() {
-    console.info('showIssues');
-    $.each(ractive.get('current.issues'), function(i,d) {
-      $('#'+d.modelRef+'Issue').attr('visibility','visible');312
-
-      $('#'+d.modelRef+'IssueBG').attr('visibility','visible');
-    });
-  },
-  showPropertySect: function() {
-    console.info('showPropertySect');
-    $('#propertySect').slideDown();
-//    if (ev.clientX > window.innerWidth/2) {
-//      $('#propertySect').css('left',0);
-//      $('#propertySect').css('right','auto');
-//    } else {
-//      $('#propertySect').css('left','auto');
-//      $('#propertySect').css('right',0);
-//    }
-  },
-  showResults: function() {
-    console.log('showResults');
-    $('#currentSect').slideUp();
-    $('#definitionsTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
-    $('#definitionsTable').slideDown();
   },
   showSelection: function(ev) {
     ractive.showSelectedId(ev.target.id);
@@ -522,112 +317,27 @@ var ractive = new BaseRactive({
     }
     ractive.set('selectedBpmnObject.extensionDetails', extDetails);
   },
-//  showUserTaskPropertySect: function(ev) {
-//    console.info('showUserTaskPropertySect at x,y:'+ev.clientX+','+ev.clientY);
-//    var side = ev.clientX > window.innerWidth/2 ? 'left' :'right';
-//    console.log('  side: '+side);
-////    'left': function() { return (ev.clientX > window.innerWidth/2) ? ev.clientX-450 : undefined },
-////    'right': function() { return (ev.clientX > window.innerWidth/2) ? undefined : ev.clientX-450 },
-//    $('#propertySect').css({
-//      'display':'block',
-//      /*'right':0,
-//      'top':ev.clientY-100,
-//      'width':'400px'*/
-//    });
-//    /*if (ev.clientX > window.innerWidth/2) {
-//      $('#propertySect').css('left',0);
-//      $('#propertySect').css('right','auto');
-//    } else {
-//      $('#propertySect').css('left','auto');
-//      $('#propertySect').css('right',0);
-//    }*/
-//  },
-  startInstance: function(id, label, bizKey) {
-    console.log('startInstance: '+id+' for '+bizKey);
-    $.ajax({
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify({
-        processDefinitionId: id,
-        businessKey: bizKey
-      }),
-      success: completeHandler = function(data,textStatus,jqXHR) {
-        console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
-        ractive.fetchInstances();
-        ractive.showMessage('Started workflow "'+label+'" for '+bizKey);
-      },
-    });
-  },
-  suspend: function(id) {
-    console.log('suspend: '+id);
-    $.ajax({
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+id+'/suspend',
-      type: 'POST',
-      contentType: 'application/json',
-      success: completeHandler = function(data,textStatus,jqXHR) {
-        console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
-        ractive.fetch();
-        ractive.showMessage('Suspended workflow "'+id+'"');
-        ractive.showResults();
-      },
-    });
-  },
-  toggleAuditTrail: function(instance, idx) {
-    console.log('toggleAuditTrail for: '+instance.id);
-    if ($('section.instanceSect[data-instance-id="'+instance.id+'"]').is(':visible')) {
-      $('section.instanceSect[data-instance-id="'+instance.id+'"]').hide();
+  fetch: function() {
+    var instanceId = parseInt(getSearchParameters()['instanceId']);
+    console.log('fetch instance: '+instanceId);
+    if (instanceId==undefined) {
+      ractive.showError("You must specify the instanceId as a request parameter");
     } else {
-      $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/'+instance.id, function( data ) {
+      var idx = 0;
+      $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/'+instanceId, function( data ) {
         console.log('found audit trail: '+data.auditTrail.length);
         data.auditTrail.sort(function(a,b) { return new Date(b.startTime)-new Date(a.startTime); });
-        ractive.set('current.instances.'+idx+'.auditTrail',data.auditTrail);
-        instance.auditTrail = data.auditTrail;
+        ractive.set('current.instances.'+idx, data);
 
         console.log('found processVariables: '+data.processVariables.length);
-        instance.processVariableNames = Object.keys(data.processVariables);
-        instance.processVariables = data.processVariables;
-        ractive.set('current.instances.'+idx,instance);
-        $('.instanceSect[data-instance-id='+instance.id+']').slideDown();
+        data.processVariableNames = Object.keys(data.processVariables);
+
+        // adapt section from the definition page defaults
+        if (!$('#instancesTable').is(':visible')) {
+          $('#currentInstanceListSect .ol-collapse').click();
+          $('.instanceSect[data-instance-id='+instanceId+']').slideDown();
+        }
       });
     }
-    $('[data-instance-id="'+instance.id+'"] .glyphicon-eye-open,[data-instance-id="'+instance.id+'"] .glyphicon-eye-close')
-        .toggleClass('glyphicon-eye-open glyphicon-eye-close');
-  },
-  toggleDetails: function() {
-    console.info('toggleDetails');
-    ractive.set('showDetails', !ractive.get('showDetails'));
-    $('.details-control').toggleClass('glyphicon-eye-open').toggleClass('glyphicon-eye-close');
-  },
-  toggleResults: function() {
-    console.log('toggleResults');
-    $('#definitionsTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
-    $('#definitionsTable').slideToggle();
-  },
-  upload: function(formId) {
-    console.log('upload, id: '+formId);
-    var formElement = document.getElementById(formId);
-    var formData = new FormData(formElement);
-    return $.ajax({
-        type: 'POST',
-        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/deployments',
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function(response) {
-//          console.log('successfully uploaded definition');
-          ractive.fetch();
-          ractive.collapseAdd();
-          ractive.showMessage('Deployed successfully');
-        }
-    });
   }
-});
-
-ractive.on( 'sortInstances', function ( event, column ) {
-  console.info('sortInstances on '+column);
-  // if already sorted by this column reverse order
-  if (this.get('sortInstanceColumn')==column) this.set('sortInstanceAsc', !this.get('sortInstanceAsc'));
-  this.set( 'sortInstanceColumn', column );
 });

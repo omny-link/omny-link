@@ -15,6 +15,7 @@ import javax.xml.transform.TransformerConfigurationException;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.history.HistoricProcessInstanceQuery;
+import org.activiti.engine.runtime.ProcessInstanceQuery;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -90,11 +91,17 @@ public class ProcessDefinitionController {
         List<ProcessDefinition> list = ProcessDefinition
                 .findAllProcessDefinitions(tenantId);
         for (ProcessDefinition defn : list) {
-            defn.setInstanceCount(processEngine.getHistoryService()
+            long activeCount = processEngine.getRuntimeService()
+                    .createProcessInstanceQuery()
+                    .processInstanceTenantId(tenantId)
+                    .processDefinitionId(defn.getId())
+                    .count();
+            long historicCount = processEngine.getHistoryService()
                     .createHistoricProcessInstanceQuery()
                     .processInstanceTenantId(tenantId)
                     .processDefinitionId(defn.getId())
-                    .count());
+                    .count();
+            defn.setInstanceCount(activeCount + historicCount);
         }
         LOGGER.info("Deployed definitions: " + list.size());
 
@@ -200,15 +207,20 @@ public class ProcessDefinitionController {
                 RequestMethod.GET, id));
 
         List<ProcessInstance> instances = new ArrayList<ProcessInstance>();
+        ProcessInstanceQuery activeQuery = processEngine
+                .getRuntimeService().createProcessInstanceQuery()
+                .processDefinitionId(id).orderByProcessInstanceId().desc();
         HistoricProcessInstanceQuery query = processEngine
                 .getHistoryService().createHistoricProcessInstanceQuery()
-                .processDefinitionId(id);
+                .processDefinitionId(id).orderByProcessInstanceId().desc();
         if (limit == null) {
+            instances.addAll(ProcessInstance.wrap(activeQuery.list()));
             instances.addAll(ProcessInstance.wrap(query.list()));
         } else {
             if (page == null) {
                 page = 0;
             }
+            instances.addAll(ProcessInstance.wrap(activeQuery.listPage(page*limit, limit)));
             instances.addAll(ProcessInstance.wrap(query.listPage(page*limit, limit)));
         }
         return instances;

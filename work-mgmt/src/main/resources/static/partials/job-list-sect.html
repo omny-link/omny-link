@@ -1,0 +1,46 @@
+<section class="container container-sticky">
+  <h2 class="navbar-sticky">
+    {{>navbar}}
+    {{>profileArea}}
+  </h2>
+</section>
+<section class="resultsSect" id="jobSect">
+  <h2 class="navbar-top">
+    {{>navbar}}
+  </h2>
+  <table id="jobsTable" class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th class="col-md-1 col-sm-1 col-xs-1" on-click="sort:id">Id<span class="sortable {{ sorted('id') }} glyphicon "></th>
+        <th class="col-md-3 col-sm-4 col-xs-4" on-click="sort:processDefinitionId">Definition<span class="sortable {{ sorted('processDefinitionId') }} glyphicon "></th>
+        <th class="col-md-3 col-sm-4 col-xs-2" on-click="sort:processInstanceId">Instance<span class="sortable {{ sorted('processInstanceId') }} glyphicon "></th>
+        <th class="col-md-1 col-sm-1 col-xs-1" on-click="sort:retries"># Attempts<span class="sortable {{ sorted('retries') }} glyphicon "></th>
+        <th class="col-md-2 col-sm-2 col-xs-2" on-click="sort:ExceptionMessage">Error<span class="sortable {{ sorted('exceptionMessage') }} glyphicon "></th>
+        <th class="col-md-2 col-sm-2 col-xs-2 col-actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each sort(jobs,sortColumn,sortAsc):i}}
+        {{# matchSearch(this) }}
+        <tr data-id="{{id}}">
+          <td>{{i+1}}</td>
+          <td class="col-md-2 col-sm-3 col-xs-2">{{id}}</td>
+          <td class="col-md-3 col-sm-5 col-xs-2">{{processDefinitionId}}</td>
+          <td class="col-md-2 hidden-sm hidden-xs">{{processInstanceId}}</td>
+          <td class="col-md-1 hidden-sm hidden-xs">{{retries}}</td>
+          <td class="col-md-1 hidden-sm hidden-xs">{{exceptionMessage}}</td>
+          <td class="col-md-3 col-sm-3 col-xs-3 col-actions">
+            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this.id)" title="Delete this job"></a>
+            <a class="clickable glyphicon glyphicon-repeat" aria-hidden="true" on-click="retry(this.id)" title="Retry this job"></a>
+            <a class="clickable glyphicon glyphicon-new-window" aria-hidden="true" href="audit.html?instanceId={{processInstanceId}}" target="_blank" title="Show audit trail for process instance"></a>
+          </td>
+        </tr>
+        {{/}}
+      {{/each}}
+    </tbody>
+    <tfoot>
+      <tr><th colspan="12">{{searchMatched == 0 ? 'No' : searchMatched}} matching job{{searchMatched==1 ? '' : 's'}}</th></tr>
+    </tfoot>
+  </table>
+</section>
