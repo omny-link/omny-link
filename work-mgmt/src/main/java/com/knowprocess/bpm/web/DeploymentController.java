@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.knowprocess.bpm.api.ReportableException;
 import com.knowprocess.bpm.api.UnsupportedBpmnException;
 import com.knowprocess.bpm.model.Deployment;
 import com.knowprocess.bpm.model.ProcessModel;
@@ -364,11 +365,16 @@ public class DeploymentController {
     public @ResponseBody void deleteFromJson(@PathVariable("id") String id) {
         LOGGER.info(String.format("deleting deployment: %1$s", id));
         try {
-            Deployment deployment = Deployment.findDeployment(id);
-            deployment.remove();
+            processEngine.getRepositoryService().deleteDeployment(id);
         } catch (Exception e) {
-            // assume this is an incomplete model....
-            processModelRepo.delete(id);
+            if (processEngine.getRepositoryService().createDeploymentQuery().deploymentId(id).count()==0) {
+                // assume this is an incomplete model....
+                processModelRepo.delete(id);
+            } else {
+                String msg = String.format("Unable to delete deployment with id %1$s, does it still have instances?", id);
+                LOGGER.error(msg, e);
+                throw new ReportableException(msg, e);
+            }
         }
     }
 
