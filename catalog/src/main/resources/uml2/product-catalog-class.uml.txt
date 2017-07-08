@@ -1,6 +1,0 @@
-@startuml
-StockCategory o-- "0..*" StockItem
-Order *-- "0..*" OrderLine
-OrderLine "0..*" -- "1" StockItem
-StockItem "0..*" -- "0..1" StockLocation
-@enduml

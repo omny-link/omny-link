@@ -130,11 +130,11 @@
       <version>${omny-link.version}</version>
     </dependency>    
 
-    <!-- Without this get Sax 2 parser exception on Batik transcoder -->
+    <!-- Without >=2.5.0 get Sax 2 parser exception on Batik transcoder -->
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
-      <version>2.5.0</version>
+      <version>${xerces.version}</version>
     </dependency>
 
   </dependencies>
