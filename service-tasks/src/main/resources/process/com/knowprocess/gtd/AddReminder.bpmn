@@ -21,7 +21,7 @@
     </ioSpecification>
     <userTask activiti:candidateGroups="${who}" activiti:candidateUsers="${who}" completionQuantity="1" id="doSomething" implementation="##unspecified" isForCompensation="false" name="Respond to reminder" startQuantity="1">
       <extensionElements>
-        <activiti:taskListener event="create" expression="${task.setName(com_knowprocess_beans_model_Todo.businessKey)}"/>
+        <activiti:taskListener event="create" expression="${task.setName(execution.businessKey)}"/>
       </extensionElements>
       <incoming>_16</incoming>
       <outgoing>flow2</outgoing>
