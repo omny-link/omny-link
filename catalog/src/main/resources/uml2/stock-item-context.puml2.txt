@@ -1,0 +1,18 @@
+@startuml
+!include stylesheet.puml.txt
+
+class Order << C, ff6c06 >>
+class OrderItem << C, ff6c06 >>
+class StockCategory << C, ff6c06 >>
+class StockItem << C, ff6c06 >>
+
+StockItem "1" <-- "*" Order
+StockItem "0..1" <-- "*" OrderItem
+StockItem "*" -right- "0..1" StockCategory
+Order *-right- "*" OrderItem : " "
+
+note "Either the Order or OrderItem\nmay be linked to the StockItem\nbut not both." as StockItemNote
+StockItemNote .. Order
+StockItemNote .. OrderItem
+
+@enduml
