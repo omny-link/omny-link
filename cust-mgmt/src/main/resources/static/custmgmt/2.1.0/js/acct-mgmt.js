@@ -1154,6 +1154,7 @@ var ractive = new BaseRactive({
           ractive.set('currentContact.tenantId', ractive.get('tenant.id'));
 
           var tmp = ractive.get('currentContact');
+          if (typeof tmp == 'function') return ; // 10 Jul 17 Ractive extension
           delete tmp.account;
           delete tmp.activities;
           delete tmp.documents;
@@ -1162,12 +1163,12 @@ var ractive = new BaseRactive({
           delete tmp.customFields; // NOTE cannot handle customFields
           tmp.accountId = ractive.id(ractive.get('current'));
           if (tmp.alerts!=undefined && Array.isArray(tmp.alerts)) tmp.alerts = tmp.alerts.join();
-          var id = ractive.uri(tmp) == undefined ? undefined: ractive.id(tmp);
+          var id = ractive.uri(tmp) == undefined ? undefined: ractive.tenantUri(ractive.get('currentContact'), '/contacts');
           console.log('ready to save contact' + JSON.stringify(tmp) + ' ...');
           $.ajax({
             url: id === undefined
                 ? ractive.getServer() + '/' + tmp.tenantId + '/contacts/'
-                : ractive.tenantUri(ractive.get('currentContact'), '/contacts'),
+                : id,
             type: id === undefined ? 'POST': 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(tmp),
@@ -1774,22 +1775,17 @@ ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
 // done this way rather than with on-* attributes because autocomplete
 // controls done that way save the oldValue
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
-  if (ractive.get('current') != undefined)
-    ractive.showAlertCounters();
+  if (ractive.get('current') != undefined) ractive.showAlertCounters();
   ignored = [ 'current.account.companiesHouseInfo', 'current.notes', 'current.documents' ];
-  if (!ractive.get('saveObserver')) {
-    console.debug('Skipped save of '+keypath+' because in middle of other operation');
-  } else if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1) {
-    console.log('current prop change: ' + newValue + ',' + oldValue + ' '
-        + keypath);
-    if (keypath == 'current.account') ractive.saveDependentAccount();
+  if (!ractive.get('saveObserver')) console.debug('Skipped save of '+keypath+' because in middle of other operation');
 //    else if (keypath=='current.notes') ractive.saveNote();
 //    else if (keypath=='current.documents') ractive.saveDoc();
-    else ractive.save();
-  } else {
-    // console.warn('Skipped contact save of ' + keypath);
-    // console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
-    // console.log(' saveObserver: '+ractive.get('saveObserver'));
+  else if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1 && keypath == 'current.contact' && !keypath.endsWith('mainContact')) ractive.saveContact();
+  else if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1 && keypath.startsWith('current.')) ractive.saveAccount();
+  else {
+     console.warn('Skipped save triggered by change to: ' + keypath);
+     console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
+     console.log(' saveObserver: '+ractive.get('saveObserver'));
   }
 });
 

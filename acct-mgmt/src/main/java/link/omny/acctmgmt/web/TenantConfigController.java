@@ -139,46 +139,48 @@ public class TenantConfigController {
                     && tenantConfig.getBot().getCustMgmtSecret() != null
                     && tenantConfig.getBot().getCcAccount() != null);
         }
-        
-        for (TenantExtension process : tenantConfig.getProcesses()) {
-            ProcessDefinition pd = processEngine.getRepositoryService()
-                    .createProcessDefinitionQuery()
-                    .processDefinitionKey(process.getRef())
-                    .processDefinitionTenantId(id).latestVersion()
-                    .singleResult();
-            if (pd != null) {
-                InputStream is = null;
-                try {
-                    is = processEngine.getRepositoryService().getProcessModel(
-                            pd.getId());
-                    @SuppressWarnings("resource")
-                    String latestDeployedBpmn = new Scanner(is).useDelimiter(
-                            "\\A").next();
 
-                    if (process.getUrl() != null
-                            && Md5HashUtils.isIdentical(
-                            com.knowprocess.bpm.model.ProcessDefinition
-                                    .readFromClasspath("/" + process.getUrl()),
-                            latestDeployedBpmn)) {
-                        process.setValid(true);
-                    } else {
-                        process.setStatus("warning");
-                        process.setValid(false);
-                    }
-                    process.setDescription(pd.getDescription());
-                } catch (Throwable t) {
-                    LOGGER.error(String
-                            .format("Problem loading process from '%1$s', check configuration for '%2$s'",
-                                    process.getUrl(), id));
-                } finally {
-                     try {
-                         is.close();
-                     } catch (Exception e) {
-                         ;
-                     }
-                }
+        for (TenantExtension process : tenantConfig.getProcesses()) {
+            if (process.getUrl().matches("https?://.*")) {
+                process.setStatus("remote");
             } else {
-                // Missing will be flagged as an error
+                ProcessDefinition pd = processEngine.getRepositoryService()
+                        .createProcessDefinitionQuery()
+                        .processDefinitionKey(process.getRef())
+                        .processDefinitionTenantId(id).latestVersion()
+                        .singleResult();
+                if (pd != null) {
+                    InputStream is = null;
+                    try {
+                        is = processEngine.getRepositoryService().getProcessModel(
+                                pd.getId());
+                        @SuppressWarnings("resource")
+                        String latestDeployedBpmn = new Scanner(is).useDelimiter(
+                                "\\A").next();
+
+                        if (process.getUrl() != null
+                                && Md5HashUtils.isIdentical(
+                                com.knowprocess.bpm.model.ProcessDefinition
+                                        .readFromClasspath("/" + process.getUrl()),
+                                latestDeployedBpmn)) {
+                            process.setValid(true);
+                        } else {
+                            process.setStatus("warning");
+                            process.setValid(false);
+                        }
+                        process.setDescription(pd.getDescription());
+                    } catch (Throwable t) {
+                        LOGGER.error(String
+                                .format("Problem loading process from '%1$s', check configuration for '%2$s'",
+                                        process.getUrl(), id));
+                    } finally {
+                         try {
+                             is.close();
+                         } catch (Exception e) {
+                             ;
+                         }
+                    }
+                }
             }
         }
 
