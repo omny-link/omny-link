@@ -90,6 +90,8 @@ public class Contact implements Serializable {
      * failures in 122 sample from gardenatics).
      */
     @Transient
+    @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     private String fullName;
 
     // @NotNull

@@ -49,7 +49,6 @@ public class TemplateTask implements JavaDelegate {
             throw new IllegalStateException("Need to specify a process variable named responseVar to receive template output");
         }        
         try {
-            
             String result = evaluateTemplate(template, execution.getVariables());
             execution.setVariable(outVar, result);
         } catch (Throwable e) {
