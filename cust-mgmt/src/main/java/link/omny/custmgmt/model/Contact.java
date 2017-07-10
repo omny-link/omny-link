@@ -91,7 +91,7 @@ public class Contact implements Serializable {
      */
     @Transient
     @JsonProperty
-    @JsonView({ ContactViews.Summary.class })
+    @JsonView({ ContactViews.Detailed.class })
     private String fullName;
 
     // @NotNull
