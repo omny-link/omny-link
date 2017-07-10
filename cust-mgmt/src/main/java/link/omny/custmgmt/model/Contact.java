@@ -91,18 +91,18 @@ public class Contact implements Serializable {
      */
     @Transient
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     private String fullName;
 
     // @NotNull
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "first_name")
     private String firstName;
 
     // @NotNull
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "last_name")
     private String lastName;
 
@@ -110,22 +110,22 @@ public class Contact implements Serializable {
      * Whether this is the primary contact for an account.
      */
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "main_contact")
     private boolean mainContact;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "title")
     private String title;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "job_title")
     private String jobTitle;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "email")
     private String email;
 
@@ -153,7 +153,7 @@ public class Contact implements Serializable {
     @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
     @Size(max = 15)
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "phone1")
     private String phone1;
 
@@ -209,7 +209,7 @@ public class Contact implements Serializable {
     private boolean existingCustomer;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Size(max = 30)
     @Column(name = "stage")
     private String stage;
@@ -225,19 +225,19 @@ public class Contact implements Serializable {
     private Date stageDate;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Size(max = 100)
     @Column(name = "enquiry_type")
     private String enquiryType;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Size(max = 30)
     @Column(name = "account_type")
     private String accountType;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Size(max = 50)
     @Column(name = "owner")
     private String owner;
@@ -331,7 +331,7 @@ public class Contact implements Serializable {
      * Comma-separated set of arbitrary tags for the contact.
      */
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "tags")
     private String tags;
 
@@ -345,18 +345,18 @@ public class Contact implements Serializable {
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "first_contact", updatable = false)
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     private Date firstContact;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "last_updated")
     private Date lastUpdated;
 
     @NotNull
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Size(max = 30)
     @Column(name = "tenant_id", nullable = false)
     private String tenantId;

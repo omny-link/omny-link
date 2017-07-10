@@ -33,7 +33,7 @@
           {{/}}
           {{#if property == 'templates' && status == 'false'}}
             <span class="glyphicon glyphicon-repeat" on-click="deployTemplate(this)" title="Create a stub of the template"></span>
-          {{elseif (property == 'processes')}}
+          {{elseif (property == 'processes') && status != 'remote'}}
             <span class="glyphicon glyphicon-repeat" on-click="deployProcess(this)" title="(Re)Deploy the process"></span>
           {{/if}}
         </td>

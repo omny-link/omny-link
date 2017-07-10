@@ -548,7 +548,7 @@ public class ContactController extends BaseTenantAwareController{
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public @ResponseBody ResponseEntity<?> create(
+    public @ResponseBody ResponseEntity<? extends Contact> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Contact contact) {
         contact.setTenantId(tenantId);
@@ -567,7 +567,7 @@ public class ContactController extends BaseTenantAwareController{
         // TODO migrate to http://host/tenant/contacts/id
         // headers.setLocation(getTenantBasedUri(tenantId, contact));
 
-        return new ResponseEntity(headers, HttpStatus.CREATED);
+        return new ResponseEntity(contact, headers, HttpStatus.CREATED);
     }
 
     /**
@@ -1121,6 +1121,8 @@ public class ContactController extends BaseTenantAwareController{
         private String email;
         private String phone1;
         private String jobTitle;
+        private boolean mainContact;
+        // Note when migrating: this is not included in ContactViews.Summary
         private String accountName;
         private String owner;
         private String stage;

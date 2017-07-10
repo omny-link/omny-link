@@ -297,7 +297,7 @@
                   <td class="hidden">
                     <span>{{..selfRef}}</span>
                   </td>
-                  <td><input class="radio" name="mainContact" twoway="false" type="radio" checked="{{mainContact}}" on-change="setMainContact(selfRef)"/></td>
+                  <td><input class="radio" name="mainContact" twoway="false" type="radio" checked="{{mainContact}}" on-change="setMainContact(..selfRef)"/></td>
                   <td class="col-md-2 col-sm-2" data-contact-id="{{..selfRef}}" data-key="fullName">
 	                  <span>{{fullName}}</span>
 	                  <input class="hidden form-control" name="fullName" value="{{..fullName}}">

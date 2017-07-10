@@ -62,9 +62,6 @@ a.glyphicon:focus,
 h1.navbar-top span {
   padding-left: 20px;
 }
-.navbar-brand img {
-  height: 70px;
-}
 /* END BOOTSTRAP OVERRIDES */
 .omny-dropdown.dropdown-menu li.divider {
   background-color: %4$s;
