@@ -19,6 +19,7 @@ import javax.json.JsonStructure;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParsingException;
 import javax.script.ScriptException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 
 import org.activiti.engine.ActivitiException;
@@ -31,10 +32,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,9 +53,9 @@ import com.knowprocess.bpm.impl.MessageRegistry;
 /**
  * Handle REST requests sending BPMN message events to start or modify process
  * instances.
- * 
+ *
  * @author Tim Stephenson
- * 
+ *
  */
 @Controller
 @RequestMapping("/msg")
@@ -71,7 +74,7 @@ public class MessageController {
 
     @Autowired
     protected JsonManager jsonManager;
-    
+
     /**
      * Whether messages may be sent anonymously. Default: false.
      */
@@ -88,7 +91,8 @@ public class MessageController {
         MessageController.processEngine = pe;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{tenantId}/{msgId}", headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "/{tenantId}/{msgId}",
+            headers = "Accept=application/json")
     @ResponseBody
     public final ResponseEntity<String> doInOutMep(
             UriComponentsBuilder uriBuilder,
@@ -151,15 +155,17 @@ public class MessageController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{tenantId}/{msgId}", headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.POST, value = "/{tenantId}/{msgId}",
+            headers = { "Accept=application/json" },
+            consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE })
     @ResponseBody
-    public ResponseEntity<String> doInOnlyMep(UriComponentsBuilder uriBuilder,
+    public ResponseEntity<String> doInOnlyMepAsBody(UriComponentsBuilder uriBuilder,
             @PathVariable("tenantId") String tenantId,
             @PathVariable("msgId") String msgId,
             @RequestParam(required = false, value = "businessDescription") String bizDesc,
-            @RequestParam(required = false) String json) {
+            @RequestBody String json) {
         long start = System.currentTimeMillis();
-        LOGGER.info("handling In-Only MEP: " + msgId + ", json:" + json);
+        LOGGER.info("doInOnlyMepAsBody: handling In-Only MEP to {}, biz key: {}, payload: {}", msgId, bizDesc, json);
 
         Map<String, Object> vars = new HashMap<String, Object>();
         ResponseEntity<String> response = handleMep(uriBuilder, tenantId,
@@ -170,7 +176,46 @@ public class MessageController {
                 (System.currentTimeMillis() - start)));
         return response;
     }
-    
+
+    @RequestMapping(method = RequestMethod.POST, value = "/{tenantId}/{msgId}",
+            headers = { "Accept=application/json" },
+            consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE, "application/x-www-form-urlencoded; charset=UTF-8" })
+    @ResponseBody
+    public ResponseEntity<String> doInOnlyMep(UriComponentsBuilder uriBuilder,
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("msgId") String msgId,
+            @RequestParam(required = false, value = "businessDescription") String bizDesc,
+            @RequestParam(required = false) String json) {
+        long start = System.currentTimeMillis();
+        LOGGER.info("doInOnlyMep: handling In-Only MEP to {}, biz key: {}, payload: {}", msgId, bizDesc, json);
+
+        Map<String, Object> vars = new HashMap<String, Object>();
+        ResponseEntity<String> response = handleMep(uriBuilder, tenantId,
+                msgId,
+                bizDesc, json, vars, 0);
+
+        LOGGER.debug(String.format("doInOnlyMep took: %1$s ms",
+                (System.currentTimeMillis() - start)));
+        return response;
+    }
+
+    // On the face of it this not needed but apparently the forms plugin
+    // matches this set of headers / consumes, so leave for now
+    @RequestMapping(method = RequestMethod.POST, value = "/{tenantId}/{msgId}",
+            headers = { "Accept=application/json" })
+    @ResponseBody
+    public ResponseEntity<String> doInOnlyMep2(HttpServletRequest request,
+            UriComponentsBuilder uriBuilder,
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("msgId") String msgId,
+            @RequestParam(required = false, value = "businessDescription") String bizDesc,
+            @RequestParam(required = false) String json) {
+        LOGGER.info("doInOnlyMep2: handling In-Only MEP to {}, biz key: {}, payload: {}, Content-Type, Accept",
+                msgId, bizDesc, json, request.getHeader("Content-Type"), request.getHeader("Accept"));
+
+        return doInOnlyMep(uriBuilder, tenantId, msgId, bizDesc, json);
+    }
+
     protected ResponseEntity<String> handleMep(
             final UriComponentsBuilder uriBuilder, String tenantId,
             String msgId, String bizDesc, String jsonBody,
@@ -195,7 +240,7 @@ public class MessageController {
     }
 
     /**
-     * 
+     *
      * @param tenantId
      * @param msgId
      * @param bizDesc
