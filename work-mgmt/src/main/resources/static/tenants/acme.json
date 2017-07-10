@@ -68,7 +68,7 @@
     { "name": "Search for companies", "ref": "companySearch", "url": "processes/link/omny/companiesHouse/SearchForCompany.bpmn" }
   ],
   "serviceLevel": {
-    "inactiveStages":["discovery","review"],
+    "inactiveStages":["cold","discovery","on hold","review"],
     "initialResponseThreshold":7
   },
   "strings": {

@@ -9,6 +9,7 @@
   <h2 class="navbar-top">
     {{>navbar}}  
   </h2>
+
   <form class="inline-form form" id="currentForm">
     <h2 id="features">
 	    <span>Features enabled for </span>
@@ -118,6 +119,19 @@
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Display the tool to raise a support call</p>
         </li>
       </ul>
+    </div>
+  </form>
+
+  <form class="inline-form form" id="currentForm">
+    <h2 id="filters">
+      <span>Filters</span>
+    </h2>
+    <div class="currentBody col-md-12 col-sm-12 col-xs-12">
+      <table class="table table-striped">
+        <tbody>
+          <tr><th>Stages deemed 'inactive':</th><td>{{current.serviceLevel.inactiveStages}}</td></tr>
+        </tbody>
+      </table>
     </div>
   </form>
 
