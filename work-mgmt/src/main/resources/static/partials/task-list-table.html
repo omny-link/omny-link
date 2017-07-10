@@ -5,7 +5,7 @@
       <th on-click="sort:businessKey">From / Regarding<span class="sortable {{ sorted('businessKey') }} glyphicon"></th>
       <th class="col-truncate" on-click="sort:name">Task<span class="sortable {{ sorted('name') }} glyphicon"></th>
       <th on-click="sort:createTime">Created<span class="sortable {{ sorted('createTime') }} glyphicon"></th>
-      <th on-click="sort:taskLocalVariables['deferUntil'])">Deferred Until<span class="sortable {{ sorted('taskLocalVariables["deferUntil"]') }} glyphicon"></th>
+      <th on-click="@this.sort(taskLocalVariables['deferUntil'])">Deferred Until<span class="sortable {{ sorted('taskLocalVariables[\"deferUntil\"]') }} glyphicon"></th>
       <th on-click="sort:dueDate">Due<span class="sortable {{ sorted('dueDate') }} glyphicon"></th>
       <!--th class="col-truncate" style="width: 400px;">Description</th-->
       <th on-click="sort:assignee">Assigned<span class="sortable {{ sorted('assignee') }} glyphicon"></th>
