@@ -1,1 +1,5 @@
-<a href="http://www.education.gov.uk/edubase/groups/group/summary.xhtml?id={{parseInt(current.companyNumber)}}" target="edubaseGroup"><span class="glyphicon glyphicon-new-window"></span></a>
+{{#if current.accountType=='Establishment Group'}}
+  <a href="http://www.education.gov.uk/edubase/groups/group/summary.xhtml?id={{parseInt(current.companyNumber)}}" target="edubaseGroup"><span class="glyphicon glyphicon-new-window"></span></a>
+{{elseif current.parentOrg!=''}}
+  <a href="http://www.education.gov.uk/edubase/groups/group/summary.xhtml?id={{parseInt(current.parentOrg)}}" target="edubaseGroup"><span class="glyphicon glyphicon-new-window"></span></a>
+{{/if}}
