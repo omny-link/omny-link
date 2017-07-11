@@ -118,7 +118,7 @@ public class Account implements Serializable {
 
     @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
     @JsonProperty
-    @JsonView( { AccountViews.Summary.class } )
+    @JsonView( { AccountViews.Summary.class, ContactViews.Detailed.class } )
     @Column(name = "phone1")
     private String phone1;
 
@@ -296,7 +296,7 @@ public class Account implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
-    @JsonView({ AccountViews.Detailed.class })
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     private List<Note> notes;
 
     @OneToMany(cascade = CascadeType.ALL)
