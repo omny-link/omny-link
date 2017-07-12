@@ -246,7 +246,7 @@ public class AccountController {
             @RequestBody Account updatedAccount) {
         Account account = accountRepo.findOne(accountId);
 
-        BeanUtils.copyProperties(updatedAccount, account, "id");
+        BeanUtils.copyProperties(updatedAccount, account, "id", "notes", "documents");
         account.setTenantId(tenantId);
         accountRepo.save(account);
     }
