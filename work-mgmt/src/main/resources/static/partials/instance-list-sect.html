@@ -99,7 +99,7 @@
 	                    {{#each processVariableNames:j}}
 	                      <tr data-href="{{_links.self.href}}">
 	                        <td>{{j+1}}</td>
-	                        <td>{{ processVariableNames[j] }}</td>
+	                        <th>{{ processVariableNames[j] }}</th>
 	                        <td>
 	                          {{# typeof processVariables[processVariableNames[j]] == 'object' }}
 	                            {{{ formatJson(JSON.stringify(processVariables[processVariableNames[j]])) }}}

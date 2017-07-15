@@ -8,8 +8,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.transform.TransformerConfigurationException;
 
@@ -91,17 +93,13 @@ public class ProcessDefinitionController {
         List<ProcessDefinition> list = ProcessDefinition
                 .findAllProcessDefinitions(tenantId);
         for (ProcessDefinition defn : list) {
-            long activeCount = processEngine.getRuntimeService()
-                    .createProcessInstanceQuery()
-                    .processInstanceTenantId(tenantId)
-                    .processDefinitionId(defn.getId())
-                    .count();
+            // Historic count _includes_ active
             long historicCount = processEngine.getHistoryService()
                     .createHistoricProcessInstanceQuery()
                     .processInstanceTenantId(tenantId)
                     .processDefinitionId(defn.getId())
                     .count();
-            defn.setInstanceCount(activeCount + historicCount);
+            defn.setInstanceCount(historicCount);
         }
         LOGGER.info("Deployed definitions: " + list.size());
 
@@ -207,23 +205,58 @@ public class ProcessDefinitionController {
                 RequestMethod.GET, id));
 
         List<ProcessInstance> instances = new ArrayList<ProcessInstance>();
-        ProcessInstanceQuery activeQuery = processEngine
-                .getRuntimeService().createProcessInstanceQuery()
-                .processDefinitionId(id).orderByProcessInstanceId().desc();
+
         HistoricProcessInstanceQuery query = processEngine
                 .getHistoryService().createHistoricProcessInstanceQuery()
                 .processDefinitionId(id).orderByProcessInstanceId().desc();
         if (limit == null) {
-            instances.addAll(ProcessInstance.wrap(activeQuery.list()));
             instances.addAll(ProcessInstance.wrap(query.list()));
+            mergeActiveInst(id, instances);
         } else {
             if (page == null) {
                 page = 0;
             }
-            instances.addAll(ProcessInstance.wrap(activeQuery.listPage(page*limit, limit)));
             instances.addAll(ProcessInstance.wrap(query.listPage(page*limit, limit)));
+            mergeActiveInst(id, instances);
         }
         return instances;
+    }
+
+    private void mergeActiveInst(String procDefId,
+            List<ProcessInstance> instances) {
+        if (instances == null || instances.size() == 0) {
+            LOGGER.debug("no instances to enhance");
+            return;
+        }
+        ProcessInstanceQuery activeQuery = processEngine.getRuntimeService()
+                .createProcessInstanceQuery().processDefinitionId(procDefId)
+                .orderByProcessInstanceId().desc();
+
+        Set<String> instanceIds = new HashSet<String>();
+        for (ProcessInstance auditInst : instances) {
+            if (!auditInst.getEnded()) {
+                instanceIds.add(auditInst.getId());
+            }
+        }
+        LOGGER.debug("Audit instance ids for merging: {}", instanceIds);
+        List<org.activiti.engine.runtime.ProcessInstance> activeList = activeQuery
+                .processDefinitionIds(instanceIds).list();
+        LOGGER.debug("Active instances found: {}", activeList.size());
+        for (ProcessInstance auditInst : instances) {
+            if (!auditInst.getEnded()) {
+                LOGGER.debug("Unfinished instance {}, seeking merge...",
+                        auditInst.getId());
+                for (org.activiti.engine.runtime.ProcessInstance activeInst : activeList) {
+                    LOGGER.debug("Active instance {}, needed?",
+                            activeInst.getId());
+                    if (auditInst.getId().equals(activeInst.getId())) {
+                        LOGGER.debug("FOUND: {} {}", activeInst.getId(),
+                                activeInst.getActivityId());
+                        auditInst.setActivityId(activeInst.getActivityId());
+                    }
+                }
+            }
+        }
     }
 
     @RequestMapping(value = "/{id}/issues", method = RequestMethod.GET, headers = "Accept=application/json")

@@ -13,6 +13,7 @@ var ractive = new BaseRactive({
     },
     definitions: [],
     diagPanZoomHandlers: [],
+    entityPath: '/process-definitions',
     showDetails: false,
     duration: function(timeString) {
       return i18n.getDurationString(new Date(timeString))
@@ -30,18 +31,9 @@ var ractive = new BaseRactive({
     formatJson: function(json) {
       console.log('formatJson: '+json);
       try {
-        var obj = JSON.parse(json);
-        var html = '<ul class="json">';
-        $.each(Object.keys(obj), function(i,d) {
-          if (typeof obj[d] == 'object' && obj[d]['string'] != undefined) {
-            html += '<li><label>'+d.toLabel()+':</label><span>'+obj[d]['string']+'</span>';
-          } else if (typeof obj[d] == 'object') {
-            // currently ignore keys without value, may change that?
-          } else {
-            html += '<label>'+d+':</label><span>'+obj[d]+'</span>';
-          }
-        });
-        return html;
+        var obj = json;
+        if (typeof json == 'string') obj = JSON.parse(json);
+        return ractive.json2Html(obj);
       } catch (e) {
         // So it wasn't JSON
         return json;
@@ -285,6 +277,38 @@ var ractive = new BaseRactive({
       ractive.set('saveObserver',true);
     }
   },
+  download: function() {
+    console.info('download');
+    $.ajax({
+      headers: {
+        "Accept": "application/xml"
+      },
+      url: ractive.tenantUri(ractive.get('current'))+'.bpmn',
+      crossDomain: true,
+      success: function( data ) {
+        console.warn('response;'+data);
+        var serializer = new XMLSerializer();
+        var bpmn = serializer.serializeToString(data);
+        something = window.open("data:application/xml," + encodeURIComponent(bpmn),"bpmn");
+        something.focus();
+      }
+    });
+  },
+  downloadImage: function(diagId) {
+    console.info('downloadImage');
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+      var reader = new FileReader();
+      reader.onloadend = function() {
+        console.warn('response;'+reader.result);
+        something = window.open("data:image/png," + encodeURIComponent(reader.result),"_blank");
+        something.focus();
+      }
+    };
+    xhr.open('GET', ractive.tenantUri(ractive.get('current'))+'/'+diagId+'.png');
+    xhr.responseType = 'blob';
+    xhr.send();
+  },
   fetch: function () {
     console.log('fetch...');
     $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions', function( data ) {
@@ -344,6 +368,8 @@ var ractive = new BaseRactive({
   },
   fetchInstances: function() {
     console.log('fetch instances');
+    // collapse any visible instances so notice any new instances and to force refresh on re-open
+    $('section.instanceSect[data-instance-id]').hide();
     $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+ractive.get('current.id')+'/instances?limit=20', function( data ) {
       console.log('found instances '+data.length);
       ractive.set('current.instances',data);
@@ -379,6 +405,19 @@ var ractive = new BaseRactive({
     }
     return defn.version==latestVsn ? true : false;
   },
+  json2Html: function(obj) {
+    var html = '<ul class="json">';
+    $.each(Object.keys(obj), function(i,d) {
+      if (typeof obj[d] == 'object' && obj[d]['string'] != undefined) {
+        html += '<li><label style="text-align:right;padding-right:10px">'+d.toLabel()+':</label><span>'+obj[d]['string']+'</span>';
+      } else if (typeof obj[d] == 'object') { // child object
+        html += '<table class="table table-striped"><tr><th>' + d.toLabel() +'</th><td>'+ ractive.json2Html(obj[d])+'</td></tr></table>';
+      } else {
+        html += '<label>'+d.toLabel()+':</label><span>'+obj[d]+'</span>';
+      }
+    });
+    return html;
+  } ,
   oninit: function() {
   },
   select: function(definition) {
