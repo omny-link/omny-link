@@ -11,7 +11,7 @@
   </li>
   <li class="form-group">
     <label class="col-md-4 col-sm-4 required" for="email">Email: </label>
-    <input class="form-control col-md-8 col-sm-8" id="email" placeholder="Email address of the new user" type="email" value="{{instanceToStart.processVariables.omny_registration['email']}}"/>
+    <input class="form-control col-md-8 col-sm-8" id="email" onblur="this.value = this.value.toLowerCase();" placeholder="Email address of the new user" type="email" value="{{instanceToStart.processVariables.omny_registration['email']}}"/>
     <p class="col-md-offset-4 col-sm-offset-4 help-block field-hint field-error">Please provide the user's email</p>
   </li>
   <li class="curPhone1">

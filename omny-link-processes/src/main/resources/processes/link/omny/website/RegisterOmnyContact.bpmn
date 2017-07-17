@@ -45,7 +45,9 @@
     <scriptTask completionQuantity="1" id="_2" isForCompensation="false" name="Assign user rights" scriptFormat="JavaScript" startQuantity="1">
       <incoming>_3</incoming>
       <outgoing>_6</outgoing>
-      <script><![CDATA[var userId = execution.getVariable('contactEmail');
+      <script><![CDATA[var userId = execution.getVariable('contactEmail').toLowerCase();
+//var System = java.lang.System;
+//System.out.println('  creating user: '+userId);
 var contact = execution.getVariable('contact');
 var user = execution.getEngineServices().getIdentityService().newUser(userId);
 user.setFirstName(contact.getString('firstName'));
@@ -56,21 +58,24 @@ execution.getEngineServices().getIdentityService().saveUser(user);
 
 execution.getEngineServices().getIdentityService().createMembership(userId, 'user');
 execution.getEngineServices().getIdentityService().createMembership(userId, contact.getString('tenantId'));
-if (contact.getString('roles') != undefined) {
-  var System = java.lang.System;
+if (contact.getString('roles') != undefined && contact.getString('roles').trim().length>0) {
+  //System.out.println('  roles: '+contact.getString('roles'));
   var roles = contact.getString('roles').split(',');
   for (idx in roles) {
+    //System.out.println('  test if role exists: '+roles[idx]);
+
     try {
       var count = execution.getEngineServices().getIdentityService().createGroupQuery().groupId(roles[idx].trim().toLowerCase()).count();
       if (count == 0) {
-	      var g = execution.getEngineServices().getIdentityService().newGroup(roles[idx].trim().toLowerCase());
-	      g.setName(roles[idx]);
-	      execution.getEngineServices().getIdentityService().saveGroup(g);
-	    }
+        var g = execution.getEngineServices().getIdentityService().newGroup(roles[idx].trim().toLowerCase());
+        g.setName(roles[idx]);
+        execution.getEngineServices().getIdentityService().saveGroup(g);
+      }
+      execution.getEngineServices().getIdentityService().createMembership(userId, roles[idx].trim().toLowerCase());
     } catch (e) { // unfortunately it seems this is not actually caught, hence count above
       ; // group must already exist
     }
-    execution.getEngineServices().getIdentityService().createMembership(userId, roles[idx].trim().toLowerCase());
+
   }
 }
 execution.getEngineServices().getIdentityService().setUserInfo(userId, 'tenant', contact.getString('tenantId'));
