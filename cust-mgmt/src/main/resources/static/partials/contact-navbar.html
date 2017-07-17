@@ -13,8 +13,8 @@
   <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
     <li on-click="['filter',{idx:1,value:''}]">Show All</li>
     <li on-click="['filter',{idx:2,value:'active'}]">Show Active</li>
-    <li on-click="['filter',{idx:3,value:'active owner:{{profile.id}}'}]">Show Mine</li>
-    <li on-click="['filter',{idx:4,value:'!active owner:{{profile.id}}'}]">Show Mine (inactive)</li>
+    <li on-click="['filter',{idx:3,value:'active owner:'+profile.id}]">Show Mine</li>
+    <li on-click="['filter',{idx:4,value:'!active owner:'+profile.id}]">Show Mine (inactive)</li>
     <li class="divider"></li>
     <li on-click="['filter',{idx:6,value:'updated>'+daysAgo(7)}]">Recently updated</li>
     {{#if tenant.show.stage}}
