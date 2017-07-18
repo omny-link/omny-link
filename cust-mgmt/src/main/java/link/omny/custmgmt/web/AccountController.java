@@ -362,6 +362,11 @@ public class AccountController {
         ShortAccount resource = new ShortAccount();
         BeanUtils.copyProperties(account, resource);
 
+        String orgCode = (String) account.getCustomFieldValue("orgCode");
+        if (orgCode != null) {
+            resource.setOrgCode(orgCode);
+        }
+
         Link detail = linkTo(AccountRepository.class, account.getId())
                 .withSelfRel();
         resource.add(detail);
@@ -381,6 +386,7 @@ public class AccountController {
     public static class ShortAccount extends ResourceSupport {
         private String selfRef;
         private String name;
+        private String orgCode;
         private String companyNumber;
         private String businessWebsite;
         private String email;
