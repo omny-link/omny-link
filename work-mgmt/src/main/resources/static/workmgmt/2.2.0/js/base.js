@@ -405,6 +405,7 @@ var BaseRactive = Ractive.extend({
   },
   initTags: function() {
     console.info('initTags');
+    ractive.set('saveObserver', false);
     $('[data-bind]').each(function(i,d) {
       $(d).val(ractive.get($(d).data('bind'))).css('display','none');
     });
@@ -421,6 +422,7 @@ var BaseRactive = Ractive.extend({
         ractive.set($(event.target).data('bind'),$(event.target).val());
       }
     });
+    ractive.set('saveObserver', true);
   },
   initialAccountStage: function() {
     console.log('initialAccountStage');
