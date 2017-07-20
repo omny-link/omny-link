@@ -8,6 +8,10 @@
         <activiti:field name="dynamicValue"/>
       </activiti:executionListener>
       <activiti:executionListener class="com.knowprocess.bpm.listeners.FieldInjectionListener" event="start">
+        <activiti:field name="varName" stringValue="accountId"/>
+        <activiti:field expression="${''}" name="dynamicValue"/>
+      </activiti:executionListener>
+      <activiti:executionListener class="com.knowprocess.bpm.listeners.FieldInjectionListener" event="start">
         <activiti:field name="varName" stringValue="orderId"/>
         <activiti:field expression="${''}" name="dynamicValue"/>
       </activiti:executionListener>
