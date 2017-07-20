@@ -26,12 +26,12 @@
     {{#if tenant.show.enquiryType}}
       <li class="divider"></li>
       {{#enquiryTypes:j}}
-        <li on-click="filter:{idx:{{8+(tenant.show.stage?1:0)+accountStages.length+j}},value:'enquiry:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
+        <li on-click="filter:{idx:{{8+(tenant.show.stage?accountStages.length:1)+j}},value:'enquiry:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
       {{/}}
     {{/if}}
     <li class="divider"></li>
     {{#accountTypes:k}}
-      <li on-click="filter:{idx:{{8+(tenant.show.stage?1:0)+(tenant.show.enquiryType?1:0)+accountStages.length+enquiryTypes.length+k}},value:'type:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
+      <li on-click="filter:{idx:{{8+(tenant.show.stage?accountStages.length:1)+(tenant.show.enquiryType?enquiryTypes.length:1)+k}},value:'type:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
     {{/accountTypes}}
   </ul>
 </a>
