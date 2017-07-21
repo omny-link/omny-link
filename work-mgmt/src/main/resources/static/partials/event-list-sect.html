@@ -38,13 +38,13 @@
         <!--td on-click="select(this)">{{processInstanceId}}</td-->
         <td on-click="select(this)">
           <a class="btn" href="/process-definitions/{{processDefinitionId}}.bpmn" target="_newtab">
-            <a class="glyphicon glyphicon-export" aria-hidden="true"></a>View BPMN</a>
+            <a class="glyphicon glyphicon-btn glyphicon-export" aria-hidden="true"></a>View BPMN</a>
           <a class="btn" href="/process-definitions/{{processDefinitionId}}.png" target="_newtab">
-            <a class="glyphicon glyphicon-picture" aria-hidden="true"></a>View image</a>
+            <a class="glyphicon glyphicon-btn glyphicon-picture" aria-hidden="true"></a>View image</a>
         </td>
         <td on-click="select(this)">{{assignee}}</td>
         <!--td>
-          <a class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="select(this)"></a>
+          <a class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" on-click="select(this)"></a>
         </td-->
       </tr>
       {{/}}

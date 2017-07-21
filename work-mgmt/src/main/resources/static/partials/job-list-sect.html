@@ -12,11 +12,11 @@
     <thead>
       <tr>
         <th></th>
-        <th class="col-md-1 col-sm-1 col-xs-1" on-click="sort:id">Id<span class="sortable {{ sorted('id') }} glyphicon "></th>
-        <th class="col-md-3 col-sm-4 col-xs-4" on-click="sort:processDefinitionId">Definition<span class="sortable {{ sorted('processDefinitionId') }} glyphicon "></th>
-        <th class="col-md-3 col-sm-4 col-xs-2" on-click="sort:processInstanceId">Instance<span class="sortable {{ sorted('processInstanceId') }} glyphicon "></th>
-        <th class="col-md-1 col-sm-1 col-xs-1" on-click="sort:retries"># Attempts<span class="sortable {{ sorted('retries') }} glyphicon "></th>
-        <th class="col-md-2 col-sm-2 col-xs-2" on-click="sort:ExceptionMessage">Error<span class="sortable {{ sorted('exceptionMessage') }} glyphicon "></th>
+        <th class="col-md-1 col-sm-1 col-xs-1" on-click="sort:id">Id<span class="sortable {{ sorted('id') }} glyphicon glyphicon-btn "></th>
+        <th class="col-md-3 col-sm-4 col-xs-4" on-click="sort:processDefinitionId">Definition<span class="sortable {{ sorted('processDefinitionId') }} glyphicon glyphicon-btn "></th>
+        <th class="col-md-3 col-sm-4 col-xs-2" on-click="sort:processInstanceId">Instance<span class="sortable {{ sorted('processInstanceId') }} glyphicon glyphicon-btn "></th>
+        <th class="col-md-1 col-sm-1 col-xs-1" on-click="sort:retries"># Attempts<span class="sortable {{ sorted('retries') }} glyphicon glyphicon-btn "></th>
+        <th class="col-md-2 col-sm-2 col-xs-2" on-click="sort:ExceptionMessage">Error<span class="sortable {{ sorted('exceptionMessage') }} glyphicon glyphicon-btn "></th>
         <th class="col-md-2 col-sm-2 col-xs-2 col-actions">Actions</th>
       </tr>
     </thead>
@@ -31,9 +31,9 @@
           <td class="col-md-1 hidden-sm hidden-xs">{{retries}}</td>
           <td class="col-md-1 hidden-sm hidden-xs">{{exceptionMessage}}</td>
           <td class="col-md-3 col-sm-3 col-xs-3 col-actions">
-            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this.id)" title="Delete this job"></a>
-            <a class="clickable glyphicon glyphicon-repeat" aria-hidden="true" on-click="retry(this.id)" title="Retry this job"></a>
-            <a class="clickable glyphicon glyphicon-new-window" aria-hidden="true" href="audit.html?instanceId={{processInstanceId}}" target="_blank" title="Show audit trail for process instance"></a>
+            <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this.id)" title="Delete this job"></a>
+            <a class="clickable glyphicon glyphicon-btn glyphicon-repeat" aria-hidden="true" on-click="retry(this.id)" title="Retry this job"></a>
+            <a class="clickable glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" href="audit.html?instanceId={{processInstanceId}}" target="_blank" title="Show audit trail for process instance"></a>
           </td>
         </tr>
         {{/}}

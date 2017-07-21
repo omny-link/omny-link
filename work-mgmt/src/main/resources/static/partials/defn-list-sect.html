@@ -7,7 +7,7 @@
 <section class="resultsSect" id="definitionSect">
   <h2 class="navbar-top">
     {{>navbar}}
-    <a class="clickable glyphicon glyphicon-cloud-upload pull-right hidden-xs" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
+    <a class="clickable glyphicon glyphicon-btn glyphicon-cloud-upload pull-right hidden-xs" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
   </h2>
   <div id="upload" style="display:none">
     <form action="/{{tenant.id}}/deployments" class="well form form-inline" enctype="multipart/form-data" id="uploadForm" method="post">
@@ -31,13 +31,13 @@
     <thead>
       <tr>
         <th></th>
-        <th class="col-md-2 col-sm-3 col-xs-2" on-click="sort:Key">Key<span class="sortable {{ sorted('key') }} glyphicon "></th>
-        <th class="col-md-3 col-sm-5 col-xs-2" on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon "></th>
-        <!--th class="col-md-2 col-sm-2 col-xs-3" on-click="sort:description">Description<span class="sortable {{ sorted('description') }} glyphicon "></th-->
-        <th class="col-md-2 hidden-sm hidden-xs" on-click="sort:category">Category<span class="sortable {{ sorted('category') }} glyphicon "></th>
-        <th class="col-md-1 hidden-sm hidden-xs" on-click="sort:instanceCount"># Instances<span class="sortable {{ sorted('instanceCount') }} glyphicon "></th>
-        <th class="col-md-1 hidden-sm hidden-xs" on-click="sort:deploymentId">Deployment Bundle<span class="sortable {{ sorted('deploymentId') }} glyphicon "></th>
-        <th on-click="sort:version">Version<span class="sortable {{ sorted('version') }} glyphicon "></th>
+        <th class="col-md-2 col-sm-3 col-xs-2" on-click="sort:Key">Key<span class="sortable {{ sorted('key') }} glyphicon glyphicon-btn "></th>
+        <th class="col-md-3 col-sm-5 col-xs-2" on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn "></th>
+        <!--th class="col-md-2 col-sm-2 col-xs-3" on-click="sort:description">Description<span class="sortable {{ sorted('description') }} glyphicon glyphicon-btn "></th-->
+        <th class="col-md-2 hidden-sm hidden-xs" on-click="sort:category">Category<span class="sortable {{ sorted('category') }} glyphicon glyphicon-btn "></th>
+        <th class="col-md-1 hidden-sm hidden-xs" on-click="sort:instanceCount"># Instances<span class="sortable {{ sorted('instanceCount') }} glyphicon glyphicon-btn "></th>
+        <th class="col-md-1 hidden-sm hidden-xs" on-click="sort:deploymentId">Deployment Bundle<span class="sortable {{ sorted('deploymentId') }} glyphicon glyphicon-btn "></th>
+        <th on-click="sort:version">Version<span class="sortable {{ sorted('version') }} glyphicon glyphicon-btn "></th>
         <th class="col-md-3 col-sm-3 col-xs-3 col-actions">Actions</th>
       </tr>
     </thead>
@@ -59,19 +59,19 @@
           <td class="col-md-3 col-sm-3 col-xs-3 col-actions">
             {{#deploymentId}}
               {{#suspended}}
-                <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.activate('{{id}}')" title="Activate"></a>
+                <a class="glyphicon glyphicon-btn glyphicon-pause" aria-hidden="true" onclick="ractive.activate('{{id}}')" title="Activate"></a>
               {{else}}
-                <a class="glyphicon glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{id}}', '{{name}}', '{{username}}')" title="Start instance"></a>
-                <a class="glyphicon glyphicon-pause" aria-hidden="true" onclick="ractive.suspend('{{id}}')" title="Suspend"></a>
+                <a class="glyphicon glyphicon-btn glyphicon-play" aria-hidden="true" onclick="ractive.startInstance('{{id}}', '{{name}}', '{{username}}')" title="Start instance"></a>
+                <a class="glyphicon glyphicon-btn glyphicon-pause" aria-hidden="true" onclick="ractive.suspend('{{id}}')" title="Suspend"></a>
               {{/}}
             {{/}}
             <a href="/{{tenant.id}}/process-definitions/{{id}}.bpmn" target="_newtab">
-              <a class="glyphicon glyphicon-cloud-download" aria-hidden="true"></a></a>
+              <a class="glyphicon glyphicon-btn glyphicon-cloud-download" aria-hidden="true"></a></a>
             {{#deploymentId}}
-              <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this.deploymentId)" title="Delete this definition"></a>
+              <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this.deploymentId)" title="Delete this definition"></a>
             {{/}}
             {{^deploymentId}}
-              <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(this.id)" title="Delete this definition"></a>
+              <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this.id)" title="Delete this definition"></a>
             {{/}}
           </td>
         </tr>

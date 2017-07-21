@@ -12,8 +12,8 @@
     <thead>
       <tr>
         <th></th>
-        <th on-click="sort:id">Username<span class="sortable {{ sorted('id') }} glyphicon "></th>
-        <th on-click="sort:fullName">Full Name<span class="sortable {{ sorted('fullName') }} glyphicon "></th>
+        <th on-click="sort:id">Username<span class="sortable {{ sorted('id') }} glyphicon glyphicon-btn "></th>
+        <th on-click="sort:fullName">Full Name<span class="sortable {{ sorted('fullName') }} glyphicon glyphicon-btn "></th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -30,8 +30,8 @@
         <td on-click="edit(this)">{{id}}</td>
         <td on-click="edit(this)">{{fullName}}</td>
         <td>
-          <span class="clickable glyphicon glyphicon-remove" aria-hidden="true" onclick="ractive.delete('/users/{{id}}')"></span>
-          <span class="clickable glyphicon glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
+          <span class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" onclick="ractive.delete('/users/{{id}}')"></span>
+          <span class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" on-click="edit(this)"></span>
         </td>
       </tr>
       {{/}}

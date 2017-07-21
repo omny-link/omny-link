@@ -4,7 +4,7 @@
     {{current.firstName}} {{current.lastName}} ({{current.id}})
     <span class="pull-right">
       {{#matchRole('admin')}}
-        <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current.selfRef)" title="Delete this user"></a>
+        <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(current.selfRef)" title="Delete this user"></a>
       {{/}}
     </span>
   </h2>
