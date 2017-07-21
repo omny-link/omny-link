@@ -6,6 +6,13 @@ import static org.junit.Assert.assertNotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+
 import link.omny.catalog.TestApplication;
 import link.omny.catalog.model.CustomFeedbackField;
 import link.omny.catalog.model.CustomOrderField;
@@ -17,18 +24,11 @@ import link.omny.catalog.model.api.OrderWithSubEntities;
 import link.omny.catalog.model.api.ShortOrder;
 import link.omny.catalog.web.OrderController.FeedbackResource;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-
 /**
  * @author Tim Stephenson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestApplication.class)
+@SpringBootTest(classes = TestApplication.class)
 @WebAppConfiguration
 public class OrderContollerTest {
     private static final String CUST_FIELD_COLOUR = "colour";
