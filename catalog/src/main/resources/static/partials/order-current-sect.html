@@ -6,11 +6,11 @@
       {{/}}
       <span>{{#current.contactId}}{{formatContactId(current.contactId)}}{{/}}</span>
       <span class="pull-right">
-        <a class="clickable admin glyphicon glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+        <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
         {{#if tenant.orderActions!=undefined && tenant.orderActions.length>0 }}
           <span class="clickable dropdown" aria-hidden="true" title="Start Process">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
-              <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+              <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
             </a>
             <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
               {{#each tenant.orderActions }}
@@ -42,9 +42,9 @@
                 id="curContact" required value="{{#current.contactId}}{{formatContactId(current.contactId)}}{{/}}">
             <span class="input-group-addon">
               {{#if tenant.show.accountView}}
-                <a href="accounts.html?searchTerm={{formatAccountId(current.contactId)}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+                <a href="accounts.html?searchTerm={{formatAccountId(current.contactId)}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
               {{else}}
-                <a href="contacts.html?searchTerm={{current.contactId}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+                <a href="contacts.html?searchTerm={{current.contactId}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
               {{/if}}
             </span>
           </div>
@@ -84,7 +84,7 @@
               <input class="form-control" list="stockItems" onblur="ractive.updateStockItem(this.value)" placeholder="Start typing to filter options"
                   id="curContact" required value="{{#current.stockItem}}{{current.stockItem.name}}{{/}}">
               <span class="input-group-addon">
-                <a href="stock-items.html?q={{current.stockItem.id}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+                <a href="stock-items.html?q={{current.stockItem.id}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
               </span>
             </div>
           {{/if}}

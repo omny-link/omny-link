@@ -16,27 +16,27 @@
         <span contenteditable id="curLastName2" on-focus="editField('#curLastName2','current.lastName')" on-blur="updateField('#curLastName2','current.lastName')">{{current.lastName}}</span>
         {{#if (current.phone1 != undefined || current.phone2 != undefined) && (current.phone1 != '' || current.phone2 != '')}}
           {{#if (current.phone1 != undefined && current.phone1 != '')}}
-            <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone1}}" title="Click to call"></a>
+            <a class="clickable glyphicon glyphicon-btn glyphicon-earphone" href="tel:{{current.phone1}}" title="Click to call"></a>
             <span class="hidden-sm hidden-xs">{{current.phone1}}</span>
           {{/if}}
           {{#if (current.phone2 != undefined && current.phone2 != '')}}
-            <a class="clickable glyphicon glyphicon-earphone" href="tel:{{current.phone2}}" title="Click to call"></a>
+            <a class="clickable glyphicon glyphicon-btn glyphicon-earphone" href="tel:{{current.phone2}}" title="Click to call"></a>
             <span class="hidden-sm hidden-xs"> {{current.phone2}}</span>
           {{/if}}
         {{/if}}
         {{#if current.email != undefined && current.email != ''}}
-          <a class="clickable glyphicon glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
+          <a class="clickable glyphicon glyphicon-btn glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
           <span class="hidden-sm hidden-xs">{{current.email}}</span>
         {{/if}}
         <span class="pull-right">
           {{#matchRole('admin')}}
-            <a class="clickable glyphicon glyphicon-remove" aria-hidden="true" on-click="@this.delete(current)" style="top: -1px;" title="Delete this record"></a>
+            <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="@this.delete(current)" style="top: -1px;" title="Delete this record"></a>
           {{/}}
-          <a class="clickable glyphicon glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
+          <a class="clickable glyphicon glyphicon-btn glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
           {{#if tenant.contactActions!=undefined && tenant.contactActions.length>0 }}
             <span class="clickable dropdown" aria-hidden="true" title="Start Process">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
-                <a class="clickable glyphicon glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
+                <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
               </a>
               <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
                 {{#each tenant.contactActions }}
@@ -54,11 +54,11 @@
          {{#if tenant.show.addressAccount && (current.account.name != undefined && current.account.name != '')}}
            <span>{{current.account.name}}{{#if current.account.town}}, {{current.account.town}}{{/if}}{{#if current.account.countyOrCity}}, {{current.account.countyOrCity}}{{/if}}{{#if current.account.postCode}}, {{current.account.postCode}}{{/if}}</span>
              {{#current.account.postCode}}
-                <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.account.postCode}}" target="_blank"></a>
+                <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.account.postCode}}" target="_blank"></a>
              {{/}}
              {{^current.account.postCode}}
                {{#current.account.town || current.account.address1 || current.account.address2 || current.account.countyOrCity}}
-                 <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.account.address1}}+{{current.account.address2}}+{{current.account.town}}+{{current.account.countyOrCity}}" target="_blank"></a>
+                 <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.account.address1}}+{{current.account.address2}}+{{current.account.town}}+{{current.account.countyOrCity}}" target="_blank"></a>
                {{/}}
              {{/}}
           {{/if}}
@@ -74,7 +74,7 @@
             <div class="input-group">
               <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curShortId" readonly disabled twoway="false" value="{{shortId(current.selfRef)}}"/>
               <span class="input-group-addon">
-                <a href="contacts.html?searchTerm={{shortId(current.selfRef)}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+                <a href="contacts.html?searchTerm={{shortId(current.selfRef)}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
               </span>
             </div>
           </li>
@@ -160,7 +160,7 @@
     {{#tenant.show.contact}}
 	    <section id="connectionsSect">
 	      <h3>
-	        <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+	        <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
 	        <span> Contact Information</span>
 	        <span class="alert-counter {{#alerts.connections>0}}alert-danger{{else}}alert-hidden{{/}}"> {{alerts.connections}}</span>
 	      </h3>
@@ -249,14 +249,14 @@
 	            {{#current.postCode}}
 	              <li>
 	                <label class="col-md-4 col-sm-4">{{#tenant.strings.map}}{{tenant.strings.map}}{{else}}Map{{/}}:</label>
-	                <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
+	                <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
 	              </li>
 	            {{/}}
 	            {{^current.postCode}}
 	              {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
 	                <li>
 	                  <label class="col-md-4 col-sm-4">{{#tenant.strings.map}}{{tenant.strings.map}}{{else}}Map{{/}}:</label>
-	                  <a class="glyphicon glyphicon glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
+	                  <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
 	                </li>
 	              {{/}}
 	            {{/}}
@@ -269,7 +269,7 @@
     {{#tenant.show.marketing || tenant.show.marketingDigital}}
       <section id="marketingSect" style="clear:both;">
         <h3>
-          <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+          <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
           <span> Marketing</span>
           <span class="alert-counter {{#alerts.marketing>0}}alert-danger{{else}}alert-hidden{{/}}"> {{alerts.marketing}}</span>
         </h3>
@@ -321,7 +321,7 @@
     {{#tenant.show.budget}}
       <section id="budgetSect" style="clear:both;">
         <h3>
-          <span class="ol-collapse glyphicon glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+          <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
           <span>Budget</span>
           <span class="alert-counter {{#alerts['budget']}}alert-danger{{else}}alert-hidden{{/}}"> {{alerts.budget}}</span>
         </h3>
