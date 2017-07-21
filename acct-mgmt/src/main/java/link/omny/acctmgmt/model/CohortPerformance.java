@@ -102,12 +102,13 @@ public class CohortPerformance implements Serializable {
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_updated")
     @JsonProperty
     private Date lastUpdated;
 
     @NotNull
     @JsonProperty
-    @Column(nullable = false)
+    @Column(name = "tenant_id", nullable = false)
     private String tenantId;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "cohort", targetEntity = CustomCohortField.class)
