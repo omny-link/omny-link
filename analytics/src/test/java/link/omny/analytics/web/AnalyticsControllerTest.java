@@ -1,23 +1,24 @@
 package link.omny.analytics.web;
 
 import static org.junit.Assert.assertNotNull;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import link.omny.acctmgmt.model.Tenant;
 import link.omny.acctmgmt.model.TenantConfig;
 import link.omny.acctmgmt.model.TenantReport;
 import link.omny.acctmgmt.repositories.TenantRepository;
 import link.omny.analytics.TestApplication;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestApplication.class)
+@SpringBootTest(classes = TestApplication.class)
 public class AnalyticsControllerTest {
 
     private static final String TENANT_ID = "test";
