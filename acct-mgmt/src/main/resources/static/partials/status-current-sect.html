@@ -162,13 +162,13 @@
           <td>{{current.bot.ccAccount}}</td>
           <td>
             {{# current.bot.valid==true}}
-              <span class="glyphicon glyphicon-ok-sign glyphicon-success" id="curBotValid" title="Deployed and ready"></span>
+              <span class="glyphicon glyphicon-btn glyphicon-ok-sign glyphicon-success" id="curBotValid" title="Deployed and ready"></span>
             {{else}}
-              <span class="glyphicon glyphicon-remove-sign glyphicon-danger" id="curBotInvalid" title="Missing or out of date"></span>
+              <span class="glyphicon glyphicon-btn glyphicon-remove-sign glyphicon-danger" id="curBotInvalid" title="Missing or out of date"></span>
               {{#if current.bot.apiKey}}
-                <span class="glyphicon glyphicon-repeat" id="curBotCreate" on-click="createBot(true)" title="Re-create the bot user"></span>
+                <span class="glyphicon glyphicon-btn glyphicon-repeat" id="curBotCreate" on-click="createBot(true)" title="Re-create the bot user"></span>
               {{else}}
-                <span class="glyphicon glyphicon-repeat" id="curBotCreate" on-click="createBot(false)" title="Create the missing bot user"></span>
+                <span class="glyphicon glyphicon-btn glyphicon-repeat" id="curBotCreate" on-click="createBot(false)" title="Create the missing bot user"></span>
               {{/if}}
             {{/}}
           </td>

@@ -13,7 +13,7 @@
       <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
       {{#if type=="url" && current.customFields[name] != undefined}}
         <span class="input-group-addon">
-          <a href="{{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>
+          <a href="{{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
         </span>
       {{/if}}
     </div>
