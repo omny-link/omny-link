@@ -62,7 +62,7 @@ import lombok.NoArgsConstructor;
                 @NamedAttributeNode("account"),
                 @NamedAttributeNode("customFields") }),
         @NamedEntityGraph(name = "contactWithActivities", attributeNodes = {
-                @NamedAttributeNode("activity") }) })
+                @NamedAttributeNode("activities") }) })
 @Data
 @EqualsAndHashCode(exclude = { "fullName" })
 @AllArgsConstructor
@@ -370,6 +370,7 @@ public class Contact implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contact", targetEntity = CustomContactField.class)
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
+    @JsonView({ ContactViews.Detailed.class })
     private List<CustomContactField> customFields;
 
     public List<CustomContactField> getCustomFields() {
@@ -458,7 +459,7 @@ public class Contact implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_id")
     @JsonView({ ContactViews.Detailed.class })
-    private List<Activity> activity;
+    private List<Activity> activities;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "contact_id")
@@ -477,15 +478,11 @@ public class Contact implements Serializable {
         setTenantId(tenantId);
     }
 
-    public void setActivities(List<Activity> activities) {
-        this.activity = activities;
-    }
-
     public List<Activity> getActivities() {
-        if (activity == null) {
-            activity = new ArrayList<Activity>();
+        if (activities == null) {
+            activities = new ArrayList<Activity>();
         }
-        return activity;
+        return activities;
     }
 
     public String getFirstName() {

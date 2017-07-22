@@ -87,7 +87,7 @@ public interface CohortPerformanceRepository extends CrudRepository<Contact, Lon
     List<Contact> findAnonByUuid(@Param("uuid") String uuid,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c INNER JOIN c.activity a WHERE a.occurred > :sinceDate AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId ORDER BY a.occurred DESC")
+    @Query("SELECT c FROM Contact c INNER JOIN c.activities a WHERE a.occurred > :sinceDate AND (stage IS NULL OR stage != 'deleted') AND c.tenantId = :tenantId ORDER BY a.occurred DESC")
     List<Contact> findActiveForTenant(@Param("sinceDate") Date sinceDate,
             @Param("tenantId") String tenantId);
 
