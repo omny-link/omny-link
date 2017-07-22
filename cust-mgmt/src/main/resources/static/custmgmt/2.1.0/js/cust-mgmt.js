@@ -312,7 +312,6 @@ var ractive = new BaseRactive({
     }
     ractive.splice('orders',0, 0, obj);
     ractive.set('currentOrderIdx',0);
-    ractive.initStockItemTypeahead();
     ractive.toggleEditOrder(obj);
 
     ractive.set('saveObserver', true);
@@ -624,20 +623,6 @@ var ractive = new BaseRactive({
       }
     });
     $('#curAccountName').on("click", function (ev) {
-      newEv = $.Event("keydown");
-      newEv.keyCode = newEv.which = 40;
-      $(ev.target).trigger(newEv);
-      return true;
-    });
-  },
-  initStockItemTypeahead: function() {
-    console.info('initStockItemTypeahead');
-    $('.stock-item-typeahead').typeahead({
-      items:'all',
-      minLength:0,
-      source:ractive.get('stockItemsTypeahead')
-    });
-    $('.stock-item-typeahead').on("click", function (ev) {
       newEv = $.Event("keydown");
       newEv.keyCode = newEv.which = 40;
       $(ev.target).trigger(newEv);
