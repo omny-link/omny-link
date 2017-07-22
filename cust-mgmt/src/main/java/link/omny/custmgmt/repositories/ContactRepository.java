@@ -106,7 +106,7 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     List<Contact> findAnonByUuid(@Param("uuid") String uuid,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM Contact c INNER JOIN c.activity a WHERE a.occurred > :sinceDate AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId ORDER BY a.occurred DESC")
+    @Query("SELECT c FROM Contact c INNER JOIN c.activities a WHERE a.occurred > :sinceDate AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId ORDER BY a.occurred DESC")
     @EntityGraph("contactWithActivities")
     List<Contact> findActiveForTenant(@Param("sinceDate") Date sinceDate,
             @Param("tenantId") String tenantId);
