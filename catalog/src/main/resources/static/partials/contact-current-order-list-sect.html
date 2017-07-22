@@ -48,24 +48,20 @@
               {{#entityPath=='/accounts'}}
                 <td data-order-id="{{selfRef}}" data-key="contactName">
                   <span>{{#contactId}}{{Array.findBy('selfRef','/contacts/'+contactId,current.contacts).fullName}}{{else}}{{contactId}}{{/}}</span>
-                  <input class="hidden contact-typeahead typeahead form-control" placeholder="Start typing to filter options" required value="{{#contactId}}{{Array.findBy('selfRef','/contacts/'+contactId,current.contacts).fullName}}{{else}}{{contactId}}{{/}}">
                 </td>
               {{/}}
 		          <td data-order-id="{{selfRef}}" data-key="date">
 		            <span>{{formatDate(date)}}</span>
-                <input class="hidden form-control" placeholder="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}" type="date" value="{{date}}">
               </td>
               {{#if tenant.show.orderItems && orderItems}}
                 <td data-order-id="{{selfRef}}">{{formatDate(orderItems.0.customFields.date)}}</td>
               {{else}}
                 <td data-order-id="{{selfRef}}" data-key="dueDate">
                   <span>{{dueDate}}</span>
-                  <input class="hidden form-control" placeholder="{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Expected delivery date{{/}}" title="{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Expected delivery date{{/}}" value="{{dueDate}}"/>
                 </td>
               {{/if}}
 		          <td data-order-id="{{selfRef}}" data-key="stage">
 		            <span>{{stage}}</span>
-		            <input class="hidden typeahead form-control" placeholder="Start typing to filter options" title="{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}Stage the order has reached{{/}}" value="{{stage}}">
 		          </td>
 		          {{#if (tenant.show.orderItems && orderItems) || !tenant.show.orderItems}}
 		            <td data-order-id="{{selfRef}}" title="List of included {{#tenant.strings.stockItems}}{{tenant.strings.stockItems.toLowerCase()}}{{else}}stock items{{/}}">
@@ -74,13 +70,11 @@
 	            {{else}}
 	              <td data-order-id="{{selfRef}}" data-key="customFields.proposedStockItems">
 	                <span title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}">{{customFields['proposedStockItems']}}</span>
-	                <input class="hidden form-control stock-item-typeahead typeahead" placeholder="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}" value="{{customFields['proposedStockItems']}}"/>
 	              </td>
 	            {{/if}}
 	            {{#tenant.show.stockPricing}}
 	              <td class="number" data-order-id="{{selfRef}}" data-key="price">
 	                <span title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{price}}</span>
-                  <input class="hidden form-control" placeholder="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}" {{^matchRole('sales_manager')}}readonly{{/}} title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}" type="number" value="{{price}}">
                 </td>
 	            {{/}}
               {{#if tenant.orderFields && tenant.show.orderFieldsOnContact != undefined}}
@@ -101,7 +95,6 @@
                   {{elseif tenant.show.orderFieldsOnContact.indexOf(key) != -1}}
                     <td data-order-id="{{selfRef}}" title="{{hint}}">
                      <span title="{{hint}}">{{customFields[key]}}</span>
-                     <input class="hidden form-control" {{#if validation}}pattern="{{validation}}"{{/if}} placeholder="{{hint}}" title="{{hint}}" type="{{type}}" value="{{customFields[key]}}">
                     </td>
                   {{/if}}
                 {{/}}
@@ -109,7 +102,6 @@
               {{#if tenant.show.orderInvoiceRef}}
                 <td data-order-id="{{selfRef}}" data-key="invoiceRef">
                   <span title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">{{invoiceRef}}</span>
-                  <input class="hidden form-control" placeholder="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}" value="{{invoiceRef}}"/>
                 </td>
               {{/if}}
 		          <td class="actions">
@@ -131,7 +123,6 @@
               <tr class="orderItems" data-order-id="{{..selfRef}}" style="display:none">
                 <th>
                   <div>{{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}</div>
-                  <!--div><a class="clickable glyphicon glyphicon-btn glyphicon-plus" aria-hidden="true" on-click="addOrderItem(..selfRef)" title="Add a new {{#tenant.strings.orderItem}}{{tenant.strings.orderItem.toLowerCase()}}{{else}}order item{{/}}"></a></div-->
                 </th>
                 <td colspan="10">
 			            {{#if orderItems==undefined || orderItems.length==0}}
