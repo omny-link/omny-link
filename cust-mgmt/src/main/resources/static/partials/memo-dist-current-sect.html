@@ -18,7 +18,7 @@
         </li>
         <li>
           <label class="col-md-4 control-label required" for="curMemoDisplay">Memo Template:</label>
-          <input autocomplete="off" class="form-control" id="curMemoDisplay" placeholder="Please select a template" required {{#current.status!='Draft'}}disabled readonly{{/}} type="text" value="{{current.memoDisplay}}">
+          <input autocomplete="off" class="form-control" id="curMemoDisplay" list="memos" placeholder="Please select a template" required {{#current.status!='Draft'}}disabled readonly{{/}} type="text" value="{{current.memoDisplay}}">
           <input id="curMemoRef" required type="hidden" value="{{current.memoRef}}">
           <p class="col-md-offset-4 help-block">The memo template to use for this distribution</p>
         </li>
@@ -33,7 +33,7 @@
       <ul class="form edit-form">
         <li>
           <label class="col-md-4 control-label" for="curOwner">Owner: </label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" {{#current.status!='Draft'}}disabled readonly{{/}} value="{{current.owner}}">
+          <input class="form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" {{#current.status!='Draft'}}disabled readonly{{/}} value="{{current.owner}}">
           <p class="col-md-offset-4 help-block">The user responsible for the distribution.</p>
           <!-- Usually the owner creates and resolves the distribution but may also transfer ownership to another user. -->
         </li>
