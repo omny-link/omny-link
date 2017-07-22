@@ -61,7 +61,7 @@
             <li><label class="col-md-4 col-sm-4"></label><input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/></li>
             <li><label class="col-md-4 col-sm-4 required">Post Code:</label><input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" required value="{{current.postCode}}"></li>
             {{#tenant.features.multiNational}}
-              <li><label class="col-md-4 col-sm-4">Country:</label><input autocomplete="off" class="form-control" list="countries" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
+              <li><label class="col-md-4 col-sm-4">Country:</label><input autocomplete="off" class="form-control" list="countrys" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
             {{/}}
             {{#current.postCode}}
               <li><label class="col-md-4 col-sm-4">Map:</label><a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>

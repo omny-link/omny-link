@@ -422,7 +422,6 @@ var ractive = new BaseRactive({
           stage: ractive.initialOrderStage()
         }
         ractive.get('orders').splice(0, 0, obj);
-        ractive.initStockItemTypeahead();
         ractive.toggleEditOrder(obj);
 
         ractive.set('saveObserver', true);
@@ -494,15 +493,14 @@ var ractive = new BaseRactive({
         delete newOrder.selfRef;
         delete newOrder.lastUpdated;
         newOrder.stage = ractive.initialOrderStage();
-        for (idx in newOrder.orderItems) {
-          delete newOrder.created;
-          // TODO remove tenant-specifics
+        for (var idx = 0 ; idx < newOrder.orderItems.lenght ; idx++) {
+          delete newOrder.orderItems[idx].created;
           delete newOrder.orderItems[idx].customFields.date;
           delete newOrder.orderItems[idx].id;
           delete newOrder.orderItems[idx].links;
           delete newOrder.orderItems[idx].orderItemId;
           delete newOrder.orderItems[idx].selfRef;
-          delete newOrder.lastUpdated;
+          delete newOrder.orderItems[idx].lastUpdated;
         }
         ractive.push('orders', newOrder);
         ractive.set('currentOrderIdx', ractive.get('orders').length-1);
@@ -634,7 +632,6 @@ var ractive = new BaseRactive({
               });
             });
             ractive.set('accountsTypeahead', accData);
-            ractive.initAccountTypeahead();
             ractive.set('saveObserver', true);
           }
         });
@@ -886,60 +883,6 @@ var ractive = new BaseRactive({
         }
         console.log('  emailDomain: ' + emailDomain);
       },
-      initAccountTypeahead: function() {
-        console.info();
-        // if (ractive.get('accountsTypeahead')==undefined)
-        // ractive.fetchAccountsTypeahead();
-        // set up account typeahead
-        $('#curAccountName').typeahead(
-            {
-              items: 'all',
-              minLength: 0,
-              source: ractive.get('accountsTypeahead'),
-              updater: function(item) {
-                ractive.set('current.accountId', item.id);
-                var shortId = item.id.substring(item.id.lastIndexOf('/') + 1);
-                $.each(ractive.get('accounts'), function(i, d) {
-                  if (d.id == shortId) {
-                    ractive.saveAccountLink(ractive.uri(ractive.get('current'))
-                        + '/account', item.id);
-                  }
-                });
-                return item.name;
-              }
-            });
-        $('#curAccountName').on("click", function(ev) {
-          newEv = $.Event("keydown");
-          newEv.keyCode = newEv.which = 40;
-          $(ev.target).trigger(newEv);
-          return true;
-        });
-      },
-      initStockItemTypeahead: function() {
-        console.info('initStockItemTypeahead');
-        $('.stock-item-typeahead').typeahead({
-          items: 'all',
-          minLength: 0,
-          source: ractive.get('stockItemsTypeahead')
-        // updater:function(item) {
-        // ractive.set('current.accountId', item.id);
-        // var shortId = item.id.substring(item.id.lastIndexOf('/')+1);
-        // $.each(ractive.get('accounts'), function(i,d) {
-        // if (d.id == shortId) {
-        // ractive.saveAccountLink(ractive.uri(ractive.get('current'))+'/account',
-        // item.id);
-        // }
-        // });
-        // return item.name;
-        // }
-        });
-        $('.stock-item-typeahead').on("click", function(ev) {
-          newEv = $.Event("keydown");
-          newEv.keyCode = newEv.which = 40;
-          $(ev.target).trigger(newEv);
-          return true;
-        });
-      },
       mergeContacts: function() {
         console.info('mergeContacts');
         ractive.set('contact1', ractive.get('contacts[0]'));
@@ -950,8 +893,6 @@ var ractive = new BaseRactive({
       },
       oninit: function() {
         console.log('oninit');
-//        this.ajaxSetup();
-//        this.loadStandardPartials(this.get('stdPartials'));
       },
       pasteInit: function() {
         ractive.set('pasteData', undefined);
@@ -1341,54 +1282,6 @@ var ractive = new BaseRactive({
           ractive.set('saveObserver', true);
         }
       },
-      searchCompaniesHouse: function() {
-        if (ractive.get('tenant.features.companyBackground') == undefined
-            || ractive.get('tenant.features.companyBackground') == false)
-          return;
-        console.info('searchCompaniesHouse');
-        var q = ractive.get('current.account.name');
-        ractive
-            .sendMessage({
-              name: "omny.companySearch",
-              body: JSON.stringify({
-                companyName: q
-              }),
-              callback: function(results) {
-                console.log('  sendMessage callback...')
-                results = JSON.parse(results);
-                ractive.set('companiesHouseResults', results);
-                var data = jQuery.map(results.items, function(n, i) {
-                  return ({
-                    "id": n.company_number,
-                    "name": n.company_number + ' ' + n.title
-                  });
-                });
-                $('#curCompanyNumber').typeahead({
-                  items: 'all',
-                  minLength: 0,
-                  source: data,
-                  updater: function(item) {
-                    return item.id;
-                  }
-                });
-                $('#curCompanyNumber').on("click", function(ev) {
-                  newEv = $.Event("keydown");
-                  newEv.keyCode = newEv.which = 40;
-                  $(ev.target).trigger(newEv);
-                  return true;
-                });
-                if (ractive.get('current.account.companyNumber') != undefined)
-                  ractive.fetchCompaniesHouseInfo();
-              },
-              pattern: "inOut"
-            })
-            .fail(
-                function(jqXHR, textStatus, errorThrown) {
-                  var msg = "Unable to lookup company data at the moment. Please try later.";
-                  console.warn('msg:' + msg);
-                  ractive.showMessage(msg, 'alert-warning');
-                });
-      },
       select: function(account) {
         console.log('select: ' + account.selfRef);
         ractive.set('saveObserver', false);
@@ -1605,105 +1498,6 @@ var ractive = new BaseRactive({
             });
         }
       },
-      toggleEditOrder: function(obj) {
-        console.info('toggleEditOrder');
-        ractive.set('currentOrderIdx', ractive.get('orders').indexOf(obj));
-        var editing = $('[data-order-id="' + obj.selfRef + '"]').siblings()
-            .children('a.glyphicon-pencil').hasClass('editing');
-        // disable _all_ orders
-        $('[data-order-id]').siblings().children('a.glyphicon-pencil')
-            .removeClass('editing');
-        $('[data-order-id]').removeClass('editing');
-        $('[data-order-id="' + obj.selfRef + '"]>span').removeClass('hidden');
-        $('[data-order-id="' + obj.selfRef + '"]>input').addClass('hidden');
-
-        if (editing) { // Change editable to display
-          ractive.fetchOrders(ractive.get('current'))
-        } else { // Change clicked order to editable
-          $('[data-order-id="' + obj.selfRef + '"]').siblings().children('a.glyphicon-pencil').addClass('editing');
-          $('[data-order-id="' + obj.selfRef + '"]').addClass('editing');
-          $('[data-order-id="' + obj.selfRef + '"]>span').addClass('hidden');
-          $('[data-order-id="' + obj.selfRef + '"]>input').removeClass('hidden');
-          $('[data-order-id="' + obj.selfRef + '"][data-key="contactName"] .typeahead')
-            .typeahead({
-              items: 'all',
-              minLength: 0,
-              source: ractive.get('contactsTypeahead'),
-              afterSelect: function(item) {
-                ractive.set('orders.'+ractive.get('currentOrderIdx')+'.contactId', item.id);
-                ractive.set('orders.'+ractive.get('currentOrderIdx')+'.contactName', item.name);
-              }
-            }).on("click", function(ev) {
-              newEv = $.Event("keydown");
-              newEv.keyCode = newEv.which = 40;
-              $(ev.target).trigger(newEv);
-              return true;
-            }).on("blur", function(ev) {
-
-            });
-          $('[data-order-id="'+obj.selfRef+'"][data-key="stage"] .typeahead')
-            .typeahead({
-              items: 'all',
-              minLength: 0,
-              source: ractive.get('stages')
-            }).on("click", function(ev) {
-              newEv = $.Event("keydown");
-              newEv.keyCode = newEv.which = 40;
-              $(ev.target).trigger(newEv);
-              return true;
-            });
-          $('[data-order-id="' + obj.selfRef + '"] input')
-            .on('blur', function(ev) {
-                ractive.set('saveObserver', false);
-                ractive.set('orders.'+ractive.get('currentOrderIdx')+'.'+$(ev.target).data('key'), ev.target.value);
-                ractive.saveOrder();
-                ractive.set('saveObserver', true);
-              });
-        }
-      },
-      toggleEditOrderItem: function(orderItem) {
-        console.info('toggleEditOrderItem, order: '+orderItem.orderId+', item: '+orderItem.selfRef);
-        var order = Array.findBy('selfRef','/orders/'+orderItem.orderId,ractive.get('orders'));
-        ractive.set('currentOrderIdx', ractive.get('orders').indexOf(order));
-        ractive.set('currentOrderItemIdx', order.orderItems.indexOf(orderItem));
-        var editing = $('[data-order-item-id="' + orderItem.selfRef + '"]')
-            .siblings().children('a.glyphicon-pencil').hasClass('editing');
-        // disable _all_ order-items
-        $('[data-order-item-id]').siblings().children('a.glyphicon-pencil').removeClass('editing');
-        $('[data-order-item-id="' + orderItem.selfRef + '"] span').removeClass('hidden');
-        $('[data-order-item-id="' + orderItem.selfRef + '"] input').addClass('hidden');
-        // Change clicked order-item to editable
-        if (!editing) {
-          $('[data-order-item-id="' + orderItem.selfRef + '"]').siblings().children('a.glyphicon-pencil').addClass('editing');
-          $('[data-order-item-id="' + orderItem.selfRef + '"]').addClass('editing');
-          $('[data-order-item-id="' + orderItem.selfRef + '"] span').addClass('hidden');
-          $('[data-order-item-id="' + orderItem.selfRef + '"] input').removeClass('hidden');
-          $('[data-order-item-id="' + orderItem.selfRef + '"][data-key="stockItem"] .typeahead')
-            .typeahead({
-              items: 'all',
-              minLength: 0,
-              source: ractive.get('stockItemsTypeahead'),
-              afterSelect: function(item) {
-                ractive.set('saveObserver', false);
-                ractive.set('orders.'+ractive.get('currentOrderIdx')+'.orderItems.'+ractive.get('currentOrderItemIdx')+'.customFields.stockItemId', ractive.shortId(item.id));
-                ractive.saveOrderItem();
-                ractive.set('saveObserver', true);
-              }
-            }).on("click", function(ev) {
-              newEv = $.Event("keydown");
-              newEv.keyCode = newEv.which = 40;
-              $(ev.target).trigger(newEv);
-              return true;
-            });
-          $('[data-order-item-id="' + orderItem.selfRef + '"] input:not(.typeahead)')
-            .on('blur', function(ev) {
-              ractive.set('saveObserver', false);
-              ractive.set('orders.'+ractive.get('currentOrderIdx')+'.'+$(ev.target).parent().data('key'), ev.target.value);
-              ractive.saveOrderItem();
-              ractive.set('saveObserver', true);
-            });
-        }
-      },
       toggleOrderSubEntity: function(obj, subEntity) {
         console.log('toggleOrderSubEntity(' + ractive.uri(obj) + ', ' + subEntity
             + ')');
@@ -1781,21 +1575,6 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
   }
 });
 
-/*ractive.observe('currentContact.*', function(newValue, oldValue, keypath) {
-  if (ractive.get('currentContact') != undefined)
-    ractive.showAlertCounters();
-  ignored = [ ];
-  if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1) {
-    console.log('current prop change: ' + newValue + ',' + oldValue + ' '
-        + keypath);
-    ractive.saveContact();
-  } else {
-    // console.warn('Skipped contact save of ' + keypath);
-    // console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
-    // console.log(' saveObserver: '+ractive.get('saveObserver'));
-  }
-});*/
-
 ractive.observe('current.contacts.*.twitter currentContact.twitter', function(newValue, oldValue, keypath) {
   if (ractive.get('saveObserver') && newValue != undefined && newValue != '') {
     ractive.saveContact();
@@ -1817,24 +1596,14 @@ ractive.observe('current.stage', function(newValue, oldValue, keypath) {
   }
 });
 
-ractive.observe('current.name', function(newValue, oldValue, keypath) {
-  // console.log('account name changing from ' + oldValue + ' to ' + newValue);
-  if (ractive.get('saveObserver') && newValue != undefined && newValue != '') {
-    $('#curCompanyNumber').typeahead('destroy');
-    ractive.set('current.companyNumber', undefined);
-    ractive.searchCompaniesHouse();
+ractive.observe('current.businessWebsite', function(newValue, oldValue, keypath) {
+  console.log('account businessWebsite changing from ' + oldValue + ' to '
+      + newValue);
+  if (newValue != undefined && newValue != ''
+      && !(newValue.startsWith('http') || newValue.startsWith('https'))) {
+    ractive.set('current.businessWebsite', 'http://' + newValue);
   }
 });
-
-ractive.observe('current.businessWebsite',
-    function(newValue, oldValue, keypath) {
-      console.log('account businessWebsite changing from ' + oldValue + ' to '
-          + newValue);
-      if (newValue != undefined && newValue != ''
-          && !(newValue.startsWith('http') || newValue.startsWith('https'))) {
-        ractive.set('current.businessWebsite', 'http://' + newValue);
-      }
-    });
 
 ractive.on('filter', function(event, filter) {
   console.info('filter on ' + JSON.stringify(event) + ',' + filter.idx);

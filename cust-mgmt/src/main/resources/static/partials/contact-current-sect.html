@@ -81,7 +81,7 @@
         {{/if}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" {{#if !matchRole('power_user')}}readonly disabled{{/if}} value="{{current.owner}}">
+          <input class="form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" {{#if !matchRole('power_user')}}readonly disabled{{/if}} value="{{current.owner}}">
         </li>
         {{#tenant.show.marketing}}
           <li class="form-group">
@@ -95,13 +95,13 @@
         {{#tenant.show.marketing || tenant.show.stage}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.contactStage}}{{tenant.strings.contactStage}}{{else}}Stage{{/}}:</label>
-            <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" on-blur="initAutoComplete()" value="{{current.stage}}">
+            <input class="form-control" list="contactStages" placeholder="Start typing to filter options" id="curStage" on-blur="initAutoComplete()" value="{{current.stage}}">
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.contactStageHint}}{{tenant.strings.contactStageHint}}{{else}}How far through the sales pipeline are you with this contact?{{/}}</p>
           </li>
           {{# haveStageReasons() }}
             <li class="form-group">
               <label class="col-md-4 col-sm-4">{{#tenant.strings.stageReason}}{{tenant.strings.stageReason}}{{else}}Loss Reason{{/}}:</label>
-              <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStageReason" {{# current.stage=='Cold' }} required{{/}} value="{{current.stageReason}}">
+              <input class="form-control" list="stageReasons" placeholder="Start typing to filter options" id="curStageReason" {{# current.stage=='Cold' }} required{{/}} value="{{current.stageReason}}">
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
             </li>
             <li class="form-group">
@@ -118,13 +118,13 @@
         {{#tenant.show.enquiryType}}
           <li>
             <label class="col-md-4 col-sm-4 col-xs-4">Enquiry Type:</label>
-            <input class="typeahead form-control" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
+            <input class="form-control" list="enquiryTypes" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">The nature of the initial contact</p>
           </li>
         {{/}}
         <li>
           <label class="col-md-4 col-sm-4 col-xs-4">Account Type:</label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
+          <input class="form-control" list="accountTypes" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Defines the nature of the relationship with this contact</p>
         </li>
         <li>
@@ -168,7 +168,7 @@
 	        <ul class="form edit-form">
 	          <li class="form-group">
 	            <label class="col-md-4 col-sm-4">{{#tenant.strings.jobTitle}}{{tenant.strings.jobTitle}}{{else}}Job Title{{/}}:</label>
-	            <input class="form-control typeahead" id="curJobTitle" value="{{current.jobTitle}}"/>
+	            <input class="form-control" id="curJobTitle" value="{{current.jobTitle}}"/>
 	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
 	          </li>
 	          <li>
@@ -243,7 +243,7 @@
 	            {{#tenant.show.multiNational}}
 	              <li>
 	                <label class="col-md-4 col-sm-4">{{#tenant.strings.country}}{{tenant.strings.country}}{{else}}Country{{/}}:</label>
-	                <input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}">
+	                <input autocomplete="false" class="form-control" list="countrys" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}">
 	              </li>
 	            {{/}}
 	            {{#current.postCode}}
@@ -278,17 +278,17 @@
             {{#if tenant.show.marketingDigital && current.source}}
               <li>
                 <label class="col-md-4 col-sm-4">{{#tenant.strings.source}}{{tenant.strings.source}}{{else}}Source{{/}}:</label>
-                <input class="typeahead form-control" placeholder="Start typing to filter options" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}">
+                <input class="form-control" list="sources" placeholder="Start typing to filter options" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}">
               </li>
               <li>
                 <label class="col-md-4 col-sm-4">{{#tenant.strings.medium}}{{tenant.strings.medium}}{{else}}Medium{{/}}:</label>
-                <input class="typeahead form-control" placeholder="Start typing to filter options" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}">
+                <input class="form-control" list="mediums" placeholder="Start typing to filter options" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}">
               </li>
             {{/if}}
             {{#tenant.show.declaredSource}}
               <li>
                 <label class="col-md-4 col-sm-4">{{#tenant.strings.source2}}{{tenant.strings.source2}}{{else}}How heard of us?{{/}}:</label>
-                <input class="typeahead form-control" id="curSource2" placeholder="Start typing to filter options" {{ (matchRole('sales_manager') || matchRole('admin') || matchRole('power_user')) ? '' : 'readonly disabled' }} value="{{current.source2}}">
+                <input class="form-control" list="source2s" id="curSource2" placeholder="Start typing to filter options" {{ (matchRole('sales_manager') || matchRole('admin') || matchRole('power_user')) ? '' : 'readonly disabled' }} value="{{current.source2}}">
               </li>
             {{/}}
           </ul>

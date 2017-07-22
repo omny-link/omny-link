@@ -9,10 +9,10 @@
 
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li class="form-group"><label class="col-md-4 col-sm-4 required">Owner:</label><input class="col-md-8 col-sm-8 form-control typeahead" placeholder="Start typing to filter options" id="curOwner" required value="{{current.owner}}"></li>
+        <li class="form-group"><label class="col-md-4 col-sm-4 required">Owner:</label><input class="col-md-8 col-sm-8 form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" required value="{{current.owner}}"></li>
         <li class="form-group">
           <label class="col-md-4 col-sm-4 required">Status:</label>
-          <input class="col-md-8 col-sm-8 form-control typeahead" placeholder="Start typing to filter options" id="curStatus" required value="{{current.status}}">
+          <input class="col-md-8 col-sm-8 form-control" list="status" placeholder="Start typing to filter options" id="curStatus" required value="{{current.status}}">
           <p class="col-md-offset-4 hidden-sm help-block">Draft, Ready for review, Published etc.</p>
         </li>
         <li class="form-group">

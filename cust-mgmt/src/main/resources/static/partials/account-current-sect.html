@@ -87,7 +87,7 @@
         <li class="form-group">
           <label class="col-md-4 col-sm-4">{{# tenant.strings.companyNumber}}{{tenant.strings.companyNumber}}{{else}}Company Number{{/}}:</label>
           <div class="input-group">
-            <input autocomplete="off" class="typeahead col-md-8 col-sm-8 form-control" id="curCompanyNumber" {{#if tenant.strings.companyNumber == undefined}}pattern="[OCINS0-9]{0,2}[0-9]{4,6}" {{/if}}{{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.companyNumber}}">
+            <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curCompanyNumber" {{#if tenant.strings.companyNumber == undefined}}pattern="[OCINS0-9]{0,2}[0-9]{4,6}" {{/if}}{{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.companyNumber}}">
               <span class="input-group-addon">
                 {{#if current.companyNumber==undefined || current.companyNumber.length==0}}
                   <span>N/A</span>
@@ -100,7 +100,7 @@
         </li>
         <li class="form-group">
           <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" id="curOwner" {{#if !matchRole('power_user')}}readonly disabled{{/if}} value="{{current.owner}}">
+          <input class="form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" {{#if !matchRole('power_user')}}readonly disabled{{/if}} value="{{current.owner}}">
         </li>
         <li class="form-group">
           <label class="col-md-4 col-sm-4">{{#tenant.strings.existingCustomer}}{{tenant.strings.existingCustomer}}{{else}}Existing Customer?{{/}}:</label>
@@ -112,7 +112,7 @@
         {{#if tenant.show.stage}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.accountStage}}{{tenant.strings.accountStage}}{{else}}Stage{{/}}:</label>
-            <input class="typeahead form-control" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
+            <input class="form-control" list="accountStages" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">How far through the sales pipeline are you with this account?</p>
           </li>
         {{/if}}
@@ -124,20 +124,20 @@
           </li>
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.sic}}{{tenant.strings.sic}}{{else}}SIC{{/}}:</label>
-            <input autocomplete="off" class="typeahead form-control" id="curSic" type="text" value="{{current.sic}}"/>
+            <input autocomplete="off" class="form-control" id="curSic" type="text" value="{{current.sic}}"/>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Standard industrial classification of economic activities (SIC)</p>
           </li>
         {{/if}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.accountType}}{{tenant.strings.accountType}}{{else}}Account Type{{/}}:</label>
-          <input class="typeahead form-control" placeholder="Start typing to filter options" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
+          <input class="form-control" list="accountTypes" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Defines the nature of the relationship with this client</p>
         </li>
         {{#tenant.features.enquiryType}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.enquiryType}}{{tenant.strings.enquiryType}}{{else}}Enquiry Type{{/}}:</label>
-            <input class="typeahead form-control" placeholder="Start typing to filter options" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
-            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Defines this client is looking for</p>
+            <input class="form-control" list="enquiryTypes" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Defines what this client is looking for</p>
           </li>
         {{/}}
         <li class="form-group">
@@ -230,7 +230,7 @@
           {{#tenant.show.multiNational}}
             <li class="form-group">
               <label class="col-md-4 col-sm-4">{{#tenant.strings.country}}{{tenant.strings.country}}{{else}}Country{{/}}:</label>
-              <input autocomplete="false" class="typeahead form-control" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}">
+              <input autocomplete="false" class="form-control" list="countries" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}">
             </li>
           {{/}}
         {{/if}}

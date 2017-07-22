@@ -35,13 +35,13 @@
         {{# current.commsPreference}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4 required">Preferred:</label>
-            <input class="typeahead form-control" id="curCommsPreference" on-blur="save()" required value="{{current.commsPreference}}">
+            <input class="form-control" id="curCommsPreference" list="commsPreferences" on-blur="save()" required value="{{current.commsPreference}}">
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
           </li>
         {{/}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4 required">Tenant:</label>
-          <input class="no-update-field typeahead form-control" id="curTenant" on-blur="save()" required type="text" value="{{current.tenant}}">
+          <input class="no-update-field form-control" id="curTenant" on-blur="save()" required type="text" value="{{current.tenant}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
       </ul>

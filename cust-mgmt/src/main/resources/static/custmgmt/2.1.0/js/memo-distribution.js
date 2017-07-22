@@ -250,22 +250,8 @@ var ractive = new BaseRactive({
         }else{
           ractive.merge('memos', data['_embedded'].memos);
         }
-        $('#curMemoDisplay').typeahead({
-          items:'all',
-          minLength:0,
-          source:ractive.initMemosTypeahead(),
-          afterSelect:function(d) {
-            console.info('afterSelect:'+d);
-            ractive.set('current.memoRef',d.id.substring(d.id.lastIndexOf('/')+1));
-          }
-        });
-        $('#curMemoDisplay').on("click", function (ev) {
-          newEv = $.Event("keydown");
-          newEv.keyCode = newEv.which = 40;
-          $(ev.target).trigger(newEv);
-          return true;
-        });
-      }
+        ractive.addDataList({ name: "memos" }, ractive.get('memos'));
+       }
     });
   },
   fetchStatus: function() {
@@ -324,16 +310,6 @@ var ractive = new BaseRactive({
   hideResults: function() {
     $('#memoDistributionsTableToggle').addClass('glyphicon-triangle-right').removeClass('glyphicon-triangle-bottom');
     $('#memoDistributionsTable').slideUp();
-  },
-  initMemosTypeahead: function() {
-    console.info('initMemosTypeahead');
-    return jQuery.map(ractive.get('memos'), function( n, i ) {
-      console.log('n: '+n+', i:'+i);
-      return ( {id: n.selfRef, name: n.name} );
-    });
-  },
-  oninit: function() {
-    console.log('oninit');
   },
   save: function () {
     console.log('save distribution: '+ractive.get('current').name+'...');

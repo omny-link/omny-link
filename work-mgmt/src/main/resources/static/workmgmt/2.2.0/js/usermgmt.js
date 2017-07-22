@@ -125,29 +125,6 @@ var ractive = new BaseRactive({
     $('#usersTableToggle').removeClass('glyphicon-triangle-bottom').addClass('glyphicon-triangle-right');
     $('#usersTable').slideUp();
   },
-  initAutoComplete: function() {
-    console.log('initAutoComplete');
-    var typeaheads = ractive.get('tenant.typeaheadControls');
-    if (typeaheads==undefined) return;
-    $.each(typeaheads, function(i,d) {
-      console.log('binding ' +d.url+' to typeahead control: '+d.selector);
-      $.get(d.url, function(data){
-        $(d.selector).typeahead({ minLength:0,source:data });
-        $(d.selector).on("click", function (ev) {
-          newEv = $.Event("keydown");
-          newEv.keyCode = newEv.which = 40;
-          $(ev.target).trigger(newEv);
-          return true;
-       });
-      },'json');
-    });
-  },
-  initControls: function() {
-    console.log('initControls');
-    ractive.initAutoComplete();
-  },
-  oninit: function() {
-  },
   save: function () {
     console.log('save '+ractive.get('current')+' ...');
     if (!document.getElementById('userForm').checkValidity()) {

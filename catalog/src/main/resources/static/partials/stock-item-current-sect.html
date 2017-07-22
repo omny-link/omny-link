@@ -30,7 +30,7 @@
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}:</label>
 	          <div class="input-group">
-              <input class="form-control" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.stockCategory.name}}">
+              <input class="form-control" list="stockCategories" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.stockCategory.name}}">
 	            <span class="input-group-addon">
                 <a href="stock-categories.html?q={{current.stockCategory.id}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
               </span>

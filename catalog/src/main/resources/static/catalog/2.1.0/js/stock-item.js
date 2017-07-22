@@ -291,20 +291,7 @@ var ractive = new BaseRactive({
           return ( {  "id": ractive.id(n), "name": n.name } );
         });
         ractive.set('stockCategoriesDropDown',stockCategories);
-        $('#curStockCategory').typeahead({
-          items:'all',
-          minLength:0,
-          source:stockCategories,
-//          updater:function(item) {
-//            return item.id;
-//          }
-        });
-        $('#curStockCategory').on("click", function (ev) {
-          newEv = $.Event("keydown");
-          newEv.keyCode = newEv.which = 40;
-          $(ev.target).trigger(newEv);
-          return true;
-        });
+        ractive.addDataList({ name: "stockCategories" }, stockCategories);
         ractive.set('saveObserver', true);
       }
     });
