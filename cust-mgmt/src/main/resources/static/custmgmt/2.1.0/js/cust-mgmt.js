@@ -71,7 +71,7 @@ var ractive = new BaseRactive({
     formatContactId: function(contactId) {
       console.info('formatContactId');
       if (contactId == undefined) return 'n/a';
-      if (contactId == ractive.get('current.selfRef')) return ractive.get('current.fullName');
+      if (contactId.endsWith(ractive.get('current.selfRef'))) return ractive.get('current.fullName');
 
       var contact = Array.findBy('selfRef',contactId,ractive.get('contacts'));
       return contact == undefined ? 'n/a' : contact.fullName;
