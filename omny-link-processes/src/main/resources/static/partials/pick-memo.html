@@ -7,7 +7,7 @@
   <section>
     <div class="form-group">
       <label class="control-label required">Memo Template:</label>
-      <input autocomplete="off" class="form-control" id="curMemoDisplay" placeholder="Please select a template" required style="width:60%;" type="text" value="{{distribution.memoDisplay}}">
+      <input autocomplete="off" class="form-control" id="curMemoDisplay" list="memos" placeholder="Please select a template" required style="width:60%;" type="text" value="{{distribution.memoDisplay}}">
       <input id="curMemoRef" type="hidden" value="{{instanceToStart.processVariables.memoId}}">
       <input id="curMemoName" type="hidden" value="{{instanceToStart.processVariables.memoName}}">
       <p class="help-block">You must select a template to send to your contact.</p>
@@ -15,7 +15,7 @@
     {{#if orders}}
       <div class="form-group">
         <label class="control-label">Order:</label>
-        <input autocomplete="off" class="form-control" id="curOrderDisplay" placeholder="Please select an order" style="width:60%;" type="text" value="{{instanceToStart.processVariables.orderName}}">
+        <input autocomplete="off" class="form-control" id="curOrderDisplay" list="orders" placeholder="Please select an order" style="width:60%;" type="text" value="{{instanceToStart.processVariables.orderName}}">
         <input id="curOrderRef" type="hidden" value="{{instanceToStart.processVariables.orderId}}">
         <input id="curOrderName" type="hidden" value="{{instanceToStart.processVariables.orderName}}">
         <p class="help-block">You must select which {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} is under discussion for some templates.</p>
