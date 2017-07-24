@@ -117,33 +117,24 @@
       console.log('n: '+ractive.tenantUri(n)+', i:'+i);
       return ( {
         id: ractive.shortId(ractive.tenantUri(n)),
-        name: n['name']==null ? ractive.shortId(ractive.tenantUri(n)) : n['name']
+        name: ractive.shortId(ractive.tenantUri(n))
       } );
     }));
-
-    $('#curOrderDisplay').typeahead({
-      items:'all',
-      minLength:0,
-      source: ractive.get('ordersTypeahead'),
-      afterSelect:function(d) {
-        console.info('afterSelect:'+d);
-        ractive.set('instanceToStart.processVariables.orderId',d.id);
-        ractive.set('instanceToStart.processVariables.orderName',d.name);
-        var order = Array.findBy('orderId', d.id, ractive.get('orders'));
+    ractive.addDataList({ name: "orders" }, ractive.get('ordersTypeahead'));
+    $('#curOrderDisplay').blur(function(ev) {
+        console.info('afterSelect:'+ev.target);
+        var orderId = ev.target.value;
+        ractive.set('instanceToStart.processVariables.orderId',orderId);
+        ractive.set('instanceToStart.processVariables.orderName',orderId);
+        var order = Array.findBy('orderId', orderId, ractive.get('orders'));
         if (ractive.get('currentContact')==undefined && order['contactId']!=undefined) {
-        if (order['contactId']!=undefined) {
-          ractive.set('instanceToStart.processVariables.contactId','/contacts/'+order['contactId']);
-        }
-        if (order['stockItem']!=undefined) {
-          ractive.set('instanceToStart.processVariables.stockItemId','/stock-items/'+order['stockItem']['id']);
-        }
+          if (order['contactId']!=undefined) {
+            ractive.set('instanceToStart.processVariables.contactId','/contacts/'+order['contactId']);
+          }
+          if (order['stockItem']!=undefined) {
+            ractive.set('instanceToStart.processVariables.stockItemId','/stock-items/'+order['stockItem']['id']);
+          }
       }
-    }});
-    $('#curOrderDisplay').on("click", function (ev) {
-      newEv = $.Event("keydown");
-      newEv.keyCode = newEv.which = 40;
-      $(ev.target).trigger(newEv);
-      return true;
     });
   }
   function fetchMemos() {
@@ -156,24 +147,16 @@
         console.log('Found '+data.length+' memos.');
         if (data['_embedded'] == undefined) {
           ractive.set('memos', data);
-        }else{
+        } else {
           ractive.set('memos', data['_embedded'].memos);
         }
-        $('#curMemoDisplay').typeahead({
-          items:'all',
-          minLength:0,
-          source: initMemosSource(),
-          afterSelect:function(d) {
-            console.info('afterSelect:'+d);
-            ractive.set('instanceToStart.processVariables.memoId',d.id.substring(d.id.lastIndexOf('/')+1));
-            ractive.set('instanceToStart.processVariables.memoName',d.name);
-          }
-        });
-        $('#curMemoDisplay').on("click", function (ev) {
-          newEv = $.Event("keydown");
-          newEv.keyCode = newEv.which = 40;
-          $(ev.target).trigger(newEv);
-          return true;
+        ractive.addDataList({ name: "memos" }, initMemosSource());
+        $('#curMemoDisplay').blur(function(ev) {
+            console.info('afterSelect:'+ev.target);
+            var memoName = ev.target.value;
+            var memoId = Array.findBy('name',memoName,ractive.get('memoList')).id;
+            ractive.set('instanceToStart.processVariables.memoId',memoId.substring(memoId.lastIndexOf('/')+1));
+            ractive.set('instanceToStart.processVariables.memoName',memoName);
         });
       }
     });
