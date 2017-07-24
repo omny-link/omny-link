@@ -393,6 +393,7 @@ var BaseRactive = Ractive.extend({
   },
   initTags: function() {
     console.info('initTags');
+    if (typeof $(".tag-ctrl")['tagit'] != 'function') return;
     ractive.set('saveObserver', false);
     $('[data-bind]').each(function(i,d) {
       $(d).val(ractive.get($(d).data('bind'))).css('display','none');

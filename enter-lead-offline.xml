@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">
+<info>
+<title>C.1 Enter Lead - offline enquiry</title>
+<date>2016-12-15</date>
+</info>
+<section xml:id="_actor_client_staff">
+<title>Actor: Client Staff</title>
+
+</section>
+<section xml:id="_user_story">
+<title>User story</title>
+<simpara>The user identifies (or is contacted by) an individual who may or may not be associtaed with an organisation and who is potentially interested in the product or service offered by the tenant. The user enters the lead into the Contact page.</simpara>
+</section>
+<section xml:id="_user_outcome">
+<title>User outcome</title>
+<simpara>A new contact and, optionally, account recorded in the CRM with some arbitrary set of standard and custom fields filled out.</simpara>
+</section>
+<section xml:id="_implementation_pre_requisites">
+<title>Implementation pre-requisites</title>
+<itemizedlist>
+<listitem>
+<simpara>Create tenancy, inc. ‘Bot’</simpara>
+</listitem>
+<listitem>
+<simpara>Register client users</simpara>
+</listitem>
+</itemizedlist>
+</section>
+<section xml:id="_implementation">
+<title>Implementation</title>
+<itemizedlist>
+<listitem>
+<simpara>Configure tenant with:</simpara>
+</listitem>
+<listitem>
+<simpara>En/Disable features</simpara>
+</listitem>
+<listitem>
+<simpara>Contact fields</simpara>
+</listitem>
+<listitem>
+<simpara>Enquiry processes</simpara>
+</listitem>
+<listitem>
+<simpara>Check Tenant status page</simpara>
+</listitem>
+<listitem>
+<simpara>Test form and check contact arrives correct in all details. Also that email is sent to enquirer and alert (if configured) to contact owner</simpara>
+</listitem>
+</itemizedlist>
+<simpara>Download Order Form: [ContactMgmtOrderForm.docx](/uploads/94d84d5ffd2d44f5a696fbd3116e3324/ContactMgmtOrderForm.docx)</simpara>
+</section>
+</article>
