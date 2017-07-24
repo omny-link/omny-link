@@ -87,9 +87,9 @@
     </dependency>
     <!-- RSS dependencies -->
     <dependency>
-      <groupId>net.java.dev.rome</groupId>
+      <groupId>com.rometools</groupId>
       <artifactId>rome</artifactId>
-      <version>1.0.0</version>
+      <version>${rometools.version}</version>
     </dependency>
     <dependency>
       <groupId>org.activiti</groupId>
@@ -155,6 +155,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
     </dependency>
      <dependency>
       <groupId>org.toxos.activiti</groupId>

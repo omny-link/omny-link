@@ -1,0 +1,67 @@
+[2016-11-10 12:19:00.391] boot - 659  WARN [http-nio-443-exec-11] --- MessageController: No user associated with this message, this may result in errors if the process author expected a username.
+[2016-11-10 12:19:00.438] boot - 659  WARN [http-nio-443-exec-11] --- MessageRegistry: Unable to deserialise message omny_enquiry, will pass raw message to process instead.
+*****************
+****undefined
+****https://api.omny.link/contacts/6698
+[2016-11-10 12:19:01.694] boot - 659 ERROR [http-nio-443-exec-11] --- AtomicOperationProcessEnd: Error while completing sub process of execution ProcessInstance[16897585]
+java.lang.NullPointerException
+        at org.glassfish.json.JsonObjectBuilderImpl$JsonObjectImpl.getString(JsonObjectBuilderImpl.java:199)
+        at jdk.nashorn.internal.scripts.Script$4$\^eval\_.:program(<eval>:8)
+        at jdk.nashorn.internal.runtime.ScriptFunctionData.invoke(ScriptFunctionData.java:640)
+        at jdk.nashorn.internal.runtime.ScriptFunction.invoke(ScriptFunction.java:228)
+        at jdk.nashorn.internal.runtime.ScriptRuntime.apply(ScriptRuntime.java:393)
+        at jdk.nashorn.api.scripting.NashornScriptEngine.evalImpl(NashornScriptEngine.java:446)
+        at jdk.nashorn.api.scripting.NashornScriptEngine.evalImpl(NashornScriptEngine.java:403)
+        at jdk.nashorn.api.scripting.NashornScriptEngine.evalImpl(NashornScriptEngine.java:399)
+        at jdk.nashorn.api.scripting.NashornScriptEngine.eval(NashornScriptEngine.java:155)
+        at javax.script.AbstractScriptEngine.eval(AbstractScriptEngine.java:233)
+        at org.activiti.engine.impl.scripting.ScriptingEngines.evaluate(ScriptingEngines.java:87)
+        at org.activiti.engine.impl.scripting.ScriptingEngines.evaluate(ScriptingEngines.java:73)
+        at org.activiti.engine.impl.bpmn.behavior.ScriptTaskActivityBehavior.execute(ScriptTaskActivityBehavior.java:62)
+        at org.activiti.engine.impl.pvm.runtime.AtomicOperationActivityExecute.e
+
+
+
+
+
+
+
+[2016-11-10 12:45:54.474] boot - 659 ERROR [SimpleAsyncTaskExecutor-6] --- ExecuteAsyncRunnable: Job 16897864 failed
+java.lang.ClassCastException: org.glassfish.json.JsonObjectBuilderImpl$JsonObjectImpl cannot be cast to javax.json.JsonString
+        at org.glassfish.json.JsonArrayBuilderImpl$JsonArrayImpl.getJsonString(JsonArrayBuilderImpl.java:189)
+
+
+
+
+[2016-11-10 12:46:55.745] boot - 659 ERROR [http-nio-443-exec-2] --- BpmControllerExceptionHandler: Memo with id NotifyToDo not found
+[2016-11-10 12:46:55.761] boot - 659 ERROR [SimpleAsyncTaskExecutor-12] --- UrlResource: Response code: 404, no details
+
+
+
+
+
+[2016-11-10 13:49:30.978] boot - 659 ERROR [SimpleAsyncTaskExecutor-15] --- ExecuteAsyncRunnable: Job 16898193 failed
+org.activiti.engine.ActivitiException: Error while evaluating expression: userInfo('cust-mgmt-url')/${tenantId}/contacts/searchByEmail?email=${contact.getString('owner')}
+        at org.activiti.engine.impl.el.JuelExpression.getValue(JuelExpression.java:57)
+        at com.knowprocess.core.internal.BaseUserAwareTask.lookup(BaseUserAwareTask.java:28)
+
+
+
+
+[2016-11-10 13:56:31.526] boot - 659 ERROR [SimpleAsyncTaskExecutor-23] --- ExecuteAsyncRunnable: Job 16898314 failed
+org.activiti.engine.ActivitiException: Unknown property used in expression: userInfo('cust-mgmt-url')/${tenantId}/memos/${memoName}
+        at org.activiti.engine.impl.el.JuelExpression.getValue(JuelExpression.java:53)
+
+Caused by: org.activiti.engine.impl.javax.el.PropertyNotFoundException: Cannot resolve identifier 'memoName'
+        at org.activiti.engine.impl.juel.AstIdentifier.eval(AstIdentifier.java:83)
+
+
+
+cuteAsyncRunnable: Job 17028679 failed
+java.lang.ClassCastException: org.glassfish.json.JsonObjectBuilderImpl$JsonObjectImpl cannot be cast to javax.json.JsonString
+        at org.glassfish.json.JsonArrayBuilderImpl$JsonArrayImpl.getJsonString(JsonArrayBuilderImpl.java:189)
+        at org.glassfish.json.JsonArrayBuilderImpl$JsonArrayImpl.getString(JsonArrayBuilderImpl.java:200)
+        at jdk.nashorn.internal.scripts.Script$5903$\^eval\_.:program(<eval>:1)
+        at jdk.nashorn.internal.runtime.ScriptFunctionData.invoke(ScriptFunctionData.java:640)
+
+
