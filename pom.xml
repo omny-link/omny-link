@@ -30,6 +30,7 @@
     <work-mgmt.version>2.2.0-SNAPSHOT</work-mgmt.version>
     <activiti.bdd.version>5.19.0.20161207</activiti.bdd.version>
     <onedecision.version>1.2.0-RC1</onedecision.version>
+    <rometools.version>1.7.0</rometools.version>
     <xerces.version>2.11.0</xerces.version>
   </properties>
 
