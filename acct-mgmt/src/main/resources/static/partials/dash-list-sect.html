@@ -34,7 +34,7 @@
               {{#if theme == undefined}}
                 {{name == undefined ? tenantId : name}}
               {{else}}
-                <img alt="Logo for {{tenantId}}" class="brand-logo" src="{{theme.logoUrl}}">
+                <img alt="Logo for {{tenantId}}" class="brand-logo" src="{{theme.logoUrl}}" title="Logo for {{tenantId}}">
               {{/if}}
             </td>
             <td on-click="edit(this)">{{contacts}}</td>
@@ -49,6 +49,11 @@
             <td class="col-actions">
               <a class="clickable glyphicon glyphicon-btn glyphicon-bell" aria-hidden="true" onclick="ractive.checkServiceLevels('{{tenantId}}')" title="Check service levels for all contacts"></a>
               <a class="clickable glyphicon glyphicon-btn glyphicon-compressed" aria-hidden="true" onclick="ractive.archive('{{tenantId}}')" title="Remove historic instances"></a>
+              {{#if cocnfigUrl}}
+                <a class="clickable admin glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" href="{{configUrl}}" title="Open the tenant configuration in a new window"></a>
+              {{else}}
+                <a class="clickable admin glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" href="/tenants/{{tenantId}}.json" title="Open the tenant configuration in a new window"></a>
+              {{/if}}
               <!-- <a class="clickable admin glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" href="/status.html?tenantId={{tenantId}}" title="Open the tenant status page in a new window"></a>-->
             </td>
           </tr>

@@ -122,6 +122,16 @@
     </div>
   </form>
 
+  <div id="currentActions" style="clear: both">
+    <h2 id="actions">Actions</h2>
+    <h3 id="accountActions">Account Actions</h3>
+    {{>statusTable { property: 'accountActions', showStatus: false }}}
+    <h3 id="contactActions">Contact Actions</h3>
+    {{>statusTable { property: 'contactActions', showStatus: false }}}
+    <h3 id="orderActions">Order Actions</h3>
+    {{>statusTable { property: 'orderActions', showStatus: false }}}
+  </div>
+
   <form class="inline-form form" id="currentForm">
     <h2 id="filters">
       <span>Filters</span>
@@ -162,9 +172,9 @@
           <td>{{current.bot.ccAccount}}</td>
           <td>
             {{# current.bot.valid==true}}
-              <span class="glyphicon glyphicon-btn glyphicon-ok-sign glyphicon-success" id="curBotValid" title="Deployed and ready"></span>
+              <span class="glyphicon glyphicon-ok-sign glyphicon-success" id="curBotValid" title="Deployed and ready"></span>
             {{else}}
-              <span class="glyphicon glyphicon-btn glyphicon-remove-sign glyphicon-danger" id="curBotInvalid" title="Missing or out of date"></span>
+              <span class="glyphicon glyphicon-btn glyphicon-remove-sign alert-danger" id="curBotInvalid" title="Missing or out of date"></span>
               {{#if current.bot.apiKey}}
                 <span class="glyphicon glyphicon-btn glyphicon-repeat" id="curBotCreate" on-click="createBot(true)" title="Re-create the bot user"></span>
               {{else}}
