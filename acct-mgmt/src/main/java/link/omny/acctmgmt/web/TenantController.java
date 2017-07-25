@@ -161,6 +161,7 @@ public class TenantController {
         for (Tenant tenant : list) {
             TenantSummary summary = new TenantSummary();
             summary.setTenantId(tenant.getId());
+            summary.setConfigUrl(tenant.getRemoteUrl());
 
             try {
                 TenantConfig tenantConfig = tenantConfigController
@@ -230,6 +231,7 @@ public class TenantController {
         private Long users;
         private Date lastLogin;
         private Date lastActivity;
+        private String configUrl;
         private ThemeConfig theme;
         private List<TenantProcess> processes;
     }

@@ -62,6 +62,16 @@ a.glyphicon:focus,
 h1.navbar-top span {
   padding-left: 20px;
 }
+.btn-default {
+  background-image: none;
+  color: %1$s;
+  border-color: %1$s;
+}
+.btn.active,.btn:active,.btn:hover {
+  background-color: %1$s;
+  border-color: %1$s;
+  color: white;
+}
 /* END BOOTSTRAP OVERRIDES */
 .omny-dropdown.dropdown-menu li.divider {
   background-color: %4$s;

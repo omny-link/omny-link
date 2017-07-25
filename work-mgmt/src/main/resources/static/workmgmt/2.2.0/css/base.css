@@ -362,6 +362,9 @@ tfoot th {
   min-width: 80px;
   padding: 12px 12px;
 }
+.btn-default {
+  background-image: none;
+}
 .btn-h2 {
   margin-top: -7px;
 }
@@ -369,7 +372,11 @@ tfoot th {
   left: -7px;
 }
 .col-actions {
+	line-height: 2.4em;
   min-width: 105px !important;
+}
+.tenants.table td.col-actions {
+  line-height: 2.4em;
 }
 .col-truncate {
 	width: 200px;
@@ -437,6 +444,23 @@ input[type="checkbox"].form-control:focus {
   color: #0e9acd;
   min-width: 36px;
   text-align: center;
+}
+
+.glyphicon-new-window {
+  padding: 4px 7px;
+}
+/* Weird edge case */
+#orderSect h3 .glyphicon-new-window {
+  padding-top: 5px;
+  padding-bottom: 3px;
+}
+.glyphicon-remove {
+  padding: 4px 7px;
+}
+/* Weird edge case */
+#currentContactForm .table .glyphicon-remove,
+#currentOrderForm .table .glyphicon-remove {
+  padding: 6px;
 }
 .glyphicon-success {
   color: #3c763d;
@@ -741,9 +765,6 @@ h2 a.glyphicon:hover {
 .currentBody {
 	margin-top: 10px;
 }
-a.dropdown {
-	margin-left: -5px;
-}
 .omny-filter.dropdown-menu li:nth-child(1) {
   margin-top: 10px;
 }
@@ -1003,10 +1024,6 @@ h4 a.glyphicon-remove {
   position: relative;
   top: -12px;
 }
-/* removed to fix account contacts
-a.glyphicon-remove {
-  padding: 4px 6px;
-}*/
 ul.json {
 	list-style: none;
   position: relative;

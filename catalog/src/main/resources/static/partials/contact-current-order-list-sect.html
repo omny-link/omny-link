@@ -6,7 +6,7 @@
   </h3>
   <div class="col-md-12" id="currentOrders" style="display:none">
     <form id="currentOrderForm">
-		  <table class="active-table table table-striped">
+		  <table class="table table-striped">
 		    <thead>
 		      <tr>
 		        <th on-click="['sortOrder',orderId]" title="Order reference">Ref.<span class="sortable {{ sortedOrder('orderId') }} glyphicon glyphicon-btn "></th>
@@ -104,7 +104,7 @@
                   <span title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">{{invoiceRef}}</span>
                 </td>
               {{/if}}
-		          <td class="actions">
+		          <td class="col-actions">
 		            <a class="glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" href="orders.html?q={{#orderId}}{{orderId}}{{else}}{{id}}{{/}}" target="_blank" title="Edit this record"></a>
 	              <a class="glyphicon glyphicon-btn glyphicon-duplicate" aria-hidden="true" on-click="cloneOrder(.)" title="Duplicate this record"></a>
 			          {{#if tenant.show.orderItems && orderItems}}
