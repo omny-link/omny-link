@@ -115,34 +115,18 @@
         {{/if}}
         {{#if tenant.show.socialAccount}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">Twitter:</label>
-            <div class="input-group">
-              <input class="col-md-8 col-sm-8 form-control" id="curBusinessTwitter" pattern="@[a-zA-Z0-9_]{1,16}" type="text" value="{{current.account.twitter}}"/>
-              <span class="input-group-addon">
-                <a href="https://twitter.com/{{current.account.twitter}}" target="_newtab"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
-              </span>
+            <div class="btn-group col-md-offset-4 col-sm-offset-4" role="group" aria-label="...">
+              <a class="glyphicon glyphicon-btn kp-icon-twitter{{^current.account.twitter}} disabled{{/}}" {{#current.account.twitter}}href="https://twitter.com/{{current.account.twitter}}"{{else}}disabled {{/}} target="_newtab"></a>
+              <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showSocial('twitter','current.account.twitter')"></a>
             </div>
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include @</p>
-          </li>
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4">Facebook:</label>
-            <div class="input-group">
-              <input class="col-md-8 col-sm-8 form-control" id="curBusinessFacebook" type="url" value="{{current.account.facebook}}"/>
-              <span class="input-group-addon">
-                <a href="{{current.account.facebook}}" target="_newtab"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
-              </span>
+            <div class="btn-group" role="group" aria-label="...">
+              <a class="glyphicon glyphicon-btn kp-icon-linkedin{{^current.account.linkedIn}} disabled{{/}}" {{#current.account.linkedIn}}href="{{current.account.linkedIn}}"{{else}}disabled {{/}} target="_newtab"></a>
+              <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showSocial('linkedIn','current.account.linkedIn')"></a>
             </div>
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
-          </li>
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4">LinkedIn:</label>
-            <div class="input-group">
-              <input class="col-md-8 col-sm-8 form-control" id="curBusinessLinkedIn" type="url" value="{{current.account.linkedIn}}"/>
-              <span class="input-group-addon">
-                <a href="{{current.account.linkedIn}}" target="_newtab"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
-              </span>
+            <div class="btn-group" role="group" aria-label="...">
+              <a class="glyphicon glyphicon-btn kp-icon-facebook{{^current.account.facebook}} disabled{{/}}" {{#current.account.facebook}}href="{{current.account.facebook}}"{{/}} target="_newtab"></a>
+              <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showSocial('facebook','current.account.facebook')"></a>
             </div>
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
           </li>
         {{/if}}
       </ul>
@@ -150,12 +134,12 @@
 
     {{#tenant.show.accountDescription}}
       <div id="currentAccountDesc" class="col-md-12 col-sm-12 col-xs-12" {{#if primary == 'contacts'}}style="display:none"{{/if}}>
-          <ul class="form edit-form">
-            <li class="form-group">
-              <label class="textarea col-md-2 col-sm-4">{{#if tenant.strings.contactDescription}}{{tenant.strings.contactDescription}}{{else}}Additional info{{/if}}:</label>
-              <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#if tenant.strings.contactDescriptionHint}}{{tenant.strings.contactDescriptionHint}}{{else}}Additional info{{/if}}" value="{{current.account.description}}"></textarea>
-            </li>
-          </ul>
+        <ul class="form edit-form">
+          <li class="form-group">
+            <label class="textarea col-md-2 col-sm-4">{{#if tenant.strings.contactDescription}}{{tenant.strings.contactDescription}}{{else}}Additional info{{/if}}:</label>
+            <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#if tenant.strings.contactDescriptionHint}}{{tenant.strings.contactDescriptionHint}}{{else}}Additional info{{/if}}" value="{{current.account.description}}"></textarea>
+          </li>
+        </ul>
       </div>
     {{/}}
 
@@ -174,4 +158,6 @@
   {{#tenant.show.companyBackground}}
     {{>currentCompanyBackground}}
   {{/}}
+
+  {{>socialModal}}
 </form>

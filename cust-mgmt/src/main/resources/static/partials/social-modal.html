@@ -1,0 +1,23 @@
+{{#if current.network}}
+  <div class="modal fade" id="socialModalSect" tabindex="-1" role="dialog" aria-labelledby="socialModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h1 class="modal-title" id="socialModalLabel">Set {{current.network.name.toLabel()}} details</h1>
+        </div>
+        <div class="modal-body">
+          <form id="socialForm" class="form">
+            <label class="col-md-2 col-sm-4">{{current.network.name.toLabel()}}:</label>
+            <input class="col-md-10 col-sm-8 form-control" value="{{current.network.value}}"/>
+            <p class="col-md-offset-2 col-sm-offset-4 hidden-xs help-block">Remember to include {{#current.network.name=='twitter'}} @{{else}} https://{{/}}</p>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="cancelSocialForm" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button id="submitSocialForm" type="button" class="btn btn-primary" on-click="submitSocial(current.network)">Set {{current.network.name.toLabel()}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{{/if}}
