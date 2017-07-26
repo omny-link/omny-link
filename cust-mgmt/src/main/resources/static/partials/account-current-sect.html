@@ -235,7 +235,20 @@
           {{/}}
         {{/if}}
         {{#if tenant.show.socialAccount}}
-           <li class="form-group">{{>socialControls}}</li>
+          <li class="form-group">
+            <div class="btn-group col-md-offset-4 col-sm-offset-4" role="group" aria-label="...">
+              <a class="glyphicon glyphicon-btn kp-icon-twitter{{^current.twitter}} disabled{{/}}" {{#current.twitter}}href="https://twitter.com/{{current.twitter}}"{{else}}disabled {{/}} target="_newtab"></a>
+              <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showSocial('twitter','current.twitter')"></a>
+            </div>
+            <div class="btn-group" role="group" aria-label="...">
+              <a class="glyphicon glyphicon-btn kp-icon-linkedin{{^current.linkedIn}} disabled{{/}}" {{#current.linkedIn}}href="{{current.linkedIn}}"{{else}}disabled {{/}} target="_newtab"></a>
+              <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showSocial('linkedIn','current.linkedIn')"></a>
+            </div>
+            <div class="btn-group" role="group" aria-label="...">
+              <a class="glyphicon glyphicon-btn kp-icon-facebook{{^current.facebook}} disabled{{/}}" {{#current.facebook}}href="{{current.facebook}}"{{/}} target="_newtab"></a>
+              <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showSocial('facebook','current.facebook')"></a>
+            </div>
+          </li>
         {{/if}}
       </ul>
     </div>
@@ -383,4 +396,5 @@
     {{>currentDocumentListSect}}
   {{/if}}
 
+  {{>socialModal}}
 </section>
