@@ -90,6 +90,7 @@
   "typeaheadControls": [
     { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},
     { "name": "commsPreference", "ref": "#curCommsPreference", "url": "/data/comms-preference.json"},
+    { "name": "contactStages", "ref": "#curStage", "url": "/data/omny/stages.json"},
     { "name": "countries", "ref": "#curCountry", "url": "/data/countries.json"},
     { "name": "currentSiteCapability", "ref": "#curCurrentSiteCapability", "url": "/data/omny/current-site-capabilities.json"},
     { "name": "decisionMakingRole", "ref": "#curDecisionMakingRole", "url": "/data/omny/decision-making-roles.json"},
@@ -100,7 +101,6 @@
     { "name": "media", "ref": "#curMedium", "url": "/data/media.json"},
     { "name": "sectors", "ref": "#curSector", "url": "/data/omny/sectors.json"},
     { "name": "sources", "ref": "#curSource", "url": "/data/sources.json"},
-    { "name": "stages", "ref": "#curStage", "url": "/data/omny/stages.json"},
     { "name": "status", "ref": "#curStatus", "url": "/data/status.json"},
     { "name": "tenants", "ref": "#curTenant", "url": "/data/tenants.json"}
   ],

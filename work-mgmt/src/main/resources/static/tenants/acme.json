@@ -85,6 +85,7 @@
   "typeaheadControls": [
     { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},
     { "name": "commsPreference", "ref": "#curCommsPreference", "url": "/data/comms-preference.json"},
+    { "name": "contactStages", "ref": "#curStage", "url": "/data/omny/stages.json"},
     { "name": "countries", "ref": "#curCountry", "url": "/data/countries.json"},
     { "name": "enquiryTypes", "ref": "#curEnquiryType", "values": [
         {  "id": "Explosives", "name": "Explosives"  },
@@ -97,7 +98,6 @@
     { "name": "media", "ref": "#curMedium", "url": "/data/media.json"},
     { "name": "sectors", "ref": "#curSector", "url": "/data/omny/sectors.json"},
     { "name": "sources", "ref": "#curSource", "url": "/data/sources.json"},
-    { "name": "stages", "ref": "#curStage", "url": "/data/stages.json"},
     { "name": "status", "ref": "#curStatus", "url": "/data/status.json"},
     { "ref": "#orderStatus", "url": "/data/status.json"}
   ],
