@@ -599,12 +599,12 @@ var BaseRactive = Ractive.extend({
   },
   showSocial: function(networkName, keypath) {
     console.log('showSocial: '+networkName);
-    ractive.set('network', { name: networkName, keypath: keypath, value: ractive.get(keypath) });
+    ractive.set('current.network', { name: networkName, keypath: keypath, value: ractive.get(keypath) });
     $('#socialModalSect').modal('show');
   },
   submitSocial: function(network) {
     console.log('submitSocial: '+network);
-    ractive.set(network.keypath,ractive.get('network.value'));
+    ractive.set(network.keypath,ractive.get('current.network.value'));
     $('#socialModalSect').modal('hide');
   },
   sortChildren: function(childArray, sortBy, asc) {
