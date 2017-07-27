@@ -606,32 +606,7 @@ var ractive = new BaseRactive({
             if (ractive.hasRole('admin')) $('.admin').show();
             if (ractive.hasRole('power-user')) $('.power-user').show();
             if (ractive.fetchCallbacks != null) ractive.fetchCallbacks.fire();
-            ractive.fetchAccountsTypeahead();
             ractive.showSearchMatched();
-            ractive.set('saveObserver', true);
-          }
-        });
-      },
-      fetchAccountsTypeahead: function() {
-        console.info('fetchAccountsTypeahead...');
-        ractive.set('saveObserver', false);
-        $.ajax({
-          dataType: "json",
-          url: ractive.getServer() + '/' + ractive.get('tenant.id')
-              + '/accounts/',
-          crossDomain: true,
-          success: function(data) {
-            if (data['_embedded'] != undefined) {
-              data = data['_embedded'].accounts;
-            }
-            console.log('fetched ' + data.length + ' accounts for typeahead');
-            var accData = jQuery.map(data, function(n, i) {
-              return ({
-                "id": ractive.id(n),
-                "name": n.name
-              });
-            });
-            ractive.set('accountsTypeahead', accData);
             ractive.set('saveObserver', true);
           }
         });
@@ -1585,14 +1560,6 @@ ractive.observe('current.stage', function(newValue, oldValue, keypath) {
   // console.log('stage changing from ' + oldValue + ' to ' + newValue);
   if (newValue == 'Cold' && ractive.get('current.stageDate') == undefined) {
     ractive.set('current.stageDate', new Date());
-    $('#curStageReason').typeahead({
-      items: 'all',
-      minLength: 0,
-      source: ractive.get('stageReasons'),
-      updater: function(item) {
-        return item.id;
-      }
-    });
   }
 });
 

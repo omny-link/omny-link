@@ -259,42 +259,6 @@ var ractive = new BaseRactive({
       ractive.set('saveObserver',true);
     });
   },
-  fetchStockCategories: function () {
-    console.info('fetchStockCategories...');
-    ractive.set('saveObserver', false);
-    $.ajax({
-      dataType: "json",
-      url: ractive.getServer()+'/stock-categories/',
-      crossDomain: true,
-      success: function( data ) {
-        if (data['_embedded'] == undefined) {
-          ractive.merge('stockCategories', data);
-        } else {
-          ractive.merge('stockCategories', data['_embedded'].stockCategories);
-        }
-        // set up stockCategory typeahead
-        var stockCategories = jQuery.map( ractive.get('stockCategories'), function( n, i ) {
-          return ( {  "id": ractive.id(n), "name": n.name } );
-        });
-        ractive.set('stockCategoriesDropDown',stockCategories);
-        $('#curStockCategory').typeahead({
-          items:'all',
-          minLength:0,
-          source:stockCategories,
-//          updater:function(item) {
-//            return item.id;
-//          }
-        });
-//        $('#curCompanyName').on("click", function (ev) {
-//          newEv = $.Event("keydown");
-//          newEv.keyCode = newEv.which = 40;
-//          $(ev.target).trigger(newEv);
-//          return true;
-//        });
-        ractive.set('saveObserver', true);
-      }
-    });
-  },
   filter: function(filter) {
     console.log('filter: '+JSON.stringify(filter));
     ractive.set('filter',filter);

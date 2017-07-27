@@ -11,12 +11,12 @@
       <ul class="form inline-form edit-form">
         <li class="form-group">
           <label class="col-md-4 col-sm-4 required">Name:</label>
-          <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curAccountName" required value="{{current.account.name}}">
+          <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curAccountName" list="accounts" required value="{{current.account.name}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
         </li>
         <li class="form-group">
           <label class="col-md-4 col-sm-4">{{# tenant.strings.companyNumber}}{{tenant.strings.companyNumber}}{{else}}Company Number{{/}}:</label>
-          <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curCompanyNumber" pattern="[OCINS0-9]{0,2}[0-9]{6}" {{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.account.companyNumber}}">
+          <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curCompanyNumber" list="companies" pattern="[OCINS0-9]{0,2}[0-9]{6}" {{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.account.companyNumber}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
         </li>
         {{# false && current.account.companyNumber}}

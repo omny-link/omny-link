@@ -294,35 +294,17 @@ var ractive = new BaseRactive({
     console.log('addContact...');
     $('h2.edit-form,h2.edit-field').hide();
     $('.create-form,create-field').show();
-    var contact = { account: {}, author:$auth.getClaim('sub'), tenantId: ractive.get('tenant.id'), url: undefined };
-    ractive.select( contact );
+    ractive.select({
+      account: {},
+      author:$auth.getClaim('sub'),
+      owner:$auth.getClaim('sub'),
+      phone1:'', phone2:'',
+      stage: ractive.initialContactStage(),
+      tenantId: ractive.get('tenant.id'),
+      url: undefined
+    });
     ractive.initTags();
     ractive.showAlertCounters();
-  },
-  addOrder : function() {
-    console.log('addOrder ...');
-    ractive.set('saveObserver', false);
-
-    var obj = {
-      selfRef: '',
-      contactId: ractive.shortId(ractive.uri(ractive.get('current'))),
-      tenantId: ractive.get('tenant.id'),
-      orderItems: [],
-      stage: ractive.initialOrderStage()
-    }
-    ractive.splice('orders',0, 0, obj);
-    ractive.set('currentOrderIdx',0);
-    ractive.toggleEditOrder(obj);
-
-    ractive.set('saveObserver', true);
-    if ($('#orderSect div:visible').length == 0) $('#orderSect .ol-collapse').click();
-  },
-  addOrderItems: function(orderId, form) {
-    var order = Array.findBy('selfRef',orderId,ractive.get('orders'));
-    ractive.set('currentOrderIdx', ractive.get('orders').indexOf(order));
-    var label = 'Add order items';
-    if (ractive.get('tenant.strings.addOrderItems')!=undefined) label = ractive.get('tenant.strings.addOrderItems');
-    ractive.startCustomAction('AddOrderItems', label, order, form, label);
   },
   addSector: function () {
     console.log('addSector ...');
@@ -442,10 +424,9 @@ var ractive = new BaseRactive({
   fetchAccounts: function () {
     console.info('fetchAccounts...');
     ractive.set('saveObserver', false);
-    $( document ).ajaxStart(function() {});
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+ractive.get('tenant.id')+'/accounts/',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/accounts/',
       crossDomain: true,
       success: function( data ) {
         if (data['_embedded'] != undefined) {
@@ -458,7 +439,7 @@ var ractive = new BaseRactive({
           return ( {  "id": ractive.id(n), "name": n.name } );
         });
         ractive.set('accountsTypeahead',accData);
-        ractive.initAccountTypeahead();
+        ractive.addDataList({ name: "accounts" }, accData);
         ractive.set('saveObserver', true);
       }
     });
@@ -603,31 +584,6 @@ var ractive = new BaseRactive({
       ractive.set('current.account.businessWebsite','http://'+emailDomain);
     }
     console.log('  emailDomain: '+emailDomain);
-  },
-  initAccountTypeahead: function() {
-    console.info();
- // set up account typeahead
-    $('#curAccountName').typeahead({
-      items:'all',
-      minLength:0,
-      source:ractive.get('accountsTypeahead'),
-      updater:function(item) {
-        ractive.set('current.accountId', item.id);
-        var shortId = item.id.substring(item.id.lastIndexOf('/')+1);
-        $.each(ractive.get('accounts'), function(i,d) {
-          if (d.id == shortId) {
-            ractive.saveAccountLink(ractive.uri(ractive.get('current'))+'/account', item.id);
-          }
-        });
-        return item.name;
-      }
-    });
-    $('#curAccountName').on("click", function (ev) {
-      newEv = $.Event("keydown");
-      newEv.keyCode = newEv.which = 40;
-      $(ev.target).trigger(newEv);
-      return true;
-    });
   },
   mergeContacts: function() {
     console.info('mergeContacts');
@@ -965,20 +921,7 @@ var ractive = new BaseRactive({
         var data = jQuery.map( results.items, function( n, i ) {
           return ( {  "id": n.company_number, "name": n.company_number +' '+n.title } );
         });
-        $('#curCompanyNumber').typeahead({
-          items:'all',
-          minLength:0,
-          source:data,
-          updater:function(item) {
-            return item.id;
-          }
-        });
-        $('#curCompanyNumber').on("click", function (ev) {
-          newEv = $.Event("keydown");
-          newEv.keyCode = newEv.which = 40;
-          $(ev.target).trigger(newEv);
-          return true;
-        });
+        ractive.addDataList({ name: "companies" }, data);
         if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
       },
       pattern:"inOut"
@@ -992,10 +935,11 @@ var ractive = new BaseRactive({
   select: function(contact) {
     console.log('select: '+JSON.stringify(contact));
     ractive.set('saveObserver',false);
-    if (ractive.get('tenant.show.account') && ractive.get('accounts').length==0) {
+    if (ractive.get('tenant.show.account')
+        && (ractive.get('current.account')==undefined || ractive.get('current.account.name')=='')) {
       // This is not viable as it causes the UI to hang once have a couple of
       // thousand accounts. Also a very rare case that it's needed
-      //ractive.fetchAccounts();
+      ractive.fetchAccounts();
     }
     if (contact.account == undefined || contact.account == '') contact.account = new Object();
     // default owner to current user
@@ -1037,8 +981,9 @@ var ractive = new BaseRactive({
         ractive.sortChildren('documents','created',false);
         if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
         ractive.analyzeEmailActivity(ractive.get('current.activities'));
-        if (ractive.get('current.account')==undefined || ractive.get('current.account.name')==undefined) {
-          //ractive.initAccountTypeahead();
+        if (ractive.get('tenant.features.account')==true
+            && (ractive.get('current.account')==undefined || ractive.get('current.account.name')==undefined)) {
+          ractive.fetchAccounts();
         } else if (ractive.get('current.account.businessWebsite')==undefined || ractive.get('current.account.businessWebsite')=='') {
           ractive.inferDomainName();
         }
@@ -1125,88 +1070,6 @@ var ractive = new BaseRactive({
     console.info('toggleAllNotes');
     $('#notesTable tr.unfavorite').slideToggle();
     $(btn).toggleClass('glyphicon-star glyphicon-star-empty');
-  },
-  toggleEditOrder : function(obj) {
-    console.info('toggleEditOrder');
-    ractive.set('currentOrderIdx', ractive.get('orders').indexOf(obj));
-    var editing = $('[data-order-id="' + obj.selfRef + '"]').siblings()
-        .children('a.glyphicon-pencil').hasClass('editing');
-    // disable _all_ orders
-    $('[data-order-id]').siblings().children('a.glyphicon-pencil')
-        .removeClass('editing');
-    $('[data-order-id]').removeClass('editing');
-    $('[data-order-id="' + obj.selfRef + '"]>span').removeClass('hidden');
-    $('[data-order-id="' + obj.selfRef + '"]>input').addClass('hidden');
-
-    if (editing) { // Change editable to display
-      ractive.fetchOrders(ractive.get('current'));
-    } else { // Change clicked order to editable
-      $('[data-order-id="' + obj.selfRef + '"]').siblings().children('a.glyphicon-pencil').addClass('editing');
-      $('[data-order-id="' + obj.selfRef + '"]').addClass('editing');
-      $('[data-order-id="' + obj.selfRef + '"]>span').addClass('hidden');
-      $('[data-order-id="' + obj.selfRef + '"]>input').removeClass('hidden');
-      $('[data-order-id="' + obj.selfRef + '"][data-key="contactName"] .typeahead')
-        .typeahead({
-          items : 'all',
-          minLength : 0,
-          source : ractive.get('contactsTypeahead'),
-          afterSelect : function(item) {
-            ractive.set('orders.'+ractive.get('currentOrderIdx')+'.contactId', item.id);
-            ractive.set('orders.'+ractive.get('currentOrderIdx')+'.contactName', item.name);
-          }
-        }).on("click", function(ev) {
-          newEv = $.Event("keydown");
-          newEv.keyCode = newEv.which = 40;
-          $(ev.target).trigger(newEv);
-          return true;
-        }).on("blur", function(ev) {
-
-        });
-      $('[data-order-id="'+obj.selfRef+'"][data-key="stage"] .typeahead')
-        .typeahead({
-          items : 'all',
-          minLength : 0,
-          source : ractive.get('stages')
-        }).on("click", function(ev) {
-          newEv = $.Event("keydown");
-          newEv.keyCode = newEv.which = 40;
-          $(ev.target).trigger(newEv);
-          return true;
-        });
-      $('[data-order-id="' + obj.selfRef + '"] input')
-        .on('blur', function(ev) {
-            ractive.set('saveObserver', false);
-            ractive.set('orders.'+ractive.get('currentOrderIdx')+'.'+$(ev.target).data('key'), ev.target.value);
-            ractive.saveOrder();
-            ractive.set('saveObserver', true);
-          });
-    }
-  },
-  toggleEditOrderItem : function(order, orderItem) {
-    console.info('toggleEditOrderItem');
-    orderItem.orderId = ractive.shortId(order.selfRef);
-    ractive.set('currentOrderIdx', ractive.get('orders').indexOf(order));
-    ractive.set('currentOrderItemIdx', order.orderItems.indexOf(orderItem));
-    var editing = $('[data-order-item-id="' + orderItem.selfRef + '"]')
-        .siblings().children('a.glyphicon-pencil').hasClass('editing');
-    // disable _all_ order-items
-    $('[data-order-item-id]').siblings().children('a.glyphicon-pencil').removeClass('editing');
-    $('[data-order-item-id="' + orderItem.selfRef + '"] span').removeClass('hidden');
-    $('[data-order-item-id="' + orderItem.selfRef + '"] input').addClass('hidden');
-    // Change clicked order-item to editable
-    if (!editing) {
-      $('[data-order-item-id="' + orderItem.selfRef + '"]').siblings().children('a.glyphicon-pencil').addClass('editing');
-      $('[data-order-item-id="' + orderItem.selfRef + '"]').addClass('editing');
-      $('[data-order-item-id="' + orderItem.selfRef + '"] span').addClass('hidden');
-      $('[data-order-item-id="' + orderItem.selfRef + '"] input').removeClass('hidden');
-      $('[data-order-item-id="' + orderItem.selfRef + '"] input')
-        .on('blur', function(ev) {
-          ractive.set('saveObserver', false);
-          ractive.set('orders.'+ractive.get('currentOrderIdx')+'.'+$(ev.target).parent().data('key'), ev.target.value);
-          ractive.saveOrderItem();
-          ractive.set('saveObserver', true);
-        });
-    }
   },
   toggleFavorite: function(idx) {
     console.info('toggleFavorite: '+idx);
@@ -1305,35 +1168,25 @@ $(document).ready(function() {
     console.log('stage changing from '+oldValue+' to '+newValue);
     if (newValue=='Cold' && ractive.get('current.stageDate')==undefined) {
       ractive.set('current.stageDate',new Date());
-      $('#curStageReason').typeahead({
-        items:'all',
-        minLength:0,
-        source:ractive.get('stageReasons'),
-        updater:function(item) {
-          return item.id;
-        }
-      });
     }
   });
   ractive.set('saveObserver', true);
 });
 
+ractive.observe('current.account.name', function(newValue, oldValue, keypath) {
+  console.log('account name changing from '+oldValue+' to '+newValue);
+  if (ractive.get('saveObserver') && newValue!=undefined && newValue!='') {
+    ractive.set('current.account.companyNumber',undefined);
+    ractive.searchCompaniesHouse();
+  }
+});
 
-  ractive.observe('current.account.name', function(newValue, oldValue, keypath) {
-    console.log('account name changing from '+oldValue+' to '+newValue);
-    if (ractive.get('saveObserver') && newValue!=undefined && newValue!='') {
-      $('#curCompanyNumber').typeahead('destroy');
-      ractive.set('current.account.companyNumber',undefined);
-      ractive.searchCompaniesHouse();
-    }
-  });
-
-  ractive.observe('current.account.businessWebsite', function(newValue, oldValue, keypath) {
-    console.log('account businessWebsite changing from '+oldValue+' to '+newValue);
-    if (newValue!=undefined && newValue!='' && !(newValue.startsWith('http') || newValue.startsWith('https'))) {
-      ractive.set('current.account.businessWebsite','http://'+newValue);
-    }
-  });
+ractive.observe('current.account.businessWebsite', function(newValue, oldValue, keypath) {
+  console.log('account businessWebsite changing from '+oldValue+' to '+newValue);
+  if (newValue!=undefined && newValue!='' && !(newValue.startsWith('http') || newValue.startsWith('https'))) {
+    ractive.set('current.account.businessWebsite','http://'+newValue);
+  }
+});
 
 // Cannot work due to http://docs.ractivejs.org/0.5/observers#a-gotcha-to-be-aware-of
 function significantDifference(newValue,oldValue) {
