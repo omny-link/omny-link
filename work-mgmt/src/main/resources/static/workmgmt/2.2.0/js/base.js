@@ -482,10 +482,9 @@ var BaseRactive = Ractive.extend({
     console.log('saveDoc');
     if (ractive.get('current.documents')==undefined || ractive.get('current.documents').length==0) return;
     var n = ractive.get('current.documents.0');
-//    n.name = $('#docName').val();
-//    n.url = $('#doc').val();
     var url = ractive.tenantUri(ractive.get('current'))+'/documents';
-    if (n.url != undefined && n.url.trim().length > 0) {
+    if (document.getElementById('documentForm').checkValidity()
+        && n.url != undefined && n.url.trim().length > 0) {
       $.ajax({
         url: url,
         type: 'POST',
@@ -499,6 +498,8 @@ var BaseRactive = Ractive.extend({
           $('#doc,#docName').val(undefined);
         }
       });
+    } else {
+      $($('#documentForm :invalid')[0]).focus();
     }
   },
   saveNote: function(n) {
