@@ -56,7 +56,7 @@ public class Document implements Serializable {
 
     @JsonProperty
     @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
-    @Size(max = 30)
+    @Size(max = 60)
     @Column(name = "name")
     private String name;
 
