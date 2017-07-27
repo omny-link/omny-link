@@ -47,38 +47,6 @@ var ractive = new Ractive({
       ractive.showError("Bother! Something has gone wrong: "+textStatus+':'+errorThrown);
     }
   },
-  initAutoComplete: function() {
-    console.log('initAutoComplete');
-//    $('.expr-name .typeahead').click(function(ev) {
-//      console.log(this);
-//      console.log(ev);
-//      if (this.typeahead()==undefined) {
-//        console.error('not inited');
-//      } else {
-//        console.log('inited');
-//      }
-//    });
-    $('.expr-name .typeahead').each(function(i,d) {
-      console.log('binding entities to typeahead control: '+d.name);
-      $(d).typeahead({ minLength:0,source:ractive.get('entityAttrs')});
-    });
-//      $(d.selector).on("click", function (ev) {
-//        newEv = $.Event("keydown");
-//        newEv.keyCode = newEv.which = 40;
-//        $(ev.target).trigger(newEv);
-//        return true;
-//     });
-  },
-  oninit: function() {
-    console.log('oninit');
-    //this.ajaxSetup();
-    $( document ).ajaxStart(function() {
-      $( "#ajax-loader" ).show();
-    });
-    $( document ).ajaxStop(function() {
-      $( "#ajax-loader" ).hide();
-    });
-  },
   showActivityIndicator: function(msg, addClass) {
     document.body.style.cursor='progress';
     this.showMessage(msg, addClass);

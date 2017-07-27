@@ -239,8 +239,6 @@ var BaseRactive = Ractive.extend({
           });
         });
         ractive.set('stockItemsTypeahead', stockItemData);
-        if (ractive['initStockItemTypeahead']!= undefined) ractive.initStockItemTypeahead();
-
         // HTML5 style
         $('datalist#stockItems').remove();
         $('body').append('<datalist id="stockItems">');
