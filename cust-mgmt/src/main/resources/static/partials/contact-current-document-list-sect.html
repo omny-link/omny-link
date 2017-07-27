@@ -18,9 +18,10 @@
                <td class="field-url"><a href="{{url}}" target="_newtab"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a></td>
              {{else}}
                <td class="field-text" colspan="1">
-                 <input class="form-control" id="docName" placeholder="Name or title" required value="{{..name}}"/>
-                 <input class="form-control" id="doc" on-blur="saveDoc()" placeholder="Paste document link here" required value="{{..url}}"/>
-                 <br/>
+                 <input class="form-control" id="docName" maxlength="60" placeholder="Name or title" required value="{{..name}}"/>
+                 <p class="help-block">&nbsp;</p>
+                 <input class="form-control" id="doc" maxlength="255" on-blur="saveDoc()" placeholder="Paste document link here" required type="url" value="{{..url}}"/>
+                 <p class="help-block">Remember to start your link with http:// or https://</p>
                  <a on-click="cancelDoc()">Cancel</a>
                </td>
              {{/}}
