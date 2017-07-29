@@ -109,7 +109,10 @@ public class ContactTest {
         assertNull(field2.getId());
 
         contact.setCustomFields(Collections.singletonList(field2));
+        assertEquals(1, contact.getCustomFields().size());
+        assertEquals(field1.getId(), contact.getCustomFields().get(0).getId());
 
+        contact.addCustomField(field2);
         assertEquals(1, contact.getCustomFields().size());
         assertEquals(field1.getId(), contact.getCustomFields().get(0).getId());
     }

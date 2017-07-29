@@ -5,7 +5,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -39,6 +41,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpm.impl.DateUtils;
 import com.knowprocess.bpmn.BusinessEntityNotFoundException;
@@ -230,7 +233,15 @@ public class AccountController {
             throws BusinessEntityNotFoundException {
         LOGGER.debug(String.format("Find account for id %1$s", id));
 
-        Account account = accountRepo.findOne(Long.parseLong(id));
+        Account account;
+        try {
+            account = accountRepo.findOne(Long.parseLong(id));
+        } catch (NumberFormatException e) {
+            account = accountRepo.findByCodeForTenant(id, tenantId);
+        }
+        if (account == null) {
+            throw new BusinessEntityNotFoundException("account", id);
+        }
         account.getActivities(); // force load
 
         return addLinks(tenantId, account);
@@ -248,6 +259,39 @@ public class AccountController {
 
         BeanUtils.copyProperties(updatedAccount, account, "id", "notes", "documents");
         account.setTenantId(tenantId);
+        accountRepo.save(account);
+    }
+
+    /**
+     * Update an existing account's custom fields.
+     * @throws IOException
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{id}/customFields/", method = RequestMethod.POST, consumes = "application/json")
+    public @ResponseBody void updateCustomFields(@PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long accountId,
+            @RequestBody Object customFields) throws IOException {
+        Account account = accountRepo.findOne(accountId);
+
+        if (customFields instanceof String) {
+            JsonNode jsonNode = objectMapper.readTree((String) customFields);
+            for (Iterator<String> it = jsonNode.fieldNames() ; it.hasNext() ;) {
+                String key = it.next();
+                account.addCustomField(
+                        new CustomAccountField(key, jsonNode.get(key).asText()));
+            }
+        } else if (customFields instanceof HashMap) {
+            for (Map.Entry<?,?> entry : ((HashMap<?,?>) customFields).entrySet()) {
+                LOGGER.warn("About to try to store {}={}", entry.getKey(), entry.getValue());
+                account.addCustomField(
+                        new CustomAccountField((String)entry.getKey(), entry.getValue().toString()));
+            }
+        } else {
+            String msg = String.format("Attempt to set custom fields from %1$s is not supported", customFields.getClass().getName());
+            LOGGER.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+
         accountRepo.save(account);
     }
 
