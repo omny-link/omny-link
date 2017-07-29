@@ -26,18 +26,21 @@ public class AccountTest {
 
     @Test
     public void testMergeCustomFields() {
-        Account Account = new Account();
+        Account account = new Account();
         CustomAccountField field1 = new CustomAccountField("field1", "foo");
         field1.setId(1l);
-        Account.addCustomField(field1);
+        account.addCustomField(field1);
 
         CustomAccountField field2 = new CustomAccountField("field1", "foo");
         assertNull(field2.getId());
         
-        Account.setCustomFields(Collections.singletonList(field2));
+        account.setCustomFields(Collections.singletonList(field2));
+        assertEquals(1, account.getCustomFields().size());
+        assertEquals(field1.getId(), account.getCustomFields().get(0).getId());
         
-        assertEquals(1, Account.getCustomFields().size());
-        assertEquals(field1.getId(), Account.getCustomFields().get(0).getId());
+        account.addCustomField(field2);
+        assertEquals(1, account.getCustomFields().size());
+        assertEquals(field1.getId(), account.getCustomFields().get(0).getId());
     }
 
     @Test
