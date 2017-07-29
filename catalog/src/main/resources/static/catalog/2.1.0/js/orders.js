@@ -642,10 +642,17 @@ ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
 ractive.observe('current.stockItem.id', function(newValue, oldValue, keypath) {
   console.info('stock item changed from '+oldValue+' to '+newValue);
   if (newValue != undefined) {
-    var stockItem = Array.findBy('selfRef','/stock-items/'+newValue,ractive.get('stockItems'));
-    if (stockItem != undefined) {
-      ractive.fetchStockCategory(stockItem.stockCategoryName);
-    }
+    timerId = setInterval(function() {
+      if (ractive.get('stockItems').length==0) {
+        ractive.showMessage('Still loading stock items, please wait...', 'alert-warning');
+      } else {
+        clearInterval(timerId);
+        var stockItem = Array.findBy('selfRef','/stock-items/'+newValue,ractive.get('stockItems'));
+        if (stockItem != undefined) {
+          ractive.fetchStockCategory(stockItem.stockCategoryName);
+        }
+      }
+    }, 5000);
   }
 });
 
