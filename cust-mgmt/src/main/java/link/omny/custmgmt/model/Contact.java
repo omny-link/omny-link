@@ -398,7 +398,7 @@ public class Contact implements Serializable {
 
     public void addCustomField(CustomContactField customField) {
         customField.setContact(this);
-        getCustomFields().add(customField);
+        setCustomField(customField);
     }
 
     protected void setCustomField(CustomContactField newField) {

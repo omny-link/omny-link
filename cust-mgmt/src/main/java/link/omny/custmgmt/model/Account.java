@@ -334,10 +334,11 @@ public class Account implements Serializable {
 
     public void addCustomField(CustomAccountField customField) {
         customField.setAccount(this);
-        getCustomFields().add(customField);
+        setCustomField(customField);
     }
 
     protected void setCustomField(CustomAccountField newField) {
+        // check if it's a number in exponential form
         try {
             double d = Double.parseDouble(newField.getValue());
             if (newField.getValue().toLowerCase().contains("e")) {
