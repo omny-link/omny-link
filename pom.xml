@@ -26,7 +26,7 @@
     <activiti.version>5.18.0.20151117</activiti.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>2.1.0-SNAPSHOT</omny-link.version>
-    <kp-auth.version>1.0.0</kp-auth.version>
+    <kp-auth.version>1.0.0.1</kp-auth.version>
     <work-mgmt.version>2.2.0-SNAPSHOT</work-mgmt.version>
     <activiti.bdd.version>5.19.0.20161207</activiti.bdd.version>
     <onedecision.version>1.2.0-RC1</onedecision.version>
