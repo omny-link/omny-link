@@ -54,7 +54,7 @@ import lombok.ToString;
 @ToString(exclude = { "orderItems" })
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true, allowGetters = true)
 public class Order implements OrderWithSubEntities, Serializable {
 
     private static final long serialVersionUID = -2334761729349848501L;
@@ -164,6 +164,12 @@ public class Order implements OrderWithSubEntities, Serializable {
     public Order(String name) {
         this();
         setName(name);
+    }
+
+    @JsonProperty
+    @JsonView(OrderViews.Summary.class)
+    public Long getLocalId() {
+        return id;
     }
 
     public List<CustomOrderField> getCustomFields() {

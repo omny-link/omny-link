@@ -116,8 +116,8 @@
     ractive.set('ordersTypeahead',jQuery.map(ractive.get('orders'), function( n, i ) {
       console.log('n: '+ractive.tenantUri(n)+', i:'+i);
       return ( {
-        id: ractive.shortId(ractive.tenantUri(n)),
-        name: ractive.shortId(ractive.tenantUri(n))
+        id: ractive.localId(ractive.tenantUri(n)),
+        name: ractive.localId(ractive.tenantUri(n))
       } );
     }));
     ractive.addDataList({ name: "orders" }, ractive.get('ordersTypeahead'));
