@@ -65,7 +65,7 @@ import lombok.EqualsAndHashCode;
  * @author Tim Stephenson
  */
 @Controller
-@RequestMapping(value = "/{tenantId}/accounts")
+@RequestMapping(value = "/{tenantId}")
 public class AccountController {
 
     private static final Logger LOGGER = LoggerFactory
@@ -84,7 +84,7 @@ public class AccountController {
      * Add activity to the specified account.
      * @return the created activity.
      */
-    @RequestMapping(value = "/{accountId}/activities", method = RequestMethod.POST)
+    @RequestMapping(value = "/accounts/{accountId}/activities", method = RequestMethod.POST)
     @Transactional
     public @ResponseBody ResponseEntity<Activity> addActivity(
             @PathVariable("tenantId") String tenantId,
@@ -109,7 +109,7 @@ public class AccountController {
      * Add an activity to the specified account.
      * @return the created activity.
      */
-    @RequestMapping(value = "/{accountId}/activities", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    @RequestMapping(value = "/accounts/{accountId}/activities", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
     public @ResponseBody ResponseEntity<Activity> addActivity(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
@@ -130,7 +130,7 @@ public class AccountController {
      * @throws IOException
      *             If cannot parse the JSON.
      */
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    @RequestMapping(value = "/accounts/upload", method = RequestMethod.POST)
     public @ResponseBody Iterable<Account> handleFileUpload(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
@@ -152,7 +152,7 @@ public class AccountController {
         return result;
     }
 
-    @RequestMapping(value = "/archive", method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(value = "/accounts/archive", method = RequestMethod.POST, headers = "Accept=application/json")
     @Secured("ROLE_ADMIN")
     @Transactional
     public @ResponseBody Integer archiveAccounts(
@@ -170,8 +170,10 @@ public class AccountController {
     /**
      * @return Accounts for a specific tenant.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/accounts/", method = RequestMethod.GET)
+//    @JsonView(AccountViews.Summary.class)
     public @ResponseBody List<ShortAccount> listForTenant(
+//    public @ResponseBody List<Account> listForTenant(
             @PathVariable("tenantId") String tenantId,
             @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
@@ -188,6 +190,22 @@ public class AccountController {
         LOGGER.info(String.format("Found %1$s accounts", list.size()));
 
         return wrap(list);
+//        return list;
+    }
+
+    /**
+     * @return Account id-name pairs for a specific tenant.
+     */
+    @RequestMapping(value = "/account-pairs/", method = RequestMethod.GET)
+    @JsonView(AccountViews.Pair.class)
+    public @ResponseBody List<Account> listPairForTenant(
+            @PathVariable("tenantId") String tenantId) {
+        LOGGER.info(String.format("List account id-name pairs for tenant %1$s", tenantId));
+
+        List<Account> list = accountRepo.findAllForTenant(tenantId);
+        LOGGER.info(String.format("Found %1$s accounts", list.size()));
+
+        return list;
     }
 
     /**
@@ -197,7 +215,7 @@ public class AccountController {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(value = "/accounts/", method = RequestMethod.POST)
     public @ResponseBody ResponseEntity<?> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Account account) {
@@ -226,7 +244,7 @@ public class AccountController {
      * @throws BusinessEntityNotFoundException
      */
     @JsonView(AccountViews.Detailed.class)
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/accounts/{id}", method = RequestMethod.GET)
     public @ResponseBody Account findById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id)
@@ -251,7 +269,7 @@ public class AccountController {
      * Update an existing account.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = "application/json")
+    @RequestMapping(value = "/accounts/{id}", method = RequestMethod.PUT, consumes = "application/json")
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
             @RequestBody Account updatedAccount) {
@@ -267,7 +285,7 @@ public class AccountController {
      * @throws IOException
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}/customFields/", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/accounts/{id}/customFields/", method = RequestMethod.POST, consumes = "application/json")
     public @ResponseBody void updateCustomFields(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
             @RequestBody Object customFields) throws IOException {
@@ -298,7 +316,7 @@ public class AccountController {
     /**
      * Add a document to the specified account.
      */
-    @RequestMapping(value = "/{accountId}/documents", method = RequestMethod.PUT)
+    @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.PUT)
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Document doc) {
@@ -326,7 +344,7 @@ public class AccountController {
      *
      * @return The document created.
      */
-    @RequestMapping(value = "/{accountId}/documents", method = RequestMethod.POST)
+    @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.POST)
     public @ResponseBody Document addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
@@ -341,7 +359,7 @@ public class AccountController {
      * Add a note to the specified account.
      * @return the created note.
      */
-    @RequestMapping(value = "/{accountId}/notes", method = RequestMethod.PUT)
+    @RequestMapping(value = "/accounts/{accountId}/notes", method = RequestMethod.PUT)
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Note note) {
@@ -368,7 +386,7 @@ public class AccountController {
      *
      * @return The note created.
      */
-    @RequestMapping(value = "/{accountId}/notes", method = RequestMethod.POST)
+    @RequestMapping(value = "/accounts/{accountId}/notes", method = RequestMethod.POST)
     public @ResponseBody Note addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
@@ -382,7 +400,7 @@ public class AccountController {
      * Delete an existing account.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/accounts/{id}", method = RequestMethod.DELETE)
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId) {
 

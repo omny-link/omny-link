@@ -72,9 +72,9 @@
           <li>
             <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.id}}{{tenant.strings.id}}{{else}}Ref{{/}}:</label>
             <div class="input-group">
-              <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curShortId" readonly disabled twoway="false" value="{{shortId(current.selfRef)}}"/>
+              <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curlocalId" readonly disabled twoway="false" value="{{localId(current.selfRef)}}"/>
               <span class="input-group-addon">
-                <a href="contacts.html?searchTerm={{shortId(current.selfRef)}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+                <a href="contacts.html?searchTerm={{localId(current.selfRef)}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
               </span>
             </div>
           </li>

@@ -177,7 +177,8 @@ var ractive = new BaseRactive({
         }
         for (var idx = 0 ; idx < search.length ; idx++) {
           var searchTerm = search[idx].toLowerCase();
-          var match = ( (obj.selfRef.indexOf(searchTerm)>=0)
+          var match = ( (obj.selfRef!=undefined && obj.selfRef.indexOf(searchTerm)>=0)
+              || (obj.localId!=undefined && searchTerm.indexOf(obj.localId)>=0)
               || (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm)>=0)
               || (obj.status!=undefined && obj.status.toLowerCase().indexOf(searchTerm)>=0)
               || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
@@ -187,7 +188,7 @@ var ractive = new BaseRactive({
               || (searchTerm.startsWith('contactid:') && ractive.get('searchTerm').substring(10).replace(/ /g,'')==''+obj.contactId)
               || (searchTerm.startsWith('contactid:') && ractive.get('searchTerm').substring(10).replace(/ /g,'').split(',').indexOf(''+obj.contactId)!=-1)
               || (obj.contactName!=undefined && obj.contactName.toLowerCase().indexOf(searchTerm)>=0)
-              || (searchTerm.startsWith('stockitemid:') && ractive.get('searchTerm').substring(12).replace(/ /g,'')==ractive.shortId(obj.stockItem.selfRef))
+              || (searchTerm.startsWith('stockitemid:') && ractive.get('searchTerm').substring(12).replace(/ /g,'')==ractive.localId(obj.stockItem.selfRef))
               || (obj.stockItemName!=undefined && obj.stockItemName.toLowerCase().indexOf(searchTerm)>=0)
             );
             // no match is definitive but match now may fail other terms (AND logic)
@@ -260,7 +261,7 @@ var ractive = new BaseRactive({
     var tmp = ractive.get('itemPrototype')== undefined
         ? { orderId: orderId, customFields: {} }
         : ractive.get('itemPrototype');
-//    tmp.orderId = ractive.shortId(orderId);
+//    tmp.orderId = ractive.localId(orderId);
 //    ractive.set('currentOrderIdx',ractive.get('orders').indexOf(Array.findBy('selfRef',orderId,ractive.get('orders'))));
     ractive.set('currentOrderItemIdx',ractive.get('current.orderItems').length);
 //    if (ractive.get('current.orderItems')==undefined) {
@@ -273,7 +274,7 @@ var ractive = new BaseRactive({
     ractive.select(ractive.get('current'));
   },
   delete: function (order) {
-    var orderId = order['id']==undefined ? ractive.shortId(order.selfRef) : order.id;
+    var orderId = order['id']==undefined ? ractive.localId(order.selfRef) : order.id;
     console.info('delete '+orderId+'...');
 
     $.ajax({

@@ -120,7 +120,8 @@ var ractive = new BaseRactive({
     },
     formatStockItemIds: function(order) {
       // console.info('formatStockItemIds');
-      return ractive.getStockItemNames(order);
+      var names = ractive.getStockItemNames(order);
+      return names == undefined ? '' : names;
     },
     formatTags: function(tags) {
       var html = '';
@@ -208,8 +209,8 @@ var ractive = new BaseRactive({
     saveObserver: false,
     selectMultiple: [],
     server: $env.server,
-    shortId: function(selfRef) {
-      return ractive.shortId(selfRef);
+    localId: function(selfRef) {
+      return ractive.localId(selfRef);
     },
     sort: function (array, column, asc) {
       if (array == undefined) return;
@@ -303,6 +304,7 @@ var ractive = new BaseRactive({
       tenantId: ractive.get('tenant.id'),
       url: undefined
     });
+    ractive.fetchAccounts();
     ractive.initTags();
     ractive.showAlertCounters();
   },
@@ -336,18 +338,22 @@ var ractive = new BaseRactive({
     var newOrder = JSON.parse(JSON.stringify(order));
     delete newOrder.created;
     delete newOrder.date;
+    delete newOrder.id;
     delete newOrder.invoiceRef;
     delete newOrder.links;
+    newOrder.localId = undefined;
     delete newOrder.selfRef;
     delete newOrder.lastUpdated;
     newOrder.stage = ractive.initialOrderStage();
-    for (idx in newOrder.orderItems) {
-      delete newOrder.created;
-      delete newOrder.orderItems[idx].date;
+    for (var idx = 0 ; idx < newOrder.orderItems.length ; idx++) {
+      delete newOrder.orderItems[idx].created;
+      delete newOrder.orderItems[idx].customFields.date;
+      delete newOrder.orderItems[idx].id;
       delete newOrder.orderItems[idx].links;
+      //delete newOrder.orderItems[idx].localId;
       delete newOrder.orderItems[idx].orderItemId;
       delete newOrder.orderItems[idx].selfRef;
-      delete newOrder.lastUpdated;
+      delete newOrder.orderItems[idx].lastUpdated;
     }
     ractive.push('orders', newOrder);
     ractive.set('currentOrderIdx', ractive.get('orders').length-1);
@@ -378,7 +384,7 @@ var ractive = new BaseRactive({
   deleteOrderItem : function(order, item) {
     console.log('deleteOrderItem ' + order.selfRef + ', '+ item.selfRef +'...');
     $.ajax({
-      url : ractive.getServer() + '/'+ractive.get('tenant.id')+'/orders/' + ractive.shortId(order.selfRef)+ '/order-items/' + ractive.shortId(item.selfRef),
+      url : ractive.getServer() + '/'+ractive.get('tenant.id')+'/orders/' + ractive.localId(order.selfRef)+ '/order-items/' + ractive.localId(item.selfRef),
       type : 'DELETE',
       success : completeHandler = function(data) {
         ractive.fetchOrders(ractive.get('current'));
@@ -426,20 +432,20 @@ var ractive = new BaseRactive({
     ractive.set('saveObserver', false);
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/accounts/',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/account-pairs/',
       crossDomain: true,
       success: function( data ) {
-        if (data['_embedded'] != undefined) {
-          data = data['_embedded'].accounts;
-        }
+//        if (data['_embedded'] != undefined) {
+//          data = data['_embedded'].accounts;
+//        }
         ractive.set('saveObserver', false);
         console.log('fetched '+data.length+' accounts for typeahead');
-        ractive.set('accounts',data);
-        var accData = jQuery.map( data, function( n, i ) {
-          return ( {  "id": ractive.id(n), "name": n.name } );
-        });
-        ractive.set('accountsTypeahead',accData);
-        ractive.addDataList({ name: "accounts" }, accData);
+//        ractive.set('accounts',data);
+//        var accData = jQuery.map( data, function( n, i ) {
+//          return ( {  /*"id": ractive.id(n),*/ "name": n.name } );
+//        });
+//        ractive.set('accountsTypeahead',data);
+        ractive.addDataList({ name: "accounts" }, data);
         ractive.set('saveObserver', true);
       }
     });
@@ -850,7 +856,7 @@ var ractive = new BaseRactive({
       if (tmp.date == 'n/a') delete tmp.date;
       var contactName = tmp.contactName;
       if (contactName != undefined) {
-        tmp.contactId = ractive.shortId(Array.findBy('fullName', contactName,ractive.get('current.contacts')).selfRef);
+        tmp.contactId = ractive.localId(Array.findBy('fullName', contactName,ractive.get('current.contacts')).selfRef);
         delete tmp.contactName;
       }
       var id = ractive.uri(tmp) == undefined ? undefined : ractive.id(tmp);
@@ -935,12 +941,12 @@ var ractive = new BaseRactive({
   select: function(contact) {
     console.log('select: '+JSON.stringify(contact));
     ractive.set('saveObserver',false);
-    if (ractive.get('tenant.show.account')
-        && (ractive.get('current.account')==undefined || ractive.get('current.account.name')=='')) {
-      // This is not viable as it causes the UI to hang once have a couple of
-      // thousand accounts. Also a very rare case that it's needed
-      ractive.fetchAccounts();
-    }
+//    if (ractive.get('tenant.show.account')
+//        && (ractive.get('current.account')==undefined || ractive.get('current.account.name')=='')) {
+//      // This is not viable as it causes the UI to hang once have a couple of
+//      // thousand accounts. Also a very rare case that it's needed
+//      ractive.fetchAccounts();
+//    }
     if (contact.account == undefined || contact.account == '') contact.account = new Object();
     // default owner to current user
     if (contact.owner == undefined || contact.owner == '') contact.owner = $auth.getClaim('sub');
