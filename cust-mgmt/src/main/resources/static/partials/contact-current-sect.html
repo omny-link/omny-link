@@ -85,11 +85,11 @@
         </li>
         {{#tenant.show.marketing}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">Existing Customer?:</label>
+            <label class="col-md-4 col-sm-4">{{# tenant.strings.existingCustomer}}{{tenant.strings.existingCustomer}}{{else}}Existing Customer?{{/}}:</label>
             <label class="checkbox-inline">
               <input type="checkbox" checked="{{current.existingCustomer}}">{{#if current.existingCustomer}}Yes{{else}}No{{/if}}
             </label>
-            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Is this an existing customer, even if we are in a new sales cycle?</p>
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{# tenant.strings.existingCustomerHint}}{{tenant.strings.existingCustomerHint}}{{else}}Is this an existing customer, even if we are in a new sales cycle?{{/}}</p>
           </li>
         {{/}}
         {{#tenant.show.marketing || tenant.show.stage}}
@@ -117,18 +117,18 @@
       <ul class="form edit-form">
         {{#tenant.show.enquiryType}}
           <li>
-            <label class="col-md-4 col-sm-4 col-xs-4">Enquiry Type:</label>
+            <label class="col-md-4 col-sm-4 col-xs-4">{{# tenant.strings.enquiryType}}{{tenant.strings.enquiryType}}{{else}}Enquiry Type{{/}}:</label>
             <input class="form-control" list="enquiryTypes" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">The nature of the initial contact</p>
           </li>
         {{/}}
         <li>
-          <label class="col-md-4 col-sm-4 col-xs-4">Account Type:</label>
+          <label class="col-md-4 col-sm-4 col-xs-4">{{# tenant.strings.accountType}}{{tenant.strings.accountType}}{{else}}Account Type{{/}}:</label>
           <input class="form-control" list="accountTypes" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Defines the nature of the relationship with this contact</p>
         </li>
         <li>
-          <label class="col-md-4 col-sm-4 col-xs-4">Tags:</label>
+          <label class="col-md-4 col-sm-4 col-xs-4">{{# tenant.strings.tags}}{{tenant.strings.tags}}{{else}}Tags{{/}}:</label>
           <input class="tag-ctrl form-control col-md-8 col-sm-8 col-xs-8" id="curTags" data-bind="current.tags"/>
         </li>
       </ul>
@@ -315,7 +315,7 @@
 	                <input class="form-control" id="curCampaign" {{ current.campaign ? 'disabled readonly' : '' }} value="{{current.campaign}}">
 	              </li>
               {{elseif tenant.show.marketingDigital}}
-                <li><label class="col-md-offset-4 col-sm-offset-4">No CPC data available</label></li>
+                <li><label class="col-md-offset-4 col-sm-offset-4">{{# tenant.strings.noCPC}}{{tenant.strings.noCPC}}{{else}}No CPC data available{{/}}</label></li>
               {{/if}}
               <li>
                 <label class="col-md-4 col-sm-4">{{#tenant.strings.pageSubmitted}}{{tenant.strings.pageSubmitted}}{{else}}Page Submitted{{/}}:</label>
