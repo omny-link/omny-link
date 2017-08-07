@@ -13,12 +13,9 @@ import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
@@ -143,8 +140,8 @@ public class OrderController {
      * @return orders for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-//    @JsonView(OrderViews.OrderSummary.class)
-    public @ResponseBody List<ShortOrder> listForTenant(
+    @JsonView(OrderViews.Summary.class)
+    public @ResponseBody List<Order> listForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
@@ -160,8 +157,7 @@ public class OrderController {
         }
         LOGGER.info(String.format("Found %1$s orders", list.size()));
         
-        return wrapShort(list);
-//        return list;
+        return list;
     }
 
     /**
@@ -170,24 +166,13 @@ public class OrderController {
      * @return orders for that contact.
      */
     @RequestMapping(value = "/findByContact/{contactId}", method = RequestMethod.GET)
-    public @ResponseBody List<OrderWithSubEntities> listForContact(
+    @JsonView(OrderViews.Detailed.class)
+    public @ResponseBody List<Order> listForContact(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info(String.format("List orders for contact %1$s & tenant %2$s",
-                contactId, tenantId));
-
-        List<Order> list;
-        if (limit == null) {
-            list = orderRepo.findAllForContact(tenantId, contactId);
-        } else {
-            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
-            list = orderRepo.findPageForContact(tenantId, contactId, pageable);
-        }
-        LOGGER.info(String.format("Found %1$s orders", list.size()));
-
-        return wrap(list);
+        return listForContacts(tenantId, new Long[] { contactId }, page, limit);
     }
 
     /**
@@ -232,11 +217,12 @@ public class OrderController {
         order.setTenantId(tenantId);
 
         fixUpOrderItems(tenantId, order);
-        if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
-            order.setStockItem(null);
-        }
         for (CustomOrderField field : order.getCustomFields()) {
             field.setOrder(order);
+        }
+        if (order.getStockItem() != null && order.getStockItem().getId() != null) {
+            order.setStockItem(
+                    stockItemRepo.findOne(order.getStockItem().getId()));
         }
 
         orderRepo.save(order);
@@ -286,10 +272,15 @@ public class OrderController {
         for (OrderItem item : order.getOrderItems()) {
             item.setTenantId(tenantId);
             item.setOrder(order);
-            // HACK!
-            if (item.getCustomFieldValue("stockItemId") != null) {
+            if (item.getStockItem() != null && item.getStockItem().getId() != null) {
+                item.setStockItem(
+                        stockItemRepo.findOne(item.getStockItem().getId()));
+            } else if (item.getCustomFieldValue("stockItemId") != null) { // HACK!
                 item.setStockItem(stockItemRepo.findOne(
                         Long.parseLong((String) item.getCustomFieldValue("stockItemId"))));
+            }
+            for (CustomOrderItemField field : item.getCustomFields()) {
+                field.setOrderItem(item);
             }
         }
     }
@@ -435,83 +426,6 @@ public class OrderController {
         orderRepo.deleteItem(orderId, orderItemId);
     }
 
-    private List<ShortOrder> wrapShort(List<Order> list) {
-        List<ShortOrder> resources = new ArrayList<ShortOrder>(
-                list.size());
-        for (Order order : list) {
-            resources.add(wrapShort(order));
-        }
-        return resources;
-    }
-
-    private ShortOrder wrapShort(Order order) {
-        ShortOrderResource resource = new ShortOrderResource();
-
-        BeanUtils.copyProperties(order, resource, "feedback", "orderItems", "stockItem");
-        resource.setContactId(order.getContactId());
-        resource.setOrderId(order.getId());
-        if (order.getStockItem()!=null) {
-            StockCategoryController.ShortStockItemResource stockItem
-                    = new StockCategoryController.ShortStockItemResource();
-            BeanUtils.copyProperties(order.getStockItem(), stockItem);
-            stockItem.setPrice(order.getStockItem().getPrice() == null
-                    ? null : order.getStockItem().getPrice().toPlainString());
-            resource.setStockItem(stockItem);
-        }
-
-        Link detail = linkTo(OrderRepository.class,
-                order.getId()).withSelfRel();
-        resource.add(detail);
-        resource.setSelfRef(detail.getHref());
-        return resource;
-    }
-
-    private List<OrderWithSubEntities> wrap(List<Order> list) {
-        List<OrderWithSubEntities> resources = new ArrayList<OrderWithSubEntities>(
-                list.size());
-        for (Order order : list) {
-            resources.add(wrap(order));
-        }
-        return resources;
-    }
-    
-    private OrderResource wrap(Order order) {
-        OrderResource orderResource = new OrderResource();
-
-        // Have to handle sub-entities specially due to serialisation problems
-        BeanUtils.copyProperties(order, orderResource, "stockItem");
-        orderResource.setContactId(order.getContactId());
-        orderResource.setOrderId(order.getId());
-
-        if (order.getStockItem()!=null) {
-            StockCategoryController.ShortStockItemResource stockItem
-                    = new StockCategoryController.ShortStockItemResource();
-            BeanUtils.copyProperties(order.getStockItem(), stockItem);
-            stockItem.setPrice(order.getStockItem().getPrice() == null
-                    ? null : order.getStockItem().getPrice().toPlainString());
-            orderResource.setStockItem(stockItem);
-        }
-        ArrayList<OrderItem> orderItems = new ArrayList<OrderItem>();
-        for (OrderItem orderItem : order.getOrderItems()) {
-            OrderItem orderItemResource
-                    = new OrderItem();
-            // if include stock item JSON serialisation exception occurs
-            BeanUtils.copyProperties(orderItem, orderItemResource, "stockItem");
-            orderItems.add(orderItemResource);
-        }
-        orderResource.setOrderItems(orderItems);
-
-        orderResource.setFeedback(feedbackRepo.findByOrder(order.getTenantId(),
-                order.getId()));
-
-        Link detail = linkTo(OrderRepository.class, order.getId())
-                .withSelfRel();
-        orderResource.add(detail);
-        orderResource.setSelfRef(detail.getHref());
-
-        return orderResource;
-    }
-
     private FeedbackResource wrap(Feedback feedback) {
         FeedbackResource resource = new FeedbackResource();
 
@@ -538,13 +452,6 @@ public class OrderController {
         return resource;
     }
 
-    private Link linkTo(
-            @SuppressWarnings("rawtypes") Class<? extends CrudRepository> clazz,
-            Long id) {
-        return new Link(clazz.getAnnotation(RepositoryRestResource.class)
-                .path() + "/" + id);
-    }
-
     @Data
     @EqualsAndHashCode(callSuper = true)
     public static class OrderResource extends ShortOrderResource implements
@@ -560,7 +467,7 @@ public class OrderController {
             ShortOrder {
         private static final long serialVersionUID = 385801786736131068L;
         private String selfRef;
-        private Long orderId;
+        private Long localId;
         private String name;
         private String description;
         private Date date;
@@ -622,10 +529,11 @@ public class OrderController {
         private String tenantId;
     }
 
-    private void addLinks(String tenantId, Order order) {
+    private Order addLinks(String tenantId, Order order) {
         List<Link> links = new ArrayList<Link>();
         links.add(new Link(String.format("/%1$s/orders/%2$s",
                 tenantId, order.getId())));
         order.setLinks(links);
+        return order;
     }
 }

@@ -237,20 +237,20 @@ var ractive = new BaseRactive({
             var search = ractive.get('searchTerm').split(' ');
             for (var idx = 0 ; idx < search.length ; idx++) {
               var searchTerm = search[idx].toLowerCase();
-              var match = ( (obj.selfRef.indexOf(searchTerm)>=0)
-                || (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0)
-                || (obj.email != undefined && obj.email.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0)
+              var match = ( (obj.selfRef != undefined && obj.selfRef.indexOf(searchTerm)>=0)
+                || (obj.name != undefined && obj.name.toLowerCase().indexOf(searchTerm) >= 0)
+                || (obj.email != undefined && obj.email.toLowerCase().indexOf(searchTerm) >= 0)
                 || (obj.phone1 != undefined && obj.phone1.indexOf(searchTerm) >= 0)
                 || (obj.phone2 != undefined && obj.phone2.indexOf(searchTerm) >= 0)
-                || (obj.accountName != undefined && obj.accountName.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0)
-                || (searchTerm.startsWith('type:') && obj.accountType!=undefined && obj.accountType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(5))==0)
-                || (searchTerm.startsWith('enquiry:') && obj.enquiryType!=undefined && obj.enquiryType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(8))==0)
-                || (searchTerm.startsWith('stage:') && obj.stage!=undefined && obj.stage.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(6))==0)
+                || (obj.accountName != undefined && obj.accountName.toLowerCase().indexOf(searchTerm) >= 0)
+                || (searchTerm.startsWith('type:') && obj.accountType!=undefined && obj.accountType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.replace(/ /g,'_').substring(5))==0)
+                || (searchTerm.startsWith('enquiry:') && obj.enquiryType!=undefined && obj.enquiryType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.replace(/ /g,'_').substring(8))==0)
+                || (searchTerm.startsWith('stage:') && obj.stage!=undefined && obj.stage.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.replace(/ /g,'_').substring(6))==0)
                 || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated) > new Date(searchTerm.substring(8)))
                 || (searchTerm.startsWith('created>') && new Date(obj.firstContact) > new Date(searchTerm.substring(8)))
                 || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated) < new Date(searchTerm.substring(8)))
                 || (searchTerm.startsWith('created<') && new Date(obj.firstContact) < new Date(searchTerm.substring(8)))
-                || (searchTerm.startsWith('#') && obj.tags != undefined && obj.tags.toLowerCase().indexOf(searchTerm.toLowerCase().substring(1)) != -1))
+                || (searchTerm.startsWith('#') && obj.tags != undefined && obj.tags.toLowerCase().indexOf(searchTerm.substring(1)) != -1))
                 || (searchTerm.startsWith('owner:') && obj.owner!=undefined && obj.owner.indexOf(searchTerm.substring(6))!=-1)
                 || (searchTerm.startsWith('active') && (obj.stage==undefined || obj.stage.length==0 || ractive.inactiveStages().indexOf(obj.stage.toLowerCase())==-1))
                 || (searchTerm.startsWith('!active') && ractive.inactiveStages().indexOf(obj.stage.toLowerCase())!=-1)
@@ -430,7 +430,7 @@ var ractive = new BaseRactive({
       addOrderItem: function(orderId) {
         console.info('addOrderItem: '+orderId);
         var tmp = ractive.get('itemPrototype')== undefined ? {} : ractive.get('itemPrototype');
-        tmp.orderId = ractive.shortId(orderId);
+        tmp.orderId = ractive.localId(orderId);
         ractive.set('currentOrderIdx',ractive.get('orders').indexOf(Array.findBy('selfRef',orderId,ractive.get('orders'))));
         ractive.push('orders.'+ractive.get('currentOrderIdx')+'.orderItems', tmp);
         ractive.set('currentOrderItemIdx',ractive.get('orders.'+ractive.get('currentOrderIdx')+'.orderItems').length-1);
@@ -493,7 +493,7 @@ var ractive = new BaseRactive({
         delete newOrder.selfRef;
         delete newOrder.lastUpdated;
         newOrder.stage = ractive.initialOrderStage();
-        for (var idx = 0 ; idx < newOrder.orderItems.lenght ; idx++) {
+        for (var idx = 0 ; idx < newOrder.orderItems.length ; idx++) {
           delete newOrder.orderItems[idx].created;
           delete newOrder.orderItems[idx].customFields.date;
           delete newOrder.orderItems[idx].id;
@@ -548,7 +548,7 @@ var ractive = new BaseRactive({
       },
       deleteContact: function(obj) {
         console.log('delete ' + obj + '...');
-        if (Array.findBy('contactId', ractive.shortId(obj.selfRef), ractive.get('orders'))==undefined) {
+        if (Array.findBy('contactId', ractive.localId(obj.selfRef), ractive.get('orders'))==undefined) {
           $.ajax({
             url: ractive.getServer() + '/contacts/' + ractive.id(obj),
             type: 'DELETE',
@@ -575,7 +575,7 @@ var ractive = new BaseRactive({
       deleteOrderItem: function(item) {
         console.log('deleteOrderItem ' + item.orderId + ', '+ item.selfRef +'...');
         $.ajax({
-          url: ractive.getServer() + '/'+ractive.get('tenant.id')+'/orders/'+item.orderId+'/order-items/'+ractive.shortId(item.selfRef),
+          url: ractive.getServer() + '/'+ractive.get('tenant.id')+'/orders/'+item.orderId+'/order-items/'+ractive.localId(item.selfRef),
           type: 'DELETE',
           success: completeHandler = function(data) {
             ractive.fetchOrders(ractive.get('current'));
@@ -705,7 +705,7 @@ var ractive = new BaseRactive({
         for (idx in account.contacts) {
           if (typeof account.contacts[idx] != 'function') {
             if (contactIds.length>0) contactIds += ',';
-            contactIds += ractive.shortId(account.contacts[idx].selfRef);
+            contactIds += ractive.localId(account.contacts[idx].selfRef);
           }
         }
         if (contactIds.length == 0) return; // no contacts means no orders
@@ -1199,7 +1199,7 @@ var ractive = new BaseRactive({
           if (tmp.date == 'n/a') delete tmp.date;
           var contactName = tmp.contactName;
           if (contactName != undefined) {
-            tmp.contactId = ractive.shortId(Array.findBy('fullName', contactName,ractive.get('current.contacts')).selfRef);
+            tmp.contactId = ractive.localId(Array.findBy('fullName', contactName,ractive.get('current.contacts')).selfRef);
             delete tmp.contactName;
           }
           var id = ractive.uri(tmp) == undefined ? undefined: ractive.id(tmp);
@@ -1474,9 +1474,9 @@ var ractive = new BaseRactive({
         }
       },
       toggleOrderSubEntity: function(obj, subEntity) {
-        console.log('toggleOrderSubEntity(' + ractive.uri(obj) + ', ' + subEntity
+        console.log('toggleOrderSubEntity(' + ractive.id(obj) + ', ' + subEntity
             + ')');
-        $('[data-order-id="' + ractive.uri(obj) + '"].' + subEntity).slideToggle();
+        $('[data-order-id="' + ractive.id(obj) + '"].' + subEntity).slideToggle();
         if (subEntity == 'feedback') ractive.fetchFeedback(obj);
       },
       toggleResults: function() {
