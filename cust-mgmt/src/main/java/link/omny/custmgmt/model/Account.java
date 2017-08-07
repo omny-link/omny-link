@@ -62,12 +62,12 @@ public class Account implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
-    @JsonView( { AccountViews.Summary.class } )
+    @JsonView( { AccountViews.Pair.class } )
     private Long id;
 
     @NotNull
     @JsonProperty
-    @JsonView( { AccountViews.Summary.class, ContactViews.Summary.class } )
+    @JsonView( { AccountViews.Pair.class, ContactViews.Summary.class } )
     @Column(name = "name")
     private String name;
 

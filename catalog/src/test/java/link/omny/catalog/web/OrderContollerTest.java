@@ -194,7 +194,7 @@ public class OrderContollerTest {
     }
 
     private ShortOrder retrieveOrder() {
-        List<ShortOrder> allOrders = svc.listForTenant(TENANT_ID, null, null);
+        List<Order> allOrders = svc.listForTenant(TENANT_ID, null, null);
         assertEquals(1, allOrders.size());
         return allOrders.get(0);
     }

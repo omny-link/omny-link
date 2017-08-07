@@ -2,8 +2,7 @@ Feature: A repository of memo templates for creating merging into emails, docume
 
     Scenario: Maintain the list of memo templates
               Used by {server}/memos.html
-        Given the server is available
-          And the user is logged in
+        Given the user is logged in
           And there are 13 memos in the system for the omny tenant 
          When a list of memos is requested
          Then a list of 13 memo _summaries_ is returned

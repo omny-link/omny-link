@@ -265,17 +265,17 @@ var BaseRactive = Ractive.extend({
         || (!ractive.get('tenant.show.orderItems') && order['stockItem'] == undefined)
         || (ractive.get('tenant.show.orderItems') && (order['orderItems'] == undefined || order.orderItems.length == 0)))
       return;
-    else if (!ractive.get('tenant.show.orderItems'))
-      stockItemIds.push(order.stockItem.selfRef
-          .substring(order.stockItem.selfRef.lastIndexOf('/') + 1));
-    else {
+    else if (!ractive.get('tenant.show.orderItems')) {
+      var id = ractive.id(order.stockItem);
+      stockItemIds.push(id.substring(id.lastIndexOf('/') + 1));
+    } else {
       for (idx in order.orderItems) {
         stockItemIds
             .push(order.orderItems[idx].customFields['stockItemId']);
       }
     }
     var stockItemNames = '';
-    stockItemIds = uniq(stockItemIds);
+    stockItemIds = Array.uniq(stockItemIds);
     for (idx in stockItemIds) {
       var tmp = Array.findBy('selfRef',
           '/stock-items/' + stockItemIds[idx], ractive.get('stockItems'));
@@ -312,8 +312,9 @@ var BaseRactive = Ractive.extend({
     console.log('hideUpload...');
     $('#upload').slideUp();
   },
+  // TODO why is this so slow?
   id: function(entity) {
-    console.log('id: '+entity);
+    //console.log('id: '+entity);
     var id = ractive.uri(entity);
     return id.substring(id.lastIndexOf('/')+1);
   },
@@ -537,9 +538,13 @@ var BaseRactive = Ractive.extend({
       $( "#ajax-loader" ).hide();
     }, EASING_DURATION);
   },
-  shortId: function(uri) {
+  localId: function(uri) {
     if (uri == undefined) return;
     else return uri.substring(uri.lastIndexOf('/')+1);
+  },
+  /** @deprecated use localId */
+  shortId: function(uri) {
+    return ractive.localId(uri);
   },
   showDisconnected: function(msg) {
     console.log('showDisconnected: '+msg);
@@ -633,7 +638,7 @@ var BaseRactive = Ractive.extend({
     if (object != undefined) {
       var singularEntityName = ractive.entityName(object).toCamelCase().singular();
       instanceToStart.processVariables[singularEntityName+'Id'] = ractive.uri(object);
-      instanceToStart.processVariables[singularEntityName+'ShortId'] = ractive.shortId(ractive.uri(object));
+      instanceToStart.processVariables[singularEntityName+'localId'] = ractive.localId(ractive.uri(object));
     }
     console.log(JSON.stringify(instanceToStart));
     // save what we know so far...

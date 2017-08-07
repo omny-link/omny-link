@@ -49,7 +49,7 @@ var ractive = new BaseRactive({
     },
     server: $env.server,
     sortAsc: true,
-    sortColumn: 'shortId',
+    sortColumn: 'localId',
     sorted: function(column) {
       console.info('sorted');
       if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
