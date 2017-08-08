@@ -92,7 +92,7 @@
         </li>
         {{#tenant.show.stockPricing}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">Price:</label>
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}:</label>
             <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price for the {{tenant.strings.order.toLowerCase()}}{{/}}</p>
           </li>
@@ -102,14 +102,14 @@
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.taxHint}}{{tenant.strings.taxHint}}{{else}}Tax due on the {{tenant.strings.order.toLowerCase()}}{{/}}</p>
           </li>
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">Total Price:</label>
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.totalPrice}}{{tenant.strings.totalPrice}}{{else}}Total Price{{/}}:</label>
             <input class="form-control" id="curTotalPrice" disabled readonly step="any" twoway="false" type="number" value="{{(isNaN(current.price) ? 0 : current.price)+(isNaN(current.tax) ? 0 : current.tax)}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.totalPriceHint}}{{tenant.strings.totalPriceHint}}{{else}}Total of price and VAT{{/}}</p>
           </li>
         {{/}}
         {{#if tenant.show.orderInvoiceRef}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">Invoice Ref:</label>
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.invoiceRef}}{{tenant.strings.invoiceRef}}{{else}}Invoice Ref{{/}}:</label>
             <input class="form-control" id="curPrice" step="any" value="{{current.invoiceRef}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference for {{tenant.strings.order.toLowerCase()}}{{/}}</p>
           </li>
