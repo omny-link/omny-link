@@ -15,7 +15,9 @@
               {{#matchRole('super_admin')}}
                 <th></th>
               {{/}}
-              <th title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}</th>
+              {{#tenant.features.catalog}}
+                <th title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}</th>
+              {{/}}
               {{#tenant.orderItemFields}}
                 <th title="{{hint}}">{{label == undefined ? key.toLabel() : label}}</th>
               {{/}}
@@ -28,18 +30,17 @@
                 {{#matchRole('super_admin')}}
                   <td>{{current.orderItems[j].id}}</td>
                 {{/}}
-                <td on-click="toggleEditOrderItem(current.orderItems[j],j)">
-                  <span title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#stockItem}}{{stockItem.name}}{{else}}n/a{{/}}</span>
-                  <input class="hidden form-control stock-item-typeahead typeahead" placeholder="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}" title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}" value="{{stockItem}}"/>
-                </td>
+                {{#tenant.features.catalog}}
+                  <td on-click="toggleEditOrderItem(current.orderItems[j],j)">
+                    <span title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#stockItem}}{{stockItem.name}}{{else}}n/a{{/}}</span>
+                  </td>
+                {{/}}
                 {{#tenant.orderItemFields}}
                   <td on-click="toggleEditOrderItem(current.orderItems[j],j)" class="{{type}}">
                     {{#if type=='date'}}
                       <span title="{{hint}}">{{formatDate(customFields[key])}}</span>
-                      <input class="hidden form-control" placeholder="yyyy-mm-dd" type="date" title="{{hint}}" value="{{customFields[key]}}">
                     {{else}}
                       <span title="{{hint}}" >{{customFields[key]}}</span>
-                      <input class="hidden form-control" placeholder="{{hint}}" title="{{hint}}" type="{{type}}" value="{{customFields[key]}}">
                     {{/if}}
                   </td>
                 {{/}}

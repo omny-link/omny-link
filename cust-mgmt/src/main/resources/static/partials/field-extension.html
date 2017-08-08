@@ -7,10 +7,10 @@
         {{else}}value="{{current.customFields[name]}}"
         {{/}}></select>
   {{elseif type=='list'}}
-    <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}s" value="{{current.customFields[name]}}">
+    <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}" value="{{current.customFields[name]}}">
   {{else}}
     <div {{#if type=="url" && current.customFields[name] != undefined}}class="input-group"{{/if}}>
-      <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
+      <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type=='number'}}step="any"{{/}} {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
       {{#if type=="url" && current.customFields[name] != undefined}}
         <span class="input-group-addon">
           <a href="{{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
@@ -18,5 +18,5 @@
       {{/if}}
     </div>
   {{/}}
-  <p class="col-md-offset-4 col-sm-offset-4 help-block field-error">{{hint}}</p>
+  <p class="col-md-offset-4 col-sm-offset-4 help-block">{{hint}}</p>
 </li>

@@ -312,6 +312,8 @@ tfoot th {
 }
 #ajax-loader, .ajax-loader {
   display: inline;
+  position: fixed;
+  z-index: 1500;
 }
 #ajax-loader img.ajax-loader {
   position: fixed;
