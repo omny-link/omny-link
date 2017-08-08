@@ -116,14 +116,14 @@ var ractive = new BaseRactive({
     },
     formatStockItemIds: function(order) {
       if (order==undefined) return '';
-      console.warn('formatStockItemIds for order: '+order);
+      console.info('formatStockItemIds for order: '+ractive.uri(order));
 
       var stockItemIds = [];
-      for (idx in order.orderItems) {
+      for (var idx = 0 ; idx < order.orderItems.length ; idx++) {
         stockItemIds.push(order.orderItems[idx].stockItem.id);
       }
       var stockItemNames = '';
-      for (idx in stockItemIds) {
+      for (var idx = 0 ; idx < stockItemIds.length ; idx++) {
         var tmp = Array.findBy('selfRef','/stock-items/' + stockItemIds[idx],ractive.get('stockItems'));
         if (tmp != undefined && stockItemNames.indexOf(tmp.name)==-1) {
           if (stockItemNames.length > 0) stockItemNames += ',';
@@ -250,8 +250,6 @@ var ractive = new BaseRactive({
         stage: ractive.initialOrderStage(),
         tenantId: ractive.get('tenant.id')
     };
-//    ractive.set('current', order);
-//    ractive.save();
     ractive.select( order );
     ractive.initTags();
   },
@@ -261,14 +259,8 @@ var ractive = new BaseRactive({
     var tmp = ractive.get('itemPrototype')== undefined
         ? { orderId: orderId, customFields: {} }
         : ractive.get('itemPrototype');
-//    tmp.orderId = ractive.localId(orderId);
-//    ractive.set('currentOrderIdx',ractive.get('orders').indexOf(Array.findBy('selfRef',orderId,ractive.get('orders'))));
     ractive.set('currentOrderItemIdx',ractive.get('current.orderItems').length);
-//    if (ractive.get('current.orderItems')==undefined) {
-//      ractive.set('current.orderItems', [ tmp ]);
-//    } else {
-      ractive.push('current.orderItems', tmp);
-//    }
+    ractive.push('current.orderItems', tmp);
 
     ractive.saveOrderItem();
     ractive.select(ractive.get('current'));
@@ -283,10 +275,6 @@ var ractive = new BaseRactive({
         success: completeHandler = function(data) {
           ractive.fetch();
           ractive.showResults();
-//        },
-//        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
-//          console.error(textStatus+': '+errorThrown);
-//          ractive.showError("I'm afraid we can't delete "+order.id+" at this time");
         }
     });
     return false; // cancel bubbling to prevent edit as well as delete
@@ -301,8 +289,7 @@ var ractive = new BaseRactive({
         url: ractive.getServer() + '/'+ractive.get('tenant.id')+'/orders/'+orderId+'/order-items/'+item.id,
         type: 'DELETE',
         success: completeHandler = function(data) {
-          // TODO cannot select directly as have no hateos links
-          ractive.select(Array.findBy('selfRef', ractive.get('current.id'), ractive.get('orders')));
+          ractive.select(ractive.get('current'));
         }
       });
     }
@@ -561,7 +548,7 @@ var ractive = new BaseRactive({
     console.info('select: '+JSON.stringify(order));
     ractive.set('saveObserver',false);
     // default owner to current user
-    if (order.owner == undefined || order.owner == '') order.owner = $auth.getClaim('sub');
+    if (order['owner'] == undefined || order['owner'] == '') order.owner = $auth.getClaim('sub');
     if (ractive.uri(order) != undefined) {
       console.log('loading detail for '+ractive.uri(order));
       $.getJSON(ractive.getServer()+ractive.tenantUri(order), function( data ) {
