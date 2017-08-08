@@ -28,6 +28,18 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     List<Order> findByStageForTenant(@Param("tenantId") String tenantId,
             @Param("stage") String stage);
 
+    @Query("SELECT o FROM Order o WHERE o.stage IN :stage AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
+    List<Order> findPageByStageForTenant(@Param("tenantId") String tenantId,
+            @Param("stage") String stage, Pageable pageable);
+
+    @Query("SELECT o FROM Order o WHERE o.type IN :type AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
+    List<Order> findByTypeForTenant(@Param("tenantId") String tenantId,
+            @Param("type") String type);
+
+    @Query("SELECT o FROM Order o WHERE o.type IN :type AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
+    List<Order> findPageByTypeForTenant(@Param("tenantId") String tenantId,
+            @Param("type") String type, Pageable pageable);
+
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId = :contactId ORDER BY o.lastUpdated DESC")
     List<Order> findAllForContact(@Param("tenantId") String tenantId,
             @Param("contactId") Long contactId);

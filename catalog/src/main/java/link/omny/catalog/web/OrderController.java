@@ -60,7 +60,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * REST web service for accessing stock items.
- * 
+ *
  * @author Tim Stephenson
  */
 @Controller
@@ -78,14 +78,12 @@ public class OrderController {
 
     @Autowired
     private OrderItemRepository orderItemRepo;
-    
+
     @Autowired
     private StockItemRepository stockItemRepo;
 
     /**
-     * Return the specified order and its items and feedback.
-     * 
-     * @return a complete order.
+     * @return a complete order including its items and feedback.
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @JsonView(OrderViews.Detailed.class)
@@ -101,16 +99,14 @@ public class OrderController {
                 "Found order with %1$d order items and %2$s inc. feedback",
                 order.getOrderItems().size(),
                 order.getFeedback() == null ? "DOES NOT" : "DOES"));
-        
+
         order.setFeedback(feedbackRepo.findByOrder(tenantId, orderId));
         addLinks(tenantId, order);
         return order;
     }
 
     /**
-     * Return feedback for the specified order.
-     *
-     * @return orders for that tenant.
+     * @return feedback for the specified order.
      */
     @RequestMapping(value = "/{id}/feedback", method = RequestMethod.GET)
     public @ResponseBody FeedbackResource readFeedback(
@@ -135,9 +131,7 @@ public class OrderController {
     }
 
     /**
-     * Return just the orders for a specific tenant.
-     * 
-     * @return orders for that tenant.
+     * @return orders for the specified tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     @JsonView(OrderViews.Summary.class)
@@ -156,14 +150,12 @@ public class OrderController {
             list = orderRepo.findPageForTenant(tenantId, pageable);
         }
         LOGGER.info(String.format("Found %1$s orders", list.size()));
-        
+
         return list;
     }
 
     /**
-     * Return just the orders for a specific contact.
-     * 
-     * @return orders for that contact.
+     * @return orders owned by the specified contact.
      */
     @RequestMapping(value = "/findByContact/{contactId}", method = RequestMethod.GET)
     @JsonView(OrderViews.Detailed.class)
@@ -176,9 +168,7 @@ public class OrderController {
     }
 
     /**
-     * Return just the orders for a specific contact or contacts.
-     * 
-     * @return orders.
+     * @return orders owned by the specified contact(s).
      */
     @RequestMapping(value = "/findByContacts/{contactIds}", method = RequestMethod.GET)
     @JsonView(OrderViews.Detailed.class)
@@ -205,9 +195,30 @@ public class OrderController {
     }
 
     /**
-     * Create a new order.
-     * 
-     * @return
+     * @return orders of the specified type.
+     */
+    @RequestMapping(value = "/findByType/{type}", method = RequestMethod.GET)
+    @JsonView(OrderViews.Detailed.class)
+    public @ResponseBody List<Order> findByType(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("type") String type,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        List<Order> list;
+        if (limit == null) {
+            list = orderRepo.findByTypeForTenant(tenantId, type);
+        } else {
+            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            list = orderRepo
+                    .findPageByTypeForTenant(tenantId, type, pageable);
+        }
+        LOGGER.info(String.format("Found %1$s orders", list.size()));
+
+        return list;
+    }
+
+    /**
+     * @return the created order.
      */
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/", method = RequestMethod.POST)
@@ -287,7 +298,7 @@ public class OrderController {
 
     /**
      * Update an existing order with a new order item.
-     * @return 
+     * @return
      */
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/{id}/order-items", method = RequestMethod.POST, consumes = { "application/json" })
@@ -314,13 +325,13 @@ public class OrderController {
         List<OrderItem> items = order.getOrderItems();
         items.sort((o1,o2) -> o1.getId().compareTo(o2.getId()));
         vars.put("itemId", items.get(0).getId().toString());
-        
+
         return getCreatedResponseEntity("/{id}/order-items/{itemId}", vars);
     }
 
     /**
      * Update an existing order with new feedback.
-     * @return 
+     * @return
      */
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/{id}/feedback", method = RequestMethod.POST, consumes = { "application/json" })
@@ -343,12 +354,12 @@ public class OrderController {
                     .copyNonNullProperties(feedback, existingFeedback);
             feedbackRepo.save(existingFeedback);
         }
-        
+
         HashMap<String, String> vars = new HashMap<String, String>();
         vars.put("tenantId", tenantId);
         vars.put("id", orderId.toString());
         vars.put("feedbackId", feedback.getId().toString());
-        
+
         return getCreatedResponseEntity("/{id}/feedback/{feedbackId}",vars);
     }
 

@@ -75,6 +75,11 @@ public class Order implements OrderWithSubEntities, Serializable {
     private String name;
 
     @JsonProperty
+    @Size(max = 60)
+    @JsonView(OrderViews.Summary.class)
+    private String type;
+
+    @JsonProperty
     @JsonView(OrderViews.Summary.class)
     private String description;
 
@@ -217,7 +222,7 @@ public class Order implements OrderWithSubEntities, Serializable {
 
     public void setOrderItems(List<OrderItem> newItems) {
         orderItems = newItems;
-        if (newItems == null ) { 
+        if (newItems == null ) {
             return ;
         }
         for (OrderItem item : newItems) {
