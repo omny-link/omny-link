@@ -34,7 +34,7 @@
         </activiti:field>
 
         <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/${contact.getString('shortId')}</activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/${contact.getString('localId')}</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
