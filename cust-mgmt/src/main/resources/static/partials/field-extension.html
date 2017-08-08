@@ -7,7 +7,7 @@
         {{else}}value="{{current.customFields[name]}}"
         {{/}}></select>
   {{elseif type=='list'}}
-    <input autocomplete="off" class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}s" value="{{current.customFields[name]}}">
+    <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}s" value="{{current.customFields[name]}}">
   {{else}}
     <div {{#if type=="url" && current.customFields[name] != undefined}}class="input-group"{{/if}}>
       <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
