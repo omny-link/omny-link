@@ -9,7 +9,7 @@ public class BpmnRestHelper {
         return String.format("%1$s/%2$s%3$s", uri.substring(0, startPath), tenant, uri.substring(startPath));
     }
 
-    public Long uriToDbId(String uri) {
+    public Long uriToLocalId(String uri) {
         if (uri == null) {
             throw new IllegalArgumentException(String.format("URI %1$s is null", uri));
         }

@@ -14,7 +14,7 @@ public class BpmnRestHelperTest {
 
     @Test
     public void testUriToDbId() {
-        Long id = new BpmnRestHelper().uriToDbId("http://api.knowprocess.com/contacts/123");
+        Long id = new BpmnRestHelper().uriToLocalId("http://api.knowprocess.com/contacts/123");
         assertEquals(new Long("123"), id);
     }
 }
