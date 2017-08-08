@@ -14,6 +14,7 @@ var ractive = new BaseRactive({
     filter: {field: "stage", operator: "!in", value: "cold,complete"},
     saveObserver:false,
     title: 'Orders',
+    variant: 'order',
     customField: function(obj, name) {
       if (obj['customFields']==undefined) {
         return undefined;
@@ -248,7 +249,8 @@ var ractive = new BaseRactive({
         name: ractive.get('tenant.strings.order') == undefined ? 'Order' : ractive.get('tenant.strings.order'),
         orderItems: [],
         stage: ractive.initialOrderStage(),
-        tenantId: ractive.get('tenant.id')
+        tenantId: ractive.get('tenant.id'),
+        type: ractive.get('variant')
     };
     ractive.select( order );
     ractive.initTags();
@@ -304,9 +306,12 @@ var ractive = new BaseRactive({
   fetch: function () {
     console.info('fetch...');
     ractive.set('saveObserver', false);
+    var url = ractive.get('variant') == 'order'
+        ? ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/'
+        : ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/findByType/'+ractive.get('variant');
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/',
+      url: url,
       crossDomain: true,
       success: function( data ) {
         if (data['_embedded'] == undefined) {
@@ -429,8 +434,8 @@ var ractive = new BaseRactive({
             break;
           }
           //ractive.fetch();
-          ractive.showMessage((ractive.get('tenant.strings.order')==undefined
-              ? 'Order' : ractive.get('tenant.strings.order'))
+          ractive.showMessage((ractive.get('tenant.strings.'+ractive.get('variant'))==undefined
+              ? ractive.get('variant') : ractive.get('tenant.strings.'+ractive.get('variant')))
               +' saved');
           ractive.set('saveObserver',true);
         }
@@ -618,13 +623,23 @@ var ractive = new BaseRactive({
     console.info('updateStockItem: '+newVal);
     var newStockItem = Array.findBy('name',newVal,ractive.get('stockItems'));
     ractive.set('current.stockItem', newStockItem);
+  },
+  updateTitle: function() {
+    if (ractive.get('tenant.strings.'+ractive.get('variant')+'s')==undefined) {
+      ractive.set('title', ractive.get('variant'));
+    } else {
+      ractive.set('title', ractive.get('tenant.strings.'+ractive.get('variant')+'s'));
+    }
   }
 });
 
-ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
-  console.info('searchTerm changed');
-  ractive.showResults();
-  setTimeout(function() { ractive.showSearchMatched(); }, 500);
+$(document).ready(function() {
+  ractive.set('saveObserver', false);
+  var params = getSearchParameters();
+  if (params['v']!=undefined) {
+    ractive.set('variant',decodeURIComponent(params['v']));
+  }
+  ractive.set('saveObserver', true);
 });
 
 ractive.observe('current.stockItem.id', function(newValue, oldValue, keypath) {
@@ -644,9 +659,14 @@ ractive.observe('current.stockItem.id', function(newValue, oldValue, keypath) {
   }
 });
 
+ractive.observe('variant', function(newValue, oldValue, keypath) {
+  console.info('update variant');
+  ractive.updateTitle();
+});
+
 ractive.observe('tenant.strings.orders', function(newValue, oldValue, keypath) {
   console.info('update title');
-  ractive.set('title', ractive.get('tenant.strings.orders'));
+  ractive.updateTitle();
 });
 
 // Save on model change
