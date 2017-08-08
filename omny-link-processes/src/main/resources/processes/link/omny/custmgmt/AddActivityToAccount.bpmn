@@ -34,7 +34,7 @@
           <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/accounts/${bpmnRest.uriToDbId(accountId)}/activities</activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/accounts/${bpmnRest.uriToLocalId(accountId)}/activities</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>

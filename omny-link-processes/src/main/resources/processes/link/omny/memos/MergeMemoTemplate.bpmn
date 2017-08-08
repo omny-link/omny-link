@@ -87,19 +87,19 @@ var contactId = execution.getVariable('contactId');
 System.out.println('contactId: '+contactId);
 if (contactId.indexOf('://')==-1) contactId = "userInfo('cust-mgmt-url')/"+contactId;
 execution.setVariable('contactId',contactId);
-// Accounts page does not populate contactShortId
-if (execution.getVariable('contactShortId')==undefined) execution.setVariable('contactShortId',contactId.substring(contactId.lastIndexOf('/')+1));
+// Accounts page does not populate contactLocalId
+if (execution.getVariable('contactLocalId')==undefined) execution.setVariable('contactLocalId',contactId.substring(contactId.lastIndexOf('/')+1));
 // Prepare 'short' id for reading order
 if (execution.getVariable('orderId')!=undefined && execution.getVariable('orderId').indexOf('/')!=-1) {
-  execution.setVariable('orderShortId',execution.getVariable('orderId').substring(execution.getVariable('orderId').lastIndexOf('/')+1));
+  execution.setVariable('orderLocalId',execution.getVariable('orderId').substring(execution.getVariable('orderId').lastIndexOf('/')+1));
 } else {
-  execution.setVariable('orderShortId',execution.getVariable('orderId'));
+  execution.setVariable('orderLocalId',execution.getVariable('orderId'));
 }
 // Prepare 'short' id for reading account
 if (execution.getVariable('accountId')!=undefined && execution.getVariable('accountId').indexOf('/')!=-1) {
-  execution.setVariable('accountShortId',execution.getVariable('accountId').substring(execution.getVariable('accountId').lastIndexOf('/')+1));
+  execution.setVariable('accountLocalId',execution.getVariable('accountId').substring(execution.getVariable('accountId').lastIndexOf('/')+1));
 } else {
-  execution.setVariable('accountShortId',execution.getVariable('accountId'));
+  execution.setVariable('accountLocalId',execution.getVariable('accountId'));
 }
 //System.out.println("We're done");]]></script>
     </scriptTask>
@@ -128,7 +128,7 @@ if (execution.getVariable('accountId')!=undefined && execution.getVariable('acco
           <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/${contactShortId}</activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/${contactLocalId}</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Accept:application/json</activiti:string>
@@ -178,7 +178,7 @@ if (execution.getVariable('accountId')!=undefined && execution.getVariable('acco
           <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/orders/${orderShortId}</activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/orders/${orderLocalId}</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Accept:application/json</activiti:string>
@@ -262,7 +262,7 @@ if (execution.getVariable('accountId')!=undefined && execution.getVariable('acco
           <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/accounts/${accountShortId}</activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/accounts/${accountLocalId}</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Accept:application/json</activiti:string>

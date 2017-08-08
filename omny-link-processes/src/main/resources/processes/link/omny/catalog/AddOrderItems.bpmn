@@ -32,7 +32,7 @@
           <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression><![CDATA[userInfo('cust-mgmt-url')/${tenantId}/orders/${orderShortId}/order-items]]></activiti:expression>
+          <activiti:expression><![CDATA[userInfo('cust-mgmt-url')/${tenantId}/orders/${bpmnRest.uriToLocalId(orderId)}/order-items]]></activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
