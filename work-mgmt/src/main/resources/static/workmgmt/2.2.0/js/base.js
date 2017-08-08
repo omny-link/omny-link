@@ -663,7 +663,11 @@ var BaseRactive = Ractive.extend({
         data: JSON.stringify(ractive.get('instanceToStart')),
         success: function(data, textStatus, jqXHR) {
           console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
-          ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
+          if (ractive.get('instanceToStart.label')==ractive.get('instanceToStart.businessKey')) {
+            ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'"');
+          } else {
+            ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
+          }
           $('#customActionModalSect').modal('hide');
           if (document.location.href.endsWith('contacts.html')) {
             ractive.select(ractive.get('current'));// refresh individual record

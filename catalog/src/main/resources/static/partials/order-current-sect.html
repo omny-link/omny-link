@@ -41,7 +41,7 @@
             <input class="form-control" list="contacts" onblur="ractive.updateContactId(this.value)" placeholder="Start typing to filter options"
                 id="curContact" required value="{{#current.contactId}}{{formatContactId(current.contactId)}}{{/}}">
             <span class="input-group-addon">
-              {{#if tenant.show.accountView}}
+              {{#if tenant.features.accountView}}
                 <a href="accounts.html?searchTerm={{formatAccountId(current.contactId)}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
               {{else}}
                 <a href="contacts.html?searchTerm={{current.contactId}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
@@ -60,13 +60,13 @@
           <input autocomplete="off" class="form-control" list="orderStages" placeholder="Start typing to filter options" id="curOrderStage" value="{{current.stage}}"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}Stage the {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} has reached{{/}}</p>
         </li>
-        {{#tenant.show.orderDueDate}}
+        {{#tenant.features.orderDueDate}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}:</label>
             {{#if current.orderItems}}
               <span>{{formatOrderItemDates(current)}}</span>
             {{else}}
-              <input class="form-control col-md-8 col-sm-8 col-xs-8" id="curDueDate" {{#if !tenant.show.orderItems}}type="date" {{/if}}value="{{current.dueDate}}"/>
+              <input class="form-control col-md-8 col-sm-8 col-xs-8" id="curDueDate" {{#if !tenant.features.orderItems}}type="date" {{/if}}value="{{current.dueDate}}"/>
             {{/if}}
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Date {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} due to be delivered{{/}}</p>
           </li>
@@ -75,22 +75,24 @@
     </div>
     <div class="currentBody col-md-6 col-sm-12">
       <ul class="form edit-form">
-        <li class="form-group">
-          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
-          {{#if current.orderItems}}
-            <span>{{formatStockItemIds(current)}}</span>
-          {{else}}
-            <div class="input-group">
-              <input class="form-control" list="stockItems" onblur="ractive.updateStockItem(this.value)" placeholder="Start typing to filter options"
-                  id="curContact" required value="{{#current.stockItem}}{{current.stockItem.name}}{{/}}">
-              <span class="input-group-addon">
-                <a href="stock-items.html?q={{current.stockItem.id}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
-              </span>
-            </div>
-          {{/if}}
-          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{tenant.strings.stockItem}} this {{tenant.strings.order.toLowerCase()}} is for</p>
-        </li>
-        {{#tenant.show.stockPricing}}
+        {{#tenant.features.catalog}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4 required">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
+            {{#if current.orderItems}}
+              <span>{{formatStockItemIds(current)}}</span>
+            {{else}}
+              <div class="input-group">
+                <input class="form-control" list="stockItems" onblur="ractive.updateStockItem(this.value)" placeholder="Start typing to filter options"
+                    id="curContact" required value="{{#current.stockItem}}{{current.stockItem.name}}{{/}}">
+                <span class="input-group-addon">
+                  <a href="stock-items.html?q={{current.stockItem.id}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+                </span>
+              </div>
+            {{/if}}
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{tenant.strings.stockItem}} this {{tenant.strings.order.toLowerCase()}} is for</p>
+          </li>
+        {{/}}
+        {{#tenant.features.stockPricing}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}:</label>
             <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
@@ -107,7 +109,7 @@
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.totalPriceHint}}{{tenant.strings.totalPriceHint}}{{else}}Total of price and VAT{{/}}</p>
           </li>
         {{/}}
-        {{#if tenant.show.orderInvoiceRef}}
+        {{#if tenant.features.orderInvoiceRef}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.invoiceRef}}{{tenant.strings.invoiceRef}}{{else}}Invoice Ref{{/}}:</label>
             <input class="form-control" id="curPrice" step="any" value="{{current.invoiceRef}}">
@@ -137,11 +139,11 @@
     {{/}}
   </form>
   
-  {{#if tenant.show.orderItems}}
+  {{#if tenant.features.orderItems}}
     {{>currentOrderItemListSect}}
   {{/if}}
   
-  {{#if tenant.show.feedback}}
+  {{#if tenant.features.feedback}}
     {{>currentFeedbackSect}}
   {{/if}}  
 </section>
