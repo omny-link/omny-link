@@ -1,11 +1,13 @@
 <ul class="form edit-form">
-  <li class="form-group">
-	  <label class="col-md-3 col-sm-3 col-xs-4 control-label required">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
-	  <input class="col-md-9 col-sm-9 col-xs-8 form-control" list="stockItems" id="orderStockItem" 
-        placeholder="Please select a {{#tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/}}" 
-        required type="text" value="{{instanceToStart.processVariables.orderItem.stockItemName}}">
-	  <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Please select the {{#tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/}} to add to the {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}Order{{/}}</p>
-	</li>
+  {{#tenant.features.catalog}}
+    <li class="form-group">
+      <label class="col-md-3 col-sm-3 col-xs-4 control-label required">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
+      <input class="col-md-9 col-sm-9 col-xs-8 form-control" list="stockItems" id="orderStockItem"
+          placeholder="Please select a {{#tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/}}"
+          required type="text" value="{{instanceToStart.processVariables.orderItem.stockItem.name}}">
+      <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Please select the {{#tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/}} to add to the {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}Order{{/}}</p>
+    </li>
+  {{/}}
   {{#tenant.strings.orderItemPriceHint}}
     <li class="form-group">
       <label class="col-md-3 col-sm-3 col-xs-4 required">Price:</label>
@@ -16,9 +18,15 @@
   {{#each tenant.orderItemFields:k}}
     <li class="form-group">
       <label class="col-md-3 col-sm-3 col-xs-4">{{label == undefined ? name.toLabel() : label}}:</label>
-      <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="cur{{name.toLeadingCaps()}}" type="{{type}}" value="{{instanceToStart.processVariables.orderItem.customFields[name]}}">
+      {{#if type=='list'}}
+        <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}"
+            value="{{instanceToStart.processVariables.orderItem.customFields[name]}}">
+      {{else}}
+        <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type=='number'}}step="any"{{/}} {{#type}}type="{{type}}"{{/}}
+            value="{{instanceToStart.processVariables.orderItem.customFields[name]}}">
+      {{/if}}
       <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">{{hint}}</p>
     </li>
   {{/each}}
 </ul>
-<script type="text/javascript" src="js/add-order-item.js"></script>
+<script type="text/javascript" src="catalog/2.1.0/js/add-order-item.js"></script>

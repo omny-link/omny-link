@@ -2,13 +2,17 @@
   var me = {
   };
 
-  ractive.observe('instanceToStart.processVariables.orderItem.stockItemName', function(newValue, oldValue, keypath) {
+  ractive.observe('instanceToStart.processVariables.orderItem.stockItem.name', function(newValue, oldValue, keypath) {
     console.log('stock item changing from '+oldValue+' to '+newValue);
     if (newValue!=undefined && newValue!='' && newValue.length >0) {
-      ractive.set('instanceToStart.processVariables.orderItem.stockItem',{ id: ractive.localId(Array.findBy('name', newValue, ractive.get('stockItems')).selfRef) });
+      var stockItem = Array.findBy('name', newValue, ractive.get('stockItems'));
+      if (stockItem.id == undefined) stockItem.id = ractive.localId(ractive.uri(stockItem));
+      ractive.set('instanceToStart.processVariables.orderItem.stockItem', stockItem);
     }
     console.log(ractive.get('instanceToStart.processVariables.orderItem.stockItem'));
   });
+
+  ractive.set('instanceToStart.processVariables.orderItem.stockItem', ractive.get('current.stockItem'));
 
 //  return me;
 }($, ractive));
