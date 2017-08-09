@@ -223,6 +223,7 @@ var ractive = new BaseRactive({
     },
     stdPartials: [
       { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
+      { "name": "fieldExtension", "url": "/partials/field-extension.html"},
       { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "navbar", "url": "/partials/order-navbar.html"},
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
@@ -330,6 +331,21 @@ var ractive = new BaseRactive({
     ractive.fetchStockItems();
     //ractive.fetchStockCategories();
   },
+  fetchAccounts: function () {
+    console.info('fetchAccounts...');
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/accounts/',
+      crossDomain: true,
+      success: function( data ) {
+        ractive.set('saveObserver', false);
+        ractive.set('accounts', data);
+        ractive.addDataList({ name: 'accounts' }, ractive.get('accounts'));
+        ractive.set('saveObserver', true);
+      }
+    });
+  },
   fetchContacts: function () {
     console.info('fetchContacts...');
     ractive.set('saveObserver', false);
@@ -339,16 +355,7 @@ var ractive = new BaseRactive({
       crossDomain: true,
       success: function( data ) {
         ractive.set('saveObserver', false);
-        if (data['_embedded'] == undefined) {
-          ractive.merge('contacts', data);
-        } else {
-          ractive.merge('contacts', data['_embedded'].contacts);
-        }
-        var kvArray = [{key: 1, value: 10},
-          {key: 2, value: 20},
-          {key: 3, value: 30}];
-
-        ractive.set('contacts',ractive.get('contacts').map(function(obj) {
+        ractive.set('contacts',data.map(function(obj) {
             obj.name = obj.fullName;
             return obj;
           })
@@ -615,6 +622,7 @@ var ractive = new BaseRactive({
   },
   updateContactId: function(newVal) {
     console.info('updateContactId: '+newVal);
+    if (newVal==undefined || newVal.length==0) return;
     var newContact = Array.findBy('fullName',newVal,ractive.get('contacts'));
     ractive.set('current.contact', newContact);
     ractive.set('current.contactId', ractive.id(newContact));
