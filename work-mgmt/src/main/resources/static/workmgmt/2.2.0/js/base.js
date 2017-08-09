@@ -865,6 +865,16 @@ $(document).ready(function() {
     if ((oldValue == undefined || oldValue.id == '') && newValue != undefined && newValue.id != '' && ractive['fetch'] != undefined) {
       ractive.fetch();
     }
+
+    if (newValue!=undefined && newValue.orderFields!=undefined && newValue.orderFields.length>0) {
+      for(var idx = 0 ; idx<newValue.orderFields.length ; idx++) {
+        if (newValue.orderFields[idx].type=='account' && $('datalist#accounts').length==0) {
+          if (ractive['fetchAccounts']!=undefined) ractive.fetchAccounts();
+        } else if (newValue.orderFields[idx].type=='contact' && $('datalist#contacts').length==0) {
+          if (ractive['fetchContacts']!=undefined) ractive.fetchContacts();
+        }
+      }
+    }
   });
 
   ractive.on('sort', function ( event, column ) {
