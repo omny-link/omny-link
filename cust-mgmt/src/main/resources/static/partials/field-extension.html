@@ -1,22 +1,45 @@
 <li class="form-group">
   <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
-  {{#type=='select' || type=='multi-select'}}
+  {{#if current.orderItems && current.orderItems[0].customFields[name] && ..aggregation!=undefined}}
+    {{#if ..aggregation=='sum'}}1
+      <span>{{formatSumOrderItemField(current,name)}}</span>
+    {{elseif ..aggregation=='uniq'}}2
+      <span>{{formatUniqOrderItemField(current,name)}}</span>
+      {{else}}3
+    {{/if}}
+  {{elseif type=='select' || type=='multi-select'}}
     {{! binding does not work for multiple selects}}
     <select class="form-control" id="cur{{name.toLeadingCaps()}}"
         {{#type=='multi-select'}}multiple="{{multiple}}" data-key="{{name}}" data-value="{{current.customFields[name]}}"
         {{else}}value="{{current.customFields[name]}}"
         {{/}}></select>
-  {{elseif type=='list'}}
-    <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}" value="{{current.customFields[name]}}">
-  {{else}}
-    <div {{#if type=="url" && current.customFields[name] != undefined}}class="input-group"{{/if}}>
-      <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type=='number'}}step="any"{{/}} {{#type}}type="{{type}}"{{/}} value="{{current.customFields[name]}}">
+  {{elseif (type=="url" || type=="account" || type=="contact") && current.customFields[name] != undefined}}
+    <div class="input-group">
+      <input class="form-control" id="cur{{name.toLeadingCaps()}}"
+          placeholder="{{placeholder}}"
+          {{#if type=='list'}}list="{{name}}s"{{elseif type=='contact'}}list="contacts"{{elseif type=='account'}}list="accounts"{{/if}}
+          value="{{current.customFields[name]}}"/>
       {{#if type=="url" && current.customFields[name] != undefined}}
         <span class="input-group-addon">
           <a href="{{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
         </span>
+      {{elseif type=="account" && current.customFields[name] != undefined}}
+        <span class="input-group-addon">
+          <a href="accounts.html?q={{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+        </span>
+      {{elseif type=="contact" && current.customFields[name] != undefined}}
+        <span class="input-group-addon">
+          <a href="contacts.html?q={{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+        </span>
       {{/if}}
     </div>
-  {{/}}
+  {{else}}
+    <input class="form-control" id="cur{{name.toLeadingCaps()}}"
+        {{#if type=='list'}}list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}"{{/if}}
+        placeholder="{{placeholder}}"
+        {{#type=='number'}}step="any"{{/}}
+        {{#type}}type="{{type}}" {{/}}
+        value="{{current.customFields[name]}}">
+  {{/if}}
   <p class="col-md-offset-4 col-sm-offset-4 help-block">{{hint}}</p>
 </li>
