@@ -45,7 +45,7 @@ public class CssController {
         TenantConfig tenantConfig = tenantConfigController.showTenant(tenantId);
         if (tenantConfig.getTheme() != null
                 && tenantConfig.getTheme().getCssUrl() != null
-                && tenantConfig.getTheme().getCssUrl().startsWith("http")) {
+                && tenantConfig.getTheme().getCssUrl().startsWith("http")) { // remote css
             String theme = null;
             Fetcher get = new Fetcher();
             try {
@@ -59,11 +59,18 @@ public class CssController {
             }
             return String.format(getDefaultCss(tenantConfig)) + theme;
         } else if (tenantConfig.getTheme() != null
-                && tenantConfig.getTheme().getCssUrl() != null) {
+                && tenantConfig.getTheme().getCssUrl() != null) { // embedded css
             return TenantConfig.readResource(String.format("%1$s%2$s",
                     STATIC_BASE, tenantConfig.getTheme().getCssUrl()));
         } else if (TenantConfig.resourceExists(resourceUrl)) {
             return TenantConfig.readResource(resourceUrl);
+        } else if (tenantConfig.getTheme() != null
+                && tenantConfig.getTheme().getAccentColor() != null
+                && tenantConfig.getTheme().getBodyColor() != null
+                && tenantConfig.getTheme().getHeadingColor() != null
+                && tenantConfig.getTheme().getIconColor() != null
+                && tenantConfig.getTheme().getSubHeadingColor() != null) { // simple palette
+            return getDefaultCss(tenantConfig);
         } else {
             // Defaults exist for everything but log warning
             LOGGER.warn("Please specify either CSS url or theme color properties in {} tenant configuration", tenantId);
