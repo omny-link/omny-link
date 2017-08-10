@@ -36,7 +36,7 @@ var ractive = new BaseRactive({
       }
     },
     daysAgo: function(noOfDays) {
-      return new Date(new Date().setDate(new Date().getDate() - noOfDays)).toISOString().substring(0,10);
+      return ractive.daysAgo(noOfDays);
     },
     featureEnabled: function(feature) {
       console.log('featureEnabled: '+feature);

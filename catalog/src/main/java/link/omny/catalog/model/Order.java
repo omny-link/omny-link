@@ -111,7 +111,7 @@ public class Order implements OrderWithSubEntities, Serializable {
     // gets confused and attempts to cast id:Long to String. Why this property
     // affects a completely different one is a mystery I have not investigated
     @JsonProperty("stockItem")
-    @JsonView(OrderViews.Detailed.class)
+    @JsonView(OrderViews.Summary.class)
     @RestResource(rel = "stockItem")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "stock_item_id")

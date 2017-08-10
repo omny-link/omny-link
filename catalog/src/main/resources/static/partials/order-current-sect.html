@@ -25,7 +25,7 @@
         {{/if}}
       </span>
     </h2>
-    
+
     <div class="currentBody col-md-6 col-sm-12">
       <ul class="form edit-form">
         {{#1==2}}
@@ -81,7 +81,7 @@
             <div class="input-group">
               {{#if current.orderItems}}
                 <input class="form-control" list="stockItems" onblur="ractive.updateStockItem(this.value)" placeholder="Start typing to filter options"
-                    id="curContact" readonly disabled value="{{formatStockItemIds(current)}}">
+                    id="curContact" readonly disabled twoway="false" value="{{formatStockItemIds(current)}}">
               {{else}}
                 <input class="form-control" list="stockItems" onblur="ractive.updateStockItem(this.value)" placeholder="Start typing to filter options"
                     id="curContact" required value="{{#current.stockItem}}{{current.stockItem.name}}{{/}}">

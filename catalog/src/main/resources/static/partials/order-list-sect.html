@@ -27,7 +27,7 @@
           <th on-click="sort:price" style="width: 5em;" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}<span class="sortable {{ sorted('price') }} glyphicon glyphicon-btn "></th>
         {{/}}
         {{#if tenant.show.orderInvoiceRef}}
-          <th on-click ="sort:invoiceRef" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">Invoice Ref<span class="sortable {{ sorted('invoiceRef') }} glyphicon glyphicon-btn "></th>
+          <th on-click ="sort:invoiceRef" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">{{#tenant.strings.invoiceRef}}{{tenant.strings.invoiceRef}}{{else}}Invoice Ref{{/}}<span class="sortable {{ sorted('invoiceRef') }} glyphicon glyphicon-btn "></th>
         {{/if}}
         <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon glyphicon-btn "></th>
         <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
