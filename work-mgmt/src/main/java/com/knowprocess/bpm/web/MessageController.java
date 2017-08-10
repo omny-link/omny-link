@@ -2,6 +2,7 @@ package com.knowprocess.bpm.web;
 
 import java.io.StringReader;
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -262,9 +264,8 @@ public class MessageController {
                     String.format(
                             "The JSON requested is empty or otherwise badly formed: %1$s",
                             jsonBody));
-        // if (SecurityContextHolder.getContext().getAuthentication() == null
-        // || "anonymousUser".equals(SecurityContextHolder.getContext()
-        // .getAuthentication().getName())) {
+        if (SecurityContextHolder.getContext().getAuthentication() == null
+                 || "anonymousUser".equals(((Principal) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getName())) {
             LOGGER.debug("allow Anonymous is set to " + allowAnonymous);
             if (Boolean.valueOf(allowAnonymous)) {
                 LOGGER.warn("No user associated with this message, this may result in errors if the process author expected a username.");
@@ -272,7 +273,7 @@ public class MessageController {
                 throw new ReportableException(
                         "Please ensure you are logged in before sending messages");
             }
-        // }
+        }
 
         String bizKey = bizDesc == null ? msgId + " - "
                 + isoFormatter.format(new Date()) : bizDesc;
@@ -286,9 +287,16 @@ public class MessageController {
             }
 
             try {
-                String username = "anonymousUser";
-                if (activitiMultiTenantProperties.getServers().containsKey(
-                        tenantId)) {
+                String username = "";
+                if (SecurityContextHolder.getContext()
+                        .getAuthentication().isAuthenticated()) {
+                    String tmp = ((Principal) SecurityContextHolder.getContext()
+                            .getAuthentication().getPrincipal()).getName();
+                    if (tmp.contains("@")) { // trust that this is an email addr
+                        username = tmp;
+                    }
+                } else if (activitiMultiTenantProperties.getServers()
+                        .containsKey(tenantId)) {
                     username = activitiMultiTenantProperties.getServers()
                             .get(tenantId).getMailServerDefaultFrom();
                 }
