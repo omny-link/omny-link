@@ -7,7 +7,7 @@ ua.init();
 
 function UserActivity() {
   this.enabled = false;
-  this.server = 'https://api.omny.link';
+  this.server = $env.server;
   // default only, user will override
   this.tenantId = 'omny';
   this.getId = function() {

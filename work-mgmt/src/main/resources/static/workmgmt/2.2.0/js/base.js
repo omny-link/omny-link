@@ -156,6 +156,9 @@ var BaseRactive = Ractive.extend({
     console.info('cancelNote');
     ractive.get('current.notes').splice(0, 1);
   },
+  daysAgo: function(noOfDays) {
+    return new Date(new Date().setDate(new Date().getDate() - noOfDays)).toISOString().substring(0,10);
+  },
   entityName: function(entity) {
     console.info('entityName');
     var id = ractive.uri(entity);
@@ -538,9 +541,10 @@ var BaseRactive = Ractive.extend({
       $( "#ajax-loader" ).hide();
     }, EASING_DURATION);
   },
-  localId: function(uri) {
-    if (uri == undefined) return;
-    else return uri.substring(uri.lastIndexOf('/')+1);
+  localId: function(uriOrObj) {
+    if (uriOrObj == undefined) return;
+    else if (typeof uriOrObj == 'object') return ractive.localId(ractive.uri(uriOrObj));
+    else return uriOrObj.substring(uriOrObj.lastIndexOf('/')+1);
   },
   /** @deprecated use localId */
   shortId: function(uri) {
@@ -897,7 +901,7 @@ $(document).ready(function() {
       $( "#ajax-loader" ).show();
       ractive.showResults();
     }
-    setTimeout(ractive.showSearchMatched, 1000);
+    setTimeout(ractive.showSearchMatched, EASING_DURATION);
   });
 
   var params = getSearchParameters();
