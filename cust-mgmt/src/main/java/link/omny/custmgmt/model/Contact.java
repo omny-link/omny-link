@@ -83,17 +83,6 @@ public class Contact implements Serializable {
     @JsonView({ ContactViews.Detailed.class })
     private Long id;
 
-    /**
-     * Convenience for forms that want to have just one field for first name and
-     * last name. This will be transposed into firstName and lastName by
-     * splitting at the first space which evidence suggests usually works (2
-     * failures in 122 sample from gardenatics).
-     */
-    @Transient
-    @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
-    private String fullName;
-
     // @NotNull
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
@@ -501,6 +490,14 @@ public class Contact implements Serializable {
         return lastName == null;
     }
 
+    /**
+     * Convenience for forms that want to have just one field for first name and
+     * last name. This will be transposed into firstName and lastName by
+     * splitting at the first space which evidence suggests usually works (2
+     * failures in 122 sample from gardenatics).
+     */
+    @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     public void setFullName(String name) {
         String fName;
         try {
