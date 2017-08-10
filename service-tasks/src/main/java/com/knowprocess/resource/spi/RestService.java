@@ -268,8 +268,7 @@ public abstract class RestService extends BaseUserAwareTask implements
             throws ActivitiException {
         try (Scanner scanner = new Scanner(connection.getErrorStream())) {
             String error = scanner.useDelimiter("\\A").next();
-            String msg = "Response code: " + code + ", details: "
-                    + error;
+            String msg = String.format("Response %1$d from %2$s, details: %3$s", code, connection.getURL().toExternalForm(), error);
             LOGGER.error(msg);
             throw new ActivitiException(msg);
         } catch (NullPointerException e) {
