@@ -358,7 +358,7 @@ public abstract class RestService extends BaseUserAwareTask implements
         }
 
         if (responseBodyKey == null) {
-            LOGGER.warn("No response variable key specified, storing as 'body'");
+            LOGGER.debug("No response variable key specified, storing as 'body'");
             responseBodyKey = "body";
         }
 
