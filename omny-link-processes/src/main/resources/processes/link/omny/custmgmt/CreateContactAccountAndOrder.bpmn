@@ -88,7 +88,7 @@ contact.order = undefined;
 
 var pageSubmitted = extContact['pageSubmitted'];
 if (pageSubmitted!=undefined) {
-  //println('Setting page submitted to: '+pageSubmitted);
+  //System.out.println('Setting page submitted to: '+pageSubmitted);
   if (contact['customFields']==undefined) contact.customFields = {};
   contact.customFields.pageSubmitted = pageSubmitted;
 }
@@ -96,18 +96,21 @@ if (pageSubmitted!=undefined) {
 //System.out.println('contactFirstName: '+extContact.firstName);
 if (extContact.firstName != undefined) execution.setVariable('contactFirstName',extContact.firstName);
 else if (extContact.fullName != undefined) {
-  //System.out.println('20');
+  //System.out.println('have full name');
   execution.setVariable('contactFirstName',extContact.fullName);
   execution.setVariable('contactLastName','Unknown');
 } else {
-  //System.out.println('30');
+  //System.out.println('have no names');
   execution.setVariable('contactFirstName','Unknown');
   execution.setVariable('contactLastName','Unknown');
 }
 //System.out.println('contactEmail: '+extContact.email);
 execution.setVariable('contactEmail',extContact.email);
-//System.out.println('contactPwd: '+extContact.password == undefined ? null : extContact.password);
-execution.setVariable('contactPwd',extContact.password == undefined ? null : extContact.password);
+var contactPwd = (extContact.password == undefined ? null : extContact.password);
+if (contactPwd!=null) {
+  //System.out.println('contactPwd: '+contactPwd);
+  execution.setVariable('contactPwd',contactPwd);
+}
 //System.out.println('contact: '+JSON.stringify(contact));
 execution.setVariable('contact',JSON.stringify(contact));
 //System.out.println('account: '+JSON.stringify(account));
