@@ -239,20 +239,22 @@ public class ProcessDefinitionController {
             }
         }
         LOGGER.debug("Audit instance ids for merging: {}", instanceIds);
-        List<org.activiti.engine.runtime.ProcessInstance> activeList = activeQuery
-                .processDefinitionIds(instanceIds).list();
-        LOGGER.debug("Active instances found: {}", activeList.size());
-        for (ProcessInstance auditInst : instances) {
-            if (!auditInst.getEnded()) {
-                LOGGER.debug("Unfinished instance {}, seeking merge...",
-                        auditInst.getId());
-                for (org.activiti.engine.runtime.ProcessInstance activeInst : activeList) {
-                    LOGGER.debug("Active instance {}, needed?",
-                            activeInst.getId());
-                    if (auditInst.getId().equals(activeInst.getId())) {
-                        LOGGER.debug("FOUND: {} {}", activeInst.getId(),
-                                activeInst.getActivityId());
-                        auditInst.setActivityId(activeInst.getActivityId());
+        if (instanceIds.size() > 0) {
+            List<org.activiti.engine.runtime.ProcessInstance> activeList = activeQuery
+                    .processDefinitionIds(instanceIds).list();
+            LOGGER.debug("Active instances found: {}", activeList.size());
+            for (ProcessInstance auditInst : instances) {
+                if (!auditInst.getEnded()) {
+                    LOGGER.debug("Unfinished instance {}, seeking merge...",
+                            auditInst.getId());
+                    for (org.activiti.engine.runtime.ProcessInstance activeInst : activeList) {
+                        LOGGER.debug("Active instance {}, needed?",
+                                activeInst.getId());
+                        if (auditInst.getId().equals(activeInst.getId())) {
+                            LOGGER.debug("FOUND: {} {}", activeInst.getId(),
+                                    activeInst.getActivityId());
+                            auditInst.setActivityId(activeInst.getActivityId());
+                        }
                     }
                 }
             }
