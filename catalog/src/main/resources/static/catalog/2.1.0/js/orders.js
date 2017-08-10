@@ -1,6 +1,7 @@
 var EASING_DURATION = 500;
 fadeOutMessages = true;
 var newLineRegEx = /\n/g;
+var DEFAULT_INACTIVE_STAGES = 'cold,complete,on hold,unqualified,waiting list';
 
 var ractive = new BaseRactive({
   el: 'container',
@@ -27,6 +28,9 @@ var ractive = new BaseRactive({
         });
         return val;
       }
+    },
+    daysAgo: function(noOfDays) {
+      return ractive.daysAgo(noOfDays);
     },
     featureEnabled: function(feature) {
       //console.info('featureEnabled: '+feature);
@@ -117,6 +121,7 @@ var ractive = new BaseRactive({
     },
     formatStockItemIds: function(order) {
       if (order==undefined) return '';
+      if (order.stockItemNames!=undefined) return order.stockItemNames;
       console.info('formatStockItemIds for order: '+ractive.uri(order));
 
       var stockItemIds = [];
@@ -131,7 +136,7 @@ var ractive = new BaseRactive({
           stockItemNames += tmp.name;
         }
       }
-      return stockItemNames;
+      return (order.stockItemNames = stockItemNames);
     },
     formatTags: function(tags) {
       var html = '';
@@ -172,31 +177,33 @@ var ractive = new BaseRactive({
           var contact = Array.findBy('selfRef','/contacts/'+obj.contactId,ractive.get('contacts'));
           if (contact != undefined) obj.contactName = contact.fullName;
         }
-        if (obj.stockItem != undefined && obj['stockItemName'] == undefined) {
-          var stockItem = Array.findBy('selfRef',obj.stockItem.selfRef,ractive.get('stockItems'));
-          if (stockItem != undefined) obj.stockItemName = stockItem.name;
-        }
         for (var idx = 0 ; idx < search.length ; idx++) {
           var searchTerm = search[idx].toLowerCase();
           var match = ( (obj.selfRef!=undefined && obj.selfRef.indexOf(searchTerm)>=0)
               || (obj.localId!=undefined && searchTerm.indexOf(obj.localId)>=0)
               || (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm)>=0)
-              || (obj.status!=undefined && obj.status.toLowerCase().indexOf(searchTerm)>=0)
+              || (searchTerm.startsWith('stage:') && obj.stage!=undefined && obj.stage.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.replace(/ /g,'_').substring(6))==0)
+              || (obj.date!=undefined && searchTerm.startsWith('date>') && new Date(obj.date)>new Date(ractive.get('searchTerm').substring(8)))
               || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
               || (searchTerm.startsWith('created>') && new Date(obj.created)>new Date(ractive.get('searchTerm').substring(8)))
+              || (obj.date!=undefined && searchTerm.startsWith('date<') && new Date(obj.date)<new Date(ractive.get('searchTerm').substring(8)))
               || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(ractive.get('searchTerm').substring(8)))
               || (searchTerm.startsWith('created<') && new Date(obj.created)<new Date(ractive.get('searchTerm').substring(8)))
               || (searchTerm.startsWith('contactid:') && ractive.get('searchTerm').substring(10).replace(/ /g,'')==''+obj.contactId)
               || (searchTerm.startsWith('contactid:') && ractive.get('searchTerm').substring(10).replace(/ /g,'').split(',').indexOf(''+obj.contactId)!=-1)
               || (obj.contactName!=undefined && obj.contactName.toLowerCase().indexOf(searchTerm)>=0)
-              || (searchTerm.startsWith('stockitemid:') && ractive.get('searchTerm').substring(12).replace(/ /g,'')==ractive.localId(obj.stockItem.selfRef))
-              || (obj.stockItemName!=undefined && obj.stockItemName.toLowerCase().indexOf(searchTerm)>=0)
+              || (obj.stockItem!=undefined && obj.stockItem.name.toLowerCase().indexOf(searchTerm)>=0)
+              || (searchTerm.startsWith('active') && (obj.stage==undefined || obj.stage.length==0 || ractive.inactiveStages().indexOf(obj.stage.toLowerCase())==-1))
+              || (searchTerm.startsWith('!active') && ractive.inactiveStages().indexOf(obj.stage.toLowerCase())!=-1)
             );
             // no match is definitive but match now may fail other terms (AND logic)
             if (!match) return false;
         }
         return true;
       }
+    },
+    localId: function(obj) {
+      return ractive.localId(obj);
     },
     selectMultiple: [],
     sort: function (array, column, asc) {
@@ -393,8 +400,28 @@ var ractive = new BaseRactive({
     $('#ordersTable').slideUp();
     $('#currentSect').slideDown({ queue: true });
   },
+  inactiveStages: function() {
+    var inactiveStages = ractive.get('tenant.serviceLevel.inactiveStages')==undefined
+        ? DEFAULT_INACTIVE_STAGES
+        : ractive.get('tenant.serviceLevel.inactiveStages').join();
+    return inactiveStages;
+  },
   oninit: function() {
     console.info('oninit');
+    this.on( 'filter', function ( event, filter ) {
+      console.info('filter on '+JSON.stringify(event)+','+filter.idx);
+      $('.omny-dropdown.dropdown-menu li').removeClass('selected');
+      $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
+      ractive.search(filter.value);
+    });
+    this.on( 'sortOrder', function ( event, column ) {
+      console.info('sortOrder on '+column);
+      $( "#ajax-loader" ).show();
+      // if already sorted by this column reverse order
+      if (this.get('sortOrderColumn')==column) this.set('sortOrderAsc', !this.get('sortOrderAsc'));
+      this.set( 'sortOrderColumn', column );
+      $( "#ajax-loader" ).hide();
+    });
   },
   save: function () {
     console.info('save order: '+ractive.get('current.name')+'...');
@@ -463,7 +490,7 @@ var ractive = new BaseRactive({
     } else if (document.getElementById('currentOrderItemForm').checkValidity()) {
       var tmp = ractive.get('current.orderItems.'+ractive.get('currentOrderItemIdx'));
       tmp.orderId = ractive.get('current.id');
-      tmp.tenantId = ractive.get('tenant.id');ready
+      tmp.tenantId = ractive.get('tenant.id');
 
       console.log('ready to save order item' + JSON.stringify(tmp) + ' ...');
       $.ajax({
@@ -602,6 +629,7 @@ var ractive = new BaseRactive({
       var order = Array.findBy('selfRef',orderId,ractive.get('orders'))
       ractive.edit( order );
     }
+    $( "#ajax-loader" ).hide();
   },
   toggleEditOrderItem: function(orderItem, j) {
     console.info('editOrderItem '+(orderItem['id']==undefined ? 'new item?' : orderItem.id)+'...');
@@ -646,6 +674,9 @@ $(document).ready(function() {
   var params = getSearchParameters();
   if (params['v']!=undefined) {
     ractive.set('variant',decodeURIComponent(params['v']));
+  }
+  if (ractive.get('searchTerm')==undefined) {
+    ractive.set('searchTerm','updated>'+ractive.daysAgo(7));
   }
   ractive.set('saveObserver', true);
 });
