@@ -78,17 +78,18 @@
         {{#tenant.features.catalog}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4 required">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
-            {{#if current.orderItems}}
-              <span>{{formatStockItemIds(current)}}</span>
-            {{else}}
-              <div class="input-group">
+            <div class="input-group">
+              {{#if current.orderItems}}
+                <input class="form-control" list="stockItems" onblur="ractive.updateStockItem(this.value)" placeholder="Start typing to filter options"
+                    id="curContact" readonly disabled value="{{formatStockItemIds(current)}}">
+              {{else}}
                 <input class="form-control" list="stockItems" onblur="ractive.updateStockItem(this.value)" placeholder="Start typing to filter options"
                     id="curContact" required value="{{#current.stockItem}}{{current.stockItem.name}}{{/}}">
-                <span class="input-group-addon">
-                  <a href="stock-items.html?q={{current.stockItem.id}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
-                </span>
-              </div>
-            {{/if}}
+              {{/if}}
+              <span class="input-group-addon">
+                <a href="stock-items.html?q={{current.stockItem.id}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+              </span>
+            </div>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{tenant.strings.stockItem}} this {{tenant.strings.order.toLowerCase()}} is for</p>
           </li>
         {{/}}
