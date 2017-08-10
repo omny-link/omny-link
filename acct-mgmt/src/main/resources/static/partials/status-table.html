@@ -39,5 +39,8 @@
         </td>
       </tr>
     {{/each}}
+    {{^current[property]}}
+      <tr><td colspan="6">None</td></tr>
+    {{/}}
   </tbody>
 </table>
