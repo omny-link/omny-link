@@ -58,7 +58,7 @@
     { "name": "Register a user", "ref": "RegisterOmnyContact", "url": "processes/link/omny/website/RegisterOmnyContact.bpmn" },
     { "name": "Reset user's password", "ref": "ResetPassword", "url": "processes/link/omny/support/ResetPassword.bpmn" },
     { "name": "Select enquiry response", "ref": "SelectEnquiryResponse", "url": "processes/link/omny/mail/SelectDefaultEnquiryResponse.bpmn" },
-    { "name": "Send memo", "ref": "SendMemo", "url": "processes/link/omny/mail/SendMemo.bpmn" },
+    { "name": "Send memo", "ref": "SendMemo", "url": "processes/link/omny/memos/SendMemo.bpmn" },
     { "name": "Send alert", "ref": "SendAlert", "url": "processes/link/omny/alerts/SendAlertMemo.bpmn" },
     { "name": "Send alert to contact's owner", "ref": "SendAlertToOwner", "url": "processes/link/omny/alerts/SendAlertToOwner.bpmn" },
     { "name": "Catch all", "ref": "CatchAllProcess", "url": "processes/link/omny/support/CatchAllProcessPostToSlack.bpmn" },

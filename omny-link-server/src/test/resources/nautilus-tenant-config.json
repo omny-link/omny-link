@@ -87,7 +87,7 @@
     { "name": "Register an Omny user", "ref": "RegisterOmnyContact", "url": "processes/link/omny/website/RegisterOmnyContact.bpmn" },
     { "name": "Reset user's password", "ref": "ResetPassword", "url": "processes/link/omny/support/ResetPassword.bpmn" },
     { "name": "Select Enquiry Response", "ref": "SelectEnquiryResponse", "url": "processes/uk/co/circumcisioncentre/mail/SelectEnquiryResponseFromAge.bpmn" },
-    { "name": "Send memo", "ref": "SendMemo", "url": "processes/link/omny/mail/SendMemo.bpmn" },
+    { "name": "Send memo", "ref": "SendMemo", "url": "processes/link/omny/memos/SendMemo.bpmn" },
     { "name": "Send alert", "ref": "SendAlert", "url": "processes/link/omny/alerts/SendAlertMemo.bpmn" },
     { "name": "Catch All", "ref": "CatchAllProcess", "url": "processes/link/omny/support/CatchAllProcessPostToSlack.bpmn" },
     { "name": "Update contact with decision logic", "ref": "UpdateContactWithDecisionLogic", "url": "processes/link/omny/custmgmt/UpdateContactWithDecisionLogic.bpmn" },
