@@ -1,6 +1,7 @@
 package link.omny.catalog.web;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,6 +58,8 @@ import link.omny.catalog.repositories.StockCategoryRepository;
 import link.omny.catalog.views.MediaResourceViews;
 import link.omny.catalog.views.StockCategoryViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
+import link.omny.custmgmt.model.Document;
+import link.omny.custmgmt.model.Note;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -402,6 +405,91 @@ public class StockCategoryController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(builder.path("/{id}").buildAndExpand(vars).toUri());
         return new ResponseEntity(headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Add a document to the specified stockCategory.
+     */
+    @RequestMapping(value = "/{stockCategoryId}/documents", method = RequestMethod.POST)
+    @Transactional
+    public @ResponseBody ResponseEntity<Document> addDocument(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockCategoryId") Long stockCategoryId, @RequestBody Document doc) {
+         StockCategory stockCategory = stockCategoryRepo.findOne(stockCategoryId);
+         stockCategory.getDocuments().add(doc);
+         stockCategory.setLastUpdated(new Date());
+         stockCategoryRepo.save(stockCategory);
+         doc = stockCategory.getDocuments().get(stockCategory.getDocuments().size()-1);
+
+         HttpHeaders headers = new HttpHeaders();
+         URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                 .path("/{id}/documents/{docId}")
+                 .buildAndExpand(tenantId, stockCategory.getId(), doc.getId())
+                 .toUri();
+         headers.setLocation(uri);
+
+         return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Add a document to the specified stockCategory.
+     *      *
+     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
+     * @return
+     *
+     * @return The document created.
+     */
+    @RequestMapping(value = "/{stockCategoryId}/documents", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    public @ResponseBody Document addDocument(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockCategoryId") Long stockCategoryId,
+            @RequestParam("author") String author,
+            @RequestParam("name") String name,
+            @RequestParam("url") String url) {
+
+        return addDocument(tenantId, stockCategoryId, new Document(author, name, url)).getBody();
+    }
+
+    /**
+     * Add a note to the specified stockCategory.
+     * @return the created note.
+     */
+    @RequestMapping(value = "/{stockCategoryId}/notes", method = RequestMethod.POST)
+    @Transactional
+    public @ResponseBody ResponseEntity<Note> addNote(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockCategoryId") Long stockCategoryId, @RequestBody Note note) {
+        StockCategory stockCategory = stockCategoryRepo.findOne(stockCategoryId);
+        stockCategory.getNotes().add(note);
+        stockCategory.setLastUpdated(new Date());
+        stockCategoryRepo.save(stockCategory);
+        note = stockCategory.getNotes().get(stockCategory.getNotes().size()-1);
+
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                .path("/{id}/notes/{noteId}")
+                .buildAndExpand(tenantId, stockCategory.getId(), note.getId())
+                .toUri();
+        headers.setLocation(uri);
+
+        return new ResponseEntity<Note>(note, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Add a note to the specified stockCategory from its parts.
+     *
+     * <p>This is just a convenience method, see {@link #addNote(String, Long, Note)}
+     *
+     * @return The note created.
+     */
+    @RequestMapping(value = "/{stockCategoryId}/notes", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    public @ResponseBody Note addNote(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockCategoryId") Long stockCategoryId,
+            @RequestParam("author") String author,
+            @RequestParam("favorite") boolean favorite,
+            @RequestParam("content") String content) {
+        return addNote(tenantId, stockCategoryId, new Note(author, content, favorite)).getBody();
     }
 
     /**

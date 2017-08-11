@@ -109,4 +109,12 @@
     {{>currentImageSect}}
   {{/if}}
 
+  {{#if tenant.features.notesOnStockItem}}
+    {{>currentNoteListSect}}
+  {{/if}}
+
+  {{#if tenant.features.documentsOnStockItem}}
+    {{>currentDocumentListSect}}
+  {{/if}}
+
 </section>

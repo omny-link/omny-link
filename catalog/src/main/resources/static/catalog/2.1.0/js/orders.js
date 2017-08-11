@@ -41,6 +41,10 @@ var ractive = new BaseRactive({
       console.info('formatAge: '+timeString);
       return (timeString == "-1" || timeString==undefined) ? 'n/a' : i18n.getDurationString(timeString)+' ago';
     },
+    formatAgeFromDate: function(timeString) {
+      if (timeString==undefined) return;
+      return i18n.getAgeString(ractive.parseDate(timeString))
+    },
     formatAccountId: function(contactId) {
       console.info('formatAccountId for contact: '+contactId);
       if (contactId == undefined) return;
@@ -56,6 +60,12 @@ var ractive = new BaseRactive({
       var contact = Array.findBy('selfRef','/contacts/'+contactId,ractive.get('contacts'));
       return contact == undefined ? 'n/a' : contact.fullName;
     },
+    formatContent: function(content) {
+      console.info('formatContent:'+content);
+      content = content.replace(/\n/g,'<br/>');
+      content = ractive.autolinker().link(content);
+      return content;
+    },
     formatDate: function(timeString) {
       if (timeString == undefined || timeString.length==0) return 'n/a';
       var date = ractive.parseDate(timeString);
@@ -64,6 +74,17 @@ var ractive = new BaseRactive({
       } else {
         return date.toLocaleDateString(navigator.languages);
       }
+    },
+    formatDateTime: function(timeString) {
+      if (timeString==undefined) return 'n/a';
+      var dts = new Date(timeString).toLocaleString(navigator.languages);
+      // remove secs
+      if (dts.split(':').length>1) dts = dts.substring(0, dts.lastIndexOf(':'));
+      return dts;
+    },
+    formatFavorite: function(obj) {
+      if (obj['favorite']) return 'glyphicon-star';
+      else return 'glyphicon-star-empty';
     },
     formatId: function(entity) {
       return ractive.id(entity);
@@ -159,6 +180,12 @@ var ractive = new BaseRactive({
       return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
     },
     helpUrl: '//omny.link/user-help/orders/#the_title',
+    lessThan24hAgo: function(isoDateTime) {
+      if (isoDateTime == undefined || (new Date().getTime()-new Date(isoDateTime).getTime()) < 1000*60*60*24) {
+        return true;
+      }
+      return false;
+    },
     matchRole: function(role) {
       //console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {
@@ -238,6 +265,8 @@ var ractive = new BaseRactive({
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "orderListSect", "url": "/partials/order-list-sect.html"},
+      { "name": "currentDocumentListSect", "url": "/partials/contact-current-document-list-sect.html"},
+      { "name": "currentNoteListSect", "url": "/partials/contact-current-note-list-sect.html"},
       { "name": "currentOrderSect", "url": "/partials/order-current-sect.html"},
       { "name": "currentOrderExtensionSect", "url": "/partials/order-extension.html"},
       { "name": "currentOrderItemListSect", "url": "/partials/order-item-list-sect.html"},

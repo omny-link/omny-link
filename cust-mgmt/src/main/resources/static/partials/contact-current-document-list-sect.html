@@ -11,7 +11,7 @@
 		   <tbody>
 		     {{#each current.documents:k}}
 		       <tr>
-		         <td class="field-age">{{age(created)}} ({{formatDate(created)}})</td>
+		         <td class="field-age">{{formatAgeFromDate(created)}} ({{formatDate(created)}})</td>
 		         <td class="field-author">{{{gravatar(author)}}}</td>
              {{#created}}
                <td class="field-text">{{name}}</td>
