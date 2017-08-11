@@ -1,15 +1,19 @@
-{ 
-  "id": "omny", 
+{
+  "id": "omny",
   "name": "Omny Link",
   "theme": {
     "logoUrl": "/images/omny-logo.png",
     "iconUrl": "/images/icon/omny-icon-16x16.png"
   },
-  "show": { 
-    "account":true, "activityAnalysis":true, "activityTracker":true, "budget":true, "companyBackground":false,
-    "documents": true, "financials":true, "marketing":true, "merge":true, "supportBar": true, "workManagement": true
+  "features": {
+    "account":true, "activityAnalysis":true, "activityTracker":true, "budget":true,
+    "catalog": false, "companyBackground":false,
+    "documents": true, "documentsOnOrder": true, "documentsOnStockCategory": true, "documentsOnStockItem": true,
+    "financials":true, "marketing":true, "merge":true,
+    "notesOnOrder": true, "notesOnStockCategory": true,"notesOnStockItem": true,
+    "supportBar": true, "workManagement": true
   },
-  "accountFields": [ 
+  "accountFields": [
   ],
   "contactActions": [
     { "feature":"workManagement", "name": "Add task", "ref": "SimpleToDo", "url": true },
@@ -17,7 +21,7 @@
     { "name": "Send email", "ref": "SendMemo", "url": true  },
     { "name": "Preview template", "ref": "MergeMemoTemplate", "url": true  }
   ],
-  "contactFields": [ 
+  "contactFields": [
     { "label": "Job Title", "key": "jobTitle"},
     { "label": "Decision Making Role", "key": "decisionMakingRole"}
   ],
@@ -30,7 +34,7 @@
     { "url": "memo-distribution.html", "icon": "glyphicon-send", "name": "Distribution Centre", "description": "Send messages to groups of contacts", "role": "admin" },
     { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates", "role": "admin"  },
     { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View your sales funnel", "name": "Funnel" },
-    { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },    
+    { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },
     { "url": "admin/users.html", "icon": "omny-icon-user", "name": "User Management", "description": "Manage users", "role": "super_admin" },
     { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status", "description": "Check various aspects of the tenant's configuration", "role": "admin" },
     { "url": "admin/dash.html", "icon": "glyphicon-king", "name": "Admin", "description": "Admin Dashboard", "role": "super_admin" }
@@ -49,7 +53,7 @@
     { "name": "Add note to contact", "ref": "AddNoteToContact", "url": "processes/link/omny/custmgmt/AddNoteToContact.bpmn" },
     { "name": "Ad-Hoc Task from external", "ref": "HandleAdHocTask", "url": "processes/link/omny/casemgmt/HandleAdHocTask.bpmn" },
     { "name": "Check service levels", "ref": "RunDecisionLogicForAllContacts", "url": "processes/link/omny/custmgmt/RunDecisionLogicForAllContacts.bpmn" },
-    { "name": "Create contact and account", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAndAccount.bpmn" },
+    { "name": "Create contact, account and order", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAccountAndOrder.bpmn" },
     { "name": "De-duplicate contact and account", "ref": "DedupeContact", "url": "processes/link/omny/custmgmt/DedupeContact.bpmn" },
     { "name": "Import contact", "ref": "ImportContact", "url": "processes/link/omny/website/ImportContact.bpmn" },
     { "name": "Merge memo", "ref": "MergeMemoTemplate", "url": "processes/link/omny/memos/MergeMemoTemplate.bpmn" },
@@ -95,6 +99,7 @@
     { "name": "currentSiteCapability", "ref": "#curCurrentSiteCapability", "url": "/data/omny/current-site-capabilities.json"},
     { "name": "decisionMakingRole", "ref": "#curDecisionMakingRole", "url": "/data/omny/decision-making-roles.json"},
     { "name": "enquiryTypes", "ref": "#curEnquiryType", "url": "/data/omny/enquiry-types.json"},
+    { "name": "orderStages", "ref": "#curStage", "url": "/data/omny/stages.json"},
     { "name": "owners", "ref": "#curOwner", "url": "/data/omny/owners.json"},
     { "ref": "#who", "url": "/data/omny/owners.json"},
     { "ref": "#notify", "url": "/data/omny/owners.json"},

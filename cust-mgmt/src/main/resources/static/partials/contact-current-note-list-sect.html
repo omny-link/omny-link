@@ -11,13 +11,13 @@
 	  <table id="notesTable" class="table table-striped"><tbody>
 	    {{#each current.notes:j}}
 	      <tr class="{{#if favorite}}favorite{{else}}unfavorite{{/if}}">
-	        <td class="field-age">{{age(created)}} ({{formatDateTime(created)}})</td>
+	        <td class="field-age">{{formatAgeFromDate(created)}} {{#created}}({{formatDateTime(created)}}){{/}}</td>
 	        <td class="field-author">{{{gravatar(author)}}}</td>
 	        {{#created}}
 	          <td class="field-text" {{# lessThan24hAgo(created)}}notyetcontenteditable{{/}}>{{{formatContent(..content)}}}</td>
 	        {{else}}
 	          <td class="field-text">
-	            <textarea id="note" on-blur="saveNote()" placeholder="Type your note here" required style="width:100%;" value={{..content}}></textarea>
+	            <textarea id="note" on-blur="saveNote(.)" placeholder="Type your note here" required style="width:100%;" value={{..content}}></textarea>
 	            <br/>
 	            <a on-click="cancelNote()">Cancel</a>
 	          </td>

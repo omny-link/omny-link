@@ -26,7 +26,11 @@ import link.omny.acctmgmt.model.SystemConfig;
 import link.omny.analytics.AnalyticsConfig;
 import link.omny.catalog.CatalogConfig;
 import link.omny.custmgmt.CustMgmtConfig;
-import link.omny.server.model.mixins.OmnyLinkMixIn;
+import link.omny.custmgmt.model.Document;
+import link.omny.custmgmt.model.Note;
+import link.omny.server.model.mixins.DocumentMixIn;
+import link.omny.server.model.mixins.LinkMixIn;
+import link.omny.server.model.mixins.NoteMixIn;
 
 @Configuration
 @EnableAutoConfiguration
@@ -54,7 +58,9 @@ public class Application extends WebMvcConfigurerAdapter {
     public void configureMessageConverters(
             List<HttpMessageConverter<?>> converters) {
         ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
-                .mixIn(Link.class, OmnyLinkMixIn.class)
+                .mixIn(Document.class, DocumentMixIn.class)
+                .mixIn(Link.class, LinkMixIn.class)
+                .mixIn(Note.class, NoteMixIn.class)
                 .build();
         converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
         super.configureMessageConverters(converters);

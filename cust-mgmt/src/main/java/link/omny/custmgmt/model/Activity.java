@@ -84,10 +84,6 @@ public class Activity implements Serializable {
 
     @PreUpdate
     public void preUpdate() {
-        if (LOGGER.isWarnEnabled() && lastUpdated != null) {
-            LOGGER.warn(String.format(
-                    "Overwriting update date %1$s with 'now'.", lastUpdated));
-        }
         lastUpdated = new Date();
     }
 

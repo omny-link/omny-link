@@ -81,10 +81,10 @@
             <div class="input-group">
               {{#if current.orderItems}}
                 <input class="form-control" list="stockItems" onblur="ractive.updateStockItem(this.value)" placeholder="Start typing to filter options"
-                    id="curContact" readonly disabled twoway="false" value="{{formatStockItemIds(current)}}">
+                    id="curStockItem" readonly disabled twoway="false" value="{{formatStockItemIds(current)}}">
               {{else}}
                 <input class="form-control" list="stockItems" onblur="ractive.updateStockItem(this.value)" placeholder="Start typing to filter options"
-                    id="curContact" required value="{{#current.stockItem}}{{current.stockItem.name}}{{/}}">
+                    id="curStockItem" required value="{{#current.stockItem}}{{current.stockItem.name}}{{/}}">
               {{/if}}
               <span class="input-group-addon">
                 <a href="stock-items.html?q={{current.stockItem.id}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
@@ -146,5 +146,13 @@
   
   {{#if tenant.features.feedback}}
     {{>currentFeedbackSect}}
+  {{/if}}
+
+  {{#if tenant.features.notesOnOrder}}
+    {{>currentNoteListSect}}
+  {{/if}}
+
+  {{#if tenant.features.documentsOnOrder}}
+    {{>currentDocumentListSect}}
   {{/if}}  
 </section>

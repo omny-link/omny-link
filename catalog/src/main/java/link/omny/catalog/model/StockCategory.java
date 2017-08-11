@@ -13,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
@@ -41,6 +42,8 @@ import link.omny.catalog.views.StockCategoryViews;
 import link.omny.catalog.views.StockItemViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
+import link.omny.custmgmt.model.Document;
+import link.omny.custmgmt.model.Note;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -204,6 +207,16 @@ public class StockCategory implements ShortStockCategory, Serializable {
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
     // "stockCategory")
     private List<MediaResource> images;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "stock_cat_id")
+    @JsonView({ StockCategoryViews.Detailed.class })
+    private List<Note> notes;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "stock_cat_id")
+    @JsonView({ StockCategoryViews.Detailed.class })
+    private List<Document> documents;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
@@ -389,10 +402,6 @@ public class StockCategory implements ShortStockCategory, Serializable {
 
     @PreUpdate
     public void preUpdate() {
-        if (LOGGER.isWarnEnabled() && lastUpdated != null) {
-            LOGGER.warn(String.format(
-                    "Overwriting update date %1$s with 'now'.", lastUpdated));
-        }
         lastUpdated = new Date();
     }
 

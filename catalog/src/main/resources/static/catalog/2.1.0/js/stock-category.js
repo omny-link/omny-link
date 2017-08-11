@@ -33,6 +33,16 @@ var ractive = new BaseRactive({
       console.log('formatAge: '+timeString);
       return (timeString==undefined || timeString == "-1") ? 'n/a' : i18n.getDurationString(timeString)+' ago';
     },
+    formatAgeFromDate: function(timeString) {
+      if (timeString==undefined) return;
+      return i18n.getAgeString(ractive.parseDate(timeString))
+    },
+    formatContent: function(content) {
+      console.info('formatContent:'+content);
+      content = content.replace(/\n/g,'<br/>');
+      content = ractive.autolinker().link(content);
+      return content;
+    },
     formatDate: function(timeString) {
       if (timeString==undefined) return 'n/a';
       return new Date(timeString).toLocaleDateString(navigator.languages);
@@ -43,6 +53,10 @@ var ractive = new BaseRactive({
       // remove secs
       if (dts.split(':').length>1) dts = dts.substring(0, dts.lastIndexOf(':'));
       return dts;
+    },
+    formatFavorite: function(obj) {
+      if (obj['favorite']) return 'glyphicon-star';
+      else return 'glyphicon-star-empty';
     },
     formatJson: function(json) {
       console.log('formatJson: '+json);
@@ -157,6 +171,8 @@ var ractive = new BaseRactive({
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
+      { "name": "currentDocumentListSect", "url": "/partials/contact-current-document-list-sect.html"},
+      { "name": "currentNoteListSect", "url": "/partials/contact-current-note-list-sect.html"},
       { "name": "stockCategoryListSect", "url": "/partials/stock-category-list-sect.html"},
       { "name": "currentImageSect", "url": "/partials/image-current-sect.html"},
       { "name": "currentOfferSect", "url": "/partials/offer-current-sect.html"},

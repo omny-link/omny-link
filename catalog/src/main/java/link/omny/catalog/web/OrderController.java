@@ -55,6 +55,8 @@ import link.omny.catalog.repositories.StockItemRepository;
 import link.omny.catalog.views.OrderViews;
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
+import link.omny.custmgmt.model.Document;
+import link.omny.custmgmt.model.Note;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -327,6 +329,91 @@ public class OrderController {
         vars.put("itemId", items.get(0).getId().toString());
 
         return getCreatedResponseEntity("/{id}/order-items/{itemId}", vars);
+    }
+
+    /**
+     * Add a document to the specified order.
+     */
+    @RequestMapping(value = "/{orderId}/documents", method = RequestMethod.POST)
+    @Transactional
+    public @ResponseBody ResponseEntity<Document> addDocument(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("orderId") Long orderId, @RequestBody Document doc) {
+         Order order = orderRepo.findOne(orderId);
+         order.getDocuments().add(doc);
+         order.setLastUpdated(new Date());
+         orderRepo.save(order);
+         doc = order.getDocuments().get(order.getDocuments().size()-1);
+
+         HttpHeaders headers = new HttpHeaders();
+         URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                 .path("/{id}/documents/{docId}")
+                 .buildAndExpand(tenantId, order.getId(), doc.getId())
+                 .toUri();
+         headers.setLocation(uri);
+
+         return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Add a document to the specified order.
+     *      *
+     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
+     * @return
+     *
+     * @return The document created.
+     */
+    @RequestMapping(value = "/{orderId}/documents", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    public @ResponseBody Document addDocument(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("orderId") Long orderId,
+            @RequestParam("author") String author,
+            @RequestParam("name") String name,
+            @RequestParam("url") String url) {
+
+        return addDocument(tenantId, orderId, new Document(author, name, url)).getBody();
+    }
+
+    /**
+     * Add a note to the specified order.
+     * @return the created note.
+     */
+    @RequestMapping(value = "/{orderId}/notes", method = RequestMethod.POST)
+    @Transactional
+    public @ResponseBody ResponseEntity<Note> addNote(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("orderId") Long orderId, @RequestBody Note note) {
+        Order order = orderRepo.findOne(orderId);
+        order.getNotes().add(note);
+        order.setLastUpdated(new Date());
+        orderRepo.save(order);
+        note = order.getNotes().get(order.getNotes().size()-1);
+
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                .path("/{id}/notes/{noteId}")
+                .buildAndExpand(tenantId, order.getId(), note.getId())
+                .toUri();
+        headers.setLocation(uri);
+
+        return new ResponseEntity<Note>(note, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Add a note to the specified order from its parts.
+     *
+     * <p>This is just a convenience method, see {@link #addNote(String, Long, Note)}
+     *
+     * @return The note created.
+     */
+    @RequestMapping(value = "/{orderId}/notes", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    public @ResponseBody Note addNote(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("orderId") Long orderId,
+            @RequestParam("author") String author,
+            @RequestParam("favorite") boolean favorite,
+            @RequestParam("content") String content) {
+        return addNote(tenantId, orderId, new Note(author, content, favorite)).getBody();
     }
 
     /**

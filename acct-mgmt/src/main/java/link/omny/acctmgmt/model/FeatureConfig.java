@@ -36,7 +36,11 @@ public class FeatureConfig {
     private boolean marketingDigital = marketing;
     private boolean multiNational = false;
     private boolean declaredSource = false;
+    private boolean notesOnOrder = false;
+    private boolean notesOnStockItem = false;
+    private boolean notesOnStockCategory = false;
     private boolean documents = false;
+    private boolean documentsOnOrder = false;
     private boolean documentsOnStockItem = false;
     private boolean documentsOnStockCategory = false;
     private boolean orders = false;
@@ -121,6 +125,9 @@ public class FeatureConfig {
         case "documents":
             setDocuments(b);
             break;
+        case "documentsOnOrder":
+            setDocumentsOnOrder(b);
+            break;
         case "documentsOnStockCategory":
             setDocumentsOnStockCategory(b);
             break;
@@ -147,6 +154,15 @@ public class FeatureConfig {
             break;
         case "multiNational":
             setMultiNational(b);
+            break;
+        case "notesOnOrder":
+            setNotesOnOrder(b);
+            break;
+        case "notesOnStockCategory":
+            setNotesOnStockCategory(b);
+            break;
+        case "notesOnStockItem":
+            setNotesOnStockItem(b);
             break;
         case "offers":
             setStockCategoryOffers(b);
