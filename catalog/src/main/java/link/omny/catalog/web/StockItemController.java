@@ -3,6 +3,7 @@ package link.omny.catalog.web;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,6 +51,8 @@ import link.omny.catalog.repositories.StockItemRepository;
 import link.omny.catalog.views.MediaResourceViews;
 import link.omny.catalog.views.StockItemViews;
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
+import link.omny.custmgmt.model.Document;
+import link.omny.custmgmt.model.Note;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -348,6 +351,91 @@ public class StockItemController {
         // necessary to force a save
         stockItem.setLastUpdated(new Date());
         stockItemRepo.save(stockItem);
+    }
+
+    /**
+     * Add a document to the specified stockItem.
+     */
+    @RequestMapping(value = "/{stockItemId}/documents", method = RequestMethod.POST)
+    @Transactional
+    public @ResponseBody ResponseEntity<Document> addDocument(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockItemId") Long stockItemId, @RequestBody Document doc) {
+         StockItem stockItem = stockItemRepo.findOne(stockItemId);
+         stockItem.getDocuments().add(doc);
+         stockItem.setLastUpdated(new Date());
+         stockItemRepo.save(stockItem);
+         doc = stockItem.getDocuments().get(stockItem.getDocuments().size()-1);
+
+         HttpHeaders headers = new HttpHeaders();
+         URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                 .path("/{id}/documents/{docId}")
+                 .buildAndExpand(tenantId, stockItem.getId(), doc.getId())
+                 .toUri();
+         headers.setLocation(uri);
+
+         return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Add a document to the specified stockItem.
+     *      *
+     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
+     * @return
+     *
+     * @return The document created.
+     */
+    @RequestMapping(value = "/{stockItemId}/documents", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    public @ResponseBody Document addDocument(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockItemId") Long stockItemId,
+            @RequestParam("author") String author,
+            @RequestParam("name") String name,
+            @RequestParam("url") String url) {
+
+        return addDocument(tenantId, stockItemId, new Document(author, name, url)).getBody();
+    }
+
+    /**
+     * Add a note to the specified stockItem.
+     * @return the created note.
+     */
+    @RequestMapping(value = "/{stockItemId}/notes", method = RequestMethod.POST)
+    @Transactional
+    public @ResponseBody ResponseEntity<Note> addNote(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockItemId") Long stockItemId, @RequestBody Note note) {
+        StockItem stockItem = stockItemRepo.findOne(stockItemId);
+        stockItem.getNotes().add(note);
+        stockItem.setLastUpdated(new Date());
+        stockItemRepo.save(stockItem);
+        note = stockItem.getNotes().get(stockItem.getNotes().size()-1);
+
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                .path("/{id}/notes/{noteId}")
+                .buildAndExpand(tenantId, stockItem.getId(), note.getId())
+                .toUri();
+        headers.setLocation(uri);
+
+        return new ResponseEntity<Note>(note, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Add a note to the specified stockItem from its parts.
+     *
+     * <p>This is just a convenience method, see {@link #addNote(String, Long, Note)}
+     *
+     * @return The note created.
+     */
+    @RequestMapping(value = "/{stockItemId}/notes", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    public @ResponseBody Note addNote(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("stockItemId") Long stockItemId,
+            @RequestParam("author") String author,
+            @RequestParam("favorite") boolean favorite,
+            @RequestParam("content") String content) {
+        return addNote(tenantId, stockItemId, new Note(author, content, favorite)).getBody();
     }
 
     @ResponseStatus(value = HttpStatus.NO_CONTENT)

@@ -42,6 +42,8 @@ import link.omny.catalog.model.api.OrderWithSubEntities;
 import link.omny.catalog.views.OrderViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
+import link.omny.custmgmt.model.Document;
+import link.omny.custmgmt.model.Note;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -160,6 +162,16 @@ public class Order implements OrderWithSubEntities, Serializable {
     @JsonView( { OrderViews.Detailed.class } )
     private Feedback feedback;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_id")
+    @JsonView({ OrderViews.Detailed.class })
+    private List<Note> notes;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_id")
+    @JsonView({ OrderViews.Detailed.class })
+    private List<Document> documents;
+
     @Transient
     @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
     @JsonProperty("links")
@@ -247,10 +259,6 @@ public class Order implements OrderWithSubEntities, Serializable {
 
     @PreUpdate
     public void preUpdate() {
-        if (LOGGER.isWarnEnabled() && lastUpdated != null) {
-            LOGGER.warn(String.format(
-                    "Overwriting update date %1$s with 'now'.", lastUpdated));
-        }
         lastUpdated = new Date();
     }
 

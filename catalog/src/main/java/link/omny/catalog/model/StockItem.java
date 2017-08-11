@@ -50,6 +50,8 @@ import link.omny.catalog.views.StockCategoryViews;
 import link.omny.catalog.views.StockItemViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
+import link.omny.custmgmt.model.Document;
+import link.omny.custmgmt.model.Note;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -186,6 +188,16 @@ public class StockItem implements ShortStockItem, Serializable {
     @JoinColumn(name = "stock_cat_id")
     @JsonView({ StockItemViews.Detailed.class })
     private StockCategory stockCategory;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "stock_item_id")
+    @JsonView({ StockItemViews.Detailed.class })
+    private List<Note> notes;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "stock_item_id")
+    @JsonView({ StockItemViews.Detailed.class })
+    private List<Document> documents;
 
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
@@ -393,10 +405,6 @@ public class StockItem implements ShortStockItem, Serializable {
 
     @PreUpdate
     public void preUpdate() {
-        if (LOGGER.isWarnEnabled() && lastUpdated != null) {
-            LOGGER.warn(String.format(
-                    "Overwriting update date %1$s with 'now'.", lastUpdated));
-        }
         lastUpdated = new Date();
     }
 

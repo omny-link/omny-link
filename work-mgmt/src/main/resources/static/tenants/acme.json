@@ -1,17 +1,19 @@
-{ 
-  "id": "acme", 
+{
+  "id": "acme",
   "name": "Acme Inc.",
     "theme": {
     "logoUrl": "/images/acme-logo.png",
     "iconUrl": "/images/icon/acme-icon-16x16.png"
   },
-  "show": { 
+  "show": {
     "account":true, "activityAnalysis":true, "activityTracker":true,
-    "budget":true, "companyBackground":false, "declaredSource":true,
-    "documents": true, "financials":true, "marketing":true, "merge":true,
+    "budget":true, "catalog": false, "companyBackground":false, "declaredSource":true,
+    "documents": true, "documentsOnOrder": true,
+    "financials":true, "marketing":true, "merge":true,
+    "notesOnOrder": true,
     "orders":true, "orderItems":false, "supportBar": true
   },
-  "accountFields": [ 
+  "accountFields": [
   ],
   "contactActions": [
     { "name": "Add order", "ref": "AddOrderToContact", "url": true  },
@@ -19,7 +21,7 @@
     { "name": "Alert owner", "ref": "SendAlertToOwner"  },
     { "name": "Send email", "ref": "SendMemo", "url": true  }
   ],
-  "contactFields": [ 
+  "contactFields": [
   ],
   "toolbar": [
     { "url": "work.html", "icon": "glyphicon-inbox", "description": "View your list of active tasks here", "name": "Work Management" },
@@ -31,7 +33,7 @@
     { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View your sales funnel", "name": "Funnel" },
     { "url": "stock-items.html", "classes": "glyphicon-barcode", "role": "power_user", "description": "View and manage stock items here", "title": "Stock Items" },
     { "url": "stock-categories.html", "classes": "glyphicon-barcode", "role": "power_user", "description": "View and manage stock categories here", "title": "Stock Categories" },
-    { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },    
+    { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },
     { "url": "stacked-bar.html", "icon": "glyphicon-dashboard", "name": "Cohort Performance", "description": "Compare groups of contacts", "role": "super_admin" },
     { "url": "admin/users.html", "icon": "omny-icon-user", "name": "User Management", "description": "Manage users", "role": "super_admin" },
     { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status", "description": "Check various aspects of the tenant's configuration", "role": "admin" },
@@ -92,6 +94,7 @@
         {  "id": "Insurance", "name": "Insurance"  }
       ]
     },
+    { "name": "orderStages", "ref": "#curStage", "url": "/data/omny/stages.json"},
     { "name": "owners", "ref": "#curOwner", "url": "/data/omny/owners.json"},
     { "ref": "#who", "url": "/data/omny/owners.json"},
     { "ref": "#notify", "url": "/data/omny/owners.json"},

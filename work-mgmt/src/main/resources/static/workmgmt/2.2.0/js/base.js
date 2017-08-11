@@ -50,8 +50,8 @@ var BaseRactive = Ractive.extend({
   addDoc: function() {
     console.log('addDoc');
     if (ractive.uri(ractive.get('current'))==undefined) {
-      var entityName = ractive.entityName(ractive.get('current')).singular();
-      ractive.showMessage('You must have created your '+entityName+' before adding documents');
+      ractive.showMessage('You must have created your record before adding documents');
+      ractive.set('saveObserver', true);
       return;
     }
     ractive.set('saveObserver', false);
@@ -68,8 +68,8 @@ var BaseRactive = Ractive.extend({
     console.log('addNote');
     ractive.set('saveObserver', false);
     if (ractive.uri(ractive.get('current'))==undefined) {
-      var entityName = ractive.entityName(ractive.get('current')).singular();
-      ractive.showMessage('You must have created your '+entityName+' before adding notes');
+      ractive.showMessage('You must have created your record before adding notes');
+      ractive.set('saveObserver', true);
       return;
     }
     if (ractive.get('current.notes') == undefined) ractive.set('current.notes', []);
@@ -513,7 +513,6 @@ var BaseRactive = Ractive.extend({
       n = ractive.get('current.notes.0');
       n.content = $('#note').val();
     }
-    n.contact = ractive.uri(ractive.get('current'));
     var url = ractive.tenantUri(ractive.get('current'))+'/notes';
     console.log('  url:'+url);
     if (n.content != undefined && n.content.trim().length > 0) {
