@@ -12,10 +12,6 @@ var ractive = new BaseRactive({
     entityPath: '/contacts',
     contacts: [],
     title: 'Contact Management',
-    age: function(timeString) {
-      if (timeString==undefined) return;
-      return i18n.getAgeString(ractive.parseDate(timeString))
-    },
     alerts: function(selector) {
       console.log('alerts for '+selector);
       return $(selector+' :invalid').length;
@@ -63,10 +59,14 @@ var ractive = new BaseRactive({
     findDocName: function(docId) {
       console.info('findDocName: '+docId);
     },
-    formatAge: function(timeString) {
-      console.info('formatAge: ' + timeString);
-      if (timeString == "-1" || isNaN(timeString)) return 'n/a';
-      else return i18n.getDurationString(timeString) + ' ago';
+    formatAge: function(millis) {
+      console.info('formatAge: ' + millis);
+      if (millis == "-1" || isNaN(millis)) return 'n/a';
+      else return i18n.getDurationString(millis) + ' ago';
+    },
+    formatAgeFromDate: function(timeString) {
+      if (timeString==undefined) return;
+      return i18n.getAgeString(ractive.parseDate(timeString))
     },
     formatContactId: function(contactId) {
       console.info('formatContactId');

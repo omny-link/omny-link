@@ -116,4 +116,12 @@
     {{>currentImageSect}}
   {{/if}}
 
+  {{#if tenant.features.notesOnStockCategory}}
+    {{>currentNoteListSect}}
+  {{/if}}
+
+  {{#if tenant.features.documentsOnStockCategory}}
+    {{>currentDocumentListSect}}
+  {{/if}}
+
 </section>

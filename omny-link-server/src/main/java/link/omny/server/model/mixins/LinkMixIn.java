@@ -13,7 +13,7 @@ import link.omny.custmgmt.model.views.DocumentViews;
 import link.omny.custmgmt.model.views.MemoViews;
 import link.omny.custmgmt.model.views.NoteViews;
 
-public abstract class OmnyLinkMixIn {
+public abstract class LinkMixIn {
 
     @JsonView( {
         // catalog
