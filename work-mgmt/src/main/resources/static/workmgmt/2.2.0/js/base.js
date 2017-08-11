@@ -869,11 +869,38 @@ $(document).ready(function() {
       ractive.fetch();
     }
 
+    if (newValue!=undefined && newValue.accountFields!=undefined && newValue.accountFields.length>0) {
+      for(var idx = 0 ; idx<newValue.accountFields.length ; idx++) {
+        if (newValue.accountFields[idx].type=='account' && $('datalist#accounts').length==0) {
+          if (ractive['fetchAccounts']!=undefined) ractive.fetchAccounts();
+        } else if (newValue.accountFields[idx].type=='contact' && $('datalist#contacts').length==0) {
+          if (ractive['fetchContacts']!=undefined) ractive.fetchContacts();
+        }
+      }
+    }
+    if (newValue!=undefined && newValue.contactFields!=undefined && newValue.contactFields.length>0) {
+      for(var idx = 0 ; idx<newValue.contactFields.length ; idx++) {
+        if (newValue.contactFields[idx].type=='account' && $('datalist#accounts').length==0) {
+          if (ractive['fetchAccounts']!=undefined) ractive.fetchAccounts();
+        } else if (newValue.contactFields[idx].type=='contact' && $('datalist#contacts').length==0) {
+          if (ractive['fetchContacts']!=undefined) ractive.fetchContacts();
+        }
+      }
+    }
     if (newValue!=undefined && newValue.orderFields!=undefined && newValue.orderFields.length>0) {
       for(var idx = 0 ; idx<newValue.orderFields.length ; idx++) {
         if (newValue.orderFields[idx].type=='account' && $('datalist#accounts').length==0) {
           if (ractive['fetchAccounts']!=undefined) ractive.fetchAccounts();
         } else if (newValue.orderFields[idx].type=='contact' && $('datalist#contacts').length==0) {
+          if (ractive['fetchContacts']!=undefined) ractive.fetchContacts();
+        }
+      }
+    }
+    if (newValue!=undefined && newValue.orderItemFields!=undefined && newValue.orderItemFields.length>0) {
+      for(var idx = 0 ; idx<newValue.orderItemFields.length ; idx++) {
+        if (newValue.orderItemFields[idx].type=='account' && $('datalist#accounts').length==0) {
+          if (ractive['fetchAccounts']!=undefined) ractive.fetchAccounts();
+        } else if (newValue.orderItemFields[idx].type=='contact' && $('datalist#contacts').length==0) {
           if (ractive['fetchContacts']!=undefined) ractive.fetchContacts();
         }
       }
