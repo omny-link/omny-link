@@ -50,8 +50,14 @@
             </span>
           {{/if}}
         </span>
-        <span class="clearfix">
-         {{#if tenant.show.addressAccount && (current.account.name != undefined && current.account.name != '')}}
+        <span>
+          {{#if tenant.show.addressContact && current.postCode}}
+            <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
+          {{/if}}
+          {{#if current.postCode == undefined && (current.town || current.address1 || current.address2 || current.countyOrCity)}}
+            <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
+          {{/if}}
+          {{#if tenant.show.addressAccount && (current.account.name != undefined && current.account.name != '')}}
            <span>{{current.account.name}}{{#if current.account.town}}, {{current.account.town}}{{/if}}{{#if current.account.countyOrCity}}, {{current.account.countyOrCity}}{{/if}}{{#if current.account.postCode}}, {{current.account.postCode}}{{/if}}</span>
              {{#current.account.postCode}}
                 <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.account.postCode}}" target="_blank"></a>
@@ -145,18 +151,6 @@
       </div>
     {{/}}
 
-    {{#tenant.contactFields.length>0}}
-      {{#if haveCustomExtension('ContactExtension')}}
-        <div id="currentContactExtended" style="clear: both">
-          {{>(tenant.id+'ContactExtension')}}
-        </div>
-      {{else}}
-        <div id="currentContactExtended" style="clear: both">
-          {{>currentContactExtensionSect}}
-        </div>
-      {{/if}}
-    {{/}}
-    
     {{#tenant.show.contact}}
 	    <section id="connectionsSect">
 	      <h3>
@@ -357,7 +351,19 @@
       </section>
     {{/}}
   </form>
-  
+
+  {{#tenant.contactFields.length>0}}
+    {{#if haveCustomExtension('ContactExtension')}}
+      <div id="currentContactExtended" style="clear: both">
+        {{>(tenant.id+'ContactExtension')}}
+      </div>
+    {{else}}
+      <div id="currentContactExtended" style="clear: both">
+        {{>currentContactExtensionSect}}
+      </div>
+    {{/if}}
+  {{/}}
+
   {{#tenant.show.account}}
     {{>currentContactAccountSect { primary: 'contacts' }}}
   {{/}}
