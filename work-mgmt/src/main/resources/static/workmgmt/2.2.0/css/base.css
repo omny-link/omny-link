@@ -973,7 +973,7 @@ form#upload {
 	width: 60%;
 }
 @media (min-width: 920px) {
-	.form textarea {
+	.form .col-md-12 textarea {
 	  width: 80%;
 	}
 }

@@ -13,6 +13,10 @@
         {{#type=='multi-select'}}multiple="{{multiple}}" data-key="{{name}}" data-value="{{current.customFields[name]}}"
         {{else}}value="{{current.customFields[name]}}"
         {{/}}></select>
+  {{elseif type=='textarea'}}
+    <textarea class="form-control" id="cur{{name.toLeadingCaps()}}"
+        placeholder="{{placeholder}}"
+        value="{{current.customFields[name]}}"></textarea>
   {{elseif (type=="url" || type=="account" || type=="contact") && current.customFields[name] != undefined}}
     <div class="input-group">
       <input class="form-control" id="cur{{name.toLeadingCaps()}}"

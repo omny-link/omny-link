@@ -18,7 +18,13 @@
   {{#each tenant.orderItemFields:k}}
     <li class="form-group">
       <label class="col-md-3 col-sm-3 col-xs-4">{{label == undefined ? name.toLabel() : label}}:</label>
-      {{#if type=='list'}}
+      {{#if type=='account'}}
+        <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="accounts"
+            value="{{instanceToStart.processVariables.orderItem.customFields[name]}}">
+      {{elseif type=='contact'}}
+        <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="contacts"
+            value="{{instanceToStart.processVariables.orderItem.customFields[name]}}">
+      {{elseif type=='list'}}
         <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}"
             value="{{instanceToStart.processVariables.orderItem.customFields[name]}}">
       {{else}}
