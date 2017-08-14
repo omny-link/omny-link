@@ -1031,21 +1031,16 @@ var ractive = new BaseRactive({
               var entityName = ractive.get('entityPath').substring(1);
               var location = jqXHR.getResponseHeader('Location');
               ractive.set('saveObserver', false);
-              if (location != undefined)
+              if (location != undefined) {
                 ractive.set('current._links.self.href', location);
+                ractive.set('current.selfRef', location);
+              }
               switch (jqXHR.status) {
               case 201:
-                // TODO workaround for immediate create contact failing
-//                ractive.addContact();
-//                ractive.saveContact();
-                ractive.select(ractive.get('current'));
-                //                var currentIdx = ractive.get(entityName).push(
-//                    ractive.get('current')) - 1;
-//                ractive.set('currentIdx', currentIdx);
+                ractive.splice('accounts', 0, 0, ractive.get('current'));
                 break;
               case 204:
-                ractive.splice(entityName, ractive.get('currentIdx'), 1,
-                    ractive.get('current'));
+                ractive.splice(entityName, ractive.get('currentIdx'), 1, ractive.get('current'));
                 break;
               }
               ractive.showMessage('Account saved');
