@@ -119,7 +119,24 @@
      <groupId>org.springframework.boot</groupId>
      <artifactId>spring-boot-starter-log4j2</artifactId>
    </dependency>
-
+   <dependency>
+     <groupId>com.h2database</groupId>
+     <artifactId>h2</artifactId>
+     <scope>test</scope>
+   </dependency>
+   <dependency>
+     <groupId>mysql</groupId>
+     <artifactId>mysql-connector-java</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>com.fasterxml.jackson.core</groupId>
+     <artifactId>jackson-databind</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>org.projectlombok</groupId>
+     <artifactId>lombok</artifactId>
+     <scope>provided</scope>
+   </dependency>
    <!-- Use instead of tomcat jdbc default provided by Spring Boot as more reliable -->
    <dependency>
      <groupId>com.zaxxer</groupId>
@@ -151,6 +168,7 @@
     <module>omny-link-processes</module>
     <!--module>rightmove</module-->
     <module>service-tasks</module>
+    <module>support-services</module>
     <module>work-mgmt</module>
   </modules>
 
