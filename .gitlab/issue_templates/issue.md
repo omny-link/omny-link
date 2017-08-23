@@ -1,9 +1,12 @@
-- Impact:
-  - 1 - system down,
-  - 2 - single piece of functionality with no workaround,
-  - 3 - single piece of functionality _with_ workaround, or
+- Impact (_delete_as_appropriate_):
+  - 1 - system down
+  - 2 - single piece of functionality with no workaround
+  - 3 - single piece of functionality _with_ workaround
   - 4 - a 'paper cut' or suggestion for enhancement
-- Tenant: Named, Multiple or Global
+- Tenant (_delete_as_appropriate_):
+  - Named
+  - Multiple
+  - Global
 
 ## Steps to reproduce
   - First ...
@@ -12,3 +15,5 @@
   - Expected that ...
   - Instead ...
 
+- For example look at record with id ....
+- This screenshot illustrates ...
