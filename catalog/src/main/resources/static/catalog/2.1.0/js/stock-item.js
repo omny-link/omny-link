@@ -330,6 +330,12 @@ var ractive = new BaseRactive({
     });
     return c;
   },
+  initAccessControl: function() {
+    if (!ractive.hasRole('product_owner')) {
+      $('input,select,textarea').attr('disabled','disabled').attr('readonly','readonly');
+      ractive.showMessage('You do not have permission to edit this record, only Product Owners may do that');
+    }
+  },
   oninit: function() {
     console.log('oninit');
   },
@@ -437,9 +443,10 @@ var ractive = new BaseRactive({
         ractive.set('current', data);
         if ('tenant.features.stockItemImages') ractive.fetchImages();
         ractive.initControls();
-        ractive.initTags();
+        ractive.initTags(!ractive.hasRole('product_owner'));
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
+        ractive.initAccessControl();
         ractive.set('saveObserver',true);
       });
     } else {
