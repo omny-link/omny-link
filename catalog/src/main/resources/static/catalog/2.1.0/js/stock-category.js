@@ -293,6 +293,11 @@ var ractive = new BaseRactive({
     });
     return c;
   },
+  initAccessControl: function() {
+    if (!ractive.hasRole('product_owner')) {
+      $('input,select,textarea').attr('disabled','disabled').attr('readonly','readonly');
+    }
+  },
   initSelect: function() {
     console.log('initSelect');
     if (ractive.get('tenant.typeaheadControls')!=undefined && ractive.get('tenant.typeaheadControls').length>0) {
@@ -427,10 +432,11 @@ var ractive = new BaseRactive({
         ractive.initControls();
         ractive.initSelect(); // not (yet?) a standard control
         setTimeout(ractive.updateSelect, 500); // yes really!
-        ractive.initTags();
+        ractive.initTags(!ractive.hasRole('product_owner'));
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
         if (ractive.get('tenant.features.stockCategoryImages')) ractive.fetchImages();
+        ractive.initAccessControl();
 //        if (ractive.get('tenant.features.notesOnStockCategory')) ractive.fetchNotes();
 //        if (ractive.get('tenant.features.documentsOnStockCategory')) ractive.fetchDocs();
         ractive.set('saveObserver',true);
