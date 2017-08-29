@@ -393,7 +393,7 @@ var BaseRactive = Ractive.extend({
       }
     });
   },
-  initTags: function() {
+  initTags: function(readOnly) {
     console.info('initTags');
     if (typeof $(".tag-ctrl")['tagit'] != 'function') return;
     ractive.set('saveObserver', false);
@@ -405,6 +405,7 @@ var BaseRactive = Ractive.extend({
     $(".tag-ctrl").tagit({
       allowSpaces: true,
       placeholderText: "Comma separated tags",
+      readOnly: readOnly==true ? true : false,
       showAutocompleteOnFocus: true,
       afterTagAdded: function(event, ui) {
         ractive.set($(event.target).data('bind'),$(event.target).val());
