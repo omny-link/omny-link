@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -64,18 +65,21 @@ public class GDriveRepository implements Repository,
     private String url;
     private boolean debug = true;
 
+    @Value("${omny.app.dir:.}")
+    private String appDir;
+
 	public GDriveRepository() throws IOException {
         init();
     }
 
     /** Authorizes the installed application to access user's protected data. */
     private Credential authorize() throws Exception {
-		java.io.File secretFile = new java.io.File(".", ".goog_secret.json");
+        java.io.File secretFile = new java.io.File(appDir, ".goog_secret.json");
 		if (secretFile == null || !secretFile.exists()) {
 			throw new IllegalStateException(
 					String.format("No client secret found in %1$s", secretFile.getCanonicalPath()));
 		}
-		java.io.File tokenFile = new java.io.File(".", ".goog_token.json");
+		java.io.File tokenFile = new java.io.File(appDir, ".goog_token.json");
 		if (tokenFile == null || !tokenFile.exists()) {
 			throw new IllegalStateException(
 					String.format("No credentials found in %1$s", tokenFile.getCanonicalPath()));
