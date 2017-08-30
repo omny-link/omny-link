@@ -22,16 +22,26 @@ public class JsEnvironmentController {
     @Value("${kp.app.tagLine:}")
     protected String tagLine;
 
-    @Value("${spring.data.rest.baseUri}")
+    @Value("${server.port:8080}")
+    protected String serverPort;
+
+    @Value("${spring.data.rest.baseUri:}")
     protected String restBaseUri;
 
-    @RequestMapping(path = "/js/env.js", method = RequestMethod.GET)
+    public String getRestBaseUri() {
+        if (restBaseUri.length() == 0) {
+			restBaseUri = "http://localhost:" + serverPort;
+        }
+		return restBaseUri;
+	}
+
+	@RequestMapping(path = "/js/env.js", method = RequestMethod.GET)
     public final String getEnvironment(HttpServletResponse resp, Model model)
             throws Exception {
         resp.setContentType("text/javascript");
         model.addAttribute("appName", appName);
         model.addAttribute("tagLine", tagLine);
-        model.addAttribute("restBaseUri", restBaseUri);
+        model.addAttribute("restBaseUri", getRestBaseUri());
         return "/js-env";
     }
 
