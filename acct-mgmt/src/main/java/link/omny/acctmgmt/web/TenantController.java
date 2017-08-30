@@ -128,11 +128,12 @@ public class TenantController {
         idSvc.saveUser(botUser);
 
         String url = request.getRequestURL().toString();
-        idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CUST_MGMT_URL,
-                url.substring(0, url.indexOf("/tenants")));
+        url = url.substring(0, url.indexOf("/tenants"));
+        idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CUST_MGMT_URL, url);
         idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CUST_MGMT_SECRET,
                 botUser.getPassword());
-        idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CC_ACCOUNT, "");
+        idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CC_ACCOUNT, "tim@omny.link");
+        idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_JWT_AUTH_URL, url + "/auth/login");
         idSvc.setUserInfo(botUser.getId(), "tenant",tenantId);
 
         idSvc.createMembership(botUser.getId(), "bot");

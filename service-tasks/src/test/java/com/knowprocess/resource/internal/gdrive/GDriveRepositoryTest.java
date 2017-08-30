@@ -10,14 +10,12 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
-@Ignore
 public class GDriveRepositoryTest {
 
     private static final String UPLOADED_RESOURCE_MIME = "image/png";
@@ -36,7 +34,7 @@ public class GDriveRepositoryTest {
                 return base;
             } else {
                 System.out
-                        .println("No GDrive connection, probably due to not having any secrets.");
+                        .println("No GDrive connection, probably due to not having any credentials.");
                 return new Statement() {
                     @Override
                     public void evaluate() { /* do nothing */
@@ -70,7 +68,8 @@ public class GDriveRepositoryTest {
     private void pushImageToRepo(String resourceTitle, String resourceMime) {
         InputStream is = null;
         try {
-            is = getClass().getResourceAsStream("/" + resourceTitle);
+            is = getClass()
+                    .getResourceAsStream("/static/images/" + resourceTitle);
             assertTrue("Could not find test resource to store.", is != null);
             repo.write(resourceTitle, resourceMime, null, is);
         } catch (IOException e) {
