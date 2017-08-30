@@ -232,7 +232,7 @@ public class AccountController {
         vars.put("id", account.getId().toString());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(builder2.path("/{id}")
+        headers.setLocation(builder2.path("/accounts/{id}")
                 .buildAndExpand(vars).toUri());
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
