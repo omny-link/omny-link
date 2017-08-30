@@ -4,5 +4,6 @@
 .settings/
 *.bak
 *~
-/target/
 /bin/
+src/main/resources/client_secret.json
+/target/

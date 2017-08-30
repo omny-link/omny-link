@@ -54,7 +54,7 @@ public abstract class RestService extends BaseUserAwareTask implements
      */
     private Expression mockResponse;
 
-    static final String USER_AGENT = "KnowProcess Agent";
+	public static final String USER_AGENT = "KnowProcess Agent";
 
     private ThreadLocal<String> threadLocalJwtToken = new ThreadLocal<String>();
 
