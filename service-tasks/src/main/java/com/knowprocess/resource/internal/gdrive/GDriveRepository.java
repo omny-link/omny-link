@@ -13,6 +13,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -47,6 +48,7 @@ import com.knowprocess.resource.spi.RestService;
  * @author Tim Stephenson
  * 
  */
+@Service
 public class GDriveRepository implements Repository,
         MediaHttpUploaderProgressListener {
 
@@ -66,20 +68,36 @@ public class GDriveRepository implements Repository,
     private boolean debug = true;
 
     @Value("${omny.app.dir:.}")
-    private String appDir;
+    private String appHome;
 
-	public GDriveRepository() throws IOException {
+    public GDriveRepository() throws IOException {
         init();
+    }
+
+    public void setAppDir(String appDir) {
+        this.appHome = appDir;
+    }
+
+    public String getAppHome() {
+        if (appHome == null) {
+            LOGGER.warn("No app home set, checking environment");
+            appHome = System.getenv("APP_HOME") == null ? "."
+                    : System.getenv("APP_HOME");
+            LOGGER.warn("... set to '{}'", appHome);
+        }
+        return appHome;
     }
 
     /** Authorizes the installed application to access user's protected data. */
     private Credential authorize() throws Exception {
-        java.io.File secretFile = new java.io.File(appDir, ".goog_secret.json");
+        java.io.File secretFile = new java.io.File(getAppHome(),
+                ".goog_secret.json");
 		if (secretFile == null || !secretFile.exists()) {
 			throw new IllegalStateException(
 					String.format("No client secret found in %1$s", secretFile.getCanonicalPath()));
 		}
-		java.io.File tokenFile = new java.io.File(appDir, ".goog_token.json");
+        java.io.File tokenFile = new java.io.File(getAppHome(),
+                ".goog_token.json");
 		if (tokenFile == null || !tokenFile.exists()) {
 			throw new IllegalStateException(
 					String.format("No credentials found in %1$s", tokenFile.getCanonicalPath()));
@@ -104,7 +122,7 @@ public class GDriveRepository implements Repository,
 		}
     }
 
-	public void init() throws IOException {
+    public void init() throws IOException {
         long start = new Date().getTime();
         try {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
