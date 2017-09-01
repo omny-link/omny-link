@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public enum UserInfoKeys implements Serializable {
 
-    COMMS_PREFERENCE, OMNY_BAR_POSITION, PHONE, TENANT;
+    ALLOWED_TENANTS, COMMS_PREFERENCE, OMNY_BAR_POSITION, PHONE, TENANT;
 
     public String toString() {
         return name().toLowerCase();

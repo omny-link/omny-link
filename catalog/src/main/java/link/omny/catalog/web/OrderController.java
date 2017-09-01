@@ -357,10 +357,8 @@ public class OrderController {
 
     /**
      * Add a document to the specified order.
-     *      *
-     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
-     * @return
      *
+     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
      * @return The document created.
      */
     @RequestMapping(value = "/{orderId}/documents", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
@@ -481,8 +479,12 @@ public class OrderController {
 
     /**
      * Change the stage the order has reached.
+     *
+     * @param tenantId
+     * @param orderId
+     * @param stage Expected to be a human-readable string not JSON etc.
      */
-    @RequestMapping(value = "/{orderId}/stage", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/{orderId}/stage", method = RequestMethod.POST)
     public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId,

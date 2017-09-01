@@ -2,6 +2,9 @@ var ractive = new BaseRactive({
   el: 'container',
   template: '#template',
   data: {
+    haveCustomExtension: function(extName) {
+      return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
+    },
     helpUrl: '//omny.link/user-help/users/#the_title',
     featureEnabled: function(feature) {
       console.log('featureEnabled: '+feature);
@@ -41,6 +44,7 @@ var ractive = new BaseRactive({
       else return 'hidden';
     },
     stdPartials: [
+      { "name": "currentUserExtensionSect", "url": "/partials/user-extension.html"},
       { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
       { "name": "navbar", "url": "/partials/user-navbar.html"},
@@ -50,8 +54,24 @@ var ractive = new BaseRactive({
       { "name": "userCurrentSect", "url": "/partials/user-current-sect.html"},
       { "name": "userListSect", "url": "/partials/user-list-sect.html"}
     ],
+    tenant: { id: 'omny' },
     title: 'User Management',
     users: []
+  },
+  partials: {
+    helpModal: '',
+    loginSect: '',
+    profileArea: '',
+    sidebar: '',
+    titleArea: '',
+    userCurrentSect: '',
+    userInfo: '<li class="form-group">'
+      	     +'  <label class="col-md-4 col-sm-4">{{#tenant.strings[key]}}{{tenant.strings[key]}}{{else}}{{key.toLabel()}}{{/}}:</label>'
+      	     +'  <input class="form-control" id="cur{{key.toLeadingCaps().replace(/-/g,\'\')}}"'
+      	     +'      on-blur="saveUserInfo(this)" value="{{value}}">'
+      	     +'  <p class="col-md-offset-4 col-sm-offset-4 help-block">{{tenant.strings[key+\'Hint\']}}</p>'
+      	     +'</li>',
+    userListSect: ''
   },
   addGroup: function () {
     console.log('addGroup...');
@@ -112,6 +132,7 @@ var ractive = new BaseRactive({
     $.getJSON(ractive.getServer()+'/users/',  function( data ) {
       ractive.merge('users', data);
       if (ractive.hasRole('admin')) $('.admin').show();
+      ractive.showSearchMatched();
     });
   },
   fetchUserGroups: function () {
@@ -131,18 +152,38 @@ var ractive = new BaseRactive({
       ractive.showFormError('userForm','Please correct the highlighted fields');
       return ;
     }
-
+    var tmp = ractive.get('current');
+    delete tmp.authorities;
     $.ajax({
       url: ractive.getServer()+'/users/'+(ractive.get('currentAction') == 'CREATE' ? '' : ractive.get('current.id')),
       type: ractive.get('currentAction') == 'CREATE' ? 'POST' : 'PUT',
       contentType: 'application/json',
-      data: JSON.stringify(ractive.get('current')),
+      data: JSON.stringify(tmp),
       success: completeHandler = function(data) {
         console.log('data: '+ data);
+        ractive.set('saveObserver',false);
         ractive.showMessage('User has been saved successfully');
         ractive.fetch();
         ractive.showResults();
         ractive.set('currentAction', 'UPDATE');
+        ractive.set('saveObserver',true);
+      }
+    });
+  },
+  saveUserInfo: function (info) {
+    console.log('saveUserInfo '+info.key+' ...');
+    if (!document.getElementById('userForm').checkValidity()) {
+      ractive.showFormError('userForm','Please correct the highlighted fields');
+      return ;
+    }
+
+    $.ajax({
+      url: ractive.tenantUri(ractive.get('current'))+'/info/'+info.key,
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ key: info.key, value: info.value }),
+      success: completeHandler = function() {
+        ractive.showMessage('User info has been saved successfully');
       }
     });
   },
@@ -160,6 +201,7 @@ var ractive = new BaseRactive({
         if ($("#curGroups").is(":ui-tagit")) $("#curGroups").tagit('destroy');
         $("#curGroups").tagit({
           placeholderText: "Comma separated roles",
+          readOnly: ractive.hasRole('admin') ? false : true,
           afterTagAdded: function(event, ui) {
             if (ui.duringInitialization) return;
             else ractive.addUserToGroup(ui.tagLabel);
@@ -195,6 +237,14 @@ var ractive = new BaseRactive({
     console.log('showResults');
     $('#usersTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
     $('#usersTable').slideDown();
+  },
+  showSearchMatched: function() {
+    ractive.set('searchMatched',$('#usersTable tbody tr').length);
+    if ($('#usersTable tbody tr:visible').length==1) {
+      var userId = $('#usersTable tbody tr:visible').data('href')
+      var user = Array.findBy('id',ractive.localId(userId),ractive.get('users'))
+      ractive.edit( user );
+    }
   },
   toggleResults: function() {
     console.log('toggleResults');
@@ -234,7 +284,12 @@ var ractive = new BaseRactive({
 ractive.observe('current.email', function(newValue, oldValue, keypath) {
   console.log('email changed from '+oldValue+' to '+newValue);
   if (newValue == undefined) return;
+  ractive.set('current.email', newValue.toLowerCase().trim());
+  newValue = newValue.toLowerCase().trim();
+});
+ractive.observe('current.id', function(newValue, oldValue, keypath) {
+  console.log('id changed from '+oldValue+' to '+newValue);
+  if (newValue == undefined) return;
   ractive.set('current.id', newValue.toLowerCase().trim());
   newValue = newValue.toLowerCase().trim();
 });
-
