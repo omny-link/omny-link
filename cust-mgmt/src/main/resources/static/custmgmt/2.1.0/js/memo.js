@@ -127,11 +127,23 @@ var ractive = new BaseRactive({
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "memoListSect", "url": "/partials/memo-list-sect.html"},
       { "name": "currentMemoSect", "url": "/partials/memo-current-sect.html"}
     ],
     title: "Template Library"
+  },
+  partials: {
+    helpModal: '',
+    navbar: '',
+    loginSect: '',
+    profileArea: '',
+    sidebar: '',
+    supportBar: '',
+    titleArea: '',
+    memoListSect: '',
+    currentMemoSect: ''
   },
   add: function () {
     console.log('add...');
