@@ -824,24 +824,27 @@ var BaseRactive = Ractive.extend({
     var saveObserver = ractive.get('saveObserver');
     ractive.set('saveObserver', false);
     var uri;
-    if (entity['links']!=undefined) {
-      $.each(entity.links, function(i,d) {
-        if (d.rel == 'self') {
-          uri = d.href;
-        }
-      });
-    } else if (entity['_links']!=undefined) {
-      uri = ractive.stripProjection(entity._links.self.href);
-    } else if (entity['id']!=undefined) {
-      uri = ractive.get('entityPath')+'/'+entity.id;
+    try {
+      if (entity['links']!=undefined) {
+        $.each(entity.links, function(i,d) {
+          if (d.rel == 'self') {
+            uri = d.href;
+          }
+        });
+      } else if (entity['_links']!=undefined) {
+        uri = ractive.stripProjection(entity._links.self.href);
+      } else if (entity['id']!=undefined) {
+        uri = ractive.get('entityPath')+'/'+entity.id;
+      }
+      // work around for sub-dir running
+      if (uri != undefined && uri.indexOf(ractive.getServer())==-1 && uri.indexOf('//')!=-1) {
+        uri = ractive.getServer() + uri.substring(uri.indexOf('/', uri.indexOf('//')+2));
+      } else if (uri != undefined && uri.indexOf('//')==-1) {
+        uri = ractive.getServer()+uri;
+      }
+    } catch (e) {
+      console.error('Cannot get URI of '+JSON.stringify(entity)+'. '+e);
     }
-    // work around for sub-dir running
-    if (uri != undefined && uri.indexOf(ractive.getServer())==-1 && uri.indexOf('//')!=-1) {
-      uri = ractive.getServer() + uri.substring(uri.indexOf('/', uri.indexOf('//')+2));
-    } else if (uri != undefined && uri.indexOf('//')==-1) {
-      uri = ractive.getServer()+uri;
-    }
-
     ractive.set('saveObserver', saveObserver);
     return uri;
   }

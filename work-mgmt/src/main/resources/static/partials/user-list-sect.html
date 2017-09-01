@@ -25,7 +25,7 @@
             || (this.email!=undefined && this.email.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
             || (this.id!=undefined && this.id.toLowerCase().indexOf(searchTerm.toLowerCase()))===0
           ) }}
-      <tr data-href="{{_links.self.href}}">
+      <tr data-href="/users/{{id}}">
         <td on-click="edit(this)">{{i+1}}</td>
         <td on-click="edit(this)">{{id}}</td>
         <td on-click="edit(this)">{{fullName}}</td>
@@ -37,5 +37,8 @@
       {{/}}
     {{/each}}
     </tbody>
+    <tfoot>
+      <tr><th colspan="12">{{searchMatched == 0 ? 'No' : searchMatched}} matching user{{searchMatched==1 ? '' : 's'}}</th></tr>
+    </tfoot>
   </table>
 </section>

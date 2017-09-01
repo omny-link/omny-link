@@ -153,8 +153,8 @@ public class UserRecordController {
         LOGGER.debug("... done");
         for (UserInfo info : userRecord.getInfo()) {
             String userInfo = idSvc.getUserInfo(id, info.getKey());
-            System.out.println("Found user info: " + userInfo + " for key: "
-                    + info.getKey() + ", setting to: " + info.getValue());
+            LOGGER.debug("Found user info: {} for key: {}, setting to: {}",
+                    userInfo, info.getKey(), info.getValue());
             if (userInfo == null || !userInfo.equals(info.getValue())) {
                 LOGGER.debug(String.format(
                         "Updating user info record %2$s for %1$s...", id,
@@ -183,6 +183,17 @@ public class UserRecordController {
                     userRecord.getTenant());
         }
         return new UserRecord(user);
+    }
+
+    @RequestMapping(value = "/{id}/info/{key}", method = RequestMethod.POST, headers = "Accept=application/json")
+    public @ResponseBody void updateInfo(
+            @PathVariable("id") String id,
+            @PathVariable("key") String key,
+            @RequestBody UserInfo userInfo) {
+        LOGGER.info(String.format("Updating info %2$s of %1$s", id, key));
+
+        IdentityService idSvc = processEngine.getIdentityService();
+        idSvc.setUserInfo(id, key, userInfo.getValue());
     }
 
     @RequestMapping(value = "/{id}/reset-password", method = RequestMethod.POST, headers = "Accept=application/json")
