@@ -169,11 +169,24 @@ var ractive = new BaseRactive({
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "funnelSect", "url": "/partials/funnel-sect.html"},
       { "name": "accountListTable", "url": "/partials/account-list-table.html" },
       { "name": "contactListTable", "url": "/partials/contact-list-table.html"}
     ],
+  },
+  partials: {
+    helpModal: '',
+    navbar: '',
+    loginSect: '',
+    profileArea: '',
+    sidebar: '',
+    supportBar: '',
+    titleArea: '',
+    funnelSect: '',
+    accountListTable: '',
+    contactListTable: ''
   },
   activeStages: function() {
     console.info('activeStages');
