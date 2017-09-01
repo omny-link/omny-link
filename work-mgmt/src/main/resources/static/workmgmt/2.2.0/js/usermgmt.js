@@ -50,6 +50,7 @@ var ractive = new BaseRactive({
       { "name": "navbar", "url": "/partials/user-navbar.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "userCurrentSect", "url": "/partials/user-current-sect.html"},
       { "name": "userListSect", "url": "/partials/user-list-sect.html"}
@@ -63,6 +64,7 @@ var ractive = new BaseRactive({
     loginSect: '',
     profileArea: '',
     sidebar: '',
+    supportBar: '',
     titleArea: '',
     userCurrentSect: '',
     userInfo: '<li class="form-group">'
