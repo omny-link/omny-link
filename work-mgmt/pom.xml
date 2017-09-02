@@ -21,7 +21,6 @@
     <serenity.version>1.0.21</serenity.version>
     <serenity.maven.version>1.0.21</serenity.maven.version>
     <webdriver.driver>firefox</webdriver.driver>
-    <kp-auth.version>1.0</kp-auth.version>
   </properties>
 
   <repositories>

@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.knowprocess.resource.spi.Resource;
+import com.knowprocess.resource.spi.RestService;
 import com.knowprocess.resource.spi.model.JwtUserPrincipal;
 
 public class UrlResource implements Resource {
@@ -174,7 +175,7 @@ public class UrlResource implements Resource {
             }
 
             if (!headers.containsKey("User-Agent")) {
-                headers.put("User-Agent", "KnowProcess Agent");
+				headers.put("User-Agent", RestService.USER_AGENT);
             }
 
             if (username != null && !sUrl.equals(jwtLoginUrl)) {

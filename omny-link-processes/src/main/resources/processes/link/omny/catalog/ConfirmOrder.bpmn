@@ -36,7 +36,7 @@
           <activiti:expression>userInfo('cust-mgmt-url')/${omny_orderConfirmation.getString('tenantId')}/orders/${omny_orderConfirmation.getString('orderId')}/stage</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
-          <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
+          <activiti:string>Content-Type:text/plain,Accept:application/json</activiti:string>
         </activiti:field>
         <activiti:field name="data">
           <activiti:expression>Confirmation received</activiti:expression>

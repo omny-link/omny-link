@@ -1058,8 +1058,15 @@ ul.json li label {
 	z-index: 250;
 }
 
-.navbar-top .profile .tenant {
+.profile .tenant {
 	display:inline;
+}
+.profile select.tenant {
+    border-color: #6f6f71;
+    height: 34px;
+    border-radius: 5px;
+    top: -3px;
+    position: relative;
 }
 .profile-img img {
 	margin-top: -9px;

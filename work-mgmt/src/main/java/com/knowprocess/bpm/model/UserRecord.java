@@ -3,7 +3,9 @@ package com.knowprocess.bpm.model;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,6 +66,8 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
     private String commsPreference;
 
     private String omnyBarPosition;
+
+    private String allowedTenants;
 
     private String tenant;
 
@@ -191,6 +195,9 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
             } else if (UserInfoKeys.TENANT.toString().equals(key)) {
                 wrappedUser.setTenant(svc.getUserInfo(username,
                         UserInfoKeys.TENANT.toString()));
+            } else if (UserInfoKeys.ALLOWED_TENANTS.toString().equals(key)) {
+                wrappedUser.setAllowedTenants(svc.getUserInfo(username,
+                        UserInfoKeys.ALLOWED_TENANTS.toString()));
             } else {
                 wrappedUser.getInfo().add(
                         new UserInfo(key, svc.getUserInfo(
@@ -299,6 +306,14 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
 
     public String getFullName() {
         return String.format("%1$s %2$s", getFirstName(), getLastName());
+    }
+
+    public List<String> getAllowedTenantsAsList() {
+        if (allowedTenants == null) {
+            return Collections.emptyList();
+        } else {
+            return Arrays.asList(allowedTenants.split(","));
+        }
     }
 
     @Override

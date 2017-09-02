@@ -1,5 +1,6 @@
 package com.knowprocess.resource.internal.gdrive;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +12,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -34,6 +37,7 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.knowprocess.resource.spi.Repository;
+import com.knowprocess.resource.spi.RestService;
 
 /**
  * Store resource in Google Drive.
@@ -44,6 +48,7 @@ import com.knowprocess.resource.spi.Repository;
  * @author Tim Stephenson
  * 
  */
+@Service
 public class GDriveRepository implements Repository,
         MediaHttpUploaderProgressListener {
 
@@ -62,48 +67,70 @@ public class GDriveRepository implements Repository,
     private String url;
     private boolean debug = true;
 
-	public GDriveRepository() throws IOException {
+    @Value("${omny.app.dir:.}")
+    private String appHome;
+
+    public GDriveRepository() throws IOException {
         init();
+    }
+
+    public void setAppDir(String appDir) {
+        this.appHome = appDir;
+    }
+
+    public String getAppHome() {
+        if (appHome == null) {
+            LOGGER.warn("No app home set, checking environment");
+            appHome = System.getenv("APP_HOME") == null ? "."
+                    : System.getenv("APP_HOME");
+            LOGGER.warn("... set to '{}'", appHome);
+        }
+        return appHome;
     }
 
     /** Authorizes the installed application to access user's protected data. */
     private Credential authorize() throws Exception {
-        // load client secrets
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
-                JSON_FACTORY, GDriveRepository.class
-                        .getResourceAsStream("/client_secret.json"));
-        if (clientSecrets.getDetails().getClientId().startsWith("Enter")
-                || clientSecrets.getDetails().getClientSecret()
-                        .startsWith("Enter ")) {
-            System.out
-                    .println("Enter Client ID and Secret from https://code.google.com/apis/console/?api=drive "
-                            + "into client_secret.json somewhere on the classpath");
-            System.exit(1);
-        }
-        // set up file credential store
-        FileCredentialStore credentialStore = new FileCredentialStore(
-                new java.io.File(System.getProperty("user.home"),
-                        ".credentials/drive.json"), JSON_FACTORY);
-        // set up authorization code flow
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets,
-                Collections.singleton(DriveScopes.DRIVE_FILE))
-                .setCredentialStore(credentialStore).build();
-        // authorize
-        return new AuthorizationCodeInstalledApp(flow,
-                new LocalServerReceiver()).authorize("user");
+        java.io.File secretFile = new java.io.File(getAppHome(),
+                ".goog_secret.json");
+		if (secretFile == null || !secretFile.exists()) {
+			throw new IllegalStateException(
+					String.format("No client secret found in %1$s", secretFile.getCanonicalPath()));
+		}
+        java.io.File tokenFile = new java.io.File(getAppHome(),
+                ".goog_token.json");
+		if (tokenFile == null || !tokenFile.exists()) {
+			throw new IllegalStateException(
+					String.format("No credentials found in %1$s", tokenFile.getCanonicalPath()));
+		}
+
+		InputStream secretStream = null;
+		try {
+			secretStream = new FileInputStream(secretFile);
+			GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
+	                JSON_FACTORY, secretStream);
+			FileCredentialStore credentialStore = new FileCredentialStore(
+	                tokenFile, JSON_FACTORY);
+	        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+	                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets,
+	                Collections.singleton(DriveScopes.DRIVE_FILE))
+	                .setCredentialStore(credentialStore)
+	                .setAccessType("offline").build();
+	        return new AuthorizationCodeInstalledApp(flow,
+	                new LocalServerReceiver()).authorize("user");
+		} finally {
+			secretStream.close();
+		}
     }
 
-	public void init() throws IOException {
+    public void init() throws IOException {
         long start = new Date().getTime();
         try {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            // authorization
             Credential credential = authorize();
             // set up the global Drive instance
             drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, null)
                     .setHttpRequestInitializer(credential)
-                    .setApplicationName("knowprocess-cloudcast").build();
+					.setApplicationName(RestService.USER_AGENT).build();
 
 		} catch (Exception e) {
             LOGGER.error(e.getClass().getName() + ":" + e.getMessage());
@@ -163,12 +190,6 @@ public class GDriveRepository implements Repository,
         if (created != null) {
             metadata.setCreatedDate(new DateTime(created));
         }
-        // List<ParentReference> parents = new ArrayList<ParentReference>();
-        // ParentReference ref = new ParentReference();
-        // ref.setKind("drive#fileLink");
-        // ref.setId("");
-        // parents.add(ref);
-        // metadata.setParents(parents);
 
         InputStreamContent content = new InputStreamContent(mimeType, is);
 

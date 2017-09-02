@@ -90,9 +90,22 @@ var ractive = new BaseRactive({
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "navbar", "url": "/partials/status-navbar.html"},
       { "name": "statusTable", "url": "/partials/status-table.html"},
+      { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "currentTenantSect", "url": "/partials/status-current-sect.html"}
     ],
+  },
+  partials: {
+    currentTenantSect: '',
+    helpModal: '',
+    instanceListSect: '',
+    navbar: '',
+    loginSect: '',
+    profileArea: '',
+    sidebar: '',
+    statusTable: '',
+    supportBar: '',
+    titleArea: ''
   },
   createBot: function (force) {
     console.log('createBot...');

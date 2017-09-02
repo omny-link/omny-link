@@ -1,13 +1,16 @@
 package link.omny.custmgmt.web;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,15 +81,18 @@ public class ContactAndAccountControllerTest {
         List<String> locationHdrs = contactResp.getHeaders().get("Location");
         assertEquals(1, locationHdrs.size());
         assertNotNull(locationHdrs.get(0));
+		// TODO migrate to http://host/tenant/contacts/id
+		// assertThat(locationHdrs.get(0), containsString(TENANT_ID + "/contacts/"));
         contactId = Long.parseLong(locationHdrs.get(0).substring(
                 locationHdrs.get(0).lastIndexOf('/') + 1));
 
         Account acct = getAccount();
         ResponseEntity<?> acctResp = acctController.create(TENANT_ID, acct);
         assertEquals(HttpStatus.CREATED, acctResp.getStatusCode());
-        locationHdrs = contactResp.getHeaders().get("Location");
+        locationHdrs = acctResp.getHeaders().get("Location");
         assertEquals(1, locationHdrs.size());
         assertNotNull(locationHdrs.get(0));
+        assertThat(locationHdrs.get(0), containsString(TENANT_ID + "/accounts/"));
         acctId = Long.parseLong(locationHdrs.get(0).substring(
                 locationHdrs.get(0).lastIndexOf('/') + 1));
 

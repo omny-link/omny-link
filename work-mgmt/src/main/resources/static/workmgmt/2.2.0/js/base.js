@@ -272,23 +272,19 @@ var BaseRactive = Ractive.extend({
       var id = ractive.id(order.stockItem);
       stockItemIds.push(id.substring(id.lastIndexOf('/') + 1));
     } else {
-      for (idx in order.orderItems) {
+      for (var idx = 0 ; idx < order.orderItems.length ; idx++) {
         stockItemIds
             .push(order.orderItems[idx].customFields['stockItemId']);
       }
     }
-    var stockItemNames = '';
-    stockItemIds = Array.uniq(stockItemIds);
-    for (idx in stockItemIds) {
-      var tmp = Array.findBy('selfRef',
-          '/stock-items/' + stockItemIds[idx], ractive.get('stockItems'));
-      if (tmp != undefined) {
-        if (stockItemNames.length > 0)
-          stockItemNames += ',';
-        stockItemNames += tmp.name;
-      }
-    }
-    return stockItemNames;
+    var stockItemNames = [];
+    stockItemIds = new Set(stockItemIds);
+    stockItemIds.forEach(function(value) {
+    var tmp = Array.findBy('selfRef',
+        '/stock-items/' + value, ractive.get('stockItems'));
+      if (tmp != undefined) stockItemNames.push(tmp.name);
+    });
+    return stockItemNames.join();
   },
   hash: function(email) {
     if (email==undefined) return;
@@ -393,7 +389,7 @@ var BaseRactive = Ractive.extend({
       }
     });
   },
-  initTags: function() {
+  initTags: function(readOnly) {
     console.info('initTags');
     if (typeof $(".tag-ctrl")['tagit'] != 'function') return;
     ractive.set('saveObserver', false);
@@ -405,6 +401,7 @@ var BaseRactive = Ractive.extend({
     $(".tag-ctrl").tagit({
       allowSpaces: true,
       placeholderText: "Comma separated tags",
+      readOnly: readOnly==true ? true : false,
       showAutocompleteOnFocus: true,
       afterTagAdded: function(event, ui) {
         ractive.set($(event.target).data('bind'),$(event.target).val());
@@ -735,7 +732,7 @@ var BaseRactive = Ractive.extend({
       // extract label from json fields in array idx 0
       var row = '';
 
-      for (var idx in arr[0]) {
+      for (var idx = 0 ; idx < arr[0].length ; idx++) {
           row += idx + ',';
       }
 
@@ -823,24 +820,27 @@ var BaseRactive = Ractive.extend({
     var saveObserver = ractive.get('saveObserver');
     ractive.set('saveObserver', false);
     var uri;
-    if (entity['links']!=undefined) {
-      $.each(entity.links, function(i,d) {
-        if (d.rel == 'self') {
-          uri = d.href;
-        }
-      });
-    } else if (entity['_links']!=undefined) {
-      uri = ractive.stripProjection(entity._links.self.href);
-    } else if (entity['id']!=undefined) {
-      uri = ractive.get('entityPath')+'/'+entity.id;
+    try {
+      if (entity['links']!=undefined) {
+        $.each(entity.links, function(i,d) {
+          if (d.rel == 'self') {
+            uri = d.href;
+          }
+        });
+      } else if (entity['_links']!=undefined) {
+        uri = ractive.stripProjection(entity._links.self.href);
+      } else if (entity['id']!=undefined) {
+        uri = ractive.get('entityPath')+'/'+entity.id;
+      }
+      // work around for sub-dir running
+      if (uri != undefined && uri.indexOf(ractive.getServer())==-1 && uri.indexOf('//')!=-1) {
+        uri = ractive.getServer() + uri.substring(uri.indexOf('/', uri.indexOf('//')+2));
+      } else if (uri != undefined && uri.indexOf('//')==-1) {
+        uri = ractive.getServer()+uri;
+      }
+    } catch (e) {
+      console.error('Cannot get URI of '+JSON.stringify(entity)+'. '+e);
     }
-    // work around for sub-dir running
-    if (uri != undefined && uri.indexOf(ractive.getServer())==-1 && uri.indexOf('//')!=-1) {
-      uri = ractive.getServer() + uri.substring(uri.indexOf('/', uri.indexOf('//')+2));
-    } else if (uri != undefined && uri.indexOf('//')==-1) {
-      uri = ractive.getServer()+uri;
-    }
-
     ractive.set('saveObserver', saveObserver);
     return uri;
   }
@@ -979,7 +979,7 @@ Array.prototype.clean = function(deleteValue) {
  * @return The first array element whose 'k' field equals 'v'.
  */
 Array.findBy = function(k,v,arr) {
-  for (idx in arr) {
+  for (var idx = 0 ; idx < arr.length ; idx++) {
     if (arr[idx][k]==v) return arr[idx];
     else if ('selfRef'==k && arr[idx][k] != undefined && arr[idx][k].endsWith(v)) return arr[idx];
   }
@@ -989,7 +989,7 @@ Array.findBy = function(k,v,arr) {
  */
 Array.findAll = function(k,v,arr) {
   var retArr = [];
-  for (idx in arr) {
+  for (var idx = 0 ; idx < arr.length ; idx++) {
     if (arr[idx][k]==v) retArr.push(arr[idx]);
     else if ('selfRef'==k && arr[idx][k] != undefined && arr[idx][k].endsWith(v)) return retArr.push(arr[idx]);
   }
@@ -997,8 +997,9 @@ Array.findAll = function(k,v,arr) {
 }
 Array.uniq = function(fieldName, arr) {
   // console.info('uniq');
+  if (arr == undefined) return undefined;
   list = '';
-  for (idx in arr) {
+  for (var idx = 0 ; idx < arr.length ; idx++) {
     if (index(arr[idx],fieldName) != undefined
         && list.indexOf(index(arr[idx],fieldName)) == -1) {
       if (list != '')

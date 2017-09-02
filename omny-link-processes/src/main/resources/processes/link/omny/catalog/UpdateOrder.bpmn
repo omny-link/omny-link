@@ -32,7 +32,6 @@
         <activiti:field name="jwtLoginResource">
           <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
         </activiti:field>
-
         <activiti:field name="globalResource">
           <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/orders/${orderId}</activiti:expression>
         </activiti:field>
@@ -42,8 +41,6 @@
         <activiti:field name="data">
           <activiti:expression>${order}</activiti:expression>
         </activiti:field>
-        <activiti:field expression="contactId=Location" name="responseHeaders"/>
-        <activiti:field expression="contact" name="responseVar"/>
       </extensionElements>
       <incoming>_5</incoming>
       <outgoing>_7</outgoing>
