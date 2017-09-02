@@ -37,7 +37,7 @@
     <tbody>
     {{#each sort(orders,sortColumn,sortAsc):i}}
       {{#if matchSearch(this) }}
-        <tr data-href="{{selfRef}}">
+        <tr data-href="{{id}}">
           <td on-click="edit(this)">{{i+1}}</td>
           <td on-click="edit(this)">{{orderId}}</td>
           {{#1==2}}

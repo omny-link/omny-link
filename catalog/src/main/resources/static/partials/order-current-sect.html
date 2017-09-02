@@ -7,6 +7,9 @@
       <span>{{#current.contactId}}{{formatContactId(current.contactId)}}{{/}}</span>
       <span class="pull-right">
         <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+        {{#if tenant.features.notesOnOrder ||  tenant.features.documentsOnOrder}}
+          <a class="clickable glyphicon glyphicon-btn glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
+        {{/if}}
         {{#if tenant.orderActions!=undefined && tenant.orderActions.length>0 }}
           <span class="clickable dropdown" aria-hidden="true" title="Start Process">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
