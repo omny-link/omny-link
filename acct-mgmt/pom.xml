@@ -20,7 +20,6 @@
 
   <properties>
     <start-class>link.omny.acctmgmt.Application</start-class>
-    <kp-auth.version>1.0</kp-auth.version>
   </properties>
 
   <repositories>

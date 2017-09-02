@@ -108,11 +108,23 @@ var ractive = new BaseRactive({
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "memoDistListSect", "url": "/partials/memo-dist-list-sect.html"},
       { "name": "currentMemoDistSect", "url": "/partials/memo-dist-current-sect.html"}
     ],
     title: "Distribution Centre"
+  },
+  partials: {
+    helpModal: '',
+    navbar: '',
+    loginSect: '',
+    profileArea: '',
+    sidebar: '',
+    supportBar: '',
+    titleArea: '',
+    memoDistListSect: '',
+    currentMemoDistSect: ''
   },
   add: function () {
     console.log('add...');

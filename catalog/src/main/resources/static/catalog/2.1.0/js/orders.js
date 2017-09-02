@@ -655,7 +655,7 @@ var ractive = new BaseRactive({
     ractive.set('searchMatched',$('#ordersTable tbody tr').length);
     if ($('#ordersTable tbody tr:visible').length==1) {
       var orderId = $('#ordersTable tbody tr:visible').data('href')
-      var order = Array.findBy('selfRef',orderId,ractive.get('orders'))
+      var order = Array.findBy('id',orderId,ractive.get('orders'))
       ractive.edit( order );
     }
     $( "#ajax-loader" ).hide();

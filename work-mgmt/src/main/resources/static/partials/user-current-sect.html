@@ -1,6 +1,6 @@
 <section id="currentSect" style="display:none">
   <h2>
-    {{#current.id == profile.id}}Welcome!{{else}}User:{{/}} 
+    {{#current.id == profile.id}}Welcome!{{else}}User:{{/}}
     {{current.firstName}} {{current.lastName}} ({{current.id}})
     <span class="pull-right">
       {{#matchRole('admin')}}
@@ -13,35 +13,37 @@
     <form id="userForm">
       <ul class="form edit-form">
         <li class="form-group">
-          <label class="col-md-4 col-sm-4 required">Email:</label>
-          <input class="no-update-field form-control" id="curEmail" on-blur="save()" required type="email" value="{{current.email}}">
+          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.email}}{{tenant.strings.email}}{{else}}Email{{/}}:</label>
+          <input class="no-update-field form-control" id="curEmail" required type="email" value="{{current.email}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
         <li class="form-group">
-          <label class="col-md-4 col-sm-4 required">First Name:</label>
-          <input class="no-update-field form-control" id="curFirstName" on-blur="save()" required value="{{current.firstName}}">
+          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.firstName}}{{tenant.strings.firstName}}{{else}}First Name:{{/}}</label>
+          <input class="no-update-field form-control" id="curFirstName" required value="{{current.firstName}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
         <li class="form-group">
-          <label class="col-md-4 col-sm-4 required">Last Name:</label>
-          <input class="no-update-field form-control" id="curLastName" on-blur="save()" required value="{{current.lastName}}">
+          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.lastName}}{{tenant.strings.lastName}}{{else}}Last Name:{{/}}</label>
+          <input class="no-update-field form-control" id="curLastName" required value="{{current.lastName}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
-        <li class="form-group">
-          <label class="col-md-4 col-sm-4">Phone:</label>
-          <input class="form-control" id="curPhone" on-blur="save()" pattern="\+?[0-9, ]{8,13}" type="tel" value="{{current.phone}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
-        </li>
+        {{# current.phone}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.phone}}{{tenant.strings.phone}}{{else}}Phone:{{/}}</label>
+            <input class="form-control" id="curPhone" pattern="\+?[0-9, ]{8,13}" type="tel" value="{{current.phone}}">
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+          </li>
+        {{/}}
         {{# current.commsPreference}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4 required">Preferred:</label>
-            <input class="form-control" id="curCommsPreference" list="commsPreferences" on-blur="save()" required value="{{current.commsPreference}}">
+            <label class="col-md-4 col-sm-4 required">{{#tenant.strings.preferred}}{{tenant.strings.preferred}}{{else}}Preferred:{{/}}</label>
+            <input class="form-control" id="curCommsPreference" list="commsPreferences" required value="{{current.commsPreference}}">
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
           </li>
         {{/}}
         <li class="form-group">
-          <label class="col-md-4 col-sm-4 required">Tenant:</label>
-          <input class="no-update-field form-control" id="curTenant" on-blur="save()" required type="text" value="{{current.tenant}}">
+          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.tenant}}{{tenant.strings.tenant}}{{else}}Tenant:{{/}}</label>
+          <input class="no-update-field form-control" id="curTenant" required type="text" value="{{current.tenant}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
       </ul>
@@ -53,7 +55,7 @@
       <form id="userPwdForm">
         <ul class="form edit-form">
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">Groups:</label>
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.roles}}{{tenant.strings.roles}}{{else}}Roles:{{/}}</label>
             <ul class="tagit form-control col-md-8 col-sm-8 col-xs-8" id="curGroups"></ul>
           </li>
           <li style="clear:both">
@@ -69,5 +71,16 @@
       </form>
     </div>
   {{/}}
+
+  {{#if haveCustomExtension('UserExtension')}}
+    <div id="currentUserExtended" style="clear: both">
+      {{>(tenant.id+'UserExtension')}}
+    </div>
+  {{else}}
+    <div id="currentUserExtended" style="clear: both">
+      {{>currentUserExtensionSect}}
+    </div>
+  {{/if}}
+
   </div>
 </section>

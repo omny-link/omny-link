@@ -154,7 +154,7 @@ var ractive = new BaseRactive({
         },
         formatUniqOrderItemField: function(order,fieldName) {
           var val='';
-          for (idx in order.orderItems) {
+          for (var idx = 0 ; idx < order.orderItems.length ; idx++) {
             if (order.orderItems[idx].customFields[fieldName]==undefined) continue;
             var tmp = order.orderItems[idx].customFields[fieldName];
             if (tmp != undefined && val.indexOf(tmp)==-1) {

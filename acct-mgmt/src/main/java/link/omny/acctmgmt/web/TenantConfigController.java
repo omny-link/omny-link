@@ -131,6 +131,8 @@ public class TenantConfigController {
             tenantConfig.getBot().setCustMgmtSecret(
                     processEngine.getIdentityService().getUserInfo(botUser.getId(),
                             BotConfig.KEY_CUST_MGMT_SECRET));
+			tenantConfig.getBot().setJwtAuthUrl(
+					processEngine.getIdentityService().getUserInfo(botUser.getId(), BotConfig.KEY_JWT_AUTH_URL));
             tenantConfig.getBot().setCcAccount(
                     processEngine.getIdentityService().getUserInfo(botUser.getId(),
                             BotConfig.KEY_CC_ACCOUNT));

@@ -5,18 +5,18 @@
       {{#tenant.show.merge}}
         <th><input class="checkbox" type="checkbox"/></th>
       {{/}}
-      <th on-click="sort:fullName">Full Name<span class="sortable {{ sorted('fullName') }} glyphicon glyphicon-btn "></th>
-      {{#tenant.show.account}}<th on-click="sort:accountName">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
+      <th on-click="['sort','fullName']">Full Name<span class="sortable {{ sorted('fullName') }} glyphicon glyphicon-btn "></th>
+      {{#tenant.show.account}}<th on-click="['sort','accountName']">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
       {{#tenant.show.marketing || tenant.show.stage}}
-        <th on-click="sort:stage">{{#tenant.strings.contactStage}}{{tenant.strings.contactStage}}{{else}}Stage{{/}}<span class="sortable {{ sorted('stage') }} glyphicon"></th>
+        <th on-click="['sort','stage']">{{#tenant.strings.contactStage}}{{tenant.strings.contactStage}}{{else}}Stage{{/}}<span class="sortable {{ sorted('stage') }} glyphicon"></th>
       {{/}}
       {{#tenant.show.marketing || tenant.show.enquiryType}}
-        <th on-click="sort:enquiryType">Enquiry Type<span class="sortable {{ sorted('enquiryType') }} glyphicon"></th>
+        <th on-click="['sort','enquiryType']">Enquiry Type<span class="sortable {{ sorted('enquiryType') }} glyphicon"></th>
       {{/}}
-      <th on-click="sort:accountType">Account Type<span class="sortable {{ sorted('accountType') }} glyphicon"></th>
-      <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon"></th>
-      <th class="hidden-xs hidden-sm" on-click="sort:firstContact">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}First Contact{{/}}<span class="sortable {{ sorted('firstContact') }} glyphicon"></th>
-      <th class="hidden-xs" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
+      <th on-click="['sort','accountType']">Account Type<span class="sortable {{ sorted('accountType') }} glyphicon"></th>
+      <th on-click="['sort','owner']">Owned By<span class="sortable {{ sorted('owner') }} glyphicon']"></th>
+      <th class="hidden-xs hidden-sm" on-click="['sort','firstContact']">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}First Contact{{/}}<span class="sortable {{ sorted('firstContact') }} glyphicon"></th>
+      <th class="hidden-xs" on-click="['sort','lastUpdated']">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
       <th>Alerts</th>
       <th>Tags</th>
       <th class="col-actions">Actions</th>

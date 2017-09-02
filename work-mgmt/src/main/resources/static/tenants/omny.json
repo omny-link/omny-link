@@ -80,6 +80,8 @@
     "initialResponseThreshold":7
   },
   "strings": {
+    "org": "Organisation",
+    "orgHint": "The department or organisation unit the user belongs to"
   },
   "templates": [
     { "name": "ContactAlert", "ref": "ContactAlert" },

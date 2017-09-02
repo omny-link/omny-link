@@ -151,9 +151,24 @@ var ractive = new BaseRactive({
       { "name": "navbar", "url": "/partials/defn-navbar.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"}
     ],
     title: 'Process Definitions'
+  },
+  partials: {
+    defnCurrentSect: '',
+    defnListSect: '',
+    defnPropSect: '',
+    designerSect: '',
+    helpModal: '',
+    instanceListSect: '',
+    navbar: '',
+    loginSect: '',
+    profileArea: '',
+    sidebar: '',
+    supportBar: '',
+    titleArea: ''
   },
   simpleTodoFormExtension: function(x) {
     console.log('simpleTodoFormExtension: '+JSON.stringify(x));

@@ -105,10 +105,21 @@ var ractive = new BaseRactive({
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "tenantListSect", "url": "/partials/dash-list-sect.html"},
       { "name": "navbar", "url": "/partials/dash-navbar.html"}
     ],
+  },
+  partials: {
+    helpModal: '',
+    navbar: '',
+    loginSect: '',
+    profileArea: '',
+    sidebar: '',
+    supportBar: '',
+    tenantListSect: '',
+    titleArea: ''
   },
   archive: function (tenantId) {
     console.log('archive: '+tenantId);

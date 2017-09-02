@@ -17,6 +17,8 @@ public class BotConfig {
 
     private String custMgmtSecret;
 
+    private String jwtAuthUrl;
+
     private String ccAccount;
 
     private boolean valid;
@@ -26,6 +28,8 @@ public class BotConfig {
     public static final String KEY_CUST_MGMT_SECRET = "cust-mgmt-secret";
 
     public static final String KEY_CUST_MGMT_URL = "cust-mgmt-url";
+
+	public static final String KEY_JWT_AUTH_URL = "jwt-login-url";
 
     public BotConfig(String id) {
         setApiKey(id);
