@@ -203,11 +203,23 @@ var ractive = new BaseRactive({
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "metricListSect", "url": "/partials/metric-list-sect.html"},
       { "name": "navbar", "url": "/partials/metric-navbar.html"},
       { "name": "currentMetricSect", "url": "/partials/metric-current-sect.html"}
     ],
+  },
+  partials: {
+    currentMetricSect: '',
+    helpModal: '',
+    metricListSect: '',
+    navbar: '',
+    loginSect: '',
+    profileArea: '',
+    sidebar: '',
+    supportBar: '',
+    titleArea: ''
   },
   add: function () {
     console.log('add...');

@@ -2,8 +2,15 @@ package link.omny.server;
 
 import java.util.List;
 
+import org.apache.catalina.connector.Connector;
+import org.apache.coyote.http11.Http11NioProtocol;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +49,18 @@ import link.omny.server.model.mixins.NoteMixIn;
         "io.onedecision.engine" })
 public class Application extends WebMvcConfigurerAdapter {
 
+    protected static final Logger LOGGER = LoggerFactory
+            .getLogger(Application.class);
+
+    @Value("${omny.tomcat.connector2.enabled:false}")
+    protected boolean tomcatConnector2Enabled;
+
+    @Value("${omny.tomcat.connector2.port:8080}")
+    protected int connector2Port;
+
+    @Value("${omny.tomcat.connector2.scheme:http}")
+    protected String connector2Scheme;
+
     @Bean
     public SystemConfig systemConfig() {
         return new SystemConfig();
@@ -64,6 +83,28 @@ public class Application extends WebMvcConfigurerAdapter {
                 .build();
         converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
         super.configureMessageConverters(converters);
+    }
+
+    @Bean
+    public EmbeddedServletContainerFactory servletContainer() {
+        TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
+        if (tomcatConnector2Enabled) {
+            Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+            Http11NioProtocol protocol = (Http11NioProtocol) connector.getProtocolHandler();
+            connector.setScheme(connector2Scheme);
+            connector.setSecure(false);
+            connector.setPort(connector2Port);
+            protocol.setSSLEnabled(false);
+
+            LOGGER.info("Enabled secondary connector:");
+            LOGGER.info("  port: {}", connector2Port);
+            LOGGER.info("  scheme: {}", connector2Scheme);
+            tomcat.addAdditionalTomcatConnectors(connector);
+        } else {
+            LOGGER.info("No secondary connector configured, set omny.tomcat.* to enable");
+        }
+
+        return tomcat;
     }
 
     public static void main(String[] args) {

@@ -12,9 +12,9 @@
 
   <form class="inline-form form" id="currentForm">
     <h2 id="features">
-	    <span>Features enabled for </span>
-			<span contenteditable id="curName" on-focus="editField('#curName','current.name')" on-blur="updateField('#curName','current.name')">{{current.name}}</span>
-			<span id="curId" >({{current.id}})</span>
+      <span>Features enabled for </span>
+      <span contenteditable id="curName" on-focus="editField('#curName','current.name')" on-blur="updateField('#curName','current.name')">{{current.name}}</span>
+      <span id="curId" >({{current.id}})</span>
     </h2>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
@@ -159,6 +159,7 @@
           <!-- th class="col-md-2">API Secret</th-->
           <th class="col-md-2">Contact Mgmt URL</th>
           <th class="col-md-2">Contact Mgmt Secret</th>
+          <th class="col-md-2">Authentication URL</th>
           <th class="col-md-2">CC Account</th>
           <th class="col-md-2">Status</th>
         </tr>
@@ -169,6 +170,7 @@
           <!-- td>{{current.bot.apiSecret}}</td-->
           <td>{{current.bot.custMgmtUrl}}</td>
           <td>{{current.bot.custMgmtSecret}}</td>
+          <td>{{current.bot.jwtAuthUrl}}</td>
           <td>{{current.bot.ccAccount}}</td>
           <td>
             {{# current.bot.valid==true}}
@@ -208,13 +210,13 @@
     <h2 id="slas">Service Level Alerts</h2>
     <table class="table table-striped">
       <thead>
-	      <tr><th>Name</th><th>Value (days)</th></tr>
+        <tr><th>Name</th><th>Value (days)</th></tr>
       </thead>
       <tbody>
-	      <tr><td>Inactivity Reminder Threshold</td><td>{{current.serviceLevel.inactivityReminderThreshold}}</td></tr>
+        <tr><td>Inactivity Reminder Threshold</td><td>{{current.serviceLevel.inactivityReminderThreshold}}</td></tr>
         <tr><td>Inactivity Threshold</td><td>{{current.serviceLevel.inactivityThreshold}}</td></tr>
-	      <tr><td>Initial Response Threshold</td><td>{{current.serviceLevel.initialResponseThreshold}}</td></tr>
-	    </tbody>
+        <tr><td>Initial Response Threshold</td><td>{{current.serviceLevel.initialResponseThreshold}}</td></tr>
+      </tbody>
     </table>
   </div>
   <div id="currentTemplates" style="clear: both">
