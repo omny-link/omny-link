@@ -127,8 +127,9 @@ public class TenantController {
         botUser.setPassword(UUID.randomUUID().toString());
         idSvc.saveUser(botUser);
 
-        String url = request.getRequestURL().toString();
-        url = url.substring(0, url.indexOf("/tenants"));
+        String url = String.format("%1$s://%2$s:%3$s",
+                request.getScheme(), request.getServerName(),
+                request.getServerPort());
         idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CUST_MGMT_URL, url);
         idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CUST_MGMT_SECRET,
                 botUser.getPassword());

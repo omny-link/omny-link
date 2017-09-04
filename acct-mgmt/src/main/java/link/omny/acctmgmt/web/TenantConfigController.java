@@ -29,6 +29,7 @@ import link.omny.acctmgmt.model.TenantAction;
 import link.omny.acctmgmt.model.TenantConfig;
 import link.omny.acctmgmt.model.TenantExtension;
 import link.omny.acctmgmt.model.TenantPartial;
+import link.omny.acctmgmt.model.TenantSequence;
 import link.omny.acctmgmt.model.TenantTemplate;
 import link.omny.acctmgmt.model.TenantToolbarEntry;
 import link.omny.acctmgmt.model.TenantTypeaheadControl;
@@ -37,6 +38,8 @@ import link.omny.acctmgmt.repositories.TenantRepository;
 import link.omny.custmgmt.model.Memo;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.custmgmt.repositories.MemoRepository;
+import link.omny.supportservices.model.NumberSequence;
+import link.omny.supportservices.repositories.NumberSequenceRepository;
 
 @Controller
 @RequestMapping(value = "/tenants")
@@ -55,6 +58,9 @@ public class TenantConfigController {
 
     @Autowired
     protected MemoRepository memoRepo;
+
+    @Autowired
+    protected NumberSequenceRepository nfRepo;
 
     @Autowired
     private ProcessEngine processEngine;
@@ -213,6 +219,15 @@ public class TenantConfigController {
             } else {
                 partial.setValid(TenantConfig.resourceExists(STATIC_BASE
                         + partial.getUrl()));
+            }
+        }
+
+        if (tenantConfig.getSequences() != null) {
+            for (TenantSequence seq : tenantConfig.getSequences()) {
+                List<NumberSequence> seqs = nfRepo
+                        .findByEntityNameForTenant(seq.getName(), id);
+                seq.setStatus(seqs.size() == 1
+                        ? seqs.get(0).getLastUsed().toString() : "false");
             }
         }
 

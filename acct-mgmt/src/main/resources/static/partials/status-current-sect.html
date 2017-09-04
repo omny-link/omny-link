@@ -122,34 +122,6 @@
     </div>
   </form>
 
-  <div id="currentActions" style="clear: both">
-    <h2 id="actions">Actions</h2>
-    <h3 id="accountActions">Account Actions</h3>
-    {{>statusTable { property: 'accountActions', showStatus: false }}}
-    <h3 id="contactActions">Contact Actions</h3>
-    {{>statusTable { property: 'contactActions', showStatus: false }}}
-    <h3 id="orderActions">Order Actions</h3>
-    {{>statusTable { property: 'orderActions', showStatus: false }}}
-  </div>
-
-  <form class="inline-form form" id="currentForm">
-    <h2 id="filters">
-      <span>Filters</span>
-    </h2>
-    <div class="currentBody col-md-12 col-sm-12 col-xs-12">
-      <table class="table table-striped">
-        <tbody>
-          <tr><th>Stages deemed 'inactive':</th><td>{{current.serviceLevel.inactiveStages}}</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </form>
-
-  <div id="currentToolbar" style="clear: both">
-    <h2 id="toolbar">Toolbar entries</h2>
-    {{>statusTable { property: 'toolbar' }}}
-  </div>
-
   <div id="currentBot" style="clear: both">
     <h2 id="bot">Bot settings</h2>
     <table class="table table-striped">
@@ -189,12 +161,62 @@
     </table>
   </div>
 
-  {{#contactActions}}
-    <div id="currentActions" style="clear: both">
-      <h2 id="contactActions">Actions</h2>
-      {{>statusTable { property: 'contactActions' }}}
+  <div id="currentToolbar" style="clear: both">
+    <h2 id="toolbar">Toolbar entries</h2>
+    {{>statusTable { property: 'toolbar' }}}
+  </div>
+
+  <div id="currentActions" style="clear: both">
+    <h2 id="actions">Actions</h2>
+    <h3 id="accountActions">Account Actions</h3>
+    {{>statusTable { property: 'accountActions', showStatus: false }}}
+    <h3 id="contactActions">Contact Actions</h3>
+    {{>statusTable { property: 'contactActions', showStatus: false }}}
+    <h3 id="orderActions">Order Actions</h3>
+    {{>statusTable { property: 'orderActions', showStatus: false }}}
+  </div>
+
+  <form class="inline-form form" id="currentForm">
+    <h2 id="filters">
+      <span>Filters</span>
+    </h2>
+    <div class="currentBody col-md-12 col-sm-12 col-xs-12">
+      <table class="table table-striped">
+        <tbody>
+          <tr><th>Stages deemed 'inactive':</th><td>{{current.serviceLevel.inactiveStages}}</td></tr>
+        </tbody>
+      </table>
     </div>
-  {{/}}
+  </form>
+
+  <div id="currentSequences" style="clear: both">
+    <h2 id="sequences">Sequences</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="col-md-2">Name</th>
+          <th class="col-md-2">Entity</th>
+          <th class="col-md-6">Description</th>
+          <th class="col-md-2">Last Used</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each current.sequences:i}}
+          <tr data-href="{{_links.self.href}}">
+            <td>{{i+1}}</td>
+            <td class="col-md-2">{{name}}</td>
+            <td class="col-md-2">{{ref}}</td>
+            <td class="col-md-6">{{{description}}}</td>
+            <td class="col-md-2">{{status}}</td>
+          </tr>
+        {{/each}}
+        {{^current.sequences}}
+          <tr><td colspan="4">None</td></tr>
+        {{/}}
+      </tbody>
+    </table>
+  </div>
 
   <div id="currentProcesses" style="clear: both">
     <h2 id="processes">Processes</h2>

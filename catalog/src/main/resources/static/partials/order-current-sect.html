@@ -4,6 +4,9 @@
       {{#matchRole('super_admin')}}
         <span>{{current.id}} - </span>
       {{/}}
+      {{#current.ref}}
+        <span>{{current.ref}} - </span>
+      {{/}}
       <span>{{#current.contactId}}{{formatContactId(current.contactId)}}{{/}}</span>
       <span class="pull-right">
         <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
@@ -31,11 +34,18 @@
 
     <div class="currentBody col-md-6 col-sm-12">
       <ul class="form edit-form">
-        {{#1==2}}
+        {{#current.ref}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4 required">Name:</label>
-            <input class="form-control" list="stockCategories" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.name}}">
-            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.orderRef}}{{tenant.strings.orderRef}}{{else}}Ref{{/}}:</label>
+            <input class="form-control" disabled id="curRef" readonly value="{{current.ref}}">
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderRefHint}}{{tenant.strings.orderRefHint}}{{else}}Reference is generated automatically{{/}}</p>
+          </li>
+        {{/}}
+        {{#tenant.features.orderName}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4 required">{{#tenant.strings.orderName}}{{tenant.strings.orderName}}{{else}}Name{{/}}:</label>
+            <input class="form-control" id="curName" required value="{{current.name}}">
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderNameHint}}{{tenant.strings.orderNameHint}}{{/}}</p>
           </li>
         {{/}}
         <li class="form-group">
