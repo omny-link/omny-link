@@ -4,13 +4,21 @@
     <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
     <span>Notes</span>
     <span class="clickable glyphicon glyphicon-btn glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')" title="Add a new note"></span>
-    <span class="clickable glyphicon glyphicon-btn glyphicon-star-empty" aria-hidden="true" onclick="ractive.toggleAllNotes(this)" title="Toggle showing all notes or just the favorites"></span>
+    <span class="clickable glyphicon glyphicon-btn glyphicon-star-empty" aria-hidden="true" onclick="ractive.toggleShowFavoriteNotes(this)" title="Toggle showing all notes or just the favorites"></span>
+    <span class="clickable glyphicon glyphicon-btn kp-icon-unlock" aria-hidden="true"
+      {{#if current.owner == profile.id}} 
+        onclick="ractive.toggleShowConfidentialNotes(this)" title="Toggle showing all notes or just the non-confidential ones"
+      {{else}}
+        onclick="ractive.showMessage('Since you\'re not the owner you cannot view confidential notes', 'alert-warning');"
+        title="Since you're not the owner you cannot view confidential notes."
+      {{/if}}
+      ></span>
     {{#alerts['notes']}}<span class="alert-counter alert-danger"> {{alerts['notes']}}</span>{{/}}
   </h2>
   <div style="display:none">
 	  <table id="notesTable" class="table table-striped"><tbody>
 	    {{#each current.notes:j}}
-	      <tr class="{{#if favorite}}favorite{{else}}unfavorite{{/if}}">
+	      <tr class="{{#if favorite}}favorite{{else}}unfavorite{{/if}} {{#if confidential}}alert-warning confidential{{else}}nonconfidential{{/if}}">
 	        <td class="field-age">{{formatAgeFromDate(created)}} {{#created}}({{formatDateTime(created)}}){{/}}</td>
 	        <td class="field-author">{{{gravatar(author)}}}</td>
 	        {{#created}}
@@ -22,9 +30,10 @@
 	            <a on-click="cancelNote()">Cancel</a>
 	          </td>
 	        {{/}}
-	        <td class="pull-right field-favorite" on-click="toggleFavorite(j)">
-	          <span class="glyphicon glyphicon-btn {{formatFavorite(this)}}"></span>
-	        </td>
+	        <td class="pull-right">
+	          <span class="glyphicon glyphicon-btn {{#favorite}}glyphicon-star{{else}}glyphicon-star-empty{{/}}" on-click="toggleNoteFavorite(j)"></span>
+              <span class="glyphicon glyphicon-btn {{#confidential==true}}kp-icon-lock{{else}}kp-icon-unlock-alt{{/}}" on-click="toggleNoteConfidentiality(j)"></span>
+            </td>
 	      </tr>
 	    {{/each}}
 	    {{^current.notes}}

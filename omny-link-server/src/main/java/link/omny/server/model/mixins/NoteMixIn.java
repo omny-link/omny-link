@@ -70,5 +70,17 @@ public abstract class NoteMixIn {
         AccountViews.Detailed.class,
         ContactViews.Detailed.class,
     } )
+    private boolean confidential;
+
+    @JsonView( {
+        // catalog
+        OrderViews.Detailed.class,
+        StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class,
+
+        // custmgmt
+        AccountViews.Detailed.class,
+        ContactViews.Detailed.class,
+    } )
     private boolean favorite;
 }

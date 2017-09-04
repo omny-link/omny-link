@@ -65,6 +65,16 @@ public class Document implements Serializable {
     @Column(name = "url")
     private String url;
 
+    @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
+    @Column(name = "favorite")
+    private boolean favorite = true;
+
+    @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
+    @Column(name = "confidential")
+    private boolean confidential = false;
+
     public Document(String author, String url) {
         setAuthor(author);
         setUrl(url);
