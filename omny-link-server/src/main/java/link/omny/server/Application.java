@@ -38,12 +38,14 @@ import link.omny.custmgmt.model.Note;
 import link.omny.server.model.mixins.DocumentMixIn;
 import link.omny.server.model.mixins.LinkMixIn;
 import link.omny.server.model.mixins.NoteMixIn;
+import link.omny.supportservices.SupportServicesConfig;
 
 @Configuration
 @EnableAutoConfiguration
 @Import({ AuthConfig.class, OneDecisionConfig.class, OneDecisionDomainConfig.class,
         AnalyticsConfig.class, AcctMgmtConfig.class,
-        BpmConfiguration.class, CustMgmtConfig.class, CatalogConfig.class })
+        BpmConfiguration.class, CustMgmtConfig.class, CatalogConfig.class,
+        SupportServicesConfig.class })
 @ComponentScan(basePackages = { "link.omny.acctmgmt", "link.omny.analytics",
         "link.omny.catalog", "link.omny.custmgmt", "link.omny.server",
         "io.onedecision.engine" })
