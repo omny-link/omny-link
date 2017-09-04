@@ -79,12 +79,25 @@ public class NoteController {
      * Favorite an existing note.
      */
     @RequestMapping(value = "/{noteId}/favorite", method = RequestMethod.POST)
-    public @ResponseBody void addNote(
+    public @ResponseBody void favoriteNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("noteId") Long noteId,
             @RequestParam("favorite") boolean favorite) {
         Note note = repo.findOne(noteId);
         note.setFavorite(favorite);
+        repo.save(note);
+    }
+
+    /**
+     * Mark an existing note as confidential.
+     */
+    @RequestMapping(value = "/{noteId}/confidential", method = RequestMethod.POST)
+    public @ResponseBody void markNoteConfidential(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("noteId") Long noteId,
+            @RequestParam("confidential") boolean confidential) {
+        Note note = repo.findOne(noteId);
+        note.setConfidential(confidential);
         repo.save(note);
     }
 }

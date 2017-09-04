@@ -53,12 +53,6 @@ var ractive = new BaseRactive({
       "phone1": "^\\+?[0-9, \\-()]{0,15}$",
       "phone2": "^\\+?[0-9, \\-()]{0,15}$"
     },
-    findDocName: function(docId) {
-      console.info('findDocName: '+docId);
-    },
-    findDocName: function(docId) {
-      console.info('findDocName: '+docId);
-    },
     formatAge: function(millis) {
       console.info('formatAge: ' + millis);
       if (millis == "-1" || isNaN(millis)) return 'n/a';
@@ -253,8 +247,8 @@ var ractive = new BaseRactive({
       { "name": "currentContactExtensionSect", "url": "/partials/contact-extension.html"},
       { "name": "currentContactAccountSect", "url": "/partials/contact-current-account-sect.html"},
       { "name": "currentCompanyBackground", "url": "/partials/contact-company-sect.html"},
-      { "name": "currentDocumentListSect", "url": "/partials/contact-current-document-list-sect.html"},
-      { "name": "currentNoteListSect", "url": "/partials/contact-current-note-list-sect.html"},
+      { "name": "currentDocumentListSect", "url": "/webjars/supportservices/2.1.0/partials/current-document-list-sect.html"},
+      { "name": "currentNoteListSect", "url": "/webjars/supportservices/2.1.0/partials/current-note-list-sect.html"},
       { "name": "currentOrderListSect", "url" : "/partials/contact-current-order-list-sect.html"},
       { "name": "currentTaskListSect", "url": "/partials/task-list-sect.html"},
       { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
@@ -1071,28 +1065,6 @@ var ractive = new BaseRactive({
       var contact = Array.findBy('selfRef',contactId,ractive.get('contacts'))
       ractive.select( contact );
     }
-  },
-  toggleAllNotes: function(btn) {
-    console.info('toggleAllNotes');
-    $('#notesTable tr.unfavorite').slideToggle();
-    $(btn).toggleClass('glyphicon-star glyphicon-star-empty');
-  },
-  toggleFavorite: function(idx) {
-    console.info('toggleFavorite: '+idx);
-    ractive.set('current.notes.'+idx+'.favorite',!ractive.get('current.notes.'+idx+'.favorite'));
-    var n = ractive.get('current.notes.'+idx);
-    var url = ractive.uri(n)+'/favorite';
-    url = url.replace(ractive.entityName(n),ractive.get('tenant.id')+'/'+ractive.entityName(n));
-
-    $.ajax({
-      url: url,
-      type: 'POST',
-      data: { favorite: n.favorite },
-      success: completeHandler = function(data) {
-        console.log('response: '+ data);
-        ractive.showMessage('Note favorited');
-      }
-    });
   },
   toggleResults: function() {
     console.info('toggleResults');
