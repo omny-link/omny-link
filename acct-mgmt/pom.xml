@@ -91,6 +91,11 @@
       <version>${omny-link.version}</version>
     </dependency>
     <dependency>
+      <groupId>link.omny.support-services</groupId>
+      <artifactId>support-services</artifactId>
+      <version>${omny-link.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.knowprocess.bpm</groupId>
       <artifactId>work-mgmt</artifactId>
       <version>${work-mgmt.version}</version>

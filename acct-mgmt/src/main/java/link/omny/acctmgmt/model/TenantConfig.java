@@ -112,6 +112,9 @@ public class TenantConfig implements Serializable {
     @Transient
     private List<FeedbackField> feedbackFields;
 
+    @Transient
+    private List<TenantSequence> sequences;
+
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Transient
     private List<StockCategoryField> stockCategoryFields;

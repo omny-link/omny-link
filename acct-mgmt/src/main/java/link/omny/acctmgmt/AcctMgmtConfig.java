@@ -4,6 +4,7 @@ import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -12,12 +13,13 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import link.omny.acctmgmt.model.TenantConfig;
+import link.omny.supportservices.SupportServicesConfig;
 
 @Configuration
 @ComponentScan(basePackages = { "link.omny.acctmgmt" })
 @EntityScan({ "link.omny.acctmgmt.model" })
 @EnableJpaRepositories({ "link.omny.acctmgmt.repositories" })
-//@Import({ AuthConfig.class, BpmConfiguration.class})
+@Import({ SupportServicesConfig.class })
 public class AcctMgmtConfig extends RepositoryRestMvcConfiguration {
 
     @Override

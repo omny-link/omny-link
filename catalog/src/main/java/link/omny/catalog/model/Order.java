@@ -49,7 +49,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
 @Entity
 @Table(name = "OL_ORDER")
 @Data
@@ -71,6 +70,15 @@ public class Order implements OrderWithSubEntities, Serializable {
 //    @JsonFormat(shape= JsonFormat.Shape.NUMBER)
     @JsonView(OrderViews.Summary.class)
     private Long id;
+
+    /**
+     * An publicly visible identifier typically populated with a per-tenant
+     * unique and contiguous integer.
+     */
+    @Column(name = "ref")
+    @JsonProperty
+    @JsonView(OrderViews.Summary.class)
+    private Long ref;
 
     @JsonProperty
     @JsonView(OrderViews.Summary.class)

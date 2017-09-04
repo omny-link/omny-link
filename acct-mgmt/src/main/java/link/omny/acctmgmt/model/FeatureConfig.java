@@ -46,6 +46,7 @@ public class FeatureConfig {
     private boolean orders = false;
     private boolean orderDueDate = false;
     private boolean orderInvoiceRef = true;
+    private boolean orderName = false;
     private boolean orderItems = false;
     private boolean merge = false;
     private boolean parentOrg = false;
@@ -178,6 +179,9 @@ public class FeatureConfig {
             break;
         case "orderItems":
             setOrderItems(b);
+            break;
+        case "orderName":
+            setOrderName(b);
             break;
         case "parentOrg":
             setParentOrg(b);

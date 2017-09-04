@@ -304,6 +304,17 @@ var ractive = new BaseRactive({
     ractive.saveOrderItem();
     ractive.select(ractive.get('current'));
   },
+  assignSequence: function(seqName) {
+    console.info('assignSequence '+ractive.localId(ractive.get('current'))+'...');
+
+    $.ajax({
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/sequences/'+seqName,
+        type: 'GET',
+        success: completeHandler = function(data) {
+          ractive.set('current.ref',data.lastUsed);
+        }
+    });
+  },
   delete: function (order) {
     var orderId = order['id']==undefined ? ractive.localId(order.selfRef) : order.id;
     console.info('delete '+orderId+'...');
@@ -491,6 +502,10 @@ var ractive = new BaseRactive({
           case 201:
             var currentIdx = ractive.get('orders').push(ractive.get('current'))-1;
             ractive.set('currentIdx',currentIdx);
+            var seqName = ractive.get('tenant.strings.'+ractive.get('variant'));
+            if (Array.findBy('name',seqName,ractive.get('tenant.sequences'))!=undefined) {
+              ractive.assignSequence(seqName);
+            }
             break;
           case 204:
 //            ractive.splice('orders',ractive.get('currentIdx'),1,ractive.get('current'));
