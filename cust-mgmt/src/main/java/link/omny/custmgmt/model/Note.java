@@ -70,7 +70,12 @@ public class Note implements Serializable {
     @JsonProperty
     @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     @Column(name = "favorite")
-    private boolean favorite;
+    private boolean favorite = true;
+
+    @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
+    @Column(name = "confidential")
+    private boolean confidential = false;
 
     // This advises to avoid back reference in a composition relationship
     // http://stackoverflow.com/questions/25311978/posting-a-onetomany-sub-resource-association-in-spring-data-rest/25451662#25451662

@@ -265,8 +265,8 @@ var ractive = new BaseRactive({
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "orderListSect", "url": "/partials/order-list-sect.html"},
-      { "name": "currentDocumentListSect", "url": "/partials/contact-current-document-list-sect.html"},
-      { "name": "currentNoteListSect", "url": "/partials/contact-current-note-list-sect.html"},
+      { "name": "currentDocumentListSect", "url": "/webjars/supportservices/2.1.0/partials/current-document-list-sect.html"},
+      { "name": "currentNoteListSect", "url": "/webjars/supportservices/2.1.0/partials/current-note-list-sect.html"},
       { "name": "currentOrderSect", "url": "/partials/order-current-sect.html"},
       { "name": "currentOrderExtensionSect", "url": "/partials/order-extension.html"},
       { "name": "currentOrderItemListSect", "url": "/partials/order-item-list-sect.html"},
@@ -460,14 +460,14 @@ var ractive = new BaseRactive({
       console.debug('still loading, safe to ignore');
     } else if (document.getElementById('currentForm').checkValidity()) {
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
-//      if (id != undefined && tmp.stockItem != undefined) {
-//        tmp.stockItem = ractive.uri(Array.findBy('name',ractive.get('current.stockItem.name'),ractive.get('stockItems')));
-//      } else {
-//        delete tmp.stockItem;
-//        delete tmp.stockItemId;
-//      }
       if (tmp.stockItem!=undefined && tmp.stockItem.selfRef!=undefined && tmp.stockItem.id==undefined) tmp.stockItem.id = ractive.id(tmp.stockItem)
+      if (tmp.contact!=undefined) {
+        tmp.contactId = ractive.localId(tmp.contact);
+        ractive.set('current.contactId', ractive.localId(tmp.contact));
+      }
       delete tmp.contact;
+      delete tmp.documents;
+      delete tmp.notes;
       delete tmp.orderItems;
       // without time json will not reach endpoint
       if (tmp.date != null) tmp.date += 'T00:00:00';
@@ -747,16 +747,20 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
 //  } else if (JSON.stringify(newValue)==JSON.stringify(oldValue)) {
 //    console.error('Why are we notifying a change of identical objects?');
 //    return;
+  } else if (ractive.get('saveObserver') && keypath.indexOf('current.documents')!=-1) {
+    ractive.saveDoc();
+  } else if (ractive.get('saveObserver') && keypath.indexOf('current.notes')!=-1) {
+    ractive.saveNote();
+  } else if (ractive.get('saveObserver') && keypath.indexOf('current.orderItems')!=-1) {
+    ractive.saveOrderItem();
+  } else if (ractive.get('saveObserver') && keypath.indexOf('current.feedback')!=-1) {
+    ractive.saveFeedback();
   } else if (ractive.get('saveObserver') && keypath.indexOf('current.orderItems')==-1) {
 //    if (keypath=='current.contact') {
 //      console.warn('here we are again');
 //      newValue = Array.findBy('fullName',newValue.fullName,ractive.get('contacts'));
 //    }
     ractive.save();
-  } else if (ractive.get('saveObserver') && keypath.indexOf('current.orderItems')!=-1) {
-    ractive.saveOrderItem();
-  } else if (ractive.get('saveObserver') && keypath.indexOf('current.feedback')!=-1) {
-    ractive.saveFeedback();
   } else {
     console.warn('Skipped order save of '+keypath);
     //console.log('current prop change: '+newValue +','+oldValue+' '+keypath);

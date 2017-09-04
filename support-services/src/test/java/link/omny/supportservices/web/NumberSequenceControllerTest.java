@@ -1,4 +1,4 @@
-package link.omny.supportservices.services;
+package link.omny.supportservices.web;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -10,51 +10,52 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import link.omny.supportservices.Application;
-import link.omny.supportservices.model.NumberFountain;
-import link.omny.supportservices.repositories.NumberFountainRepository;
-import link.omny.supportservices.repositories.NumberFountainService;
+import link.omny.supportservices.model.NumberSequence;
+import link.omny.supportservices.repositories.NumberSequenceRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = { Application.class })
-public class NumberFountainServiceTest {
+public class NumberSequenceControllerTest {
 
-    private static final String ENTITY_NAME = "Contact";
+    private static final String SEQ_NAME = "Contact";
+
+    private static final String TENANT_ID = "acme";
 
     @Autowired
-    private NumberFountainRepository nfRepo;
+    private NumberSequenceRepository nfRepo;
 
     @Autowired
-    private NumberFountainService svc;
+    private NumberSequenceController svc;
 
     @Test
     public void testNumberFountain() {
         assertNotNull(svc);
-        NumberFountain next = svc.getNext(ENTITY_NAME);
+        NumberSequence next = svc.getNext(SEQ_NAME, TENANT_ID);
         assertNotNull(next);
-        assertEquals(ENTITY_NAME, next.getEntityName());
+        assertEquals(SEQ_NAME, next.getName());
         Long last = next.getLastUsed();
         assertNotNull(last);
-        next = svc.getNext(ENTITY_NAME);
+        next = svc.getNext(SEQ_NAME, TENANT_ID);
         assertNotNull(next);
-        assertEquals(ENTITY_NAME, next.getEntityName());
+        assertEquals(SEQ_NAME, next.getName());
         assertEquals(++last, next.getLastUsed());
     }
 
     @Test
     public void testNumberFountainFirstUse() {
         nfRepo.deleteAll();
-        NumberFountain next = svc.getNext(ENTITY_NAME);
+        NumberSequence next = svc.getNext(SEQ_NAME, TENANT_ID);
         assertNotNull(next);
-        assertEquals(ENTITY_NAME, next.getEntityName());
+        assertEquals(SEQ_NAME, next.getName());
         assertEquals(new Long(1l), next.getNext());
     }
 
     @Test
     public void testNumberFountainAfterDatabaseMeddling() {
-        nfRepo.save(new NumberFountain(ENTITY_NAME));
-        NumberFountain next = svc.getNext(ENTITY_NAME);
+        nfRepo.save(new NumberSequence(SEQ_NAME, TENANT_ID));
+        NumberSequence next = svc.getNext(SEQ_NAME, TENANT_ID);
         assertNotNull(next);
-        assertEquals(ENTITY_NAME, next.getEntityName());
+        assertEquals(SEQ_NAME, next.getName());
         assertNotNull(next.getNext());
     }
 }

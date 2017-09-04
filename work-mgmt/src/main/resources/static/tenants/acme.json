@@ -5,13 +5,16 @@
     "logoUrl": "/images/acme-logo.png",
     "iconUrl": "/images/icon/acme-icon-16x16.png"
   },
-  "show": {
+  "features": {
     "account":true, "activityAnalysis":true, "activityTracker":true,
     "budget":true, "catalog": false, "companyBackground":false, "declaredSource":true,
     "documents": true, "documentsOnOrder": true,
     "financials":true, "marketing":true, "merge":true,
     "notesOnOrder": true,
-    "orders":true, "orderItems":false, "supportBar": true
+    "orders":true, "orderItems":false,
+    "documentsOnStockItem": true, "documentsOnStockCategory": true,
+    "notesOnStockItem": true, "notesOnStockCategory": true,
+    "supportBar": true
   },
   "accountFields": [
   ],
@@ -34,10 +37,9 @@
     { "url": "stock-items.html", "classes": "glyphicon-barcode", "role": "power_user", "description": "View and manage stock items here", "title": "Stock Items" },
     { "url": "stock-categories.html", "classes": "glyphicon-barcode", "role": "power_user", "description": "View and manage stock categories here", "title": "Stock Categories" },
     { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },
-    { "url": "stacked-bar.html", "icon": "glyphicon-dashboard", "name": "Cohort Performance", "description": "Compare groups of contacts", "role": "super_admin" },
-    { "url": "admin/users.html", "icon": "omny-icon-user", "name": "User Management", "description": "Manage users", "role": "super_admin" },
-    { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status", "description": "Check various aspects of the tenant's configuration", "role": "admin" },
-    { "url": "api.html", "icon": "glyphicon-wrench", "name": "API Documentation", "role": "admin" }
+    { "url": "me.html", "icon": "omny-icon-user", "name": "My Profile", "description": "Manage your profile", "role": "user" },
+    { "url": "admin/users.html", "icon": "omny-icon-users", "name": "User Management", "description": "Manage users", "role": "super_admin" },
+    { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status", "description": "Check various aspects of the tenant's configuration", "role": "admin" }
   ],
   "partials": [
     { "name": "acmeContactExtension", "url": "/partials/contact-extension.html"},
@@ -73,7 +75,11 @@
     "inactiveStages":["cold","discovery","on hold","review"],
     "initialResponseThreshold":7
   },
+  "sequences": [
+    { "name": "Order", "ref": "Order", "description": "Sequence for orders" }
+  ],
   "strings": {
+    "order": "Booking"
   },
   "templates": [
     { "name": "ContactAlert", "ref": "ContactAlert" },

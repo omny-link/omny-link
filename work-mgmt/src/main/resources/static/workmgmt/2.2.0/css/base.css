@@ -1,5 +1,6 @@
 /* FONTS */
 @import url('//fonts.googleapis.com/css?family=Roboto:400italic,400,700');
+@import url('/knowprocess-icons/2.2.0/style.css');
 @font-face {
   font-family: 'barmenoregular';
   src: url('/webjars/barmeno/1.0.0/barmeno_regular-webfont.eot');
@@ -7,17 +8,6 @@
        url('/webjars/barmeno/1.0.0/barmeno_regular-webfont.woff') format('woff'),
        url('/webjars/barmeno/1.0.0/barmeno_regular-webfont.ttf') format('truetype'),
        url('/webjars/barmeno/1.0.0/barmeno_regular-webfont.svg#barmenoregular') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'knowprocess';
-  src:url('/knowprocess-icons/2.2.0/fonts/knowprocess.eot');
-  src:url('/knowprocess-icons/2.2.0/fonts/knowprocess.eot?#iefix') format('embedded-opentype'),
-    url('/knowprocess-icons/2.2.0/fonts/knowprocess.woff') format('woff'),
-    url('/knowprocess-icons/2.2.0/fonts/knowprocess.ttf') format('truetype'),
-    url('/knowprocess-icons/2.2.0/fonts/knowprocess.svg#knowprocess') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -394,6 +384,7 @@ tfoot th {
 .field-author, .field-favorite {
   width:3em;
 }
+.confidential,
 .unfavorite {
 	display:none;
 }
