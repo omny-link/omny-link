@@ -59,7 +59,7 @@ to be associated to a contact</text>
     </textAnnotation>
     <association associationDirection="None" id="_20" sourceRef="_19" targetRef="_5"/>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddOrderToContact" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddOrderToContact" name="Add order to contact" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="AddOrderToContact">
       <bpmndi:BPMNShape bpmnElement="start" id="Yaoqiang-start">
         <dc:Bounds height="32.0" width="32.0" x="62.77272727272734" y="262.3636363636364"/>

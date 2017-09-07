@@ -59,7 +59,7 @@
       <text>ADD STOCK ITEMS</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddStockItems" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddStockItems" name="Add stock items" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="AddStockItems">
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
         <dc:Bounds height="32.0" width="32.0" x="62.000000000000014" y="254.99999999999994"/>

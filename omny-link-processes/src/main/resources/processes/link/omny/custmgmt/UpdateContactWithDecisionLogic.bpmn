@@ -98,7 +98,7 @@
       <text>UPDATE CONTACT BY RUNNING DECISION LOGIC OVER IT</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-UpdateContactWithDecisionLogic" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-UpdateContactWithDecisionLogic" name="Update contact using decision logic" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="UpdateContactWithDecisionLogic">
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
         <dc:Bounds height="32.0" width="32.0" x="62.000000000000014" y="254.99999999999994"/>

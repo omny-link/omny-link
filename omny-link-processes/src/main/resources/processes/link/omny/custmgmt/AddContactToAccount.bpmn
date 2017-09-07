@@ -85,7 +85,7 @@
       <text>ADD CONTACT TO ACCOUNT</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddContactToAccount" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-AddContactToAccount" name="Add contact to account" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="AddContactToAccount">
       <bpmndi:BPMNShape bpmnElement="start" id="Yaoqiang-start">
         <dc:Bounds height="32.0" width="32.0" x="62.77272727272734" y="262.3636363636364"/>

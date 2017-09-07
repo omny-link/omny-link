@@ -41,7 +41,7 @@
       <text>OMNY LINK SAFETY NET</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="Catch all process" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="CatchAllProcess">
       <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
         <dc:Bounds height="32.0" width="32.0" x="85.65384615384616" y="248.13636363636363"/>
