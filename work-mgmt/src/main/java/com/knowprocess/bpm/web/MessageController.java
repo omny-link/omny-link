@@ -259,53 +259,15 @@ public class MessageController {
             String msgId, String bizDesc, String jsonBody,
             final Map<String, Object> vars, int retry) {
 
-        if (jsonBody != null && isEmptyJson(jsonBody))
-            throw new BadJsonMessageException(
-                    String.format(
-                            "The JSON requested is empty or otherwise badly formed: %1$s",
-                            jsonBody));
-        if (SecurityContextHolder.getContext().getAuthentication() == null
-                 || "anonymousUser".equals(((Principal) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getName())) {
-            LOGGER.debug("allow Anonymous is set to " + allowAnonymous);
-            if (Boolean.valueOf(allowAnonymous)) {
-                LOGGER.warn("No user associated with this message, this may result in errors if the process author expected a username.");
-            } else {
-                throw new ReportableException(
-                        "Please ensure you are logged in before sending messages");
-            }
-        }
+        addJsonToVars(msgId, vars, jsonBody);
+
 
         String bizKey = bizDesc == null ? msgId + " - "
                 + isoFormatter.format(new Date()) : bizDesc;
         try {
             vars.put("tenantId", tenantId);
-            String modifiedMsgId = getMessageVarName(msgId);
-            vars.put("messageName", modifiedMsgId);
+            addInitiatorToVars(tenantId, vars);
 
-            if (jsonBody != null) {
-                addJsonToVars(msgId, jsonBody, vars, modifiedMsgId);
-            }
-
-            try {
-                String username = "";
-                if (SecurityContextHolder.getContext()
-                        .getAuthentication().isAuthenticated()) {
-                    String tmp = ((Principal) SecurityContextHolder.getContext()
-                            .getAuthentication().getPrincipal()).getName();
-                    if (tmp.contains("@")) { // trust that this is an email addr
-                        username = tmp;
-                    }
-                } else if (activitiMultiTenantProperties.getServers()
-                        .containsKey(tenantId)) {
-                    username = activitiMultiTenantProperties.getServers()
-                            .get(tenantId).getMailServerDefaultFrom();
-                }
-                LOGGER.debug(" ... from " + username);
-                Authentication.setAuthenticatedUserId(username);
-                vars.put("initiator", username);
-            } catch (Exception e) {
-                LOGGER.warn("No initiator username available, attempting to continue");
-            }
             LOGGER.debug(String.format("vars: %1$s", vars));
             ProcessInstance instance = processEngine.getRuntimeService()
                     .startProcessInstanceByMessageAndTenantId(msgId, bizKey,
@@ -376,16 +338,69 @@ public class MessageController {
         }
     }
 
-    private void addJsonToVars(String msgId, String jsonBody,
-            final Map<String, Object> vars, String modifiedMsgId) {
-        if (messageRegistry.canDeserialise(modifiedMsgId, jsonBody)) {
-            vars.put(modifiedMsgId,
-                    messageRegistry.deserialiseMessage(msgId, jsonBody));
-        } else {
-            vars.put(modifiedMsgId, jsonManager.toObject(jsonBody));
+    private void addInitiatorToVars(final String tenantId,
+            final Map<String, Object> vars) {
+        try {
+            String username = "";
+            org.springframework.security.core.Authentication authentication = SecurityContextHolder
+                    .getContext().getAuthentication();
+            if (authentication.isAuthenticated()) {
+                if (authentication.getPrincipal() instanceof Principal) {
+                    String tmp = ((Principal) authentication.getPrincipal())
+                            .getName();
+                    if (tmp.contains("@")) { // trust that this is an email addr
+                        username = tmp;
+                    } else {
+                        LOGGER.warn("Username '{}' is not an email address, ignoring, this may result in errors if the process author expected a username.", tmp);
+                    }
+                } else if (authentication.getPrincipal() instanceof String) {
+                    username = (String) authentication.getPrincipal();
+                } else {
+                    LOGGER.warn(
+                            "Authenticated but principal of unknown type {}",
+                            authentication.getPrincipal().getClass().getName());
+                }
+            } else if (activitiMultiTenantProperties.getServers()
+                    .containsKey(tenantId)) {
+                username = activitiMultiTenantProperties.getServers()
+                        .get(tenantId).getMailServerDefaultFrom();
+            }
+            LOGGER.debug(" ... from " + username);
+            Authentication.setAuthenticatedUserId(username);
+            vars.put("initiator", username);
+        } catch (Exception e) {
+            LOGGER.debug("allow Anonymous is set to " + allowAnonymous);
+            if (Boolean.valueOf(allowAnonymous)) {
+                LOGGER.warn(
+                        "No user associated with this message, this may result in errors if the process author expected a username.");
+            } else {
+                throw new ReportableException(
+                        "Please ensure you are logged in before sending messages");
+            }
         }
-        // TODO deprecate query param?
-        vars.put("query", jsonBody);
+    }
+
+    private void addJsonToVars(final String msgId,
+            final Map<String, Object> vars, final String jsonBody) {
+        if (jsonBody != null && isEmptyJson(jsonBody))
+            throw new BadJsonMessageException(String.format(
+                    "The JSON requested is empty or otherwise badly formed: %1$s",
+                    jsonBody));
+        String modifiedMsgId = getMessageVarName(msgId);
+        vars.put("messageName", modifiedMsgId);
+
+        if (jsonBody == null) {
+            LOGGER.info("No JSON in body of message: {}", msgId);
+        } else {
+            if (messageRegistry.canDeserialise(modifiedMsgId, jsonBody)) {
+                vars.put(modifiedMsgId,
+                        messageRegistry.deserialiseMessage(msgId, jsonBody));
+            } else {
+                vars.put(modifiedMsgId, jsonManager.toObject(jsonBody));
+            }
+            // TODO deprecate query param?
+            vars.put("query", jsonBody);
+        }
     }
 
     private com.knowprocess.bpm.model.ProcessInstance startCatchAllProcess(
