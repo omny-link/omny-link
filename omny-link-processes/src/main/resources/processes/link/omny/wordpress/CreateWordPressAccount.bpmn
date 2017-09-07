@@ -54,7 +54,7 @@
       <text>CREATE WORDPRESS ACCOUNT</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="Create WordPress account" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="CreateWordPressAccount">
       <bpmndi:BPMNShape bpmnElement="start" id="Yaoqiang-start">
         <dc:Bounds height="32.0" width="32.0" x="62.0" y="182.36363636363637"/>

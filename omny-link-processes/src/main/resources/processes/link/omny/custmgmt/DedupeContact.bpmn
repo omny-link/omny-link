@@ -112,7 +112,7 @@ at the moment</text>
     </textAnnotation>
     <association associationDirection="None" id="_14" sourceRef="_10" targetRef="_4"/>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-DedupeContact" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-DedupeContact" name="De-dupe contact" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="DedupeContact">
       <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
         <dc:Bounds height="55.0" width="441.0" x="46.0" y="41.0"/>

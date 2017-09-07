@@ -80,7 +80,7 @@
       <text>REQUEST HOLIDAY</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-RequestHoliday" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-RequestHoliday" name="Request holiday" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="RequestHoliday">
       <bpmndi:BPMNShape bpmnElement="start" id="Yaoqiang-start">
         <dc:Bounds height="32.0" width="32.0" x="62.77272727272734" y="262.3636363636364"/>

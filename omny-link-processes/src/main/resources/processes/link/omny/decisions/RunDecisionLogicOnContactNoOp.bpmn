@@ -48,7 +48,7 @@ System.out.println('This process makes no updates to the contact, tenants may su
     </textAnnotation>
     <association associationDirection="None" id="_9" sourceRef="_4" targetRef="_6"/>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-RunDecisionLogicOnContact" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-RunDecisionLogicOnContact" name="Run decision logic on contact" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="RunDecisionLogicOnContact">
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
         <dc:Bounds height="32.0" width="32.0" x="62.000000000000014" y="254.99999999999994"/>

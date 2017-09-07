@@ -42,7 +42,7 @@
       <text>SELF-CERTIFY SICKNESS</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-SelfCertify" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-SelfCertify" name="Self-certify sickness" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="SelfCertify">
       <bpmndi:BPMNShape bpmnElement="start" id="Yaoqiang-start">
         <dc:Bounds height="32.0" width="32.0" x="62.77272727272734" y="203.1470588235294"/>

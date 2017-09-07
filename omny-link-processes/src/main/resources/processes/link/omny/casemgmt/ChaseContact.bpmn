@@ -127,7 +127,7 @@ Wait period increases exponentially</text>
     </textAnnotation>
     <association associationDirection="None" id="_6" sourceRef="_3" targetRef="_30"/>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-ChaseContact" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-ChaseContact" name="Chase contact" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="ChaseContact">
       <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4">
         <dc:Bounds height="28.0" width="282.0" x="78.0" y="47.0"/>

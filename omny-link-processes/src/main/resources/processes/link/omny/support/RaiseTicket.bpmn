@@ -174,7 +174,7 @@ at the moment</text>
     <association associationDirection="None" id="_14" sourceRef="_10" targetRef="_4"/>
   </process>
   <resource id="RS_1" name="omny_support"/>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-RaiseTicket" name="New Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-RaiseTicket" name="Raise ticket" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="RaiseTicket">
       <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
         <dc:Bounds height="31.0" width="238.0" x="26.0" y="41.0"/>
