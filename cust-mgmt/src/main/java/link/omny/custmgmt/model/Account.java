@@ -295,7 +295,7 @@ public class Account implements Serializable {
     private List<CustomAccountField> customFields;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "account_id", nullable = true, updatable = false)
+    @JoinColumn(name = "account_id")
     @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     private List<Note> notes;
 

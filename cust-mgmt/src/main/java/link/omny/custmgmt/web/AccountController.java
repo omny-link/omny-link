@@ -328,7 +328,7 @@ public class AccountController {
 
          HttpHeaders headers = new HttpHeaders();
          URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                 .path("/{id}/notes/{noteId}")
+                 .path("/{id}/documents/{docId}")
                  .buildAndExpand(tenantId, account.getId(), doc.getId())
                  .toUri();
          headers.setLocation(uri);
