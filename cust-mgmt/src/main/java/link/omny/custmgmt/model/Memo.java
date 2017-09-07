@@ -144,7 +144,8 @@ public class Memo implements Serializable {
     }
 
     public String getPlainContent() {
-        if (plainContent == null && richContent != null) {
+        if ((plainContent == null || plainContent.trim().length() == 0)
+                && richContent != null) {
             plainContent = Jsoup.parse(richContent).text();
         }
         return plainContent;
