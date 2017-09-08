@@ -8,6 +8,9 @@
 
     {{#current.selfRef}}
       <h2 class="edit-form">
+         {{#current.customFields.orgCode}}
+           <span contenteditable id="curOrgCode" on-focus="editField('#curOrgCode','current.customFields.orgCode')" on-blur="updateField('#curOrgCode','current.customFields.orgCode')">{{current.customFields.orgCode}}</span><span> - </span>
+         {{/}}
          <span contenteditable id="curName2" on-focus="editField('#curName2','current.Name')" on-blur="updateField('#curName2','current.name')">{{current.name}}</span>
 
          {{#if tenant.show.addressAccount && (current.name != undefined && current.name != '')}}
