@@ -239,6 +239,7 @@ var ractive = new BaseRactive({
               var searchTerm = search[idx].toLowerCase();
               var match = ( (obj.selfRef != undefined && obj.selfRef.indexOf(searchTerm)>=0)
                 || (obj.name != undefined && obj.name.toLowerCase().indexOf(searchTerm) >= 0)
+                || (obj.orgCode != undefined && obj.orgCode.toLowerCase().indexOf(searchTerm) >= 0)
                 || (obj.email != undefined && obj.email.toLowerCase().indexOf(searchTerm) >= 0)
                 || (obj.phone1 != undefined && obj.phone1.indexOf(searchTerm) >= 0)
                 || (obj.phone2 != undefined && obj.phone2.indexOf(searchTerm) >= 0)
