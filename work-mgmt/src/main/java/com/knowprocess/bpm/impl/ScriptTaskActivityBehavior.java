@@ -27,9 +27,22 @@ public class ScriptTaskActivityBehavior extends org.activiti.engine.impl.bpmn.be
         try {
             super.execute(execution);
         } catch (ActivitiException e) {
+            String msg = String.format(
+                    "ActivitiException executing script task '%1$s' (%2$s) in process %3$s (%4$s). Script error is: %5$s",
+                    execution.getCurrentActivityName(),
+                    execution.getCurrentActivityId(),
+                    execution.getProcessInstanceId(),
+                    execution.getProcessDefinitionId(),
+                    e.getCause() == null ? e.getMessage()
+                            : e.getCause().getMessage());
+            LOGGER.error(msg);
+            throw new ActivitiException(msg);
+        } catch (Throwable e) {
             String msg = String.format("Exception executing script task '%1$s' (%2$s) in process %3$s (%4$s). Script error is: %5$s",
-                    execution.getCurrentActivityName(), execution.getCurrentActivityId(),
-                    execution.getProcessInstanceId(), execution.getProcessDefinitionId(),
+                    execution.getCurrentActivityName(),
+                    execution.getCurrentActivityId(),
+                    execution.getProcessInstanceId(),
+                    execution.getProcessDefinitionId(),
                     e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
             LOGGER.error(msg);
             throw new ActivitiException(msg);
