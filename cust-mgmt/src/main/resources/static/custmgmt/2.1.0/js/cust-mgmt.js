@@ -968,7 +968,7 @@ var ractive = new BaseRactive({
           //ractive.fetchStockItems();
           ractive.fetchOrders(ractive.get('current'));
         }
-        ractive.fetchTasks(ractive.id(ractive.get('current')));
+        ractive.fetchTasks(ractive.localId(ractive.get('current')));
 
         ractive.initControls();
         ractive.initTags();
