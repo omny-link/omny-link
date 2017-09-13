@@ -1,6 +1,6 @@
 <section id="currentSect" style="display:none">
   <form class="inline-form form" id="currentForm">
-      <h2 class="form-inline">Edit Template
+     <h2 class="form-inline">Edit Template
       <a class="clickable glyphicon glyphicon-btn glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
       <span class="pull-right">
         <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
@@ -51,11 +51,14 @@
           <div class="clearfix"></div>
           <label class="col-md-offset-2">Characters used:</label>
           <span id="curChars" value="{{chars(current.shortContent)}}">{{chars(current.shortContent)}}</span>
-          <p class="col-md-offset-2 help-block">Consider embedding a URL to fuller information in these short form messages.</p>              
+          <p class="col-md-offset-2 help-block">Consider embedding a URL to fuller information in these short form messages.</p>
         </li>
       </ul>
     </div>
-
   </form>
+
+  {{#tenant.features.documentSigning}}
+    {{>currentMemoSignatorySect}}
+  {{/}}
 
 </section>

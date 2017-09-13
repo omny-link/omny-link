@@ -229,18 +229,6 @@
       <version>2.7.1</version>
     </dependency>
 
-    <!-- If you want PDF output -->
-    <dependency>
-      <groupId>com.itextpdf</groupId>
-      <artifactId>itextpdf</artifactId>
-      <version>5.5.10</version>
-    </dependency>
-    <dependency>
-      <groupId>com.itextpdf.tool</groupId>
-      <artifactId>xmlworker</artifactId>
-      <version>5.5.10</version>
-    </dependency>
-
     <!-- BPMN -> SVG -> PNG -->
     <dependency>
       <groupId>batik</groupId>
@@ -293,11 +281,6 @@
       <groupId>link.omny</groupId>
       <artifactId>fonts</artifactId>
       <version>${omny-link.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>bootstrap</artifactId>
-      <version>3.3.5</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>

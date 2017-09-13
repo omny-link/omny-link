@@ -371,8 +371,36 @@ tfoot th {
   line-height: 2.4em;
 }
 .col-truncate {
-	width: 200px;
+  overflow: scroll;
+  max-width: 200px;
   text-overflow: ellipsis;
+  width: 200px;
+}
+ul.field-json,
+ul.json {
+  list-style: none;
+  left: -40px;
+  max-height: 200px;
+  overflow-y: auto;
+  position: relative;
+}
+ul.field-json ul.field-json {
+  max-height: 10000px; /* avoid nesting scroll bars */
+}
+ul.field-json li label,
+ul.json li label {
+  width: 30%;
+}
+
+.field-json .table {
+  margin-bottom: 0px;
+}
+.field-scalar {
+  display: inline-block;
+  max-height: 100px !important;
+  max-width: 850px;
+  min-height: 60px;
+  overflow: overlay;
 }
 .date, .time {
   max-width: 170px;
@@ -1016,14 +1044,6 @@ ul.form,
 h4 a.glyphicon-remove {
   position: relative;
   top: -12px;
-}
-ul.json {
-	list-style: none;
-  position: relative;
-  left: -40px;
-}
-ul.json li label {
-	width: 30%;
 }
 .powered-by {
   display:none;

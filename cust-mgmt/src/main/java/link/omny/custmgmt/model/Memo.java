@@ -1,17 +1,20 @@
 package link.omny.custmgmt.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -47,7 +50,7 @@ public class Memo implements Serializable {
     @JsonProperty
     @JsonView({ MemoViews.Summary.class })
     private Long id;
-    
+
     @JsonProperty
     @JsonView({ MemoViews.Detailed.class })
     @Size(max = 50)
@@ -102,6 +105,11 @@ public class Memo implements Serializable {
     @Column(name = "status")
     private String status;
 
+    @JsonProperty
+    @JsonView({ MemoViews.Summary.class })
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "memo")
+    private List<MemoSignatory> signatories;
+
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "created", updatable = false)
@@ -151,6 +159,25 @@ public class Memo implements Serializable {
         return plainContent;
     }
 
+    public List<MemoSignatory> getSignatories() {
+        if (signatories == null) {
+            signatories = new ArrayList<MemoSignatory>();
+        }
+        return signatories;
+    }
+
+    public void setSignatories(List<MemoSignatory> signatories) {
+        getSignatories().clear();
+        getSignatories().addAll(signatories);
+    }
+
+    public void addAllSignatories(List<MemoSignatory> signatories2) {
+        for (MemoSignatory signatory : signatories2) {
+            signatory.setMemo(this);
+            getSignatories().add(signatory);
+        }
+    }
+
     @PrePersist
     public void preInsert() {
         if (created == null) {
@@ -173,6 +200,20 @@ public class Memo implements Serializable {
     public String toCsv() {
         return String.format("%1$d,%2$s,%3$s,%4$s,%5$s,%6$s,%7$s", id, name,
                 title, status, owner, richContent, plainContent);
+    }
+
+    public String formatSignatoriesForDocuSign() {
+        StringBuilder sb = new StringBuilder("{\"signers\":[");
+        for (int i = 0; i < getSignatories().size(); i++) {
+            MemoSignatory sig = getSignatories().get(i);
+            sb.append(sig.formatForDocuSign()
+                    .replaceAll("\"recipientId\": \"\"", "\"recipientId\": \""+(i+1)+"\""));
+            if ((i+1) < getSignatories().size()) {
+                sb.append(",");
+            }
+        }
+        sb.append("]}");
+        return sb.toString();
     }
 
 }

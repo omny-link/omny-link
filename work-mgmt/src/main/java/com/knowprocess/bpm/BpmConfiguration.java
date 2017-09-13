@@ -39,7 +39,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.knowprocess.bpm.api.ActivitiUserDetailsService;
 import com.knowprocess.bpm.impl.CustomActivityBehaviorFactory;
 import com.knowprocess.bpm.impl.JsonManager;
 import com.knowprocess.bpm.impl.TaskAllocationMapper;
@@ -47,6 +46,7 @@ import com.knowprocess.bpmn.BpmnRestHelper;
 
 @Configuration
 @ComponentScan(basePackages = { "com.knowprocess.bpm",
+        "com.knowprocess.services",
         "com.knowprocess.decisions", "link.omny.acctmgmt" })
 @EntityScan({ "com.knowprocess.bpm", "link.omny.acctmgmt.model" })
 @EnableJpaRepositories({ "com.knowprocess.decisions.repositories",
@@ -135,11 +135,6 @@ public class BpmConfiguration extends AbstractProcessEngineAutoConfiguration {
     @Bean
     public JsonManager jsonManager() {
         return new JsonManager();
-    }
-
-    @Bean
-    public ActivitiUserDetailsService activitiUserDetailsService() {
-        return new ActivitiUserDetailsService();
     }
 
     @Bean

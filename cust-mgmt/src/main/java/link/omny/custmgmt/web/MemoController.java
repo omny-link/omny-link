@@ -42,6 +42,7 @@ import link.omny.custmgmt.model.Memo;
 import link.omny.custmgmt.model.Note;
 import link.omny.custmgmt.model.views.MemoViews;
 import link.omny.custmgmt.repositories.MemoRepository;
+import link.omny.custmgmt.repositories.MemoSignatoryRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -61,6 +62,9 @@ public class MemoController extends BaseTenantAwareController {
 
     @Autowired
     private MemoRepository memoRepo;
+
+    @Autowired
+    private MemoSignatoryRepository memoSignatoryRepo;
 
     @Autowired
     private NoteRepository noteRepo;
@@ -243,14 +247,16 @@ public class MemoController extends BaseTenantAwareController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @Transactional
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long memoId,
             @RequestBody Memo updatedMemo) {
+        memoSignatoryRepo.deleteAllForMemo(updatedMemo.getId());
         Memo memo = memoRepo.findOne(memoId);
-
-        NullAwareBeanUtils.copyNonNullProperties(updatedMemo, memo, "id");
+        NullAwareBeanUtils.copyNonNullProperties(updatedMemo, memo, "id", "signatories");
+        memo.addAllSignatories(updatedMemo.getSignatories());
         memo.setTenantId(tenantId);
-        memoRepo.save(memo);
+        memo = memoRepo.save(memo);
     }
 
     /**

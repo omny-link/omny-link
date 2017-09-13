@@ -1,13 +1,10 @@
 package com.knowprocess.bpm.web;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Scanner;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +16,6 @@ import org.activiti.engine.history.HistoricProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -33,24 +29,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.tool.xml.Pipeline;
-import com.itextpdf.tool.xml.XMLWorker;
-import com.itextpdf.tool.xml.XMLWorkerHelper;
-import com.itextpdf.tool.xml.exceptions.CssResolverException;
-import com.itextpdf.tool.xml.html.Tags;
-import com.itextpdf.tool.xml.parser.XMLParser;
-import com.itextpdf.tool.xml.pipeline.css.CSSResolver;
-import com.itextpdf.tool.xml.pipeline.css.CssResolverPipeline;
-import com.itextpdf.tool.xml.pipeline.end.PdfWriterPipeline;
-import com.itextpdf.tool.xml.pipeline.html.HtmlPipeline;
-import com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext;
-import com.itextpdf.tool.xml.pipeline.html.LinkProvider;
 import com.knowprocess.bpm.impl.DateUtils;
 import com.knowprocess.bpm.impl.UriHelper;
 import com.knowprocess.bpm.model.ProcessInstance;
+import com.knowprocess.services.pdf.Html2PdfService;
 
 @RequestMapping("/{tenantId}/process-instances")
 @Controller
@@ -65,12 +47,8 @@ public class ProcessInstanceController {
     @Autowired
     public ProcessEngine processEngine;
 
-    @Value("${spring.data.rest.baseUri:https://api.omny.link}")
-    private String baseUrl;
-
-    private String bootstrapCss;
-
-    private String omnyCss;
+    @Autowired
+    protected Html2PdfService pdfHelper;
 
     @RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<ProcessInstance> listJson() {
@@ -132,98 +110,16 @@ public class ProcessInstanceController {
             HttpServletResponse response,
             @PathVariable("tenantId") String tenantId,
             @PathVariable("instanceId") String instanceId,
-            @PathVariable("varName") String varName) {
+            @PathVariable("varName") String varName) throws IOException {
         LOGGER.info("getInstanceVar");
         String var = getInstanceVar(instanceId, varName);
+        response.setContentType("application/pdf");
 
-        StringBuilder sb = new StringBuilder()
-                .append("<html><head>")
-                .append("</head><body>")
-                .append(var.replaceAll("<br>", "<br/>"))
-                .append("</body></html>");
+        pdfHelper.execute(var, response.getOutputStream());
 
-        try {
-            Document document = new Document();
-            response.setContentType("application/pdf");
-            PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
-            writer.setInitialLeading(12.5f);
-            document.open();
-
-            HtmlPipelineContext htmlContext = new HtmlPipelineContext(null);
-            htmlContext.setTagFactory(Tags.getHtmlTagProcessorFactory());
-//            htmlContext.setImageProvider(new AbstractImageProvider() {
-//                public String getImageRootPath() {
-//                    return "images/";
-//                }
-//            });
-
-            htmlContext.setLinkProvider(new LinkProvider() {
-                public String getLinkRoot() {
-                    return baseUrl;
-                }
-            });
-
-            CSSResolver cssResolver =
-                    XMLWorkerHelper.getInstance().getDefaultCssResolver(false);
-            try {
-                cssResolver.addCss(getBootstrapCss("/META-INF/resources/webjars/bootstrap/3.3.5/css/bootstrap.min.css"), true);
-                cssResolver.addCss(getOmnyCss("/static/css/omny-1.0.0.css"), true);
-                cssResolver.addCss("ol { list-style: decimal !important; } ul { list-style: disc !important; }", true);
-            } catch (CssResolverException e) {
-                LOGGER.warn("Cannot add CSS to PDF pipeline", e);
-            }
-            Pipeline<?> pipeline = new CssResolverPipeline(cssResolver,
-                    new HtmlPipeline(htmlContext,
-                            new PdfWriterPipeline(document, writer)));
-            XMLWorker worker = new XMLWorker(pipeline, true);
-
-            XMLParser p = new XMLParser(worker);
-            p.parse(new StringReader(sb.toString()));
-
-            document.close();
-
-            LOGGER.debug(String.format("PDF Created for var %1$s of process instance %2$s", varName, instanceId));
-        } catch (NoClassDefFoundError e) {
-            throw new IllegalStateException("PDF generation not currently enabled.");
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new IllegalStateException(e);
-        } catch (DocumentException e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new IllegalStateException("Probably a template problem.");
-        }
-    }
-
-    private String getBootstrapCss(String resource) {
-        if (bootstrapCss == null) {
-            bootstrapCss = getClasspathResource(resource);
-        }
-        return bootstrapCss;
-    }
-
-    private String getOmnyCss(String resource) {
-        if (omnyCss == null) {
-            omnyCss = getClasspathResource(resource);
-        }
-        return omnyCss;
-    }
-
-    @SuppressWarnings("resource")
-    private String getClasspathResource(String resource) {
-        InputStream is = null;
-        try {
-            is = getClass().getResourceAsStream(resource);
-            return new Scanner(is).useDelimiter("\\A").next();
-        } catch (Exception e) {
-            LOGGER.warn(String.format("Unable to read CSS from %1$s", resource));
-        } finally {
-            try {
-                is.close();
-            } catch (Exception e) {
-                ;
-            }
-        }
-        return "";
+        LOGGER.debug(String.format(
+                "PDF Created for var %1$s of process instance %2$s", varName,
+                instanceId));
     }
 
     @RequestMapping(value = "/findByVar/{varName}/{varValue}", method = RequestMethod.GET, headers = "Accept=application/json")
