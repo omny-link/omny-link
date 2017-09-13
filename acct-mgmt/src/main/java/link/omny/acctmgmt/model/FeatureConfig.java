@@ -43,6 +43,7 @@ public class FeatureConfig {
     private boolean documentsOnOrder = false;
     private boolean documentsOnStockItem = false;
     private boolean documentsOnStockCategory = false;
+    private boolean documentSigning = false;
     private boolean orders = false;
     private boolean orderDueDate = false;
     private boolean orderInvoiceRef = true;
@@ -134,6 +135,9 @@ public class FeatureConfig {
             break;
         case "documentsOnStockItem":
             setDocumentsOnStockItem(b);
+            break;
+        case "documentSigning":
+            setDocumentSigning(b);
             break;
         case "enquiryType":
             setEnquiryType(b);
