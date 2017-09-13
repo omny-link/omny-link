@@ -130,7 +130,8 @@ var ractive = new BaseRactive({
       { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "memoListSect", "url": "/partials/memo-list-sect.html"},
-      { "name": "currentMemoSect", "url": "/partials/memo-current-sect.html"}
+      { "name": "currentMemoSect", "url": "/partials/memo-current-sect.html"},
+      { "name": "currentMemoSignatorySect", "url": "/partials/memo-current-signatory-sect.html"}
     ],
     title: "Template Library"
   },
@@ -238,6 +239,7 @@ var ractive = new BaseRactive({
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
         ractive.set('searchMatched',$('#memosTable tbody tr:visible').length);
+        ractive.showSearchMatched();
         ractive.set('saveObserver', true);
       }
     });
@@ -325,6 +327,8 @@ var ractive = new BaseRactive({
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       tmp.tenantId = ractive.get('tenant.id');
       tmp.richContent = CKEDITOR.instances.curRichContent.getData();
+      if (tmp.signatories[0] != undefined) delete tmp.signatories[0].signHereTabs;
+      if (tmp.signatories[1] != undefined) delete tmp.signatories[1].signHereTabs;
       var id = ractive.uri(tmp);
       $.ajax({
         url: id === undefined
