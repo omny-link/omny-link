@@ -518,7 +518,7 @@ var BaseRactive = Ractive.extend({
       ractive.submitCustomAction();
     } else {
       // ... or display form, override submit handler with $('#submitCustomActionForm').off('click').on('click',function)
-      $('#submitCustomActionForm').on('click', ractive.submitCustomAction);
+      $('#submitCustomActionForm').off().on('click', ractive.submitCustomAction);
       $('#customActionModalSect').modal('show');
     }
   },

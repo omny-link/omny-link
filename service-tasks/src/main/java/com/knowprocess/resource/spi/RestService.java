@@ -76,15 +76,14 @@ public abstract class RestService extends BaseUserAwareTask implements
         this.headers = headers;
     }
 
-    // public String getOutputVar() {
-    // return outputVar;
-    // }
-
-    /** @deprecated Use #setResponseVar */
-    public void setOutputVar(Expression outputVar) {
+    public void setOutputVariable(Expression outputVar) {
         this.responseVar = outputVar;
     }
 
+    /**
+     * @deprecated Use {@link #setOutputVariable(Expression)} to match Activiti
+     *             convention
+     */
     public void setResponseVar(Expression responseVar) {
         this.responseVar = responseVar;
     }
@@ -98,12 +97,13 @@ public abstract class RestService extends BaseUserAwareTask implements
                 .createExpression(variable);
     }
 
-    protected String getStringFromExpression(Expression expression,
+    protected Object evalExpression(Expression expression,
             DelegateExecution execution) {
         if (expression != null) {
             Object value = expression.getValue(execution);
             if (value != null) {
-                return value.toString();
+                LOGGER.warn("attempt to get string from {}", value);
+                return value;
             }
         }
         return null;
@@ -126,7 +126,7 @@ public abstract class RestService extends BaseUserAwareTask implements
     protected String evalExpr(DelegateExecution execution, String expr) {
         // TODO This is a bit of a hack
         if (expr != null && expr.contains("${")) {
-            expr = getStringFromExpression(getExpression(expr), execution);
+            expr = (String) evalExpression(getExpression(expr), execution);
             LOGGER.debug("  : " + expr);
         }
         return expr;
@@ -161,7 +161,7 @@ public abstract class RestService extends BaseUserAwareTask implements
     }
 
     protected void setAuthorization(String usr, String pwd, HttpURLConnection connection) {
-        if (usr != null) {
+        if (usr != null && pwd != null) {
             connection.setRequestProperty("Authorization",
                     UrlResource.getBasicAuthorizationHeader(usr, pwd));
         }
@@ -200,6 +200,9 @@ public abstract class RestService extends BaseUserAwareTask implements
         return response.substring(start+1, response.indexOf(',', start)-1);
     }
 
+    /**
+     * @deprecated Use {@link #setHeaders(HttpURLConnection, Map)}
+     */
     protected void setHeaders(HttpURLConnection connection, String headers) {
         connection.setRequestProperty("User-Agent", RestService.USER_AGENT);
 
@@ -209,12 +212,26 @@ public abstract class RestService extends BaseUserAwareTask implements
         }
     }
 
-    protected Map<String, String> getRequestHeaders(DelegateExecution execution) {
-        if (headers == null) {
-            return new HashMap<String, String>();
-        } else {
-            return getRequestHeaders((String) headers.getValue(execution));
+    protected void setHeaders(HttpURLConnection connection,
+            Map<String, String> requestHeaders) {
+        for (Entry<String, String> h : requestHeaders.entrySet()) {
+            connection.setRequestProperty(h.getKey(), h.getValue());
         }
+        if (!requestHeaders.containsKey("User-Agent")) {
+            connection.setRequestProperty("User-Agent", RestService.USER_AGENT);
+        }
+    }
+
+    protected Map<String, String> getRequestHeaders(DelegateExecution execution,
+            String usr, String headerString) {
+        Map<String, String> map = getRequestHeaders(headerString);
+        for (Entry<String, String> entry : map.entrySet()) {
+            if (entry.getValue().startsWith("userInfo")) {
+                entry.setValue(getUserInfoHelper().lookup(execution, usr,
+                        entry.getValue()));
+            }
+        }
+        return map;
     }
 
     protected String[] getResponseHeadersSought(DelegateExecution execution) {
@@ -242,7 +259,9 @@ public abstract class RestService extends BaseUserAwareTask implements
         } else if (jwtLoginResource == null) {
             ur = new UrlResource(usr, getPassword(execution, usr));
         } else {
-            String jwtLoginUrl = evalExpr(execution, lookup(execution, usr, jwtLoginResource));;
+            String jwtLoginUrl = evalExpr(execution,
+                    lookup(execution, usr, jwtLoginResource));
+            ;
             ur = new UrlResource(new JwtUserPrincipal(usr,getPassword(execution, usr),jwtLoginUrl));
         }
         return ur;
@@ -284,9 +303,23 @@ public abstract class RestService extends BaseUserAwareTask implements
         return execute(method, resource, headers, payload, responseHeadersSought, null, principal);
     }
 
+    /**
+     * @deprecated Use execute(String method, String resource, Map<String,
+     *             String> requestHeaders, Object payload, String[]
+     *             responseHeadersSought, String responseBodyKey, Principal
+     *             principal)
+     */
     protected Map<String, Object> execute(String method, String resource, String headers,
             Object payload, String[] responseHeadersSought, String responseBodyKey, Principal principal)
             throws IOException {
+        return execute(method, resource, getRequestHeaders(headers), payload,
+                responseHeadersSought, null, principal);
+    }
+
+    protected Map<String, Object> execute(String method, String resource,
+            Map<String, String> requestHeaders, Object payload,
+            String[] responseHeadersSought, String responseBodyKey,
+            Principal principal) throws IOException {
         URL url;
         HttpURLConnection connection = null;
         try {
@@ -294,7 +327,7 @@ public abstract class RestService extends BaseUserAwareTask implements
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(method);
 
-            setHeaders(connection, headers);
+            setHeaders(connection, requestHeaders);
             setAuthorization(principal, connection);
 
             connection.setUseCaches(false);
@@ -309,7 +342,7 @@ public abstract class RestService extends BaseUserAwareTask implements
                 // try again after login
                 threadLocalRetry.set(1);
                 login((JwtUserPrincipal) principal);
-                return execute( method, resource,  headers,
+                return execute(method, resource, requestHeaders,
                         payload, responseHeadersSought, responseBodyKey, principal);
             } else if (code >= HttpURLConnection.HTTP_BAD_REQUEST) {
                 unsetAuthorization(principal, connection);

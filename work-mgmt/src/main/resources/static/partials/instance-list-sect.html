@@ -59,7 +59,7 @@
 	                    <tr>
 	                      <th></th>
 	                      <th>Type</th>
-	                      <th class="col-truncate">Event</th>
+	                      <th>Event</th>
 	                      <th>Started</th>
 	                      <th>Ended</th>
 	                      <th>Duration</th>
@@ -91,7 +91,7 @@
 	                  <thead>
 	                    <tr>
 	                      <th></th>
-	                      <th class="col-truncate">Name</th>
+	                      <th>Name</th>
 	                      <th>Value</th>
 	                    </tr>
 	                  </thead>
@@ -100,13 +100,15 @@
 	                      <tr data-href="{{_links.self.href}}">
 	                        <td>{{j+1}}</td>
 	                        <th>{{ processVariableNames[j] }}</th>
-	                        <td>
-	                          {{# typeof processVariables[processVariableNames[j]] == 'object' }}
+                            {{# typeof processVariables[processVariableNames[j]] == 'object' }}
+                              <td class="field-json">
 	                            {{{ formatJson(JSON.stringify(processVariables[processVariableNames[j]])) }}}
-	                          {{else}}
-	                            {{{ processVariables[processVariableNames[j]] }}}
-	                          {{/}}
-	                        </td>
+                              </td>
+                            {{else}}
+                              <td class="field-scalar">
+                                {{{ processVariables[processVariableNames[j]] }}}
+                              </td>
+                            {{/}}
 	                      </tr>
 	                    {{/each}}
 	                  </tbody>

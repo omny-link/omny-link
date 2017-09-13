@@ -322,7 +322,9 @@ public class Fetcher extends RestService implements JavaDelegate {
                         .getValue(execution);
                 LOGGER.debug("sel: " + sel);
                 String content = fetchToString(resource,
-                        getRequestHeaders(execution), sel);
+                        getRequestHeaders(execution, getUsername(execution),
+                                (String) headers.getValue(execution)),
+                        sel);
                 if (LOGGER.isDebugEnabled() && content != null) {
                     LOGGER.debug("Response starts: "
                             + content.substring(0,

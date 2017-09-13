@@ -410,6 +410,9 @@
   <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.deployment.DeploymentService']|serviceTask[@activiti:class='com.knowprocess.deployment.DeploymentService']">
     <xsl:copy-of select="."/>
   </xsl:template>
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.services.encode.Base64EncoderTask']|serviceTask[@activiti:class='com.knowprocess.services.encode.Base64EncoderTask']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
   <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.el.TemplateTask']|serviceTask[@activiti:class='com.knowprocess.el.TemplateTask']">
     <xsl:copy-of select="."/>
   </xsl:template>
@@ -419,8 +422,8 @@
   <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.logging.LoggingService']|serviceTask[@activiti:class='com.knowprocess.logging.LoggingService']">
     <xsl:copy-of select="."/>
   </xsl:template>
-     <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.mk.EstimateFare']|serviceTask[@activiti:class='com.knowprocess.mk.EstimateFare']">
-    <xsl:copy-of select="."/>
+    <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.mk.EstimateFare']|serviceTask[@activiti:class='com.knowprocess.mk.EstimateFare']">
+  <xsl:copy-of select="."/>
   </xsl:template>
   <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.resource.spi.RestDelete']|serviceTask[@activiti:class='com.knowprocess.resource.spi.RestDelete']">
     <xsl:copy-of select="."/>
@@ -437,11 +440,15 @@
   <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.resource.spi.RestPut']|serviceTask[@activiti:class='com.knowprocess.resource.spi.RestPut']">
     <xsl:copy-of select="."/>
   </xsl:template>
-
   <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.identity.IdentityTask']|serviceTask[@activiti:class='com.knowprocess.identity.IdentityTask']">
     <xsl:copy-of select="."/>
   </xsl:template>
-
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.services.encode.Base64EncoderTask']|serviceTask[@activiti:class='com.knowprocess.services.encode.Base64EncoderTask']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.services.pdf.Html2PdfService']|serviceTask[@activiti:class='com.knowprocess.services.pdf.Html2PdfService']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
   <xsl:template match="semantic:serviceTask[@activiti:class='com.knowprocess.xslt.TransformTask']|serviceTask[@activiti:class='com.knowprocess.xslt.TransformTask']">
     <xsl:copy-of select="."/>
   </xsl:template>
@@ -450,6 +457,9 @@
     <xsl:copy-of select="."/>
   </xsl:template>
 
+  <xsl:template match="semantic:serviceTask[@activiti:type='shell']|serviceTask[@activiti:type='shell']">
+    <xsl:copy-of select="."/>
+  </xsl:template>
   <!--
   <xsl:template match="semantic:sequenceFlow|sequenceFlow">
     <xsl:variable name="id" select="@id"/>

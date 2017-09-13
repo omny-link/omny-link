@@ -19,8 +19,12 @@ public class UserInfoHelper {
 
     public String lookup(DelegateExecution execution, @Nonnull String usr,
             @Nonnull Expression expr) {
+        return lookup(execution, usr, (String) expr.getValue(execution));
+    }
 
-        String s = (String) expr.getValue(execution);
+    public String lookup(DelegateExecution execution, @Nonnull String usr,
+            @Nonnull String s) {
+
         try {
             if (s != null && s.startsWith("userInfo('")) {
                 String key = s.substring("userInfo(".length(), s.indexOf(')'));
@@ -41,7 +45,7 @@ public class UserInfoHelper {
         } catch (ActivitiException e) {
             String msg = String
                     .format("Problem whilst looking up '%1$s' for '%2$s', check with your administrator.",
-                            expr, usr);
+                            s, usr);
             LOGGER.error(msg + " " + e.getClass().getName() + ":"
                     + e.getMessage());
             throw new UserInfoNotFoundException(msg);

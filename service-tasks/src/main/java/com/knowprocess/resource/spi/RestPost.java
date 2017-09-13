@@ -31,7 +31,8 @@ public class RestPost extends RestService implements JavaDelegate {
             principal = getPrincipal(execution);
             resource = evalExpr(execution,
                     lookup(execution, principal.getName(), globalResource));
-            Map<String, String> requestHeaders = getRequestHeaders(execution);
+            Map<String, String> requestHeaders = getRequestHeaders(execution,
+                    getUsername(execution), (String) headers.getValue(execution));
             String[] responseHeadersSought = getResponseHeadersSought(execution);
             String contentType = requestHeaders.get("Content-Type");
             Map<String, Object> responses;
@@ -41,10 +42,13 @@ public class RestPost extends RestService implements JavaDelegate {
                         resource, requestHeaders, responseHeadersSought,
                         getFormFields(execution, (String) data.getExpressionText()));
             } else {
+                String resourceBodyKey = (String) (responseVar == null
+                        ? "resource"
+                        : responseVar.getValue(execution));
                 responses = super.execute(
-                        "POST", resource, (String) headers.getValue(execution),
-                        getStringFromExpression(data, execution),
-                        responseHeadersSought, principal);
+                        "POST", resource, requestHeaders,
+                        evalExpression(data, execution),
+                        responseHeadersSought, resourceBodyKey, principal);
             }
 
             for (Entry<String, Object> response : responses.entrySet()) {
@@ -141,7 +145,7 @@ public class RestPost extends RestService implements JavaDelegate {
         Map<String, String> data = new HashMap<String, String>();
         for (String field : ff) {
             LOGGER.debug(String.format("Field expression: %1$s", field));
-            String tmp = getStringFromExpression(getExpression(field),
+            String tmp = (String) evalExpression(getExpression(field),
                     execution);
             LOGGER.debug(String.format("Field: %1$s", tmp));
             String name = tmp.substring(0, tmp.indexOf('='));

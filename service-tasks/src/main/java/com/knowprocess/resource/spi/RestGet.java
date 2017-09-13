@@ -22,18 +22,18 @@ public class RestGet extends RestService implements JavaDelegate {
                 : responseVar.getValue(execution));
         try {
             principal = getPrincipal(execution);
-                resource = principal == null
-                        ? evalExpr(execution, globalResource.getExpressionText())
-                        : evalExpr(execution, lookup(execution, principal.getName(), globalResource));
-
-            String headerStr = headers == null
-                    ? "" : (String) headers.getValue(execution);
+            resource = principal == null
+                    ? evalExpr(execution, globalResource.getExpressionText())
+                    : evalExpr(execution, lookup(execution, principal.getName(),
+                            globalResource));
 
             LOGGER.warn(String.format("Seeking %1$s", resourceBodyKey));
             Map<String, Object> responses = super.execute(
-                    "GET", resource, headerStr,
-                    getStringFromExpression(data, execution),
-                    responsesSought, resourceBodyKey, getPrincipal(execution));
+                    "GET", resource,
+                    getRequestHeaders(execution, getUsername(execution),
+                            (String) headers.getValue(execution)),
+                    evalExpression(data, execution),
+                    responsesSought, resourceBodyKey, principal);
 
             for (Entry<String, Object> response : responses.entrySet()) {
                 LOGGER.debug(String.format("Setting %1$s to %2$s",
