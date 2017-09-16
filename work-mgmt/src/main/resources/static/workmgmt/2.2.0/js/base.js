@@ -191,8 +191,13 @@ var BaseRactive = Ractive.extend({
       stockItemIds.push(id.substring(id.lastIndexOf('/') + 1));
     } else {
       for (var idx = 0 ; idx < order.orderItems.length ; idx++) {
-        stockItemIds
-            .push(order.orderItems[idx].customFields['stockItemId']);
+        if (order.orderItems[idx]['stockItem']!=undefined) {
+          stockItemIds.push(order.orderItems[idx].stockItem.id);
+        } else if (order.orderItems[idx].customFields['stockItemId']!=undefined) {
+          stockItemIds.push(order.orderItems[idx].customFields['stockItemId']);
+        } else {
+          console.warn('cannot find stock item for order item '+idx);
+        }
       }
     }
     var stockItemNames = [];
