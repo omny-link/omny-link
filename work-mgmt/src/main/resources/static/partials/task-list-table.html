@@ -3,7 +3,7 @@
     <tr>
       <th></th>
       <th on-click="sort:businessKey">From / Regarding<span class="sortable {{ sorted('businessKey') }} glyphicon"></th>
-      <th class="col-truncate" on-click="sort:name">Task<span class="sortable {{ sorted('name') }} glyphicon"></th>
+      <th on-click="sort:name">Task<span class="sortable {{ sorted('name') }} glyphicon"></th>
       <th on-click="sort:createTime">Created<span class="sortable {{ sorted('createTime') }} glyphicon"></th>
       <th on-click="@this.sort(taskLocalVariables['deferUntil'])">Deferred Until<span class="sortable {{ sorted('taskLocalVariables[\"deferUntil\"]') }} glyphicon"></th>
       <th on-click="sort:dueDate">Due<span class="sortable {{ sorted('dueDate') }} glyphicon"></th>
@@ -18,7 +18,7 @@
     <tr class="{{renderPriority(this)}}" data-href="{{_links.self.href}}">
       <td on-click="edit(this)">{{i+1}}</td>
       <td on-click="edit(this)">{{businessKey}}</td>
-      <td on-click="edit(this)">{{name == null ? taskDefinitionKey.toLabel() : name}}</td>
+      <td class="col-truncate" on-click="edit(this)">{{name == null ? taskDefinitionKey.toLabel() : name}}</td>
       <td on-click="edit(this)">{{formatDate(createTime)}}</td>
       <td on-click="edit(this)">{{formatDate(taskLocalVariables['deferUntil'])}}</td>
       <td on-click="edit(this)">{{formatDate(dueDate)}}</td>

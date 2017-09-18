@@ -370,11 +370,16 @@ tfoot th {
 .tenants.table td.col-actions {
   line-height: 2.4em;
 }
-.col-truncate {
-  overflow: scroll;
+.col-scroll {
   max-width: 200px;
-  text-overflow: ellipsis;
+  overflow: scroll;
   width: 200px;
+}
+.col-truncate {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 ul.field-json,
 ul.json {
