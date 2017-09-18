@@ -426,11 +426,11 @@ var ractive = new BaseRactive({
       if (typeof obj[d] == 'object' && obj[d]['valueType'] != undefined && (obj[d]['string'] == undefined)) { // empty javax.json.JsonObject
         console.info('Supressing empty value '+d);
       } else if (typeof obj[d] == 'object' && obj[d]['valueType'] != undefined) { // populated javax.json.JsonObject
-        html += '<li><label style="text-align:right;padding-right:10px">'+d.toLabel()+':</label><span class="col-truncate">'+obj[d]['string']+'</span>';
+        html += '<li><label style="text-align:right;padding-right:10px">'+d.toLabel()+':</label><span class="col-scroll">'+obj[d]['string']+'</span>';
       } else if (typeof obj[d] == 'object') { // child object
         html += '<table class="table table-striped"><tr><th>' + d.toLabel() +'</th><td>'+ ractive.json2Html(obj[d])+'</td></tr></table>';
       } else {
-        html += '<label>'+d.toLabel()+':</label><span class="col-truncate">'+obj[d]+'</span>';
+        html += '<label>'+d.toLabel()+':</label><span class="col-scroll">'+obj[d]+'</span>';
       }
     });
     return html;
