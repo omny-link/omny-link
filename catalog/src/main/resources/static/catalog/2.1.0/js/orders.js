@@ -130,9 +130,10 @@ var ractive = new BaseRactive({
     formatUniqOrderItemField: function(order,fieldName) {
       if (order == undefined || fieldName == undefined) return '';
       var val='';
-      for (idx in order.orderItems) {
-        if (order.orderItems[idx].customFields[fieldName]==undefined) continue;
-        var tmp = order.orderItems[idx].customFields[fieldName];
+      var items = order.orderItems.slice(); // avoid recursion by cloning
+      for (var idx = 0 ; idx < items.length ; idx++) {
+        if (items[idx].customFields[fieldName]==undefined) continue;
+        var tmp = items[idx].customFields[fieldName];
         if (tmp != undefined && val.indexOf(tmp)==-1) {
           if (val.length > 0 && tmp!='-' && tmp!='n/a') val += ',';
           if (tmp!='-' && tmp!='n/a') val += tmp;
