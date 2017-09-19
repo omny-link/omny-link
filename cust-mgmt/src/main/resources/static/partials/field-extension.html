@@ -1,9 +1,9 @@
 <li class="form-group">
   <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
   {{#if current.orderItems && current.orderItems[0].customFields[name] && ..aggregation!=undefined}}
-    {{#if ..aggregation=='sum'}}1
+    {{#if ..aggregation=='sum'}}
       <span>{{formatSumOrderItemField(current,name)}}</span>
-    {{elseif ..aggregation=='uniq'}}2
+    {{elseif ..aggregation=='uniq'}}
       <span>{{formatUniqOrderItemField(current,name)}}</span>
       {{else}}3
     {{/if}}
