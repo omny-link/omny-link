@@ -2,6 +2,7 @@ package link.omny.custmgmt.internal;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -9,7 +10,6 @@ import java.util.Scanner;
 
 import javax.validation.constraints.NotNull;
 
-import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
@@ -17,49 +17,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import lombok.NoArgsConstructor;
+
 @Component
+@NoArgsConstructor
 public class ContactAvatarService {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ContactAvatarService.class);
-    
+
     private PNGTranscoder t = new PNGTranscoder();
 
     private String template;
 
     private File outputDir;
 
-    public ContactAvatarService() {
-        // Jasper Reports baulks if we include Xerces and Batik if we don't
-        // From
-        // http://mail-archives.apache.org/mod_mbox/xmlgraphics-batik-users/200501.mbox/%3C3AE413A5D1F1D44188D9D2810E67186FD41206@MOEEXC02.europe.bmw.corp%3E
-        t.addTranscodingHint(PNGTranscoder.KEY_XML_PARSER_CLASSNAME,
-                "com.sun.org.apache.xerces.internal.parsers.SAXParser");
-        t.addTranscodingHint(PNGTranscoder.KEY_XML_PARSER_VALIDATING,
-                new Boolean(false));
-        t.addTranscodingHint(PNGTranscoder.KEY_DOM_IMPLEMENTATION,
-                SVGDOMImplementation.getDOMImplementation());
-    }
-
     public ContactAvatarService(@NotNull String outputDir) {
-        this();
         this.outputDir = new File(outputDir);
         this.outputDir.mkdirs();
     }
 
+    @SuppressWarnings("resource")
     protected String getTemplate() {
         if (template == null) {
-            InputStream is = null;
-            try {
-                is = getClass().getResourceAsStream("/initials.svg");
-
+            try (InputStream is = getClass().getResourceAsStream("/initials.svg")) {
                 template = new Scanner(is).useDelimiter("\\A").next();
-            } finally {
-                try {
-                    is.close();
-                } catch (Exception e) {
-                    ;
-                }
+            } catch (IOException e) {
+                ;
             }
         }
         return template;
@@ -91,7 +75,7 @@ public class ContactAvatarService {
         } catch (Exception e) {
             LOGGER.error(String.format("Unable to generate gravatar for %1$s", initials));
             try {
-                create("??", os);
+                writeErrorAvatar(os);
             } catch (Exception e1) {
                 LOGGER.error("Unable to create default avatar", e);
             }
@@ -100,6 +84,27 @@ public class ContactAvatarService {
                 os.close();
             } catch (Exception e) {
             }
+        }
+    }
+
+    public void writeUnknownAvatar(OutputStream oos) {
+        writeStockAvatar("unknown", oos);
+    }
+
+    public void writeErrorAvatar(OutputStream oos) {
+        writeStockAvatar("error", oos);
+    }
+
+    private void writeStockAvatar(String avatarName, OutputStream oos) {
+        try (InputStream is = getClass().getResourceAsStream("/static/images/avatar-"+avatarName+".jpg")) {
+            byte[] buf = new byte[8192];
+            int c = 0;
+            while ((c = is.read(buf, 0, buf.length)) > 0) {
+                oos.write(buf, 0, c);
+                oos.flush();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Unable to create error avatar", e);
         }
     }
 }
