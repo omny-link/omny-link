@@ -50,8 +50,7 @@ public class GravatarController {
                 LOGGER.warn(String.format(
                         "Unable to find contact for email hash %1$s, displaying N/A",
                         emailHash));
-                avatarSvc.create("N/A",
-                        response.getOutputStream());
+                avatarSvc.writeUnknownAvatar(response.getOutputStream());
             } else {
                 avatarSvc.create(contacts.get(0).initials(),
                         response.getOutputStream());
