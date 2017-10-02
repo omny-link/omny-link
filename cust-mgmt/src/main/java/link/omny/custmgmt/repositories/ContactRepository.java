@@ -79,7 +79,6 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
             @Param("accountName") String accountName);
 
     @Query("SELECT c FROM Contact c WHERE c.email = :email AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId")
-    @EntityGraph("contactWithAccount")
     List<Contact> findByEmail(@Param("email") String email,
             @Param("tenantId") String tenantId);
 

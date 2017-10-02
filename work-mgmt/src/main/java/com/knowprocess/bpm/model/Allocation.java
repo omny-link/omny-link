@@ -1,5 +1,8 @@
 package com.knowprocess.bpm.model;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class Allocation {
     public Object type;
     public Object groupId;

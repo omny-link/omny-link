@@ -327,8 +327,10 @@ var ractive = new BaseRactive({
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       tmp.tenantId = ractive.get('tenant.id');
       tmp.richContent = CKEDITOR.instances.curRichContent.getData();
-      if (tmp.signatories[0] != undefined) delete tmp.signatories[0].signHereTabs;
-      if (tmp.signatories[1] != undefined) delete tmp.signatories[1].signHereTabs;
+      if (tmp['signatories'] != undefined) {
+        if (tmp.signatories[0] != undefined) delete tmp.signatories[0].signHereTabs;
+        if (tmp.signatories[1] != undefined) delete tmp.signatories[1].signHereTabs;
+      }
       var id = ractive.uri(tmp);
       $.ajax({
         url: id === undefined

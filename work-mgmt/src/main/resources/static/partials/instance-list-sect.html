@@ -1,4 +1,25 @@
 <section id="currentInstanceListSect">
+  {{#active=='audit.html'}}
+    <h2>
+       {{#current.instances.0.businessKey==undefined || current.instances.0.businessKey==''}}
+         Instance {{current.instances.0.id}} of {{current.instances.0.processDefinitionId}}
+       {{else}}
+         {{current.instances.0.businessKey}} ({{current.instances.0.id}}) 
+       {{/}}
+    </h2>
+    {{#if current.instances.0.id}}
+      {{# current.instances.0.diagrams:i}}
+        <section id="{{current.diagrams[i].id}}Sect">
+          <h3>
+            <span>Diagram: {{current.instances.0.diagrams[i].name}}</span>
+          </h3>
+          <div>
+            <div class="bpmnDiagram">{{{current.instances.0.diagrams[i].image}}}</div>
+          </div>
+        </section>
+      {{/}}
+    {{/if}}
+  {{/}}
   <h3 {{#active=='audit.html'}}style="display:none"{{/}}>
     <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
     <span>Instances</span>
@@ -21,7 +42,7 @@
 	        {{#if .!=undefined && !..ended}}
 	          <th class="a-secondary-label control-label" on-click="sortInstances:activityId">Current task{{#active!='audit.html'}}<span class="sortable {{ sortedInstance('activityId') }} glyphicon">{{/}}</th>
 	        {{/if}}
-	        <th class="action-icons" {{#active=='audit.html'}}style="display:none"{{/}}>Actions</th>
+	        <th class="action-icons">Actions</th>
 	      </tr>
 	    </thead>
 	      {{#each sort(current.instances,sortInstanceColumn,sortInstanceAsc):i}}
@@ -41,12 +62,19 @@
 	            {{else}}
 	              <td>None</td>
 	            {{/if}}
-	            <td class="action-icons" {{#active=='audit.html'}}style="display:none"{{/}}>
-	              <span class="clickable glyphicon glyphicon-btn glyphicon-eye-close" on-click="toggleAuditTrail(this,i)"></span>
-                <a aria-hidden="true" href="jobs.html?q={{id}}" target="_blank" title="Show tasks for this process instance">
-                  <span class="clickable glyphicon glyphicon-btn glyphicon-tasks"></span>
-                </a>
-	              <span class="clickable glyphicon glyphicon-btn glyphicon-remove" on-click="deleteInstance(this,i)"></span>
+	            <td>
+                  {{#active!='audit.html'}}
+	                <span class="clickable glyphicon glyphicon-btn glyphicon-eye-close" on-click="toggleAuditTrail(this,i)"></span>
+                  {{/}}
+                  <a aria-hidden="true" href="jobs.html?q={{id}}" target="_blank" title="Show tasks for this process instance">
+                    <span class="clickable glyphicon glyphicon-btn glyphicon-tasks"></span>
+                  </a>
+                  <a aria-hidden="true" href="audit.html?instanceId={{superInstanceId}}" target="_blank" title="Audit parent process">
+                    <span class="clickable glyphicon glyphicon-btn glyphicon-new-window"></span>
+                  </a>
+	              {{#active!='audit.html'}}
+                    <span class="clickable glyphicon glyphicon-btn glyphicon-remove" on-click="deleteInstance(this,i)"></span>
+                  {{/}}
 	            </td>
 	          </tr>
 	          <tr>
@@ -64,6 +92,7 @@
 	                      <th>Ended</th>
 	                      <th>Duration</th>
 	                      <th>Actioned by</th>
+                          <th>Actions</th>
 	                    </tr>
 	                  </thead>
 	                  <tbody>
@@ -82,6 +111,13 @@
 	                          {{/}}
                             {{^allocations}}Omny Bot{{/}}
 	                        </td>
+                            <td>
+                              {{#activityType=='callActivity'}}
+                                <a aria-hidden="true" href="audit.html?instanceId={{calledProcessInstanceId}}" target="_blank" title="Audit called process">
+                                  <span class="clickable glyphicon glyphicon-btn glyphicon-new-window"></span>
+                                </a>
+                              {{/}}
+                            </td>
 	                      </tr>
 	                    {{/each}}
 	                  </tbody>

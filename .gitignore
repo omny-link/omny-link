@@ -1,7 +1,7 @@
 */.*
 .project
 .settings/
-*.bak
+**/*.bak
 *.class
 *.log*
 application.properties

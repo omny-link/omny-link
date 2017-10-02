@@ -1,0 +1,10 @@
+{
+  "processVariables": {
+    "initiator":"tim@omny.link","tenantId":"flexspace",
+    "contactId":"http://localhost:8082/flexspace/contacts/24386",
+    "contactlocalId":"24386"
+  },
+  "processDefinitionKey":"SendAlertToOwner",
+  "businessKey":"t t",
+  "label":"Alert owner"
+}
