@@ -81,6 +81,7 @@
                   {{#if hasRole('admin') && showDetails}}<td class="col-md-1">{{selectedBpmnObject.id}}</td>{{/if}}
                   <td class="col-md-2">{{# current.bpmn.querySelector('[id="'+selectedBpmnObject.id+'"]').getAttribute('name') }}{{ current.bpmn.querySelector('[id="'+selectedBpmnObject.id+'"]').getAttribute('name') }} {{else}} n/a {{/}}</td>
                   <td class="col-md-2">
+                    {{#current.bpmn.querySelector('[id="'+selectedBpmnObject.id+'"]').getAttribute('activiti:async')}}Asynchronous<br/>{{/}}
                     {{selectedBpmnObject.type.toLabel()}}
                     {{# selectedBpmnObject.type=='Service Task'}}
                        <br/>{{current.bpmn.querySelector('[id="'+selectedBpmnObject.id+'"]').getAttribute('activiti:class').substring(current.bpmn.querySelector('[id="'+selectedBpmnObject.id+'"]').getAttribute('activiti:class').lastIndexOf('.')+1).toLabel()}}

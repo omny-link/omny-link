@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/website" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1387529213597" name="Register for Trial" targetNamespace="http://omny.link/website" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/acctmgmt" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1387529213597" targetNamespace="http://omny.link/acctmgmt" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
   <message id="omny.registration" name="omny.registration"/>
   <process id="RegisterOmnyContact" isClosed="false" isExecutable="true" name="Register Omny Link Contact" processType="Public">
     <documentation id="RegisterOmnyContact_D_1" textFormat="text/plain"><![CDATA[Create a new Omny Link account in the CRM back-end and initiate fulfilment of the account.]]></documentation>
@@ -36,30 +36,36 @@
     <startEvent activiti:initiator="initiator" id="startFromOmnyRegistrationMsg" isInterrupting="true" name="omny.registration" parallelMultiple="false">
       <outgoing>_13</outgoing>
       <outputSet/>
-      <messageEventDefinition id="_2_ED_1" messageRef="omny.registration"/>
+      <messageEventDefinition id="assignRights_ED_1" messageRef="omny.registration"/>
     </startEvent>
     <endEvent id="endEvent" name="End Event">
       <incoming>_8</incoming>
       <inputSet/>
     </endEvent>
-    <scriptTask completionQuantity="1" id="_2" isForCompensation="false" name="Assign user rights" scriptFormat="JavaScript" startQuantity="1">
+    <scriptTask completionQuantity="1" id="assignRights" isForCompensation="false" name="Assign user rights" scriptFormat="JavaScript" startQuantity="1">
       <incoming>_3</incoming>
       <outgoing>_6</outgoing>
       <script><![CDATA[var userId = execution.getVariable('contactEmail').toLowerCase();
-//var System = java.lang.System;
+var System = java.lang.System;
 //System.out.println('  creating user: '+userId);
 var contact = execution.getVariable('contact');
-var user = execution.getEngineServices().getIdentityService().newUser(userId);
-user.setFirstName(contact.getString('firstName'));
-user.setLastName(contact.getString('lastName'));
-user.setEmail(userId);
-user.setPassword(org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(12));
-execution.getEngineServices().getIdentityService().saveUser(user);
+try {
+  var user = execution.getEngineServices().getIdentityService().newUser(userId);
+  user.setFirstName(contact.getString('firstName'));
+  user.setLastName(contact.getString('lastName'));
+  user.setEmail(userId);
+  user.setPassword(org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(12));
+  execution.getEngineServices().getIdentityService().saveUser(user);
+} catch (e) {
+  System.err.println('Unable to save, assume user already exists');
+}
 
+//System.out.println('  creating role: user');
 execution.getEngineServices().getIdentityService().createMembership(userId, 'user');
+//System.out.println('  creating role: '+contact.getString('tenantId','no-tenant!'));
 execution.getEngineServices().getIdentityService().createMembership(userId, contact.getString('tenantId'));
-if (contact.getString('roles') != undefined && contact.getString('roles').trim().length>0) {
-  //System.out.println('  roles: '+contact.getString('roles'));
+if (contact.getString('roles','').trim().length>0) {
+  //System.out.println('  additional roles: '+contact.getString('roles'));
   var roles = contact.getString('roles').split(',');
   for (idx in roles) {
     //System.out.println('  test if role exists: '+roles[idx]);
@@ -78,15 +84,18 @@ if (contact.getString('roles') != undefined && contact.getString('roles').trim()
 
   }
 }
+//System.out.println('  creating user info: tenantId');
 execution.getEngineServices().getIdentityService().setUserInfo(userId, 'tenant', contact.getString('tenantId'));
+//System.out.println('  creating user info: comms_preference');
 execution.getEngineServices().getIdentityService().setUserInfo(userId, 'comms_preference', 'Email only');
+//System.out.println('  creating user info: phone');
 execution.getEngineServices().getIdentityService().setUserInfo(userId, 'phone', contact.getString('phone1'));
 
 execution.setVariable('pwd',user.getPassword());
 execution.setVariable('Location',execution.getVariable('contactId'));]]></script>
     </scriptTask>
-    <sequenceFlow id="_3" sourceRef="_11" targetRef="_2"/>
-    <sequenceFlow id="_6" sourceRef="_2" targetRef="_4"/>
+    <sequenceFlow id="_3" sourceRef="_11" targetRef="assignRights"/>
+    <sequenceFlow id="_6" sourceRef="assignRights" targetRef="_4"/>
     <textAnnotation id="_12" textFormat="text/plain">
       <text>REGISTER OMNY LINK ACCOUNT</text>
     </textAnnotation>
@@ -123,7 +132,7 @@ execution.setVariable('Location',execution.getVariable('contactId'));]]></script
           <dc:Bounds height="18.955078125" width="58.0" x="672.9999999999999" y="245.85872395833337"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
+      <bpmndi:BPMNShape bpmnElement="assignRights" id="Yaoqiang-assignRights">
         <dc:Bounds height="88.0" width="125.0" x="334.0" y="176.83333333333334"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.955078125" width="105.0" x="344.0" y="213.35579427083334"/>

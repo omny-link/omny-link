@@ -14,17 +14,22 @@ import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.cmd.AbstractCustomSqlExecution;
 import org.activiti.engine.impl.cmd.CustomSqlExecution;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.knowprocess.bpm.impl.TaskAllocationMapper;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Component
 public class ProcessInstance extends Execution
 /* implements org.activiti.engine.runtime.ProcessInstance */{
+
+    private static final long serialVersionUID = 6550600017648645656L;
 
     protected static ProcessEngine processEngine;
 
@@ -50,6 +55,8 @@ public class ProcessInstance extends Execution
 
     private Date endTime;
 
+    private String superInstanceId;
+
     public ProcessInstance() {
         super();
     }
@@ -64,6 +71,9 @@ public class ProcessInstance extends Execution
         setProcessDefinitionId(pi.getProcessDefinitionId());
         setProcessInstanceId(pi.getProcessInstanceId());
         setProcessVariables(pi.getProcessVariables());
+        if (pi instanceof ExecutionEntity) {
+            setSuperInstanceId(((ExecutionEntity) pi).getSuperExecutionId());
+        }
         setSuspended(pi.isSuspended());
         setTenantId(pi.getTenantId());
     }
@@ -160,8 +170,14 @@ public class ProcessInstance extends Execution
                             histVar.getVariableName(), histVar.getValue());
                 }
             } else {
-                System.err.println("Cannot find process with id: " + id);
-                throw new ActivitiObjectNotFoundException(ProcessInstance.class);
+                List<org.activiti.engine.runtime.Execution> execList
+                        = processEngine.getRuntimeService().createExecutionQuery().executionId(id).list();
+                if (execList.size() > 0) {
+                    return findProcessInstance(execList.get(0).getProcessInstanceId());
+                } else {
+                    System.err.println("Cannot find process with id: " + id);
+                    throw new ActivitiObjectNotFoundException(ProcessInstance.class);
+                }
             }
         }
         return instance;

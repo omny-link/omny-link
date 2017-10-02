@@ -81,7 +81,7 @@ public class ProcessInstanceController {
         return result;
     }
 
-    @RequestMapping(value = "/{instanceId}/variables/{varName}", method = RequestMethod.GET, headers = "Accept=text/*")
+    @RequestMapping(value = "/{instanceId}/variables/{varName}", method = RequestMethod.GET, consumes = "!application/pdf")
     public @ResponseBody String getInstanceVar(
             @PathVariable("instanceId") String instanceId,
             @PathVariable("varName") String varName) {
@@ -105,7 +105,7 @@ public class ProcessInstanceController {
         }
     }
 
-    @RequestMapping(value = "/{instanceId}/variables/{varName}", method = RequestMethod.GET, headers = "Accept=application/pdf", produces = "application/pdf")
+    @RequestMapping(value = "/{instanceId}/variables/{varName}", method = RequestMethod.GET, consumes = "application/pdf", produces = "application/pdf")
     public void getInstanceVarAsPdf(
             HttpServletResponse response,
             @PathVariable("tenantId") String tenantId,

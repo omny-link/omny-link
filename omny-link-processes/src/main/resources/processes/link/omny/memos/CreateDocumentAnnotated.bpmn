@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:tns="http://omny.link/memos" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yaoqiang="http://bpmn.sourceforge.net" id="_14811346235356" name="" targetNamespace="http://omny.link/memos" expressionLanguage="http://activiti.org/Juel" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.22 (GPLv3, Non-Commercial)" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <process id="CreateDocument" name="Create a document" processType="None" isClosed="false" isExecutable="true">
+    <documentation id="CreateDocument_D_1"><![CDATA[Create a document by merging a template with the specified contact's data]]></documentation>
+    <extensionElements>
+      <yaoqiang:description />
+      <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6" />
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1" />
+    </extensionElements>
+    <ioSpecification>
+      <dataInput id="_8" name="contactId" />
+      <dataInput id="_3" name="tenantId" />
+      <dataInput id="_10" name="memoName" />
+      <dataInput id="_6" name="toEmail" />
+      <dataInput id="_20" name="orderId" />
+      <inputSet>
+        <dataInputRefs>_8</dataInputRefs>
+        <dataInputRefs>_3</dataInputRefs>
+        <dataInputRefs>_10</dataInputRefs>
+        <dataInputRefs>_6</dataInputRefs>
+        <dataInputRefs>_20</dataInputRefs>
+      </inputSet>
+      <outputSet />
+    </ioSpecification>
+    <startEvent id="_2" name="Start Event">
+      <outgoing>_12</outgoing>
+      <outputSet />
+    </startEvent>
+    <endEvent id="endEvent" name="End, document sent">
+      <incoming>_19</incoming>
+      <inputSet />
+    </endEvent>
+    <callActivity id="_4" name="Merge memo &#10;template" calledElement="MergeMemoTemplate">
+      <extensionElements>
+        <activiti:in source="memoName" target="memoName" />
+        <activiti:in source="contactId" target="contactId" />
+        <activiti:in source="orderId" target="orderId" />
+        <activiti:in source="tenantId" target="tenantId" />
+        <activiti:out source="contact" target="contact" />
+        <activiti:out source="memo" target="memo" />
+        <activiti:out source="order" target="order" />
+        <activiti:out source="owner" target="owner" />
+      </extensionElements>
+      <incoming>_12</incoming>
+      <outgoing>_14</outgoing>
+      <dataOutputAssociation id="DataOutputAssociation_0paif2q">
+        <targetRef>DataObjectReference_1ktb5bp</targetRef>
+      </dataOutputAssociation>
+      <dataOutputAssociation id="DataOutputAssociation_0o2j92w">
+        <targetRef>DataObjectReference_07kqvlt</targetRef>
+      </dataOutputAssociation>
+      <dataOutputAssociation id="DataOutputAssociation_1mv15z6">
+        <targetRef>DataObjectReference_0pybgg9</targetRef>
+      </dataOutputAssociation>
+      <dataOutputAssociation id="DataOutputAssociation_1dtb92v">
+        <targetRef>DataObjectReference_1qajli5</targetRef>
+      </dataOutputAssociation>
+    </callActivity>
+    <serviceTask id="_16" name="Convert to PDF" implementation="##WebService" activiti:class="com.knowprocess.services.pdf.Html2PdfService">
+      <extensionElements>
+        <activiti:field expression="${memo.getString(&#39;richContent&#39;,&#39;&#39;)}" name="data" />
+        <activiti:field name="outputVariable" stringValue="document" />
+      </extensionElements>
+      <incoming>_14</incoming>
+      <outgoing>_18</outgoing>
+      <property id="Property_190gka2" name="__targetRef_placeholder" />
+      <dataInputAssociation id="DataInputAssociation_1sk7blo">
+        <sourceRef>DataObjectReference_07kqvlt</sourceRef>
+        <targetRef>Property_190gka2</targetRef>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DataOutputAssociation_1btpcov">
+        <targetRef>DataObjectReference_1b65shx</targetRef>
+      </dataOutputAssociation>
+    </serviceTask>
+    <serviceTask id="_5" name="Encode &#10;document" implementation="##WebService" activiti:class="com.knowprocess.services.encode.Base64EncoderTask">
+      <extensionElements>
+        <activiti:field expression="${document}" name="data" />
+        <activiti:field name="outputVariable" stringValue="documentBase64" />
+      </extensionElements>
+      <incoming>_18</incoming>
+      <outgoing>_9</outgoing>
+      <property id="Property_04kdq1x" name="__targetRef_placeholder" />
+      <dataInputAssociation id="DataInputAssociation_11lf9f6">
+        <sourceRef>DataObjectReference_1b65shx</sourceRef>
+        <targetRef>Property_04kdq1x</targetRef>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DataOutputAssociation_128coxc">
+        <targetRef>DataObjectReference_14vbhcr</targetRef>
+      </dataOutputAssociation>
+    </serviceTask>
+    <serviceTask id="_11" name="Send document&#10;to Docusign" implementation="##WebService" activiti:async="true" activiti:class="com.knowprocess.resource.spi.RestGet">
+      <extensionElements>
+        <activiti:field name="resourceUsername" stringValue="userInfo(&#39;tenant-bot&#39;)" />
+        <activiti:field expression="userInfo(&#39;docusign-url&#39;)" name="globalResource" />
+        <activiti:field expression="Accept:application/json,Content-Type:application/json,X-DocuSign-Authentication:userInfo(&#39;docusign-authentication&#39;)" name="headers" />
+        <activiti:field name="data">
+          <field>
+            <activiti:expression>
+              <expression><![CDATA[{ "status": "sent", "emailSubject": "${memo.getString('title','Here are the documents for your signature')}", "documents": [{ "documentId": "1", "name": "${order.getString('name', 'this document')}", "documentBase64": "${documentBase64}" }], "recipients": { "signers": [{ "name": "${owner.getJsonObject(0).getString('fullName','')}","email": "${owner.getJsonObject(0).getString('email','')}", "recipientId": "1", "tabs": { "signHereTabs": [{ "xPosition": "250", "yPosition": "250", "documentId": "1", "pageNumber": "3" }] } },{ "name": "${contact.getString('fullName','')}","email": "${contact.getString('email','')}", "recipientId": "2", "tabs": { "signHereTabs": [{ "xPosition": "250", "yPosition": "340", "documentId": "1", "pageNumber": "3" }] } }] } }]]></expression>
+            </activiti:expression>
+          </field>
+        </activiti:field>
+        <activiti:field expression="docusignResponse" name="responseVar" />
+      </extensionElements>
+      <incoming>_9</incoming>
+      <outgoing>_19</outgoing>
+      <property id="Property_0oqza9w" name="__targetRef_placeholder" />
+      <dataInputAssociation id="DataInputAssociation_10ss6lw">
+        <sourceRef>DataObjectReference_14vbhcr</sourceRef>
+        <targetRef>Property_0oqza9w</targetRef>
+      </dataInputAssociation>
+      <dataInputAssociation id="DataInputAssociation_0d9hmf5">
+        <sourceRef>DataObjectReference_07kqvlt</sourceRef>
+        <targetRef>Property_0oqza9w</targetRef>
+      </dataInputAssociation>
+    </serviceTask>
+    <sequenceFlow id="_12" sourceRef="_2" targetRef="_4" />
+    <sequenceFlow id="_14" sourceRef="_4" targetRef="_16" />
+    <sequenceFlow id="_19" sourceRef="_11" targetRef="endEvent" />
+    <sequenceFlow id="_9" sourceRef="_5" targetRef="_11" />
+    <sequenceFlow id="_18" sourceRef="_16" targetRef="_5" />
+    <dataObjectReference id="DataObjectReference_1ktb5bp" name="contact" dataObjectRef="DataObject_1j7ho31" />
+    <dataObject id="DataObject_1j7ho31" />
+    <dataObjectReference id="DataObjectReference_07kqvlt" name="memo" dataObjectRef="DataObject_11p9lnn" />
+    <dataObject id="DataObject_11p9lnn" />
+    <dataObjectReference id="DataObjectReference_0pybgg9" name="order" dataObjectRef="DataObject_0b74gh5" />
+    <dataObject id="DataObject_0b74gh5" />
+    <dataObjectReference id="DataObjectReference_1qajli5" name="owner" dataObjectRef="DataObject_1rv8q1r" />
+    <dataObject id="DataObject_1rv8q1r" />
+    <dataObjectReference id="DataObjectReference_1b65shx" name="document" dataObjectRef="DataObject_0hag44u" />
+    <dataObject id="DataObject_0hag44u" />
+    <dataObjectReference id="DataObjectReference_14vbhcr" name="documetBase64" dataObjectRef="DataObject_1wplmwm" />
+    <dataObject id="DataObject_1wplmwm" />
+    <textAnnotation id="_7">    <text>Create a document</text>
+</textAnnotation>
+    <textAnnotation id="_15">    <text><![CDATA[Optional. If not supplied, contact's email will be used instead]]></text>
+</textAnnotation>
+    <association id="_17" associationDirection="None" sourceRef="_6" targetRef="_15" />
+    <textAnnotation id="_13">    <text>Optional. If supplied, order will be available to memo template</text>
+</textAnnotation>
+    <association id="_21" associationDirection="None" sourceRef="_20" targetRef="_13" />
+  </process>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-CreateDocument" name="Create document and send to Docusign" resolution="96">
+    <bpmndi:BPMNPlane bpmnElement="CreateDocument">
+      <bpmndi:BPMNShape id="Yaoqiang-_2" bpmnElement="_2">
+        <dc:Bounds x="46.863636363636424" y="160.5" width="32" height="32" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="28.36" y="203.13" width="69" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-_7" bpmnElement="_7">
+        <dc:Bounds x="42" y="42" width="245" height="31" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="42" y="50.1" width="115" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-_8" bpmnElement="_8">
+        <dc:Bounds x="48.363636363636424" y="372.6136363636364" width="29" height="38" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="34.36" y="412.61" width="57" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-_3" bpmnElement="_3">
+        <dc:Bounds x="48.363636363636424" y="583.5" width="29" height="38" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="36.86" y="623.5" width="52" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-_10" bpmnElement="_10">
+        <dc:Bounds x="48.363636363636424" y="302.3181818181818" width="29" height="38" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="25.36" y="342.32" width="75" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-endEvent" bpmnElement="endEvent">
+        <dc:Bounds x="753.5000000000008" y="160.5" width="32" height="32" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="709.5" y="202.47" width="120" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-_6" bpmnElement="_6">
+        <dc:Bounds x="48.363636363636424" y="442.90909090909093" width="29" height="38" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="38.86" y="482.91" width="48" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-_15" bpmnElement="_15">
+        <dc:Bounds x="132" y="439.40909090909093" width="436" height="45" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="132" y="454.51" width="354" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-_13" bpmnElement="_13">
+        <dc:Bounds x="132" y="509.7045454545455" width="436" height="45" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="132" y="524.8" width="362" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-_20" bpmnElement="_20">
+        <dc:Bounds x="48.363636363636424" y="513.2045454545455" width="29" height="38" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="39.36" y="553.2" width="47" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-_4" bpmnElement="_4" isExpanded="false">
+        <dc:Bounds x="149.6909090909093" y="137" width="109" height="79" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="163.69" y="162.1" width="81" height="32.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-_5" bpmnElement="_5">
+        <dc:Bounds x="432.345454545455" y="137" width="109" height="79" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="455.85" y="162.1" width="62" height="32.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-_11" bpmnElement="_11">
+        <dc:Bounds x="573.6727272727279" y="137" width="109" height="79" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="580.67" y="162.1" width="95" height="32.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-_16" bpmnElement="_16">
+        <dc:Bounds x="291.01818181818214" y="137" width="109" height="79" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="300.52" y="169.1" width="90" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-DataObjectReference_1ktb5bp" bpmnElement="DataObjectReference_1ktb5bp">
+        <dc:Bounds x="240.375" y="235.5978407557355" width="29" height="38" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="251.88" y="275.6" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-DataObjectReference_07kqvlt" bpmnElement="DataObjectReference_07kqvlt">
+        <dc:Bounds x="240" y="287.9311740890688" width="29" height="38" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="251.5" y="327.93" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-DataObjectReference_0pybgg9" bpmnElement="DataObjectReference_0pybgg9">
+        <dc:Bounds x="240" y="340.2645074224021" width="29" height="38" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="251.5" y="380.26" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Yaoqiang-DataObjectReference_1qajli5" bpmnElement="DataObjectReference_1qajli5">
+        <dc:Bounds x="240" y="392.59784075573543" width="29" height="38" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="251.5" y="432.6" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Yaoqiang-_19" bpmnElement="_19">
+        <di:waypoint xsi:type="dc:Point" x="682.375" y="176.5" />
+        <di:waypoint xsi:type="dc:Point" x="753.375" y="176.5" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="714.88" y="167.1" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Yaoqiang-_18" bpmnElement="_18">
+        <di:waypoint xsi:type="dc:Point" x="400.375" y="176.5" />
+        <di:waypoint xsi:type="dc:Point" x="432.375" y="176.5" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="413.38" y="167.1" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Yaoqiang-_17" bpmnElement="_17">
+        <di:waypoint xsi:type="dc:Point" x="77.375" y="461.5899354505566" />
+        <di:waypoint xsi:type="dc:Point" x="132.375" y="461.9310699181851" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="101.88" y="452.36" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Yaoqiang-_14" bpmnElement="_14">
+        <di:waypoint xsi:type="dc:Point" x="258.375" y="176.5" />
+        <di:waypoint xsi:type="dc:Point" x="291.375" y="176.5" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="271.88" y="167.1" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Yaoqiang-_9" bpmnElement="_9">
+        <di:waypoint xsi:type="dc:Point" x="541.375" y="176.5" />
+        <di:waypoint xsi:type="dc:Point" x="573.375" y="176.5" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="554.38" y="167.1" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Yaoqiang-_12" bpmnElement="_12">
+        <di:waypoint xsi:type="dc:Point" x="78.375" y="176.5" />
+        <di:waypoint xsi:type="dc:Point" x="149.375" y="176.5" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="110.88" y="167.1" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Yaoqiang-DataOutputAssociation_1mv15z6" bpmnElement="DataOutputAssociation_1mv15z6">
+        <di:waypoint xsi:type="dc:Point" x="203.875" y="216.5" />
+        <di:waypoint xsi:type="dc:Point" x="203.875" y="351" />
+        <di:waypoint xsi:type="dc:Point" x="240.375" y="351" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="200.88" y="292.6" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Yaoqiang-_21" bpmnElement="_21">
+        <di:waypoint xsi:type="dc:Point" x="77.375" y="532.428040919701" />
+        <di:waypoint xsi:type="dc:Point" x="132.375" y="532.1550926840837" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="101.88" y="522.89" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Yaoqiang-DataOutputAssociation_0o2j92w" bpmnElement="DataOutputAssociation_0o2j92w">
+        <di:waypoint xsi:type="dc:Point" x="205" y="216.5" />
+        <di:waypoint xsi:type="dc:Point" x="205" y="279" />
+        <di:waypoint xsi:type="dc:Point" x="240.375" y="306.9311740890688" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="202" y="270" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Yaoqiang-DataOutputAssociation_0paif2q" bpmnElement="DataOutputAssociation_0paif2q">
+        <di:waypoint xsi:type="dc:Point" x="203.875" y="216.5" />
+        <di:waypoint xsi:type="dc:Point" x="203.875" y="247.25" />
+        <di:waypoint xsi:type="dc:Point" x="240.375" y="247.25" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="203.75" y="237.85" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Yaoqiang-DataOutputAssociation_1dtb92v" bpmnElement="DataOutputAssociation_1dtb92v">
+        <di:waypoint xsi:type="dc:Point" x="205" y="216.5" />
+        <di:waypoint xsi:type="dc:Point" x="205" y="398" />
+        <di:waypoint xsi:type="dc:Point" x="240.375" y="398" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="202" y="315.54" width="6" height="18.8" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DataObjectReference_1b65shx_di" bpmnElement="DataObjectReference_1b65shx">
+        <dc:Bounds x="366" y="230" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="360" y="284" width="49" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_1btpcov_di" bpmnElement="DataOutputAssociation_1btpcov">
+        <di:waypoint xsi:type="dc:Point" x="358" y="216" />
+        <di:waypoint xsi:type="dc:Point" x="366" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_11lf9f6_di" bpmnElement="DataInputAssociation_11lf9f6">
+        <di:waypoint xsi:type="dc:Point" x="402" y="242" />
+        <di:waypoint xsi:type="dc:Point" x="440" y="214" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DataObjectReference_14vbhcr_di" bpmnElement="DataObjectReference_14vbhcr">
+        <dc:Bounds x="512" y="230" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="490" y="284" width="80" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_128coxc_di" bpmnElement="DataOutputAssociation_128coxc">
+        <di:waypoint xsi:type="dc:Point" x="509" y="216" />
+        <di:waypoint xsi:type="dc:Point" x="517" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_10ss6lw_di" bpmnElement="DataInputAssociation_10ss6lw">
+        <di:waypoint xsi:type="dc:Point" x="548" y="242" />
+        <di:waypoint xsi:type="dc:Point" x="584" y="216" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1sk7blo_di" bpmnElement="DataInputAssociation_1sk7blo">
+        <di:waypoint xsi:type="dc:Point" x="268" y="288" />
+        <di:waypoint xsi:type="dc:Point" x="315" y="216" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_0d9hmf5_di" bpmnElement="DataInputAssociation_0d9hmf5">
+        <di:waypoint xsi:type="dc:Point" x="269" y="307" />
+        <di:waypoint xsi:type="dc:Point" x="586" y="307" />
+        <di:waypoint xsi:type="dc:Point" x="625" y="216" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

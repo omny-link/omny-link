@@ -3,10 +3,11 @@
   <process id="SendAlert" isClosed="false" isExecutable="true" name="Send notification of an event" processType="None">
     <documentation id="SendAlert_D_1" textFormat="text/plain"><![CDATA[This is a 'no-op' process that will swallow the event.]]></documentation>
     <extensionElements>
+      <yaoqiang:description/>
       <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
     </extensionElements>
-    <endEvent id="endWithConfirmation" name="End event">
+    <endEvent id="endEvent" name="End event">
       <incoming>_2</incoming>
       <inputSet/>
     </endEvent>
@@ -14,36 +15,36 @@
       <outgoing>_2</outgoing>
       <outputSet/>
     </startEvent>
-    <sequenceFlow id="_2" sourceRef="startEvent" targetRef="endWithConfirmation"/>
+    <sequenceFlow id="_2" sourceRef="startEvent" targetRef="endEvent"/>
     <textAnnotation id="_7" textFormat="text/plain">
       <text>SEND NOTIFICATION OF AN EVENT</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="Untitled Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-SendAlert" name="Send alert - empty implementation" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="SendAlert">
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
         <dc:Bounds height="32.0" width="32.0" x="47.0" y="210.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="63.0" x="31.5" y="251.15234375"/>
+          <dc:Bounds height="18.8" width="69.0" x="28.5" y="251.23"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7">
         <dc:Bounds height="55.0" width="179.0" x="47.0" y="42.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="32.955078125" width="130.0" x="47.0" y="55.0224609375"/>
+          <dc:Bounds height="18.8" width="197.0" x="47.0" y="62.1"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="endWithConfirmation" id="Yaoqiang-endWithConfirmation">
+      <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
         <dc:Bounds height="32.0" width="32.0" x="823.0000000000001" y="210.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="58.0" x="810.0000000000001" y="250.0224609375"/>
+          <dc:Bounds height="18.8" width="62.0" x="808.0" y="250.1"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_2" id="Yaoqiang-_2">
-        <di:waypoint x="79.11538461538464" y="226.0"/>
-        <di:waypoint x="823.1153846153846" y="226.0"/>
+        <di:waypoint x="79.36718559171948" y="226.0"/>
+        <di:waypoint x="823.3828144082805" y="226.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="448.11538461538464" y="216.5224609375"/>
+          <dc:Bounds height="18.8" width="6.0" x="448.38" y="216.6"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

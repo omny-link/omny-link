@@ -71,7 +71,7 @@
     <scriptTask activiti:async="true" completionQuantity="1" id="cacheTemplate" isForCompensation="false" name="Cache&#10;template" scriptFormat="JavaScript" startQuantity="1">
       <incoming>_11</incoming>
       <outgoing>_12</outgoing>
-      <script><![CDATA[var System = java.lang.System;
+      <script><![CDATA[//var System = java.lang.System;
 try {
   execution.setVariable('plainContent',execution.getVariable('memo').getString('plainContent'));
 } catch (e) {
@@ -79,17 +79,24 @@ try {
 }
 
 var memo = execution.getVariable('memo');
-System.out.println('memo: '+memo);
+//System.out.println('memo: '+memo);
+if (typeof memo == 'string') {
+  System.out.println('parse memo');
+  memo = JSON.parse('memo');
+}
 var richContent = memo.getString('richContent');
-System.out.println('richContent: '+richContent);
+//System.out.println('extracted rich content');
 execution.setVariable('richContent',richContent);
 var contactId = execution.getVariable('contactId');
-System.out.println('contactId: '+contactId);
+//System.out.println('contactId: '+contactId);
 if (contactId.indexOf('://')==-1) contactId = "userInfo('cust-mgmt-url')/"+contactId;
+//System.out.println('absolute contactId: '+contactId);
 execution.setVariable('contactId',contactId);
 
 // Accounts page does not populate contactLocalId
 if (execution.getVariable('contactLocalId')==undefined) execution.setVariable('contactLocalId',contactId.substring(contactId.lastIndexOf('/')+1));
+//execution.setVariable('contactLocalId',29343);
+//System.out.println('contactLocalId: '+execution.getVariable('contactLocalId'));
 
 // Prepare local id for reading order
 if (execution.getVariable('orderId')!=undefined && execution.getVariable('orderId').indexOf('/')!=-1) {
@@ -157,7 +164,7 @@ if (execution.getVariable('accountId')!=undefined && execution.getVariable('acco
           <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
         </activiti:field>
         <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/searchByEmail?email=${contact.get('owner')}</activiti:expression>
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/searchByEmail?email=${contact.getString('owner')}</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Accept:application/json</activiti:string>

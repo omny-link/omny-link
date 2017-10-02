@@ -4,9 +4,15 @@ var ractive = new BaseRactive({
   el: 'container',
   template: '#template',
   parser: new DOMParser(),
-  partials: { simpleTodoFormExtension: function(x) {
-    return 'HELLO'+x
-  } },
+  partials: {
+    'profileArea':'',
+    'titleArea':'',
+    'loginSect':'',
+    'instanceListSect':'',
+    'defnPropSect':'',
+    'sidebar':'',
+    'helpModal':''
+  },
   data: {
     duration: function(timeString) {
       return i18n.getDurationString(new Date(timeString))
@@ -337,6 +343,8 @@ var ractive = new BaseRactive({
           $('#currentInstanceListSect .ol-collapse').click();
           $('.instanceSect[data-instance-id='+instanceId+']').slideDown();
         }
+        // TODO load definition and thence diagram?
+        // ractive.fetchDefinition(data.processDefinitionId);
       });
     }
   }
