@@ -56,9 +56,10 @@
     </boundaryEvent>
     <callActivity calledElement="SendAlert" completionQuantity="1" id="notifyNonReceipt" isForCompensation="false" name="Notify &#10;non-receipt" startQuantity="1">
       <extensionElements>
-        <activiti:in source="memoName" target="memoName"/>
+        <activiti:in sourceExpression="tim@omny.link" target="addressee"/>
+        <activiti:in sourceExpression="Omny Link: Contact has not responded to your request yet" target="subject"/>
+        <activiti:in sourceExpression="Please review here: &lt;a href=https://api.omny.link/contacts.html?q=${contactId}>Click to open Omny&lt;/a>" target="message"/>
         <activiti:in source="tenantId" target="tenantId"/>
-        <activiti:in source="contactId" target="contactId"/>
         <activiti:in source="orderId" target="orderId"/>
       </extensionElements>
       <incoming>_25</incoming>
@@ -82,9 +83,9 @@
       <script><![CDATA[var noOfChases = execution.getVariable('noOfChases');
 var maxChases = 3;
 if (noOfChases==undefined) noOfChases = maxChases;
-if (noOfChases != 0 ) {
+if (noOfChases != 0) {
 	noOfChases--;
-	waitDuration = 'P'+(Math.floor(Math.exp(maxChases-noOfChases))+'D';
+	waitDuration = 'P'+(Math.floor(Math.exp(maxChases-noOfChases))+'D');
 	execution.setVariable('noOfChases', noOfChases);
 }]]></script>
     </scriptTask>
@@ -95,25 +96,25 @@ if (noOfChases != 0 ) {
       <extensionElements>
         <activiti:in source="memoName" target="memoName"/>
         <activiti:in source="tenantId" target="tenantId"/>
-        <activiti:in source="contactId" target="contactId"/>
+        <activiti:in sourceExpression="tim@omny.link" target="addressee"/>
         <activiti:in source="orderId" target="orderId"/>
       </extensionElements>
       <incoming>_39</incoming>
       <outgoing>_41</outgoing>
     </callActivity>
     <sequenceFlow id="_39" name="Yes" sourceRef="_36" targetRef="notifyGivenUp">
-      <conditionExpression><![CDATA[noOfChases == 0]]></conditionExpression>
+      <conditionExpression><![CDATA[${noOfChases == 0}]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway default="_32" gatewayDirection="Diverging" id="_36" name="Give up?">
       <incoming>_37</incoming>
       <outgoing>_39</outgoing>
       <outgoing>_32</outgoing>
     </exclusiveGateway>
-    <endEvent id="_40" name="End without &#10;success">
+    <endEvent id="endWithoutSuccess" name="End without &#10;success">
       <incoming>_41</incoming>
       <inputSet/>
     </endEvent>
-    <sequenceFlow id="_41" sourceRef="notifyGivenUp" targetRef="_40"/>
+    <sequenceFlow id="_41" sourceRef="notifyGivenUp" targetRef="endWithoutSuccess"/>
     <endEvent id="endEvent" name="End with success">
       <incoming>_28</incoming>
       <inputSet/>
@@ -201,7 +202,7 @@ Wait period increases exponentially</text>
           <dc:Bounds height="18.8046875" width="55.0" x="787.7058823529411" y="337.38235294117646"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_40" id="Yaoqiang-_40">
+      <bpmndi:BPMNShape bpmnElement="endWithoutSuccess" id="Yaoqiang-endWithoutSuccess">
         <dc:Bounds height="32.0" width="32.0" x="1102.8076923076922" y="298.38235294117646"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="32.8046875" width="76.0" x="1080.807692307692" y="332.07766544117646"/>

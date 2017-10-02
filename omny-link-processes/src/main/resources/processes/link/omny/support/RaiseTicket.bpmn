@@ -85,7 +85,7 @@
     </exclusiveGateway>
     <sequenceFlow id="_9" sourceRef="fetchContact" targetRef="_8"/>
     <sequenceFlow id="_13" name="No" sourceRef="_8" targetRef="_6"/>
-    <scriptTask completionQuantity="1" id="_2" isForCompensation="false" name="Select first contact" scriptFormat="JavaScript" startQuantity="1">
+    <scriptTask activiti:async="true" completionQuantity="1" id="_2" isForCompensation="false" name="Select first contact" scriptFormat="JavaScript" startQuantity="1">
       <incoming>_3</incoming>
       <outgoing>_5</outgoing>
       <script><![CDATA[var contacts = execution.getVariable('contacts');
@@ -98,11 +98,9 @@ execution.setVariable('contactId',contacts.getJsonObject(0).getString('selfRef')
     <sequenceFlow id="_5" sourceRef="_2" targetRef="_15"/>
     <callActivity calledElement="SendAlert" completionQuantity="1" id="notifyInternalUsers" isForCompensation="false" name="Notify internal users" startQuantity="1">
       <extensionElements>
-        <activiti:in sourceExpression="New Support Ticket from ${omny_ticket.getString('firstName')} ${omny_ticket.getString('lastName')}" target="subject"/>
-        <activiti:in sourceExpression="New Support Ticket" target="type"/>
-        <activiti:in sourceExpression="NotifyTicket" target="memoName"/>
+        <activiti:in sourceExpression="New support ticket from ${omny_ticket.getString('firstName', '')} ${omny_ticket.getString('email', '')}" target="subject"/>
         <activiti:in source="addressee" target="addressee"/>
-        <activiti:in sourceExpression="Please review here: &lt;https://api.omny.link/work.html|Click to open work list&gt;" target="message"/>
+        <activiti:in sourceExpression="Please review here: &lt;a href=https://api.omny.link/work.html?q=${execution.getProcessInstanceId()}>Click to open work manager&lt;/a>" target="message"/>
         <activiti:in sourceExpression="${omny_ticket.getString('tenantId')}" target="tenantId"/>
         <activiti:in source="contactId" target="contactId"/>
         <activiti:in source="initiator" target="initiator"/>
@@ -110,8 +108,8 @@ execution.setVariable('contactId',contacts.getJsonObject(0).getString('selfRef')
       <incoming>_22</incoming>
       <outgoing>_28</outgoing>
     </callActivity>
-    <sequenceFlow id="_24" sourceRef="_16" targetRef="_18"/>
-    <parallelGateway gatewayDirection="Diverging" id="_16" name="Split">
+    <sequenceFlow id="_24" sourceRef="parallelSplit" targetRef="findAddresseeToAlert"/>
+    <parallelGateway gatewayDirection="Diverging" id="parallelSplit" name="Split">
       <incoming>_25</incoming>
       <outgoing>_24</outgoing>
       <outgoing>_32</outgoing>
@@ -127,22 +125,24 @@ execution.setVariable('contactId',contacts.getJsonObject(0).getString('selfRef')
       <incoming>_23</incoming>
       <inputSet/>
     </endEvent>
-    <scriptTask completionQuantity="1" id="_18" isForCompensation="false" name="Find addressee to alert" scriptFormat="JavaScript" startQuantity="1">
+    <scriptTask activiti:async="true" completionQuantity="1" id="findAddresseeToAlert" isForCompensation="false" name="Find addressee to alert" scriptFormat="JavaScript" startQuantity="1">
       <incoming>_24</incoming>
       <outgoing>_22</outgoing>
-      <script><![CDATA[var botUser = execution.getEngineServices().getIdentityService()
+      <script><![CDATA[
+try {        
+  /*var botUser = execution.getEngineServices().getIdentityService()
         .createUserQuery().userFirstName(execution.getTenantId())
         .userLastName("Bot").singleResult();
-try {        
   var emailToAlert = execution.getEngineServices().getIdentityService().getUserInfo(botUser.getId(), 'alert');
-  execution.setVariable('addressee',emailToAlert);
+  execution.setVariable('addressee',emailToAlert);*/
+  execution.setVariable('addressee','tim@omny.link');
 } catch (e) {
   // No one to notify
 }]]></script>
     </scriptTask>
-    <sequenceFlow id="_22" sourceRef="_18" targetRef="notifyInternalUsers"/>
-    <sequenceFlow id="_25" sourceRef="_15" targetRef="_16"/>
-    <userTask activiti:dueDate="P1D" completionQuantity="1" id="_31" implementation="##unspecified" isForCompensation="false" name="Resolve ticket" startQuantity="1">
+    <sequenceFlow id="_22" sourceRef="findAddresseeToAlert" targetRef="notifyInternalUsers"/>
+    <sequenceFlow id="_25" sourceRef="_15" targetRef="parallelSplit"/>
+    <userTask activiti:dueDate="P1D" completionQuantity="1" id="resolveTicket" implementation="##unspecified" isForCompensation="false" name="Resolve ticket" startQuantity="1">
       <documentation id="_3_D_1" textFormat="text/plain"><![CDATA[
           Please respond to the customer about this support ticket.
       ]]></documentation>
@@ -153,17 +153,17 @@ try {
       </extensionElements>
       <incoming>_32</incoming>
       <outgoing>_34</outgoing>
-      <potentialOwner id="_31_RES_1">
+      <potentialOwner id="resolveTicket_RES_1">
         <resourceRef>RS_1</resourceRef>
       </potentialOwner>
     </userTask>
-    <sequenceFlow id="_32" sourceRef="_16" targetRef="_31"/>
+    <sequenceFlow id="_32" sourceRef="parallelSplit" targetRef="resolveTicket"/>
     <endEvent id="_33" name="End Resolved">
       <incoming>_34</incoming>
       <inputSet/>
     </endEvent>
-    <sequenceFlow id="_34" sourceRef="_31" targetRef="_33"/>
-    <sequenceFlow id="_17" sourceRef="_16" targetRef="sendMemo"/>
+    <sequenceFlow id="_34" sourceRef="resolveTicket" targetRef="_33"/>
+    <sequenceFlow id="_17" sourceRef="parallelSplit" targetRef="sendMemo"/>
     <textAnnotation id="_11" textFormat="text/plain">
       <text>RAISE TICKET</text>
     </textAnnotation>
@@ -236,7 +236,7 @@ at the moment</text>
           <dc:Bounds height="32.8046875" width="85.0" x="879.8333333333334" y="449.2643229166667"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_16" id="Yaoqiang-_16">
+      <bpmndi:BPMNShape bpmnElement="parallelSplit" id="Yaoqiang-parallelSplit">
         <dc:Bounds height="42.0" width="42.0" x="659.3333333333334" y="310.33333333333337"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.8046875" width="31.0" x="664.8333333333334" y="354.33333333333337"/>
@@ -254,13 +254,13 @@ at the moment</text>
           <dc:Bounds height="18.8046875" width="106.0" x="989.0" y="356.19368489583337"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_18" id="Yaoqiang-_18">
+      <bpmndi:BPMNShape bpmnElement="findAddresseeToAlert" id="Yaoqiang-findAddresseeToAlert">
         <dc:Bounds height="91.0" width="119.0" x="720.8333333333334" y="418.1666666666667"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="32.8046875" width="94.0" x="733.3333333333334" y="449.2643229166667"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_31" id="Yaoqiang-_31">
+      <bpmndi:BPMNShape bpmnElement="resolveTicket" id="Yaoqiang-resolveTicket">
         <dc:Bounds height="91.0" width="119.0" x="720.8333333333334" y="145.9411764705882"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.8046875" width="84.0" x="738.3333333333334" y="184.0388327205882"/>

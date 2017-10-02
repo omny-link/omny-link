@@ -1,14 +1,15 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/custmgmt" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1422450380149" name="" targetNamespace="http://omny.link/custmgmt" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
-  <process id="SetContactStage" isClosed="false" isExecutable="true" name="Set Contact&apos;s stage" processType="None">
-    <documentation id="SetContactStage_D_1" textFormat="text/plain"><![CDATA[Move an existing contact to the specified stage]]></documentation>
+  <process id="UpdateContact" isClosed="false" isExecutable="true" name="Update Contact" processType="None">
+    <documentation id="UpdateContact_D_1" textFormat="text/plain"><![CDATA[Update an existing contact in the CRM]]></documentation>
     <extensionElements>
+      <yaoqiang:description/>
       <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
     </extensionElements>
     <ioSpecification>
       <dataInput id="_5" isCollection="false" name="contactId"/>
-      <dataInput id="_6" isCollection="false" name="stage"/>
+      <dataInput id="_6" isCollection="false" name="contact"/>
       <dataInput id="_7" isCollection="false" name="tenantId"/>
       <inputSet>
         <dataInputRefs>_5</dataInputRefs>
@@ -21,65 +22,34 @@
       <outgoing>_4</outgoing>
       <outputSet/>
     </startEvent>
-    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="setContactStage" implementation="##WebService" isForCompensation="false" name="Set contact's&#10;stage" startQuantity="1">
-      <extensionElements>
-        <activiti:field name="resourceUsername">
-          <activiti:string>userInfo('tenant-bot')</activiti:string>
-        </activiti:field>
-        <activiti:field name="resourcePassword">
-          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="jwtLoginResource">
-          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/${bpmnRest.uriToLocalId(contactId)}/stage/${stage}</activiti:expression>
-        </activiti:field>
-        <activiti:field name="headers">
-          <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
-        </activiti:field>
-        <activiti:field name="data">
-          <activiti:expression/>
-        </activiti:field>
-      </extensionElements>
-      <incoming>_4</incoming>
-      <outgoing>_3</outgoing>
-    </serviceTask>
-    <dataObject id="DO_SetContactStage_1" isCollection="false" name="Data Object"/>
+    <dataObject id="DO_UpdateContact_1" isCollection="false" name="Data Object"/>
     <endEvent id="endEvent" name="End Event">
-      <incoming>_3</incoming>
+      <incoming>_4</incoming>
       <inputSet/>
     </endEvent>
-    <sequenceFlow id="_3" sourceRef="setContactStage" targetRef="endEvent"/>
-    <sequenceFlow id="_4" sourceRef="startEvent" targetRef="setContactStage"/>
+    <sequenceFlow id="_4" sourceRef="startEvent" targetRef="endEvent"/>
     <textAnnotation id="_2" textFormat="text/plain">
-      <text>SET CONTACT'S STAGE</text>
+      <text>UPDATE CONTACT</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-SetContactStage" name="Set contact's stage" resolution="96.0">
-    <bpmndi:BPMNPlane bpmnElement="SetContactStage">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-UpdateContact" name="Update contact" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="UpdateContact">
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
         <dc:Bounds height="32.0" width="32.0" x="62.000000000000014" y="163.19230769230768"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.8" width="69.0" x="43.5" y="204.54"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="setContactStage" id="Yaoqiang-setContactStage">
-        <dc:Bounds height="81.0" width="116.0" x="348.30769230769226" y="138.69230769230768"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="32.8" width="80.0" x="366.31" y="164.79"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
-        <dc:Bounds height="32.0" width="32.0" x="690.576923076923" y="163.19230769230768"/>
+        <dc:Bounds height="32.0" width="32.0" x="500.576923076923" y="163.19230769230768"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="62.0" x="675.58" y="204.54"/>
+          <dc:Bounds height="18.8" width="62.0" x="485.58" y="204.54"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
-        <dc:Bounds height="55.0" width="173.0" x="62.000000000000014" y="53.0"/>
+        <dc:Bounds height="38.0" width="173.0" x="62.0" y="53.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="139.0" x="62.0" y="73.1"/>
+          <dc:Bounds height="18.8" width="108.0" x="62.0" y="64.6"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_5" id="Yaoqiang-_5">
@@ -91,7 +61,7 @@
       <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6">
         <dc:Bounds height="38.0" width="29.0" x="62.000000000000014" y="323.61965811965814"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="38.0" x="57.5" y="363.62"/>
+          <dc:Bounds height="18.8" width="47.0" x="53.0" y="363.62"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7">
@@ -101,17 +71,10 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_4" id="Yaoqiang-_4">
-        <di:waypoint x="94.14409997005981" y="179.19230769230768"/>
-        <di:waypoint x="348.1470588235294" y="179.19230769230768"/>
+        <di:waypoint x="94.3720411465304" y="179.19230769230768"/>
+        <di:waypoint x="500.37795885346964" y="179.19230769230768"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="6.0" x="218.15" y="169.79"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
-        <di:waypoint x="464.1470588235294" y="179.19230769230768"/>
-        <di:waypoint x="690.150017676999" y="179.19230769230768"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8" width="6.0" x="574.15" y="169.79"/>
+          <dc:Bounds height="18.8" width="6.0" x="294.38" y="169.79"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

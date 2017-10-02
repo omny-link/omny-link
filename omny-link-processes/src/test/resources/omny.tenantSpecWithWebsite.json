@@ -1,0 +1,8 @@
+{
+  "id":"acme",
+  "name":"ACME Inc",
+  "adminEmail":"tim@omny.link",
+  "adminFirstName":"Tim",
+  "adminLastName":"Stephenson",
+  "websiteIncluded": true
+}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/acctmgmt" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="5.0" expressionLanguage="http://www.w3.org/1999/XPath" id="_1482413586499" name="" targetNamespace="http://omny.link/acctmgmt" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/acctmgmt" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="5.0" expressionLanguage="http://activiti.org/Juel" id="_1482413586499" name="" targetNamespace="http://omny.link/acctmgmt" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
   <message id="omny.tenantSpec" name="omny.tenantSpec"/>
   <process id="CreateTenancy" isClosed="false" isExecutable="true" name="Create Tenancy" processType="None">
     <extensionElements>
@@ -11,11 +11,11 @@
       <outputSet/>
     </ioSpecification>
     <dataObject id="DOCreateTenancy_1" isCollection="false" name="omny_tenantSpec"/>
-    <sequenceFlow id="_28" sourceRef="_27" targetRef="createTenantJson"/>
+    <sequenceFlow id="_28" sourceRef="connectGitium" targetRef="createTenantJson"/>
     <sequenceFlow id="_26" name="No" sourceRef="_22" targetRef="createTenantJson">
       <conditionExpression><![CDATA[${omny_tenantSpec.isNull('websiteIncluded')}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="_25" name="Yes" sourceRef="_22" targetRef="createIssue"/>
+    <sequenceFlow id="_25" name="Yes" sourceRef="_22" targetRef="provisionWebsite"/>
     <sequenceFlow id="_23" sourceRef="createRepo" targetRef="_22"/>
     <sequenceFlow id="_21" sourceRef="createTenantRecord" targetRef="verifyTenancy"/>
     <sequenceFlow id="_16" sourceRef="createTenantJson" targetRef="createTenantRecord"/>
@@ -89,7 +89,7 @@
         <resourceRef>developer</resourceRef>
       </potentialOwner>
     </userTask>
-    <userTask activiti:candidateUsers="${initiator}" completionQuantity="1" id="verifyTenancy" implementation="##unspecified" isForCompensation="false" name="Verify tenancy" startQuantity="1">
+    <userTask activiti:candidateGroups="sales" completionQuantity="1" id="verifyTenancy" implementation="##unspecified" isForCompensation="false" name="Verify tenancy" startQuantity="1">
       <documentation id="verifyTenancy_D_1" textFormat="text/plain"><![CDATA[Eyeball the Omny tenancy and very likely initiate futher feature enablements]]></documentation>
       <incoming>_21</incoming>
       <outgoing>_41</outgoing>
@@ -118,22 +118,22 @@
     <dataObjectReference dataObjectRef="DOCreateTenancy_1" id="_13"/>
     <dataObjectReference dataObjectRef="DOCreateTenancy_1" id="_3"/>
     <dataObjectReference dataObjectRef="DOCreateTenancy_1" id="_7"/>
-    <userTask activiti:candidateGroups="developer" completionQuantity="1" id="createIssue" implementation="##unspecified" isForCompensation="false" name="Provision &#10;WordPress site" startQuantity="1">
-      <documentation id="createIssue_D_1" textFormat="text/plain"><![CDATA[An Ansible playbook exists to take care of most of this. See https://github.com/tstephen/ansible/blob/master/wordpress.yml]]></documentation>
+    <userTask activiti:candidateGroups="developer" completionQuantity="1" id="provisionWebsite" implementation="##unspecified" isForCompensation="false" name="Provision &#10;WordPress site" startQuantity="1">
+      <documentation id="provisionWebsite_D_1" textFormat="text/plain"><![CDATA[An Ansible playbook exists to take care of most of this. See https://github.com/tstephen/ansible/blob/master/wordpress.yml]]></documentation>
       <incoming>_25</incoming>
       <outgoing>_36</outgoing>
       <ioSpecification>
-        <dataInput id="DincreateIssue_3" isCollection="false" name="omny_tenantSpec"/>
+        <dataInput id="DinprovisionWebsite_3" isCollection="false" name="omny_tenantSpec"/>
         <inputSet>
-          <dataInputRefs>DincreateIssue_3</dataInputRefs>
+          <dataInputRefs>DinprovisionWebsite_3</dataInputRefs>
         </inputSet>
         <outputSet/>
       </ioSpecification>
       <dataInputAssociation id="_17">
         <sourceRef>_3</sourceRef>
-        <targetRef>DincreateIssue_3</targetRef>
+        <targetRef>DinprovisionWebsite_3</targetRef>
       </dataInputAssociation>
-      <potentialOwner id="createIssue_RES_1">
+      <potentialOwner id="provisionWebsite_RES_1">
         <resourceRef>developer</resourceRef>
       </potentialOwner>
     </userTask>
@@ -161,49 +161,43 @@
       <outgoing>_25</outgoing>
       <outgoing>_26</outgoing>
     </exclusiveGateway>
-    <userTask activiti:candidateGroups="developer" completionQuantity="1" id="_27" implementation="##unspecified" isForCompensation="false" name="Connect Gitium&#10;to Gitlab" startQuantity="1">
-      <documentation id="_27_D_1" textFormat="text/plain"><![CDATA[In order to version WordPress changes it is necessary to connect the Gitium plugin to the Gitlab repository. Currently this has to be done manually.]]></documentation>
+    <userTask activiti:candidateGroups="developer" completionQuantity="1" id="connectGitium" implementation="##unspecified" isForCompensation="false" name="Connect Gitium&#10;to Gitlab" startQuantity="1">
+      <documentation id="connectGitium_D_1" textFormat="text/plain"><![CDATA[In order to version WordPress changes it is necessary to connect the Gitium plugin to the Gitlab repository. Currently this has to be done manually.]]></documentation>
       <incoming>_36</incoming>
       <outgoing>_28</outgoing>
       <ioSpecification>
-        <dataInput id="Din_27_29" isCollection="false" name="omny_tenantSpec"/>
+        <dataInput id="DinconnectGitium_29" isCollection="false" name="omny_tenantSpec"/>
         <inputSet>
-          <dataInputRefs>Din_27_29</dataInputRefs>
+          <dataInputRefs>DinconnectGitium_29</dataInputRefs>
         </inputSet>
         <outputSet/>
       </ioSpecification>
       <dataInputAssociation id="_30">
         <sourceRef>_29</sourceRef>
-        <targetRef>Din_27_29</targetRef>
+        <targetRef>DinconnectGitium_29</targetRef>
       </dataInputAssociation>
-      <potentialOwner id="_27_RES_1">
+      <potentialOwner id="connectGitium_RES_1">
         <resourceRef>developer</resourceRef>
       </potentialOwner>
     </userTask>
     <dataObjectReference dataObjectRef="DOCreateTenancy_1" id="_29"/>
-    <sequenceFlow id="_36" sourceRef="createIssue" targetRef="_27"/>
+    <sequenceFlow id="_36" sourceRef="provisionWebsite" targetRef="connectGitium"/>
     <callActivity calledElement="SendAlert" completionQuantity="1" id="notifyTenancyAvailable" isForCompensation="false" name="Notify new &#10;tenancy available" startQuantity="1">
       <extensionElements>
-        <activiti:in sourceExpression="New tenant ${omny_tenantSpec.getString('tenantId','')} is live}" target="subject"/>
-        <activiti:in sourceExpression="New tenant available" target="type"/>
-        <activiti:in sourceExpression="NotifyTenantAvailable" target="memoName"/>
+        <activiti:in sourceExpression="Omny Link: New tenant ${omny_tenantSpec.getString('id','')} is available}" target="subject"/>
         <activiti:in sourceExpression="tim@omny.link" target="addressee"/>
-        <activiti:in sourceExpression="Omny Link: &lt;https://api.omny.link/index.html|Click to open Omny&gt;" target="message"/>
+        <activiti:in sourceExpression="Omny Link: &lt;a href=https://api.omny.link/index.html>Click to open Omny&lt;/a>" target="message"/>
         <activiti:in sourceExpression="omny" target="tenantId"/>
-        <activiti:in source="contactId" target="contactId"/>
       </extensionElements>
       <incoming>_38</incoming>
     </callActivity>
     <sequenceFlow id="_38" sourceRef="createTenantRecord" targetRef="notifyTenancyAvailable"/>
     <callActivity calledElement="SendAlert" completionQuantity="1" id="notifyTenancyLive" isForCompensation="false" name="Notify new&#10;tenancy live" startQuantity="1">
       <extensionElements>
-        <activiti:in sourceExpression="New tenant ${omny_tenantSpec.getString('tenantId','')} is live}" target="subject"/>
-        <activiti:in sourceExpression="New tenant live" target="type"/>
-        <activiti:in sourceExpression="NotifyTenantLive" target="memoName"/>
+        <activiti:in sourceExpression="Omny Link: New tenant ${omny_tenantSpec.getString('id','')} is live}" target="subject"/>
         <activiti:in sourceExpression="tim@omny.link" target="addressee"/>
-        <activiti:in sourceExpression="Omny Link: &lt;https://api.omny.link/index.html|Click to open Omny&gt;" target="message"/>
+        <activiti:in sourceExpression="Omny Link: &lt;a href=https://api.omny.link/index.html>Click to open Omny&lt;/a>" target="message"/>
         <activiti:in sourceExpression="omny" target="tenantId"/>
-        <activiti:in source="contactId" target="contactId"/>
       </extensionElements>
       <incoming>_40</incoming>
     </callActivity>
@@ -295,7 +289,7 @@
           <omgdc:Bounds height="18.8" width="107.0" x="111.0" y="233.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="createIssue" id="Yaoqiang-createIssue">
+      <bpmndi:BPMNShape bpmnElement="provisionWebsite" id="Yaoqiang-provisionWebsite">
         <omgdc:Bounds height="77.0" width="105.0" x="298.0" y="200.5"/>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="32.8" width="92.0" x="304.5" y="224.6"/>
@@ -313,7 +307,7 @@
           <omgdc:Bounds height="18.8" width="107.0" x="218.67" y="143.5"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_27" id="Yaoqiang-_27">
+      <bpmndi:BPMNShape bpmnElement="connectGitium" id="Yaoqiang-connectGitium">
         <omgdc:Bounds height="77.0" width="105.0" x="431.0" y="200.5"/>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="32.8" width="93.0" x="437.0" y="224.6"/>

@@ -5,6 +5,7 @@ import java.util.Calendar;
 import org.activiti.bdd.ActivitiSpec;
 import org.activiti.bdd.ext.DumpAuditTrail;
 import org.activiti.bdd.test.activiti.ExtendedRule;
+import org.activiti.bdd.test.mailserver.TestMailServer;
 import org.activiti.engine.IdentityService;
 import org.junit.After;
 import org.junit.Before;
@@ -31,6 +32,9 @@ public class ChaseContactTest {
     @Rule
     public ExtendedRule activitiRule = new ExtendedRule("test-activiti.cfg.xml");
 
+    @Rule
+    public TestMailServer mailServer = new TestMailServer();
+
     @Before
     public void setUp() {
         IdentityService idSvc = activitiRule.getIdentityService();
@@ -51,17 +55,16 @@ public class ChaseContactTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore
     @org.activiti.engine.test.Deployment(resources = {
             "processes/link/omny/casemgmt/ChaseContact.bpmn",
-            "processes/link/omny/alerts/SendAlertNoOp.bpmn",
+            "processes/link/omny/alerts/SendAlertEmail.bpmn",
             "processes/link/omny/mail/SendMemoNoOp.bpmn",
             "processes/link/omny/custmgmt/UpdateContactNoOp.bpmn" },
             tenantId = TENANT_ID)
     public void testChaseContactResponseAfter1Chase() throws Exception {
         new ActivitiSpec(activitiRule, "testChaseContactResponseAfter1Chase")
                 .whenEventOccurs(
-                        "Contract proposed",
+                        "Request info from contact",
                         PROCESS_KEY,
                         ActivitiSpec.emptySet(),
                         ActivitiSpec.buildMap(
@@ -84,17 +87,16 @@ public class ChaseContactTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Ignore
     @Test
     @org.activiti.engine.test.Deployment(resources = {
             "processes/link/omny/casemgmt/ChaseContact.bpmn",
-            "processes/link/omny/alerts/SendAlertNoOp.bpmn",
+            "processes/link/omny/alerts/SendAlertEmail.bpmn",
             "processes/link/omny/mail/SendMemoNoOp.bpmn",
             "processes/link/omny/custmgmt/UpdateContactNoOp.bpmn" }, tenantId = TENANT_ID)
     public void testChaseContactResponseAfter2Chases() throws Exception {
         new ActivitiSpec(activitiRule, "testChaseContactResponseAfter2Chases")
                 .whenEventOccurs(
-                        "Contract proposed",
+                        "Request info from contact",
                         PROCESS_KEY,
                         ActivitiSpec.emptySet(),
                         ActivitiSpec.buildMap(
@@ -102,21 +104,53 @@ public class ChaseContactTest {
                                 ActivitiSpec.newPair("contactId", CONTACT_ID),
                                 ActivitiSpec.newPair("memoName", USERNAME)),
                         TENANT_ID)
-                // .thenVariableEquals("waitDuration", "P1D")
                 .whenExecuteJobsForTime(2000)
                 .thenSubProcessCalled("SendMemo")
-                // .thenWaitingAt("waitForRequiredInfo",
-                // ActivitiSpec.emptySet())
                 .whenProcessTimePassed(Calendar.DATE, 2)
                 .thenExtension(new DumpAuditTrail(activitiRule))
-                // .thenTimerExpired("waitForRequiredInfoTimer")
-                /* NB Activiti expects id of receiveTask not message name */
-                // .whenFollowUpMsgReceived("Contact replies with required info",
-                // "waitForRequiredInfo",
-                // "/omny.contactRequiredInfo.json", TENANT_ID)
-                // .whenExecuteJobsForTime(2000)
+                .whenExecuteJobsForTime(2000)
                 .thenSubProcessCalled("SendAlert")
+                /* NB Activiti expects id of receiveTask not message name */
+                .whenFollowUpMsgReceived("Contact replies with required info",
+                        "waitForRequiredInfo",
+                        "/omny.contactRequiredInfo.json", TENANT_ID)
+                .whenExecuteJobsForTime(2000)
                 .thenProcessEndedAndInExclusiveEndEvent("endEvent")
+                .thenExtension(new DumpAuditTrail(activitiRule));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    @Ignore
+    @org.activiti.engine.test.Deployment(resources = {
+            "processes/link/omny/casemgmt/ChaseContact.bpmn",
+            "processes/link/omny/alerts/SendAlertEmail.bpmn",
+            "processes/link/omny/mail/SendMemoNoOp.bpmn",
+            "processes/link/omny/custmgmt/UpdateContactNoOp.bpmn" }, tenantId = TENANT_ID)
+    public void testChaseContactTwiceAndGiveUp() throws Exception {
+        new ActivitiSpec(activitiRule, "testChaseContactResponseAfter2Chases")
+                .whenEventOccurs(
+                        "Request info from contact",
+                        PROCESS_KEY,
+                        ActivitiSpec.emptySet(),
+                        ActivitiSpec.buildMap(
+                                ActivitiSpec.newPair("tenantId", TENANT_ID),
+                                ActivitiSpec.newPair("contactId", CONTACT_ID),
+                                ActivitiSpec.newPair("memoName", USERNAME)),
+                        TENANT_ID)
+                .whenExecuteJobsForTime(2000)
+                .thenSubProcessCalled("SendMemo")
+                .thenVariableEquals("noOfChases", 2)
+
+                .whenProcessTimePassed(Calendar.DATE, 2)
+
+                .thenExtension(new DumpAuditTrail(activitiRule))
+                .whenExecuteJobsForTime(2000)
+                .thenSubProcessCalled("SendAlert")
+                .whenProcessTimePassed(Calendar.DATE, 2)
+                .whenExecuteJobsForTime(2000)
+                .thenSubProcessCalled("SendAlert")
+                .thenProcessEndedAndInExclusiveEndEvent("endWithoutSuccess")
                 .thenExtension(new DumpAuditTrail(activitiRule));
     }
 }

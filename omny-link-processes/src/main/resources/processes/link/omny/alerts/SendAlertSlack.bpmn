@@ -3,9 +3,23 @@
   <process id="SendAlert" isClosed="false" isExecutable="true" name="Send notification of an event to Slack" processType="None">
     <documentation id="SendAlert_D_1" textFormat="text/plain"><![CDATA[Send notification of an event to Slack.]]></documentation>
     <extensionElements>
+      <yaoqiang:description/>
       <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
     </extensionElements>
+    <ioSpecification>
+      <dataInput id="_2" isCollection="false" name="addressee"/>
+      <dataInput id="_6" isCollection="false" name="message"/>
+      <dataInput id="_8" isCollection="false" name="subject"/>
+      <dataInput id="_9" isCollection="false" name="tenantId"/>
+      <inputSet>
+        <dataInputRefs>_2</dataInputRefs>
+        <dataInputRefs>_6</dataInputRefs>
+        <dataInputRefs>_8</dataInputRefs>
+        <dataInputRefs>_9</dataInputRefs>
+      </inputSet>
+      <outputSet/>
+    </ioSpecification>
     <endEvent id="endWithConfirmation" name="End event">
       <incoming>_5</incoming>
       <inputSet/>
@@ -17,18 +31,47 @@
     <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="_3" implementation="##WebService" isForCompensation="false" name="Notify" startQuantity="1">
       <extensionElements>
         <activiti:field name="globalResource">
-          <activiti:expression>https://hooks.slack.com/services/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</activiti:expression>
+            <activiti:expression>https://hooks.slack.com/services/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</activiti:expression>
         </activiti:field>
         <activiti:field name="headers">
           <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
         </activiti:field>
         <activiti:field name="data">
-          <activiti:expression><![CDATA[{ "channel":"${addressee}","attachments":[ { "fallback":"${message}","pretext":"${subject}", "color":"#d9534f","fields":[{"title":"${type}: ${tenantId}","value":"${message}","short":false }]}]}]]></activiti:expression>
+            <activiti:expression><![CDATA[{ "channel":"${addressee}","attachments":[ { "fallback":"${message}","pretext":"${subject}", "color":"#d9534f","fields":[{"title":"${type}: ${tenantId}","value":"${message}","short":false }]}]}]]></activiti:expression>
         </activiti:field>
         <activiti:field expression="slackId=Location" name="responseHeaders"/>
-      </extensionElements>    
+      </extensionElements>
       <incoming>_4</incoming>
       <outgoing>_5</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_3_2" isCollection="false" name="addressee"/>
+        <dataInput id="Din_3_6" isCollection="false" name="message"/>
+        <dataInput id="Din_3_8" isCollection="false" name="subject"/>
+        <dataInput id="Din_3_9" isCollection="false" name="tenantId"/>
+        <inputSet>
+          <dataInputRefs>Din_3_2</dataInputRefs>
+          <dataInputRefs>Din_3_6</dataInputRefs>
+          <dataInputRefs>Din_3_8</dataInputRefs>
+          <dataInputRefs>Din_3_9</dataInputRefs>
+        </inputSet>
+        <outputSet/>
+      </ioSpecification>
+      <dataInputAssociation id="_10">
+        <sourceRef>_2</sourceRef>
+        <targetRef>Din_3_2</targetRef>
+      </dataInputAssociation>
+      <dataInputAssociation id="_11">
+        <sourceRef>_6</sourceRef>
+        <targetRef>Din_3_6</targetRef>
+      </dataInputAssociation>
+      <dataInputAssociation id="_12">
+        <sourceRef>_8</sourceRef>
+        <targetRef>Din_3_8</targetRef>
+      </dataInputAssociation>
+      <dataInputAssociation id="_13">
+        <sourceRef>_9</sourceRef>
+        <targetRef>Din_3_9</targetRef>
+      </dataInputAssociation>
     </serviceTask>
     <sequenceFlow id="_4" sourceRef="startEvent" targetRef="_3"/>
     <sequenceFlow id="_5" sourceRef="_3" targetRef="endWithConfirmation"/>
@@ -36,44 +79,100 @@
       <text>SEND NOTIFICATION OF AN EVENT TO SLACK</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-SendAlert" name="Untitled Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-SendAlert" name="Send alert to Slack" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="SendAlert">
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
-        <dc:Bounds height="32.0" width="32.0" x="47.0" y="222.5"/>
+        <dc:Bounds height="32.0" width="32.0" x="47.0" y="172.5"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="63.0" x="31.5" y="263.6748046875"/>
+          <dc:Bounds height="18.8" width="69.0" x="28.5" y="213.83"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7">
-        <dc:Bounds height="55.0" width="349.0" x="47.0" y="42.0"/>
+        <dc:Bounds height="55.0" width="349.0" x="46.374999999999986" y="42.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="247.0" x="47.0" y="62.0224609375"/>
+          <dc:Bounds height="18.8" width="257.0" x="46.37" y="62.1"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endWithConfirmation" id="Yaoqiang-endWithConfirmation">
-        <dc:Bounds height="32.0" width="32.0" x="823.0000000000001" y="222.5"/>
+        <dc:Bounds height="32.0" width="32.0" x="513.0000000000001" y="172.5"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="58.0" x="810.0000000000001" y="262.544921875"/>
+          <dc:Bounds height="18.8" width="62.0" x="498.0" y="212.7"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_3" id="Yaoqiang-_3">
-        <dc:Bounds height="79.0" width="121.0" x="398.0" y="199.0"/>
+        <dc:Bounds height="79.0" width="121.0" x="235.50000000000006" y="149.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="38.0" x="439.5" y="231.0224609375"/>
+          <dc:Bounds height="18.8" width="38.0" x="277.0" y="181.1"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
-        <di:waypoint x="519.5" y="238.5"/>
-        <di:waypoint x="823.5" y="238.5"/>
+      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
+        <dc:Bounds height="38.0" width="29.0" x="46.374999999999986" y="264.25"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="668.5" y="229.0224609375"/>
+          <dc:Bounds height="18.8" width="67.0" x="27.37" y="304.25"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6">
+        <dc:Bounds height="38.0" width="29.0" x="46.374999999999986" y="337.16666666666663"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="59.0" x="31.37" y="377.17"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_8" id="Yaoqiang-_8">
+        <dc:Bounds height="38.0" width="29.0" x="46.374999999999986" y="410.08333333333326"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="47.0" x="37.37" y="450.08"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_9" id="Yaoqiang-_9">
+        <dc:Bounds height="38.0" width="29.0" x="46.374999999999986" y="482.9999999999999"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="52.0" x="34.87" y="523.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_13" id="Yaoqiang-_13">
+        <di:waypoint x="75.375" y="498.5"/>
+        <di:waypoint x="257.625" y="498.5"/>
+        <di:waypoint x="257.625" y="228.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="254.63" y="445.22"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
+        <di:waypoint x="75.375" y="427.25"/>
+        <di:waypoint x="257.625" y="427.25"/>
+        <di:waypoint x="257.625" y="228.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="254.63" y="409.6"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_11" id="Yaoqiang-_11">
+        <di:waypoint x="75.375" y="358.5"/>
+        <di:waypoint x="257.625" y="358.5"/>
+        <di:waypoint x="257.625" y="228.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="228.5" y="349.1"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_10" id="Yaoqiang-_10">
+        <di:waypoint x="75.375" y="287.25"/>
+        <di:waypoint x="257.625" y="287.25"/>
+        <di:waypoint x="257.625" y="228.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="192.88" y="277.85"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
+        <di:waypoint x="356.375" y="188.5"/>
+        <di:waypoint x="513.375" y="188.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="431.88" y="179.1"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_4" id="Yaoqiang-_4">
-        <di:waypoint x="79.5" y="238.5"/>
-        <di:waypoint x="398.5" y="238.5"/>
+        <di:waypoint x="79.375" y="188.5"/>
+        <di:waypoint x="235.375" y="188.5"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.955078125" width="6.0" x="236.0" y="229.0224609375"/>
+          <dc:Bounds height="18.8" width="6.0" x="154.38" y="179.1"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

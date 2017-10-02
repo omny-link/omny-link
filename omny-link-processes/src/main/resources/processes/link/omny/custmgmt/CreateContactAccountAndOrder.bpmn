@@ -52,7 +52,7 @@
         <targetRef>_3</targetRef>
       </dataOutputAssociation>
       <script><![CDATA[
-var System = java.lang.System;
+//var System = java.lang.System;
 var json = execution.getVariable('json');
 //System.out.println('JSON: '+json);
 var extContact = JSON.parse(json);

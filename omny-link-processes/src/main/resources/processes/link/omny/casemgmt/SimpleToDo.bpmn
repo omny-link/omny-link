@@ -64,13 +64,10 @@
     </startEvent>
     <callActivity calledElement="SendAlert" completionQuantity="1" id="_23" isForCompensation="false" name="Notify task arrival" startQuantity="1">
       <extensionElements>
-        <activiti:in sourceExpression="New task requires your attention" target="subject"/>
-        <activiti:in sourceExpression="New Task" target="type"/>
-        <activiti:in sourceExpression="NotifyToDo" target="memoName"/>
+        <activiti:in sourceExpression="Omny Link: A new task requires your attention" target="subject"/>
         <activiti:in sourceExpression="${who}" target="addressee"/>
-        <activiti:in sourceExpression="Please review here: &lt;https://api.omny.link/work.html|Click to open work manager&gt;" target="message"/>
+        <activiti:in sourceExpression="Please review here: &lt;a href=https://api.omny.link/work.html?q=${execution.getProcessInstanceId()}>Click to open work manager&lt;/a>" target="message"/>
         <activiti:in source="tenantId" target="tenantId"/>
-        <activiti:in source="contactId" target="contactId"/>
         <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_29</incoming>
@@ -78,12 +75,10 @@
     <sequenceFlow id="_29" sourceRef="_4" targetRef="_23"/>
     <callActivity calledElement="SendAlert" completionQuantity="1" id="_31" isForCompensation="false" name="Notify task completion" startQuantity="1">
       <extensionElements>
-        <activiti:in sourceExpression="Task completed" target="subject"/>
-        <activiti:in sourceExpression="Task completed" target="type"/>
+        <activiti:in sourceExpression="Omny Link: Task completed" target="subject"/>
         <activiti:in sourceExpression="${notify}" target="addressee"/>
-        <activiti:in sourceExpression="Please review here: &lt;https://api.omny.link/work.html|Click to open work manager&gt;" target="message"/>
+        <activiti:in sourceExpression="Please review here: &lt;a href=https://api.omny.link/audit.html?instanceId=${execution.getProcessInstanceId()}>Click to open work manager&lt;/a>" target="message"/>
         <activiti:in source="tenantId" target="tenantId"/>
-        <activiti:in source="contactId" target="contactId"/>
         <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_32</incoming>
@@ -114,13 +109,10 @@
     </boundaryEvent>
     <callActivity calledElement="SendAlert" completionQuantity="1" id="_28" isForCompensation="false" name="Alert task &#10;not yet done" startQuantity="1">
       <extensionElements>
-        <activiti:in sourceExpression="Outstanding task requires your attention" target="subject"/>
-        <activiti:in sourceExpression="Outstanding Task" target="type"/>
-        <activiti:in sourceExpression="NotifyToDoOutstanding" target="memoName"/>
+        <activiti:in sourceExpression="Omny Link: Outstanding task requires your attention" target="subject"/>
         <activiti:in sourceExpression="${who}" target="addressee"/>
-        <activiti:in sourceExpression="Please review here: &lt;https://api.omny.link/work.html|Click to open work manager&gt;" target="message"/>
+        <activiti:in sourceExpression="Please review here: &lt;a href=https://api.omny.link/work.html?q=${execution.getProcessInstanceId()}>Click to open work manager&lt;/a>" target="message"/>
         <activiti:in source="tenantId" target="tenantId"/>
-        <activiti:in source="contactId" target="contactId"/>
         <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_30</incoming>
@@ -158,7 +150,7 @@ who may then specify the person who will do it (actor).</text>
     </textAnnotation>
     <association associationDirection="None" id="_24" sourceRef="_21" targetRef="_4"/>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-SimpleToDo" name="Untitled Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-SimpleToDo" name="Simple TODO" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="SimpleToDo">
       <bpmndi:BPMNShape bpmnElement="doSomething" id="Yaoqiang-doSomething">
         <omgdc:Bounds height="78.0" width="110.0" x="576.9285714285714" y="259.57142857142856"/>
