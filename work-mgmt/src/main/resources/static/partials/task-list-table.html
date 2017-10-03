@@ -5,7 +5,7 @@
       <th on-click="sort:businessKey">From / Regarding<span class="sortable {{ sorted('businessKey') }} glyphicon"></th>
       <th on-click="sort:name">Task<span class="sortable {{ sorted('name') }} glyphicon"></th>
       <th on-click="sort:createTime">Created<span class="sortable {{ sorted('createTime') }} glyphicon"></th>
-      <th on-click="@this.sort(taskLocalVariables['deferUntil'])">Deferred Until<span class="sortable {{ sorted('taskLocalVariables[\"deferUntil\"]') }} glyphicon"></th>
+      <th on-click="@this.sort(taskLocalVariables['deferUntil'])">Remind<span class="sortable {{ sorted('taskLocalVariables[\"deferUntil\"]') }} glyphicon"></th>
       <th on-click="sort:dueDate">Due<span class="sortable {{ sorted('dueDate') }} glyphicon"></th>
       <!--th class="col-truncate" style="width: 400px;">Description</th-->
       <th on-click="sort:assignee">Assigned<span class="sortable {{ sorted('assignee') }} glyphicon"></th>
@@ -15,7 +15,7 @@
   <tbody>
   {{#each sort(xTasks,sortColumn,sortAsc):i}}
     {{# !matchPage('work.html') || (matchSearch(this) && matchFilter(this,i)) }}
-    <tr class="{{renderPriority(this)}}" data-href="{{_links.self.href}}">
+    <tr class="{{renderPriority(this)}}" data-href="/tasks/{{id}}">
       <td on-click="edit(this)">{{i+1}}</td>
       <td on-click="edit(this)">{{businessKey}}</td>
       <td class="col-truncate" on-click="edit(this)">{{name == null ? taskDefinitionKey.toLabel() : name}}</td>

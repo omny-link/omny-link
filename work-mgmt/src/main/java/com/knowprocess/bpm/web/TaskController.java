@@ -69,11 +69,7 @@ public class TaskController {
         LOGGER.info(String.format("updateTask %1$s", taskId));
 
         if (complete != null) {
-            LOGGER.debug(String.format(
-                    "Completing task %1$s with variables %2$s", taskId,
-                    t.getProcessVariables()));
-            processEngine.getTaskService().complete(taskId,
-                    t.getProcessVariables());
+            completeTask(taskId, t);
         } else {
             org.activiti.engine.task.Task dest = processEngine.getTaskService()
                     .createTaskQuery().taskId(taskId).singleResult();
@@ -103,6 +99,14 @@ public class TaskController {
             }            
         }
         return t;
+    }
+
+    protected void completeTask(String taskId, Task t) {
+        LOGGER.debug(String.format(
+                "Completing task %1$s with variables %2$s", taskId,
+                t.getProcessVariables()));
+        processEngine.getTaskService().complete(taskId,
+                t.getProcessVariables());
     }
 
     protected Date getRelativeDate(String defer) {

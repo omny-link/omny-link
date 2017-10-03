@@ -280,19 +280,8 @@ var BaseRactive = Ractive.extend({
     console.log('initControls');
     ractive.initAutoComplete();
     ractive.initAutoNumeric();
-    ractive.initDatepicker();
     ractive.initContentEditable();
     ractive.initHelp();
-  },
-  initDatepicker: function() {
-    console.log('initDatepicker');
-    if ($('.datepicker')!=undefined && $('.datepicker').length>0) {
-      $('.datepicker').datepicker({
-        format: "dd/mm/yyyy",
-        autoclose: true,
-        todayHighlight: true
-      });
-    }
   },
   initHelp: function() {
     $( "body" ).keypress(function( event ) {

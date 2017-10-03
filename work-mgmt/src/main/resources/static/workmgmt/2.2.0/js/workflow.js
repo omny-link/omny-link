@@ -60,7 +60,6 @@ var ractive = new BaseRactive({
     console.info('initControls');
 //    ractive.initAutoComplete();
 //    ractive.initAutoNumeric();
-//    ractive.initDatepicker();
   },
   oninit: function() {
 
