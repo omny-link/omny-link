@@ -394,6 +394,7 @@ public class ContactController extends BaseTenantAwareController{
      *
      * @return contacts for that tenant with the specified email address.
      */
+    @Transactional
     @RequestMapping(value = "/searchByEmail", method = RequestMethod.GET, params = { "email" })
     public @ResponseBody List<ContactResource> searchByEmail(
             @PathVariable("tenantId") String tenantId,
@@ -645,7 +646,6 @@ public class ContactController extends BaseTenantAwareController{
         }
     }
 
-    // @Transactional(value = TxType.REQUIRES_NEW)
     public void updateKnownContact(String tenantId, String uuid,
             List<Contact> contacts, Contact anonContact) {
         for (Contact contact : contacts) {
@@ -991,6 +991,7 @@ public class ContactController extends BaseTenantAwareController{
         // maybe due to Spring introspection changes implied by #511?
         if (resource instanceof ContactResource) {
             ContactResource c = ((ContactResource) resource);
+            c.setCustomFields(contact.getCustomFields());
             if (c.getAccount()!=null) {
                 c.getAccount().setContact(null);
             }
@@ -1016,16 +1017,16 @@ public class ContactController extends BaseTenantAwareController{
             BeanUtils.getPropertyDescriptor(resource.getClass(), "selfRef")
                     .getWriteMethod().invoke(resource, detail.getHref());
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.warn(String.format("Unable to set selfRef for contact %1$d"),
+                    contact.getId());
         }
         try {
             BeanUtils.getPropertyDescriptor(resource.getClass(), "alerts")
                     .getWriteMethod()
                     .invoke(resource, contact.getAlertsAsList());
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.warn(String.format("Unable to set alerts for contact %1$d"),
+                    contact.getId());
         }
 
         return resource;
