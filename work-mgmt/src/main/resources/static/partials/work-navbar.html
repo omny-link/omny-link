@@ -17,7 +17,7 @@
     <li on-click="filter:{idx:6, field: 'dueDate', func: 'isDueThisMonth'}">Show due this month</li>
     <li class="divider"></li>
     <li on-click="filter:{idx:8, field: 'taskLocalVariables.deferUntil', func: 'isActive'}">Show active</li>
-    <li on-click="filter:{idx:9, field: 'taskLocalVariables.deferUntil', func: 'isDeferred'}">Show deferred</li>
+    <li on-click="filter:{idx:9, field: 'taskLocalVariables.deferUntil', func: 'isDeferred'}">Show future reminders</li>
   </ul>
 </a>
 {{#if tenant.workActions}}

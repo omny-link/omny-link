@@ -8,31 +8,22 @@
     {{#current.description}}
       <p class="col-md-12 alert-info">{{current.description}}</p>
     {{/}}
-    <div class="col-md-4 col-sm-4 col-xs-12">
-      <ul class="form edit-form">
+    <div class="col-md-12">
+      <ul class="form-inline edit-form">
         <li class="form-group">
-          <label class="col-md-4">Created:</label>
-          <input class="form-control" id="curCreated" disabled readonly value="{{formatDate(current.createTime)}}">
+          <label class="">Created:</label>
+          <input class="form-control" id="curCreated" disabled readonly twoway="false" value="{{formatDate(current.createTime)}}">
         </li>
-      </ul>
-    </div>
-    <div class="col-md-4 col-sm-4 col-xs-12">
-      <ul class="form edit-form">
         <li class="form-group">
-          <label class="col-md-4">Due:</label>
-          <div class="input-group date" data-provide="datepicker" data-date-format="dd/mm/yyyy" data-date="{{current.dueDate}}" data-date-autoclose="true" data-date-start-date="1d" data-date-today-highlight="true" style="float: right; top: 3px">
-            <input class="form-control" id="curDueDate" placeholder="dd/mm/yyyy" {{#current.processVariables.initiator!=profile.email}}readonly disabled{{/}}>
-            <div class="input-group-addon">
-              <span class="glyphicon glyphicon-btn glyphicon-th"></span>
-            </div>
-          </div>
+          <label class="">Remind:</label>
+          <input class="form-control" id="curDeferDate" readonly disabled twoway="false" value="{{formatDate(current.taskLocalVariables['deferUntil'])}}">
         </li>
-      </ul>
-    </div>
-    <div class="col-md-4 col-sm-4 col-xs-12">
-      <ul class="form edit-form">
+        <li class="form-group">
+          <label class="">Due:</label>
+          <input class="form-control" id="curDueDate" on-change="save()" placeholder="yyyy-mm-dd" {{#current.processVariables.initiator!=profile.email}}readonly disabled{{/}} type="date" value="{{current.dueDate}}">
+        </li>
         <li class="form-group initiator">
-          <label class="col-md-4">Started By:</label>
+          <label class="">Started By:</label>
           {{#if current.processVariables['initiator']==undefined || current.processVariables['initiator']=='anonymousUser'}}
             <span class="initiator-img" style="margin-top:-2px" title="Omny Link"></span>
           {{else}}
@@ -55,7 +46,9 @@
       <li class="btn-warning" on-click="deferTask('P7D')">In a week</li>
       <li class="btn-warning" on-click="deferTask('P14D')">In a fortnight</li>
       <li class="btn-warning" on-click="deferTask('P30D')">In a month</li>
-      <li class="btn-warning text-warning warning"><input class="form-control" min="{{today}}" on-change="deferTask(this.value)" style="width: 165px" type="date"/></li>
+      <li class="btn-warning text-warning warning">
+        <input class="form-control" min="{{today}}" on-change="deferTask()" style="width: 165px" type="date" value="{{deferUntil}}"/>
+      </li>
     </ul>
   </div>
 

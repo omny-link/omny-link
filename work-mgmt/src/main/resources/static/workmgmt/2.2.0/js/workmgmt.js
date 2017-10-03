@@ -6,6 +6,15 @@ var ractive = new BaseRactive({
   template: '#template',
 
   partials: {
+    profileArea: '',
+    titleArea: '',
+    loginSect: '',
+    workListSect: '',
+    workCurrentSect: '',
+    sidebar: '',
+    helpModal: '',
+    customActionModal: '',
+    supportBar: '',
     defaultCtrl: function() {
       return $('#defaultTemplate').html();
     },
@@ -147,6 +156,7 @@ var ractive = new BaseRactive({
       } else {
         return ( (obj.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+          || (obj.processInstanceId.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.taskDefinitionKey.toLabel().toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
           || (searchTerm.startsWith('created>') && new Date(obj.firstContact)>new Date(ractive.get('searchTerm').substring(8)))
@@ -204,9 +214,10 @@ var ractive = new BaseRactive({
     console.log('collapseSendMessage...');
     $('#sendMessage').slideUp();
   },
-  deferTask: function(until) {
-    until = until == undefined ? 'PT24H' : until;
+  deferTask: function() {
+    until = ractive.get('deferUntil') == undefined ? 'PT24H' : ractive.get('deferUntil');
     console.log('deferTask until: '+until);
+    $('#remindBtn').dropdown('toggle');
     ractive.submitTask('defer='+until);
   },
   edit: function(task) {
@@ -239,17 +250,7 @@ var ractive = new BaseRactive({
       ractive.merge('tasks', data);
       ractive.set('xTasks', ractive.get('tasks'));
       if (ractive.hasRole('admin')) $('.admin').show();
-      ractive.set('searchMatched',$('#tasksTable tbody tr:visible').length);
-
-      if (getSearchParameters()['id']!=undefined) {
-        ractive.select({ id: getSearchParameters()['id'] })
-      }
-    });
-  },
-  fetchUserNotes: function () {
-    console.log('fetchUserNotes...');
-    $.getJSON(ractive.getServer()+'/tasks/'+ractive.get('current.id')+'/notes',  function( data ) {
-      ractive.merge('currentNotes', data);
+      ractive.showSearchMatched();
     });
   },
   filter: function(filter) {
@@ -257,8 +258,7 @@ var ractive = new BaseRactive({
     ractive.set('filter',filter);
     $('.omny-dropdown.dropdown-menu li').removeClass('selected')
     $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
-    ractive.set('searchMatched',$('#tasksTable tbody tr:visible').length);
-    $('input[type="search"]').blur();
+    ractive.showSearchMatched();
   },
   findFormProperty: function(name) {
     console.log('findFormProperty: '+name);
@@ -441,6 +441,7 @@ var ractive = new BaseRactive({
 //      });
       // avoid getting 1 Jan 1970
       if (data.dueDate==undefined) data.dueDate='';
+      else data.dueDate = new Date(data.dueDate).toISOString().substring(0,10);
       ractive.set('current', data);
 
       // Remove previous initiators (one added with each select, possible ractive binding bug)
@@ -453,11 +454,7 @@ var ractive = new BaseRactive({
         $('.initiator-img').empty().append('<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(ractive.get('current.processVariables')["initiator"])+'?s=34"/>');
       }
       ractive.set('saveObserver',true);
-      // due date handling
-      if ($('#curDueDate').datepicker()!=undefined) $('#curDueDate').datepicker('destroy');
-      $('#curDueDate').datepicker('update',new Date(ractive.get('current.dueDate')));
     });
-//    ractive.fetchUserNotes();
     ractive.showTask();
     $('#currentSect').slideDown();
   },
@@ -491,6 +488,14 @@ var ractive = new BaseRactive({
     $('#currentSect').slideUp();
     $('#tasksTable').slideDown({ queue: true });
   },
+  showSearchMatched: function() {
+    ractive.set('searchMatched',$('#tasksTable tbody tr').length);
+    if ($('#tasksTable tbody tr:visible').length==1) {
+      var taskId = $('#tasksTable tbody tr:visible').data('href')
+      var task = Array.findBy('id',ractive.localId(taskId),ractive.get('tasks'))
+      ractive.select( task );
+    }
+  },
   showTask: function() {
     console.log('showResults');
     $('#tasksTableToggle').addClass('glyphicon-triangle-right').removeClass('glyphicon-triangle-bottom');
@@ -503,8 +508,6 @@ var ractive = new BaseRactive({
 
     var id = ractive.get('current').id;
     $('#currentSect').hide();
-    var due = $('#curDueDate').val();
-    ractive.set('current.dueDate', new Date(due.substring(6),due.substring(3,5)-1,due.substring(0,2)).toISOString());
     var t = ractive.get('current');
     t.tenantId = ractive.get('tenant.id');
     $.ajax({
@@ -545,13 +548,6 @@ var ractive = new BaseRactive({
   }
 });
 
-ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
-  console.log('searchTerm changed');
-  ractive.showResults();
-  setTimeout(function() {
-    ractive.set('searchMatched',$('#tasksTable tbody tr').length);
-  }, 500);
-});
 ractive.on( 'filter', function ( event, filter ) {
   console.info('filter on '+JSON.stringify(event)+','+filter.idx);
   ractive.filter(filter);
