@@ -9,6 +9,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("url", help="api url to call")
 parser.add_argument("-u", "--user", required=True,
     help="USER[:PASSWORD]  Server user and password")
+parser.add_argument("-X", "--verb", help="specify HTTP verb explicitly (GET and POST are implicit)")
 parser.add_argument("-v", "--verbose", help="increase output verbosity",
     action="store_true")
 args = parser.parse_args()
@@ -38,6 +39,8 @@ if args.verbose:
   print('connecting to {}'.format(args.url))
 
 req = urllib.request.Request(args.url, headers = headers)
+if args.verb:
+  req.get_method = lambda: args.verb
 resp = urllib.request.urlopen(req)
 respData = resp.read()
 
