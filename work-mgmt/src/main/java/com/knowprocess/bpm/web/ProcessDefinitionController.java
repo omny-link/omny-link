@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.knowprocess.bpm.api.ReportableException;
 import com.knowprocess.bpm.model.Deployment;
 import com.knowprocess.bpm.model.ModelIssue;
 import com.knowprocess.bpm.model.ProcessDefinition;
@@ -50,7 +51,7 @@ public class ProcessDefinitionController {
             .getLogger(ProcessDefinitionController.class);
 
     private static final String MSG_INTROSPECTOR_RESOURCES = "/static/xslt/bpmn2msgs.xslt";
-    
+
     private static final String DIAG_INTROSPECTOR_RESOURCES = "/static/xslt/bpmn2diags.xslt";
 
     private static final String RENDERER_RESOURCES = "/static/xslt/bpmn2svg.xslt";
@@ -62,7 +63,7 @@ public class ProcessDefinitionController {
     private ProcessModelRepository processModelRepo;
 
     private TransformTask messageIntrospector;
-    
+
     private TransformTask diagramIntrospector;
 
     private static TransformTask renderer;
@@ -321,9 +322,60 @@ public class ProcessDefinitionController {
     @RequestMapping(value = "/{id}/{diagramId}.svg", method = RequestMethod.GET, produces = "image/svg+xml")
     public @ResponseBody byte[] showBpmnDiagramAsSvg(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("id") String id, 
+            @PathVariable("id") String id,
             @PathVariable("diagramId") String diagramId) throws IOException {
         return getBpmnDiagramAsSvg(tenantId, id, diagramId).getBytes();
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.DELETE)
+    public @ResponseBody void deleteObsolete(
+            @PathVariable("tenantId") String tenantId) {
+        LOGGER.info(String.format("deleting obsolete definitions for %1$s", tenantId));
+        List<org.activiti.engine.repository.ProcessDefinition> defs = processEngine
+                .getRepositoryService()
+                .createProcessDefinitionQuery()
+                .processDefinitionTenantId(tenantId)
+                .list();
+        for (org.activiti.engine.repository.ProcessDefinition def : defs) {
+            deleteObsoleteByKey(tenantId, def.getKey());
+        }
+    }
+
+    @RequestMapping(value = "/{key}", method = RequestMethod.DELETE)
+    public @ResponseBody void deleteObsoleteByKey(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("key") String key) {
+        LOGGER.info(String.format("Deleting obsolete versions of: %1$s for %2$s", key, tenantId));
+        try {
+            org.activiti.engine.repository.ProcessDefinition latest = processEngine
+                    .getRepositoryService().createProcessDefinitionQuery()
+                    .processDefinitionKey(key)
+                    .processDefinitionTenantId(tenantId)
+                    .latestVersion().singleResult();
+            List<org.activiti.engine.repository.ProcessDefinition> defs = processEngine
+                    .getRepositoryService()
+                    .createProcessDefinitionQuery()
+                    .processDefinitionTenantId(tenantId)
+                    .processDefinitionKey(key).list();
+            for (org.activiti.engine.repository.ProcessDefinition def : defs) {
+                if (def.getVersion() == latest.getVersion()) {
+                    continue;
+                }
+                long count = processEngine.getRuntimeService()
+                        .createProcessInstanceQuery()
+                        .processDefinitionId(def.getId()).count();
+                if (count == 0) {
+                    LOGGER.info("Deleting obsolete process {} for {}",
+                            def.getId(), def.getTenantId());
+                    processEngine.getRepositoryService()
+                            .deleteDeployment(def.getDeploymentId());
+                }
+            }
+        } catch (Exception e) {
+            String msg = String.format("Unable to delete definition with key %1$s, does it still have instances?", key);
+            LOGGER.error(msg, e);
+            throw new ReportableException(msg, e);
+        }
     }
 
     protected String getBpmnDiagramAsSvg(String tenantId, String id,
@@ -377,7 +429,7 @@ public class ProcessDefinitionController {
         }
         return diagramIntrospector;
     }
-    
+
     protected TransformTask getProcessRenderer() {
         if (renderer == null) {
             renderer = new TransformTask();
