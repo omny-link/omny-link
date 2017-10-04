@@ -9,16 +9,19 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.impl.identity.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.knowprocess.bpm.impl.AuthenticationHelper;
 import com.knowprocess.bpm.model.FormProperty;
 import com.knowprocess.bpm.model.Task;
 import com.rometools.rome.feed.atom.Entry;
@@ -63,13 +67,13 @@ public class TaskController {
     @RequestMapping(value = "/task/{taskId}", method = RequestMethod.PUT)
     public @ResponseBody Task updateTask(
             @PathVariable("taskId") String taskId,
-            @RequestBody Task t,
+            @RequestBody(required = false) Task t,
             @RequestParam(required = false, value = "complete") String complete,
             @RequestParam(required = false, value = "defer") String defer) {
         LOGGER.info(String.format("updateTask %1$s", taskId));
 
         if (complete != null) {
-            completeTask(taskId, t);
+            completeTask(taskId, Optional.ofNullable(t));
         } else {
             org.activiti.engine.task.Task dest = processEngine.getTaskService()
                     .createTaskQuery().taskId(taskId).singleResult();
@@ -96,17 +100,30 @@ public class TaskController {
                     processEngine.getTaskService().setVariableLocal(taskId,
                             "deferUntil", getRelativeDate(defer));
                 }
-            }            
+            }
         }
         return t;
     }
 
-    protected void completeTask(String taskId, Task t) {
-        LOGGER.debug(String.format(
-                "Completing task %1$s with variables %2$s", taskId,
-                t.getProcessVariables()));
-        processEngine.getTaskService().complete(taskId,
-                t.getProcessVariables());
+    protected void completeTask(String taskId, Optional<Task> t) {
+        try {
+            // TODO 4 Oct 17 Apparently this does not result in completer being recorded in history
+            Authentication.setAuthenticatedUserId(
+                    AuthenticationHelper.getUserId(
+                            SecurityContextHolder.getContext().getAuthentication()));
+            if (t.isPresent()) {
+                LOGGER.debug(String.format(
+                        "Completing task %1$s with variables %2$s",
+                        taskId, t.get().getProcessVariables()));
+                processEngine.getTaskService().complete(taskId,
+                        t.get().getProcessVariables());
+            } else {
+                LOGGER.debug(String.format("Completing task %1$s", taskId));
+                processEngine.getTaskService().complete(taskId);
+            }
+        } finally{
+            Authentication.setAuthenticatedUserId(null);
+        }
     }
 
     protected Date getRelativeDate(String defer) {

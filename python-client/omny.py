@@ -7,6 +7,7 @@ import urllib.parse
 # parse args
 parser = argparse.ArgumentParser()
 parser.add_argument("url", help="api url to call")
+parser.add_argument("-d", "--data", help="payload, if expected by server")
 parser.add_argument("-u", "--user", required=True,
     help="USER[:PASSWORD]  Server user and password")
 parser.add_argument("-X", "--verb", help="specify HTTP verb explicitly (GET and POST are implicit)")
@@ -38,10 +39,24 @@ headers['X-Authorization'] = 'Bearer '+token
 if args.verbose:
   print('connecting to {}'.format(args.url))
 
-req = urllib.request.Request(args.url, headers = headers)
-if args.verb:
-  req.get_method = lambda: args.verb
-resp = urllib.request.urlopen(req)
-respData = resp.read()
+if args.data:
+  if args.verbose:
+    print(args.data)
+  data = args.data.encode('utf-8')
+  req = urllib.request.Request(args.url, data, headers = headers)
+else:
+  req = urllib.request.Request(args.url, headers = headers)
 
-print(respData.decode('UTF-8'))
+if args.verb:
+  if args.verbose:
+    print('HTTP method: '+args.verb)
+  req.get_method = lambda: args.verb
+try:
+  resp = urllib.request.urlopen(req)
+  respData = resp.read()
+  if args.verbose:
+    print('SUCCESS')
+  print(respData.decode('UTF-8'))
+except urllib.error.HTTPError as e:
+  if args.verbose:
+    print('ERROR: {}: {}'.format(e.code, e.reason))

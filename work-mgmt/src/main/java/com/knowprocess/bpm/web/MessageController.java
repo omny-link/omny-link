@@ -2,7 +2,6 @@ package com.knowprocess.bpm.web;
 
 import java.io.StringReader;
 import java.lang.reflect.Method;
-import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,6 +48,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.knowprocess.bpm.MultiTenantActivitiProperties;
 import com.knowprocess.bpm.api.BadJsonMessageException;
 import com.knowprocess.bpm.api.ReportableException;
+import com.knowprocess.bpm.impl.AuthenticationHelper;
 import com.knowprocess.bpm.impl.JsonManager;
 import com.knowprocess.bpm.impl.MessageRegistry;
 
@@ -345,21 +345,7 @@ public class MessageController {
             org.springframework.security.core.Authentication authentication = SecurityContextHolder
                     .getContext().getAuthentication();
             if (authentication.isAuthenticated()) {
-                if (authentication.getPrincipal() instanceof Principal) {
-                    String tmp = ((Principal) authentication.getPrincipal())
-                            .getName();
-                    if (tmp.contains("@")) { // trust that this is an email addr
-                        username = tmp;
-                    } else {
-                        LOGGER.warn("Username '{}' is not an email address, ignoring, this may result in errors if the process author expected a username.", tmp);
-                    }
-                } else if (authentication.getPrincipal() instanceof String) {
-                    username = (String) authentication.getPrincipal();
-                } else {
-                    LOGGER.warn(
-                            "Authenticated but principal of unknown type {}",
-                            authentication.getPrincipal().getClass().getName());
-                }
+                username = AuthenticationHelper.getUserId(authentication);
             } else if (activitiMultiTenantProperties.getServers()
                     .containsKey(tenantId)) {
                 username = activitiMultiTenantProperties.getServers()
