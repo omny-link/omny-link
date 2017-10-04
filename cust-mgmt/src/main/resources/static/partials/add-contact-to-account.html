@@ -31,13 +31,18 @@
   </li>
   <li class="form-group">
     <label class="col-md-3 col-sm-3 col-xs-4">LinkedIn</label>
-    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalFirstName" type="url" value="{{instanceToStart.processVariables.contact.linkedIn}}">
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalLinkedIn" type="url" value="{{instanceToStart.processVariables.contact.linkedIn}}">
     <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Remember to include http:// or https://</p>
   </li>
   <li class="form-group">
     <label class="col-md-3 col-sm-3 col-xs-4">Facebook:</label>
-    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalFirstName" type="url" value="{{instanceToStart.processVariables.contact.facebook}}">
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalFacebook" type="url" value="{{instanceToStart.processVariables.contact.facebook}}">
     <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Remember to include http:// or https://</p>
+  </li>
+  <li class="form-group">
+    <label class="col-md-3 col-sm-3 col-xs-4 required">Owner:</label>
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalOwner" list="owners" required value="{{instanceToStart.processVariables.contact.owner}}">
+    <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block"></p>
   </li>
   {{#each tenant.contactFields:k}}
     <li class="form-group">
@@ -51,5 +56,12 @@
   $(document).ready(function() {
     if (ractive.customActionCallbacks==undefined) ractive.customActionCallbacks = $.Callbacks();
     ractive.customActionCallbacks.add(function() { ractive.select(ractive.get('current')) });
+
+    ractive.observe('instanceToStart.processVariables.contact.firstName', function(newValue, oldValue, keypath) {
+      console.log('contact first name changing from '+oldValue+' to '+newValue);
+      if (newValue!=undefined && newValue!='' && newValue.length >0) {
+        ractive.set('instanceToStart.processVariables.contact.owner', $auth.getClaim('sub'));
+      }
+    });
   });
 </script>
