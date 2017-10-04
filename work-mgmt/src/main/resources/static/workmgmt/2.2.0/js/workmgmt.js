@@ -214,8 +214,8 @@ var ractive = new BaseRactive({
     console.log('collapseSendMessage...');
     $('#sendMessage').slideUp();
   },
-  deferTask: function() {
-    until = ractive.get('deferUntil') == undefined ? 'PT24H' : ractive.get('deferUntil');
+  deferTask: function(until) {
+    if (until == undefined) until = ractive.get('deferUntil') == undefined ? 'PT24H' : ractive.get('deferUntil');
     console.log('deferTask until: '+until);
     $('#remindBtn').dropdown('toggle');
     ractive.submitTask('defer='+until);
