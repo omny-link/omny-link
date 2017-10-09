@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "kp.application.tag-line",
+  "type": "java.lang.String",
+  "description": "A tag line for the application, see also spring.application.name"
+}]}

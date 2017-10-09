@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "omny.tomcat.connector2.port",
+    "type": "java.lang.String",
+    "description": "A description for 'omny.tomcat.connector2.port'"
+  },
+  {
+    "name": "omny.populator.skip",
+    "type": "java.lang.String",
+    "description": "A description for 'omny.populator.skip'"
+  },
+  {
+    "name": "omny.tenants",
+    "type": "java.lang.String",
+    "description": "A description for 'omny.tenants'"
+  },
+  {
+    "name": "omny.tenants",
+    "type": "java.lang.String",
+    "description": "A description for 'omny.tenants'"
+  },
+  {
+    "name": "omny.mock.smtp",
+    "type": "java.lang.String",
+    "description": "A description for 'omny.mock.smtp'"
+  },
+  {
+    "name": "omny.mock.smtp",
+    "type": "java.lang.String",
+    "description": "A description for 'omny.mock.smtp'"
+  }
+]}
