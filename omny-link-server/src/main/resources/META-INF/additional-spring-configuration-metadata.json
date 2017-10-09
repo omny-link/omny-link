@@ -1,5 +1,0 @@
-{"properties": [{
-  "name": "omny.tomcat.connector2.port",
-  "type": "java.lang.String",
-  "description": "A description for 'omny.tomcat.connector2.port'"
-}]}

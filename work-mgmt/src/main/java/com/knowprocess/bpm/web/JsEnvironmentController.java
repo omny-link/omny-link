@@ -19,13 +19,13 @@ public class JsEnvironmentController {
     @Value("${spring.application.name:Know Process}")
     protected String appName;
 
-    @Value("${kp.app.tagLine:}")
+    @Value("${kp.application.tag-line:}")
     protected String tagLine;
 
     @Value("${server.port:8080}")
     protected String serverPort;
 
-    @Value("${spring.data.rest.baseUri:}")
+    @Value("${spring.data.rest.base-path:}")
     protected String restBaseUri;
 
     public String getRestBaseUri() {
