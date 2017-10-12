@@ -14,3 +14,4 @@ include::../acctmgmt/edit-strings-HOWTO.adoc[]
 
 include::../acctmgmt/edit-typeahead-lists-HOWTO.adoc[]
 
+include::../acctmgmt/edit-sequences-HOWTO.adoc[]
