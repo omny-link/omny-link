@@ -278,7 +278,6 @@
     {{/}}
   </div>
 
-
   {{#tenant.show.companyBackground}}
     {{>currentCompanyBackground}}
   {{/}}
@@ -358,7 +357,7 @@
 					              <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
 					                {{#each tenant.contactActions }}
 					                  {{#name}}
-					                    <li onclick="ractive.set('currentContact',Array.findBy('selfRef','{{selfRef}}',ractive.get('current.contacts')));ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('currentContact'){{#url}}, '{{url}}'{{/url}}, '{{fullName}}')" title="{{name}}">{{name}}</li>
+					                    <li on-click="startCustomAction(ref, name, Array.findBy('selfRef',selfRef,current.contacts), url, fullName)" title="{{name}}">{{name}}</li>
 					                  {{else}}
 					                    <li class="divider"></li>
 					                  {{/}}
