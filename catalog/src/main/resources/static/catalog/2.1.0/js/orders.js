@@ -312,7 +312,9 @@ var ractive = new BaseRactive({
         url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/sequences/'+seqName,
         type: 'GET',
         success: completeHandler = function(data) {
+          ractive.set('saveObserver',true);
           ractive.set('current.ref',data.lastUsed);
+          ractive.set('saveObserver',false);
         }
     });
   },
