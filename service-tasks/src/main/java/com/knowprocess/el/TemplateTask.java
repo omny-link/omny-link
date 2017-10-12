@@ -75,7 +75,12 @@ public class TemplateTask implements JavaDelegate {
         context.getVariableMapper().setVariable("gbpFormatter", factory.createValueExpression(DecimalFormat.getCurrencyInstance(), NumberFormat.class));
         
         ValueExpression expr = factory.createValueExpression(context, template, String.class);
-        return (String) expr.getValue(context);
+        String html = escape((String) expr.getValue(context));
+        return html;
+    }
+
+    private String escape(String value) {
+        return value.replaceAll("£", "&pound;");
     }
 
 }
