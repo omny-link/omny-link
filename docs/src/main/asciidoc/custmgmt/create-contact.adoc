@@ -1,0 +1,27 @@
+[[create-contact]]
+=== icon:check-circle-o[] Enter Contact
+
+Actor: Client Staff 
+
+==== User story
+
+The user identifies (or is contacted by) an _individual_ who may or may not be 
+associated with an organisation and who is potentially interested in the 
+product or service offered by the tenant. The user enters the lead into the 
+Contact page. 
+
+==== User outcome
+
+A new contact and, optionally, account recorded in the CRM with some arbitrary 
+set of standard and custom fields filled out.
+
+==== Pre-requisites
+ 
+ * <<create-tenancy>>
+ * <<register-user-for-tenant>>
+
+==== Order Form
+
+To initiate this workflow please use: http://omny.link/provision-contacts-view/[Provision Contacts View]
+
+Implementation guide is link:devops.html#howto-manage-tenant-config[here].

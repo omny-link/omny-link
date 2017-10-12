@@ -1,0 +1,41 @@
+[[maintain-template]]
+=== icon:check-circle-o[] Maintain Template
+
+Actor: Omny Staff, Tenant Staff with the `power_user` role
+
+NOTE: So far we have held back from allowing tenant's staff to use this directly
+though that is ultimately the intention because of a number of issues, notably:
+
+ - https://code.knowprocess.com/omny/platform/issues/90[#90 Add field picker to memo template editor]
+
+==== User story
+
+The user wants to prepare pro-forma templates to be merged with data to
+send communications to contacts in a number of different ways including email
+print documents (PDFs) and text messages or tweets. The short form templates
+typically include an application link that will provide the fuller detail.
+
+To support an editorial or publication process, templates have an owner and
+status. Once status is set to published the template may no longer be edited
+so that we can provide an auditable record of what has been sent.
+
+Optionally, templates may also define a place for the owner and contact to 
+sign the resulting document. This relies on DocuSign to provide the signing 
+functionality.
+
+==== User outcome
+
+Suitably entitled users are able to create, manage and publish sophisticated
+memo templates with a range of formatting including embedding images.
+
+==== Pre-requisites
+
+ * Role `power-user`
+
+==== Order Form
+
+No particular enablement is needed for this story. Until issue #90 is complete
+raise support requests once templates are created for help with merging data.
+
+The extension to define signing locations in the resulting document is 
+enabled by turning on the `documentSigning` feature.
