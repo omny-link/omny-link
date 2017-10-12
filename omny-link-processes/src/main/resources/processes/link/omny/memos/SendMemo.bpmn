@@ -4,6 +4,12 @@
     <documentation id="SendMemo_D_1" textFormat="text/plain"><![CDATA[Send a memo to the specified contact]]></documentation>
     <extensionElements>
       <activiti:executionListener class="com.knowprocess.bpm.listeners.FieldInjectionListener" event="start">
+        <activiti:field name="varName" stringValue="initiator"/>
+        <activiti:field name="dynamicValue" expression="${execution.getEngineServices().getIdentityService()
+        .createUserQuery().userFirstName(execution.getTenantId())
+        .userLastName(&quot;Bot&quot;).singleResult().getEmail()}"/>
+      </activiti:executionListener>
+      <activiti:executionListener class="com.knowprocess.bpm.listeners.FieldInjectionListener" event="start">
         <activiti:field name="varName" stringValue="toEmail"/>
         <activiti:field name="dynamicValue"/>
       </activiti:executionListener>

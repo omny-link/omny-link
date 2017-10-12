@@ -33,7 +33,7 @@
         <activiti:in sourceExpression="${omny_enquiry.getString('email')}" target="toEmail"/>
         <activiti:in source="accountId" target="accountId"/>
         <activiti:in source="orderId" target="orderId"/>
-        <activiti:in source="initiator" target="initiator"/>
+        <!-- Do not send initiator as will be client key, unusable as email address -->
       </extensionElements>
       <incoming>_19</incoming>
       <outgoing>_21</outgoing>
