@@ -1,0 +1,4 @@
+== Integrations
+
+include::../integrations/create-invoice-xero.adoc[]
+

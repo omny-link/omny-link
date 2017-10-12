@@ -1,0 +1,48 @@
+= Omny Link User Guide
+
+This project contains the User Guide written in 
+http://asciidoctor.org/[Asciidoc].
+
+== Publishing
+
+The .adoc files are kept under version control along with the rest of the 
+source files. These are the steps to convert them to HTML and publish the 
+result on Github-provided hosting.
+
+1. Install pre-requisites: 
+  - http://maven.apache.org[Maven]
+  - Java
+  - git
+  
+2. Clone source 
+
+  ```
+  git clone https://github.com/tstephen/omny-link.git
+  ```
+
+We'll use $BASEDIR to refer to the directory where the source is.
+
+3. Move to the docs directory  
+  ```
+  cd $BASEDIR/docs
+  ```
+  
+4. Generate the documentation 
+  ```
+  mvn process-resources
+  ```
+  
+5. Move documentation to the gh-pages branch (this is a special branch used by 
+Github to publish web pages on https://github.io)
+  ```
+  git checkout gh-pages
+  cd ..
+  mv docs/target/generated-docs/*html .
+  mv docs/target/generated-docs/*css .
+  mv docs/target/generated-docs/images/* images/
+  git add *html *css *images
+  git commit -m "Regenerated docs"
+  git push public
+  ```
+  
+There is a script named `publish-docs.sh` in $BASEDIR that will do this provided you have the pre-reqs installed.

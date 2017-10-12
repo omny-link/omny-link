@@ -1,0 +1,42 @@
+[[howto-lets-encrypt]]
+=== HOWTO enable SSL using Let's Encrypt certificate authority
+
+==== Overview
+
+https://letsencrypt.org/[Let's Encrypt] is a free, automated, and open
+Certificate Authority. It allows automated request and renewal of certificates.
+However at this time the Certbot tool recommended to perform this automation
+does not support directly the embedded Tomcat server within Omny Link. Here we
+show you how to complete the steps.
+
+==== Details
+
+. **Install https://certbot.eff.org/[Certbot]:** Various options exist on the
+ homepage, https://certbot.eff.org/#ubuntuxenial-other[this] links you directly
+ to the instructions for Ubuntu 16.04.
+. **Configure Tomcat to run a secondary non-SSL connector:** This assumes that
+ the main connector configured by standard Spring Boot properties is (or will be)
+ providing HTTPS. Certbot's webroot plugin relies on being able to verify the
+ domain over HTTP. Therefore configure the following additional properties and
+ restart the service for them to take effect.
++
+[source]
+----
+# Used for Let's Encrypt renewal
+omny.tomcat.connector2.enabled=true
+omny.tomcat.connector2.port=80
+----
+. **Run Certbot with certonly and webroot options:** More details in the Certbot
+documentation but this is the command
++
+[source]
+----
+ sudo certbot certonly --webroot -w /var/www-api -d api.omny.link
+----
+. **Convert the provided certificate to PKCS12 format:** Java requires the
+certificate in a different format. Here we're using PKCS12.
++
+[source]
+----
+sudo openssl pkcs12 -export -in /etc/letsencrypt/live/api.omny.link/cert.pem -inkey /etc/letsencrypt/live/api.omny.link/privkey.pem -out /etc/letsencrypt/live/api.omny.link/keystore.p12 -name tomcat -CAfile /etc/letsencrypt/live/api.omny.link/fullchain.pem -caname root
+----

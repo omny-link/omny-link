@@ -1,0 +1,47 @@
+[[maintain-stock]]
+=== icon:check-circle-o[] Maintain Stock
+
+Actor: Omny Staff, Tenant Staff with the `power_user` role
+
+==== User story
+
+The tenant offers either products or services to their clients and wishes to 
+create a catalogue of them. This may be in order to support a web store or 
+simply to allow back-office processes to be better defined or automated.
+
+Very few assumptions are made about the 'stock' so that pretty well any 
+product or service can be defined through adding custom fields relevant to the 
+tenant's business. 
+
+The user defines a number of stock items each representing a single product or 
+service offered. 
+
+TIP: The same items may be expressed in different ways, for example 
+movies may be offered individually or in boxed sets. The key consideration is 
+that a stock item is the object that bears a price and which will appear on an 
+invoice. So if the boxed set is actually just 3 separately priced DVDs that 
+could equally well be sold separately then it should _not_ be a stock item but 
+each DVD should be listed. The converse is also true.
+
+Stock items may optionally be grouped into categories. One key reason for doing
+this is to present manageable numbers of items per page if embedding the
+full catalogue into a web site. 
+
+==== User outcome
+
+When complete this enables a stock catalogue, see also: 
+
+ - <<create-contact-order>> for details of purchasing ; and
+ - <<display-stock-website>> and <<search-stock-website>> for embedding the 
+   catalogue in a web site.
+
+==== Pre-requisites
+
+ * <<create-tenancy>>
+ * <<register-user-for-tenant>>
+
+==== Order Form
+
+To initiate this workflow please use: http://omny.link/provision-stock-catalog/[Provision Stock Catalogue]
+
+Implementation guide is link:devops.html#howto-manage-tenant-config[here].

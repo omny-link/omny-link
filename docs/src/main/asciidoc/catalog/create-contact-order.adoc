@@ -1,0 +1,49 @@
+[[create-contact-order]]
+=== icon:check-circle-o[] Create Order for Contact
+
+Actor: Client staff
+
+==== User story
+
+An existing contact gets in touch and wishes to place an order, or at least 
+start talking about some specifics of a future order. In the latter case we 
+probably refer to it as an opportunity rather than an order. 
+Within Omny this is one 'thing' that goes through different stages, and at any 
+stage may become cold if the contact decides not to proceed.
+
+The user creates a new entry for the order including whatever information is 
+available at this stage. In some client's businesses this may include all the 
+necessary details and the order is immediately ready to be completed. In this 
+case look also at offering <<place-order-web-form>>.
+
+Depending on the specific tenant requirements an order may also have order 
+items. Simply put, this is needed when the order consists of more than one stock 
+item (SKU) - see <<maintain-stock>> for more
+on this.
+
+==== User outcome
+
+The order is created and linked to the contact.
+
+==== Pre-requisites
+
+* <<create-tenancy>>
+* <<create-contact>> or <<make-enquiry-web-form>>
+
+==== Order form
+
+Basic implementation is fully declarative via the tenant configuration file.
+Extras require web development skills.
+
+Request this story via: http://omny.link/provision-order-system/[Provision Order System]
+
+Implementation guide is link:devops.html#howto-manage-tenant-config[here].
+
+==== Extras
+  
+  * Where the order, including order items, is complex or large it may be 
+  desirable to create a dedicated form to help the user enter it quickly and 
+  correctly.
+  * Actions, for example to create an invoice or send an email, may be attached 
+  to orders just as they are to other key entities. 
+

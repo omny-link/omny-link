@@ -1,0 +1,18 @@
+[[display-stock-website]]
+=== icon:check-circle-o[] Display Stock (on website)
+
+Actor:
+
+==== User story
+
+==== User outcome
+
+==== Pre-requisites
+
+
+
+This story requires a web developer to implement the layouts of the JSON stock
+definitions returned by the <<api,API>>. If the site to embed the stock within 
+uses WordPress consider <<catalog-plugin>>.
+
+Since this is custom development there is no order form for this story.

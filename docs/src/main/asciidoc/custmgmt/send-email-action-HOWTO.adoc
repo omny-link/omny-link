@@ -1,0 +1,28 @@
+[[howto-send-email]]
+==== Send email
+
+This allows `templates` to be merged with `contact`, `account`, and `order`
+data and sent out to a specific contact or account. To implement it use these
+snippets:
+
+. Add to contactActions
++
+[source,json]
+----
+  { "name": "Send email", "ref": "SendMemo", "url": true }
+----
++
+. Add to partials
++
+[source,json]
+----
+  { "name": "xxxSendMemo", "url": "/partials/pick-memo.html"},
+----
+NOTE: xxx should be replaced with the tenant id.
++
+. Add to processes
++
+[source,json]
+----
+  { "name": "Send memo", "ref": "SendMemo", "url": "processes/link/omny/mail/SendMemo.bpmn" },
+----

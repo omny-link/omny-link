@@ -1,0 +1,7 @@
+== Work Management
+
+include::../workmgmt/create-ad-hoc-task.adoc[]
+
+include::../workmgmt/view-tasks.adoc[]
+
+include::../workmgmt/upload-process-model.adoc[]

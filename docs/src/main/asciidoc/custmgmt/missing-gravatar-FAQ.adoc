@@ -1,0 +1,19 @@
+[[missing-gravatar-faq]]
+=== Why do I sometimes see avatars that are not the initials of the owner?
+
+If you ever open your contact page and see avatars like these
+
+image::missing-gravatar.png[]
+
+you may wonder what's going on. Avatars are served by a two-step process: 
+
+. Omny requests the avatar associated with an email address from gravatar.com. The best and easiest way to ensure your avatar looks as you would wish is to register your own image at https://gravatar.com. This is a simple case of entering your email address, uploading an image and clicking on a confirmation email.
+. If Gravatar does not have an image for a given address it will give us an opportunity to serve one. We do this by looking up the email address in your contact list and, provided we find one generating an image from the contact's initials. If we do not find a contact for the given email address then we will return one of the stock images shown above.
+
+==== Diagnostics
+
+To understand what Omny is serving you may view this in a browser: 
+....
+https://api.omny.link/flexspace/gravatars/<MD5 hash of email address>.png
+....
+For example https://api.omny.link/flexspace/gravatars/5d2bef261599b9febbb5fb629025642c.png. Be aware that Gravatar will cache avatars for a period so changes to Omny contacts will typically not take effect for a few days.

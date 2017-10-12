@@ -1,0 +1,9 @@
+== Contact Management
+
+include::../custmgmt/create-contact.adoc[]
+
+include::../custmgmt/create-account.adoc[]
+
+include::../custmgmt/make-enquiry-web-form.adoc[]
+
+include::../custmgmt/create-document.adoc[]

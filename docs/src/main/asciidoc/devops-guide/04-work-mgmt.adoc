@@ -1,0 +1,3 @@
+== Work Management
+
+include::../workmgmt/enable-work-mgmt-HOWTO.adoc[]

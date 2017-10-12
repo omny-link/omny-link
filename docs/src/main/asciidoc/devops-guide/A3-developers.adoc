@@ -1,0 +1,17 @@
+== For Developers
+
+=== Source code
+
+May be found at https://code.knowprocess.com/
+
+=== Building
+
+```
+  mvn clean install
+```
+
+=== Running in development mode
+
+```
+  mvn spring-boot:run
+```

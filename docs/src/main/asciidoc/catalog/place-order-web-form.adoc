@@ -1,0 +1,31 @@
+[[place-order-web-form]]
+=== icon:warning[] Place Order (web form)
+
+Actor: Omny client's client
+
+==== User story
+
+By whatever means, (referral, pay-per-click etc) the user arrives at the order 
+form on the client's web site. This form uses the same information as 
+specified when <<create-contact,creating a contact>> and 
+<<create-order-for-contact,creating an order for a contact>> but it may 
+be a subset of that if desired.
+
+==== User outcome
+
+If the web form chooses to include both contact and order in one go then both
+are created and linked. If the contact already exists then the order alone may 
+be included plus the contact's email address. 
+
+==== Pre-requisites
+
+ * <<create-contact>>
+ * <<create-contact-order>>
+
+
+
+==== Order Form
+
+Must specify: 
+
+  * Contact and Order fields, including any custom ones, to include in the form  

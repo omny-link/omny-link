@@ -1,0 +1,29 @@
+[[create-document]]
+=== icon:check-circle-o[] Create Document
+
+Actor: Client Staff 
+
+==== User story
+
+The end user wants to merge data into one of the memo templates and produce a
+PDF of the result. In this story the document is always associated with a 
+contact but it may be initiated from either contacts or accounts page.
+
+Optionally, this PDF can be sent to DocuSign to manage collection of signatures
+from owner and contact and subsequently archive the document.
+
+==== User outcome
+
+A new PDF may be downloaded or sent to DocuSign for signature by the contact.
+
+==== Pre-requisites
+ 
+ * <<create-contact>>
+ * <<maintain-template>>
+
+==== Order Form
+
+This story is enabled by adding a contact action to the tenant 
+configuration.
+
+Implementation guide is link:devops.html#howto-custmgmt-actions[here].

@@ -162,6 +162,7 @@
     <module>analytics</module>
     <module>catalog</module>
     <module>cust-mgmt</module>
+    <module>docs</module>
     <module>fonts</module>
     <!--module>integration-tests</module-->
     <module>omny-link-server</module>
