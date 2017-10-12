@@ -1,0 +1,15 @@
+== Stock and Orders
+
+include::../catalog/maintain-stock.adoc[]
+
+include::../catalog/create-contact-order.adoc[]
+
+include::../catalog/search-stock-website.adoc[]
+
+include::../catalog/display-stock-website.adoc[]
+
+include::../catalog/place-order-web-form.adoc[]
+
+include::../catalog/confirm-order-website.adoc[]
+
+include::../catalog/provide-feedback.adoc[]

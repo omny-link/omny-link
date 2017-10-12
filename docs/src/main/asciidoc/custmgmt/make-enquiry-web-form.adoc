@@ -1,0 +1,29 @@
+[[make-enquiry-web-form]]
+=== icon:check-circle-o[] Make Enquiry (from website)
+
+Actor: Internet User 
+
+==== User story
+The user identifies (or is contacted by) an individual who may or may not be 
+associated with an organisation and who is potentially interested in the product 
+or service offered by the tenant. The user enters the lead into the Contact page. 
+
+==== User outcome
+A new contact and, optionally, account recorded in the CRM with some arbitrary set of standard and custom fields filled out.
+
+==== Pre-requisites
+ - <<create-tenancy>>
+ - <<register-user-for-tenant>>
+ - <<create-contact>> _or_ <<create-account>>
+
+==== Order Form
+
+To set up one of these forms on the customer's WordPress site, please complete 
+the http://omny.link/provision-enquiry/[Provision Enquiry] form.
+
+TIP: The basic enquiry web form should capture the minimal information for a contact
+and optionally account together with details on how to get back in touch. Whilst
+it is more than possible to make very complicated forms, these tend to 
+discourage the initial contact.
+
+ 

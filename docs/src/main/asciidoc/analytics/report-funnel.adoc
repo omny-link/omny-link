@@ -1,0 +1,15 @@
+[[report-sales-unnel]]
+=== icon:check-circle-o[] Report Sales Funnel
+
+Actor:
+
+==== User story
+
+==== User outcome
+
+==== Pre-requisites
+
+
+
+==== Order Form
+

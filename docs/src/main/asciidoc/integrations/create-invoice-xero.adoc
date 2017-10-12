@@ -1,0 +1,15 @@
+[[create-xero-invoice]]
+=== icon:warning[] Create Invoice in Xero
+
+Actor:
+
+==== User story
+
+==== User outcome
+
+==== Pre-requisites
+
+
+
+==== Order Form
+

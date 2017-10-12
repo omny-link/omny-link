@@ -1,0 +1,29 @@
+[[send-memo]]
+=== icon:check-circle-o[] Send Memo (to individual)
+
+Actor: Omny Staff, Tenant Staff
+
+==== User story
+
+The user wants to send a pro-forma memo to a contact, typically by email. The
+distinction from a regular email the user writes in an email client is twofold:
+
+ * standard templates can be prepare quickly without the risk of copy and paste
+   errors
+ * a record of the communication is recorded in the activity log
+
+==== User outcome
+
+Memo is sent to the contact and the activity is recorded.
+
+==== Pre-requisites
+
+ * <<create-tenancy>>
+ * <<maintain-template>>
+
+==== Order Form
+
+This story is enabled by adding a contact action to the tenant
+configuration.
+
+Implementation guide is link:devops.html#howto-custmgmt-actions[here].
