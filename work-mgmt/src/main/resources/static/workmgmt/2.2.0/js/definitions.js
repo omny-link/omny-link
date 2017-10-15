@@ -154,6 +154,9 @@ var ractive = new BaseRactive({
       { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"}
     ],
+    imageUri: function(diagId) {
+      return ractive.tenantUri(ractive.get('current'))+'/'+diagId+'.png';
+    },
     title: 'Process Definitions'
   },
   partials: {
@@ -292,6 +295,15 @@ var ractive = new BaseRactive({
       ractive.set('saveObserver',true);
     }
   },
+  downloadUri: function(uri, name) {
+    var link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    delete link;
+  },
   download: function() {
     console.info('download');
     $.ajax({
@@ -304,25 +316,9 @@ var ractive = new BaseRactive({
         console.warn('response;'+data);
         var serializer = new XMLSerializer();
         var bpmn = serializer.serializeToString(data);
-        something = window.open("data:application/xml," + encodeURIComponent(bpmn),"bpmn");
-        something.focus();
+        ractive.downloadUri("data:application/xml," + encodeURIComponent(bpmn),ractive.get('current.id')+".bpmn");
       }
     });
-  },
-  downloadImage: function(diagId) {
-    console.info('downloadImage');
-    var xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-      var reader = new FileReader();
-      reader.onloadend = function() {
-        console.warn('response;'+reader.result);
-        something = window.open("data:image/png," + encodeURIComponent(reader.result),"_blank");
-        something.focus();
-      }
-    };
-    xhr.open('GET', ractive.tenantUri(ractive.get('current'))+'/'+diagId+'.png');
-    xhr.responseType = 'blob';
-    xhr.send();
   },
   fetch: function () {
     console.log('fetch...');
