@@ -1,16 +1,12 @@
 package link.omny.catalog.model;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import javax.annotation.Nonnull;
 import javax.persistence.CascadeType;
@@ -218,43 +214,7 @@ public class StockItem implements ShortStockItem, Serializable {
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     private List<Link> links;
 
-    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
-    // "stockItem", targetEntity = OrderItem.class)
-    // @RestResource(rel = "orderedItems2")
-    // private List<OrderItem> orderItems;
-
-    private static Map<String, Properties> defaultDescriptions = new HashMap<String, Properties>();
-
     public static final int CURRENCY_SCALE = 2;
-
-    private static Properties getDefaultDescriptions(
-            @NotNull String tenantId) {
-        if (defaultDescriptions.get(tenantId) == null) {
-            initDefaultDescriptions(tenantId);
-        }
-        return defaultDescriptions.get(tenantId);
-    }
-
-    private static synchronized void initDefaultDescriptions(String tenantId) {
-        Properties properties = new Properties();
-        defaultDescriptions.put(tenantId, properties);
-        String resource = String.format(
-                "/static/data/%1$s/stock-items/descriptions.properties",
-                tenantId);
-        InputStream is = null;
-        try {
-            is = StockItem.class.getResourceAsStream(resource);
-            properties.load(is);
-        } catch (Exception e) {
-            LOGGER.warn(String.format(
-                    "Unable to load default descriptions from %1$s", resource));
-        } finally {
-            try {
-                is.close();
-            } catch (Exception e) {
-            }
-        }
-    }
 
     public StockItem(String name, String tag) {
         this();
@@ -344,23 +304,6 @@ public class StockItem implements ShortStockItem, Serializable {
             tags = tag;
         } else {
             tags += ("," + tag);
-        }
-    }
-
-    public String getDescription() {
-        if ((description == null || description.trim().length() == 0)
-                && tenantId != null) {
-            try {
-                return getDefaultDescriptions(tenantId).getProperty(
-                        getPrimeTag());
-            } catch (Exception e) {
-                LOGGER.warn(
-                        "Could not find default description of {} for {}",
-                        getPrimeTag(), tenantId);
-                return "";
-            }
-        } else {
-            return description;
         }
     }
 
