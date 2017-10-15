@@ -108,6 +108,11 @@
     { "name": "sectors", "ref": "#curSector", "url": "/data/omny/sectors.json"},
     { "name": "sources", "ref": "#curSource", "url": "/data/sources.json"},
     { "name": "status", "ref": "#curStatus", "url": "/data/status.json"},
+    { "name": "stockTypes", "ref": "#curTags", "values": [
+        {  "id": "Explosives", "name": "Explosives"  },
+        {  "id": "Insurance", "name": "Insurance"  }
+      ]
+    },
     { "ref": "#orderStatus", "url": "/data/status.json"}
   ],
   "workActions": [
