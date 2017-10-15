@@ -354,9 +354,9 @@ public class StockItem implements ShortStockItem, Serializable {
                 return getDefaultDescriptions(tenantId).getProperty(
                         getPrimeTag());
             } catch (Exception e) {
-                LOGGER.warn(String.format(
-                        "Could not find default description of %1$s for %2$s",
-                        getPrimeTag(), tenantId));
+                LOGGER.warn(
+                        "Could not find default description of {} for {}",
+                        getPrimeTag(), tenantId);
                 return "";
             }
         } else {
@@ -367,7 +367,9 @@ public class StockItem implements ShortStockItem, Serializable {
     public List<MediaResource> getImages() {
         if (images == null || images.size() == 0) {
             if (tags == null) {
-                LOGGER.warn("Cannot provide default images because stock item has no tags");
+                LOGGER.info(
+                        "Cannot provide default images because stock item {} ({}) of {} has no tags",
+                        name, id, tenantId);
             } else {
                 images = new ArrayList<MediaResource>(DEFAULT_IMAGE_COUNT);
                 for (int i = 0; i < DEFAULT_IMAGE_COUNT; i++) {
