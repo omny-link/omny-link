@@ -367,7 +367,7 @@ public class StockItem implements ShortStockItem, Serializable {
     public List<MediaResource> getImages() {
         if (images == null || images.size() == 0) {
             if (tags == null) {
-                LOGGER.info(
+                LOGGER.warn(
                         "Cannot provide default images because stock item {} ({}) of {} has no tags",
                         name, id, tenantId);
             } else {
