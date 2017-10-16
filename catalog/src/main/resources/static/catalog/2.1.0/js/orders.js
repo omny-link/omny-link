@@ -221,6 +221,7 @@ var ractive = new BaseRactive({
               || (searchTerm.startsWith('contactid:') && ractive.get('searchTerm').substring(10).replace(/ /g,'').split(',').indexOf(''+obj.contactId)!=-1)
               || (obj.contactName!=undefined && obj.contactName.toLowerCase().indexOf(searchTerm)>=0)
               || (obj.stockItem!=undefined && obj.stockItem.name.toLowerCase().indexOf(searchTerm)>=0)
+              || (searchTerm.startsWith('owner:') && obj.owner != undefined && obj.owner.indexOf(searchTerm.substring(6))!=-1)
               || (searchTerm.startsWith('active') && (obj.stage==undefined || obj.stage.length==0 || ractive.inactiveStages().indexOf(obj.stage.toLowerCase())==-1))
               || (searchTerm.startsWith('!active') && ractive.inactiveStages().indexOf(obj.stage.toLowerCase())!=-1)
             );
@@ -286,6 +287,7 @@ var ractive = new BaseRactive({
     var order = {
         name: ractive.get('tenant.strings.order') == undefined ? 'Order' : ractive.get('tenant.strings.order'),
         orderItems: [],
+        owner: $auth.getClaim('sub'),
         stage: ractive.initialOrderStage(),
         tenantId: ractive.get('tenant.id'),
         type: ractive.get('variant')

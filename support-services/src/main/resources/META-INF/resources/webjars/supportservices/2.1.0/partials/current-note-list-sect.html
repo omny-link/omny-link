@@ -6,12 +6,8 @@
     <span class="clickable glyphicon glyphicon-btn glyphicon-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')" title="Add a new note"></span>
     <span class="clickable glyphicon glyphicon-btn glyphicon-star-empty" aria-hidden="true" onclick="ractive.toggleShowFavoriteNotes(this)" title="Toggle showing all notes or just the favorites"></span>
     <span class="clickable glyphicon glyphicon-btn kp-icon-unlock" aria-hidden="true"
-      {{#if current.owner == profile.id}} 
-        onclick="ractive.toggleShowConfidentialNotes(this)" title="Toggle showing all notes or just the non-confidential ones"
-      {{else}}
-        onclick="ractive.showMessage('Since you\'re not the owner you cannot view confidential notes', 'alert-warning');"
-        title="Since you're not the owner you cannot view confidential notes."
-      {{/if}}
+          onclick="ractive.toggleShowConfidentialNotes(this)"
+          title="Since you're not the owner you cannot view confidential notes."
       ></span>
     {{#alerts['notes']}}<span class="alert-counter alert-danger"> {{alerts['notes']}}</span>{{/}}
   </h2>

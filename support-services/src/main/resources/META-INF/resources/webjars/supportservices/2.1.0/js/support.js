@@ -128,6 +128,8 @@
           console.log('response: '+ data);
           ractive.showMessage('Note saved successfully');
           ractive.set('saveObserver',false);
+          // Location header is being sent but not arrive (blocked by CORS?)
+          ractive.set('current.notes.0.id', data.id);
           ractive.set('current.notes.0.created',data.created);
           ractive.set('saveObserver',true);
           $('#note').val(undefined);
@@ -137,6 +139,10 @@
   }
   ractive.toggleShowConfidentialNotes = function(btn) {
     console.info('toggleShowConfidentialNotes');
+    if (ractive.get('current.owner')!=ractive.get('profile.id')) {
+      ractive.showMessage('Since you\'re not the owner you cannot view confidential notes', 'alert-warning');
+      return;
+    }
     $('#notesTable tr.confidential').slideToggle();
     $(btn).toggleClass('kp-icon-lock kp-icon-unlock');
   }
