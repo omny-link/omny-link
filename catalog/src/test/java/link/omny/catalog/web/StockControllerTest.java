@@ -221,9 +221,6 @@ public class StockControllerTest {
                 .getName());
         assertEquals("Published", officeItem.getStatus());
 
-        // item desc if null should default to props file value
-        assertEquals("A fantastic working space", categoryFound.getStockItems()
-                .get(0).getDescription());
         assertNotNull(category.getImages());
         ShortStockItem foundItem = categoryFound.getStockItems().get(0);
         Long itemId;
