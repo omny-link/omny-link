@@ -156,6 +156,7 @@ var ractive = new BaseRactive({
       } else {
         return ( (obj.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+          || (obj.id.indexOf(searchTerm)>=0)
           || (obj.processInstanceId.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.taskDefinitionKey.toLabel().toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
