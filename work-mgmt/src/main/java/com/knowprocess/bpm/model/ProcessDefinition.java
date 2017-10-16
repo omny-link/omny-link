@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import javax.persistence.Id;
 
+import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.form.StartFormData;
 import org.slf4j.Logger;
@@ -148,12 +149,16 @@ public class ProcessDefinition implements Serializable {
         ProcessDefinition pd = new ProcessDefinition(processEngine
                 .getRepositoryService().createProcessDefinitionQuery()
                 .processDefinitionId(id).singleResult());
-        StartFormData formData = processEngine.getFormService()
-                .getStartFormData(id);
-        pd.setFormKey(formData.getFormKey());
-        for (org.activiti.engine.form.FormProperty prop : formData
-                .getFormProperties()) {
-            pd.getFormProperties().add(new FormProperty(prop));
+        try {
+            StartFormData formData = processEngine.getFormService()
+                    .getStartFormData(id);
+            pd.setFormKey(formData.getFormKey());
+            for (org.activiti.engine.form.FormProperty prop : formData
+                    .getFormProperties()) {
+                pd.getFormProperties().add(new FormProperty(prop));
+            }
+        } catch (ActivitiException e) {
+            LOGGER.warn("No Activiti form extensions: {}", e.getMessage());
         }
         return pd;
     }
