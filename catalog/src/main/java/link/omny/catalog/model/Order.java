@@ -134,6 +134,12 @@ public class Order implements OrderWithSubEntities, Serializable {
     private String invoiceRef;
 
     @JsonProperty
+    @JsonView({ OrderViews.Summary.class })
+    @Size(max = 50)
+    @Column(name = "owner")
+    private String owner;
+
+    @JsonProperty
     @JsonView(OrderViews.Summary.class)
     @Column(name = "contact_id")
     private Long contactId;
