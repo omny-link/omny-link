@@ -64,6 +64,11 @@
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Person this {{tenant.strings.order.toLowerCase()}} is for</p>
         </li>
         <li class="form-group">
+          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
+          <input class="form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" {{#if !matchRole('power_user')}}readonly disabled{{/if}} value="{{current.owner}}">
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderOwnerHint}}{{tenant.strings.orderOwnerHint}}{{else}}Person responsible for this {{tenant.strings.order.toLowerCase()}}{{/}}</p>
+        </li>
+        <li class="form-group">
           <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}:</label>
           <input class="form-control col-md-8 col-sm-8 col-xs-8" id="curDate" type="date" value="{{current.date}}"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} placed{{/}}</p>
