@@ -346,6 +346,13 @@ var ractive = new BaseRactive({
     if (document.getElementById('currentForm')==undefined) {
       console.debug('still loading, safe to ignore');
     } else if (document.getElementById('currentForm').checkValidity()) {
+      // ensure stock cat id up to date, don't use observer as fires after save
+      if (ractive.get('current.stockCategory.name')!=undefined) {
+        var stockCat = Array.findBy('name',ractive.get('current.stockCategory.name'),ractive.get('stockCategories'));
+        if (stockCat != undefined) {
+          ractive.set('current.stockCategory.id',ractive.id(stockCat));
+        }
+      }
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       delete tmp.images;
       delete tmp.tagsAsList;
@@ -512,18 +519,6 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
     //console.log('  saveObserver: '+ractive.get('saveObserver'));
   }
 });
-
-/* TODO check if this is needed (controller does something similar)
-ractive.observe('current.stockCategory.name', function(newValue, oldValue, keypath) {
-  console.info('stock category changed from '+oldValue+' to '+newValue);
-  if (newValue != undefined) {
-    var stockCat = Array.findBy('name','/stock-categories/'+newValue,ractive.get('stockCategories'));
-    if (stockCat != undefined) {
-      ractive.set('current.stockCategory.id',ractive.id(stockCat));
-    }
-  }
-});
-*/
 
 ractive.on( 'filter', function ( event, filter ) {
   console.info('filter on '+JSON.stringify(event)+','+filter.idx);
