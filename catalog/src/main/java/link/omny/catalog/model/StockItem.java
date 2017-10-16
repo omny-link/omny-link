@@ -313,6 +313,11 @@ public class StockItem implements ShortStockItem, Serializable {
                 LOGGER.warn(
                         "Cannot provide default images because stock item {} ({}) of {} has no tags",
                         name, id, tenantId);
+                images = Collections.emptyList();
+            } else if (getStockCategory() == null) {
+                LOGGER.warn(
+                        "Cannot provide default images because stock item {} ({}) of {} has no category",
+                        name, id, tenantId);
             } else {
                 images = new ArrayList<MediaResource>(DEFAULT_IMAGE_COUNT);
                 for (int i = 0; i < DEFAULT_IMAGE_COUNT; i++) {
