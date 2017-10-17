@@ -11,12 +11,12 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import link.omny.catalog.internal.LruCache;
 import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.StockCategory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GeoLocationService {
 
@@ -37,16 +37,13 @@ public class GeoLocationService {
             return cache.get(q);
         }
 
-        InputStream is = null;
         JsonReader jsonReader = null;
-        try {
+        URL url = new URL(String.format(GEOCODING_URL,
+                URLEncoder.encode(q, "UTF-8")));
+        try (InputStream is = (InputStream) url.getContent()) {
             long start = System.currentTimeMillis();
-            URL url = new URL(String.format(GEOCODING_URL,
-                    URLEncoder.encode(q, "UTF-8")));
-            LOGGER.debug(String.format("  Geo-coding url constructed: %1$s",
-                    url));
+            LOGGER.debug("  Geo-coding url constructed: {}", url);
 
-            is = (InputStream) url.getContent();
             jsonReader = Json.createReader(new InputStreamReader(is));
             JsonObject obj = jsonReader.readObject();
             JsonObject location = ((JsonObject) obj.getJsonArray("results")
@@ -57,19 +54,13 @@ public class GeoLocationService {
                     .doubleValue(), location.getJsonNumber("lng").doubleValue());
             cache.put(q, geoPoint);
 
-            LOGGER.info(String.format("Geo-coding took %1$d ms",
-                    (System.currentTimeMillis() - start)));
+            LOGGER.info("Geo-coding took {} ms",
+                    (System.currentTimeMillis() - start));
             return geoPoint;
-        } catch (NullPointerException e) {
-            LOGGER.warn(String.format("Location %1$s could not be geocoded", q));
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
+            LOGGER.warn("Location {} could not be geocoded, constructed URL: {}",
+                    q, url.toExternalForm());
             return null;
-        } finally {
-            try {
-                is.close();
-                jsonReader.close();
-            } catch (Exception e) {
-                ;
-            }
         }
     }
 
@@ -82,7 +73,7 @@ public class GeoLocationService {
     /**
      * An equation giving great-circle distances between two points on a sphere
      * from their longitudes and latitudes.
-     * 
+     *
      * @see https://en.wikipedia.org/wiki/Haversine_formula
      */
     static class Haversine {
