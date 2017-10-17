@@ -37,6 +37,7 @@
     ractive.set('saveObserver', true);
     if ($('#notesTable:visible').length==0) ractive.toggleSection($('#notesTable').closest('section'));
     $('#notesTable tr:nth-child(1)').slideDown();
+    document.getElementById("note").focus();
   }
   ractive.autolinker = function() {
     if (ractive._autolinker==undefined) ractive._autolinker = new Autolinker({
@@ -71,21 +72,6 @@
       ractive.set('saveObserver',true);
     });
   }
-	//  fetchNotes: function() {
-//	    $.getJSON(ractive.uri(ractive.get('current'))+'/notes',  function( data ) {
-//	      if (data['_embedded'] != undefined) {
-//	        console.log('found notes '+data);
-//	        ractive.merge('current.notes', data['_embedded'].notes);
-////	      } else if (data['content'] != undefined) {
-////	        console.log('found notes '+data);
-////	        ractive.merge('current.notes', data['content']);
-//	      }
-//	      // sort most recent first
-//	      if (ractive.get('current.notes') != undefined) {
-//	        ractive.get('current.notes').sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-//	      }
-//	    });
-	//  }
   ractive.saveDoc = function() {
     console.log('saveDoc');
     if (ractive.get('current.documents')==undefined || ractive.get('current.documents').length==0) return;
@@ -132,7 +118,6 @@
           ractive.set('current.notes.0.id', data.id);
           ractive.set('current.notes.0.created',data.created);
           ractive.set('saveObserver',true);
-          $('#note').val(undefined);
         }
       });
     }

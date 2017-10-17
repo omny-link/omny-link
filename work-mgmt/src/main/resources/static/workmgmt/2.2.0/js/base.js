@@ -281,21 +281,21 @@ var BaseRactive = Ractive.extend({
     ractive.initAutoComplete();
     ractive.initAutoNumeric();
     ractive.initContentEditable();
-    ractive.initHelp();
+    ractive.initShortKeys();
   },
-  initHelp: function() {
+  initShortKeys: function() {
     $( "body" ).keypress(function( event ) {
       if (event.target.tagName.toLowerCase() == 'input' || event.target.tagName.toLowerCase() == 'textarea') return;
       switch (event.which) { // ref http://keycode.info/
       case 47: // forward slash on both Mac and Linux
       case 191: // forward slash (allegedly)
-          $('.search').focus();
-          event.preventDefault();
-          break;
+        $('.search').focus();
+        event.preventDefault();
+        break;
       case 63: // ?
-         $('#helpModal').modal({});
-         event.preventDefault();
-         break;
+        $('#helpModal').modal({});
+        event.preventDefault();
+        break;
       default:
         //console.log("No Handler for .keypress() called with: "+event.which);
       }
