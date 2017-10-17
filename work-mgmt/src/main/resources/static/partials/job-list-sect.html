@@ -25,12 +25,12 @@
         {{# matchSearch(this) }}
         <tr data-id="{{id}}">
           <td>{{i+1}}</td>
-          <td class="col-md-2 col-sm-3 col-xs-2">{{id}}</td>
-          <td class="col-md-3 col-sm-5 col-xs-2">{{processDefinitionId}}</td>
-          <td class="col-md-2 hidden-sm hidden-xs">{{processInstanceId}}</td>
-          <td class="col-md-1 hidden-sm hidden-xs">{{retries}}</td>
-          <td class="col-md-1 hidden-sm hidden-xs">{{exceptionMessage}}</td>
-          <td class="col-md-3 col-sm-3 col-xs-3 col-actions">
+          <td>{{id}}</td>
+          <td>{{processDefinitionId}}</td>
+          <td>{{processInstanceId}}</td>
+          <td>{{retries}}</td>
+          <td>{{exceptionMessage}}</td>
+          <td class="col-actions">
             <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this.id)" title="Delete this job"></a>
             <a class="clickable glyphicon glyphicon-btn glyphicon-repeat" aria-hidden="true" on-click="retry(this.id)" title="Retry this job"></a>
             <a class="clickable glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" href="audit.html?instanceId={{processInstanceId}}" target="_blank" title="Show audit trail for process instance"></a>

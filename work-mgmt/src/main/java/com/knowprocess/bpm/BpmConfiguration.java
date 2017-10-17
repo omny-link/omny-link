@@ -40,6 +40,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.knowprocess.bpm.impl.CustomActivityBehaviorFactory;
+import com.knowprocess.bpm.impl.JobRetryMapper;
 import com.knowprocess.bpm.impl.JsonManager;
 import com.knowprocess.bpm.impl.TaskAllocationMapper;
 import com.knowprocess.bpmn.BpmnRestHelper;
@@ -83,6 +84,7 @@ public class BpmConfiguration extends AbstractProcessEngineAutoConfiguration {
 
         Set<Class<?>> mappers = new HashSet<Class<?>>();
         mappers.add(TaskAllocationMapper.class);
+        mappers.add(JobRetryMapper.class);
         config.setCustomMybatisMappers(mappers);
 
         // instead diagrams created 'on the fly' by ProcessDefinitionController
