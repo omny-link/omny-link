@@ -248,9 +248,8 @@ public class StockCategoryController {
         if (type != null && tag == null) {
             tag = type;
         }
-        LOGGER.info(String
-                .format("List stockCategories for tenant: %1$s, q: %2$s, tag: %3$s, offers: %4$B",
-                        tenantId, q, tag, offers));
+        LOGGER.info("List stockCategories for tenant: {}, q: {}, tag: {}, offers: {}",
+                        tenantId, q, tag, offers);
 
         List<StockCategory> list = new ArrayList<StockCategory>();
         GeoPoint qPoint = null;
@@ -258,8 +257,8 @@ public class StockCategoryController {
             try {
                 qPoint = geo.locate(q);
             } catch (UnknownHostException e) {
-                LOGGER.error(String.format(
-                        "Unable to geo locate '%1$s', will return unfiltered list", q));
+                LOGGER.error(
+                        "Unable to geo locate '{}', will return unfiltered list", q);
                 q = null;
             }
         }
@@ -279,15 +278,14 @@ public class StockCategoryController {
                     list.add(stockCategory);
                 }
             } catch (CatalogException e) {
-                LOGGER.error(String
-                        .format("Unable to geo locate '%1$s', will return unfiltered list",
-                                stockCategory.getPostCode()));
+                LOGGER.error("Unable to geo locate '{}', will return unfiltered list",
+                                stockCategory.getPostCode());
                 filter(stockCategory, tags);
                 list.add(stockCategory);
             } catch (Exception e) {
-                LOGGER.error(String.format(
-                        "Exception calculating distance of %1$s from %2$s",
-                        stockCategory.getName(), q), e);
+                LOGGER.error(
+                        "Exception calculating distance of {} from {}",
+                        stockCategory.getName(), q, e);
             }
             // set unfiltered tag list
             stockCategory.setTags(allTagsAvail);
@@ -297,7 +295,7 @@ public class StockCategoryController {
                         (o1, o2) -> ((int) o1.getDistance())
                                 - ((int) o2.getDistance()));
 
-        LOGGER.info(String.format("Found %1$s stock categories", list.size()));
+        LOGGER.info("Found {} stock categories", list.size());
         return wrap(list);
     }
 
@@ -317,9 +315,8 @@ public class StockCategoryController {
                 throw new CatalogException(msg);
             }
         } else if (stockCategory.getLng() == null) {
-            LOGGER.warn(String
-                    .format("Skipping geo-coding because postcode of stock category %1$d is missing",
-                            stockCategory.getId()));
+            LOGGER.warn("Skipping geo-coding because postcode of stock category {} is missing",
+                            stockCategory.getId());
         }
     }
 

@@ -1,43 +1,46 @@
-package link.omny.custmgmt;
+package link.omny.server;
+
+import java.io.IOException;
+import java.io.StringWriter;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @ControllerAdvice
-public class CustMgmtExceptionHandler {
+public class AppExceptionHandler {
     protected static final Logger LOGGER = LoggerFactory
-            .getLogger(CustMgmtExceptionHandler.class);
+            .getLogger(AppExceptionHandler.class);
+    @Autowired
+    @Qualifier("objectMapper")
+    private ObjectMapper mapper;
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
     public @ResponseBody String handleConstraintViolationException(
-            ConstraintViolationException e) {
+            ConstraintViolationException e) throws IOException {
         LOGGER.error("Constraint violation: " + e.getMessage());
-        StringBuilder sb = new StringBuilder();
-        for (ConstraintViolation<?> cv : e.getConstraintViolations()) {
-            sb.append(String.format(
-                    "  %1$s %2$s but was %3$s, bean affected is %4$s",
-                    cv.getPropertyPath(), cv.getMessage(),
-                    cv.getInvalidValue(), cv.getLeafBean()));
-        }
-        LOGGER.error(sb.toString());
-        return sb.toString();
+        StringWriter sw = new StringWriter();
+        mapper.writeValue(sw,e.getConstraintViolations());
+        return sw.toString();
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(EntityNotFoundException.class)
     public @ResponseBody String handleEntityNotFoundException(
             EntityNotFoundException e) {
-        LOGGER.error(e.getMessage(), e);
+        LOGGER.error(e.getMessage());
         return e.getMessage();
     }
 }
