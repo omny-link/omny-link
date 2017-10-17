@@ -649,7 +649,8 @@ var ractive = new BaseRactive({
         ractive.initTags();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
-
+        if (ractive.get('tenant.features.notesOnOrder')==true) ractive.sortChildren('notes','created',false);
+        if (ractive.get('tenant.features.documentsOnOrder')==true) ractive.sortChildren('documents','created',false);
         if (ractive.get('currentOrderItemId')!=undefined) {
           ractive.toggleEditOrderItem(Array.findBy('id',ractive.get('currentOrderItemId'),ractive.get('current.orderItems')));
         }
@@ -764,22 +765,11 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
   console.info('current prop change: '+newValue +','+oldValue+' '+keypath);
   if (!ractive.get('saveObserver')) {
     console.debug('Skipped save of '+keypath+' because in middle of other operation');
-//  } else if (JSON.stringify(newValue)==JSON.stringify(oldValue)) {
-//    console.error('Why are we notifying a change of identical objects?');
-//    return;
-  } else if (ractive.get('saveObserver') && keypath.indexOf('current.documents')!=-1) {
-    ractive.saveDoc();
-  } else if (ractive.get('saveObserver') && keypath.indexOf('current.notes')!=-1) {
-    ractive.saveNote();
   } else if (ractive.get('saveObserver') && keypath.indexOf('current.orderItems')!=-1) {
     ractive.saveOrderItem();
   } else if (ractive.get('saveObserver') && keypath.indexOf('current.feedback')!=-1) {
     ractive.saveFeedback();
   } else if (ractive.get('saveObserver') && keypath.indexOf('current.orderItems')==-1) {
-//    if (keypath=='current.contact') {
-//      console.warn('here we are again');
-//      newValue = Array.findBy('fullName',newValue.fullName,ractive.get('contacts'));
-//    }
     ractive.save();
   } else {
     console.warn('Skipped order save of '+keypath);

@@ -1132,8 +1132,6 @@ $(document).ready(function() {
     } else if (ractive.get('saveObserver') && ignored.indexOf(keypath)==-1) {
       console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
       if (keypath=='current.account') ractive.saveAccount();
-  //    else if (keypath=='current.notes') ractive.saveNote();
-  //    else if (keypath=='current.documents') ractive.saveDoc();
       else ractive.save();
     } else {
       console.warn('Skipped contact save of '+keypath);
