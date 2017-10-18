@@ -15,6 +15,7 @@ import java.util.Set;
 
 import javax.xml.transform.TransformerConfigurationException;
 
+import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.history.HistoricProcessInstanceQuery;
 import org.activiti.engine.runtime.ProcessInstanceQuery;
@@ -94,13 +95,7 @@ public class ProcessDefinitionController {
         List<ProcessDefinition> list = ProcessDefinition
                 .findAllProcessDefinitions(tenantId);
         for (ProcessDefinition defn : list) {
-            // Historic count _includes_ active
-            long historicCount = processEngine.getHistoryService()
-                    .createHistoricProcessInstanceQuery()
-                    .processInstanceTenantId(tenantId)
-                    .processDefinitionId(defn.getId())
-                    .count();
-            defn.setInstanceCount(historicCount);
+            defn.setInstanceCount(getInstanceCount(defn, tenantId));
         }
         LOGGER.info("Deployed definitions: " + list.size());
 
@@ -113,6 +108,24 @@ public class ProcessDefinitionController {
 
         LOGGER.info("Total definitions: " + list.size());
         return list;
+    }
+
+    protected Long getInstanceCount(ProcessDefinition defn, String tenantId) {
+        // Historic count _includes_ active
+        long count = processEngine.getHistoryService()
+                .createHistoricProcessInstanceQuery()
+                .processInstanceTenantId(tenantId)
+                .processDefinitionId(defn.getId())
+                .count();
+        if (count == 0) {
+            // double check, could be history has been trimmed
+            count = processEngine.getRuntimeService()
+                .createProcessInstanceQuery()
+                .processInstanceTenantId(tenantId)
+                .processDefinitionId(defn.getId())
+                .count();
+        }
+        return count;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -140,7 +153,7 @@ public class ProcessDefinitionController {
                     .getRepositoryService().createDeploymentQuery()
                     .deploymentId(pd.getDeploymentId().toString())
                     .singleResult()));
-
+            pd.setInstanceCount(getInstanceCount(pd, tenantId));
         } catch (NullPointerException e) {
             // assume this is an incomplete model....
             pd = new ProcessDefinition(processModelRepo.findOne(id));
@@ -212,18 +225,28 @@ public class ProcessDefinitionController {
                 .processDefinitionId(id).orderByProcessInstanceId().desc();
         if (limit == null) {
             instances.addAll(ProcessInstance.wrap(query.list()));
-            mergeActiveInst(id, instances);
+            mergeActiveInstDetails(id, instances);
         } else {
             if (page == null) {
                 page = 0;
             }
             instances.addAll(ProcessInstance.wrap(query.listPage(page*limit, limit)));
-            mergeActiveInst(id, instances);
+            mergeActiveInstDetails(id, instances);
+        }
+        // double check in case simply missing historic data
+        if (instances.size() == 0 && limit == null) {
+            instances.addAll(ProcessInstance.wrap(
+                    processEngine.getRuntimeService().createProcessInstanceQuery()
+                    .processDefinitionId(id).orderByProcessInstanceId().desc().list()));
+        } else if (instances.size() == 0) {
+            instances.addAll(ProcessInstance.wrap(
+                    processEngine.getRuntimeService().createProcessInstanceQuery()
+                    .processDefinitionId(id).orderByProcessInstanceId().desc().listPage(page*limit, limit)));
         }
         return instances;
     }
 
-    private void mergeActiveInst(String procDefId,
+    private void mergeActiveInstDetails(String procDefId,
             List<ProcessInstance> instances) {
         if (instances == null || instances.size() == 0) {
             LOGGER.debug("no instances to enhance");
@@ -392,6 +415,10 @@ public class ProcessDefinitionController {
         String bpmn = null;
         try {
             bpmn = ProcessDefinition.findProcessDefinitionAsBpmn(id);
+        } catch (ActivitiException e) {
+            // Activiti recognises the deployment but has not got the BPMN
+            // Someone messing with the database?
+            throw e;
         } catch (Exception e) {
             bpmn = processModelRepo.findOne(id).getBpmnString();
         }

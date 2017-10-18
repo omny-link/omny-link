@@ -283,6 +283,13 @@ var BaseRactive = Ractive.extend({
     ractive.initContentEditable();
     ractive.initShortKeys();
   },
+  initInfiniteScroll() {
+    $(window).scroll(function() { // when within 100px of bottom
+      if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+        if (ractive['fetchMore']!=undefined) ractive.fetchMore();
+      }
+    });
+  },
   initShortKeys: function() {
     $( "body" ).keypress(function( event ) {
       if (event.target.tagName.toLowerCase() == 'input' || event.target.tagName.toLowerCase() == 'textarea') return;

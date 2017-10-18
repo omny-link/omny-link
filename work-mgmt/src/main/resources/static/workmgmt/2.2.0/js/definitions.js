@@ -386,6 +386,17 @@ var ractive = new BaseRactive({
       ractive.set('current.instances',data);
     });
   },
+  fetchMore: function() {
+    console.log('fetch more instances');
+    if (ractive.get('current.instances').length>=ractive.get('current.instanceCount')) return;
+    // collapse any visible instances so notice any new instances and to force refresh on re-open
+    $('section.instanceSect[data-instance-id]').hide();
+    var nextPage = Math.ceil(ractive.get('current.instances').length / 20);
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+ractive.get('current.id')+'/instances?limit=20&page='+nextPage, function( data ) {
+      console.log('found instances '+data.length);
+      ractive.push('current.instances',data);
+    });
+  },
   fetchIssues: function(definition) {
     console.log('fetch issues');
     $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'/issues', function( data ) {
@@ -682,4 +693,8 @@ ractive.on( 'sortInstances', function ( event, column ) {
   // if already sorted by this column reverse order
   if (this.get('sortInstanceColumn')==column) this.set('sortInstanceAsc', !this.get('sortInstanceAsc'));
   this.set( 'sortInstanceColumn', column );
+});
+
+$(document).ready(function() {
+  ractive.initInfiniteScroll();
 });
