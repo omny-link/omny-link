@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import javax.xml.transform.TransformerConfigurationException;
 
 import org.activiti.engine.ActivitiException;
+import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
@@ -362,19 +363,33 @@ public class DeploymentController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public @ResponseBody void deleteFromJson(@PathVariable("id") String id) {
+    public @ResponseBody void deleteFromJson(@PathVariable("id") String id,
+            @RequestParam(value = "cascade", defaultValue = "false") boolean cascade) {
         LOGGER.info(String.format("deleting deployment: %1$s", id));
         try {
-            processEngine.getRepositoryService().deleteDeployment(id);
-        } catch (Exception e) {
-            if (processEngine.getRepositoryService().createDeploymentQuery().deploymentId(id).count()==0) {
-                // assume this is an incomplete model....
-                processModelRepo.delete(id);
+            if (cascade) {
+                processEngine.getRepositoryService().deleteDeployment(id, true);
             } else {
-                String msg = String.format("Unable to delete deployment with id %1$s, does it still have instances?", id);
-                LOGGER.error(msg, e);
-                throw new ReportableException(msg, e);
+                processEngine.getRepositoryService().deleteDeployment(id);
             }
+        } catch (ActivitiObjectNotFoundException e) {
+            // assume this is an incomplete model....
+            try {
+                processModelRepo.delete(id);
+            } catch (org.springframework.dao.EmptyResultDataAccessException e2) {
+                throw new ActivitiObjectNotFoundException(e2.getMessage(), ProcessModel.class);
+            }
+        } catch (ActivitiException e) {
+            throw e;
+        } catch (org.apache.ibatis.exceptions.PersistenceException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new ReportableException(String.format(
+                    "Unable to delete deployment with id '%1$s', does it still have instances?", id), e);
+        } catch (Exception e) {
+            String msg = String.format("Unable to delete deployment with id '%1$s': %2$s: %3$s",
+                    id, e.getClass().getName(), e.getMessage(), e);
+            LOGGER.error(msg, e);
+            throw new ReportableException(msg, e);
         }
     }
 

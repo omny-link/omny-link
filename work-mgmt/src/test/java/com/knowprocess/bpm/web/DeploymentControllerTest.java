@@ -35,7 +35,7 @@ public class DeploymentControllerTest {
     }
 
     @Test
-    public void testLifecycleOfIncompleteModel() {
+    public void testLifecycleOfIncompleteModel() throws Exception {
         // CREATE
         ProcessModel model = new ProcessModel();
         model.setId(UUID.randomUUID().toString());
@@ -57,22 +57,16 @@ public class DeploymentControllerTest {
         // UPDATE
 
         // DELETE
-        svc.deleteFromJson(model2.getId());
+        svc.deleteFromJson(model2.getId(), false);
     }
 
-    private String getResourceAsString(String resourceName) {
-        InputStream is = null;
-        try {
-            is = getClass().getResourceAsStream(resourceName);
+    @SuppressWarnings("resource")
+    private String getResourceAsString(String resourceName) throws Exception {
+        try (InputStream is = getClass().getResourceAsStream(resourceName)) {
             return new Scanner(is).useDelimiter("\\A").next();
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
-        } finally {
-            try {
-                is.close();
-            } catch (Exception e) {
-            }
         }
     }
 
