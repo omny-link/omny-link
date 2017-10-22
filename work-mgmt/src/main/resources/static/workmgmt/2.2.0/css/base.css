@@ -232,13 +232,12 @@ section h2 .file {
 section .pasteZone {
   background-color:#efefef;
   border: #666 dashed 3px;
-  height:10em;
+  height:30em;
 }
 section .pasteZone .target {
-  border: #666 solid 1px;
   position: relative;
   top: 42%;
-  left: 42%;
+  text-align: center;
   padding: 1em;
   border-radius: 5px;
 }
@@ -247,10 +246,10 @@ section h3 {
   padding-left: 20px;
 }
 .alert-counter {
-	border-radius: 1.75em;
-	padding: 0.13em 0.25em;
-	border-width: 1px;
-	border-style: solid;
+  border-radius: 1.75em;
+  padding: 0.13em 0.25em;
+  border-width: 1px;
+  border-style: solid;
 }
 .alert-hidden {
 	display:none;

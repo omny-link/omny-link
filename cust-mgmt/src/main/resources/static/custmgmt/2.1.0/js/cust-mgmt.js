@@ -416,6 +416,12 @@ var ractive = new BaseRactive({
         if (ractive.hasRole('power-user')) $('.power-user').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
         if (ractive.get('tenant.show.orders')) ractive.fetchStockItems();
+        ractive.set('contacts',data.map(function(obj) {
+            obj.name = obj.fullName;
+            return obj;
+          })
+        );
+        ractive.addDataList({ name: 'contacts' }, ractive.get('contacts'));
         ractive.showSearchMatched();
         ractive.set('saveObserver', true);
       }
@@ -617,7 +623,7 @@ var ractive = new BaseRactive({
     });
 
     document.addEventListener('paste', function(e){
-      console.error('  '+e.clipboardData.types);
+      console.debug('  '+e.clipboardData.types);
       if(e.clipboardData.types.indexOf('text/plain') > -1){
         ractive.pastePreview(e.clipboardData.getData('text/plain'));
         e.preventDefault(); // We are already handling the data from the clipboard, we do not want it inserted into the document
@@ -648,6 +654,9 @@ var ractive = new BaseRactive({
             }
             obj = orig;
           }
+        } else if (e.startsWith('customFields.') && d[j]!=undefined && d[j].trim().length>0) {
+          if (obj['customFields']==undefined) obj.customFields = {};
+          obj.customFields[e.substring(e.indexOf('.')+1)] = d[j];
         }
       });
       if (obj['firstName']==undefined) obj['firstName'] = 'Ann';
@@ -667,36 +676,54 @@ var ractive = new BaseRactive({
     console.info('pasteImport');
 
     var list = ractive.pasteDataToObjects();
+    var total = list.length+1;
+    var currentIdx = 0;
     var imported = 0;
     var failed = 0;
+    var requests = [];
+
+    setInterval(function() {
+      if(requests.length > 0) {
+        var request = requests.pop();
+        if(typeof request === "function") {
+          ractive.showMessage('Importing '+(++currentIdx)+' of '+total+' records');
+          request(JSON.stringify(list[currentIdx]));
+        }
+      } else {
+        ractive.showMessage('Completed import; '+failed+' failed out of '+total+' attempted');
+      }
+    }, 3000);
 
     for(var idx in list) {
-      ractive.sendMessage({
-        name:"omny.importedContact",
-        body:JSON.stringify(list[idx]),
-        callback:function(results) {
-          console.log('  sendMessage callback...')
-          imported++;
+      requests.push(function (json) {
+        ractive.sendMessage({
+          name:"omny.importedContact",
+          body:json,
+          callback:function(results) {
+            console.log('  sendMessage callback...')
+            imported++;
+            if (imported+failed==list.length) ractive.importComplete(imported, failed);
+          },
+          pattern:"inOnly"
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+          var msg = "Unable to import record "+idx;
+          console.warn('msg:'+msg);
+          failed++;
           if (imported+failed==list.length) ractive.importComplete(imported, failed);
-        },
-        pattern:"inOnly"
-      })
-      .fail(function(jqXHR, textStatus, errorThrown) {
-        var msg = "Unable to import record "+idx;
-        console.warn('msg:'+msg);
-        failed++;
-        if (imported+failed==list.length) ractive.importComplete(imported, failed);
+        });
       });
     }
   },
   pastePreview: function(data) {
     var rows = data.split("\n");
 
-    for(var y in rows) {
+    for(var y = 0 ; y < rows.length ; y++) {
+      if (rows[y]==undefined || rows[y].trim().length==0) continue;
       var cells = rows[y].trim().split("\t");
-      if (y==0){
+      if (y==0) {
         ractive.set('pasteData.headers',cells);
-      }else{
+      } else {
         ractive.set('pasteData.rows.'+(y-1),cells);
       }
     }
@@ -719,7 +746,7 @@ var ractive = new BaseRactive({
       var v = ractive.get('fieldValidators');
       $.each(ractive.get('pasteData.rows'), function(j,e) {
         console.log(j+':'+e[i]);
-        if (v[d]!=undefined && e[i].search(v[d])==-1) {
+        if (v[d]!=undefined && e[i]!=undefined && e[i].search(v[d])==-1) {
           //console.error('gotcha!');
           $('#pastePreview tbody tr[data-row="'+j+'"] td[data-col="'+i+'"] .glyphicon').show();
         }

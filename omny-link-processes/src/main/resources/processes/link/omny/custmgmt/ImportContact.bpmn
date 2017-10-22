@@ -10,7 +10,7 @@
     <callActivity calledElement="CreateContactAndAccount" completionQuantity="1" id="_11" isForCompensation="false" name="Create Contact and &#10;Account in CRM" startQuantity="1">
       <extensionElements>
         <activiti:in source="omny_importedContact" target="json"/>
-        <activiti:in sourceExpression="omny" target="tenantId"/>
+        <activiti:in sourceExpression="${execution.tenantId}" target="tenantId"/>
         <activiti:out source="contactId" target="contactId"/>
         <activiti:out source="contactEmail" target="contactEmail"/>
         <activiti:out source="contactPwd" target="contactPwd"/>
@@ -35,7 +35,7 @@
       <text>IMPORT A CONTACT AND ACCOUNT</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-ImportContact" name="Untitled Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-ImportContact" name="Import a contact" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="ImportContact">
       <bpmndi:BPMNShape bpmnElement="startFromOmnyRegistrationMsg" id="Yaoqiang-startFromOmnyRegistrationMsg">
         <dc:Bounds height="32.0" width="32.0" x="75.0" y="204.83333333333334"/>
