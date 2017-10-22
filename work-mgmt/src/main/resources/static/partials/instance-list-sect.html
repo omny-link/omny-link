@@ -69,9 +69,11 @@
                   <a aria-hidden="true" href="jobs.html?q={{id}}" target="_blank" title="Show tasks for this process instance">
                     <span class="clickable glyphicon glyphicon-btn glyphicon-tasks"></span>
                   </a>
-                  <a aria-hidden="true" href="audit.html?instanceId={{superInstanceId}}" target="_blank" title="Audit parent process">
-                    <span class="clickable glyphicon glyphicon-btn glyphicon-new-window"></span>
-                  </a>
+                  {{#superInstanceId}}
+                    <a aria-hidden="true" href="audit.html?instanceId={{superInstanceId}}" target="_blank" title="Audit parent process">
+                      <span class="clickable glyphicon glyphicon-btn glyphicon-new-window"></span>
+                    </a>
+                  {{/}}
 	              {{#active!='audit.html'}}
                     <span class="clickable glyphicon glyphicon-btn glyphicon-remove" on-click="deleteInstance(this,i)"></span>
                   {{/}}
