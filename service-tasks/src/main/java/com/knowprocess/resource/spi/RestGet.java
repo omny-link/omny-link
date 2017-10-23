@@ -18,8 +18,8 @@ public class RestGet extends RestService implements JavaDelegate {
         Principal principal = null;
         String resource = null;
         String[] responsesSought = getResponseHeadersSought(execution);
-        String resourceBodyKey = (String) (responseVar == null ? "resource"
-                : responseVar.getValue(execution));
+        String resourceBodyKey = (String) (outputVar == null ? "resource"
+                : outputVar.getValue(execution));
         try {
             principal = getPrincipal(execution);
             resource = principal == null
@@ -28,10 +28,10 @@ public class RestGet extends RestService implements JavaDelegate {
                             globalResource));
 
             LOGGER.warn(String.format("Seeking %1$s", resourceBodyKey));
+            String sHeaders = headers == null ? null : (String) headers.getValue(execution);
             Map<String, Object> responses = super.execute(
                     "GET", resource,
-                    getRequestHeaders(execution, getUsername(execution),
-                            (String) headers.getValue(execution)),
+                    getRequestHeaders(execution, getUsername(execution), sHeaders),
                     evalExpression(data, execution),
                     responsesSought, resourceBodyKey, principal);
 

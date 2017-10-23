@@ -41,7 +41,7 @@ public abstract class RestService extends BaseUserAwareTask implements
      * value is response header name.
      */
     protected Expression responseHeaders;
-    protected Expression responseVar;
+    protected Expression outputVar;
     /**
      * Comma-separated set of fields to POST to the REST resource in the form
      * key=value. May contain expressions.
@@ -77,7 +77,7 @@ public abstract class RestService extends BaseUserAwareTask implements
     }
 
     public void setOutputVariable(Expression outputVar) {
-        this.responseVar = outputVar;
+        this.outputVar = outputVar;
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class RestService extends BaseUserAwareTask implements
      *             convention
      */
     public void setResponseVar(Expression responseVar) {
-        this.responseVar = responseVar;
+        this.outputVar = responseVar;
     }
 
     public void setMockResponse(Expression mockResponse) {
@@ -226,7 +226,7 @@ public abstract class RestService extends BaseUserAwareTask implements
             String usr, String headerString) {
         Map<String, String> map = getRequestHeaders(headerString);
         for (Entry<String, String> entry : map.entrySet()) {
-            if (entry.getValue().startsWith("userInfo")) {
+            if (usr != null && entry.getValue().startsWith("userInfo")) {
                 entry.setValue(getUserInfoHelper().lookup(execution, usr,
                         entry.getValue()));
             }

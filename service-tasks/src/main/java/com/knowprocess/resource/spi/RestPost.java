@@ -42,9 +42,9 @@ public class RestPost extends RestService implements JavaDelegate {
                         resource, requestHeaders, responseHeadersSought,
                         getFormFields(execution, (String) data.getExpressionText()));
             } else {
-                String resourceBodyKey = (String) (responseVar == null
+                String resourceBodyKey = (String) (outputVar == null
                         ? "resource"
-                        : responseVar.getValue(execution));
+                        : outputVar.getValue(execution));
                 responses = super.execute(
                         "POST", resource, requestHeaders,
                         evalExpression(data, execution),
@@ -71,7 +71,7 @@ public class RestPost extends RestService implements JavaDelegate {
                 resource, "POST", requestHeaders, payload)) {
             // TODO response headers
 
-            if (responseVar == null) {
+            if (outputVar == null) {
                 LOGGER.debug("No response variable requested");
             } else if (is == null) {
                 LOGGER.warn(
@@ -118,7 +118,7 @@ public class RestPost extends RestService implements JavaDelegate {
                 }
             }
 
-            if (responseVar == null) {
+            if (outputVar == null) {
                 LOGGER.debug("No response variable requested");
             }
             if (is == null || Collections.singletonList("0")
