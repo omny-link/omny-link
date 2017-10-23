@@ -11,10 +11,21 @@
   <table id="tenantsTable" class="tenants table table-striped">
     <thead>
       <tr>
+        <th colspan="2"></th>
+        <th colspan="6" style="text-align:center">CRM</th>
+        <th colspan="5" style="text-align:center">Process Engine</th>
+        <th colspan="2">&nbsp;</th>
+      </tr>
+      <tr>
         <th></th>
         <th on-click="sort:tenantId">Name<span class="sortable {{ sorted('tenantId') }} glyphicon"></th>
+        <th on-click="sort:accounts">Accounts<span class="sortable {{ sorted('accounts') }} glyphicon"></th>
+        <!--th on-click="sort:accountAlerts">Account Alerts<span class="sortable {{ sorted('accountAlerts') }} glyphicon"></th-->
         <th on-click="sort:contacts">Contacts<span class="sortable {{ sorted('contacts') }} glyphicon"></th>
         <th on-click="sort:contactAlerts">Contact Alerts<span class="sortable {{ sorted('contactAlerts') }} glyphicon"></th>
+        <th on-click="sort:orders">Orders<span class="sortable {{ sorted('orders') }} glyphicon"></th>
+        <th on-click="sort:stockItems">Stock Items<span class="sortable {{ sorted('stockItems') }} glyphicon"></th>
+        <th on-click="sort:stockCategories">Stock Categories<span class="sortable {{ sorted('stockCategories') }} glyphicon"></th>
         <th on-click="sort:definitions">Definitions<span class="sortable {{ sorted('definitions') }} glyphicon"></th>
         <th on-click="sort:activeInstances">Active Instances<span class="sortable {{ sorted('activeInstances') }} glyphicon"></th>
         <th on-click="sort:historicInstances">Historic Instances<span class="sortable {{ sorted('historicInstances') }} glyphicon"></th>
@@ -37,8 +48,13 @@
                 <img alt="Logo for {{tenantId}}" class="brand-logo" src="{{theme.logoUrl}}" title="Logo for {{tenantId}}">
               {{/if}}
             </td>
+            <td on-click="edit(this)">{{accounts}}</td>
+            <!--td on-click="edit(this)">{{accountAlerts}}</td-->
             <td on-click="edit(this)">{{contacts}}</td>
             <td on-click="edit(this)">{{contactAlerts}}</td>
+            <td on-click="edit(this)">{{orders}}</td>
+            <td on-click="edit(this)">{{stockItems}}</td>
+            <td on-click="edit(this)">{{stockCategories}}</td>
             <td on-click="edit(this)">{{definitions}}</td>
             <td on-click="edit(this)">{{activeInstances}}</td>
             <td on-click="edit(this)">{{historicInstances}}</td>
@@ -62,7 +78,7 @@
     </tbody>
     <tfoot>
       {{# searchTerm!=undefined }}
-        <tr><th colspan="11">{{searchMatched == 0 ? 'No' : searchMatched}} matching tenant{{searchMatched==1 ? '' : 's'}}</th></tr>
+        <tr><th colspan="16">{{searchMatched == 0 ? 'No' : searchMatched}} matching tenant{{searchMatched==1 ? '' : 's'}}</th></tr>
       {{/}} 
     </tfoot>
   </table>

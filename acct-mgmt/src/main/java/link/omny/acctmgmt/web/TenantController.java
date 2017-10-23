@@ -40,6 +40,10 @@ import link.omny.acctmgmt.model.TenantExtension;
 import link.omny.acctmgmt.model.TenantProcess;
 import link.omny.acctmgmt.model.ThemeConfig;
 import link.omny.acctmgmt.repositories.TenantRepository;
+import link.omny.catalog.repositories.OrderRepository;
+import link.omny.catalog.repositories.StockCategoryRepository;
+import link.omny.catalog.repositories.StockItemRepository;
+import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -52,7 +56,19 @@ public class TenantController {
             .getLogger(TenantController.class);
 
     @Autowired
+    protected AccountRepository accountRepo;
+
+    @Autowired
     protected ContactRepository contactRepo;
+
+    @Autowired
+    protected OrderRepository orderRepo;
+
+    @Autowired
+    protected StockItemRepository stockItemRepo;
+
+    @Autowired
+    protected StockCategoryRepository stockCategoryRepo;
 
     @Autowired
     protected TenantRepository tenantRepo;
@@ -95,8 +111,8 @@ public class TenantController {
 
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
-    
-    
+
+
     /**
      * Create a new tenant bot user.
      */
@@ -183,6 +199,7 @@ public class TenantController {
                     .buildAndExpand(tenant.getId()).toUriString());
             summary.add(detail);
 
+            summary.setAccounts(accountRepo.countForTenant(tenant.getId()));
             summary.setContacts(contactRepo.countForTenant(tenant.getId()));
             summary.setContactAlerts(contactRepo.countAlertsForTenant(tenant
                     .getId()));
@@ -197,6 +214,9 @@ public class TenantController {
                     .processInstanceTenantId(tenant.getId()).count());
             summary.setJobs(processEngine.getManagementService()
                     .createJobQuery().jobTenantId(tenant.getId()).count());
+            summary.setOrders(orderRepo.countForTenant(tenant.getId()));
+            summary.setStockItems(stockItemRepo.countForTenant(tenant.getId()));
+            summary.setStockCategories(stockCategoryRepo.countForTenant(tenant.getId()));
             summary.setTasks(processEngine.getTaskService().createTaskQuery()
                     .taskTenantId(tenant.getId()).count());
             summary.setUsers(processEngine.getIdentityService()
@@ -223,12 +243,16 @@ public class TenantController {
     public static class TenantSummary extends ResourceSupport {
         private String tenantId;
         private String name;
+        private Long accounts;
         private Long contacts;
         private Long contactAlerts;
         private Long definitions;
         private Long activeInstances;
         private Long historicInstances;
         private Long jobs;
+        private Long orders;
+        private Long stockItems;
+        private Long stockCategories;
         private Long tasks;
         private Long users;
         private Date lastLogin;

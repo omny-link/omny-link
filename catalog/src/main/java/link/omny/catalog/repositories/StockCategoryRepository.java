@@ -21,6 +21,9 @@ public interface StockCategoryRepository extends
     @Query("SELECT c FROM StockCategory c WHERE c.tenantId = :tenantId ORDER BY c.name ASC")
     List<StockCategory> findAllForTenant(@Param("tenantId") String tenantId);
 
+    @Query("SELECT COUNT(c) FROM StockCategory c WHERE c.tenantId = :tenantId AND (c.status IS NULL OR c.status != 'deleted')")
+    long countForTenant(@Param("tenantId") String tenantId);
+
     @Query("SELECT c FROM StockCategory c WHERE c.tenantId = :tenantId ORDER BY c.name ASC")
     List<StockCategory> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);

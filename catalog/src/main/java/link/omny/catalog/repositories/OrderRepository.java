@@ -20,6 +20,9 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
     List<Order> findAllForTenant(@Param("tenantId") String tenantId);
 
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.tenantId = :tenantId AND (o.stage IS NULL OR o.stage != 'deleted')")
+    long countForTenant(@Param("tenantId") String tenantId);
+
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
     List<Order> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
