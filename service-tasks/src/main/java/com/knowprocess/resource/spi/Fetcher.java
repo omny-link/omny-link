@@ -347,8 +347,8 @@ public class Fetcher extends RestService implements JavaDelegate {
                 // // throw new ActivitiException(msg);
                 // }
                 // }
-                String resourceKey = (String) (responseVar == null ? RESOURCE_KEY
-                        : responseVar.getValue(execution));
+                String resourceKey = (String) (outputVar == null ? RESOURCE_KEY
+                        : outputVar.getValue(execution));
                 LOGGER.info(String.format("Setting %1$s to %2$s",
                         resourceKey, content));
                 if (getMime(resource).equals("application/json")) {

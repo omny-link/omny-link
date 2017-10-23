@@ -109,7 +109,7 @@ public class TemplatedMailshotProcessTest {
         assertNotNull(processInstance.getId());
         System.out.println("id " + processInstance.getId() + " "
                 + processInstance.getProcessDefinitionId());
-
+        activitiRule.dumpVariables(processInstance.getId());
         JobTestHelper.waitForJobExecutorToProcessAllJobs(activitiRule, 2000, 1);
 
         ProcessAssert.assertProcessEnded(processInstance);
