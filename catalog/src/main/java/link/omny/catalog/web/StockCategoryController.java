@@ -42,7 +42,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 import link.omny.catalog.CatalogException;
 import link.omny.catalog.json.JsonCustomStockCategoryFieldDeserializer;
@@ -60,6 +59,7 @@ import link.omny.catalog.views.StockCategoryViews;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
+import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
