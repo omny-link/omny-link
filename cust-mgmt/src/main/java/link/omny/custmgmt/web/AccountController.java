@@ -44,7 +44,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpm.impl.DateUtils;
-import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Activity;
@@ -55,6 +54,7 @@ import link.omny.custmgmt.model.Note;
 import link.omny.custmgmt.model.views.AccountViews;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -1,4 +1,4 @@
 [[architecture]]
 == Architecture
 
-TBD
+image::omny-link.png[Caption="Component model"]

@@ -19,9 +19,6 @@
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
   </properties>
 
-  <dependencies>
-  </dependencies>
-
   <build>
     <resources>
       <resource>
@@ -56,6 +53,39 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Plugin to automatically generated UML diagrams -->
+      <plugin>
+        <groupId>com.github.jeluard</groupId>
+        <artifactId>plantuml-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <phase>process-resources</phase>
+            <goals>
+            <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sourceFiles>
+            <directory>${basedir}</directory>
+            <includes>
+              <include>src/main/plantuml/**/*.puml</include>
+            </includes>
+          </sourceFiles>
+          <outputDirectory>${project.build.directory}/generated-docs/images</outputDirectory>
+          <flattenOutput>true</flattenOutput>
+          <!-- Also supports svg amongst other things -->
+          <format>png</format>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>${plantuml.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -78,6 +108,19 @@
                     </versionRange>
                     <goals>
                       <goal>process-asciidoc</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>com.github.jeluard</groupId>
+                    <artifactId>plantuml-maven-plugin</artifactId>
+                    <versionRange>[1.2,)</versionRange>
+                    <goals>
+                      <goal>generate</goal>
                     </goals>
                   </pluginExecutionFilter>
                   <action>

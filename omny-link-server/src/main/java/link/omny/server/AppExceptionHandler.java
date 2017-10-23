@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
+
 @ControllerAdvice
 public class AppExceptionHandler {
     protected static final Logger LOGGER = LoggerFactory
@@ -41,6 +43,14 @@ public class AppExceptionHandler {
     public @ResponseBody String handleEntityNotFoundException(
             EntityNotFoundException e) {
         LOGGER.error(e.getMessage());
+        return e.getMessage();
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(BusinessEntityNotFoundException.class)
+    public @ResponseBody String handleNotFoundException(
+            BusinessEntityNotFoundException e) {
+        LOGGER.error("{} with id {} not found", e.getEntity(), e.getId());
         return e.getMessage();
     }
 }
