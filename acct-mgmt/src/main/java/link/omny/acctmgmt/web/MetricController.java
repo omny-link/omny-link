@@ -1,8 +1,14 @@
 package link.omny.acctmgmt.web;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -48,22 +54,36 @@ public class MetricController {
 
         List<TenantSummary> list = tenantController
                 .showAllTenants();
-        for (TenantSummary tenant : list) {
-            Metric defnMetric = new Metric(tenant.getTenantId(), "definitions",
-                    tenant.getDefinitions(), now);
-            metricRepo.save(defnMetric);
-            Metric historicInstancesMetric = new Metric(tenant.getTenantId(),
-                    "historicInstances", tenant.getHistoricInstances(), now);
-            metricRepo.save(historicInstancesMetric);
-            Metric instanceMetric = new Metric(tenant.getTenantId(),
-                    "instances", tenant.getActiveInstances(), now);
-            metricRepo.save(instanceMetric);
-            Metric jobMetric = new Metric(tenant.getTenantId(), "jobs",
-                    tenant.getJobs(), now);
-            metricRepo.save(jobMetric);
-            Metric userMetric = new Metric(tenant.getTenantId(), "users",
-                    tenant.getUsers(), now);
-            metricRepo.save(userMetric);
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(TenantSummary.class);
+            HashSet<Metric> metrics = new HashSet<Metric>();
+
+            for (TenantSummary tenant : list) {
+                metrics.clear();
+                for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
+                    Metric metric;
+                    try {
+                        Long value = (Long) pd.getReadMethod().invoke(tenant, new Object[0]);
+                        if (value == null) {
+                            throw new IllegalArgumentException(String.format(
+                                    "%1$s is null, ignoring", pd.getName()));
+                        }
+                        metric = new Metric(tenant.getTenantId(), pd.getName(),
+                               value, now);
+                        metrics.add(metric);
+                    } catch (IllegalAccessException | IllegalArgumentException
+                            | InvocationTargetException | ClassCastException e) {
+                        LOGGER.error("Unable to find metric {} for {}; cause: {}",
+                                pd.getName(), tenant.getId(), e.getMessage());
+                    }
+                }
+                metricRepo.save(metrics);
+            }
+        } catch (IntrospectionException e) {
+            LOGGER.error(
+                    "Cannot introspect TenantSummary, no metrics will be recorded",
+                    e);
+            throw new RuntimeException(e);
         }
         UriComponentsBuilder builder = MvcUriComponentsBuilder
                 .fromController(getClass());

@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Size;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,10 @@ public class Tenant implements Serializable {
     @JsonProperty
     @Column(name = "remote_url")
     protected String remoteUrl;
+
+    @JsonProperty
+    @Size(max = 20)
+    private String status;
 
     @Transient
     private TenantConfig config;
