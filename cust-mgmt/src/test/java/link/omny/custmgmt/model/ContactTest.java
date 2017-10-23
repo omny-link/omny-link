@@ -13,7 +13,6 @@ import java.util.Scanner;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.knowprocess.bpm.model.ProcessDefinition;
 
 public class ContactTest {
 
@@ -184,7 +183,7 @@ public class ContactTest {
     }
 
     private static String readFromClasspath(String resourceName) {
-        try (Scanner scanner = new Scanner(ProcessDefinition.class.getResourceAsStream(resourceName))) {
+        try (Scanner scanner = new Scanner(ContactTest.class.getResourceAsStream(resourceName))) {
             return scanner.useDelimiter("\\A").next();
         } catch (Exception e) {
             throw e;

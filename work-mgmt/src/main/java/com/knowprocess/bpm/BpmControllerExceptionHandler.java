@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpm.api.BadJsonMessageException;
 import com.knowprocess.bpm.api.ReportableException;
-import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 @ControllerAdvice
 public class BpmControllerExceptionHandler {
@@ -45,14 +44,6 @@ public class BpmControllerExceptionHandler {
     public @ResponseBody String handleNotFound(Exception e) {
         LOGGER.error(e.getMessage());
         return toJson(e);
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(BusinessEntityNotFoundException.class)
-    public @ResponseBody String handleNotFoundException(
-            BusinessEntityNotFoundException e) {
-        LOGGER.error("{} with id {} not found", e.getEntity(), e.getId());
-        return e.getMessage();
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

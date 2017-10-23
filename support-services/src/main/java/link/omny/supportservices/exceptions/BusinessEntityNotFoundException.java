@@ -1,6 +1,4 @@
-package com.knowprocess.bpmn;
-
-
+package link.omny.supportservices.exceptions;
 
 /**
  * Business exception suitable for catching as BPMN error.

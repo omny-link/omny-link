@@ -31,7 +31,6 @@ import com.knowprocess.bpm.model.UserGroup;
 import com.knowprocess.bpm.model.UserInfo;
 import com.knowprocess.bpm.model.UserInfoKeys;
 import com.knowprocess.bpm.model.UserRecord;
-import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -124,7 +123,8 @@ public class UserRecordController {
         // UserRecord user = UserRecord.findUserRecord(id);
         IdentityService idSvc = processEngine.getIdentityService();
         User user = idSvc.createUserQuery().userId(id).singleResult();
-        if (user == null) throw new BusinessEntityNotFoundException("User", id);
+        if (user == null) throw new ActivitiObjectNotFoundException(
+                String.format("Cannot find user with id '%1$s'", id), User.class);
 
         LOGGER.info("Found user to update: " + user);
         if (userRecord.getEmail() != null
