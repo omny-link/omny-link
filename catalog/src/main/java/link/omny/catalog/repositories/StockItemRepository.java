@@ -22,6 +22,9 @@ public interface StockItemRepository extends CrudRepository<StockItem, Long> {
     @Query("SELECT i FROM StockItem i WHERE i.tenantId = :tenantId AND (i.status IS NULL OR i.status != 'deleted') ORDER BY i.name ASC")
     List<StockItem> findAllForTenant(@Param("tenantId") String tenantId);
 
+    @Query("SELECT COUNT(i) FROM StockItem i WHERE i.tenantId = :tenantId AND (i.status IS NULL OR i.status != 'deleted')")
+    long countForTenant(@Param("tenantId") String tenantId);
+
     @Query("SELECT i FROM StockItem i WHERE i.tenantId = :tenantId AND (i.status IS NULL OR i.status != 'deleted') ORDER BY i.name ASC")
     List<StockItem> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);

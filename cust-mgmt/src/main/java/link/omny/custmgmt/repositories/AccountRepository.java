@@ -18,6 +18,9 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
     @Query("SELECT a FROM Account a INNER JOIN a.customFields c WHERE (a.stage IS NULL OR a.stage != 'deleted') AND a.tenantId = :tenantId AND c.name='orgCode' AND c.value = :code ORDER BY a.lastUpdated DESC")
     Account findByCodeForTenant(@Param("code") String code, @Param("tenantId") String tenantId);
 
+    @Query("SELECT COUNT(a) FROM Account a WHERE a.tenantId = :tenantId AND (a.stage IS NULL OR a.stage != 'deleted')")
+    long countForTenant(@Param("tenantId") String tenantId);
+
     @Query("SELECT a FROM Account a WHERE (a.stage IS NULL OR a.stage != 'deleted') AND a.tenantId = :tenantId ORDER BY a.lastUpdated DESC")
     List<Account> findAllForTenant(@Param("tenantId") String tenantId);
 
