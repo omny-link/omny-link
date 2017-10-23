@@ -411,12 +411,12 @@ public class ContactController extends BaseTenantAwareController{
                     .format("Loading activities for %1$d contacts, this may be a bottleneck",
                             list.size()));
         }
-//        for (Contact contact : list) {
-//            contact.setActivities(activityRepo.findByContactId(contact.getId()));
-//            LOGGER.debug(String.format(
-//                    "  loaded %1$d activities for contact %2$d",
-//                    contact.getActivities().size(), contact.getId()));
-//        }
+        // force load of custom fields
+        for (Contact contact : list) {
+            LOGGER.debug(String.format(
+                    "  loaded %1$d custom fields for contact %2$d",
+                    contact.getCustomFields().size(), contact.getId()));
+        }
 
         return wrap(list);
     }
