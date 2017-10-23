@@ -8,12 +8,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import link.omny.catalog.CatalogConfig;
 import link.omny.custmgmt.CustMgmtConfig;
 
 @EnableAutoConfiguration
 @Configuration
 @ComponentScan
-@Import({ AcctMgmtConfig.class, CustMgmtConfig.class })
+@Import({ AcctMgmtConfig.class, CatalogConfig.class, CustMgmtConfig.class })
 public class Application extends WebMvcConfigurerAdapter {
 
     @Override
@@ -25,15 +26,4 @@ public class Application extends WebMvcConfigurerAdapter {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
-
-    // @Bean
-    // public DataSource database() {
-    // return dataSource;
-    // return DataSourceBuilder.create()
-    // .url("jdbc:mysql://127.0.0.1:3306/activiti-spring-boot?characterEncoding=UTF-8")
-    // .username("alfresco")
-    // .password("alfresco")
-    // .driverClassName("com.mysql.jdbc.Driver")
-    // .build();
-    // }
 }

@@ -35,7 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.model.Memo;
@@ -44,6 +43,7 @@ import link.omny.custmgmt.model.views.MemoViews;
 import link.omny.custmgmt.repositories.MemoRepository;
 import link.omny.custmgmt.repositories.MemoSignatoryRepository;
 import link.omny.custmgmt.repositories.NoteRepository;
+import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

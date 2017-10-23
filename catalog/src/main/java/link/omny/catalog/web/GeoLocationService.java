@@ -6,10 +6,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import javax.annotation.Nonnull;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public class GeoLocationService {
         cache = new LruCache<String, GeoPoint>(cacheSize);
     }
 
-    public GeoPoint locate(@Nonnull String q) throws IOException {
+    public GeoPoint locate(@NotNull String q) throws IOException {
         if (cache.containsKey(q)) {
             LOGGER.debug(String.format("  Geo-coding cache hit for: %1$s", q));
             return cache.get(q);

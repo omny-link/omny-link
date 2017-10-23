@@ -55,7 +55,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.knowprocess.bpm.impl.DateUtils;
-import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 import link.omny.custmgmt.internal.CsvImporter;
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
@@ -71,6 +70,7 @@ import link.omny.custmgmt.model.Note;
 import link.omny.custmgmt.model.views.ContactViews;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -445,14 +445,12 @@ public class ContactController extends BaseTenantAwareController{
      * Return just the matching contact.
      *
      * @return the contact with this id.
-     * @throws BusinessEntityNotFoundException
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @JsonView(ContactViews.Detailed.class)
     public @ResponseBody Contact findById(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("id") String id)
-            throws BusinessEntityNotFoundException {
+            @PathVariable("id") String id) {
         LOGGER.debug(String.format("Find contact for id %1$s", id));
         return addLinks(tenantId, contactRepo.findOne(Long.parseLong(id)));
     }
@@ -461,14 +459,12 @@ public class ContactController extends BaseTenantAwareController{
      * Return all contacts associated with an account.
      *
      * @return contacts matching that account.
-     * @throws BusinessEntityNotFoundException
      */
     @RequestMapping(value = "/findByAccountId", method = RequestMethod.GET)
     @Transactional
     public @ResponseBody List<ContactResource> findByAccountId(
             @PathVariable("tenantId") String tenantId,
-            @RequestParam("accountId") String accountId)
-            throws BusinessEntityNotFoundException {
+            @RequestParam("accountId") String accountId) {
         LOGGER.debug(String.format("Find contact for account %1$s", accountId));
 
         return wrap(contactRepo.findByAccountId(Long.parseLong(accountId),
@@ -479,14 +475,12 @@ public class ContactController extends BaseTenantAwareController{
      * Return just the matching contact.
      *
      * @return contacts for that tenant with the matching tag.
-     * @throws BusinessEntityNotFoundException
      */
     @RequestMapping(value = "/findByUuid", method = RequestMethod.GET, params = { "uuid" })
     @Transactional
     public @ResponseBody ContactResource findByUuid(
             @PathVariable("tenantId") String tenantId,
-            @RequestParam("uuid") String uuid)
-            throws BusinessEntityNotFoundException {
+            @RequestParam("uuid") String uuid) {
         LOGGER.debug(String.format("Find contact for uuid %1$s", uuid));
 
         return (ContactResource) wrap(
@@ -502,13 +496,11 @@ public class ContactController extends BaseTenantAwareController{
      * </p>
      *
      * @return contacts for that tenant with the matching tag.
-     * @throws BusinessEntityNotFoundException
      */
     @RequestMapping(value = "/findActive", method = RequestMethod.GET)
     @Transactional
     public @ResponseBody List<ShortContact> findActive(
-            @PathVariable("tenantId") String tenantId)
-            throws BusinessEntityNotFoundException {
+            @PathVariable("tenantId") String tenantId) {
         LOGGER.debug(String.format("Find active contacts for tenant %1$s",
                 tenantId));
 

@@ -39,7 +39,6 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.knowprocess.bpmn.BusinessEntityNotFoundException;
 
 import link.omny.catalog.internal.CatalogCsvImporter;
 import link.omny.catalog.model.CustomStockItemField;
@@ -53,6 +52,7 @@ import link.omny.catalog.views.StockItemViews;
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
+import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

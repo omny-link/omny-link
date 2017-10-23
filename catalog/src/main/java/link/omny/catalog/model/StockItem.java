@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Nonnull;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -299,7 +298,7 @@ public class StockItem implements ShortStockItem, Serializable {
         }
     }
 
-    public void addTag(@Nonnull String tag) {
+    public void addTag(@NotNull String tag) {
         if (tags == null) {
             tags = tag;
         } else {

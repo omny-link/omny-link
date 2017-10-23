@@ -26,10 +26,12 @@
     <activiti.version>5.18.0.20151117</activiti.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>2.1.0-SNAPSHOT</omny-link.version>
-    <kp-auth.version>1.0.0.1</kp-auth.version>
+    <!-- Should express as range: [1.0,1.1) -->
+    <kp-auth.version>1.0.0.2</kp-auth.version>
     <work-mgmt.version>2.2.0-SNAPSHOT</work-mgmt.version>
     <activiti.bdd.version>5.19.0.20161207</activiti.bdd.version>
     <onedecision.version>1.2.0-RC1</onedecision.version>
+    <plantuml.version>8059</plantuml.version>
     <rometools.version>1.7.0</rometools.version>
     <xerces.version>2.11.0</xerces.version>
   </properties>
@@ -185,6 +187,38 @@
           <optimize>true</optimize>
         </configuration>
       </plugin>
+      <!-- Plugin to automatically generated UML diagrams -->
+      <plugin>
+        <groupId>com.github.jeluard</groupId>
+        <artifactId>plantuml-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <phase>process-resources</phase>
+            <goals>
+            <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sourceFiles>
+            <directory>${basedir}</directory>
+            <includes>
+              <include>src/main/plantuml/**/*.puml</include>
+            </includes>
+          </sourceFiles>
+          <outputDirectory>${project.build.directory}/classes/static/images/domain</outputDirectory>
+          <flattenOutput>true</flattenOutput>
+          <format>svg</format>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>${plantuml.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
@@ -213,6 +247,33 @@
             <mavenExecutorId>forked-path</mavenExecutorId>
             <useReleaseProfile>false</useReleaseProfile>
             <arguments>${arguments} -Psonatype-oss-release</arguments>
+          </configuration>
+        </plugin>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>com.github.jeluard</groupId>
+                    <artifactId>
+                      plantuml-maven-plugin
+                    </artifactId>
+                    <versionRange>[1.2.1,)</versionRange>
+                    <goals>
+                      <goal>generate</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
           </configuration>
         </plugin>
       </plugins>

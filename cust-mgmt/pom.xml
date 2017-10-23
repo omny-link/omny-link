@@ -59,6 +59,22 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- Parse and extract HTML parts -->
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+    <dependency>
+      <groupId>link.omny.support-services</groupId>
+      <artifactId>support-services</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.knowprocess</groupId>
+      <artifactId>auth</artifactId>
+      <version>${kp-auth.version}</version>
+    </dependency>
     <dependency>
       <groupId>com.knowprocess.bpm</groupId>
       <artifactId>work-mgmt</artifactId>
