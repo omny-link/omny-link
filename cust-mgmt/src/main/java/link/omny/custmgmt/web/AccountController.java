@@ -266,6 +266,29 @@ public class AccountController {
     }
 
     /**
+     * Return just the matching account.
+     *
+     * @return the account with this name.
+     * @throws BusinessEntityNotFoundException
+     */
+    @JsonView(AccountViews.Detailed.class)
+    @RequestMapping(value = "/accounts/findByName/{name}", method = RequestMethod.GET)
+    public @ResponseBody Account findByName(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("name") String name)
+            throws BusinessEntityNotFoundException {
+        LOGGER.debug(String.format("Find account with name %1$s", name));
+
+        Account account = accountRepo.findByNameForTenant(name, tenantId);
+        if (account == null) {
+            throw new BusinessEntityNotFoundException("account", name);
+        }
+        account.getActivities(); // force load
+
+        return addLinks(tenantId, account);
+    }
+
+    /**
      * Update an existing account.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
