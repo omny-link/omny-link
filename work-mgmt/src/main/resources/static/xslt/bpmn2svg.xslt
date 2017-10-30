@@ -1,10 +1,10 @@
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:activiti="http://activiti.org/bpmn" 
-  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" 
-  xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" 
-  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
-  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
+  xmlns:activiti="http://activiti.org/bpmn"
+  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:svg="http://www.w3.org/2000/svg"
@@ -13,7 +13,7 @@
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:yaoqiang="http://bpmn.sourceforge.net">
-  
+
   <xsl:param name="diagramId" select="//bpmndi:BPMNDiagram[position()=1]/@id"/>
 
   <xsl:variable name="fontSize">
@@ -147,7 +147,7 @@
 
       <xsl:apply-templates select="//bpmn:dataStore[//bpmndi:BPMNDiagram[@id=$diagramId]//@bpmnElement=@id]"/>
       <xsl:apply-templates select="//bpmn:dataStoreReference[//bpmndi:BPMNDiagram[@id=$diagramId]//@bpmnElement=@id]"/>
-      
+
       <!-- TEXT ANNOTATIONS -->
       <xsl:apply-templates select="//bpmn:textAnnotation[//bpmndi:BPMNDiagram[@id=$diagramId]//@bpmnElement=@id]"/>
 
@@ -183,9 +183,9 @@
 		      <xsl:attribute name="class"><xsl:value-of select="local-name(.)"/></xsl:attribute>
 		      <xsl:attribute name="d">
 		        <xsl:choose>
-              <xsl:when test="local-name(.)='dataInput'"><xsl:value-of select="$dataInputIcon"/></xsl:when>		        
-              <xsl:when test="local-name(.)='dataOutput'"><xsl:value-of select="$dataOutputIcon"/></xsl:when>           
-              <xsl:otherwise><xsl:value-of select="$dataObjectIcon"/></xsl:otherwise>		        
+              <xsl:when test="local-name(.)='dataInput'"><xsl:value-of select="$dataInputIcon"/></xsl:when>
+              <xsl:when test="local-name(.)='dataOutput'"><xsl:value-of select="$dataOutputIcon"/></xsl:when>
+              <xsl:otherwise><xsl:value-of select="$dataObjectIcon"/></xsl:otherwise>
 		        </xsl:choose>
 		      </xsl:attribute>
 		      <xsl:attribute name="transform">translate(<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x)-5"/>,<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@y)-10"/>) scale(0.035)</xsl:attribute>
@@ -195,8 +195,8 @@
           <xsl:attribute name="class"><xsl:value-of select="local-name(.)"/>Fill</xsl:attribute>
           <xsl:attribute name="d">
             <xsl:choose>
-              <xsl:when test="local-name(.)='dataInput'"><xsl:value-of select="$dataInputIconFill"/></xsl:when>           
-              <xsl:when test="local-name(.)='dataOutput'"><xsl:value-of select="$dataOutputIconFill"/></xsl:when>           
+              <xsl:when test="local-name(.)='dataInput'"><xsl:value-of select="$dataInputIconFill"/></xsl:when>
+              <xsl:when test="local-name(.)='dataOutput'"><xsl:value-of select="$dataOutputIconFill"/></xsl:when>
               <xsl:otherwise><xsl:value-of select="$dataObjectIconFill"/></xsl:otherwise>
             </xsl:choose>
           </xsl:attribute>
@@ -227,13 +227,33 @@
 		    </xsl:if>
 		  </xsl:otherwise>
 	  </xsl:choose>
+
+      <!-- Collection markers -->
+      <xsl:if test="$debug='true'">
+        <xsl:comment>
+          <xsl:text> x </xsl:text><xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x"></xsl:value-of>
+          <xsl:text> y </xsl:text><xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@y"></xsl:value-of>
+          <xsl:text> height </xsl:text><xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height"></xsl:value-of>
+          <xsl:text> width </xsl:text><xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@width"></xsl:value-of>
+        </xsl:comment>
+      </xsl:if>
+      <xsl:call-template name="collectionMarker">
+        <xsl:with-param name="this" select="."/>
+        <xsl:with-param name="id" select="$id"/>
+        <xsl:with-param name="yOffset">
+          <xsl:choose>
+            <xsl:when test="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height &gt; 85">-10</xsl:when>
+            <xsl:otherwise>-20</xsl:otherwise>
+          </xsl:choose>
+        </xsl:with-param>
+      </xsl:call-template>
   </xsl:template>
 
   <xsl:template match="bpmn:dataState|dataState">
     <xsl:variable name="id" select="../@id"/>
-    
+
     <xsl:variable name="diElement" select="//bpmndi:*[@bpmnElement=$id]"/>
-    
+
     <!-- not using label template as id is not data state id but its parent -->
     <xsl:element name="text">
       <xsl:attribute name="class">label <xsl:value-of select="local-name(.)"/></xsl:attribute>
@@ -304,14 +324,14 @@
         </xsl:element>
       </xsl:element>
     </xsl:if>
-      
+
     <xsl:call-template name="label">
       <xsl:with-param name="id" select="$id"></xsl:with-param>
       <xsl:with-param name="r">0</xsl:with-param>
       <xsl:with-param name="tx">0</xsl:with-param>
       <xsl:with-param name="ty">0</xsl:with-param>
     </xsl:call-template>
-    
+
     <xsl:apply-templates select="bpmn:dataState"/>
   </xsl:template>
 
@@ -359,12 +379,12 @@
       <xsl:with-param name="trgtElement" select="$trgtElement"/>
     </xsl:call-template>
   </xsl:template>
-  
+
   <!-- EVENTS -->
   <xsl:template match="bpmn:startEvent|bpmn:boundaryEvent|bpmn:intermediateCatchEvent|bpmn:intermediateThrowEvent|bpmn:endEvent">
     <xsl:variable name="id" select="@id"/>
     <xsl:variable name="bpmnElement" select="//bpmndi:BPMNShape[@bpmnElement=$id]"/>
-    
+
     <xsl:apply-templates select="bpmn:dataInputAssociation"/>
     <xsl:apply-templates select="bpmn:dataOutputAssociation"/>
 
@@ -417,7 +437,7 @@
       <xsl:if test="@cancelActivity='false'">
         <xsl:attribute name="stroke-dasharray">5,3</xsl:attribute>
       </xsl:if>
-      
+
       <xsl:choose>
         <xsl:when test="timerEventDefinition/bpmn:timeCycle">
           <xsl:attribute name="data-timer-cycle">
@@ -642,7 +662,7 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    
+
     <xsl:element name="g">
       <xsl:attribute name="class"><xsl:value-of select="local-name(.)"/></xsl:attribute>
       <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
@@ -670,7 +690,7 @@
       </xsl:element>
     </xsl:element>
   </xsl:template>
-  
+
   <xsl:template match="bpmn:participant">
     <xsl:variable name="id" select="@id"/>
 
@@ -884,7 +904,7 @@
       <xsl:element name="path">
         <xsl:attribute name="class">icon <xsl:value-of select="local-name(.)"/></xsl:attribute>
         <xsl:attribute name="data-called-element"><xsl:value-of select="@calledElement"/></xsl:attribute>
-        
+
         <xsl:choose>
           <xsl:when test="//bpmndi:BPMNShape[@bpmnElement=$id]/@isExpanded!='true' and (local-name(.)='callActivity' or local-name(.)='subProcess')">
             <xsl:attribute name="transform">translate(<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x)+number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@width div 2)-10"/>,<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@y)+number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height)-20"/>) scale(0.01)</xsl:attribute>
@@ -921,7 +941,7 @@
           </xsl:when>
         </xsl:choose>
       </xsl:element>
-    
+
 	    <xsl:call-template name="label">
 	      <xsl:with-param name="id" select="$id"/>
 	      <xsl:with-param name="tx">0</xsl:with-param>
@@ -932,23 +952,23 @@
 
       <!-- Activity markers -->
       <xsl:if test="$debug='true'">
-	      <xsl:comment>
-	        <xsl:text> x </xsl:text><xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x"></xsl:value-of>
-	        <xsl:text> y </xsl:text><xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@y"></xsl:value-of>
-	        <xsl:text> height </xsl:text><xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height"></xsl:value-of>
-	        <xsl:text> width </xsl:text><xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@width"></xsl:value-of>
-	      </xsl:comment>
-	    </xsl:if>
+        <xsl:comment>
+          <xsl:text> x </xsl:text><xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x"></xsl:value-of>
+          <xsl:text> y </xsl:text><xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@y"></xsl:value-of>
+          <xsl:text> height </xsl:text><xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height"></xsl:value-of>
+          <xsl:text> width </xsl:text><xsl:value-of select="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@width"></xsl:value-of>
+        </xsl:comment>
+      </xsl:if>
       <xsl:call-template name="activityMarker">
         <xsl:with-param name="this" select="."/>
         <xsl:with-param name="id" select="$id"/>
         <xsl:with-param name="yOffset">
-		      <xsl:choose>
-		        <xsl:when test="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height &gt; 70">-10</xsl:when>
-		        <xsl:otherwise>-20</xsl:otherwise>
-		      </xsl:choose>
-		    </xsl:with-param>
-		  </xsl:call-template>
+	      <xsl:choose>
+	        <xsl:when test="//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height &gt; 85">-10</xsl:when>
+	        <xsl:otherwise>-20</xsl:otherwise>
+	      </xsl:choose>
+	    </xsl:with-param>
+	  </xsl:call-template>
     </xsl:element>
 
     <!--<xsl:for-each select="bpmn:outgoing">
@@ -974,7 +994,7 @@
         <xsl:attribute name="stroke-width">1.0</xsl:attribute>
       </xsl:element>
     </xsl:for-each>-->
-    
+
     <xsl:element name="rect">
         <xsl:attribute name="id"><xsl:value-of select="@id"/>IssueBG</xsl:attribute>
         <xsl:attribute name="class">issue</xsl:attribute>
@@ -995,7 +1015,7 @@
       <path fill="#ff6c06" d="M256 46.387l214.551 427.613h-429.103l214.552-427.613zM256 0c-11.035 0-22.070 7.441-30.442 22.324l-218.537 435.556c-16.743 29.766-2.5 54.12 31.652 54.12h434.654c34.15 0 48.396-24.354 31.65-54.12h0.001l-218.537-435.556c-8.371-14.883-19.406-22.324-30.441-22.324v0z"></path>
 			<path fill="#ff6c06" d="M288 416c0 17.673-14.327 32-32 32s-32-14.327-32-32c0-17.673 14.327-32 32-32s32 14.327 32 32z"></path>
 			<path fill="#ff6c06" d="M256 352c-17.673 0-32-14.327-32-32v-96c0-17.673 14.327-32 32-32s32 14.327 32 32v96c0 17.673-14.327 32-32 32z"></path>
-			
+
     </xsl:element>
 
   </xsl:template>
@@ -1076,7 +1096,7 @@
     <xsl:apply-templates select="//dc:Bounds"/>
 
     <ellipse cx="17" cy="139" fill="url(#g1)" rx="16" ry="16" stroke="#000000" stroke-width="1.0"/>
-    
+
     <text fill="#fff" font-decoration="none" font-size="11" font-weight="normal" text-anchor="start" x="202" y="224">
       <xsl:variable name="bpmnElement" select="@bpmnElement"/>
       <xsl:value-of select="$bpmnElement"/>
@@ -1144,9 +1164,37 @@
           <xsl:attribute name="d"><xsl:value-of select="$parallelMiMarker"/></xsl:attribute>
         </xsl:element>
       </xsl:when>
+      <xsl:when test="@isCollection='true'">
+        <xsl:element name="path">
+          <xsl:attribute name="class">icon <xsl:value-of select="local-name($this)"/></xsl:attribute>
+          <xsl:attribute name="transform">translate(<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x)+number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@width div 2)-10"/>,<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@y)+number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height)+$yOffset"/>) scale(0.01)</xsl:attribute>
+          <xsl:attribute name="d"><xsl:value-of select="$parallelMiMarker"/></xsl:attribute>
+        </xsl:element>
+      </xsl:when>
       <xsl:otherwise>
         <xsl:if test="$debug='true'">
           <xsl:comment>No activity markers</xsl:comment>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="collectionMarker">
+    <xsl:param name="this"/>
+    <xsl:param name="id"/>
+    <xsl:param name="yOffset"/>
+
+    <xsl:choose>
+      <xsl:when test="@isCollection='true'">
+        <xsl:element name="path">
+          <xsl:attribute name="class">icon <xsl:value-of select="local-name($this)"/></xsl:attribute>
+          <xsl:attribute name="transform">translate(<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@x)+number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@width div 2)-10"/>,<xsl:value-of select="number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@y)+number(//bpmndi:BPMNShape[@bpmnElement=$id]/dc:Bounds/@height)+$yOffset"/>) scale(0.01)</xsl:attribute>
+          <xsl:attribute name="d"><xsl:value-of select="$parallelMiMarker"/></xsl:attribute>
+        </xsl:element>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="$debug='true'">
+          <xsl:comment>No collection markers</xsl:comment>
         </xsl:if>
       </xsl:otherwise>
     </xsl:choose>
@@ -1161,7 +1209,7 @@
     <xsl:param name="bpmnElement"/>
     <xsl:param name="srcElement"/>
     <xsl:param name="trgtElement"/>
-    
+
     <xsl:if test="$debug='true'">
       <xsl:comment>FLOW OR ASSOC <xsl:value-of select="$id"/><xsl:value-of select="$sourceRef/@id"/></xsl:comment>
 	    <xsl:choose>
@@ -1194,7 +1242,7 @@
 	          <xsl:text> local-name(//*[@id=$sourceRef]) </xsl:text><xsl:value-of select="local-name(//*[@id=$sourceRef])"/>
 	          <xsl:text> contains Task: </xsl:text><xsl:value-of select="contains(local-name(//*[@id=$sourceRef]),'Task')"/>
 	        </xsl:comment>
-	      </xsl:otherwise>          
+	      </xsl:otherwise>
 	    </xsl:choose>
     </xsl:if>
 
@@ -1250,7 +1298,7 @@
           <xsl:attribute name="style">marker-end:url(#open-arrow)</xsl:attribute>
         </xsl:when>
 	    </xsl:choose>
-      
+
       <xsl:choose>
         <xsl:when test="local-name(.)='dataInputAssociation'">
           <xsl:attribute name="stroke-dasharray">3,5</xsl:attribute>
@@ -1265,7 +1313,7 @@
           <xsl:attribute name="stroke-dasharray">3,3</xsl:attribute>
         </xsl:when>
       </xsl:choose>
-      
+
       <xsl:choose>
         <xsl:when test="conditionExpression|bpmn:conditionExpression">
           <xsl:attribute name="data-condition">
@@ -1287,14 +1335,14 @@
     <xsl:param name="ty">0</xsl:param>
     <xsl:param name="fill">#666</xsl:param>
     <xsl:param name="text"><xsl:value-of select="@name"/></xsl:param>
-    
+
     <xsl:variable name="len" select="string-length($text)"/>
     <xsl:variable name="cutBefore" select="contains(substring($text,0,$len div 2),' ')*(string-length(substring-before(substring($text,0,$len div 2),' ')))"/>
     <xsl:variable name="cutAfter" select="contains(substring($text,($len) div 2),' ')*(string-length(substring-before(substring($text,($len) div 2),' ')))"/>
     <xsl:variable name="lenBefore" select="string-length(substring($text,$len div 2)) - $cutBefore"/>
     <xsl:variable name="lenAfter" select="string-length(substring($text,$len div 2)) + $cutAfter"/>
     <xsl:variable name="diElement" select="//bpmndi:*[@bpmnElement=$id]"/>
-    
+
     <!-- Set label x,y to bounds if we have and otherwise make an educated guess -->
     <xsl:variable name="labelX">
       <xsl:choose>
@@ -1358,8 +1406,8 @@
       </xsl:comment>
     </xsl:if>
 
-    <!-- 
-      Strategy here is to first honour line breaks and otherwise try a crude split into 2 lines. 
+    <!--
+      Strategy here is to first honour line breaks and otherwise try a crude split into 2 lines.
       The latter covers many cases so is judged 'good enough' -->
     <xsl:choose>
       <xsl:when test="not(contains($text,'&#10;')) and $cutBefore!=0 and $cutAfter!=0 and number($diElement/dc:Bounds/@height) &gt;= (2.75*$fontSize)">
@@ -1409,8 +1457,8 @@
 		      <xsl:with-param name="y" select="$labelY+$fontSize"/>
 		      <!--xsl:with-param name="y" select="$diElement/bpmndi:BPMNLabel/dc:Bounds/@y+($diElement/dc:Bounds/@height div 3)"/>-->
 		    </xsl:call-template>
-	    </xsl:otherwise>   
-    </xsl:choose>   
+	    </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template name="maximum">
@@ -1519,7 +1567,7 @@
         <xsl:otherwise>10</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-  
+
     <xsl:if test="$debug='true'">
 	    <xsl:comment>
 	      <xsl:text>HEIGHT: </xsl:text>
@@ -1532,31 +1580,31 @@
 	  </xsl:if>
     <xsl:variable name="s">
       <xsl:choose>
-        <xsl:when test="$class='compensation'"> 
+        <xsl:when test="$class='compensation'">
           <xsl:value-of select="0.030"/>
         </xsl:when>
-        <xsl:when test="$class='conditional'"> 
+        <xsl:when test="$class='conditional'">
           <xsl:value-of select="0.028"/>
         </xsl:when>
-        <xsl:when test="$class='escalation'"> 
+        <xsl:when test="$class='escalation'">
           <xsl:value-of select="0.030"/>
         </xsl:when>
-        <xsl:when test="$class='error'"> 
+        <xsl:when test="$class='error'">
           <xsl:value-of select="0.030"/>
         </xsl:when>
-        <xsl:when test="$class='link'"> 
+        <xsl:when test="$class='link'">
           <xsl:value-of select="0.030"/>
         </xsl:when>
-        <xsl:when test="$class='message'"> 
+        <xsl:when test="$class='message'">
           <xsl:value-of select="0.030"/>
         </xsl:when>
-        <xsl:when test="$class='messageThrow'"> 
+        <xsl:when test="$class='messageThrow'">
           <xsl:value-of select="0.026"/>
         </xsl:when>
-        <xsl:when test="$class='signal'"> 
+        <xsl:when test="$class='signal'">
           <xsl:value-of select="0.030"/>
         </xsl:when>
-        <xsl:when test="$class='timer'"> 
+        <xsl:when test="$class='timer'">
           <xsl:value-of select="0.022"/>
         </xsl:when>
       </xsl:choose>
@@ -1597,7 +1645,7 @@
 	            <xsl:text>#666</xsl:text>
 	          </xsl:otherwise>
 	        </xsl:choose>
-	      </xsl:attribute>      
+	      </xsl:attribute>
       </xsl:element>
     </xsl:element>
   </xsl:template>
@@ -1610,7 +1658,7 @@
   <xsl:variable name="businessRuleTaskIcon">
     m 357.73047,473.9082 0,759.8789 1012.22073,0 0,-759.8789 z m 43.10547,263.10547 926.01176,0 0,206.39063 -687.76762,0 0,-205.88086 -43.10547,0 0,205.88086 -195.13867,0 z m 0,249.4961 195.13867,0 0,204.17183 -195.13867,0 z m 238.24414,0 687.76762,0 0,204.17183 -687.76762,0 z
   </xsl:variable>
-  
+
   <xsl:variable name="conditionalEventIcon">
     m 78,98.031314 0,22.611216 0,679.35746 103.55469,0 412.71287,0 103.7442,0 0,-701.968676 z m 49.88672,45.057216 520.04684,0 0,611.84545 -53.666,0 -412.71287,0 -53.66797,0 z m 53.66797,68.87762 0,44.89024 412.71287,0 0,-44.89024 z m 0,135.52665 0,45.06424 412.71287,0 0,-45.06424 z m 0,156.61403 0,44.89901 412.71287,0 0,-44.89901 z m 0,141.48136 0,44.90071 412.71287,0 0,-44.90071 z
   </xsl:variable>
@@ -1626,7 +1674,7 @@
   <xsl:variable name="dataInputIcon">
     m 767.35199,-91.28812 c -286.2304,6.5e-4 -572.46091,9.6e-4 -858.69136,0.002 l 0,1584.21092 1213.51177,0 0,-1219.85545 C 1003.8989,151.61683 885.62549,30.16436 767.35199,-91.28812 z m -104.207,90 0,371.64844 369.02741,0 0,1032.56448 -1033.51177,0 0,-1404.21096 c 221.49479,-6.5e-4 442.98959,-9.6e-4 664.48436,-0.002 z m 90,24.41211 250.50391,257.23633 -250.50391,0 0,-257.23633 z m -454.56053,42.60547 0,46.23047 0,139.07227 -212.03516,0 0,159.54687 212.03516,0 0,185.30469 L 580.73489,330.80563 298.58446,65.72946 z m 40,92.46289 183.73243,172.61328 -183.73243,172.61329 0,-132.83985 -212.03516,0 0,-79.54687 212.03516,0 0,-132.83985 z
   </xsl:variable>
-  
+
   <xsl:variable name="dataInputIconFill">
     m -1.2965639e-5,701.4841 0,-701.4841 L 328.92555,0 l 328.92553,0 0,187.95746 0,187.95746 184.6011,0 184.60112,0 0,513.52664 0,513.52664 -513.52667,0 -513.526642965639,0 0,-701.4841 z M 445.68514,463.70366 C 521.95588,391.99677 583.52558,331.4353 582.50678,329.1226 581.48788,326.80991 517.21868,265.36211 439.68619,192.57193 L 298.7181,60.22614 l -1.86251,94.07311 -1.86249,94.07311 -107.21996,0 -107.219953,0 0,83.90958 0,83.90958 107.404263,0 107.40426,0 0,91.18174 c 0,50.14997 2.62111,90.17484 5.82469,88.94416 3.20358,-1.23067 68.22801,-60.90687 144.49874,-132.61376 z
   </xsl:variable>
@@ -1634,19 +1682,19 @@
   <xsl:variable name="dataObjectIcon">
     m 767.352,-91.28807 c -286.23045,6.5e-4 -572.46091,0.001 -858.691365,0.002 0,528.07032 0,1056.14066 0,1584.21097 404.503925,0 809.007865,0 1213.511765,0 0,-406.6185 0,-813.237 0,-1219.8555 C 1003.8989,151.61692 885.6255,30.16445 767.352,-91.28803 z m -104.207,90 c 0,123.88281 0,247.76563 0,371.64844 123.0091,0 246.0183,0 369.0274,0 0,344.18818 0,688.37623 0,1032.56443 -344.5039,0 -689.00784,0 -1033.5117645,0 0,-468.07025 0,-936.14059 0,-1404.21091 C 220.15543,-1.28676 441.65021,-1.28711 663.145,-1.28811 z m 90,24.41211 c 83.5013,85.74544 167.0026,171.49089 250.5039,257.23633 -83.5013,0 -167.0026,0 -250.5039,0 0,-85.74544 0,-171.49089 0,-257.23633 z
   </xsl:variable>
-  
+
   <xsl:variable name="dataObjectIconFill">
     M -4.512677e-6,701.48415 -4.512677e-6,0 328.92558,0 657.8512,0 l 0,187.95747 0,187.95748 184.6011,0 184.6011,0 0,513.52668 0,513.52667 -513.52672,0 -513.5266845126768,0 0,-701.48415 z
   </xsl:variable>
-  
+
   <xsl:variable name="dataOutputIcon">
     m 767.352,-91.28807 c -286.2304,6.5e-4 -572.46091,9.6e-4 -858.691365,0.002 l 0,1584.21097 1213.511765,0 0,-1219.8555 C 1003.8989,151.61688 885.6255,30.16441 767.352,-91.28807 z m -104.207,90 0,371.64844 369.0274,0 0,1032.56453 -1033.5117645,0 0,-1404.21101 C 220.15543,-1.28676 441.65023,-1.28707 663.145,-1.28811 z m 90,24.41211 250.5039,257.23633 -250.5039,0 z m -454.56053,42.60547 0,185.30274 -212.035165,0 0,159.54687 212.035165,0 0,185.30469 282.15043,-265.07813 z
   </xsl:variable>
-  
+
   <xsl:variable name="dataOutputIconFill">
     M -4.512677e-6,701.48415 -4.512677e-6,0 328.92558,0 657.8512,0 l 0,187.95747 0,187.95748 184.6011,0 184.6011,0 0,513.52668 0,513.52667 -513.52672,0 -513.5266845126768,0 0,-701.48415 z M 445.68518,463.7037 C 521.9559,391.9968 583.5256,331.43532 582.5068,329.12263 581.488,326.80994 517.2187,265.36213 439.68624,192.57194 l -140.96811,-132.3458 -1.8625,94.07312 -1.8625,94.07312 -107.21997,0 -107.219965,0 0,83.90958 0,83.90959 107.404285,0 107.40427,0 0,91.18175 c 0,50.14997 2.62111,90.17484 5.82469,88.94416 3.20358,-1.23067 68.22801,-60.90686 144.49874,-132.61376 z
   </xsl:variable>
-  
+
   <xsl:variable name="dataStoreIcon">
     M 680.67576,0 C 522.8631,0 365.30963,13.01049 241.91406,39.92187 180.21628,53.37756 127.08085,70.10271 85.42383,92.05468 45.29971,113.19887 12.64856,140.47003 2.58008,179.88085 1.88677,181.9393 1.38657,184.05781 1.08594,186.20898 L 0,191.47851 l 0.73633,3.57031 c -0.51535,315.04128 0,614.82949 0,938.87108 l 0.7207,3.4961 c 8.633,41.8917 42.30977,70.4074 83.9668,92.3594 41.65702,21.952 94.79245,38.6752 156.49023,52.1309 123.39557,26.9113 280.94904,39.9238 438.7617,39.9238 157.8127,0 315.3662,-13.0125 438.76174,-39.9238 61.6978,-13.4557 114.8333,-30.1789 156.4903,-52.1309 41.657,-21.952 75.3357,-50.4677 83.9687,-92.3594 l 0.7188,-3.4961 c 0,-309.85813 0.01,-647.33317 0,-940.84764 0.096,-1.4965 0.096,-2.99764 0,-4.49414 l 0,-0.66797 -0.1192,-0.57422 c -0.3037,-2.86398 -0.9597,-5.67953 -1.9531,-8.38281 -10.3403,-38.91405 -42.8049,-65.9196 -82.6152,-86.89844 C 1234.2708,70.10271 1181.1353,53.37756 1119.4375,39.92187 996.04196,13.01049 838.48846,0 680.67576,0 Z m 0,70 c 153.9084,0 308.076,13.06619 423.84574,38.31445 57.8849,12.62413 106.1932,28.50022 138.7715,45.66797 26.0001,13.70124 39.6105,27.31335 45.1797,37.49609 -5.5695,10.18265 -19.1804,23.79528 -45.1797,37.4961 -32.5783,17.16775 -80.8866,33.04188 -138.7715,45.66601 -115.76974,25.24826 -269.93734,38.31641 -423.84574,38.31641 -153.90834,0 -308.07597,-13.06815 -423.84568,-38.31641 C 198.94522,262.01649 150.63686,246.14236 118.05859,228.97461 92.05934,215.27379 78.44843,201.66116 72.87891,191.47851 78.4481,181.29577 92.05852,167.68366 118.05859,153.98242 150.63686,136.81467 198.94522,120.93858 256.83008,108.31445 372.59979,83.06619 526.76742,70 680.67576,70 Z M 70.73633,282.64257 c 4.76495,2.85244 9.66013,5.6105 14.6875,8.25977 41.65702,21.95198 94.79245,38.67517 156.49023,52.13086 123.39557,26.91138 280.94904,39.92383 438.7617,39.92383 157.8127,0 315.3662,-13.01245 438.76174,-39.92383 61.6978,-13.45569 114.8333,-30.17888 156.4903,-52.13086 5.0273,-2.64927 9.9225,-5.40733 14.6875,-8.25977 l 0,82.0625 c -3.4205,10.40901 -16.9417,26.30677 -47.3223,42.31641 -32.5783,17.16775 -80.8866,33.04189 -138.7715,45.66602 -115.76974,25.24825 -269.93734,38.3164 -423.84574,38.3164 -153.90834,0 -308.07597,-13.06815 -423.84568,-38.3164 C 198.94522,440.06337 150.63686,424.18923 118.05859,407.02148 87.67802,391.01184 74.15677,375.11408 70.73633,364.70507 Z m 0,178.04688 c 4.76495,2.85243 9.66013,5.61049 14.6875,8.25976 41.65702,21.95198 94.79245,38.67517 156.49023,52.13086 123.39557,26.91139 280.94904,39.92383 438.7617,39.92383 157.8127,0 315.3662,-13.01244 438.76174,-39.92383 61.6978,-13.45569 114.8333,-30.17888 156.4903,-52.13086 5.0273,-2.64927 9.9225,-5.40733 14.6875,-8.25976 l 0,82.0625 c -3.4205,10.409 -16.9417,26.30677 -47.3223,42.31641 -32.5783,17.16775 -80.8866,33.04188 -138.7715,45.66601 -115.76974,25.24826 -269.93734,38.31641 -423.84574,38.31641 -153.90834,0 -308.07597,-13.06815 -423.84568,-38.31641 C 198.94522,618.11024 150.63686,602.23611 118.05859,585.06836 87.67802,569.05872 74.15677,553.16095 70.73633,542.75195 Z m 0,178.04883 c 4.76494,2.85243 9.66014,5.60854 14.6875,8.25781 41.65702,21.95198 94.79245,38.67517 156.49023,52.13086 123.39557,26.91138 280.94904,39.92383 438.7617,39.92383 157.8127,0 315.3662,-13.01245 438.76174,-39.92383 61.6978,-13.45569 114.8333,-30.17888 156.4903,-52.13086 5.0273,-2.64927 9.9225,-5.40538 14.6875,-8.25781 l 0,486.79302 c -3.4205,10.409 -16.9417,26.3067 -47.3223,42.3164 -32.5783,17.1677 -80.8866,33.0438 -138.7715,45.6679 -115.76974,25.2483 -269.93734,38.3145 -423.84574,38.3145 -153.90834,0 -308.07597,-13.0662 -423.84568,-38.3145 -57.88486,-12.6241 -106.19322,-28.5002 -138.77149,-45.6679 -30.38057,-16.0097 -43.90182,-31.9074 -47.32226,-42.3164 z
   </xsl:variable>
@@ -1658,7 +1706,7 @@
   <xsl:variable name="errorEventIcon">
     M 709.0586,0 C 638.9798,142.05924 568.9011,284.11847 498.8223,426.17771 411.6869,312.83918 324.55145,199.50064 237.41602,86.16211 158.27735,320.21614 79.13867,554.27021 0,788.32421 88.72461,674.28191 177.44922,560.23961 266.17383,446.19731 357.6947,550.92121 449.2155,655.64521 540.7363,760.36911 596.8437,506.91271 652.9512,253.45637 709.0586,0 z
   </xsl:variable>
-  
+
   <xsl:variable name="eventBasedGatewayIcon">
     m 1024.002,564.95508 -14.7032,10.67187 -426.27927,309.45313 168.43945,517.96682 545.08202,0 168.4395,-517.96682 z m 0,61.77539 382.1778,277.43945 -145.9766,448.90428 -472.39842,0 -145.97656,-448.90428 z
   </xsl:variable>
@@ -1666,11 +1714,11 @@
   <xsl:variable name="exclusiveGatewayIcon">
     m 725.68555,669.78711 c -0.0138,7.2e-4 -9.61179,1.83789 -9.61914,1.83789 -0.01,0 -8.14488,5.51367 -8.15039,5.51367 l -30.73243,30.73828 c -0.01,0 -5.61057,8.22552 -5.61328,8.32227 0,0.01 -1.737,9.48047 -1.73633,9.48047 -6.9e-4,0.01 1.86771,9.38476 1.8711,9.38476 0,0.01 5.33756,8.32227 5.34375,8.32227 l 280.70703,280.69918 -280.57227,280.5743 0,-0.088 c 0,0.01 -5.61057,8.3203 -5.61328,8.3203 0,0.01 -1.73633,9.4824 -1.73633,9.4824 0,0.019 1.86829,9.3848 1.8711,9.3848 0,0 5.33843,8.2235 5.34375,8.3203 l 30.73437,30.7285 c 0.01,0.01 8.41062,5.5156 8.41797,5.5156 0.01,0 9.3452,1.8379 9.35352,1.8379 0.01,0 9.47878,-1.7402 9.48633,-1.7402 0.01,0 8.27964,-5.6133 8.28515,-5.6133 l 280.57613,-280.582 280.6368,280.6406 c 0.01,0.01 8.4121,5.5156 8.4179,5.5156 0.01,0 9.3458,1.8379 9.3535,1.8379 0.01,0 9.4806,-1.7422 9.4883,-1.7422 0.01,0 8.2755,-5.6113 8.2813,-5.6113 l 30.7344,-30.7285 c 0.01,-0.01 5.4756,-8.127 5.4804,-8.127 0,-0.01 1.8711,-9.579 1.8711,-9.6758 0,-0.01 -1.8692,-9.3847 -1.873,-9.3847 0,0 -5.4718,-8.418 -5.4785,-8.418 L 1090.209,1023.9219 1370.8164,743.31836 c 0.01,0 5.4737,-8.12695 5.4785,-8.12695 0,-0.01 1.8711,-9.57813 1.8711,-9.57813 0,-0.0194 -1.8682,-9.38476 -1.8711,-9.38476 0,-0.01 -5.6055,-8.32227 -5.6113,-8.32227 l -30.7344,-30.73828 c -0.01,0 -8.1436,-5.51367 -8.1504,-5.51367 -0.01,0 -9.3448,-1.83985 -9.3535,-1.83985 -0.01,0 -9.6124,1.83985 -9.6191,1.83985 -0.01,0 -8.1456,5.51367 -8.1504,5.51367 L 1024.0625,957.78125 743.32422,677.0332 l 0,-0.0879 c -0.01,0 -8.27819,-5.32031 -8.28516,-5.32031 -0.01,0 -9.34027,-1.83715 -9.35156,-1.83789 z
   </xsl:variable>
-  
+
   <xsl:variable name="inclusiveGatewayIcon">
     m 1024,594 c -237.23182,0 -430,192.77939 -430,430.0078 0,237.2284 192.76818,430 430,430 237.2318,0 430,-192.7716 430,-430 C 1454,786.77939 1261.2318,594 1024,594 z m 0,47.68945 c 211.4073,0 382.3223,170.91329 382.3223,382.31835 0,211.4051 -170.915,382.3301 -382.3223,382.3301 -211.40721,0 -382.32227,-170.925 -382.32227,-382.3301 0,-211.40506 170.91506,-382.31835 382.32227,-382.31835 z
   </xsl:variable>
-  
+
   <xsl:variable name="linkEventIcon">
     m 8.7407755,1040.0406 c 0,0.7088 0,1.4176 0,2.1265 -1.5939247,0 -3.1878494,0 -4.7817741,0 0,1.3385 0,2.6771 0,4.0157 1.5939247,0 3.1878494,0 4.7817741,0 0,0.7087 0,1.4175 0,2.1262 1.162238,-1.378 2.3244765,-2.756 3.4867145,-4.1341 -1.162238,-1.3781 -2.3244765,-2.7562 -3.4867145,-4.1343 z m 0.582468,1.5458 c 0.7199345,0.8562 1.4398675,1.7124 2.1598005,2.5686 -0.719933,0.8562 -1.439866,1.7124 -2.1598005,2.5686 0,-0.3854 0,-0.7708 0,-1.1563 -1.571248,0 -3.1424963,0 -4.7137447,0 0,-0.9346 0,-1.8692 0,-2.8038 1.5712484,0 3.1424967,0 4.7137447,0 0,-0.3923 0,-0.7847 0,-1.1771 z
   </xsl:variable>
@@ -1690,13 +1738,13 @@
   <xsl:variable name="receiveTaskIcon">
     m 353.77539,495.84961 0,694.62499 1052.97461,0 0,-694.62499 z m 108.98242,45.44336 835.00779,0 -417.50388,274.67187 z m -63.54101,12.58984 481.04492,316.47657 481.04488,-316.47657 0,591.15039 -962.0898,0 z
   </xsl:variable>
-  
+
   <xsl:variable name="parallelGatewayIcon">
     m 1002.1543,555.2207 c 0,0.01 -9.65727,1.83789 -9.66211,1.83789 -0.01,0 -7.90826,5.32227 -7.91407,5.32227 -0.01,0.01 -5.49711,8.12695 -5.50195,8.12695 0,0.01 -1.85941,9.67578 -1.86328,9.67578 l 0,396.85157 -397.02539,0 -0.0664,-0.0781 c 0,0.01 -9.61821,2.12891 -9.62304,2.12891 -0.01,0.01 -7.90727,5.32226 -7.91211,5.32226 l 0.008,-0.0976 c -0.01,0.01 -5.49712,8.12695 -5.50195,8.12695 -0.01,0 -1.86137,9.67582 -1.86524,9.67582 l 0,43.4707 c 0,0 1.84827,9.7819 1.91406,9.8496 0,0.01 5.47852,7.9336 5.47852,7.9336 0.0101,0.01 7.95705,5.3223 7.95898,5.3223 0.01,0.01 9.65629,2.1269 9.66016,2.1269 l 396.97852,0 0,396.7852 -0.0625,-0.059 c 0,0.01 1.91599,9.8496 1.91406,9.8496 0,0.01 5.47656,7.9336 5.47656,7.9336 0.0101,0.01 7.959,5.3203 7.96094,5.3203 0,0 9.59054,2.0321 9.66214,2.1289 l 43.4609,-0.01 c 0.011,0 9.8463,-2.0312 9.8516,-2.0312 0,0 7.9082,-5.3203 7.914,-5.3203 0.01,-0.01 5.4708,-7.9356 5.4766,-7.9356 0,0 1.8867,-9.8203 1.8906,-9.8203 l 0,-396.8027 396.8789,0 c 0.011,0.01 9.8467,-2.0313 9.8516,-2.0313 0.01,0 7.9092,-5.3222 7.914,-5.3222 0.01,-0.01 5.4708,-7.9336 5.4766,-7.9336 0,0 1.8858,-9.8204 1.8906,-9.8204 l 0,-43.4609 c 0,-0.01 -1.8779,-9.57904 -1.875,-9.67579 -0.01,-0.01 -5.4498,-8.12695 -5.5175,-8.12695 -0.01,-0.01 -7.9581,-5.32032 -7.961,-5.32032 0,0.01 -9.8194,-2.12995 -9.8242,-2.0332 l -396.8379,0 0,-396.8418 c 0,-0.01 -1.8779,-9.57707 -1.875,-9.67383 -0.01,-0.01 -5.4492,-8.1289 -5.4492,-8.1289 -0.01,-0.01 -7.9571,-5.32031 -7.959,-5.32031 -0.01,0 -9.8474,-1.93555 -9.8516,-1.93555 z
   </xsl:variable>
-  
+
   <xsl:variable name="scriptTaskIcon">
-    m 609.02539,514.59375 -4.62695,2.74805 -1.51172,0.89648 c -65.42017,38.76909 -110.44116,74.32034 -140.16016,109.03516 -29.76015,34.76286 -44.14948,69.76512 -44.55859,103.50781 -0.81416,67.15047 48.71676,117.47208 92.66211,162.47852 43.91192,44.97215 83.08282,87.38448 86.76953,122.48433 1.87909,17.8903 -2.35053,35.8588 -21.85742,60.4629 -19.42482,24.5007 -54.67916,53.8468 -111.04297,86.7032 l -83.21289,48.5039 513.57031,0 6.07813,-3.5352 0.006,-0.01 c 59.73132,-34.8195 99.97333,-66.9878 125.61533,-99.33 25.7183,-32.4387 36.1804,-66.3775 32.8339,-98.2383 -6.6307,-63.1295 -58.0554,-109.13068 -101.28907,-153.40822 -43.26718,-44.31189 -78.33879,-86.10665 -77.86133,-125.48632 0.24109,-19.88014 7.8822,-42.05777 32.05078,-70.28907 24.12719,-28.18307 64.80779,-61.15655 127.17192,-98.11328 l 0,-0.002 81.6914,-48.41211 z m 14.47461,52.04687 316.2832,0 c -27.85557,20.76926 -49.88108,40.8347 -66.83008,60.63282 -29.76012,34.76286 -44.14751,69.76511 -44.55664,103.50781 -0.81411,67.15104 48.71894,117.47234 92.66407,162.47852 43.91168,44.97187 83.07885,87.38381 86.76565,122.48433 1.8791,17.8904 -2.3487,35.8588 -21.8555,60.4629 -18.70677,23.5949 -52.34894,51.7499 -105.18945,83.1602 l -317.0918,0 c 21.99697,-17.1554 39.47182,-33.9655 52.83789,-50.8242 25.71836,-32.4387 36.18243,-66.3756 32.83594,-98.2364 C 642.7325,947.1772 591.30589,901.17402 548.07227,856.89648 504.8051,812.5846 469.73545,770.7918 470.21289,731.41211 c 0.24104,-19.8801 7.88224,-42.05776 32.05078,-70.28906 23.31699,-27.2366 62.32854,-59.01093 121.23633,-94.48243 z m -74.00586,88.76954 0,24.04101 247.24609,0 0,-24.04101 z m -9.1875,129.49218 0,24.04102 255.64063,0 0,-24.04102 z m 115.83398,129.48828 0,24.04102 247.57813,0 0,-24.04102 z m 35.4004,129.49218 0,24.0391 256.53906,0 0,-24.0391 z 
+    m 609.02539,514.59375 -4.62695,2.74805 -1.51172,0.89648 c -65.42017,38.76909 -110.44116,74.32034 -140.16016,109.03516 -29.76015,34.76286 -44.14948,69.76512 -44.55859,103.50781 -0.81416,67.15047 48.71676,117.47208 92.66211,162.47852 43.91192,44.97215 83.08282,87.38448 86.76953,122.48433 1.87909,17.8903 -2.35053,35.8588 -21.85742,60.4629 -19.42482,24.5007 -54.67916,53.8468 -111.04297,86.7032 l -83.21289,48.5039 513.57031,0 6.07813,-3.5352 0.006,-0.01 c 59.73132,-34.8195 99.97333,-66.9878 125.61533,-99.33 25.7183,-32.4387 36.1804,-66.3775 32.8339,-98.2383 -6.6307,-63.1295 -58.0554,-109.13068 -101.28907,-153.40822 -43.26718,-44.31189 -78.33879,-86.10665 -77.86133,-125.48632 0.24109,-19.88014 7.8822,-42.05777 32.05078,-70.28907 24.12719,-28.18307 64.80779,-61.15655 127.17192,-98.11328 l 0,-0.002 81.6914,-48.41211 z m 14.47461,52.04687 316.2832,0 c -27.85557,20.76926 -49.88108,40.8347 -66.83008,60.63282 -29.76012,34.76286 -44.14751,69.76511 -44.55664,103.50781 -0.81411,67.15104 48.71894,117.47234 92.66407,162.47852 43.91168,44.97187 83.07885,87.38381 86.76565,122.48433 1.8791,17.8904 -2.3487,35.8588 -21.8555,60.4629 -18.70677,23.5949 -52.34894,51.7499 -105.18945,83.1602 l -317.0918,0 c 21.99697,-17.1554 39.47182,-33.9655 52.83789,-50.8242 25.71836,-32.4387 36.18243,-66.3756 32.83594,-98.2364 C 642.7325,947.1772 591.30589,901.17402 548.07227,856.89648 504.8051,812.5846 469.73545,770.7918 470.21289,731.41211 c 0.24104,-19.8801 7.88224,-42.05776 32.05078,-70.28906 23.31699,-27.2366 62.32854,-59.01093 121.23633,-94.48243 z m -74.00586,88.76954 0,24.04101 247.24609,0 0,-24.04101 z m -9.1875,129.49218 0,24.04102 255.64063,0 0,-24.04102 z m 115.83398,129.48828 0,24.04102 247.57813,0 0,-24.04102 z m 35.4004,129.49218 0,24.0391 256.53906,0 0,-24.0391 z
   </xsl:variable>
 
   <xsl:variable name="serviceTaskIcon">
@@ -1731,7 +1779,7 @@
   </xsl:variable>
 
   <xsl:variable name="compensationMarker">
-    m 1003.1719,-427.54214 c -39.60796,5.794 -68.12868,38.56118 -102.1447,57.51603 -186.37683,125.49923 -373.21723,250.34472 -559.3042,376.25275 -35.93279,27.59579 -23.84863,86.43052 16.0756,103.58172 206.32507,138.4236 412.21958,277.524 618.81387,415.5246 41.83143,24.8132 96.65733,-16.1808 88.32893,-63.0759 0,-105.8146 0,-211.6291 0,-317.4437 188.9638,126.7544 377.4965,254.1864 566.7296,380.5177 41.8315,24.8133 96.6575,-16.1808 88.329,-63.076 -0.2007,-278.6032 0.4013,-557.22646 -0.3009,-835.81704 -2.7279,-48.53139 -67.3754,-71.26567 -101.6214,-38.12699 -184.3787,123.91483 -368.7575,247.82966 -553.1363,371.74449 -0.7888,-113.15884 1.5844,-226.51615 -1.1984,-339.55004 -5.2041,-28.0178 -32.0958,-49.35538 -60.5711,-48.04762 z m -58.23049,172.58399 c 0,204.92837 0,409.85671 0,614.78511 C 792.48112,257.36276 640.02084,154.89866 487.56055,52.43446 640.02084,-50.02974 792.48112,-152.49395 944.94141,-254.95815 Z M 1600,-254.9562 c 0,204.92709 0,409.85416 0,614.78126 C 1447.5397,257.36156 1295.0794,154.89796 1142.6191,52.43446 1295.0794,-50.02909 1447.5397,-152.49265 1600,-254.9562 Z  
+    m 1003.1719,-427.54214 c -39.60796,5.794 -68.12868,38.56118 -102.1447,57.51603 -186.37683,125.49923 -373.21723,250.34472 -559.3042,376.25275 -35.93279,27.59579 -23.84863,86.43052 16.0756,103.58172 206.32507,138.4236 412.21958,277.524 618.81387,415.5246 41.83143,24.8132 96.65733,-16.1808 88.32893,-63.0759 0,-105.8146 0,-211.6291 0,-317.4437 188.9638,126.7544 377.4965,254.1864 566.7296,380.5177 41.8315,24.8133 96.6575,-16.1808 88.329,-63.076 -0.2007,-278.6032 0.4013,-557.22646 -0.3009,-835.81704 -2.7279,-48.53139 -67.3754,-71.26567 -101.6214,-38.12699 -184.3787,123.91483 -368.7575,247.82966 -553.1363,371.74449 -0.7888,-113.15884 1.5844,-226.51615 -1.1984,-339.55004 -5.2041,-28.0178 -32.0958,-49.35538 -60.5711,-48.04762 z m -58.23049,172.58399 c 0,204.92837 0,409.85671 0,614.78511 C 792.48112,257.36276 640.02084,154.89866 487.56055,52.43446 640.02084,-50.02974 792.48112,-152.49395 944.94141,-254.95815 Z M 1600,-254.9562 c 0,204.92709 0,409.85416 0,614.78126 C 1447.5397,257.36156 1295.0794,154.89796 1142.6191,52.43446 1295.0794,-50.02909 1447.5397,-152.49265 1600,-254.9562 Z
   </xsl:variable>
 
   <xsl:variable name="parallelMiMarker">
