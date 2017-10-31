@@ -283,7 +283,7 @@ var BaseRactive = Ractive.extend({
     ractive.initContentEditable();
     ractive.initShortKeys();
   },
-  initInfiniteScroll() {
+  initInfiniteScroll: function() {
     $(window).scroll(function() { // when within 100px of bottom
       if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
         if (ractive['fetchMore']!=undefined) ractive.fetchMore();
