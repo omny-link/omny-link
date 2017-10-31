@@ -47,6 +47,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.knowprocess.bpm.MultiTenantActivitiProperties;
 import com.knowprocess.bpm.api.BadJsonMessageException;
+import com.knowprocess.bpm.api.ProcessDefinitionSuspendedException;
 import com.knowprocess.bpm.api.ReportableException;
 import com.knowprocess.bpm.impl.AuthenticationHelper;
 import com.knowprocess.bpm.impl.JsonManager;
@@ -317,6 +318,8 @@ public class MessageController {
             if (cve != null) {
                 e2 = new ReportableException(cve);
                 throw e2;
+            } else if (e.getMessage().endsWith("is suspended")) {
+                throw new ProcessDefinitionSuspendedException(e.getMessage());
             } else if (se != null && se.getMessage().contains("OptimisticLock")) {
                 LOGGER.info("Script Exception message: " + se.getMessage());
                 e2 = new ReportableException(
