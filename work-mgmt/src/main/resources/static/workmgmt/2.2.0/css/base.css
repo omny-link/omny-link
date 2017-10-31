@@ -450,6 +450,7 @@ input[type="checkbox"].form-control:focus {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   left: -4px;
+  top: 2px;
 }
 .glyphicon.disabled,
 .glyphicon.disabled:active,
