@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.history.HistoricActivityInstance;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knowprocess.bpm.api.ProcessDefinitionSuspendedException;
 import com.knowprocess.bpm.impl.DateUtils;
 import com.knowprocess.bpm.impl.UriHelper;
 import com.knowprocess.bpm.model.ProcessInstance;
@@ -211,18 +213,25 @@ public class ProcessInstanceController {
         }
 
         ProcessInstance pi;
-        if (instanceToStart.getProcessDefinitionId()==null) {
-            pi = new ProcessInstance(processEngine
-                    .getRuntimeService().startProcessInstanceByKeyAndTenantId(
-                            instanceToStart.getProcessDefinitionKey(),
-                            instanceToStart.getBusinessKey(),
-                            instanceToStart.getProcessVariables(), tenantId));
-        } else {
-            pi = new ProcessInstance(processEngine
-                    .getRuntimeService().startProcessInstanceById(
-                            instanceToStart.getProcessDefinitionId(),
-                            instanceToStart.getBusinessKey(),
-                            instanceToStart.getProcessVariables()));
+        try {
+            if (instanceToStart.getProcessDefinitionId()==null) {
+                pi = new ProcessInstance(processEngine
+                        .getRuntimeService().startProcessInstanceByKeyAndTenantId(
+                                instanceToStart.getProcessDefinitionKey(),
+                                instanceToStart.getBusinessKey(),
+                                instanceToStart.getProcessVariables(), tenantId));
+            } else {
+                pi = new ProcessInstance(processEngine
+                        .getRuntimeService().startProcessInstanceById(
+                                instanceToStart.getProcessDefinitionId(),
+                                instanceToStart.getBusinessKey(),
+                                instanceToStart.getProcessVariables()));
+            }
+        } catch (ActivitiException e) {
+            if (e.getMessage().endsWith("is suspended")) {
+                throw new ProcessDefinitionSuspendedException(e.getMessage());
+            }
+            throw e;
         }
         resp.setHeader("Location",
                 "/process-instances/" + pi.getProcessInstanceId());

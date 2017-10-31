@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.bpm.api.BadJsonMessageException;
+import com.knowprocess.bpm.api.ProcessDefinitionSuspendedException;
 import com.knowprocess.bpm.api.ReportableException;
 
 @ControllerAdvice
@@ -43,6 +44,13 @@ public class BpmControllerExceptionHandler {
     @ExceptionHandler(ActivitiObjectNotFoundException.class)
     public @ResponseBody String handleNotFound(Exception e) {
         LOGGER.error(e.getMessage());
+        return toJson(e);
+    }
+
+    @ResponseStatus(HttpStatus.FOUND)
+    @ExceptionHandler(ProcessDefinitionSuspendedException.class)
+    public @ResponseBody String handleSuspended(ProcessDefinitionSuspendedException e) {
+        LOGGER.warn(e.getMessage());
         return toJson(e);
     }
 
