@@ -191,7 +191,9 @@ var ractive = new BaseRactive({
   activeStages: function() {
     console.info('activeStages');
     var activeStages = [];
-    $.each(ractive.get('stages'), function(i,d) {
+    var stages = ractive.get('contactStages') == undefined
+        ? ractive.get('accountStages') : ractive.get('contactStages');
+    $.each(stages, function(i,d) {
       if (d['idx']>=0) activeStages.push(d.name);
     });
     return activeStages;
