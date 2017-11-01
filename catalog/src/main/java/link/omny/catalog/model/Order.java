@@ -99,7 +99,7 @@ public class Order implements OrderWithSubEntities, Serializable {
     private Date date;
 
     @JsonProperty
-    @Size(max = 20)
+    @Size(max = 50)
     @JsonView(OrderViews.Summary.class)
     @Column(name = "due_date")
     private String dueDate;
