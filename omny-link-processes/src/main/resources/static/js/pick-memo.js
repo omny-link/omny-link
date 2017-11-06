@@ -95,7 +95,8 @@
             console.log('  do we have '+requiredVarList[idx]);
             if (requiredVarList[idx].toLowerCase().indexOf('formatter')==-1
                 && requiredVarList[idx].length>0 && ractive.get('instanceToStart.processVariables.'+requiredVarList[idx]) == undefined
-                && ractive.get('instanceToStart.processVariables.'+requiredVarList[idx]+'Id') == undefined) {
+                && ractive.get('instanceToStart.processVariables.'+requiredVarList[idx]+'Id') == undefined
+                && (requiredVarList[idx].toLowerCase().indexOf('owner')>=0 && ractive.get('current.owner') == undefined)) {
               console.log('  ... not all data available');
               return undefined;
             }
