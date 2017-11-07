@@ -125,6 +125,11 @@ public class Contact implements Serializable {
 
     @JsonProperty
     @JsonView({ ContactViews.Detailed.class })
+    @Column(name = "email_optin")
+    private boolean emailOptIn;
+
+    @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     @Size(max = 32)
     @Column(name = "email_hash")
     private String emailHash;
