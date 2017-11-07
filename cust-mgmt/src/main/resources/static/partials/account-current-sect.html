@@ -185,6 +185,11 @@
           <input class="" id="curEmailConfirmed" type="checkbox" checked="{{current.emailConfirmed}}">
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Has this email been confirmed valid?</p>
         </li>
+        <li>
+          <label class="col-md-4 col-sm-4">{{#tenant.strings.emailOptIn}}{{tenant.strings.emailOptIn}}{{else}}Opt in{{/}}:</label>
+          <input class="" id="curemailOptIn" type="checkbox" checked="{{current.emailOptIn}}"> User preference
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This will be checked if the user has opted in to marketing emails</p>
+        </li>
         <li class="form-group">
           <label class="col-md-4 col-sm-4">{{#tenant.strings.phone1}}{{tenant.strings.phone1}}{{else}}Preferred Phone{{/}}:</label>
           <input class="form-control" id="curPhone1" pattern="\+?[0-9, \-()]{0,15}" type="tel" value="{{current.phone1}}">
@@ -297,7 +302,7 @@
                 <th class="col-md-2 col-sm-2" on-click="sortContact:fullName">Name<span class="sortable {{ sortedContact('fullName') }} glyphicon glyphicon-btn "></th>
                 <th class="col-md-2 col-sm-2" on-click="sortContact:jobTitle">Job Title<span class="sortable {{ sortedContact('jobTitle') }} glyphicon glyphicon-btn "></th>
                 <th class="col-md-2 col-sm-2" on-click="sortContact:email">Email<span class="sortable {{ sortedContact('email') }} glyphicon glyphicon-btn "></th>
-                <!--th>Opt out</th-->
+                <th class="col-md-2 col-sm-2" on-click="sortContact:emailOptIn">Opt in<span class="sortable {{ sortedContact('emailOptIn') }} glyphicon glyphicon-btn "></th>
                 <th class="col-md-2 col-sm-2" on-click="sortContact:phone1">Phone<span class="sortable {{ sortedContact('phone1') }} glyphicon glyphicon-btn "></th>
                 <th>Twitter</th>
                 <th>Linked In</th>
@@ -314,8 +319,8 @@
                   </td>
                   <td><input class="radio" name="mainContact" twoway="false" type="radio" checked="{{mainContact}}" on-change="setMainContact(..selfRef)"/></td>
                   <td class="col-md-2 col-sm-2" data-contact-id="{{..selfRef}}" data-key="fullName">
-	                  <span>{{fullName}}</span>
-	                  <input class="hidden form-control" name="fullName" value="{{..fullName}}">
+                    <span>{{fullName}}</span>
+                    <input class="hidden form-control" name="fullName" value="{{..fullName}}">
                   </td>
                   <td class="col-md-2 col-sm-2" data-contact-id="{{..selfRef}}" data-key="jobTitle">
                     <span>{{jobTitle}}</span>
@@ -325,15 +330,19 @@
                     <span>{{email}}</span>
                     <input class="hidden form-control" name="email" value="{{..email}}">
                   </td>
+                  <td class="col-md-2 col-sm-2" data-contact-id="{{..selfRef}}" data-key="emailOptIn">
+                    <span>{{{emailOptIn == true ? '&#10004;' : '&#10007;'}}}</span>
+                    <input class="hidden form-control" name="emailOptIn" type="checkbox" checked="{{..emailOptIn}}">
+                  </td>
                   <td class="col-md-1 col-sm-1" data-contact-id="{{..selfRef}}" data-key="phone1">
                     <span>{{phone1}}</span>
                     <input class="hidden form-control" name="phone1" value="{{..phone1}}">
                   </td>
                   <td class="btn-group-social">
-	                  <div class="btn-group" role="group" aria-label="...">
-										  <a class="glyphicon glyphicon-btn kp-icon-twitter{{^twitter}} disabled{{/}}" {{#twitter}}href="https://twitter.com/{{twitter}}"{{else}}disabled {{/}} target="_newtab" title="{{^twitter}} None entered, click on edit icon to set Twitter handle{{/}}"></a>
-										  <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showContactSocial(this, 'twitter', 'currentContact.twitter')"></a>
-										</div>
+                    <div class="btn-group" role="group" aria-label="...">
+                      <a class="glyphicon glyphicon-btn kp-icon-twitter{{^twitter}} disabled{{/}}" {{#twitter}}href="https://twitter.com/{{twitter}}"{{else}}disabled {{/}} target="_newtab" title="{{^twitter}} None entered, click on edit icon to set Twitter handle{{/}}"></a>
+                      <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showContactSocial(this, 'twitter', 'currentContact.twitter')"></a>
+                    </div>
                   </td>
                   <td class="btn-group-social">
                     <div class="btn-group" role="group" aria-label="...">
@@ -350,21 +359,21 @@
                   <td>
                     <a class="glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" on-click="toggleEditContact(.)" title="Edit this record"></a>
                     {{#if tenant.contactActions!=undefined && tenant.contactActions.length>0 }}
-					            <span class="clickable dropdown" aria-hidden="true" title="Start Process">
-					              <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
-					                <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
-					              </a>
-					              <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
-					                {{#each tenant.contactActions }}
-					                  {{#name}}
-					                    <li on-click="startCustomAction(ref, name, Array.findBy('selfRef',selfRef,current.contacts), url, fullName)" title="{{name}}">{{name}}</li>
-					                  {{else}}
-					                    <li class="divider"></li>
-					                  {{/}}
-					                {{/each}}
-					              </ul>
-					            </span>
-					          {{/if}}
+                      <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
+                          <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
+                        </a>
+                        <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+                          {{#each tenant.contactActions }}
+                            {{#name}}
+                              <li on-click="startCustomAction(ref, name, Array.findBy('selfRef',selfRef,current.contacts), url, fullName)" title="{{name}}">{{name}}</li>
+                            {{else}}
+                              <li class="divider"></li>
+                            {{/}}
+                          {{/each}}
+                        </ul>
+                      </span>
+                    {{/if}}
                     {{#matchRole('admin')  && selfRef}}
                       <a class="glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="deleteContact(.)" title="Delete this record"></a>
                     {{/}}

@@ -1075,6 +1075,8 @@ var ractive = new BaseRactive({
           delete tmp.customFields; // NOTE cannot handle customFields
           tmp.accountId = ractive.id(ractive.get('current'));
           if (tmp.alerts!=undefined && Array.isArray(tmp.alerts)) tmp.alerts = tmp.alerts.join();
+          if (tmp.emailOptIn == 'on') tmp.emailOptIn = true;
+          else  tmp.emailOptIn = false;
           var id = ractive.uri(tmp) == undefined ? undefined: ractive.tenantUri(ractive.get('currentContact'), '/contacts');
           console.log('ready to save contact' + JSON.stringify(tmp) + ' ...');
           $.ajax({

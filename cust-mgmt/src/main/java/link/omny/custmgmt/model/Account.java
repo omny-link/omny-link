@@ -112,6 +112,11 @@ public class Account implements Serializable {
     private boolean emailConfirmed;
 
     @JsonProperty
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
+    @Column(name = "email_optin")
+    private boolean emailOptIn;
+
+    @JsonProperty
     @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
     @Column(name = "email_hash")
     private String emailHash;
