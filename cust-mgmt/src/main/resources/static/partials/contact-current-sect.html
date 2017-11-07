@@ -181,9 +181,9 @@
 	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Check this if the user should not receive automated emails, for example during sensitive negotiations</p>  
 	            </li>
 	            <li>
-	              <label class="col-md-4 col-sm-4">{{#tenant.strings.optOut}}{{tenant.strings.optOut}}{{else}}Opt out{{/}}:</label>
-	              <input class="" id="curOptOut" type="checkbox" checked="{{current.optOut}}"> User preference
-	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This will be checked if the user has opted-out of / unsubscribed from marketing emails</p>
+	              <label class="col-md-4 col-sm-4">{{#tenant.strings.emailOptIn}}{{tenant.strings.emailOptIn}}{{else}}Opt in{{/}}:</label>
+	              <input class="" id="curemailOptIn" type="checkbox" checked="{{current.emailOptIn}}"> User preference
+	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This will be checked if the user has opted in to marketing emails</p>
 	            </li>
 	          {{/}}
 	          {{#if tenant.show.socialContact}}
