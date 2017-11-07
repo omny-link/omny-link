@@ -1,38 +1,30 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/custmgmt" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="4.0" expressionLanguage="http://activiti.org/Juel" id="_1432568236869" name="" targetNamespace="http://omny.link/custmgmt" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
   <message id="omny.decisionInvocation" name="omny.decisionInvocation"/>
   <process id="RunDecisionLogicForAllContacts" isClosed="false" isExecutable="true" name="Update All Contacts Using Decision" processType="None">
     <documentation id="RunDecisionLogicForAllContacts_D_1" textFormat="text/plain"><![CDATA[Update all contacts in the CRM with current service level alerts]]></documentation>
     <extensionElements>
+      <yaoqiang:description/>
       <yaoqiang:pageFormat height="841.8897637795276" imageableHeight="831.8897637795276" imageableWidth="588.1102362204724" imageableX="5.0" imageableY="5.0" orientation="0" width="598.1102362204724"/>
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
     </extensionElements>
     <ioSpecification>
-      <dataInput id="_4" isCollection="false" name="decisionName"/>
+      <dataInput id="definitionsId" isCollection="false" name="definitionsId"/>
+      <dataInput id="decisionId" isCollection="false" name="decisionId"/>
       <dataInput id="_7" isCollection="false" name="tenantId"/>
       <inputSet>
-        <dataInputRefs>_4</dataInputRefs>
+        <dataInputRefs>decisionId</dataInputRefs>
         <dataInputRefs>_7</dataInputRefs>
       </inputSet>
       <outputSet/>
     </ioSpecification>
     <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="_5" implementation="##WebService" isForCompensation="false" name="Read all contacts" startQuantity="1">
       <extensionElements>
-        <activiti:field name="resourceUsername">
-          <activiti:string>userInfo('tenant-bot')</activiti:string>
-        </activiti:field>
-        <activiti:field name="resourcePassword">
-          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="jwtLoginResource">
-          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/</activiti:expression>
-        </activiti:field>
-        <activiti:field name="headers">
-          <activiti:string>Accept:application/json</activiti:string>
-        </activiti:field>
+        <activiti:field name="resourceUsername" stringValue="userInfo('tenant-bot')"/>
+        <activiti:field expression="userInfo('cust-mgmt-secret')" name="resourcePassword"/>
+        <activiti:field expression="userInfo('jwt-login-url')" name="jwtLoginResource"/>
+        <activiti:field expression="userInfo('cust-mgmt-url')/${tenantId}/contacts/" name="globalResource"/>
+        <activiti:field name="headers" stringValue="Accept:application/json"/>
         <activiti:field expression="contacts" name="responseVar"/>
       </extensionElements>
       <incoming>_6</incoming>
@@ -47,7 +39,8 @@
     <callActivity activiti:async="true" calledElement="UpdateContactWithDecisionLogic" completionQuantity="1" id="runDecisionOnContact" isForCompensation="false" name="Run decision on contact" startQuantity="1">
       <extensionElements>
         <activiti:in sourceExpression="${contact.selfRef.string}" target="contactId"/>
-        <activiti:in source="decisionName" target="decisionName"/>
+        <activiti:in source="definitionsId" target="definitionsId"/>
+        <activiti:in source="decisionId" target="decisionId"/>
         <activiti:in source="tenantId" target="tenantId"/>
       </extensionElements>
       <incoming>_3</incoming>
@@ -64,69 +57,75 @@
       <text>RUN DECISION LOGIC FOR ALL A TENANT'S CONTACTS</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-RunDecisionLogicForAllContacts" name="Untitled Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-RunDecisionLogicForAllContacts" name="Run decision logic for all contacts" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="RunDecisionLogicForAllContacts">
       <bpmndi:BPMNShape bpmnElement="_19" id="Yaoqiang-_19">
         <dc:Bounds height="45.0" width="469.0" x="56.0" y="41.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="311.0" x="56.0" y="56.09765625"/>
+          <dc:Bounds height="18.64" width="286.0" x="56.0" y="56.18"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_5" id="Yaoqiang-_5">
         <dc:Bounds height="79.0" width="120.0" x="173.07142857142856" y="196.5"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="103.0" x="181.57142857142856" y="228.59765625"/>
+          <dc:Bounds height="18.64" width="90.0" x="188.07" y="228.68"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
         <dc:Bounds height="32.0" width="32.0" x="56.0" y="220.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="145.0" x="-0.5" y="260.59765625"/>
+          <dc:Bounds height="18.64" width="126.0" x="9.0" y="260.68"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="runDecisionOnContact" id="Yaoqiang-runDecisionOnContact" isExpanded="false">
         <dc:Bounds height="79.0" width="120.0" x="334.1428571428571" y="196.5"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="32.8046875" width="96.0" x="346.1428571428571" y="221.59765625"/>
+          <dc:Bounds height="32.64" width="83.0" x="352.64" y="221.68"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
         <dc:Bounds height="32.0" width="32.0" x="539.2142857142857" y="220.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="62.0" x="524.2142857142857" y="261.716796875"/>
+          <dc:Bounds height="18.64" width="55.0" x="527.71" y="261.88"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4">
-        <dc:Bounds height="38.0" width="29.0" x="56.0" y="344.0"/>
+      <bpmndi:BPMNShape bpmnElement="definitionsId" id="Yaoqiang-definitionsId">
+        <dc:Bounds height="38.0" width="29.0" x="56.0" y="295.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="86.0" x="27.5" y="384.0"/>
+          <dc:Bounds height="18.64" width="67.0" x="37.0" y="335.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="decisionId" id="Yaoqiang-decisionId">
+        <dc:Bounds height="38.0" width="29.0" x="56.0" y="362.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.64" width="55.0" x="43.0" y="402.5"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7">
         <dc:Bounds height="38.0" width="29.0" x="56.0" y="430.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="52.0" x="44.5" y="470.0"/>
+          <dc:Bounds height="18.64" width="47.0" x="47.0" y="470.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_6" id="Yaoqiang-_6">
-        <di:waypoint x="88.06361416314803" y="236.0"/>
-        <di:waypoint x="173.07142857142856" y="236.0"/>
+        <di:waypoint x="87.99932416392711" y="236.0"/>
+        <di:waypoint x="173.0" y="236.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="6.0" x="127.5675213672883" y="226.59765625"/>
+          <dc:Bounds height="18.64" width="6.0" x="127.5" y="226.68"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
-        <di:waypoint x="293.07142857142856" y="236.0"/>
-        <di:waypoint x="334.07142857142856" y="236.0"/>
+        <di:waypoint x="293.0" y="236.0"/>
+        <di:waypoint x="334.0" y="236.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="6.0" x="310.57142857142856" y="226.59765625"/>
+          <dc:Bounds height="18.64" width="6.0" x="310.5" y="226.68"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_2" id="Yaoqiang-_2">
-        <di:waypoint x="454.07142857142856" y="236.0"/>
-        <di:waypoint x="539.0792429797091" y="236.0"/>
+        <di:waypoint x="454.0" y="236.0"/>
+        <di:waypoint x="539.0006758360729" y="236.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.8046875" width="6.0" x="493.5753357755688" y="226.59765625"/>
+          <dc:Bounds height="18.64" width="6.0" x="493.5" y="226.68"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
