@@ -41,7 +41,11 @@ if args.verbose:
 
 if args.data:
   if args.verbose:
-    print(args.data)
+    print('payload is: {}'.format(args.data))
+  if args.data.find('=') != -1:
+    headers['Content-Type'] = 'application/x-www-form-urlencoded'
+    if args.verbose:
+      print('content type: {}'.format(headers['Content-Type']))
   data = args.data.encode('utf-8')
   req = urllib.request.Request(args.url, data, headers = headers)
 else:
