@@ -19,3 +19,5 @@ include::devops-guide/A1-architecture.adoc[]
 include::devops-guide/A2-api.adoc[]
 
 include::devops-guide/A3-developers.adoc[]
+
+include::devops-guide/A4-command-line-client.adoc[]
