@@ -52,7 +52,6 @@
     { "name": "Add activity to contact", "ref": "AddActivityToContact", "url": "processes/link/omny/custmgmt/AddActivityToContact.bpmn" },
     { "name": "Add note to contact", "ref": "AddNoteToContact", "url": "processes/link/omny/custmgmt/AddNoteToContact.bpmn" },
     { "name": "Ad-Hoc Task from external", "ref": "HandleAdHocTask", "url": "processes/link/omny/casemgmt/HandleAdHocTask.bpmn" },
-    { "name": "Check service levels", "ref": "RunDecisionLogicForAllContacts", "url": "processes/link/omny/custmgmt/RunDecisionLogicForAllContacts.bpmn" },
     { "name": "Create contact, account and order", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAccountAndOrder.bpmn" },
     { "name": "De-duplicate contact and account", "ref": "DedupeContact", "url": "processes/link/omny/custmgmt/DedupeContact.bpmn" },
     { "name": "De-register a user", "ref": "DeRegisterOmnyContact", "url": "processes/link/omny/acctmgmt/DeRegisterOmnyContact.bpmn" },
@@ -68,11 +67,7 @@
     { "name": "Send alert to contact's owner", "ref": "SendAlertToOwner", "url": "processes/link/omny/alerts/SendAlertToOwner.bpmn" },
     { "name": "Set contact stage", "ref": "SetContactStage", "url": "processes/link/omny/custmgmt/SetContactStage.bpmn" },
     { "name": "Catch all", "ref": "CatchAllProcess", "url": "processes/link/omny/support/CatchAllProcessPostToSlack.bpmn" },
-    { "name": "Add task", "ref": "SimpleToDo", "url": "processes/link/omny/casemgmt/SimpleToDo.bpmn" },
-    { "name": "Fetch company information", "ref": "companyRecord", "url": "processes/link/omny/companiesHouse/FetchCompanyInfo.bpmn" },
-    { "name": "Search for companies", "ref": "companySearch", "url": "processes/link/omny/companiesHouse/SearchForCompany.bpmn" },
-    { "name": "Update contact with decision logic", "ref": "UpdateContactWithDecisionLogic", "url": "processes/link/omny/custmgmt/UpdateContactWithDecisionLogic.bpmn" },
-    { "name": "Update service level alerts", "ref": "RunDecisionLogicOnContact", "url": "processes/link/omny/alerts/RunAlertDecisionLogicOnContact.bpmn" }
+    { "name": "Add task", "ref": "SimpleToDo", "url": "processes/link/omny/casemgmt/SimpleToDo.bpmn" }
   ],
   "reports": [
     { "name": "Basic contacts", "ref": "contacts1" }
