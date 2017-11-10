@@ -100,6 +100,13 @@ var BaseRactive = Ractive.extend({
       if (ractive.brandingCallbacks!=undefined) ractive.brandingCallbacks.fire();
     }
   },
+  checkFullyLoaded: function() {
+    if ($auth.getClaim('sub')==undefined) {
+      // should be impossible, in theory as invoked as login callback, but just in case...
+      $auth.showLogin();
+    }
+    if (ractive.get('profile') == undefined) ractive.getProfile();
+  },
   daysAgo: function(noOfDays) {
     return new Date(new Date().setDate(new Date().getDate() - noOfDays)).toISOString().substring(0,10);
   },
@@ -176,6 +183,30 @@ var BaseRactive = Ractive.extend({
     var value = "; " + document.cookie;
     var parts = value.split("; " + name + "=");
     if (parts.length == 2) return parts.pop().split(";").shift();
+  },
+  getProfile: function() {
+    if ($auth.loginInProgress) {
+      console.info('skip fetch profile while logging in');
+      return;
+    }
+    var username = $auth.getClaim('sub');
+    console.log('getProfile: '+username);
+    if (username) {
+      $.getJSON(ractive.getServer()+'/users/'+username, function(profile) {
+          ractive.set('saveObserver', false);
+          ractive.set('profile',profile);
+          $('.profile-img').empty().append('<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34" title="'+ractive.get('profile.email')+'"/>');
+          if (ractive.hasRole('super_admin')) $('.super-admin').show();
+          ractive.loadTenantConfig(ractive.get('profile.tenant'));
+          ractive.set('saveObserver', true);
+        });
+      } else if (ractive.get('tenant') && $auth.isPublic(window.location.href)) {
+        var tenant = ractive.get('tenant.id');
+        console.warn('... page supplied default tenant:'+tenant);
+        ractive.loadTenantConfig(ractive.get('tenant.id'));
+      } else {
+        $auth.showLogin();
+      }
   },
   getServer: function() {
     return ractive.get('server')==undefined ? '' : ractive.get('server');
@@ -374,6 +405,23 @@ var BaseRactive = Ractive.extend({
     if (ractive == undefined || stdPartials == undefined) return;
     $.each(stdPartials, function(i,d) {
       ractive.loadStandardPartial(d.name, ractive.getServer()+d.url);
+    });
+  },
+  loadTenantConfig: function(tenant) {
+    if ($auth.loginInProgress) {
+      console.info('skip tenant load while logging in');
+      return;
+    }
+    if (tenant==undefined || tenant=='undefined') $auth.showLogin();
+    console.info('loadTenantConfig:'+tenant);
+    $.getJSON(ractive.getServer()+'/tenants/'+tenant+'.json', function(response) {
+      //console.log('... response: '+JSON.stringify(response));
+      ractive.set('saveObserver', false);
+      ractive.set('tenant', response);
+      ractive.applyBranding();
+      ractive.initAutoComplete();
+      ractive.set('saveObserver', true);
+      if (ractive.tenantCallbacks!=undefined) ractive.tenantCallbacks.fire();
     });
   },
   logout: function() {
@@ -776,6 +824,8 @@ $(document).ready(function() {
       }
     }
   });
+
+  $auth.addLoginCallback(ractive.checkFullyLoaded);
 
   ractive.on('sort', function ( event, column ) {
     console.info('sort on '+column);
