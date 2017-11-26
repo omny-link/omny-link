@@ -44,7 +44,7 @@ var ractive = new BaseRactive({
       if (form == 'simpleTodo') form = '/partials/generic-form.html';
       if (form == '/partials/simpleTodoFormExtension.html') form = '/partials/generic-form.html';
       // catch all form
-      if (form == undefined) form = '/partials/generic-form.html';
+      if (form == undefined) form = ractive.getServer()+'/partials/generic-form.html';
       $.get(form, function (partial) {
         if (ractive != undefined) ractive.resetPartial('userForm',partial);
         ractive.initControls();
