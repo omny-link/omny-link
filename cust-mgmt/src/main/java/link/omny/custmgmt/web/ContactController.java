@@ -922,7 +922,7 @@ public class ContactController extends BaseTenantAwareController{
         if (contacts.size() > 0) {
             try {
                 User user = idSvc.createUserQuery()
-                        .userEmail(contacts.get(0).getEmail())
+                        .userId(contacts.get(0).getEmail())
                         .memberOfGroup("user").singleResult();
                 user.setPassword(pwd);
                 idSvc.saveUser(user);

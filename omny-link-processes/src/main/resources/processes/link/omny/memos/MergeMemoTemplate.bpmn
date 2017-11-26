@@ -117,7 +117,7 @@ if (execution.getVariable('accountId')!=undefined && execution.getVariable('acco
     <sequenceFlow id="_9" sourceRef="_2" targetRef="getMemo"/>
     <serviceTask activiti:async="true" activiti:class="com.knowprocess.el.TemplateTask" completionQuantity="1" id="mergeTemplate" implementation="##WebService" isForCompensation="false" name="Evaluate&#10;template" startQuantity="1">
       <extensionElements>
-        <activiti:field name="htmlVar">
+        <activiti:field name="templateVar">
           <activiti:expression>richContent</activiti:expression>
         </activiti:field>
         <activiti:field expression="mergedMemo" name="responseVar"/>
