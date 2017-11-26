@@ -4,6 +4,8 @@ var ractive = new BaseRactive({
   el: 'container',
   template: '#template',
   parser: new DOMParser(),
+  serializer: new XMLSerializer(),
+  transformer: new XSLTProcessor(),
   partials: { simpleTodoFormExtension: function(x) {
     return 'HELLO'+x
   } },
@@ -154,9 +156,6 @@ var ractive = new BaseRactive({
       { "name": "supportBar", "url": "/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"}
     ],
-    imageUri: function(diagId) {
-      return ractive.tenantUri(ractive.get('current'))+'/'+diagId+'.png';
-    },
     title: 'Process Definitions'
   },
   partials: {
@@ -361,16 +360,6 @@ var ractive = new BaseRactive({
             $('[data-toggle="tooltip"]').tooltip();
           });
           $('[data-ref]').click(function(ev) { ractive.showSelectedId($(ev.target).data('ref')); });
-          ractive.splice('diagPanZoomHandlers', idx, 0, svgPanZoom('#'+diagId));
-
-          var diagEl = document.querySelector('.bpmnDiagram'); // element to make resizable
-          diagEl.addEventListener('mouseup', function(e) {
-            $('svg').attr('width', ($(e.target).css('width')-50));
-            $('svg').attr('height', ($(e.target).css('height')-50));
-            ractive.get('diagPanZoomHandlers.0').resize(); // update SVG cached size and controls positions
-            ractive.get('diagPanZoomHandlers.0').fit();
-            ractive.get('diagPanZoomHandlers.0').center();
-          }, false);
         } catch (e) {
           console.error('  e:'+e);
         }
@@ -402,6 +391,11 @@ var ractive = new BaseRactive({
     $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+definition.id+'/issues', function( data ) {
       console.log('found issues '+data.length);
       ractive.set('current.issues',data);
+    });
+  },
+  fetchRenderer: function() {
+    $.get(ractive.getServer()+'/xslt/bpmn2svg.xslt', function(data) {
+      ractive.transformer.importStylesheet(data);
     });
   },
   find: function(defnKey) {
@@ -442,7 +436,35 @@ var ractive = new BaseRactive({
     });
     return html;
   } ,
-  oninit: function() {
+  renderBpmn: function() {
+    $.each(ractive.get('current.diagramIds'), function(idx,d) {
+      var diagId = d;
+      console.log('  fetch diagram: '+diagId);
+      if (typeof ractive.get('current.bpmn') == 'string') {
+        ractive.set('current.bpmn',ractive.parser.parseFromString(ractive.get('current.bpmn'), "text/xml"));
+      }
+      ractive.transformer.clearParameters();
+      ractive.transformer.setParameter('http://www.omg.org/spec/BPMN/20100524/MODEL', 'diagramId', diagId);
+      var result = ractive.transformer.transformToDocument(ractive.get('current.bpmn'));
+      if (result == undefined) {
+        ractive.showError("Unable to render image of BPMN");
+      } else {
+        var svgString = ractive.serializer.serializeToString(result.firstElementChild);
+        var diagName = ractive.get('current.bpmn').querySelector('#'+diagId).getAttribute('name');
+        ractive.splice('current.diagrams',ractive.get('current.diagramIds').indexOf(diagId),0, { id: diagId, name: diagName, image: svgString });
+      }
+
+      $('.event, .dataStoreReference, .flow, .gateway, .lane, .participant, .task').on('click',ractive.showSelection);
+      $('[data-called-element]').attr('class',$('[data-called-element]').attr('class')+' clickable');
+      $('[data-called-element]').click(function(ev) {
+        console.log('drill down to call activity');
+        console.log('selected: '+JSON.stringify($(ev.target)));
+        console.log('selected: '+ev.target.attributes['data-called-element'].value);
+        ractive.select(ractive.find(ev.target.attributes['data-called-element'].value));
+        $('[data-toggle="tooltip"]').tooltip();
+      });
+      $('[data-ref]').click(function(ev) { ractive.showSelectedId($(ev.target).data('ref')); });
+    });
   },
   select: function(definition) {
     ractive.set('current', definition);
@@ -452,7 +474,6 @@ var ractive = new BaseRactive({
       data.diagrams = [];
       ractive.set('current',data);
       ractive.toggleResults();
-      ractive.fetchDiagrams(ractive.get('current'));
       ractive.set('saveObserver',true);
       if (ractive.get('current').deploymentId==null) {
         ractive.fetchIssues(ractive.get('current'));
@@ -476,13 +497,6 @@ var ractive = new BaseRactive({
   showPropertySect: function() {
     console.info('showPropertySect');
     $('#propertySect').slideDown();
-//    if (ev.clientX > window.innerWidth/2) {
-//      $('#propertySect').css('left',0);
-//      $('#propertySect').css('right','auto');
-//    } else {
-//      $('#propertySect').css('left','auto');
-//      $('#propertySect').css('right',0);
-//    }
   },
   showResults: function() {
     console.log('showResults');
@@ -585,26 +599,6 @@ var ractive = new BaseRactive({
     }
     ractive.set('selectedBpmnObject.extensionDetails', extDetails);
   },
-//  showUserTaskPropertySect: function(ev) {
-//    console.info('showUserTaskPropertySect at x,y:'+ev.clientX+','+ev.clientY);
-//    var side = ev.clientX > window.innerWidth/2 ? 'left' :'right';
-//    console.log('  side: '+side);
-////    'left': function() { return (ev.clientX > window.innerWidth/2) ? ev.clientX-450 : undefined },
-////    'right': function() { return (ev.clientX > window.innerWidth/2) ? undefined : ev.clientX-450 },
-//    $('#propertySect').css({
-//      'display':'block',
-//      /*'right':0,
-//      'top':ev.clientY-100,
-//      'width':'400px'*/
-//    });
-//    /*if (ev.clientX > window.innerWidth/2) {
-//      $('#propertySect').css('left',0);
-//      $('#propertySect').css('right','auto');
-//    } else {
-//      $('#propertySect').css('left','auto');
-//      $('#propertySect').css('right',0);
-//    }*/
-//  },
   startInstance: function(id, label, bizKey) {
     console.log('startInstance: '+id+' for '+bizKey);
     $.ajax({
@@ -688,6 +682,16 @@ var ractive = new BaseRactive({
   }
 });
 
+ractive.observe('current.bpmn', function(newValue, oldValue, keypath) {
+  console.log('bpmn changed');
+  if ((oldValue == undefined || oldValue.id == '') && newValue != undefined && newValue.id != '') {
+    // old server side render works fine but is slower in desktop test
+    // ractive.fetchDiagrams(ractive.get('current'));
+    // client side render is faster but only shows current partial when all done, hence delay...
+    setTimeout(function() { ractive.renderBpmn(ractive.get('current')) }, 500);
+  }
+});
+
 ractive.on( 'sortInstances', function ( event, column ) {
   console.info('sortInstances on '+column);
   // if already sorted by this column reverse order
@@ -696,5 +700,6 @@ ractive.on( 'sortInstances', function ( event, column ) {
 });
 
 $(document).ready(function() {
+  ractive.fetchRenderer();
   ractive.initInfiniteScroll();
 });
