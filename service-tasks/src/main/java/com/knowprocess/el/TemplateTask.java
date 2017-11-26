@@ -21,6 +21,11 @@ public class TemplateTask implements JavaDelegate {
             .getLogger(TemplateTask.class);
     
     /**
+     * Expression to evaluate to get the template itself.
+     */
+    protected Expression template;
+    
+    /**
      * Expression to evaluate to get the name of the var holding the template.
      */
     protected Expression templateVar;
@@ -30,7 +35,14 @@ public class TemplateTask implements JavaDelegate {
      */
     protected Expression responseVar;
     
+    /**
+     * @deprecated Use setTemplateVar
+     */
     public void setHtmlVar(Expression templateVar) {
+        this.templateVar = templateVar;
+    }
+
+    public void setTemplateVar(Expression templateVar) {
         this.templateVar = templateVar;
     }
 
@@ -40,16 +52,31 @@ public class TemplateTask implements JavaDelegate {
     
     @Override
     public void execute(DelegateExecution execution) throws Exception {
-        String template = (String) execution.getVariable((String) templateVar.getValue(execution));
-        if (template == null) { 
-            throw new IllegalStateException("Need to specify a process variable named templateVar containing the variable expression providing the name of the template to merge");
+        String templateVal;
+        try {
+            templateVal = (String) execution.getVariable((String) templateVar.getValue(execution));
+            if (templateVal == null) {
+                LOGGER.info("templateVar not specified, try template");
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException e) {
+            try {
+                templateVal = (String) template.getValue(execution);
+                if (templateVal == null) {
+                    throw new NullPointerException();
+                }
+            } catch (NullPointerException e2) {
+                throw new IllegalStateException("Need to specify either 'template' that holds the template directly or 'templateVar' containing a process variable expression that resolves to the template");
+            }
         }
+        LOGGER.debug("TemplateTask.execute inputs {}", templateVal);
         String outVar = (String) responseVar.getValue(execution);
+        LOGGER.debug("TemplateTask.execute output {}", outVar);
         if (outVar == null) { 
-            throw new IllegalStateException("Need to specify a process variable named responseVar to receive template output");
+            throw new IllegalStateException("Need to specify responseVar that names the process variable to receive template output");
         }        
         try {
-            String result = evaluateTemplate(template, execution.getVariables());
+            String result = evaluateTemplate(templateVal, execution.getVariables());
             execution.setVariable(outVar, result);
         } catch (Throwable e) {
             LOGGER.error(String.format("Unable to transform template in activity '%1$s' within execution '%2$s'", 
