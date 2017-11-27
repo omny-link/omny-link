@@ -34,7 +34,9 @@ documentation but this is the command
  sudo certbot certonly --webroot -w /var/www-api -d api.omny.link
 ----
 . **Convert the provided certificate to PKCS12 format:** Java requires the
-certificate in a different format. Here we're using PKCS12.
+certificate in a different format. Here we're using PKCS12. The following
+command will prompt for a keystore password, which needs to be supplied to the
+application at runtime via the `server.ssl.key-password` property.
 +
 [source]
 ----
