@@ -31,7 +31,7 @@ documentation but this is the command
 +
 [source]
 ----
- sudo certbot certonly --webroot -w /var/www-api -d api.omny.link
+sudo certbot certonly --webroot -w /var/www-api -d api.omny.link
 ----
 . **Convert the provided certificate to PKCS12 format:** Java requires the
 certificate in a different format. Here we're using PKCS12. The following
@@ -41,4 +41,14 @@ application at runtime via the `server.ssl.key-password` property.
 [source]
 ----
 sudo openssl pkcs12 -export -in /etc/letsencrypt/live/api.omny.link/cert.pem -inkey /etc/letsencrypt/live/api.omny.link/privkey.pem -out /etc/letsencrypt/live/api.omny.link/keystore.p12 -name tomcat -CAfile /etc/letsencrypt/live/api.omny.link/fullchain.pem -caname root
+----
+
+=== HOWTO make HTTP calls _to_ the SSL endpoints
+
+_After_ running certbot to create the new certificate it must be installed
+into the JVM's trust store  (typically $JAVA_HOME/lib/security/cacerts).
++
+[source]
+----
+sudo keytool -import -alias api.omny.link -keystore /usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts -file /etc/letsencrypt/live/api.omny.link/../../archive/api.omny.link/certn.pem # replace n with number of latest renewal
 ----
