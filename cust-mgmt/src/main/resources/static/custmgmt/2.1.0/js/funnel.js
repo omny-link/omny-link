@@ -11,9 +11,10 @@ var ractive = new BaseRactive({
   lazy: true,
   template: '#template',
   data: {
-    title: 'Sales Funnel',
+    title: 'Funnel',
     accounts:[],
     contacts:[],
+    orders:[],
     data: [],
     searchMatched: 0,
     searchTerm: '',
@@ -25,6 +26,18 @@ var ractive = new BaseRactive({
     formatAge: function(timeString) {
       console.log('formatAge: '+timeString);
       return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
+    },
+    formatAccountId: function(contactId) {
+      console.info('formatContactId');
+      if (contactId == undefined) return contactId;
+      var contact = Array.findBy('selfRef','/contacts/'+contactId,ractive.get('contacts'));
+      return contact == undefined ? 'n/a' : contact.accountName;
+    },
+    formatContactId: function(contactId) {
+      console.info('formatContactId');
+      if (contactId == undefined) return contactId;
+      var contact = Array.findBy('selfRef','/contacts/'+contactId,ractive.get('contacts'));
+      return contact == undefined ? 'n/a' : contact.fullName;
     },
     formatContent: function(content) {
       console.info('formatContent');
@@ -74,12 +87,19 @@ var ractive = new BaseRactive({
           click: {
             block: function(d) {
               console.log('<' + d.label.raw + '> selected.');
-              if (ractive.get('tenant.features.accountView')) {
+              if (getSearchParameters()['o']!=undefined) {
+                ractive.set('entityPath','/orders');
+                if (ractive.get('orders').length==0) ractive.fetchOrders();
+                if (ractive.get('contacts').length==0) ractive.fetchContacts();
+                $('#ordersTable:hidden').slideDown();
+              } else if (ractive.get('tenant.features.accountView')) {
                 ractive.set('entityPath','/accounts');
                 if (ractive.get('accounts').length==0) ractive.fetchAccounts();
+                $('#accountsTable:hidden').slideDown();
               } else {
                 ractive.set('entityPath','/contacts');
                 if (ractive.get('contacts').length==0) ractive.fetchContacts();
+                $('#contactsTable:hidden').slideDown();
               }
               ractive.search(ractive.get('searchTerm').replace(/ stage:[!\S]+/g,'')+' stage:'+d.label.raw.replace(/ /g,'_'));
             },
@@ -114,7 +134,7 @@ var ractive = new BaseRactive({
         var search = ractive.get('searchTerm').trim().split(' ');
         for (var idx = 0 ; idx < search.length ; idx++) {
           var searchTerm = search[idx].toLowerCase();
-          var match = ( (obj.selfRef.indexOf(searchTerm)>=0)
+          var match = ( (obj.selfRef!=undefined && obj.selfRef.indexOf(searchTerm)>=0)
             || (obj.firstName!=undefined && obj.firstName.toLowerCase().indexOf(searchTerm)>=0)
             || (obj.lastName!=undefined && obj.lastName.toLowerCase().indexOf(searchTerm)>=0)
             || (searchTerm.indexOf('@')!=-1 && obj.email.toLowerCase().indexOf(searchTerm)>=0)
@@ -127,8 +147,10 @@ var ractive = new BaseRactive({
             || (searchTerm.startsWith('stage:') && obj.stage!=undefined && obj.stage.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(6))==0)
             || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(searchTerm.substring(8)))
             || (searchTerm.startsWith('created>') && new Date(obj.firstContact)>new Date(searchTerm.substring(8)))
+            || (searchTerm.startsWith('created>') && new Date(obj.created)>new Date(searchTerm.substring(8)))
             || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(searchTerm.substring(8)))
             || (searchTerm.startsWith('created<') && new Date(obj.firstContact)<new Date(searchTerm.substring(8)))
+            || (searchTerm.startsWith('created<') && new Date(obj.created)<new Date(searchTerm.substring(8)))
             || (searchTerm.startsWith('#') && obj.tags.indexOf(searchTerm.substring(1))!=-1)
             || (searchTerm.startsWith('owner:') && obj.owner.indexOf(searchTerm.substring(6))!=-1)
             || (searchTerm.startsWith('active') && (obj.stage==undefined || obj.stage.length==0 || ractive.inactiveStages().indexOf(obj.stage.toLowerCase())==-1))
@@ -173,7 +195,8 @@ var ractive = new BaseRactive({
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "funnelSect", "url": "/partials/funnel-sect.html"},
       { "name": "accountListTable", "url": "/partials/account-list-table.html" },
-      { "name": "contactListTable", "url": "/partials/contact-list-table.html"}
+      { "name": "contactListTable", "url": "/partials/contact-list-table.html"},
+      { "name": "orderListTable", "url": "/partials/order-list-table.html"}
     ],
   },
   partials: {
@@ -186,13 +209,18 @@ var ractive = new BaseRactive({
     titleArea: '',
     funnelSect: '',
     accountListTable: '',
-    contactListTable: ''
+    contactListTable: '',
+    orderListTable: ''
   },
   activeStages: function() {
     console.info('activeStages');
     var activeStages = [];
-    var stages = ractive.get('contactStages') == undefined
-        ? ractive.get('accountStages') : ractive.get('contactStages');
+    if (getSearchParameters()['o']!=undefined) {
+      var stages = ractive.get('orderStages');
+    } else {
+      var stages = ractive.get('contactStages') == undefined
+          ? ractive.get('accountStages') : ractive.get('contactStages');
+    }
     $.each(stages, function(i,d) {
       if (d['idx']>=0) activeStages.push(d.name);
     });
@@ -205,10 +233,12 @@ var ractive = new BaseRactive({
     console.info('fetch...');
     ractive.set('saveObserver', false);
     ractive.initControls();
-    if (ractive.get('tenant.features.accountView')) {
-      var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/accounts'
+    if (getSearchParameters()['o']!=undefined) {
+      var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/funnel';
+    } else if (ractive.get('tenant.features.accountView')) {
+      var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/accounts';
     } else {
-      var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/contacts'
+      var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/contacts';
     }
     $.ajax({
       dataType: "json",
@@ -222,7 +252,6 @@ var ractive = new BaseRactive({
         } else {
           ractive.renderChart();
         }
-//        ractive.fetchContacts();
       }
     });
   },
@@ -268,6 +297,27 @@ var ractive = new BaseRactive({
       }
     });
   },
+  fetchOrders: function () {
+    console.info('fetchOrders...');
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/',
+      crossDomain: true,
+      success: function( data ) {
+        if (data['_embedded'] == undefined) {
+          ractive.merge('orders', data);
+        } else {
+          ractive.merge('orders', data['_embedded'].accounts);
+        }
+        if (ractive.hasRole('admin')) $('.admin').show();
+        if (ractive.hasRole('power-user')) $('.power-user').show();
+        if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
+        ractive.set('searchMatched',$('#ordersTable tbody tr:visible').length);
+        ractive.set('saveObserver', true);
+      }
+    });
+  },
   inactiveStages: function() {
     console.info('inactiveStages');
     var inactiveStages = [];
@@ -276,14 +326,11 @@ var ractive = new BaseRactive({
     });
     return inactiveStages;
   },
-  oninit: function() {
-    console.log('oninit');
-
-//    this.loadStandardPartials(this.get('stdPartials'));
-  },
   openInNewWindow: function(obj) {
     console.info('openInNewWindow');
-    if (ractive.get('tenant.features.accountView')) {
+    if (getSearchParameters()['o']!=undefined) {
+      window.open('/orders.html?q='+ractive.id(obj));
+    } else if (ractive.get('tenant.features.accountView')) {
       window.open('/accounts.html?q='+ractive.id(obj));
     } else {
       window.open('/contacts.html?q='+ractive.id(obj));
