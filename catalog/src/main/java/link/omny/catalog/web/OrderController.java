@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -249,6 +250,26 @@ public class OrderController {
         LOGGER.info(String.format("Found %1$s orders", list.size()));
 
         return list;
+    }
+
+    /**
+     * @return Funnel report based on stage for the specified tenant.
+     */
+    @RequestMapping(value = "/funnel", method = RequestMethod.GET)
+    public @ResponseBody FunnelReport reportTenantByAccount(
+            @PathVariable("tenantId") String tenantId) {
+        LOGGER.info(String.format("List account funnel for tenant %1$s", tenantId));
+
+        FunnelReport rpt = new FunnelReport();
+        List<Object[]> list = orderRepo
+                .findAllForTenantGroupByStage(tenantId);
+        LOGGER.debug(String.format("Found %1$s stages", list.size()));
+
+        for (Object[] objects : list) {
+            rpt.addStage((String) objects[0], (Number) objects[1]);
+        }
+
+        return rpt;
     }
 
     /**
@@ -667,5 +688,25 @@ public class OrderController {
                 tenantId, order.getId())));
         order.setLinks(links);
         return order;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    public static class FunnelReport extends ResourceSupport {
+        @JsonProperty
+        private Map<String, Number> stages;
+
+        public Map<String, Number> getStages() {
+            if (stages == null) {
+                stages = new HashMap<String, Number>();
+            }
+            return stages;
+        }
+
+        public void addStage(String stage, Number count) {
+            getStages().put(
+                    (stage == null || stage.length() == 0) ? "N/A" : stage,
+                    count == null ? 0 : count);
+        }
     }
 }
