@@ -28,8 +28,10 @@
 </section>
 
 <div style="clear:both;"></div>
-<section id="funnelResultTableSect">
-  {{#if tenant.features.accountView}}
+<section id="funnelResultTableSect" {{#if entityPath==undefined}}style="display:none"{{/if}}>
+  {{#if entityPath.indexOf('order')!=-1}}
+    {{>orderListTable}}
+  {{elseif tenant.features.accountView}}
     {{>accountListTable}}
   {{else}}
     {{>contactListTable}}
