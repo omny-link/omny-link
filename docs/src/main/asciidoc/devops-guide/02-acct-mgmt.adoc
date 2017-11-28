@@ -12,6 +12,10 @@ include::../acctmgmt/edit-toolbar-HOWTO.adoc[]
 
 include::../acctmgmt/edit-strings-HOWTO.adoc[]
 
+include::../acctmgmt/add-custom-fields-HOWTO.adoc[]
+
+include::../acctmgmt/add-custom-partials-HOWTO.adoc[]
+
 include::../acctmgmt/edit-typeahead-lists-HOWTO.adoc[]
 
 include::../acctmgmt/edit-sequences-HOWTO.adoc[]
