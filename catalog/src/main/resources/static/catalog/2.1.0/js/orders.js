@@ -54,6 +54,12 @@ var ractive = new BaseRactive({
       });
       return acctId;
     },
+    formatAccountId: function(contactId) {
+      console.info('formatContactId');
+      if (contactId == undefined) return contactId;
+      var contact = Array.findBy('selfRef','/contacts/'+contactId,ractive.get('contacts'));
+      return contact == undefined ? 'n/a' : contact.accountName;
+    },
     formatContactId: function(contactId) {
       console.info('formatContactId');
       if (contactId == undefined) return contactId;
@@ -262,6 +268,7 @@ var ractive = new BaseRactive({
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "orderListSect", "url": "/partials/order-list-sect.html"},
+      { "name": "orderListTable", "url": "/partials/order-list-table.html"},
       { "name": "currentDocumentListSect", "url": "/webjars/supportservices/2.1.0/partials/current-document-list-sect.html"},
       { "name": "currentNoteListSect", "url": "/webjars/supportservices/2.1.0/partials/current-note-list-sect.html"},
       { "name": "currentOrderSect", "url": "/partials/order-current-sect.html"},
