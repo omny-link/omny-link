@@ -44,6 +44,7 @@ import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
+import link.omny.supportservices.internal.CsvUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -192,6 +193,9 @@ public class Order implements OrderWithSubEntities, Serializable {
     @JsonView({ OrderViews.Summary.class })
     private List<Link> links;
 
+    @Transient
+    private List<String> customHeadings;
+
     public Order(String name) {
         this();
         setName(name);
@@ -217,7 +221,7 @@ public class Order implements OrderWithSubEntities, Serializable {
         // setLastUpdated(new Date());
     }
 
-    public Object getCustomFieldValue(@NotNull String fieldName) {
+    public String getCustomFieldValue(@NotNull String fieldName) {
         for (CustomField field : getCustomFields()) {
             if (fieldName.equals(field.getName())) {
                 return field.getValue();
@@ -276,4 +280,31 @@ public class Order implements OrderWithSubEntities, Serializable {
         lastUpdated = new Date();
     }
 
+    public String toCsv() {
+        StringBuilder sb = new StringBuilder()
+                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                        id,
+                        name,
+                        ref == null ? "" : ref,
+                        type == null ? "" : type,
+                        description == null ? "" : CsvUtils.quoteIfNeeded(description),
+                        date == null ? "" : date,
+                        dueDate == null ? "" : dueDate,
+                        stage == null ? "" : "New enquiry",
+                        price == null ? "" : price,
+                        tax == null ? "" : tax,
+                        invoiceRef == null ? "" : invoiceRef,
+                        owner == null ? "" : owner,
+                        contactId == null ? "" : contactId,
+                        tenantId, created, lastUpdated));
+        if (customHeadings == null) {
+            LOGGER.warn("No custom headings specified, so only standard fields can be included");
+        } else {
+            for (String fieldName : customHeadings) {
+                String val = getCustomFieldValue(fieldName);
+                sb.append(',').append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
+            }
+        }
+        return sb.toString();
+    }
 }

@@ -599,13 +599,16 @@ h2 a.glyphicon:hover {
 	.navbar-sticky h2 {
 	  margin-top:0;
 	}
-	.navbar-sticky h2 span.profile-img {
-	  font-size: 16px;
+	.navbar-sticky .profile-img img {
+      margin-top: -6px;
 	}
 	.navbar-sticky .profile.pull-right {
 	  position: absolute;
-	  right: 5%;
+	  right: 0%;
 	  top: 7px;
+	}
+    .navbar-sticky .tenant {
+      display:none !important;
 	}
 	.print {
     display: none;

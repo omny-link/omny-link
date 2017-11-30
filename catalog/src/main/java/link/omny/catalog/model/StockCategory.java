@@ -44,6 +44,7 @@ import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
+import link.omny.supportservices.internal.CsvUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -257,6 +258,9 @@ public class StockCategory implements ShortStockCategory, Serializable {
     @JsonView(StockCategoryViews.Summary.class)
     private List<Link> links;
 
+    @Transient
+    private List<String> customHeadings;
+
     public StockCategory(String name) {
         this();
         setName(name);
@@ -276,7 +280,7 @@ public class StockCategory implements ShortStockCategory, Serializable {
         // setLastUpdated(new Date());
     }
 
-    public Object getCustomFieldValue(@NotNull String fieldName) {
+    public String getCustomFieldValue(@NotNull String fieldName) {
         for (CustomField field : getCustomFields()) {
             if (fieldName.equals(field.getName())) {
                 return field.getValue();
@@ -405,4 +409,42 @@ public class StockCategory implements ShortStockCategory, Serializable {
         lastUpdated = new Date();
     }
 
+    public String toCsv() {
+        StringBuilder sb = new StringBuilder()
+                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                        id,
+                        name,
+                        description == null ? "" : CsvUtils.quoteIfNeeded(description),
+                        address1 == null ? "" : CsvUtils.quoteIfNeeded(address1),
+                        address2 == null ? "" : CsvUtils.quoteIfNeeded(address2),
+                        town == null ? "" : CsvUtils.quoteIfNeeded(town),
+                        countyOrCity == null ? "" : CsvUtils.quoteIfNeeded(countyOrCity),
+                        postCode == null ? "" : CsvUtils.quoteIfNeeded(postCode),
+                        country == null ? "" : CsvUtils.quoteIfNeeded(country),
+                        lat == null ? "" : lat,
+                        lng == null ? "" : lng,
+                        tags == null ? "" : CsvUtils.quoteIfNeeded(tags),
+                        mapUrl == null ? "" : CsvUtils.quoteIfNeeded(mapUrl),
+                        directionsByRoad == null ? "" : CsvUtils.quoteIfNeeded(directionsByRoad),
+                        directionsByPublicTransport == null ? "" : CsvUtils.quoteIfNeeded(directionsByPublicTransport),
+                        directionsByAir == null ? "" : CsvUtils.quoteIfNeeded(directionsByAir),
+                        videoCode == null ? "" : CsvUtils.quoteIfNeeded(videoCode),
+                        status == null ? "Draft" : CsvUtils.quoteIfNeeded(status),
+                        productSheetUrl == null ? "" : CsvUtils.quoteIfNeeded(productSheetUrl),
+                        offerStatus == null ? "Draft" : CsvUtils.quoteIfNeeded(offerStatus),
+                        offerTitle == null ? "" : CsvUtils.quoteIfNeeded(offerTitle),
+                        offerDescription == null ? "" : CsvUtils.quoteIfNeeded(offerDescription),
+                        offerCallToAction == null ? "" : CsvUtils.quoteIfNeeded(offerCallToAction),
+                        offerUrl == null ? "" : CsvUtils.quoteIfNeeded(offerUrl),
+                        tenantId, created, lastUpdated));
+        if (customHeadings == null) {
+            LOGGER.warn("No custom headings specified, so only standard fields can be included");
+        } else {
+            for (String fieldName : customHeadings) {
+                String val = getCustomFieldValue(fieldName);
+                sb.append(',').append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
+            }
+        }
+        return sb.toString();
+    }
 }
