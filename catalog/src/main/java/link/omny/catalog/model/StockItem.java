@@ -47,6 +47,7 @@ import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.CustomField;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
+import link.omny.supportservices.internal.CsvUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -215,6 +216,9 @@ public class StockItem implements ShortStockItem, Serializable {
 
     public static final int CURRENCY_SCALE = 2;
 
+    @Transient
+    private List<String> customHeadings;
+
     public StockItem(String name, String tag) {
         this();
         setName(name);
@@ -244,7 +248,7 @@ public class StockItem implements ShortStockItem, Serializable {
         setLastUpdated(new Date());
     }
 
-    public Object getCustomFieldValue(@NotNull String fieldName) {
+    public String getCustomFieldValue(@NotNull String fieldName) {
         for (CustomField field : getCustomFields()) {
             if (fieldName.equals(field.getName())) {
                 return field.getValue();
@@ -458,4 +462,33 @@ public class StockItem implements ShortStockItem, Serializable {
         return result;
     }
 
+    public String toCsv() {
+        StringBuilder sb = new StringBuilder()
+                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                        id,
+                        name,
+                        description == null ? "" : CsvUtils.quoteIfNeeded(description),
+                        size,
+                        sizeString == null ? "" : CsvUtils.quoteIfNeeded(sizeString),
+                        unit == null ? "" : unit,
+                        price == null ? "" : price,
+                        tags == null ? "" : CsvUtils.quoteIfNeeded(tags),
+                        videoCode == null ? "" : CsvUtils.quoteIfNeeded(videoCode),
+                        status == null ? "Draft" : CsvUtils.quoteIfNeeded(status),
+                        offerStatus == null ? "Draft" : CsvUtils.quoteIfNeeded(offerStatus),
+                        offerTitle == null ? "" : CsvUtils.quoteIfNeeded(offerTitle),
+                        offerDescription == null ? "" : CsvUtils.quoteIfNeeded(offerDescription),
+                        offerCallToAction == null ? "" : CsvUtils.quoteIfNeeded(offerCallToAction),
+                        offerUrl == null ? "" : CsvUtils.quoteIfNeeded(offerUrl),
+                        tenantId, created, lastUpdated));
+        if (customHeadings == null) {
+            LOGGER.warn("No custom headings specified, so only standard fields can be included");
+        } else {
+            for (String fieldName : customHeadings) {
+                String val = getCustomFieldValue(fieldName);
+                sb.append(',').append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
+            }
+        }
+        return sb.toString();
+    }
 }

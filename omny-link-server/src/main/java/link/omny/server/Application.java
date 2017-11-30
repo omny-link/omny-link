@@ -38,6 +38,7 @@ import link.omny.custmgmt.model.Note;
 import link.omny.server.model.mixins.DocumentMixIn;
 import link.omny.server.model.mixins.LinkMixIn;
 import link.omny.server.model.mixins.NoteMixIn;
+import link.omny.server.web.converters.CsvBeanConverter;
 import link.omny.supportservices.SupportServicesConfig;
 
 @Configuration
@@ -107,6 +108,11 @@ public class Application extends WebMvcConfigurerAdapter {
         }
 
         return tomcat;
+    }
+
+    @Override
+    public void extendMessageConverters (List<HttpMessageConverter<?>> converters) {
+        converters.add(new CsvBeanConverter());
     }
 
     public static void main(String[] args) {

@@ -35,6 +35,9 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
     List<Object[]> findAllForTenantGroupByStage(
             @Param("tenantId") String tenantId);
 
+    @Query(value = "SELECT DISTINCT(cf.name) FROM OL_ACCOUNT a INNER JOIN OL_ACCOUNT_CUSTOM cf on a.id = cf.account_id WHERE (a.stage IS NULL OR a.stage != 'deleted') AND a.tenant_id = :tenantId ", nativeQuery = true)
+    List<String> findCustomFieldNames(@Param("tenantId") String tenantId);
+
     @Query(value = "UPDATE Account a set a.stage = :stage WHERE (a.lastUpdated < :before OR a.lastUpdated IS NULL) AND a.stage != 'deleted'AND a.tenantId = :tenantId")
     @Modifying(clearAutomatically = true)
     int updateStage(@Param("stage") String stage, @Param("before") Date before, @Param("tenantId") String tenantId);

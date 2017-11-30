@@ -50,6 +50,7 @@ import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.views.ContactViews;
+import link.omny.supportservices.internal.CsvUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -381,7 +382,7 @@ public class Contact implements Serializable {
         setLastUpdated(new Date());
     }
 
-    public Object getCustomFieldValue(@NotNull String fieldName) {
+    public String getCustomFieldValue(@NotNull String fieldName) {
         for (CustomField field : getCustomFields()) {
             if (fieldName.equals(field.getName())) {
                 return field.getValue();
@@ -462,6 +463,9 @@ public class Contact implements Serializable {
 
     @Transient
     private Date now;
+
+    @Transient
+    private List<String> customHeadings;
 
     public Contact(String firstName, String lastName, String email,
             String tenantId) {
@@ -806,6 +810,63 @@ public class Contact implements Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public void setUtm_keyword(String keyword) {
         setKeyword(keyword);
+    }
+
+    public String toCsv() {
+        StringBuilder sb = new StringBuilder() ;
+        sb.append(String.format(
+                "%1$s,%2$s,%3$s,%4$b,%5$s,%6$s,%7$s,%8$s,%9$s,%10$s,%11$s,%12$s,%13$s,%14$b,%15$s,%16$s,%17$s,%18$s,%19$s,%20$s,%21$s,%22$s,%23$s,%24$b,%25$s,%26$s,%27$s,%28$s,%29$s,%30$s,%31$s,%32$s,%33$s,%34$b,%35$s,%36$s,%37$s,%38$s,%39$s",
+                getFirstName(),
+                getLastName(),
+                title == null ? "" : title,
+                isMainContact(),
+                address1 == null ? "" : CsvUtils.quoteIfNeeded(address1),
+                address2 == null ? "" : CsvUtils.quoteIfNeeded(address2),
+                town == null ? "" : town,
+                countyOrCity == null ? "" : countyOrCity,
+                country == null ? "" : country,
+                postCode == null ? "" : postCode,
+                email == null ? "" : email,
+                // isMailConfirmed(),
+                jobTitle == null ? "" : jobTitle,
+                phone1 == null ? "" : phone1,
+                phone2 == null ? "" : phone2,
+                // getAccountName(),
+                owner == null ? "" : owner,
+                stage == null ? "" : stage,
+                stageReason == null ? "" : stageReason,
+                stageDate == null ? "" : stageDate,
+                enquiryType == null ? "" : enquiryType,
+                accountType == null ? "" : accountType,
+                isExistingCustomer(),
+                source == null ? "" : source,
+                medium == null ? "" : medium,
+                campaign == null ? "" : campaign,
+                keyword == null ? "" : keyword,
+                isDoNotCall(),
+                isDoNotEmail(),
+                getTags() == null ? "" : CsvUtils.quoteIfNeeded(getTags()),
+                getUuid(),
+                twitter == null ? "" : twitter,
+                linkedIn == null ? "" : linkedIn,
+                facebook == null ? "" : facebook,
+                // getSkype(),
+                tenantId,
+                firstContact == null ? "" : firstContact,
+                getLastUpdated(),
+                getTimeSinceLogin(),
+                getTimeSinceFirstLogin(),
+                getTimeSinceRegistered(),
+                getTimeSinceEmail()));
+        if (customHeadings == null) {
+            LOGGER.warn("No custom headings specified, so only standard fields can be included");
+        } else {
+            for (String fieldName : customHeadings) {
+                String val = getCustomFieldValue(fieldName);
+                sb.append(',').append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
+            }
+        }
+        return sb.toString();
     }
 
     @Override
