@@ -122,14 +122,21 @@ public class StockItemController {
     }
 
     /**
-     * Return just the stockItems for a specific tenant.
-     *
-     * @return stockItems for that tenant.
+     * @return stock items for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public @ResponseBody List<ShortStockItem> listForTenant(
+    public @ResponseBody List<ShortStockItem> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
-            @AuthenticationPrincipal UserDetails activeUser,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        return wrapShort(listForTenant(tenantId, page, limit));
+    }
+
+    /**
+     * @return stock items for that tenant.
+     */
+    public @ResponseBody List<StockItem> listForTenant(
+            @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
         LOGGER.info(String.format("List stockItems for tenant %1$s", tenantId));
@@ -143,7 +150,41 @@ public class StockItemController {
         }
         LOGGER.info(String.format("Found %1$s stockItems", list.size()));
 
-        return wrapShort(list);
+        return list;
+    }
+
+    /**
+     * @return stock items for that tenant.
+     */
+    @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
+    public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        StringBuilder sb = new StringBuilder()
+                .append("id,name,description,size,sizeString,unit,price,"
+                        + "tags,videoCode,status,offerStatus,"
+                        + "offerTitle,offerDescription,offerCallToAction,"
+                        + "offerUrl,tenantId,created,lastUpdated,");
+        List<String> customFieldNames = stockItemRepo.findCustomFieldNames(tenantId);
+        LOGGER.info("Found {} custom field names while exporting orders for {}: {}",
+                customFieldNames.size(), tenantId, customFieldNames);
+        for (String fieldName : customFieldNames) {
+            sb.append(fieldName).append(",");
+        }
+        sb.append("\r\n");
+
+        for (StockItem item : listForTenant(tenantId, page, limit)) {
+            item.setCustomHeadings(customFieldNames);
+            sb.append(item.toCsv()).append("\r\n");
+        }
+        LOGGER.info("Exporting CSV stock items for {} generated {} bytes",
+                tenantId, sb.length());
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentLength(sb.length());
+        return new ResponseEntity<String>(
+                sb.toString(), httpHeaders, HttpStatus.OK);
     }
 
     /**

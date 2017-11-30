@@ -142,10 +142,15 @@ public class StockCategoryController {
      * @return stockCategories for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public @ResponseBody List<? extends ShortStockCategory> listForTenant(
+    public @ResponseBody List<? extends ShortStockCategory> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
+        return wrapShort(listForTenant(tenantId, page, limit));
+    }
+
+    protected List<StockCategory> listForTenant(String tenantId,
+            Integer page, Integer limit) {
         LOGGER.info(String.format("List stockCategories for tenant %1$s",
                 tenantId));
 
@@ -158,7 +163,44 @@ public class StockCategoryController {
         }
         LOGGER.info(String.format("Found %1$s stock categories", list.size()));
 
-        return wrapShort(list);
+        return list;
+    }
+
+    /**
+     * @return stock categories for that tenant.
+     */
+    @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
+    public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        StringBuilder sb = new StringBuilder()
+                .append("id,name,description,address1,address2,town,"
+                        + "countyOrCity,postCode,country,"
+                        + "lat,lng,tags,mapUrl,directionsByRoad,"
+                        + "directionsByPublicTransport,directionsByAir,"
+                        + "videoCode,status,productSheetUrl,offerStatus,"
+                        + "offerTitle,offerDescription,offerCallToAction,"
+                        + "offerUrl,tenantId,created,lastUpdated,");
+        List<String> customFieldNames = stockCategoryRepo.findCustomFieldNames(tenantId);
+        LOGGER.info("Found {} custom field names while exporting orders for {}: {}",
+                customFieldNames.size(), tenantId, customFieldNames);
+        for (String fieldName : customFieldNames) {
+            sb.append(fieldName).append(",");
+        }
+        sb.append("\r\n");
+
+        for (StockCategory order : listForTenant(tenantId, page, limit)) {
+            order.setCustomHeadings(customFieldNames);
+            sb.append(order.toCsv()).append("\r\n");
+        }
+        LOGGER.info("Exporting CSV stock categories for {} generated {} bytes",
+                tenantId, sb.length());
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentLength(sb.length());
+        return new ResponseEntity<String>(
+                sb.toString(), httpHeaders, HttpStatus.OK);
     }
 
     /**

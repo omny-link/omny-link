@@ -60,6 +60,9 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     List<Order> findPageForContacts(@Param("tenantId") String tenantId,
             @Param("contactIds") Long[] contactIds, Pageable pageable);
 
+    @Query(value = "SELECT DISTINCT(cf.name) FROM OL_ORDER o INNER JOIN OL_ORDER_CUSTOM cf on o.id = cf.order_id WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenant_id = :tenantId ", nativeQuery = true)
+    List<String> findCustomFieldNames(@Param("tenantId") String tenantId);
+
     @Override
     @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = :id")
     @Modifying(clearAutomatically = true)

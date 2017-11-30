@@ -1,4 +1,4 @@
-package link.omny.custmgmt.web.converters;
+package link.omny.server.web.converters;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,7 +10,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import link.omny.custmgmt.CustMgmtException;
 import link.omny.custmgmt.model.Contact;
 
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ public class CsvBeanConverter extends
     }
 
     protected boolean supports(Class<?> clazz) {
-        System.out.println(":supports: " + clazz.getName());
+        LOGGER.debug("supports {}?", clazz.getName());
         ArrayList<Contact> arrayList = new ArrayList<Contact>();
         // for clazz.getGenericInterfaces())
         // getInterfaces
@@ -62,7 +61,7 @@ public class CsvBeanConverter extends
                     | InvocationTargetException e) {
                 String msg = "Unable to serialize to CSV";
                 LOGGER.error(msg, e);
-                throw new CustMgmtException(msg, e);
+                throw new IllegalArgumentException(msg, e);
             }
         }
         writer.close();

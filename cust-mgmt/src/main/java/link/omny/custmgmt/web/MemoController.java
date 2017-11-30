@@ -48,7 +48,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * REST web service for uploading and accessing a file of JSON Messages (over
+ * REST web service for uploading and accessing a file of JSON memos (over
  * and above the CRUD offered by spring data).
  * 
  * @author Tim Stephenson
@@ -73,7 +73,7 @@ public class MemoController extends BaseTenantAwareController {
     private ObjectMapper objectMapper;
 
     /**
-     * Imports JSON representation of messages.
+     * Imports JSON representation of memos.
      * 
      * <p>
      * This is a handy link: http://shancarter.github.io/mr-data-converter/
@@ -89,13 +89,13 @@ public class MemoController extends BaseTenantAwareController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
             throws IOException {
-        LOGGER.info(String.format("Uploading messages for: %1$s", tenantId));
+        LOGGER.info(String.format("Uploading memos for: %1$s", tenantId));
         String content = new String(file.getBytes());
 
         List<Memo> list = objectMapper.readValue(content,
                 new TypeReference<List<Memo>>() {
                 });
-        LOGGER.info(String.format("  found %1$d messages", list.size()));
+        LOGGER.info(String.format("  found %1$d memos", list.size()));
         for (Memo message : list) {
             message.setTenantId(tenantId);
         }
@@ -128,27 +128,17 @@ public class MemoController extends BaseTenantAwareController {
     }
 
     /**
-     * Return just the messages for a specific tenant.
+     * Return just the memos for a specific tenant.
      * 
-     * @return messages for that tenant.
+     * @return memos for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public @ResponseBody List<ResourceSupport> listForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info(String.format("List messages for tenant %1$s", tenantId));
-
-        List<Memo> list;
-        if (limit == null) {
-            list = memoRepo.findAllForTenant(tenantId);
-        } else {
-            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
-            list = memoRepo.findPageForTenant(tenantId, pageable);
-        }
-        LOGGER.info(String.format("Found %1$s messages", list.size()));
-
-        return wrap(list);
+        LOGGER.info(String.format("List memos for tenant %1$s", tenantId));
+        return wrap(listAsCsv(tenantId, page, limit));
     }
 
     /**
@@ -223,12 +213,12 @@ public class MemoController extends BaseTenantAwareController {
     /**
      * @return Export all memos for the specified tenant as CSV.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
-    public @ResponseBody List<Memo> exportAsCsv(
+    @RequestMapping(value = "/", method = RequestMethod.GET, produces = { "text/csv" })
+    public @ResponseBody List<Memo> listAsCsv(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info(String.format("Export messages for tenant %1$s", tenantId));
+        LOGGER.info(String.format("Export memos for tenant %1$s", tenantId));
 
         List<Memo> list;
         if (limit == null) {
@@ -237,7 +227,7 @@ public class MemoController extends BaseTenantAwareController {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
             list = memoRepo.findPageForTenant(tenantId, pageable);
         }
-        LOGGER.info(String.format("Found %1$s messages", list.size()));
+        LOGGER.info(String.format("Found %1$s memos", list.size()));
 
         return list;
     }

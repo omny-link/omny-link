@@ -82,7 +82,7 @@ var ractive = new BaseRactive({
         var search = ractive.get('searchTerm').split(' ');
         for (var idx = 0 ; idx < search.length ; idx++) {
           var searchTerm = search[idx].toLowerCase();
-          var match = ( (obj.selfRef.indexOf(searchTerm)>=0)
+          var match = ( (obj.selfRef!=undefined && obj.selfRef.indexOf(searchTerm)>=0)
               || (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
               || (obj.title.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
               || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
@@ -184,22 +184,6 @@ var ractive = new BaseRactive({
       }
     });
     ractive.set('saveObserver', true);
-  },
-  download: function() {
-    console.info('download');
-    $.ajax({
-      headers: {
-        "Accept": "text/csv; charset=utf-8",
-        "Content-Type": "text/csv; charset=utf-8"
-      },
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/memos/',
-      crossDomain: true,
-      success: function( data ) {
-        console.warn('response;'+data);
-        something = window.open("data:text/csv," + encodeURIComponent(data),"_blank");
-        //something.focus();
-      }
-    });
   },
   edit: function (idx, message) {
     console.log('edit'+message+'...');

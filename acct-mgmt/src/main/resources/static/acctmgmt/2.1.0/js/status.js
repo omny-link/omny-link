@@ -184,6 +184,9 @@ var ractive = new BaseRactive({
         ractive.set('saveObserver', true);
       }
     });
+    $.getJSON(ractive.getServer()+'/admin/tenants/'+ractive.get('tenant.id'), function(data) {
+      ractive.set('currentSummary', data);
+    });
   },
   oninit: function() {
     console.log('oninit');

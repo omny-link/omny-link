@@ -192,14 +192,20 @@ public class Memo implements Serializable {
     }
 
     private void cleanHtml() {
-        if (getRichContent()!=null) {
-          setRichContent(getRichContent().replace("&#39;", "\'"));
+        if (richContent != null) {
+          setRichContent(richContent.replace("&#39;", "\'"));
         }
     }
 
     public String toCsv() {
-        return String.format("%1$d,%2$s,%3$s,%4$s,%5$s,%6$s,%7$s", id, name,
-                title, status, owner, richContent, plainContent);
+        return String.format("%1$s,%2$s,%3$s,%4$s,%5$s,%6$s,%7$s",
+                id == null ? "" : id.toString(),
+                name,
+                title,
+                status == null ? "Draft" : status,
+                owner == null ? "" : owner,
+                richContent == null ? "" : richContent.replaceAll("\\n", ""),
+                getPlainContent());
     }
 
     public String formatSignatoriesForDocuSign() {

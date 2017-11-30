@@ -174,7 +174,7 @@ public class ContactController extends BaseTenantAwareController{
      * @return contacts for that tenant.
      */
     @RequestMapping(value = "/contacts.csv", method = RequestMethod.GET, produces = "text/csv")
-    public @ResponseBody ResponseEntity<InputStreamResource> listForTenantAsCsvAlt(
+    public @ResponseBody ResponseEntity<String> listForTenantAsCsvAlt(
             @PathVariable("tenantId") String tenantId,
             @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
@@ -207,67 +207,38 @@ public class ContactController extends BaseTenantAwareController{
      * @return contacts for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
-    public @ResponseBody ResponseEntity<InputStreamResource> listForTenantAsCsv(
+    public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
             @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        StringBuilder sb = new StringBuilder();
-        for (Contact contact : listForTenant(tenantId, activeUser, page, limit)) {
-            StringBuilder customFields = new StringBuilder();
-            for (CustomContactField field : contact.getCustomFields()) {
-                customFields.append(field.getValue()).append(',');
-            }
-            sb.append(String.format(
-                    "%1$s,%2$s,%3$s,%4$b,%5$s,%6$s,%7$s,%8$s,%9$s,%10$s,%11$s,%12$s,%13$s,%14$b,%15$s,%16$s,%17$s,%18$s,%19$s,%20$s,%21$s,%22$s,%23$s,%24$b,%25$s,%26$s,%27$s,%28$s,%29$s,%30$s,%31$s,%32$s,%33$s,%34$b,%35$s,%36$s,%37$s,%38$s,%39$s%40$s,%41$s,%42$s\n",
-                    contact.getFirstName(),
-                    contact.getLastName(),
-                    contact.getTitle(),
-                    contact.isMainContact(),
-                    contact.getAddress1(),
-                    contact.getAddress2(),
-                    contact.getTown(),
-                    contact.getCountyOrCity(),
-                    contact.getCountry(),
-                    contact.getPostCode(),
-                    contact.getEmail(),
-                    // contact.isMailConfirmed(),
-                    contact.getJobTitle(),
-                    contact.getPhone1(),
-                    contact.getPhone2(),
-                    // contact.getAccountName(),
-                    contact.getOwner(), contact.getStage(),
-                    contact.getStageReason(), contact.getStageDate(),
-                    contact.getEnquiryType(), contact.getAccountType(),
-                    contact.isExistingCustomer(), contact.getSource(),
-                    contact.getMedium(),
-                    contact.getCampaign(),
-                    contact.getKeyword(),
-                    contact.isDoNotCall(),
-                    contact.isDoNotEmail(),
-                    contact.getTags(),
-                    contact.getUuid(),
-                    contact.getTwitter(),
-                    contact.getLinkedIn(),
-                    contact.getFacebook(),
-                    // contact.getSkype(),
-                    contact.getTenantId(), contact.getFirstContact(),
-                    contact.getLastUpdated(),
-                    contact.getTimeSinceBusinessPlanDownload(),
-                    contact.getTimeSinceLogin(),
-                    contact.getTimeSinceFirstLogin(),
-                    contact.getTimeSinceRegistered(),
-                    contact.getTimeSinceEmail(),
-                    // contact.getMailsSent(),
-                    contact.getTimeSinceValuation(), customFields.toString()));
+        StringBuilder sb = new StringBuilder().append("firstName,lastName,title,"
+                + "isMainContact,address1,address2,town,countyOrCity,country,"
+                + "postCode,email,jobTitle,phone1,phone2,owner,stage,"
+                + "stageReason,stageDate,enquiryType,accountType,"
+                + "isExistingCustomer,source,medium,campaign,keyword,"
+                + "isDoNotCall,isDoNotEmail,tags,uuid,twitter,linkedIn,"
+                + "facebook,tenantId,firstContact,lastUpdated,timeSinceLogin,"
+                + "timeSinceFirstLogin,timeSinceRegistered,timeSinceEmail");
+        List<String> customFieldNames = contactRepo.findCustomFieldNames(tenantId);
+        LOGGER.info("Found {} custom field names while exporting contacts for {}: {}",
+                customFieldNames.size(), tenantId, customFieldNames);
+        for (String fieldName : customFieldNames) {
+            sb.append(fieldName).append(",");
         }
+        sb.append("\r\n");
 
-        InputStreamResource inputStreamResource = new InputStreamResource(
-                new ByteArrayInputStream(sb.toString().getBytes()));
+        for (Contact contact : listForTenant(tenantId, activeUser, page, limit)) {
+            contact.setCustomHeadings(customFieldNames);
+            sb.append(contact.toCsv()).append("\r\n");
+        }
+        LOGGER.info("Exporting CSV contacts for {} generated {} bytes",
+                tenantId, sb.length());
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentLength(sb.length());
-        return new ResponseEntity<InputStreamResource>(inputStreamResource, httpHeaders,
-                HttpStatus.OK);
+        return new ResponseEntity<String>(
+                sb.toString(), httpHeaders, HttpStatus.OK);
     }
 
     /**

@@ -171,13 +171,18 @@ public class AccountController {
      * @return Accounts for a specific tenant.
      */
     @RequestMapping(value = "/accounts/", method = RequestMethod.GET)
-//    @JsonView(AccountViews.Summary.class)
-    public @ResponseBody List<ShortAccount> listForTenant(
-//    public @ResponseBody List<Account> listForTenant(
+//  @JsonView(AccountViews.Summary.class)
+//  public @ResponseBody List<Account> listForTenantAsJson(
+    public @ResponseBody List<ShortAccount> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
+        return wrap(listForTenant(tenantId, page, limit));
+    }
+
+    protected List<Account> listForTenant(
+            String tenantId, Integer page, Integer limit) {
         LOGGER.info(String.format("List accounts for tenant %1$s", tenantId));
 
         List<Account> list;
@@ -189,8 +194,46 @@ public class AccountController {
         }
         LOGGER.info(String.format("Found %1$s accounts", list.size()));
 
-        return wrap(list);
-//        return list;
+        return list;
+    }
+
+    /**
+     * Return just the accounts for a specific tenant.
+     *
+     * @return accounts for that tenant.
+     */
+    @RequestMapping(value = "/accounts/", method = RequestMethod.GET, produces = "text/csv")
+    public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
+            @PathVariable("tenantId") String tenantId,
+            @AuthenticationPrincipal UserDetails activeUser,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        StringBuilder sb = new StringBuilder()
+                .append("id,name,companyNumber,aliases,businessWebsite,"
+                        + "address1,address2,town,countyOrCity,country,"
+                        + "postCode,email,phone1,phone2,owner,stage,"
+                        + "stageReason,stageDate,enquiryType,accountType,"
+                        + "isExistingCustomer,tags,twitter,linkedIn,facebook,"
+                        + "shortDesc,description,incorporationYear,noOfEmployees,tenantId,firstContact,lastUpdated,");
+        List<String> customFieldNames = accountRepo.findCustomFieldNames(tenantId);
+        LOGGER.info("Found {} custom field names while exporting accounts for {}: {}",
+                customFieldNames.size(), tenantId, customFieldNames);
+        for (String fieldName : customFieldNames) {
+            sb.append(fieldName).append(",");
+        }
+        sb.append("\r\n");
+
+        for (Account account : listForTenant(tenantId, page, limit)) {
+            account.setCustomHeadings(customFieldNames);
+            sb.append(account.toCsv()).append("\r\n");
+        }
+        LOGGER.info("Exporting CSV accounts for {} generated {} bytes",
+                tenantId, sb.length());
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentLength(sb.length());
+        return new ResponseEntity<String>(
+                sb.toString(), httpHeaders, HttpStatus.OK);
     }
 
     /**

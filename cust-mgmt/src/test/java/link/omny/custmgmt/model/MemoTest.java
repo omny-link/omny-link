@@ -44,5 +44,16 @@ public class MemoTest {
         + "\"tabs\": { \"signHereTabs\": [{ \"xPosition\": \"250\", \"yPosition\": \"340\", \"documentId\": \"1\", \"pageNumber\": \"1\" }]}"
         + "}]}", memo.formatSignatoriesForDocuSign());
     }
+
+    @Test
+    public void testToCsv() {
+        Memo memo = new Memo();
+        memo.setName("BookRecommendation");
+        memo.setTitle("Your latest recommended reading");
+        memo.setRichContent("<h1>The War of the Worlds</h1>\n<br/>\n<h2>By H.G. Wells</h2>");
+        assertEquals(",BookRecommendation,Your latest recommended reading,Draft,,<h1>The War of the Worlds</h1>" +
+                "<br/><h2>By H.G. Wells</h2>,The War of the Worlds By H.G. Wells",
+                memo.toCsv());
+    }
 }
 

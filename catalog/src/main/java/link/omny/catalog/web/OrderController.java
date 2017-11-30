@@ -157,6 +157,37 @@ public class OrderController {
     }
 
     /**
+     * @return orders for that tenant.
+     */
+    @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
+    public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        StringBuilder sb = new StringBuilder()
+                .append("id,name,ref,type,description,date,dueDate,stage,price,tax,invoiceRef,owner,contactId,tenantId,created,lastUpdated,");
+        List<String> customFieldNames = orderRepo.findCustomFieldNames(tenantId);
+        LOGGER.info("Found {} custom field names while exporting orders for {}: {}",
+                customFieldNames.size(), tenantId, customFieldNames);
+        for (String fieldName : customFieldNames) {
+            sb.append(fieldName).append(",");
+        }
+        sb.append("\r\n");
+
+        for (Order order : listForTenant(tenantId, page, limit)) {
+            order.setCustomHeadings(customFieldNames);
+            sb.append(order.toCsv()).append("\r\n");
+        }
+        LOGGER.info("Exporting CSV orders for {} generated {} bytes",
+                tenantId, sb.length());
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentLength(sb.length());
+        return new ResponseEntity<String>(
+                sb.toString(), httpHeaders, HttpStatus.OK);
+    }
+
+    /**
      * @return orders owned by the specified contact.
      */
     @RequestMapping(value = "/findByContact/{contactId}", method = RequestMethod.GET)

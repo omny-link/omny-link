@@ -110,6 +110,31 @@ var BaseRactive = Ractive.extend({
   daysAgo: function(noOfDays) {
     return new Date(new Date().setDate(new Date().getDate() - noOfDays)).toISOString().substring(0,10);
   },
+  download: function(entityName) {
+    console.info('download');
+    $.ajax({
+      headers: {
+        "Accept": "text/csv"
+      },
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/'+entityName+'/',
+      crossDomain: true,
+      success: function( data ) {
+        console.info('CSV received, first record: '+data.substring(0,data.indexOf('\n')));
+        var entityLabel = ractive.get('tenant.strings.'+entityName.toCamelCase())==undefined ? entityName : ractive.get('tenant.strings.'+entityName.toCamelCase());
+        ractive.downloadUri(encodeURI("data:text/csv;charset=utf-8,"+data), entityLabel+".csv");
+      }
+    });
+  },
+  downloadUri: function(uri, name) {
+    ractive.set('uri', uri);
+    var link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    delete link;
+  },
   entityName: function(entity) {
     console.info('entityName');
     var id = ractive.uri(entity);

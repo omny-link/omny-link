@@ -36,4 +36,8 @@ public interface StockCategoryRepository extends
     List<StockCategory> findByStatusAndOffersForTenant(
             @Param("tenantId") String tenantId, @Param("status") String status,
             @Param("offerStatus") String offerStatus);
+
+    @Query(value = "SELECT DISTINCT(cf.name) FROM OL_STOCK_CAT o INNER JOIN OL_STOCK_CAT_CUSTOM cf on o.id = cf.stock_cat_id WHERE o.tenant_id = :tenantId ", nativeQuery = true)
+    List<String> findCustomFieldNames(@Param("tenantId") String tenantId);
+
 }

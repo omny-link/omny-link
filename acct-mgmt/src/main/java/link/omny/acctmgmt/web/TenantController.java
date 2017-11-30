@@ -177,54 +177,58 @@ public class TenantController {
         List<TenantSummary> result = new ArrayList<TenantSummary>();
         Iterable<Tenant> list = tenantRepo.findAll();
         for (Tenant tenant : list) {
-            TenantSummary summary = new TenantSummary();
-            summary.setTenantId(tenant.getId());
+            TenantSummary summary = showOne(tenant.getId());
             summary.setConfigUrl(tenant.getRemoteUrl());
-
-            try {
-                TenantConfig tenantConfig = tenantConfigController
-                        .showTenant(tenant.getId());
-                summary.setName(tenantConfig.getName());
-                summary.setTheme(tenantConfig.getTheme());
-            } catch (Exception e) {
-                LOGGER.error(String.format(
-                        "Unable to read tenant config for '%1$s'",
-                        tenant.getId()));
-            }
-
-            UriComponentsBuilder builder = MvcUriComponentsBuilder
-                    .fromController(TenantConfigController.class);
-
-            Link detail = new Link(builder.path("/{tenantId}")
-                    .buildAndExpand(tenant.getId()).toUriString());
-            summary.add(detail);
-
-            summary.setAccounts(accountRepo.countForTenant(tenant.getId()));
-            summary.setContacts(contactRepo.countForTenant(tenant.getId()));
-            summary.setContactAlerts(contactRepo.countAlertsForTenant(tenant
-                    .getId()));
-            summary.setDefinitions(processEngine.getRepositoryService()
-                    .createProcessDefinitionQuery()
-                    .processDefinitionTenantId(tenant.getId()).count());
-            summary.setActiveInstances(processEngine.getRuntimeService()
-                    .createProcessInstanceQuery()
-                    .processInstanceTenantId(tenant.getId()).count());
-            summary.setHistoricInstances(processEngine.getHistoryService()
-                    .createHistoricProcessInstanceQuery()
-                    .processInstanceTenantId(tenant.getId()).count());
-            summary.setJobs(processEngine.getManagementService()
-                    .createJobQuery().jobTenantId(tenant.getId()).count());
-            summary.setOrders(orderRepo.countForTenant(tenant.getId()));
-            summary.setStockItems(stockItemRepo.countForTenant(tenant.getId()));
-            summary.setStockCategories(stockCategoryRepo.countForTenant(tenant.getId()));
-            summary.setTasks(processEngine.getTaskService().createTaskQuery()
-                    .taskTenantId(tenant.getId()).count());
-            summary.setUsers(processEngine.getIdentityService()
-                    .createUserQuery().memberOfGroup(tenant.getId()).count());
-
             result.add(summary);
         }
         return result;
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody TenantSummary showOne(@PathVariable("id") String tenantId) {
+        TenantSummary summary = new TenantSummary();
+        summary.setTenantId(tenantId);
+
+        try {
+            TenantConfig tenantConfig =
+                    tenantConfigController.showTenant(tenantId);
+            summary.setName(tenantConfig.getName());
+            summary.setTheme(tenantConfig.getTheme());
+        } catch (Exception e) {
+            LOGGER.error(String.format(
+                    "Unable to read tenant config for '%1$s'",
+                    tenantId));
+        }
+
+        UriComponentsBuilder builder = MvcUriComponentsBuilder
+                .fromController(TenantConfigController.class);
+
+        Link detail = new Link(builder.path("/{tenantId}")
+                .buildAndExpand(tenantId).toUriString());
+        summary.add(detail);
+
+        summary.setAccounts(accountRepo.countForTenant(tenantId));
+        summary.setContacts(contactRepo.countForTenant(tenantId));
+        summary.setContactAlerts(contactRepo.countAlertsForTenant(tenantId));
+        summary.setDefinitions(processEngine.getRepositoryService()
+                .createProcessDefinitionQuery()
+                .processDefinitionTenantId(tenantId).count());
+        summary.setActiveInstances(processEngine.getRuntimeService()
+                .createProcessInstanceQuery()
+                .processInstanceTenantId(tenantId).count());
+        summary.setHistoricInstances(processEngine.getHistoryService()
+                .createHistoricProcessInstanceQuery()
+                .processInstanceTenantId(tenantId).count());
+        summary.setJobs(processEngine.getManagementService()
+                .createJobQuery().jobTenantId(tenantId).count());
+        summary.setOrders(orderRepo.countForTenant(tenantId));
+        summary.setStockItems(stockItemRepo.countForTenant(tenantId));
+        summary.setStockCategories(stockCategoryRepo.countForTenant(tenantId));
+        summary.setTasks(processEngine.getTaskService().createTaskQuery()
+                .taskTenantId(tenantId).count());
+        summary.setUsers(processEngine.getIdentityService()
+                .createUserQuery().memberOfGroup(tenantId).count());
+        return summary;
     }
 
     /**
