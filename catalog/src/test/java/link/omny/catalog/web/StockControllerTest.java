@@ -68,8 +68,7 @@ public class StockControllerTest {
     public void tearDown() {
         categoryController.delete(TENANT_ID, categoryId);
         // check clean
-        @SuppressWarnings("unchecked")
-        List<ShortStockCategory> list = (List<ShortStockCategory>) categoryController.listForTenant(
+        List<StockCategory> list = (List<StockCategory>) categoryController.listForTenant(
                 TENANT_ID, null, null);
         assertEquals(0, list.size());
     }

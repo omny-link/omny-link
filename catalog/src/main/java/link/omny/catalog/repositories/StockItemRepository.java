@@ -42,6 +42,9 @@ public interface StockItemRepository extends CrudRepository<StockItem, Long> {
             @Param("categoryName") String categoryName,
             @Param("tenantId") String tenantId);
 
+    @Query(value = "SELECT DISTINCT(cf.name) FROM OL_STOCK_ITEM o INNER JOIN OL_STOCK_ITEM_CUSTOM cf on o.id = cf.stock_item_id WHERE o.tenant_id = :tenantId ", nativeQuery = true)
+    List<String> findCustomFieldNames(@Param("tenantId") String tenantId);
+
     @Query(value = "UPDATE OL_STOCK_ITEM i SET i.stock_cat_id = :categoryId WHERE i.id = :itemId", nativeQuery = true)
     @Modifying(clearAutomatically = true)
     public void setStockCategory(@Param("itemId") Long itemId, @Param("categoryId") Long categoryId);
