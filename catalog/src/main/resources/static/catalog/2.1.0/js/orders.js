@@ -60,6 +60,14 @@ var ractive = new BaseRactive({
       var contact = Array.findBy('selfRef','/contacts/'+contactId,ractive.get('contacts'));
       return contact == undefined ? 'n/a' : contact.fullName;
     },
+    formatContactAddress: function(contactId, selector) {
+      console.info('formatContactAddress');
+      if (contactId == undefined) return contactId;
+      $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/contacts/'+contactId, function(contact) {
+        $(selector).val(contact.address);
+      });
+      return 'n/a';
+    },
     formatContent: function(content) {
       console.info('formatContent:'+content);
       content = content.replace(/\n/g,'<br/>');
@@ -102,19 +110,6 @@ var ractive = new BaseRactive({
         // So it wasn't JSON
         return json;
       }
-    },
-    formatOrderItemDates: function(order) {
-      var dates='';
-      for (idx in order.orderItems) {
-        if (order.orderItems[idx]['customFields']==undefined || order.orderItems[idx].customFields['date']==undefined) continue;
-        var tmp = ractive.parseDate(order.orderItems[idx].customFields['date']).toLocaleDateString(navigator.languages);
-        if (tmp != undefined && tmp != 'Invalid Date' && dates.indexOf(tmp)==-1) {
-          if (dates.length > 0) dates += ',';
-          dates += tmp;
-        }
-      }
-      if (dates.length==0) dates = 'Specify dates for each '+ractive.get('tenant.strings.orderItem').toLowerCase();
-      return dates;
     },
     formatSumOrderItemField: function(order,fieldName) {
       var val=0;
@@ -271,6 +266,7 @@ var ractive = new BaseRactive({
       { "name": "currentNoteListSect", "url": "/webjars/supportservices/2.1.0/partials/current-note-list-sect.html"},
       { "name": "currentOrderSect", "url": "/partials/order-current-sect.html"},
       { "name": "currentOrderExtensionSect", "url": "/partials/order-extension.html"},
+      { "name": "currentPurchaseOrderExtensionSect", "url": "/partials/purchase-order-extension.html"},
       { "name": "currentOrderItemListSect", "url": "/partials/order-item-list-sect.html"},
       { "name": "currentFeedbackSect", "url": "/partials/feedback-current-sect.html"},
       { "name": "currentOrderItemSect", "url": "/partials/order-item-current-sect.html"},
@@ -356,12 +352,10 @@ var ractive = new BaseRactive({
     ractive.set('currentIdx',ractive.get('orders').indexOf(order));
     ractive.select( order );
   },
-  fetch: function () {
-    console.info('fetch...');
+  fetch: function() {
+    console.info('fetch variant: '+ractive.get('variant'));
     ractive.set('saveObserver', false);
-    var url = ractive.get('variant') == 'order'
-        ? ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/'
-        : ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/findByType/'+ractive.get('variant');
+    var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/findByType/'+ractive.get('variant');
     $.ajax({
       dataType: "json",
       url: url,
@@ -698,12 +692,13 @@ var ractive = new BaseRactive({
     $('#ordersTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
     $('#ordersTable').slideToggle();
   },
-  updateContactId: function(newVal) {
+  updateContactId: function(newVal, keypath) {
     console.info('updateContactId: '+newVal);
     if (newVal==undefined || newVal.length==0) return;
     var newContact = Array.findBy('fullName',newVal,ractive.get('contacts'));
     ractive.set('current.contact', newContact);
-    ractive.set('current.contactId', ractive.id(newContact));
+    if (keypath == undefined) keypath = 'current.contactId';
+    ractive.set(keypath, ractive.id(newContact));
   },
   updateStockItem: function(newVal) {
     console.info('updateStockItem: '+newVal);
