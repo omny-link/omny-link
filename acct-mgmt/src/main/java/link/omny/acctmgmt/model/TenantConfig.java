@@ -110,6 +110,10 @@ public class TenantConfig implements Serializable {
 
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Transient
+    private List<OrderField> purchaseOrderFields;
+
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Transient
     private List<FeedbackField> feedbackFields;
 
     @Transient
@@ -163,6 +167,9 @@ public class TenantConfig implements Serializable {
 
     @Transient
     private List<TenantAction> orderActions;
+
+    @Transient
+    private List<TenantAction> purchaseOrderActions;
 
     @Transient
     private List<TenantAction> stockItemActions;

@@ -253,12 +253,14 @@
       <span>Actions</span>
     </h2>
     <div style="display:none">
-	    <h3 id="accountActions">Account Actions</h3>
+	    <h3 id="accountActions">{{# tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}} Actions</h3>
 	    {{>statusTable { property: 'accountActions', showStatus: false }}}
-	    <h3 id="contactActions">Contact Actions</h3>
+	    <h3 id="contactActions">{{# tenant.strings.contacts}}{{tenant.strings.contacts}}{{else}}Contact{{/}} Actions</h3>
 	    {{>statusTable { property: 'contactActions', showStatus: false }}}
-	    <h3 id="orderActions">Order Actions</h3>
+	    <h3 id="orderActions">{{# tenant.strings.order}}{{tenant.strings.order}}{{else}}Order{{/}} Actions</h3>
 	    {{>statusTable { property: 'orderActions', showStatus: false }}}
+      <h3 id="purchaseOrderActions">{{# tenant.strings.purchaseOrder}}{{tenant.strings.purchaseOrder}}{{else}}Purchase Order{{/}} Actions</h3>
+      {{>statusTable { property: 'purchaseOrderActions', showStatus: false }}}
 	  </div>
   </section>
 

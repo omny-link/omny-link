@@ -41,13 +41,6 @@
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderRefHint}}{{tenant.strings.orderRefHint}}{{else}}Reference is generated automatically{{/}}</p>
           </li>
         {{/}}
-        {{#tenant.features.orderName}}
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4 required">{{#tenant.strings.orderName}}{{tenant.strings.orderName}}{{else}}Name{{/}}:</label>
-            <input class="form-control" id="curName" required value="{{current.name}}">
-            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderNameHint}}{{tenant.strings.orderNameHint}}{{/}}</p>
-          </li>
-        {{/}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4 required">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}:</label>
           <div class="input-group">
@@ -81,11 +74,7 @@
         {{#tenant.features.orderDueDate}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}:</label>
-            {{#if current.orderItems}}
-              <span>{{formatOrderItemDates(current)}}</span>
-            {{else}}
-              <input class="form-control col-md-8 col-sm-8 col-xs-8" id="curDueDate" {{#if !tenant.features.orderItems}}type="date" {{/if}}value="{{current.dueDate}}"/>
-            {{/if}}
+            <input class="form-control col-md-8 col-sm-8 col-xs-8" id="curDueDate" {{#if !tenant.features.orderItems}}type="date" {{/if}}value="{{current.dueDate}}"/>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Date {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} due to be delivered{{/}}</p>
           </li>
         {{/}}
@@ -111,6 +100,13 @@
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{tenant.strings.stockItem}} this {{tenant.strings.order.toLowerCase()}} is for</p>
           </li>
         {{/}}
+        {{#tenant.features.orderName}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">{{#tenant.strings.orderName}}{{tenant.strings.orderName}}{{else}}Name{{/}}:</label>
+            <input class="form-control" id="curName" value="{{current.name}}">
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderNameHint}}{{tenant.strings.orderNameHint}}{{/}}</p>
+          </li>
+        {{/}}
         {{#tenant.features.stockPricing}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}:</label>
@@ -131,7 +127,7 @@
         {{#if tenant.features.orderInvoiceRef}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.invoiceRef}}{{tenant.strings.invoiceRef}}{{else}}Invoice Ref{{/}}:</label>
-            <input class="form-control" id="curPrice" step="any" value="{{current.invoiceRef}}">
+            <input class="form-control" id="curInvoiceRef" value="{{current.invoiceRef}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference for {{tenant.strings.order.toLowerCase()}}{{/}}</p>
           </li>
         {{/if}}
@@ -141,30 +137,46 @@
         <ul class="form edit-form">
           <li class="form-group">
             <label class="textarea col-md-2 col-sm-4">{{#if tenant.strings.orderDescription}}{{tenant.strings.orderDescription}}{{else}}Additional info{{/if}}:</label>
-            <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#if tenant.strings.orderDescriptionHint}}{{tenant.strings.orderDescriptionHint}}{{else}}Additional info{{/if}}" value="{{current.description}}"></textarea>
+            <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#if tenant.strings.orderDescriptionHint}}{{tenant.strings.orderDescriptionHint}}{{else}}Additional info{{/if}}" rows="3" value="{{current.description}}"></textarea>
           </li>
         </ul>
     </div>
-    {{#tenant.orderFields.length>0}}
-      {{#if haveCustomExtension('OrderExtension')}}
-        <div id="currentOrderExtended" style="clear: both">
-          {{>(tenant.id+'OrderExtension')}}
-        </div>
-      {{else}}
-        <div id="currentOrderExtended" style="clear: both">
-          {{>currentOrderExtensionSect}}
-        </div>
-      {{/if}}
-    {{/}}
+    {{#if (variant == 'order')}}
+	    {{#tenant.orderFields.length>0}}
+	      {{#if haveCustomExtension('OrderExtension')}}
+	        <div id="currentOrderExtended" style="clear: both">
+	          {{>(tenant.id+'OrderExtension')}}
+	        </div>
+	      {{else}}
+	        <div id="currentOrderExtended" style="clear: both">
+	          {{>currentOrderExtensionSect}}
+	        </div>
+	      {{/if}}
+	    {{/}}
+
+		  {{#if tenant.features.orderItems}}
+		    {{>currentOrderItemListSect}}
+		  {{/if}}
+
+		  {{#if tenant.features.feedback}}
+		    {{>currentFeedbackSect}}
+		  {{/if}}
+    {{elseif (variant == 'po')}}
+      {{#tenant.purchaseOrderFields.length>0}}
+        {{#if haveCustomExtension('PurchaseOrderExtension')}}
+          <div id="currentPurchaseOrderExtended" style="clear: both">
+            {{>(tenant.id+'PurchaseOrderExtension')}}
+          </div>
+        {{else}}
+          <div id="currentPurchaseOrderExtended" style="clear: both">
+            {{>currentPurchaseOrderExtensionSect}}
+          </div>
+        {{/if}}
+      {{/}}
+    {{else}}
+      <p>UNKNOWN ORDER VARIANT: {{variant}}, please report this</p>
+    {{/if}}
   </form>
-  
-  {{#if tenant.features.orderItems}}
-    {{>currentOrderItemListSect}}
-  {{/if}}
-  
-  {{#if tenant.features.feedback}}
-    {{>currentFeedbackSect}}
-  {{/if}}
 
   {{#if tenant.features.notesOnOrder}}
     {{>currentNoteListSect}}
