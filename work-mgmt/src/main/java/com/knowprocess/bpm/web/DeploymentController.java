@@ -42,7 +42,7 @@ public class DeploymentController {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(DeploymentController.class);
 
-    private static final String PREPROCESSOR_RESOURCES = "/xslt/ExecutableTweaker.xsl";
+    private static final String PREPROCESSOR_RESOURCES = "/xslt/polyfill.xslt,/xslt/ExecutableTweaker.xsl";
 
     private static final String BPMN_RESOURCE_RESOURCES = "/static/xslt/bpmn2resources.xslt";
 
@@ -311,7 +311,7 @@ public class DeploymentController {
     }
 
     private TransformTask getPreProcessor() {
-//        if (preProcessor == null) {
+        if (preProcessor == null) {
             preProcessor = new TransformTask();
             try {
                 preProcessor.setXsltResources(PREPROCESSOR_RESOURCES);
@@ -320,12 +320,12 @@ public class DeploymentController {
                         "Unable to locate deployment pre-processors: %1$s",
                         PREPROCESSOR_RESOURCES), e);
             }
-//        }
+        }
         return preProcessor;
     }
 
     private TransformTask getResourceExtractor() {
-//      if (resourceExtractor == null) {
+      if (resourceExtractor == null) {
           resourceExtractor = new TransformTask();
           try {
               resourceExtractor.setXsltResources(BPMN_RESOURCE_RESOURCES);
@@ -334,12 +334,12 @@ public class DeploymentController {
                       "Unable to locate resource extractor: %1$s",
                       BPMN_RESOURCE_RESOURCES), e);
           }
-//      }
+      }
       return resourceExtractor;
   }
 
     private TransformTask getValidator() {
-//        if (validator == null) {
+        if (validator == null) {
             validator = new TransformTask();
             try {
                 validator.setXsltResources(VALIDATOR_RESOURCES);
@@ -348,7 +348,7 @@ public class DeploymentController {
                         "Unable to locate deployment validator: %1$s",
                         VALIDATOR_RESOURCES), e);
             }
-//        }
+        }
         return validator;
     }
     private boolean isValid(Map<String, String> processes) {

@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,32 +48,40 @@ public class TransformTask implements JavaDelegate {
 	}
 
     /**
-     * 
+     * @param xsltResources
+     *            Array of XSLT classpath resources.
+     * @throws TransformerConfigurationException
+     */
+    public void setXsltResources(String[] resources)
+            throws TransformerConfigurationException {
+        LOGGER.info(String.format("Setting up pre-processors {}",
+                Arrays.asList(resources)));
+        templates = new Templates[resources.length];
+        for (int i = 0; i < resources.length; i++) {
+            InputStream is = null;
+            try {
+                is = getClass().getResourceAsStream(resources[i]);
+                templates[i] = factory.newTemplates(new StreamSource(is));
+                assert (templates[i]!=null);
+            } finally {
+                try {
+                    is.close();
+                } catch (Exception e) {
+                    ;
+                }
+            }
+        }
+    }
+
+    /**
      * @param xsltResources
      *            Comma separated list of XSLT classpath resources.
      * @throws TransformerConfigurationException
      */
     public void setXsltResources(String xsltResources)
 			throws TransformerConfigurationException {
-        LOGGER.info(String.format("Setting up pre-processors %1$s",
-                xsltResources));
-        String[] resources = xsltResources.split(",");
-		templates = new Templates[resources.length];
-		for (int i = 0; i < resources.length; i++) {
-			InputStream is = null;
-			try {
-				is = getClass().getResourceAsStream(resources[i]);
-				templates[i] = factory.newTemplates(new StreamSource(is));
-				assert (templates[i]!=null);
-			} finally {
-				try {
-					is.close();
-				} catch (Exception e) {
-					;
-				}
-			}
-		}
-	}
+        setXsltResources(xsltResources.split(","));
+    }
 
 	public String transform(String xml) {
 		return transform(xml, new HashMap<String, String>());

@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,7 +63,8 @@ public class TransformTaskTest {
 			System.out.println("result: " + result);
 			assertNotNull(result);
 
-            assertResults(result, 2, 14, 22);
+            // ERROR: Timer events must specify exactly one of: timeDate, timeDuration or timeCycle for timerEventDefinition with id: invalidTimerUnderSpecified
+            assertResults(result, 1, 15, 22);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -156,7 +158,7 @@ public class TransformTaskTest {
         svc.setXsltResources("/xslt/ExecutableTweaker.xsl");
         System.out.println("BPMN: " + bpmn.toString());
         assertTrue(bpmn.toString().trim().endsWith(">"));
-        String result = svc.transform(bpmn.toString().trim());
+        String result = svc.transform(bpmn.toString().trim(), Collections.singletonMap("unsupportedTasksToUserTask", "true"));
         System.out.println("result: " + result);
         assertNotNull(result);
         assertTrue(result.contains("assignee=\"${initiator}\""));

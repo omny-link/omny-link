@@ -8,10 +8,10 @@
   - set isExecutable to true.
   - Manual task -> User task
   - Set default transition for exclusive gateway
-  - Suppress non-executable process
+  - Suppress non-executable processes (when processParticipantToExecute param supplied)
   - Add an activiti initiator (named 'initiator') if one does not exist.
   - Convert activiti resource shortcuts (activiti:candidateXxx) to BPMN standard ones
-  - Convert unsupported service tasks into user tasks, suppressing ST attributes, and assign to either pool name or initiator if no pools.
+  - Convert unsupported service tasks into user tasks (if unsupportedTasksToUserTask = true), suppressing ST attributes, and assign to either pool name or initiator if no pools; otherwise convert to logging implementation service asks.
   - Add form property extensions for data objects (TODO when there is no form key???)
   - Suppress assignee and candidate group shortcuts when potentialOwner is specified (also helps avoid namespace clash with camunda)
   - Suppress Camunda formKey (those with extension jsf)
@@ -20,6 +20,7 @@
   - Suppress message/@itemRef (to avoid Activiti validation: [Validation set: 'activiti-executable-process' | Problem: 'activiti-message-invalid-item-ref'] : Item reference is invalid: not found - [Extra info : ] ( line: 6, column: 104))
   - When dataInput/dataOutput has no name infer one from itemSubjectRef for activiti:formProperty
   - Add form property extensions for Data Inputs and Outputs just as done already for Data Objects
+  - User task without potentialOwner assigned to initiator
 -->
 <xsl:stylesheet version="1.0"
   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
@@ -46,6 +47,8 @@
     participants to identify the process intended for execution
   -->
   <xsl:param name="processParticipantToExecute"/>
+
+  <xsl:param name="unsupportedTasksToUserTask">false</xsl:param>
 
   <xsl:template match="bpmndi:BPMNEdge|BPMNEdge">
     <xsl:variable name="bpmnId" select="@bpmnElement"/>
@@ -317,31 +320,50 @@
   </xsl:template>
 
   <!--
-    Convert unsupported service tasks into user tasks.
+    Convert unsupported service tasks into user tasks (if unsupportedTasksToUserTask set)
+    or to logging service tasks.
   -->
   <xsl:template match="semantic:sendTask|sendTask|semantic:serviceTask|serviceTask">
     <xsl:comment>
       <xsl:value-of select="local-name(.)"/>
-      <xsl:text> converted to user task.</xsl:text>
-    </xsl:comment>
-    <xsl:text>&#x0A;</xsl:text>
-    <xsl:element name="userTask">
       <xsl:choose>
-        <xsl:when test="//collaboration/participant">
-          <xsl:apply-templates select="//collaboration/participant" mode="resource">
-            <xsl:with-param name="id" select="@id"/>
-            <xsl:with-param name="process" select="parent::node()"/>
-          </xsl:apply-templates>
-        </xsl:when>
-        <xsl:when test="not(potentialOwner)">
-          <xsl:attribute name="activiti:assignee">${initiator}</xsl:attribute>
+        <xsl:when test="$unsupportedTasksToUserTask='true'">
+          <xsl:text> is not one of the supported ones so simply converted to log the request.</xsl:text>
         </xsl:when>
         <xsl:otherwise>
+          <xsl:text> converted to user task.</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
-      <xsl:apply-templates select="@*[not(local-name(.)='delegateExpression' or local-name(.)='instantiate' or local-name(.)='messageRef' or local-name(.)='operationRef')]"/>
-      <xsl:apply-templates/>
-    </xsl:element>
+    </xsl:comment>
+    <xsl:text>&#x0A;</xsl:text>
+    <xsl:choose>
+      <xsl:when test="$unsupportedTasksToUserTask='true'">
+        <xsl:element name="userTask">
+          <xsl:choose>
+            <xsl:when test="//collaboration/participant">
+              <xsl:apply-templates select="//collaboration/participant" mode="resource">
+                <xsl:with-param name="id" select="@id"/>
+                <xsl:with-param name="process" select="parent::node()"/>
+              </xsl:apply-templates>
+            </xsl:when>
+            <xsl:when test="not(potentialOwner)">
+              <xsl:attribute name="activiti:assignee">${initiator}</xsl:attribute>
+            </xsl:when>
+            <xsl:otherwise>
+            </xsl:otherwise>
+          </xsl:choose>
+          <xsl:apply-templates select="@*[not(local-name(.)='delegateExpression' or local-name(.)='instantiate' or local-name(.)='messageRef' or local-name(.)='operationRef')]"/>
+          <xsl:apply-templates/>
+        </xsl:element>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>
+          <xsl:attribute name="activiti:class">com.knowprocess.logging.LoggingService</xsl:attribute>
+          <xsl:apply-templates select="@*[not(local-name(.)='delegateExpression' or local-name(.)='instantiate' or local-name(.)='messageRef' or local-name(.)='operationRef')]"/>
+          <xsl:apply-templates/>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="semantic:scriptTask|scriptTask">
@@ -512,7 +534,7 @@
     <xsl:choose>
       <xsl:when test="$process/@id=@processRef">
         <xsl:text>HELLO!</xsl:text>
-          <xsl:value-of select="@name"/>
+        <xsl:value-of select="@name"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>GOODBYE ${initiator}</xsl:text>
@@ -526,16 +548,24 @@
   <xsl:template match="semantic:userTask|userTask">
     <xsl:variable name="currentProcessId" select="ancestor::semantic:process/@id|ancestor::process/@id"/>
 
+    <xsl:comment>user task <xsl:value-of select="@id"/> has potentialOwner: <xsl:choose><xsl:when test="semantic:potentialOwner|potentialOwner">Yes</xsl:when><xsl:otherwise>No</xsl:otherwise></xsl:choose></xsl:comment>
+
     <xsl:comment>user task <xsl:value-of select="@id"/> has extensions: <xsl:choose><xsl:when test="semantic:extensionElements|extensionElements">Yes</xsl:when><xsl:otherwise>No</xsl:otherwise></xsl:choose></xsl:comment>
     <xsl:choose>
       <xsl:when test="semantic:extensionElements|extensionElements">
         <xsl:copy>
+          <xsl:if test="not(semantic:potentialOwner|potentialOwner)">
+            <xsl:attribute name="activiti:candidateUsers">${initiator}</xsl:attribute>
+          </xsl:if>
           <xsl:apply-templates select="@*|*"/>
         </xsl:copy>
       </xsl:when>
       <xsl:otherwise>
         <xsl:comment>Creating extensionElements</xsl:comment>
         <xsl:copy>
+          <xsl:if test="not(semantic:potentialOwner|potentialOwner)">
+            <xsl:attribute name="activiti:candidateUsers">${initiator}</xsl:attribute>
+          </xsl:if>
           <xsl:apply-templates select="@*"/>
           <xsl:apply-templates select="semantic:documentation|documentation"/>
           <xsl:element name="extensionElements">
