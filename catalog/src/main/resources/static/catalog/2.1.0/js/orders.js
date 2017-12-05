@@ -267,6 +267,7 @@ var ractive = new BaseRactive({
       { "name": "currentOrderSect", "url": "/partials/order-current-sect.html"},
       { "name": "currentOrderExtensionSect", "url": "/partials/order-extension.html"},
       { "name": "currentPurchaseOrderExtensionSect", "url": "/partials/purchase-order-extension.html"},
+      { "name": "currentOrderTableSect", "url": "/partials/order-list-table.html" },
       { "name": "currentOrderItemListSect", "url": "/partials/order-item-list-sect.html"},
       { "name": "currentFeedbackSect", "url": "/partials/feedback-current-sect.html"},
       { "name": "currentOrderItemSect", "url": "/partials/order-item-current-sect.html"},
@@ -758,13 +759,14 @@ ractive.observe('tenant.strings.orders', function(newValue, oldValue, keypath) {
 // controls done that way save the oldValue
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
   console.info('current prop change: '+newValue +','+oldValue+' '+keypath);
+  var ignored = [ 'current.notes', 'current.documents' ];
   if (!ractive.get('saveObserver')) {
     console.debug('Skipped save of '+keypath+' because in middle of other operation');
   } else if (ractive.get('saveObserver') && keypath.indexOf('current.orderItems')!=-1) {
     ractive.saveOrderItem();
   } else if (ractive.get('saveObserver') && keypath.indexOf('current.feedback')!=-1) {
     ractive.saveFeedback();
-  } else if (ractive.get('saveObserver') && keypath.indexOf('current.orderItems')==-1) {
+  } else if (ractive.get('saveObserver') && ignored.indexOf(keypath)==-1 && keypath.indexOf('current.orderItems')==-1) {
     ractive.save();
   } else {
     console.warn('Skipped order save of '+keypath);

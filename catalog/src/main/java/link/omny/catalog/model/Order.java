@@ -163,6 +163,15 @@ public class Order implements OrderWithSubEntities, Serializable {
     @Column(name = "tenant_id")
     private String tenantId;
 
+    @JoinColumn(name = "parent_id")
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true)
+    private Order parent;
+
+    @Transient
+    @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
+    private List<Order> childOrders;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
     @JsonDeserialize(using = JsonCustomOrderFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
