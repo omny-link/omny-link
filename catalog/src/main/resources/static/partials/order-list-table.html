@@ -2,7 +2,7 @@
   <thead>
     <tr>
       <th></th>
-      <th on-click="sort:orderId">Id<span class="sortable {{ sorted('orderId') }} glyphicon glyphicon-btn"></th>
+      <th on-click="sort:id">Id<span class="sortable {{ sorted('id') }} glyphicon glyphicon-btn"></th>
       {{#1==2}}
         <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn"></th>
       {{/}}
@@ -31,7 +31,7 @@
     {{#if matchSearch(this) }}
       <tr data-href="{{id}}">
         <td on-click="edit(this)">{{i+1}}</td>
-        <td on-click="edit(this)">{{orderId}}</td>
+        <td on-click="edit(this)">{{id}}</td>
         {{#1==2}}
           <td on-click="edit(this)">{{name}}</td>
         {{/}}
@@ -42,7 +42,7 @@
         {{/if}}
         <td on-click="edit(this)">{{stage}}</td>
         {{#tenant.features.catalog}}
-          <td on-click="edit(this)">{{#if orderItems}}{{formatStockItemIds(orderId)}}{{else}}{{stockItem.name}}{{/if}}</td>
+          <td on-click="edit(this)">{{#if orderItems}}{{formatStockItemIds(id)}}{{else}}{{stockItem.name}}{{/if}}</td>
         {{/}}
         {{#tenant.show.stockPricing}}
           <td on-click="edit(this)">{{price}}</td>
