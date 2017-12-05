@@ -36,7 +36,11 @@
       <ul class="form edit-form">
         {{#current.ref}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{#tenant.strings.orderRef}}{{tenant.strings.orderRef}}{{else}}Ref{{/}}:</label>
+            {{#if (variant == 'po')}}
+              <label class="col-md-4 col-sm-4">{{#tenant.strings.purchaseOrderRef}}{{tenant.strings.purchaseOrderRef}}{{else}}Ref{{/}}:</label>
+            {{else}}
+              <label class="col-md-4 col-sm-4">{{#tenant.strings.orderRef}}{{tenant.strings.orderRef}}{{else}}Ref{{/}}:</label>
+            {{/if}}
             <input class="form-control" disabled id="curRef" readonly value="{{current.ref}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderRefHint}}{{tenant.strings.orderRefHint}}{{else}}Reference is generated automatically{{/}}</p>
           </li>
@@ -134,12 +138,12 @@
       </ul>
     </div>
     <div id="currentOrderDesc" class="col-md-12 col-sm-12 col-xs-12">
-        <ul class="form edit-form">
-          <li class="form-group">
-            <label class="textarea col-md-2 col-sm-4">{{#if tenant.strings.orderDescription}}{{tenant.strings.orderDescription}}{{else}}Additional info{{/if}}:</label>
-            <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#if tenant.strings.orderDescriptionHint}}{{tenant.strings.orderDescriptionHint}}{{else}}Additional info{{/if}}" rows="3" value="{{current.description}}"></textarea>
-          </li>
-        </ul>
+      <ul class="form edit-form">
+        <li class="form-group">
+          <label class="textarea col-md-2 col-sm-4">{{#if tenant.strings.orderDescription}}{{tenant.strings.orderDescription}}{{else}}Additional info{{/if}}:</label>
+          <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#if tenant.strings.orderDescriptionHint}}{{tenant.strings.orderDescriptionHint}}{{else}}Additional info{{/if}}" rows="3" value="{{current.description}}"></textarea>
+        </li>
+      </ul>
     </div>
     {{#if (variant == 'order')}}
 	    {{#tenant.orderFields.length>0}}
@@ -157,6 +161,17 @@
 		  {{#if tenant.features.orderItems}}
 		    {{>currentOrderItemListSect}}
 		  {{/if}}
+
+      <section id="purchaseOrderSect">
+        <h3>
+          <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-bottom" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+          <span>{{#tenant.strings.purchaseOrders}}{{tenant.strings.purchaseOrders}}{{else}}Purchase Orders{{/}}</span>
+          <a class="clickable glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" href="/orders.html?v=po{{#current.contactIds}}&amp;q=contactId:{{current.contactIds}}{{/}}" target="_blank" title="Open {{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}orders{{/}} view"></a>
+        </h3>
+        <div>
+          {{>orderListTable {orders: current.childOrders, embedded: true} }}
+        </div>
+      </section>
 
 		  {{#if tenant.features.feedback}}
 		    {{>currentFeedbackSect}}

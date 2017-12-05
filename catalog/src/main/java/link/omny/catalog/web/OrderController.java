@@ -102,6 +102,7 @@ public class OrderController {
                 order.getOrderItems().size(),
                 order.getFeedback() == null ? "DOES NOT" : "DOES"));
 
+        order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
         order.setFeedback(feedbackRepo.findByOrder(tenantId, orderId));
         addLinks(tenantId, order);
         return order;
