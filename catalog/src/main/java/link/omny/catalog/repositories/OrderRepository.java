@@ -43,6 +43,10 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     List<Order> findPageByTypeForTenant(@Param("tenantId") String tenantId,
             @Param("type") String type, Pageable pageable);
 
+    @Query("SELECT o FROM Order o WHERE o.parent.id = :parentId AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
+    List<Order> findByParentOrderForTenant(@Param("tenantId") String tenantId,
+            @Param("parentId") Long parentId);
+
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId = :contactId ORDER BY o.lastUpdated DESC")
     List<Order> findAllForContact(@Param("tenantId") String tenantId,
             @Param("contactId") Long contactId);
