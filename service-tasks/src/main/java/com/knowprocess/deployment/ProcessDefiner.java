@@ -1,6 +1,8 @@
 package com.knowprocess.deployment;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.xml.transform.TransformerConfigurationException;
@@ -8,18 +10,24 @@ import javax.xml.transform.TransformerConfigurationException;
 import org.activiti.bpmn.BpmnAutoLayout;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.bpmn.model.BusinessRuleTask;
 import org.activiti.bpmn.model.EndEvent;
 import org.activiti.bpmn.model.FlowElement;
+import org.activiti.bpmn.model.ReceiveTask;
+import org.activiti.bpmn.model.ScriptTask;
+import org.activiti.bpmn.model.SendTask;
 import org.activiti.bpmn.model.SequenceFlow;
 import org.activiti.bpmn.model.ServiceTask;
 import org.activiti.bpmn.model.StartEvent;
+import org.activiti.bpmn.model.StringDataObject;
 import org.activiti.bpmn.model.SubProcess;
 import org.activiti.bpmn.model.Task;
 import org.activiti.bpmn.model.UserTask;
+import org.activiti.bpmn.model.ValuedDataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.knowprocess.bpmn.model.TaskType;
+import com.knowprocess.bpmn.model.TaskSubType;
 import com.knowprocess.xslt.TransformTask;
 
 /**
@@ -107,6 +115,15 @@ public class ProcessDefiner {
                 //
 
             }
+
+            // Now data ...
+            // TODO does not appear in output
+            List<ValuedDataObject> dataObjects = new ArrayList<ValuedDataObject>();
+            ValuedDataObject datum = new StringDataObject();
+            datum.setName("test");
+            dataObjects.add(datum);
+            process.setDataObjects(dataObjects);
+//            System.out.println("XXX"+process.getDataObjects());
         }
 
         LOGGER.debug("Adding end event");
@@ -122,12 +139,35 @@ public class ProcessDefiner {
 
     protected Task getTask(String markdown) {
         Task currentElement = null;
-        TaskType taskType = getTaskType(markdown);
+        TaskSubType taskType = getTaskType(markdown);
         switch (taskType) {
-        case SERVICE_TASK:
-            currentElement = new ServiceTask();
+        case BUSINESS_RULE:
+            currentElement = new BusinessRuleTask();
             break;
-        case USER_TASK:
+        case GET:
+        case LINK:
+        case LOG:
+        case MAILING_LIST:
+        case MAIL_TEMPLATE:
+        case POST:
+        case PUT:
+        case SERVICE:
+        case USER_INFO:
+            currentElement = new ServiceTask();
+            // TODO does not appear in output
+            currentElement.getAttributes().put("class", taskType.getClassName());
+            break;
+        case RECEIVE:
+            currentElement = new ReceiveTask();
+            break;
+        case SCRIPT:
+        case JAVASCRIPT:
+            currentElement = new ScriptTask();
+            break;
+        case SEND:
+            currentElement = new SendTask();
+            break;
+        case USER:
             currentElement = new UserTask();
             setResources((UserTask) currentElement, markdown);
             break;
@@ -171,39 +211,17 @@ public class ProcessDefiner {
         }
     }
 
-    protected TaskType getTaskType(String markdown) {
+    protected TaskSubType getTaskType(String markdown) {
         int start = markdown.indexOf(":") + 1;
         if (start > 0) {
             int end = markdown.indexOf(' ', start);
             String sType = markdown.substring(start, end >= start ? end
                     : markdown.length());
-            switch (sType.toLowerCase()) {
-            case "businessrule":
-            case "decision":
-                return TaskType.BUSINESS_RULE_TASK;
-            case "receive":
-                return TaskType.RECEIVE_TASK;
-            case "script":
-            case "javascript":
-                return TaskType.SCRIPT_TASK;
-            case "send":
-                return TaskType.SEND_TASK;
-            case "get":
-            case "mail":
-            case "post":
-            case "put":
-            case "service":
-                return TaskType.SERVICE_TASK;
-            default:
-                return TaskType.TASK;
-            }
-        } else {
-            if (markdown.contains("+")) {
-                return TaskType.USER_TASK;
-            } else {
-                return TaskType.TASK;
-            }
+            return TaskSubType.parse(sType);
+        } else if (markdown.contains("+")) {
+            return TaskSubType.USER;
         }
+        return TaskSubType.LOG;
     }
 
     private String generateId() {
