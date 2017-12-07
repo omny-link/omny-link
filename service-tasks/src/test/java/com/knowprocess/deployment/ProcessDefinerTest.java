@@ -198,4 +198,34 @@ public class ProcessDefinerTest {
         assertEquals(TaskType.USER_TASK,
                 definer.getTaskType("1. +initiator Do something"));
     }
+
+    // TODO neither data objects nor activiti:class getting written to BPMN
+    @Test
+    public void testParseData() {
+        Fetcher fetcher = new Fetcher();
+        try {
+            String markdown = fetcher
+                    .fetchToString("classpath:///processes/Data.pd.txt");
+            BpmnModel processModel = definer.parse(markdown, "Data");
+            assertNotNull(processModel);
+            assertEquals(1, processModel.getProcesses().size());
+            // Expect Start + 3 Tasks + End + sequence flows
+            assertEquals(9, processModel.getProcesses().get(0)
+                    .getFlowElements().size());
+            byte[] bytes = definer.convertToBpmn(processModel, "UTF-8");
+            FileOutputStream stream = null;
+            try {
+                File bpmnFile = new File(outputDir, "Data.bpmn");
+                stream = new FileOutputStream(bpmnFile);
+                stream.write(bytes);
+                assertTrue(bpmnFile.exists());
+            } finally {
+                stream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(String.format("%1$s: %2$s", e.getClass().getName(),
+                    e.getMessage()));
+        }
+    }
 }
