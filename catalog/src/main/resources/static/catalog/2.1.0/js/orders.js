@@ -14,6 +14,7 @@ var ractive = new BaseRactive({
     orders: [],
     filter: {field: "stage", operator: "!in", value: "cold,complete"},
     saveObserver:false,
+    server: $env.server,
     title: 'Orders',
     variant: 'order',
     customField: function(obj, name) {

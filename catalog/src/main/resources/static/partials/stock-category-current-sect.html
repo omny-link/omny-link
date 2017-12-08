@@ -41,7 +41,7 @@
       <ul class="form edit-form">
         <li class="form-group">
           <label class="col-md-2 col-sm-4 textarea">{{#tenant.strings.stockCategoryDescription}}{{tenant.strings.stockCategoryDescription}}{{else}}Description{{/}}:</label>
-          <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" rows="8" value="{{current.description}}"></textarea>
+          <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" maxlength="1000" rows="8" value="{{current.description}}"></textarea>
         </li>
       </ul>
     </div>
@@ -77,17 +77,17 @@
           <ul class="form edit-form">
             <li class="form-group">
               <label class="textarea col-md-2 col-sm-4">By Road:</label>
-              <textarea class="col-md-10 col-sm-8 form-control" id="curDirectionsByRoad" value="{{current.directionsByRoad}}"></textarea>
+              <textarea class="col-md-10 col-sm-8 form-control" id="curDirectionsByRoad" maxlength="1000" value="{{current.directionsByRoad}}"></textarea>
               <p class="col-md-offset-2 col-sm-offset-4 hidden-xs help-block">Finding us by road</p>
             </li>
             <li class="form-group">
               <label class="textarea col-md-2 col-sm-4">By Public Transport:</label>
-              <textarea class="col-md-10 col-sm-8 form-control" id="curDirectionsByPublicTransport" value="{{current.directionsByPublicTransport}}"></textarea>
+              <textarea class="col-md-10 col-sm-8 form-control" id="curDirectionsByPublicTransport" maxlength="1000" value="{{current.directionsByPublicTransport}}"></textarea>
               <p class="col-md-offset-2 col-sm-offset-4 hidden-xs help-block">Finding us by public transport</p>
             </li>
             <li class="form-group">
               <label class="textarea col-md-2 col-sm-4">By Air:</label>
-              <textarea class="col-md-10 col-sm-8 form-control" id="curDirectionsByAir" value="{{current.directionsByAir}}"></textarea>
+              <textarea class="col-md-10 col-sm-8 form-control" id="curDirectionsByAir" maxlength="1000" value="{{current.directionsByAir}}"></textarea>
               <p class="col-md-offset-2 col-sm-offset-4 hidden-xs help-block">Finding us by air</p>
             </li>
           </ul>
