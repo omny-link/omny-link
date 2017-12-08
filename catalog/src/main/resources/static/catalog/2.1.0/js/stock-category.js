@@ -8,6 +8,7 @@ var ractive = new BaseRactive({
   template: '#template',
   data: {
     entityPath: '/stock-categories',
+    server: $env.server,
     stockCategories: [],
     filter: {field: "stage", operator: "!in", value: "cold,complete"},
     title: 'Stock Management',

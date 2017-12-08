@@ -137,7 +137,7 @@
         <ul class="form edit-form">
           <li class="form-group">
             <label class="textarea col-md-2 col-sm-4">{{#if tenant.strings.contactDescription}}{{tenant.strings.contactDescription}}{{else}}Additional info{{/if}}:</label>
-            <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#if tenant.strings.contactDescriptionHint}}{{tenant.strings.contactDescriptionHint}}{{else}}Additional info{{/if}}" value="{{current.account.description}}"></textarea>
+            <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" maxlength="1000" placeholder="{{#if tenant.strings.contactDescriptionHint}}{{tenant.strings.contactDescriptionHint}}{{else}}Additional info{{/if}}" value="{{current.account.description}}"></textarea>
           </li>
         </ul>
       </div>

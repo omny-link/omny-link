@@ -18,7 +18,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
@@ -265,7 +264,7 @@ public class Contact implements Serializable {
 
     @JsonProperty
     @JsonView({ ContactViews.Detailed.class })
-    @Lob
+    @Size(max = 1000)
     @Column(name = "description")
     private String description;
 

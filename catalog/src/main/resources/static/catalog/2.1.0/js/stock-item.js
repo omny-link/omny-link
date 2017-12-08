@@ -13,6 +13,7 @@ var ractive = new BaseRactive({
     stockItems: [],
     filter: {field: "stage", operator: "!in", value: "cold,complete"},
     saveObserver:false,
+    server: $env.server,
     title: 'Stock Management',
     customField: function(obj, name) {
       if (obj['customFields']==undefined) {
