@@ -25,7 +25,7 @@ public class JsEnvironmentController {
     @Value("${server.port:8080}")
     protected String serverPort;
 
-    @Value("${spring.data.rest.base-path:}")
+    @Value("${kp.application.base-uri:}")
     protected String restBaseUri;
 
     public String getRestBaseUri() {

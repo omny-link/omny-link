@@ -18,7 +18,7 @@ import org.activiti.bpmn.model.UserTask;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.knowprocess.bpmn.model.TaskType;
+import com.knowprocess.bpmn.model.TaskSubType;
 import com.knowprocess.resource.spi.Fetcher;
 
 public class ProcessDefinerTest {
@@ -158,44 +158,44 @@ public class ProcessDefinerTest {
 
     @Test
     public void testParseBusinessRuleTaskType() {
-        assertEquals(TaskType.BUSINESS_RULE_TASK,
+        assertEquals(TaskSubType.BUSINESS_RULE,
                 definer.getTaskType("1. :decision Make decision"));
     }
 
     @Test
     public void testParseReceiveTaskType() {
-        assertEquals(TaskType.RECEIVE_TASK,
+        assertEquals(TaskSubType.RECEIVE,
                 definer.getTaskType("1. :receive Wait for message"));
     }
 
     @Test
     public void testParseScriptTaskType() {
-        assertEquals(TaskType.SCRIPT_TASK,
+        assertEquals(TaskSubType.SCRIPT,
                 definer.getTaskType("1. :script Run this script"));
-        assertEquals(TaskType.SCRIPT_TASK,
+        assertEquals(TaskSubType.SCRIPT,
                 definer.getTaskType("1. :javascript Run this script"));
     }
 
     @Test
     public void testParseSendTaskType() {
-        assertEquals(TaskType.SEND_TASK,
+        assertEquals(TaskSubType.SEND,
                 definer.getTaskType("1. :send Send a message"));
     }
 
     @Test
     public void testParseServiceTaskType() {
-        assertEquals(TaskType.SERVICE_TASK,
-                definer.getTaskType("1. :mail Invoke service"));
+        assertEquals(TaskSubType.SERVICE,
+                definer.getTaskType("1. :service Invoke service"));
     }
 
     @Test
     public void testParseUnspecifiedTaskType() {
-        assertEquals(TaskType.TASK, definer.getTaskType("1. Do something"));
+        assertEquals(TaskSubType.LOG, definer.getTaskType("1. Do something"));
     }
 
     @Test
     public void testParseUserTaskType() {
-        assertEquals(TaskType.USER_TASK,
+        assertEquals(TaskSubType.USER,
                 definer.getTaskType("1. +initiator Do something"));
     }
 
