@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,6 +46,7 @@ public class CustomField implements Serializable {
     /**
      */
     @JsonProperty
+    @Size(max = 1000)
     private String value;
 
     public CustomField(String key, Object value2) {

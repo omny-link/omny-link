@@ -64,6 +64,9 @@ public class TenantConfig implements Serializable {
             source = new InputStreamReader(is);
             scanner = new Scanner(source);
             return scanner.useDelimiter("\\A").next();
+        } catch (Exception e) {
+            LOGGER.error("Unable to read resource {} from classpath", resource);
+            return "";
         } finally {
             try {
                 scanner.close();

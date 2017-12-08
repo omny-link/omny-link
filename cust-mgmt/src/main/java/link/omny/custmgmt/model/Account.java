@@ -14,7 +14,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -187,8 +186,8 @@ public class Account implements Serializable {
 
     @JsonProperty
     @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
-    @Lob
     @Column(name = "description")
+    @Size(max = 1000)
     private String description;
 
     @Digits(integer = 4, fraction = 0)

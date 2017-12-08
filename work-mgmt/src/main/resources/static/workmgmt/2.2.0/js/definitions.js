@@ -368,7 +368,7 @@ var ractive = new BaseRactive({
   },
   fetchMore: function() {
     console.log('fetch more instances');
-    if (ractive.get('current.instances').length>=ractive.get('current.instanceCount')) return;
+    if (ractive.get('current.instances') == undefined || ractive.get('current.instances').length>=ractive.get('current.instanceCount')) return;
     // collapse any visible instances so notice any new instances and to force refresh on re-open
     $('section.instanceSect[data-instance-id]').hide();
     var nextPage = Math.ceil(ractive.get('current.instances').length / 20);

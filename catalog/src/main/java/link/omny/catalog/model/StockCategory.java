@@ -14,7 +14,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -81,7 +80,7 @@ public class StockCategory implements ShortStockCategory, Serializable {
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
-    @Lob
+    @Size(max = 1500)
     private String description;
 
     @JsonProperty
@@ -135,19 +134,19 @@ public class StockCategory implements ShortStockCategory, Serializable {
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
-    @Lob
+    @Size(max = 1000)
     @Column(name = "directions_by_road")
     private String directionsByRoad;
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
-    @Lob
+    @Size(max = 1000)
     @Column(name = "directions_by_public_transport")
     private String directionsByPublicTransport;
 
     @JsonProperty
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
-    @Lob
+    @Size(max = 1000)
     @Column(name = "directions_by_air")
     private String directionsByAir;
 

@@ -145,7 +145,7 @@
         <ul class="form edit-form">
           <li class="form-group">
             <label class="textarea col-md-2 col-sm-4">{{#tenant.strings.contactDescription}}{{tenant.strings.contactDescription}}{{else}}Background info{{/}}:</label>
-            <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" placeholder="{{#tenant.strings.contactDescriptionHint}}{{tenant.strings.contactDescriptionHint}}{{else}}Background info{{/}}" value="{{current.description}}"></textarea>
+            <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" maxlength="1000" placeholder="{{#tenant.strings.contactDescriptionHint}}{{tenant.strings.contactDescriptionHint}}{{else}}Background info{{/}}" value="{{current.description}}"></textarea>
           </li>
         </ul>
       </div>
