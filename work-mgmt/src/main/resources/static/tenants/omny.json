@@ -45,8 +45,7 @@
     { "name": "omnyMergeMemoTemplate", "url": "/partials/pick-memo.html"},
     { "name": "omnyRegisterOmnyContact", "url": "/partials/register-user.html"},
     { "name": "omnySimpleToDo", "url": "/partials/simple-todo.html"},
-    { "name": "omnySendMemo", "url": "/partials/pick-memo.html"},
-    { "name": "omnyWorkflowWizard", "url": "/partials/workflow-wizard.html"}
+    { "name": "omnySendMemo", "url": "/partials/pick-memo.html"}
   ],
   "processes": [
     { "name": "Add activity to contact", "ref": "AddActivityToContact", "url": "processes/link/omny/custmgmt/AddActivityToContact.bpmn" },

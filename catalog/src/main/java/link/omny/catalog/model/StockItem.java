@@ -142,7 +142,7 @@ public class StockItem implements ShortStockItem, Serializable {
 
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
-    @Size(max = 80)
+    @Size(max = 250)
     @Column(name = "offer_desc")
     private String offerDescription;
 

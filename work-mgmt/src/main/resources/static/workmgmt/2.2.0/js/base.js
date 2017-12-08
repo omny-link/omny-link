@@ -406,6 +406,7 @@ var BaseRactive = Ractive.extend({
   initialOrderStage: function() {
     console.log('initialOrderStage');
     var rtn = '';
+    if (ractive.get('orderStages')==undefined) return rtn;
     $.each(ractive.get('orderStages'), function(i,d) {
       if (parseInt(d['idx'])==0) rtn = d.name;
     });

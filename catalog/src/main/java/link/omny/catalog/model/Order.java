@@ -91,6 +91,7 @@ public class Order implements OrderWithSubEntities, Serializable {
     private String type;
 
     @JsonProperty
+    @Size(max = 1000)
     @JsonView(OrderViews.Summary.class)
     private String description;
 
