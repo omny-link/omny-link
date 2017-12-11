@@ -13,6 +13,7 @@
     }
     ractive.set('saveObserver', false);
     if (ractive.get('current.documents') == undefined) ractive.set('current.documents', []);
+    if (ractive.get('current.documents.0.created') == undefined) return $($('#docsTable input:invalid')[0]).focus();
     var entityName = ractive.entityName(ractive.get('current')).singular();
     ractive.splice('current.documents', 0, 0, {
       author:$auth.getClaim('sub'), entityName: ractive.uri(ractive.get('current')), content: '', favorite: true
@@ -30,6 +31,7 @@
       return;
     }
     if (ractive.get('current.notes') == undefined) ractive.set('current.notes', []);
+    if (ractive.get('current.notes.0.created') == undefined) return $($('#notesTable textarea:invalid')[0]).focus();
     var entityName = ractive.entityName(ractive.get('current')).singular();
     ractive.splice('current.notes', 0, 0, {
       author:$auth.getClaim('sub'), entityName: ractive.uri(ractive.get('current')), content: '', favorite: true
@@ -55,11 +57,13 @@
   },
   ractive.cancelDoc = function() {
     console.info('cancelDoc');
-    ractive.get('current.documents').splice(0, 1);
+    ractive.splice('current.documents', 0, 1);
+    ractive.toggleSection($('#docsTable').closest('section'));
   }
   ractive.cancelNote = function() {
     console.info('cancelNote');
-    ractive.get('current.notes').splice(0, 1);
+    ractive.splice('current.notes', 0, 1);
+    ractive.toggleSection($('#notesTable').closest('section'));
   }
   ractive.fetchDocs = function() {
     $.getJSON(ractive.uri(ractive.get('current'))+'/documents',  function( data ) {
