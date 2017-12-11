@@ -250,6 +250,16 @@ public class MemoController extends BaseTenantAwareController {
     }
 
     /**
+     * Delete an existing memo.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long memoId) {
+        memoRepo.delete(memoId);
+    }
+
+    /**
      * Add a note to the specified memo.
      */
     @RequestMapping(value = "/{messageId}/notes", method = RequestMethod.POST)

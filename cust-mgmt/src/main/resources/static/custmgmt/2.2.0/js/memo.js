@@ -198,11 +198,11 @@ var ractive = new BaseRactive({
   delete: function (obj) {
     console.log('delete '+obj+'...');
     $.ajax({
-      url: ractive.getServer()+ractive.uri(obj),
+      url: ractive.tenantUri(obj),
       type: 'DELETE',
       success: completeHandler = function(data) {
         ractive.fetch();
-        ractive.toggleResults();
+        $('#currentSect').slideUp();
       }
     });
     return false; // cancel bubbling to prevent edit as well as delete

@@ -360,6 +360,7 @@ var ractive = new BaseRactive({
         type: 'DELETE',
         success: completeHandler = function(data) {
           ractive.fetch();
+          ractive.showResults();
         }
     });
     return false; // cancel bubbling to prevent edit as well as delete
