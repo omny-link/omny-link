@@ -333,7 +333,6 @@ var ractive = new BaseRactive({
           { "name": "companyLeiLink", "url": "/partials/lei-link-uk-company.html" },
           { "name": "currentAccountSect", "url": "/partials/account-current-sect.html" },
           { "name": "currentContactAccountSect", "url": "/partials/contact-current-account-sect.html" },
-          { "name": "currentCompanyBackground", "url": "/partials/contact-company-sect.html" },
           { "name": "currentDocumentListSect", "url": "/webjars/supportservices/2.2.0/partials/current-document-list-sect.html" },
           { "name": "currentNoteListSect", "url": "/webjars/supportservices/2.2.0/partials/current-note-list-sect.html" },
           { "name": "currentOrderListSect", "url": "/partials/contact-current-order-list-sect.html" },
@@ -638,41 +637,6 @@ var ractive = new BaseRactive({
               ractive.fetchOrders(ractive.get('current'));
           }
         });
-      },
-      fetchCompaniesHouseInfo: function() {
-        if (ractive.get('tenant.features.companyBackground') == undefined
-            || ractive.get('tenant.features.companyBackground') == false)
-          return;
-        console.info('fetchCompaniesHouseInfo for '
-            + ractive.get('current.companyNumber'));
-        ractive
-            .sendMessage({
-              name: "omny.companyRecord",
-              body: JSON.stringify({
-                companyNumber: ractive.get('current.companyNumber')
-              }),
-              callback: function(results) {
-                // results = JSON.parse(results);
-                ractive.set('saveObserver', false);
-                ractive.set('current.companiesHouseInfo', JSON.parse(results));
-                // A bit of a hack required here, will resolve once can move to
-                // proper JSON API
-                var o = ractive
-                    .get('current.companiesHouseInfo.companyOfficersHtml');
-                if (o.indexOf('<h2 class="heading-medium total-appointments"') != -1) {
-                  ractive.set('current.companiesHouseInfo.companyOfficersHtml',
-                      o.substring(o.indexOf('<h2 class="heading-medium total-appointments"')));
-                }
-                var fh = ractive.get('current.companiesHouseInfo.companyFilingsHtml');
-                if (fh.indexOf('<div class="js-hidden warning-overview" id="firefox-pdf-notice">') != -1) {
-                  ractive.set('current.companiesHouseInfo.companyFilingsHtml',
-                      fh.substring(fh.indexOf('<div class="js-hidden warning-overview" id="firefox-pdf-notice">')));
-                }
-                ractive.set('saveObserver', true);
-                $('#fhTable').addClass('table-striped');
-              },
-              pattern: "inOut"
-            });
       },
       fetchFeedback: function(order) {
         console.info('fetchFeedback...');
@@ -1297,9 +1261,6 @@ var ractive = new BaseRactive({
               ractive.sortChildren('documents','created',false);
               ractive.addServiceLevelAlerts();
               ractive.analyzeEmailActivity(ractive.get('current.activities'));
-              if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
-              if (ractive.get('current.companyNumber') != undefined)
-                ractive.fetchCompaniesHouseInfo();
               if (ractive.hasRole('admin')) $('.admin').show();
               ractive.set('saveObserver', true);
             });
@@ -1510,7 +1471,7 @@ ractive.observe('profile', function(newValue, oldValue, keypath) {
 // controls done that way save the oldValue
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
   if (ractive.get('current') != undefined) ractive.showAlertCounters();
-  ignored = [ 'current.account.companiesHouseInfo', 'current.notes', 'current.documents' ];
+  ignored = [ 'current.notes', 'current.documents' ];
   if (!ractive.get('saveObserver')) console.debug('Skipped save of '+keypath+' because in middle of other operation');
 //    else if (keypath=='current.notes') ractive.saveNote();
 //    else if (keypath=='current.documents') ractive.saveDoc();

@@ -380,7 +380,6 @@ var ractive = new BaseRactive({
         ractive.sortChildren('notes','created',false);
         ractive.addServiceLevelAlerts();
         ractive.sortChildren('documents','created',false);
-        if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
         ractive.sortChildren('activities','occurred',false);
         if (ractive.get('current.account')==undefined || ractive.get('current.account.name')==undefined) {
           //ractive.initAccountTypeahead();
