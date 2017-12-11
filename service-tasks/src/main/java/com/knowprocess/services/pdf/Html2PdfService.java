@@ -47,7 +47,7 @@ public class Html2PdfService implements JavaDelegate {
      */
     protected Expression outputVariable;
 
-    @Value("${spring.data.rest.base-path:https://api.omny.link}")
+    @Value("${kp.application.base-uri:https://api.omny.link}")
     private String baseUrl;
 
     @Value("${kp.services.css:/css/base.css}")
