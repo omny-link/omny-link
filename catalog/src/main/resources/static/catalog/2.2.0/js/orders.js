@@ -285,6 +285,18 @@ var ractive = new BaseRactive({
       return Array.uniq(fieldName, arr);
     }
   },
+  partials: {
+    'profileArea': '',
+    'titleArea': '',
+    'loginSect': '',
+    'orderListSect':'',
+    'currentOrderSect': '',
+    'poweredBy': '',
+    'sidebar': '',
+    'helpModal': '',
+    'customActionModal': '',
+    'orderListTable': ''
+  },
   add: function () {
     console.info('add...');
     $('h2.edit-form,h2.edit-field').hide();
@@ -493,7 +505,7 @@ var ractive = new BaseRactive({
       tmp.tenantId = ractive.get('tenant.id');
 //      console.log('ready to save order'+JSON.stringify(tmp)+' ...');
       $.ajax({
-        url: id === undefined ? '/'+tmp.tenantId+'/orders/' : ractive.tenantUri(tmp),
+        url: id === undefined ? ractive.getServer()+'/'+tmp.tenantId+'/orders/' : ractive.tenantUri(tmp),
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
@@ -642,7 +654,7 @@ var ractive = new BaseRactive({
     if (order['owner'] == undefined || order['owner'] == '') order.owner = $auth.getClaim('sub');
     if (ractive.uri(order) != undefined) {
       console.log('loading detail for '+ractive.uri(order));
-      $.getJSON(ractive.getServer()+ractive.tenantUri(order), function( data ) {
+      $.getJSON(ractive.tenantUri(order), function( data ) {
         console.log('found order '+data);
         ractive.set('saveObserver',false);
         if (data['id'] == undefined) data.id = ractive.id(data);
