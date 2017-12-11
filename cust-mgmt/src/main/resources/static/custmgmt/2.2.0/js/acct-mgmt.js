@@ -519,7 +519,7 @@ var ractive = new BaseRactive({
       },
       editField: function(selector, path) {
         console.log('editField ' + path + '...');
-        $(selector).css('border-width', '1px').css('padding',
+        $(selector).css('border-width', '1px').css('ractive.toggleResults();padding',
             '5px 10px 5px 10px');
       },
       /*
@@ -543,6 +543,7 @@ var ractive = new BaseRactive({
           type: 'DELETE',
           success: completeHandler = function(data) {
             ractive.fetch();
+            ractive.showResults();
           }
         });
         return false; // cancel bubbling to prevent edit as well as delete
