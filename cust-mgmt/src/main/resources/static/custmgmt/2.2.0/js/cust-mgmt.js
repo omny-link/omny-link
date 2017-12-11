@@ -112,6 +112,12 @@ var ractive = new BaseRactive({
         return json;
       }
     },
+    formatLeiLink: function(obj) {
+      if (obj.companyNumber==undefined || obj.companyNumber.length==0) return;
+      else if (obj.accountType!=undefined && obj.accountType.length>0 && ractive.partials[obj.accountType.toCamelCase()+'LeiLink'] != undefined) return obj.accountType.toCamelCase()+'LeiLink';
+      else if (ractive.partials[ractive.get('tenant.id')+'LeiLink'] != undefined) return ractive.get('tenant.id')+'LeiLink';
+      else return 'companyLeiLink';
+    },
     formatStockItemIds: function(order) {
       // console.info('formatStockItemIds');
       var names = ractive.getStockItemNames(order);
@@ -240,13 +246,13 @@ var ractive = new BaseRactive({
     stdPartials: [
       { "name": "activityCurrentSect", "url": "/partials/activity-current-sect.html"},
       { "name": "accountFinancials", "url": "/partials/account-financials.html"},
+      { "name": "companyLeiLink", "url": "/partials/lei-link-uk-company.html" },
       { "name": "contactListSect", "url": "/partials/contact-list-sect.html"},
       { "name": "contactListTable", "url": "/partials/contact-list-table.html"},
       { "name": "currentAccountSect", "url": "/partials/account-current-sect.html"},
       { "name": "currentContactSect", "url": "/partials/contact-current-sect.html"},
       { "name": "currentContactExtensionSect", "url": "/partials/contact-extension.html"},
       { "name": "currentContactAccountSect", "url": "/partials/contact-current-account-sect.html"},
-      { "name": "currentCompanyBackground", "url": "/partials/contact-company-sect.html"},
       { "name": "currentDocumentListSect", "url": "/webjars/supportservices/2.2.0/partials/current-document-list-sect.html"},
       { "name": "currentNoteListSect", "url": "/webjars/supportservices/2.2.0/partials/current-note-list-sect.html"},
       { "name": "currentOrderListSect", "url" : "/partials/contact-current-order-list-sect.html"},
@@ -449,31 +455,6 @@ var ractive = new BaseRactive({
         ractive.addDataList({ name: "accounts" }, data);
         ractive.set('saveObserver', true);
       }
-    });
-  },
-  fetchCompaniesHouseInfo: function() {
-    if (ractive.get('tenant.features.companyBackground')==undefined || ractive.get('tenant.features.companyBackground')==false) return;
-    console.info('fetchCompaniesHouseInfo for '+ractive.get('current.account.companyNumber'));
-    ractive.sendMessage({
-      name:"omny.companyRecord",
-      body:JSON.stringify({companyNumber:ractive.get('current.account.companyNumber')}),
-      callback:function(results) {
-        //results = JSON.parse(results);
-        ractive.set('saveObserver',false);
-        ractive.set('current.account.companiesHouseInfo',JSON.parse(results));
-        // A bit of a hack required here, will resolve once can move to proper JSON API
-        var o = ractive.get('current.account.companiesHouseInfo.companyOfficersHtml');
-        if (o.indexOf('<h2 class="heading-medium total-appointments"')!=-1) {
-          ractive.set('current.account.companiesHouseInfo.companyOfficersHtml', o.substring(o.indexOf('<h2 class="heading-medium total-appointments"')));
-        }
-        var fh = ractive.get('current.account.companiesHouseInfo.companyFilingsHtml');
-        if (fh.indexOf('<div class="js-hidden warning-overview" id="firefox-pdf-notice">')!=-1) {
-          ractive.set('current.account.companiesHouseInfo.companyFilingsHtml', fh.substring(fh.indexOf('<div class="js-hidden warning-overview" id="firefox-pdf-notice">')));
-        }
-        ractive.set('saveObserver',true);
-        $('#fhTable').addClass('table-striped');
-      },
-      pattern:"inOut"
     });
   },
   fetchOrders: function(contact) {
@@ -935,31 +916,6 @@ var ractive = new BaseRactive({
       ractive.set('saveObserver', true);
     }
   },
-  searchCompaniesHouse: function() {
-    if (ractive.get('tenant.features.companyBackground')==undefined || ractive.get('tenant.features.companyBackground')==false) return;
-    console.info('searchCompaniesHouse');
-    var q = ractive.get('current.account.name');
-    ractive.sendMessage({
-      name:"omny.companySearch",
-      body:JSON.stringify({companyName:q}),
-      callback:function(results) {
-        console.log('  sendMessage callback...')
-        results = JSON.parse(results);
-        ractive.set('companiesHouseResults',results);
-        var data = jQuery.map( results.items, function( n, i ) {
-          return ( {  "id": n.company_number, "name": n.company_number +' '+n.title } );
-        });
-        ractive.addDataList({ name: "companies" }, data);
-        if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
-      },
-      pattern:"inOut"
-    })
-    .fail(function(jqXHR, textStatus, errorThrown) {
-      var msg = "Unable to lookup company data at the moment. Please try later.";
-      console.warn('msg:'+msg);
-      ractive.showMessage(msg,'alert-warning');
-    });
-  },
   select: function(contact) {
     console.log('select: '+JSON.stringify(contact));
     ractive.set('saveObserver',false);
@@ -1007,7 +963,6 @@ var ractive = new BaseRactive({
 //        if (ractive.get('tenant.show.documents')) ractive.fetchDocs();
         ractive.addServiceLevelAlerts();
         ractive.sortChildren('documents','created',false);
-        if (ractive.get('current.account.companyNumber')!=undefined) ractive.fetchCompaniesHouseInfo();
         ractive.analyzeEmailActivity(ractive.get('current.activities'));
         if (ractive.get('tenant.features.account')==true
             && (ractive.get('current.account')==undefined || ractive.get('current.account.name')==undefined)) {
@@ -1152,7 +1107,7 @@ $(document).ready(function() {
   // controls done that way save the oldValue
   ractive.observe('current.*', function(newValue, oldValue, keypath) {
     if (ractive.get('current')!=undefined) ractive.showAlertCounters();
-    ignored = [ 'current.account.companiesHouseInfo', 'current.notes', 'current.documents' ];
+    ignored = [ 'current.notes', 'current.documents' ];
     if (ractive.get('saveObserver') != true) {
       console.debug('Skipped save of '+keypath+' because in middle of other operation');
   //  } else if (newValue == '' && oldValue == undefined) {
@@ -1175,14 +1130,6 @@ $(document).ready(function() {
     }
   });
   ractive.set('saveObserver', true);
-});
-
-ractive.observe('current.account.name', function(newValue, oldValue, keypath) {
-  console.log('account name changing from '+oldValue+' to '+newValue);
-  if (ractive.get('saveObserver') && newValue!=undefined && newValue!='') {
-    ractive.set('current.account.companyNumber',undefined);
-    ractive.searchCompaniesHouse();
-  }
 });
 
 ractive.observe('current.account.businessWebsite', function(newValue, oldValue, keypath) {

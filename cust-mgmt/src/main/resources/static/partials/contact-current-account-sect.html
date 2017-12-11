@@ -16,16 +16,18 @@
         </li>
         <li class="form-group">
           <label class="col-md-4 col-sm-4">{{# tenant.strings.companyNumber}}{{tenant.strings.companyNumber}}{{else}}Company Number{{/}}:</label>
-          <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curCompanyNumber" list="companies" pattern="[OCINS0-9]{0,2}[0-9]{6}" {{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.account.companyNumber}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+          <div class="input-group">
+            <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curCompanyNumber" {{#if tenant.strings.companyNumber == undefined}}pattern="[OCINS0-9]{0,2}[0-9]{4,6}" {{/if}}{{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.account.companyNumber}}">
+              <span class="input-group-addon">
+                {{#if current.account.companyNumber==undefined || current.account.companyNumber.length==0}}
+                  <span>N/A</span>
+                {{else}}
+                  {{>(formatLeiLink(current.account))}}
+                {{/if}}
+              </span>
+          </div>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
         </li>
-        {{# false && current.account.companyNumber}}
-          <li class="form-group">
-            <label class="col-md-4 col-sm-4 "></label>
-            <a href="https://beta.companieshouse.gov.uk/company/{{current.account.companyNumber}}" target="_newTab">View Companies House Information</a>
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
-          </li>
-        {{/}}
         {{#if tenant.show.accountCompanyDetails}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4" style="line-height: 1.2em">{{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}}:</label>
