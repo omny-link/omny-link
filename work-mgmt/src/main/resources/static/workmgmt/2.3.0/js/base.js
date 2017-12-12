@@ -304,7 +304,9 @@ var BaseRactive = Ractive.extend({
         if (d.url==undefined) {
           ractive.addDataList(d,d.values);
         } else {
-          $.getJSON(ractive.getServer()+d.url, function(data){
+          var url = d.url;
+          if (url.indexOf('//')==-1) url = ractive.getServer()+url;
+          $.getJSON(url, function(data) {
             if (data == null || !Array.isArray(data)) {
               console.info('No values for datalist: '+d.name+', probably refreshing token');
             } else {
@@ -882,7 +884,7 @@ $(document).ready(function() {
   } else if (params['q']!=undefined) {
     ractive.set('searchTerm',decodeURIComponent(params['q']));
   }
-  window.i18n = new I18nController($env.server+'/workmgmt/2.2.0');
+  window.i18n = new I18nController($env.server+'/workmgmt/2.3.0');
   ractive.set('saveObserver', true);
 });
 
