@@ -884,6 +884,14 @@ $(document).ready(function() {
   } else if (params['q']!=undefined) {
     ractive.set('searchTerm',decodeURIComponent(params['q']));
   }
+  if (params['s']!=undefined) {
+    ractive.set('sortColumn',decodeURIComponent(params['s']));
+  }
+  if (params['asc']!=undefined && params['asc']=='true') {
+    ractive.set('sortAsc',true);
+  } else {
+    ractive.set('sortAsc',false);
+  }
   window.i18n = new I18nController($env.server+'/workmgmt/2.3.0');
   ractive.set('saveObserver', true);
 });
