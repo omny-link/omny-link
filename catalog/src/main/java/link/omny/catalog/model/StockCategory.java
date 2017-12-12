@@ -209,12 +209,12 @@ public class StockCategory implements ShortStockCategory, Serializable {
     private List<MediaResource> images;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "stock_cat_id")
+    @JoinColumn(name = "stock_cat_id", nullable = true)
     @JsonView({ StockCategoryViews.Detailed.class })
     private List<Note> notes;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "stock_cat_id")
+    @JoinColumn(name = "stock_cat_id", nullable = true)
     @JsonView({ StockCategoryViews.Detailed.class })
     private List<Document> documents;
 
