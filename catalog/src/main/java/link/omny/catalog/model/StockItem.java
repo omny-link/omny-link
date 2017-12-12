@@ -186,12 +186,12 @@ public class StockItem implements ShortStockItem, Serializable {
     private StockCategory stockCategory;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "stock_item_id")
+    @JoinColumn(name = "stock_item_id", nullable = true)
     @JsonView({ StockItemViews.Detailed.class })
     private List<Note> notes;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "stock_item_id")
+    @JoinColumn(name = "stock_item_id", nullable = true)
     @JsonView({ StockItemViews.Detailed.class })
     private List<Document> documents;
 
