@@ -2,6 +2,7 @@ package link.omny.acctmgmt.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -147,7 +148,8 @@ public class TenantConfigControllerTest {
         List<TenantTypeaheadControl> controls = tenantConfig2
                 .getTypeaheadControls();
         assertEquals(2, controls.size());
-        assertEquals(CONTROL_EXTENSION, controls.get(0).getUrl());
+        // #421 creates owner list from contacts, so url is null
+        assertNull(controls.get(0).getUrl());
         assertTrue(controls.get(0).isValid());
     }
 
@@ -181,9 +183,8 @@ public class TenantConfigControllerTest {
         List<TenantTypeaheadControl> controls = tenantConfig2
                 .getTypeaheadControls();
         assertEquals(1, controls.size());
-        assertEquals(CONTROL_EXTENSION, controls.get(0).getUrl());
+        // #421 creates owner list from contacts, so url is null
+        assertNull(controls.get(0).getUrl());
         assertTrue(!controls.get(0).isValid());
-        // warning for using non-owned defaults
-        assertEquals("warning", controls.get(0).getStatus());
     }
 }

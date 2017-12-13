@@ -1,5 +1,6 @@
 package link.omny.acctmgmt.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.ElementCollection;
@@ -38,6 +39,13 @@ public class TenantTypeaheadControl extends TenantExtension {
      */
     public String getSelector() {
         return getRef();
+    }
+
+    public void addValue(TenantTypeaheadValue value) {
+        if (values == null) {
+            values = new ArrayList<TenantTypeaheadValue>();
+        }
+        values.add(value);
     }
 
 }

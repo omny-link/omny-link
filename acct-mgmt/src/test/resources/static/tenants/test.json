@@ -28,7 +28,6 @@
     { "name": "Dummy Process", "ref": "Dummy1", "url": "processes/link/omny/acctmgmt/Dummy1.bpmn" }
   ],
   "typeaheadControls": [
-    { "name": "owners", "ref": "#curOwner", "url": "/data/test/owners.json"},
     { "name": "stages", "selector": "#curStage", "values": [
         {  "idx": 0, "id": "Enquiry", "name": "Enquiry"  },
         {  "idx": 6, "id": "Follow up", "name": "Follow up"  },
