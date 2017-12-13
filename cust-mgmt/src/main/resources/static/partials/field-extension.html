@@ -21,23 +21,23 @@
   {{elseif type=='contactAddress'}}
       <input class="form-control" id="cur{{name.toLeadingCaps()}}"
           disabled readonly twoway="false"
-          value="{{formatContactAddress(current.customFields[name], '#cur'+name.toLeadingCaps())}}"/>
-  {{elseif (type=="url" || type=="account" || type=="contact") && current.customFields[name] != undefined}}
+          value="{{#current.customFields[name]}}{{formatContactAddress(current.customFields[name], '#cur'+name.toLeadingCaps())}}{{else}}n/a{{/}}"/>
+  {{elseif (type=="url" || type=="account" || type=="contact")}}
     <div class="input-group">
       <input class="form-control" id="cur{{name.toLeadingCaps()}}"
           onblur="ractive.updateContactId(this.value, 'current.customFields.{{name}}Id')"
           placeholder="{{placeholder}}"
           {{#if type=='list'}}list="{{name}}s"{{elseif type=='contact'}}list="contacts"{{elseif type=='account'}}list="accounts"{{/if}}
           value="{{current.customFields[name]}}"/>
-      {{#if type=="url" && current.customFields[name] != undefined}}
+      {{#if type=="url"}}
         <span class="input-group-addon">
           <a href="{{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
         </span>
-      {{elseif type=="account" && current.customFields[name] != undefined}}
+      {{elseif type=="account"}}
         <span class="input-group-addon">
           <a href="accounts.html?q={{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
         </span>
-      {{elseif type=="contact" && current.customFields[name] != undefined}}
+      {{elseif type=="contact"}}
         <span class="input-group-addon">
           <a href="contacts.html?q={{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
         </span>
