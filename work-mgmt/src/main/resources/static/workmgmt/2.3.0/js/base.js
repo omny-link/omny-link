@@ -421,7 +421,9 @@ var BaseRactive = Ractive.extend({
         //console.log('response: '+response)
         if (ractive != undefined) {
           try {
+            ractive.set('saveObserver', false);
             ractive.resetPartial(name,response);
+            ractive.set('saveObserver', true);
           } catch (e) {
             console.warn('Unable to reset partial '+name+': '+e);
           }
