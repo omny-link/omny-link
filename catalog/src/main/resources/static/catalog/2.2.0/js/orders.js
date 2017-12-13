@@ -73,7 +73,6 @@ var ractive = new BaseRactive({
       $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/contacts/'+contactId, function(contact) {
         $(selector).val(contact.address);
       });
-      return 'n/a';
     },
     formatContent: function(content) {
       console.info('formatContent:'+content);
@@ -668,6 +667,14 @@ var ractive = new BaseRactive({
         if (ractive.get('tenant.features.documentsOnOrder')==true) ractive.sortChildren('documents','created',false);
         if (ractive.get('currentOrderItemId')!=undefined) {
           ractive.toggleEditOrderItem(Array.findBy('id',ractive.get('currentOrderItemId'),ractive.get('current.orderItems')));
+        }
+        var obj = Array.findBy('type','contact',ractive.get('tenant.orderFields'));
+        if (obj!=undefined) {
+          ractive.updateContactId(ractive.get('current.customFields.'+obj.name), 'current.customFields.'+obj.name+'Id')
+        }
+        obj = Array.findBy('type','contact',ractive.get('tenant.purchaseOrderFields'));
+        if (obj!=undefined) {
+          ractive.updateContactId(ractive.get('current.customFields.'+obj.name), 'current.customFields.'+obj.name+'Id')
         }
         ractive.set('saveObserver',true);
       });
