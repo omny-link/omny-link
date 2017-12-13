@@ -31,4 +31,19 @@ public class TenantTypeaheadValue implements Serializable {
     @JsonProperty
     private String name;
 
+    public TenantTypeaheadValue() {
+
+    }
+
+    public TenantTypeaheadValue(String id) {
+        this();
+        setId(id);
+        setName(id);
+    }
+
+    public TenantTypeaheadValue(String id, String name) {
+        this();
+        setId(id);
+        setName(name);
+    }
 }
