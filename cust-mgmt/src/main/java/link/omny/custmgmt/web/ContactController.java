@@ -443,6 +443,17 @@ public class ContactController extends BaseTenantAwareController{
     }
 
     /**
+     * @return contacts matching the specified account type.
+     */
+    @RequestMapping(value = "/findByAccountType", method = RequestMethod.GET)
+    public @ResponseBody List<ContactResource> findByAccountType(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam("accountType") String accountType) {
+        LOGGER.debug(String.format("Find contact for account %1$s", accountType));
+        return wrap(contactRepo.findByAccountType(accountType, tenantId));
+    }
+
+    /**
      * Return just the matching contact.
      *
      * @return contacts for that tenant with the matching tag.

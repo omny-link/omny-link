@@ -35,6 +35,7 @@ import link.omny.acctmgmt.model.TenantToolbarEntry;
 import link.omny.acctmgmt.model.TenantTypeaheadControl;
 import link.omny.acctmgmt.model.TenantTypeaheadValue;
 import link.omny.acctmgmt.repositories.TenantRepository;
+import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.Memo;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.custmgmt.repositories.MemoRepository;
@@ -117,9 +118,21 @@ public class TenantConfigController {
             }
         }
 
+        addDynamicOwnerList(id, tenant.getConfig());
         validateTenantConfig(id, tenant.getConfig());
 
         return tenant.getConfig();
+    }
+
+    private void addDynamicOwnerList(String id, TenantConfig config) {
+        List<Contact> staff = contactRepo.findByAccountType("Staff", id);
+        LOGGER.info("Found {} staff at {}", staff.size(), id);
+        TenantTypeaheadControl control = new TenantTypeaheadControl();
+        control.setName("owners");
+        for (Contact contact : staff) {
+            control.addValue(new TenantTypeaheadValue(contact.getEmail()));
+        }
+        config.addTypeaheadControl(control);
     }
 
     protected void validateTenantConfig(String id, TenantConfig tenantConfig) {
@@ -256,9 +269,14 @@ public class TenantConfigController {
             LOGGER.debug(String.format("Have typeahead '%1$s' for '%2$s'",
                     control.getName(), id));
             if (control.getUrl() == null) {
-                LOGGER.debug(String.format("  with %1$d embedded values",
-                        control.getValues().size()));
-                control.setValid(true);
+                try {
+                    LOGGER.debug(String.format("  with %1$d embedded values",
+                            control.getValues().size()));
+                    control.setValid(true);
+                } catch (NullPointerException e) {
+                    LOGGER.error("control {} has neither url nor embedded values", control.getName());
+                    control.setValid(false);
+                }
             } else if (control.getUrl() != null
                     && control.getUrl().indexOf(id) == -1) {
                 LOGGER.debug(String.format("  relies on defaults at %1$s",
