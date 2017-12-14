@@ -176,11 +176,11 @@
   /*
    * Support ticket support
    */
-  this.createTicket = function() {
+  ractive.createTicket = function() {
     console.info('createTicket');
     $('#ticketModal').modal({});
   }
-  this.submit = function() {
+  ractive.submit = function() {
     var c = document.getElementById('hdScreenshot');
   //      c.toBlob(function(blob) {
   //        console.log('have blob, submitting...');
@@ -197,7 +197,7 @@
   //      });
     $('#ticketModal').modal('hide');
   };
-  this.takeScreenshot = function(obj) {
+  ractive.takeScreenshot = function(obj) {
     html2canvas(document.body).then(function(canvas) {
       // check no previous screenshot
       var c = document.getElementById('hdScreenshot');
@@ -209,7 +209,7 @@
       canvas.setAttribute('style', 'display:none');
       document.body.appendChild(canvas);
   
-      hd.createTicket();
+      ractive.createTicket();
     });
   }
 }($, ractive, $env));
