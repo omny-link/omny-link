@@ -90,7 +90,7 @@ var ractive = new BaseRactive({
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "navbar", "url": "/partials/status-navbar.html"},
       { "name": "statusTable", "url": "/partials/status-table.html"},
-      { "name": "supportBar", "url": "/partials/support-bar.html"},
+      { "name": "supportBar", "url": "/webjars/supportservices/2.2.0/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "currentTenantSect", "url": "/partials/status-current-sect.html"}
     ],
