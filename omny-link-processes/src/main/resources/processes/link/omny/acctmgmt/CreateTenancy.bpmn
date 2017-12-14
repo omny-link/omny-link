@@ -3,6 +3,12 @@
   <message id="omny.tenantSpec" name="omny.tenantSpec"/>
   <process id="CreateTenancy" isClosed="false" isExecutable="true" name="Create Tenancy" processType="None">
     <extensionElements>
+      <activiti:executionListener class="com.knowprocess.bpm.listeners.FieldInjectionListener" event="start">
+        <activiti:field name="varName" stringValue="addressee"/>
+        <activiti:field name="dynamicValue" expression="${execution.getEngineServices().getIdentityService()
+            .createUserQuery().userFirstName(execution.getTenantId())
+            .userLastName(&quot;Bot&quot;).singleResult().getEmail()}"/>
+      </activiti:executionListener>
       <yaoqiang:pageFormat height="841.8897637795276" imageableHeight="831.8897637795276" imageableWidth="588.1102362204724" imageableX="5.0" imageableY="5.0" orientation="0" width="598.1102362204724"/>
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
     </extensionElements>
@@ -185,7 +191,7 @@
     <callActivity calledElement="SendAlert" completionQuantity="1" id="notifyTenancyAvailable" isForCompensation="false" name="Notify new &#10;tenancy available" startQuantity="1">
       <extensionElements>
         <activiti:in sourceExpression="Omny Link: New tenant ${omny_tenantSpec.getString('id','')} is available}" target="subject"/>
-        <activiti:in sourceExpression="tim@omny.link" target="addressee"/>
+        <activiti:in source="addressee" target="addressee"/>
         <activiti:in sourceExpression="Omny Link: &lt;a href=https://api.omny.link/index.html>Click to open Omny&lt;/a>" target="message"/>
         <activiti:in sourceExpression="omny" target="tenantId"/>
       </extensionElements>
@@ -195,7 +201,7 @@
     <callActivity calledElement="SendAlert" completionQuantity="1" id="notifyTenancyLive" isForCompensation="false" name="Notify new&#10;tenancy live" startQuantity="1">
       <extensionElements>
         <activiti:in sourceExpression="Omny Link: New tenant ${omny_tenantSpec.getString('id','')} is live}" target="subject"/>
-        <activiti:in sourceExpression="tim@omny.link" target="addressee"/>
+        <activiti:in sourceExpression="tim@knowprocess.com" target="addressee"/>
         <activiti:in sourceExpression="Omny Link: &lt;a href=https://api.omny.link/index.html>Click to open Omny&lt;/a>" target="message"/>
         <activiti:in sourceExpression="omny" target="tenantId"/>
       </extensionElements>

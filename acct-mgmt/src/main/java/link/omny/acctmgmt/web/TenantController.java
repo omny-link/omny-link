@@ -15,6 +15,7 @@ import org.activiti.engine.repository.Deployment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
@@ -54,6 +55,9 @@ public class TenantController {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(TenantController.class);
+
+    @Value("${kp.application.root-user:tim@knowprocess.com}")
+    protected String rootUser;
 
     @Autowired
     protected AccountRepository accountRepo;
@@ -149,7 +153,7 @@ public class TenantController {
         idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CUST_MGMT_URL, url);
         idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CUST_MGMT_SECRET,
                 botUser.getPassword());
-        idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CC_ACCOUNT, "tim@omny.link");
+        idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_CC_ACCOUNT, rootUser);
         idSvc.setUserInfo(botUser.getId(), BotConfig.KEY_JWT_AUTH_URL, url + "/auth/login");
         idSvc.setUserInfo(botUser.getId(), "tenant",tenantId);
 
