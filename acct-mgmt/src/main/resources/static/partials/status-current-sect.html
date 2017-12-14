@@ -27,7 +27,7 @@
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Account Financials:</label>
-	          <input class="" id="curFinancials" type="checkbox" checked="{{current.features.financials}}"> {{#current.features.financials==true}}Enabled{{/}}
+	          <input class="" id="curFeatureFinancials" type="checkbox" checked="{{current.features.financials}}"> {{#current.features.financials==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Additional account fields</p>
 	        </li>
 	        <li class="form-group">
@@ -42,12 +42,12 @@
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Address on Account:</label>
-	          <input id="curFeatureActivity" type="checkbox" checked="{{current.features.addressAccount}}"> {{#current.features.addressAccount==true}}Enabled{{/}}
+	          <input id="curFeatureAddressAccount" type="checkbox" checked="{{current.features.addressAccount}}"> {{#current.features.addressAccount==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Whether accounts have addresses associated</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Address on Contact:</label>
-	          <input id="curFeatureActivityTracker" type="checkbox" checked="{{current.features.addressContact}}"> {{#current.features.addressContact==true}}Enabled{{/}}
+	          <input id="curFeatureAddressContact" type="checkbox" checked="{{current.features.addressContact}}"> {{#current.features.addressContact==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Whether contacts have addresses associated</p>
 	        </li>
 	        <li class="form-group">
@@ -57,12 +57,12 @@
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Company Data:</label>
-	          <input class="" id="curFeatureCompany" type="checkbox" checked="{{current.features.companyBackground}}"> {{#current.features.companyBackground==true}}Enabled{{/}}
+	          <input class="" id="curFeatureCompanyBackground" type="checkbox" checked="{{current.features.companyBackground}}"> {{#current.features.companyBackground==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Displays research information about the company</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Documents:</label>
-	          <input class="" id="curDocuments" type="checkbox" checked="{{current.features.documents}}"> {{#current.features.documents==true}}Enabled{{/}}
+	          <input class="" id="curFeatureDocuments" type="checkbox" checked="{{current.features.documents}}"> {{#current.features.documents==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Allow documents links to be added to contacts</p>
 	        </li>
 	      </ul>
@@ -71,47 +71,47 @@
 	      <ul class="form edit-form">
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Marketing:</label>
-	          <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.features.marketing}}"> {{#current.features.marketing==true}}Enabled{{/}}
+	          <input class="" id="curFeatureMarketing" type="checkbox" checked="{{current.features.marketing}}"> {{#current.features.marketing==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Display marketing information about the source of the lead</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Marketing (Digital):</label>
-	          <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.features.marketing}}"> {{#current.features.marketingDigital==true}}Enabled{{/}}
+	          <input class="" id="curFeatureDigitalMarketing" type="checkbox" checked="{{current.features.marketingDigital}}"> {{#current.features.marketingDigital==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Specifically digital marketing information about the lead</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Merge:</label>
-	          <input class="" id="curOptOut" type="checkbox" checked="{{current.features.merge}}"> {{#current.features.merge==true}}Enabled{{/}}
+	          <input class="" id="curFeatureMerge" type="checkbox" checked="{{current.features.merge}}"> {{#current.features.merge==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block"><em>Experimental!</em> Enable the experimental contact merge functionality</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Multi-national:</label>
-	          <input class="" id="curOptOut" type="checkbox" checked="{{current.features.multiNational}}"> {{#current.features.multiNational==true}}Enabled{{/}}
+	          <input class="" id="curFeatureMultiNational" type="checkbox" checked="{{current.features.multiNational}}"> {{#current.features.multiNational==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Controls country field, and perhaps in the future more</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Offers:</label>
-	          <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.features.offers}}"> {{#current.features.offers==true}}Enabled{{/}}
+	          <input class="" id="curFeatureOffers" type="checkbox" checked="{{current.features.offers}}"> {{#current.features.offers==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Promote a stock category, usually for a limited period</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Orders:</label>
-	          <input class="" id="curOptOut" type="checkbox" checked="{{current.features.orders}}"> {{#current.features.orders==true}}Enabled{{/}}
+	          <input class="" id="curFeatureOrders" type="checkbox" checked="{{current.features.orders}}"> {{#current.features.orders==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Ability to record orders for one or more stock items against a contact</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Social on Account:</label>
-	          <input class="" id="curSupportBar" type="checkbox" checked="{{current.features.socialAccount}}"> {{#current.features.socialAccount==true}}Enabled{{/}}
+	          <input class="" id="curSocialAccount" type="checkbox" checked="{{current.features.socialAccount}}"> {{#current.features.socialAccount==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Whether accounts have social media accounts</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Social on Contact:</label>
-	          <input class="" id="curSupportBar" type="checkbox" checked="{{current.features.socialContact}}"> {{#current.features.socialContact==true}}Enabled{{/}}
+	          <input class="" id="curSocialContact" type="checkbox" checked="{{current.features.socialContact}}"> {{#current.features.socialContact==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Whether contacts have social media accounts</p>
 	        </li>
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4">Stock Pricing:</label>
-	          <input class="" id="curSupportBar" type="checkbox" checked="{{current.features.stockPricing}}"> {{#current.features.stockPricing==true}}Enabled{{/}}
+	          <input class="" id="curStockPricing" type="checkbox" checked="{{current.features.stockPricing}}"> {{#current.features.stockPricing==true}}Enabled{{/}}
 	          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Stock item pricing</p>
 	        </li>
 	        <li class="form-group">
