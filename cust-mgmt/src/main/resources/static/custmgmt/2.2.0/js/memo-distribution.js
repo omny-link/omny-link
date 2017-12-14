@@ -108,7 +108,7 @@ var ractive = new BaseRactive({
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
-      { "name": "supportBar", "url": "/partials/support-bar.html"},
+      { "name": "supportBar", "url": "/webjars/supportservices/2.2.0/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "memoDistListSect", "url": "/partials/memo-dist-list-sect.html"},
       { "name": "currentMemoDistSect", "url": "/partials/memo-dist-current-sect.html"}

@@ -202,7 +202,7 @@ var ractive = new BaseRactive({
       { "name": "navbar", "url": "/partials/work-navbar.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
-      { "name": "supportBar", "url": "/partials/support-bar.html"},
+      { "name": "supportBar", "url": "/webjars/supportservices/2.2.0/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "workCurrentSect", "url": "/partials/work-current-sect.html"},
       { "name": "workListSect", "url": "/partials/work-list-sect.html"},

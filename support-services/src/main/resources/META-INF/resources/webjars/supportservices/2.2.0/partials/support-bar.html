@@ -1,0 +1,35 @@
+{{#tenant.show.supportBar}}
+  <div class="support-bar" on-click="takeScreenshot()">
+    <span class="glyphicon glyphicon-btn glyphicon-bullhorn"></span>
+  </div>
+{{/}}
+
+<div class="modal fade" id="ticketModal" tabindex="-1" role="dialog" aria-labelledby="ticketModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="ticketModalLabel">Create a support ticket</h4>
+      </div>
+      <div class="modal-body">
+        <form id="ticketForm" class="horizontal-form">
+          <ul>
+            <li class="form-group" style="list-style:none">
+              <label class="" for="what">Message: </label>
+              <textarea class="form-control" id="what" maxlength="1000" name="what"
+                 placeholder="What happened? Please provide details of what happened and what you were expecting"
+                 rows="4" value="{{instanceToStart.processVariables['what']}}"></textarea>
+              <p class="col-md-offset-2 col-sm-offset-2 help-block field-hint field-error"></p>
+            </li>
+          </ul>
+        <input id="page" name="page" type="hidden"/>
+        <input id="entity" name="entity" type="hidden"/>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" on-click="submit()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>

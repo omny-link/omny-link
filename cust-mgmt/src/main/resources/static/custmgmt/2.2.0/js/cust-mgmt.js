@@ -268,7 +268,7 @@ var ractive = new BaseRactive({
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "mergeModal", "url": "/partials/contact-merge-sect.html"},
       { "name": "navbar", "url": "/partials/contact-navbar.html"},
-      { "name": "supportBar", "url": "/partials/support-bar.html"},
+      { "name": "supportBar", "url": "/webjars/supportservices/2.2.0/partials/support-bar.html"},
       { "name": "taskListTable", "url": "/partials/task-list-table.html"}
     ]
   },
