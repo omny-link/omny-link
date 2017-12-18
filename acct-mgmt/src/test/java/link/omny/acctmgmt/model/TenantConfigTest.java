@@ -42,9 +42,9 @@ public class TenantConfigTest {
         assertEquals(11, config.getToolbar().size());
         assertEquals(6, config.getPartials().size());
         assertEquals(1, config.getProcesses().size());
-        assertEquals(2, config.getTypeaheadControls().size());
-        assertEquals(5, config.getTypeaheadControls().get(1).getValues().size());
-        for (TenantTypeaheadValue value : config.getTypeaheadControls().get(1)
+        assertEquals(1, config.getTypeaheadControls().size());
+        assertEquals(5, config.getTypeaheadControls().get(0).getValues().size());
+        for (TenantTypeaheadValue value : config.getTypeaheadControls().get(0)
                 .getValues()) {
             assertNotNull(value.getIdx());
         }
