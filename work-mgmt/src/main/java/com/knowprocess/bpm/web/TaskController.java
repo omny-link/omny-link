@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -110,13 +112,20 @@ public class TaskController {
             // TODO 4 Oct 17 Apparently this does not result in completer being recorded in history
             Authentication.setAuthenticatedUserId(
                     AuthenticationHelper.getUserId(
-                            SecurityContextHolder.getContext().getAuthentication()));
+                    SecurityContextHolder.getContext().getAuthentication()));
             if (t.isPresent()) {
+                Map<String, Object> vars = new HashMap<String, Object>();
+                Map<String, Object> allVars = t.get().getProcessVariables();
+                for (FormProperty prop : t.get().getFormProperties()) {
+                    if (prop.getWriteable() && allVars.get(prop.getId())!= null) {
+                        vars.put(prop.getId(), allVars.get(prop.getId()));
+                    }
+                }
                 LOGGER.debug(String.format(
                         "Completing task %1$s with variables %2$s",
-                        taskId, t.get().getProcessVariables()));
+                        taskId, vars));
                 processEngine.getTaskService().complete(taskId,
-                        t.get().getProcessVariables());
+                        vars);
             } else {
                 LOGGER.debug(String.format("Completing task %1$s", taskId));
                 processEngine.getTaskService().complete(taskId);

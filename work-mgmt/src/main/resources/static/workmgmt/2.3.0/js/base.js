@@ -147,6 +147,30 @@ var BaseRactive = Ractive.extend({
       ractive.set('server',data.clientContext);
     });
   },
+  fetchMemoTemplates: function() {
+    console.info('fetchMemoTemplates...');
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType : "json",
+      url : ractive.getServer() + '/' + ractive.get('tenant.id') + '/memos/',
+      crossDomain : true,
+      success : function(data) {
+        if (data['_embedded'] != undefined) {
+          data = data['_embedded'].memos;
+        }
+        ractive.set('memos', data);
+        console.log('fetched ' + data.length + ' memos');
+        // HTML5 style only
+        $('datalist#memos').remove();
+        $('body').append('<datalist id="memos">');
+        $.each(ractive.get('memos'), function (i,d) {
+          $('datalist#memos').append('<option value="'+d.name+'">'+d.name+'</option>');
+        });
+
+        ractive.set('saveObserver', true);
+      }
+    });
+  },
   fetchStockCategories: function() {
     if (ractive.get('tenant.features.stockCategory')!=true) return;
     console.info('fetchCategories...');
