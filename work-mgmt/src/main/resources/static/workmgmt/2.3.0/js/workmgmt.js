@@ -37,6 +37,9 @@ var ractive = new BaseRactive({
       });
       return $('#linkTemplate').html();
     },
+    memoCtrl: function(v) {
+      return $('#memoTemplate').html();
+    },
     userForm: function() {
       console.log('renderUserForm');
       var form = ractive.get('current.formKey');
@@ -138,7 +141,9 @@ var ractive = new BaseRactive({
       console.log('renderAs: '+formProp.name);
 //      if (typeof formProp.value == 'string' && formProp.id=='imageUrl') {
 //        return 'image';
-      if (typeof formProp.value == 'string' && formProp.value.substring(0,4)=='http') {
+      if (formProp.id == 'memoName') {
+        return 'memo';
+      } else if (typeof formProp.value == 'string' && formProp.value.substring(0,4)=='http') {
         return 'link';
       } else if (typeof formProp.value == 'string' && formProp.value.substring(0,1)=='{') {
         return 'json';
@@ -251,6 +256,7 @@ var ractive = new BaseRactive({
       ractive.merge('tasks', data);
       ractive.set('xTasks', ractive.get('tasks'));
       if (ractive.hasRole('admin')) $('.admin').show();
+      ractive.fetchMemoTemplates();
       ractive.showSearchMatched();
     });
   },
@@ -335,9 +341,6 @@ var ractive = new BaseRactive({
     console.log('newMessage...');
     ractive.set('message', {tenant: ractive.get('tenant.id'),name: ractive.get('tenant.id')+'.messageName'});
     $('#sendMessage').slideDown();
-  },
-  oninit: function() {
-//    this.loadStandardPartials(this.get('stdPartials'));
   },
   reviseValidation: function() {
     console.log('reviseValidation');
@@ -450,7 +453,7 @@ var ractive = new BaseRactive({
 
       // set image for initiator
       if (ractive.get('current.processVariables')["initiator"]==undefined || ractive.get('current.processVariables')["initiator"]=='anonymousUser') {
-        $('.initiator-img').empty().append('<img class="img-rounded" src="/images/icon/omny-icon.png" width="34"/>');
+        $('.initiator-img').empty().append('<img class="img-rounded" src="'+$env.server+'/images/icon/omny-icon.png" width="34"/>');
       } else {
         $('.initiator-img').empty().append('<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(ractive.get('current.processVariables')["initiator"])+'?s=34"/>');
       }

@@ -9,6 +9,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,12 +33,18 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knowprocess.auth.JwtSettings;
+import com.knowprocess.auth.WebSecurityConfig;
+import com.knowprocess.auth.jwt.extractor.TokenExtractor;
+import com.knowprocess.auth.model.token.RawAccessJwtToken;
 import com.knowprocess.bpm.api.UnsupportedBpmnException;
 import com.knowprocess.resource.internal.gdrive.GDriveRepository;
 
 @Controller
 @RequestMapping("/{tenantId}/helpdesk")
 public class HelpDeskController {
+
+    private static final String UNKNOWN = "unknown";
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(HelpDeskController.class);
@@ -48,6 +57,12 @@ public class HelpDeskController {
 
     @Value("${kp.ticket.subject:Support Ticket}")
     protected String ticketSubject;
+
+    @Autowired
+    private TokenExtractor tokenExtractor;
+
+    @Autowired
+    private JwtSettings jwtSettings;
 
     @Autowired
     protected ProcessEngine processEngine;
@@ -71,12 +86,12 @@ public class HelpDeskController {
             UnsupportedBpmnException {
 
         Date whenOccurred = new Date();
-        String username = request.getUserPrincipal().getName();
-        String bizDesc = String.format("ticket-%1$s-%2$s", username,
+        Optional<User> user = findUser(request);
+        String bizDesc = String.format("ticket-%1$s-%2$s",
+                (user.isPresent() ? user.get().getEmail() : UNKNOWN),
                 isoFormatter.format(whenOccurred));
         String filename = bizDesc + ".png";
-        User user = processEngine.getIdentityService().createUserQuery()
-                .userId(username).singleResult();
+
         JsonNode json = objectMapper.readTree(context);
 
         // image will be URL encoded, strip "data:image/png;base64,"
@@ -87,13 +102,53 @@ public class HelpDeskController {
         String ticketMsg = String.format("%1$s. Raised on page: %2$s, screenshot: %3$s",
                 json.get("message").asText(), request.getHeader("Referer"), url);
 
-        String ticketMsgPayload = String.format(getMessageTemplate(),
-                user.getFirstName(), user.getLastName(), user.getEmail(),
-                rootUser, ticketSubject, ticketMsg,
-                request.getHeader("Referer"), filename, url, tenantId);
-
+        String ticketMsgPayload;
+        if (user.isPresent()) {
+            ticketMsgPayload = String.format(getMessageTemplate(),
+                    user.get().getFirstName(), user.get().getLastName(),
+                    user.get().getEmail(), rootUser, ticketSubject, ticketMsg,
+                    request.getHeader("Referer"), filename, url, tenantId);
+        } else {
+            ticketMsgPayload = String.format(getMessageTemplate(),
+                    UNKNOWN, UNKNOWN, UNKNOWN,
+                    rootUser, ticketSubject, ticketMsg,
+                    request.getHeader("Referer"), filename, url, tenantId);
+        }
+        LOGGER.debug("Sending support ticket: {}", ticketMsgPayload);
         return msgController.handleMessageStart(
                 tenantId, ticketMsgName, bizDesc, ticketMsgPayload);
+    }
+
+    private Optional<User> findUser(HttpServletRequest request) {
+        try {
+            for (Enumeration<String> en = request.getHeaderNames() ; en.hasMoreElements() ; ) {
+                String header = en.nextElement();
+                LOGGER.info("header: {} = {}", header, request.getHeader(header));
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
+        try {
+            Object name = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            LOGGER.info("username {}", name);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        try {
+            String username = request.getUserPrincipal().getName();
+            LOGGER.debug("Found username {} in request principal", username);
+            return Optional.ofNullable(processEngine.getIdentityService().createUserQuery()
+                    .userId(username).singleResult());
+        } catch (Exception e) {
+            String tokenPayload = request.getHeader(WebSecurityConfig.JWT_TOKEN_HEADER_PARAM);
+            LOGGER.debug("Considering JWT header: {}", tokenPayload);
+            RawAccessJwtToken token = new RawAccessJwtToken(tokenExtractor.extract(tokenPayload));
+            String username = token.parseClaims(jwtSettings.getTokenSigningKey()).getBody().getSubject();
+            LOGGER.debug("Found username {} in JWT header", username);
+            return Optional.ofNullable(processEngine.getIdentityService().createUserQuery()
+                    .userId(username).singleResult());
+        }
     }
 
     private void writeTmpImage(String filename, byte[] bytes) {
