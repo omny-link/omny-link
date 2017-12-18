@@ -18,7 +18,7 @@ public class CreateTenancyTest {
 
     private static final String TENANT_ID = "acme";
 
-    private static final String USER_EMAIL = "tim@omny.link";
+    private static final String USER_EMAIL = "tim@knowprocess.com";
 
     private static final String SYSTEM_EMAIL = "info@omny.link";
 
