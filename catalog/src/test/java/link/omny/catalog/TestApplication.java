@@ -16,10 +16,11 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import link.omny.custmgmt.CustMgmtConfig;
+import link.omny.supportservices.SupportServicesConfig;
 
 @EnableAutoConfiguration
 @Configuration
-@Import({ CustMgmtConfig.class, CatalogConfig.class })
+@Import({ CustMgmtConfig.class, CatalogConfig.class, SupportServicesConfig.class })
 @ComponentScan(basePackages = { "link.omny.catalog" })
 public class TestApplication extends WebMvcConfigurerAdapter {
 
