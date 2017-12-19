@@ -628,6 +628,7 @@ var BaseRactive = Ractive.extend({
   submitCustomAction: function() {
     console.info('submitCustomAction');
     if (document.getElementById('customActionForm').checkValidity()) {
+      if (ractive.get('instanceToStart.processDefinitionKeyOverride') != undefined) ractive.set('instanceToStart.processDefinitionKey', ractive.get('instanceToStart.processDefinitionKeyOverride'));
       $.ajax({
         url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
         type: 'POST',

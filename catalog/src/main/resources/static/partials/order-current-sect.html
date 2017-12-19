@@ -13,7 +13,23 @@
         {{#if tenant.features.notesOnOrder ||  tenant.features.documentsOnOrder}}
           <a class="clickable glyphicon glyphicon-btn glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
         {{/if}}
-        {{#if tenant.orderActions!=undefined && tenant.orderActions.length>0 }}
+        {{#if variant=='order' && tenant.orderActions!=undefined && tenant.orderActions.length>0 }}
+          <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
+              <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+            </a>
+            <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+              {{#each tenant.orderActions }}
+                {{#name && matchRole(role) && featureEnabled(feature)}}
+                  <li on-click="startCustomAction(ref, name, current, url)">{{name}}</li>
+                {{elseif name==undefined}}
+                  <li class="divider"></li>
+                {{/}}
+              {{/each}}
+            </ul>
+          </span>
+        {{/if}}
+        {{#if variant=='po' && tenant.purchaseOrderActions!=undefined && tenant.purchaseOrderActions.length>0 }}
           <span class="clickable dropdown" aria-hidden="true" title="Start Process">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
               <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
@@ -165,8 +181,8 @@
       <section id="purchaseOrderSect">
         <h3>
           <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-bottom" onclick="ractive.toggleSection($(this).closest('section'))"></span>
-          <span>{{#tenant.strings.purchaseOrders}}{{tenant.strings.purchaseOrders}}{{else}}Purchase Orders{{/}}</span>
-          <a class="clickable glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" href="/orders.html?v=po{{#current.contactIds}}&amp;q=contactId:{{current.contactIds}}{{/}}" target="_blank" title="Open {{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}orders{{/}} view"></a>
+          <span>{{#tenant.strings.purchaseOrders}}{{tenant.strings.purchaseOrders}}{{else}}Purchase Orders{{/}} <span class="alert-counter alert-info">{{current.childOrders.length}}</span></span>
+          <a class="clickable glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" href="/orders.html?v=po{{#current.contactId}}&amp;q=contactId:{{current.contactId}}{{/}}" target="_blank" title="Open {{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}orders{{/}} view"></a>
         </h3>
         <div>
           {{>orderListTable {orders: current.childOrders, embedded: true} }}

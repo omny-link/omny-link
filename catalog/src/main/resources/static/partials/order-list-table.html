@@ -33,7 +33,7 @@
   </thead>
   <tbody>
   {{#each sort(orders,sortColumn,sortAsc):i}}
-    {{#if matchSearch(this) }}
+    {{#if matchSearch(this) || embedded==true}}
       <tr data-href="{{id}}">
         <td on-click="edit(this)">{{i+1}}</td>
         {{#matchRole('super_admin')}}
