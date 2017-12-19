@@ -35,4 +35,6 @@
     </li>
   {{/each}}
 </ul>
-<script type="text/javascript" src="catalog/2.2.0/js/add-order-item.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { $.getScript(ractive.getServer()+'/catalog/2.2.0/js/add-order-item.js'); });
+</script>

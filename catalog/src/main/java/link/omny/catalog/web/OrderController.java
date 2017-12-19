@@ -58,6 +58,7 @@ import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
+import link.omny.supportservices.web.NumberSequenceController;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -81,6 +82,9 @@ public class OrderController {
 
     @Autowired
     private OrderItemRepository orderItemRepo;
+
+    @Autowired
+    private NumberSequenceController seqSvc;
 
     @Autowired
     private StockItemRepository stockItemRepo;
@@ -290,7 +294,21 @@ public class OrderController {
             order.setStockItem(
                     stockItemRepo.findOne(order.getStockItem().getId()));
         }
-
+        if (order.getParent() != null && order.getParent().getId() != null) {
+            order.setParent(
+                    orderRepo.findOne(order.getParent().getId()));
+        }
+        if ("-1".equals(String.valueOf(order.getRef()))) {
+            Long ref;
+            switch (order.getType()) {
+            case "po":
+                ref = seqSvc.getNext("Purchase Order", tenantId).getLastUsed();
+                break;
+            default:
+                ref = seqSvc.getNext("Order", tenantId).getLastUsed();
+            }
+            order.setRef(ref);
+        }
         orderRepo.save(order);
 
         HashMap<String, String> vars = new HashMap<String, String>();
