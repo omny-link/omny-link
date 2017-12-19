@@ -2,9 +2,14 @@
   <thead>
     <tr>
       <th></th>
-      <th on-click="sort:id">Id<span class="sortable {{ sorted('id') }} glyphicon glyphicon-btn"></th>
-      {{#1==2}}
-        <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn"></th>
+      {{#matchRole('super_admin')}}
+        <th on-click="sort:id">Id<span class="sortable {{ sorted('id') }} glyphicon glyphicon-btn"></th>
+      {{/}}
+      {{#orders.0.ref}}
+        <th on-click="sort:ref">Ref<span class="sortable {{ sorted('ref') }} glyphicon glyphicon-btn"></th>
+      {{/}}
+      {{#tenant.features.orderName}}
+        <th on-click="sort:name">{{#tenant.strings.orderName}}{{tenant.strings.orderName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn"></th>
       {{/}}
       <th on-click="sort:contactName">Contact<span class="sortable {{ sorted('contactName') }} glyphicon glyphicon-btn "></th>
       <th on-click="sort:date" style="width: 11em;" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}<span class="sortable {{ sorted('date') }} glyphicon glyphicon-btn "></th>
@@ -31,8 +36,13 @@
     {{#if matchSearch(this) }}
       <tr data-href="{{id}}">
         <td on-click="edit(this)">{{i+1}}</td>
-        <td on-click="edit(this)">{{id}}</td>
-        {{#1==2}}
+        {{#matchRole('super_admin')}}
+          <td on-click="edit(this)">{{id}}</td>
+        {{/}}
+        {{#orders.0.ref}}
+          <td on-click="edit(this)">{{#ref}}{{ref}}{{else}}n/a{{/}}</td>
+        {{/}}
+        {{#tenant.features.orderName}}
           <td on-click="edit(this)">{{name}}</td>
         {{/}}
         <td on-click="edit(this)">{{#contactId}}{{formatContactId(contactId)}}{{else}}n/a{{/}}</td>
