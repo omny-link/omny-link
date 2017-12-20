@@ -6,16 +6,21 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
 import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.bpmn.model.CallActivity;
 import org.activiti.bpmn.model.FlowElement;
+import org.activiti.bpmn.model.ScriptTask;
 import org.activiti.bpmn.model.ServiceTask;
 import org.activiti.bpmn.model.SubProcess;
 import org.activiti.bpmn.model.UserTask;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.knowprocess.bpmn.model.TaskSubType;
@@ -55,16 +60,7 @@ public class ProcessDefinerTest {
                     .getFlowElements(), "User Task 3");
             assertTrue(userTask3.getCandidateUsers().contains(
                     "tim@knowprocess.com"));
-            byte[] bytes = definer.convertToBpmn(processModel, "UTF-8");
-            FileOutputStream stream = null;
-            try {
-                File bpmnFile = new File(outputDir, "Simple.bpmn");
-                stream = new FileOutputStream(bpmnFile);
-                stream.write(bytes);
-                assertTrue(bpmnFile.exists());
-            } finally {
-                stream.close();
-            }
+            writeToFile(processModel, "Simple.bpmn");
         } catch (IOException e) {
             e.printStackTrace();
             fail(String.format("%1$s: %2$s", e.getClass().getName(),
@@ -97,29 +93,11 @@ public class ProcessDefinerTest {
             assertContainsUserTaskNamed(processModel.getProcesses().get(0)
                     .getFlowElements(), "User Task 3");
 
-        } catch (IOException e) {
+            writeToFile(processModel, "Plan.bpmn");
+        } catch (Exception e) {
             e.printStackTrace();
             fail(String.format("%1$s: %2$s", e.getClass().getName(),
                     e.getMessage()));
-        } finally {
-            FileOutputStream stream = null;
-            try {
-                byte[] bytes = definer.convertToBpmn(processModel, "UTF-8");
-                File bpmnFile = new File(outputDir, "Plan.bpmn");
-                stream = new FileOutputStream(bpmnFile);
-                stream.write(bytes);
-                assertTrue(bpmnFile.exists());
-            } catch (IOException e) {
-                e.printStackTrace();
-                fail(String.format("%1$s:%2$s", e.getClass().getName(),
-                        e.getMessage()));
-            } finally {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    ;
-                }
-            }
         }
     }
 
@@ -131,6 +109,28 @@ public class ProcessDefinerTest {
             }
         }
         fail(String.format("Unable to find user task named %1$s", name));
+        return null;
+    }
+
+    private CallActivity assertContainsCallActivityNamed(
+            Collection<FlowElement> flowElements, String name) {
+        for (FlowElement el : flowElements) {
+            if (el instanceof CallActivity && el.getName().equals(name)) {
+                return (CallActivity) el;
+            }
+        }
+        fail(String.format("Unable to find call activity named %1$s", name));
+        return null;
+    }
+
+    private ScriptTask assertContainsScriptTaskNamed(
+            Collection<FlowElement> flowElements, String name) {
+        for (FlowElement el : flowElements) {
+            if (el instanceof ScriptTask && el.getName().equals(name)) {
+                return (ScriptTask) el;
+            }
+        }
+        fail(String.format("Unable to find script task named %1$s", name));
         return null;
     }
 
@@ -157,49 +157,75 @@ public class ProcessDefinerTest {
     }
 
     @Test
-    public void testParseBusinessRuleTaskType() {
-        assertEquals(TaskSubType.BUSINESS_RULE,
-                definer.getTaskType("1. :decision Make decision"));
+    public void testParseOrderedServiceMarkdown() {
+        ActivityModel act = definer.parseLine("1. :service Do stuff // This is a comment");
+        assertEquals(TaskSubType.SERVICE, act.subType);
+        assertEquals("Do stuff", act.name);
+        assertEquals("This is a comment", act.doc);
+
+        act = definer.parseLine("1. :service +system Create user in WordPress // Role MUST be subscriber");
+        assertEquals(TaskSubType.SERVICE, act.subType);
+        assertEquals("Create user in WordPress", act.name);
+        assertEquals("system", act.actor);
+        assertEquals("Role MUST be subscriber", act.doc);
     }
 
     @Test
-    public void testParseReceiveTaskType() {
-        assertEquals(TaskSubType.RECEIVE,
-                definer.getTaskType("1. :receive Wait for message"));
+    public void testParseOrderedCallActivityMarkdown() {
+        ActivityModel act = definer.parseLine("4. :UpdateOrder Save order");
+        assertEquals(TaskSubType.CALL_ACTIVITY, act.subType);
+        assertEquals("Save order", act.name);
+        assertEquals("UpdateOrder", act.actor);
     }
 
     @Test
-    public void testParseScriptTaskType() {
-        assertEquals(TaskSubType.SCRIPT,
-                definer.getTaskType("1. :script Run this script"));
-        assertEquals(TaskSubType.SCRIPT,
-                definer.getTaskType("1. :javascript Run this script"));
+    public void testParseOrderedBusinessRuleMarkdown() {
+        ActivityModel act = definer.parseLine("1. :decision Make decision");
+        assertEquals(TaskSubType.BUSINESS_RULE, act.subType);
+        assertEquals("Make decision", act.name);
     }
 
     @Test
-    public void testParseSendTaskType() {
-        assertEquals(TaskSubType.SEND,
-                definer.getTaskType("1. :send Send a message"));
+    public void testParseOrderedReceiveMarkdown() {
+        ActivityModel act = definer.parseLine("1. :receive Wait for message");
+        assertEquals(TaskSubType.RECEIVE, act.subType);
+        assertEquals("Wait for message", act.name);
     }
 
     @Test
-    public void testParseServiceTaskType() {
-        assertEquals(TaskSubType.SERVICE,
-                definer.getTaskType("1. :service Invoke service"));
+    public void testParseOrderedScriptMarkdown() {
+        ActivityModel act = definer.parseLine("1. :script Run this script");
+        assertEquals(TaskSubType.SCRIPT, act.subType);
+        act = definer.parseLine("1. :javascript Run this script");
+        assertEquals(TaskSubType.SCRIPT, act.subType);
     }
 
     @Test
-    public void testParseUnspecifiedTaskType() {
-        assertEquals(TaskSubType.LOG, definer.getTaskType("1. Do something"));
+    public void testParseOrderedSendMarkdown() {
+        ActivityModel act = definer.parseLine("1. :send Send a message");
+        assertEquals(TaskSubType.SEND, act.subType);
     }
 
     @Test
-    public void testParseUserTaskType() {
-        assertEquals(TaskSubType.USER,
-                definer.getTaskType("1. +initiator Do something"));
+    public void testParseOrderedUnspecifiedMarkdown() {
+        ActivityModel act = definer.parseLine("1. Do something");
+        assertEquals(TaskSubType.LOG, act.subType);
     }
 
-    // TODO neither data objects nor activiti:class getting written to BPMN
+    @Test
+    public void testParseOrderedUserMarkdown() {
+        ActivityModel act = definer.parseLine("1. +initiator Do something");
+        assertEquals(TaskSubType.USER, act.subType);
+        act = definer.parseLine("1. +initiator User Task 1");
+    }
+
+    @Test
+    public void testWrapLines() {
+        assertEquals("Do something and then\nsomething else and lastly\ndo the other",
+                definer.wrapLines("Do something and then something else and lastly do the other"));
+    }
+
+    @Ignore // TODO neither data objects nor activiti:class getting written to BPMN
     @Test
     public void testParseData() {
         Fetcher fetcher = new Fetcher();
@@ -212,20 +238,57 @@ public class ProcessDefinerTest {
             // Expect Start + 3 Tasks + End + sequence flows
             assertEquals(9, processModel.getProcesses().get(0)
                     .getFlowElements().size());
-            byte[] bytes = definer.convertToBpmn(processModel, "UTF-8");
-            FileOutputStream stream = null;
-            try {
-                File bpmnFile = new File(outputDir, "Data.bpmn");
-                stream = new FileOutputStream(bpmnFile);
-                stream.write(bytes);
-                assertTrue(bpmnFile.exists());
-            } finally {
-                stream.close();
-            }
+            writeToFile(processModel, "Data.bpmn");
         } catch (IOException e) {
             e.printStackTrace();
             fail(String.format("%1$s: %2$s", e.getClass().getName(),
                     e.getMessage()));
+        }
+    }
+
+    @Test
+    public void testParseOrchestration() {
+        Fetcher fetcher = new Fetcher();
+        try {
+            String markdown = fetcher
+                    .fetchToString("classpath:///processes/Orchestration.pd.txt");
+            BpmnModel processModel = definer.parse(markdown, "Orchestration");
+            assertNotNull(processModel);
+            assertEquals(1, processModel.getProcesses().size());
+            // Expect Start + 4 Tasks + End + sequence flows
+            assertEquals(11, processModel.getProcesses().get(0)
+                    .getFlowElements().size());
+
+            assertContainsServiceTaskNamed(processModel.getProcesses().get(0)
+                    .getFlowElements(), "Create user in WordPress.");
+            assertContainsCallActivityNamed(processModel.getProcesses().get(0)
+                    .getFlowElements(), "Send contact an email\nusing the template above");
+            assertContainsScriptTaskNamed(processModel.getProcesses().get(0)
+                    .getFlowElements(), "Update order fields");
+            CallActivity callActivity = assertContainsCallActivityNamed(processModel.getProcesses().get(0)
+                    .getFlowElements(), "Save order");
+            assertEquals("UpdateOrder", callActivity.getCalledElement());
+
+            writeToFile(processModel, "Orchestration.bpmn");
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(String.format("%1$s: %2$s", e.getClass().getName(),
+                    e.getMessage()));
+        }
+    }
+
+    private void writeToFile(BpmnModel processModel, String fileName)
+            throws UnsupportedEncodingException, FileNotFoundException,
+            IOException {
+        byte[] bytes = definer.convertToBpmn(processModel, "UTF-8");
+        FileOutputStream stream = null;
+        try {
+            File bpmnFile = new File(outputDir, fileName);
+            stream = new FileOutputStream(bpmnFile);
+            stream.write(bytes);
+            assertTrue(bpmnFile.exists());
+        } finally {
+            stream.close();
         }
     }
 }

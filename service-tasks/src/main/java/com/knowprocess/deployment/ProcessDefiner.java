@@ -4,13 +4,17 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.TransformerConfigurationException;
 
 import org.activiti.bpmn.BpmnAutoLayout;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
+import org.activiti.bpmn.model.Activity;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.BusinessRuleTask;
+import org.activiti.bpmn.model.CallActivity;
 import org.activiti.bpmn.model.EndEvent;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.ReceiveTask;
@@ -21,7 +25,6 @@ import org.activiti.bpmn.model.ServiceTask;
 import org.activiti.bpmn.model.StartEvent;
 import org.activiti.bpmn.model.StringDataObject;
 import org.activiti.bpmn.model.SubProcess;
-import org.activiti.bpmn.model.Task;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.bpmn.model.ValuedDataObject;
 import org.slf4j.Logger;
@@ -38,7 +41,11 @@ import com.knowprocess.xslt.TransformTask;
  */
 public class ProcessDefiner {
 
-    private static final int MAX_TASK_NAME_LENGTH = 30;
+    private static final int TASK_WIDTH = 110;
+
+    private static final int TASK_HEIGHT = 70;
+
+    private static final int MAX_TASK_NAME_LENGTH = 20;
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(ProcessDefiner.class);
@@ -57,7 +64,9 @@ public class ProcessDefiner {
 
         LOGGER.debug("Adding start event");
         FlowElement previousElement = new StartEvent();
-        previousElement.setId(generateId());
+        previousElement.setId("startEvent");
+        // TODO need to fix label bounds
+//        previousElement.setName("Start event");
         process.addFlowElement(previousElement);
 
         String[] lines = markdown.split(EOL);
@@ -85,7 +94,7 @@ public class ProcessDefiner {
                 FlowElement spPreviousElement = null;
                 while (i < (lines.length - 1)
                         && Character.isWhitespace(lines[i + 1].charAt(0))) {
-                    Task spCurrentElement = getTask(lines[i]);
+                    Activity spCurrentElement = getActivity(lines[i].trim());
 
                     subProcess.addFlowElement(spCurrentElement);
                     if (spPreviousElement != null) {
@@ -96,7 +105,6 @@ public class ProcessDefiner {
                     spPreviousElement = spCurrentElement;
                     i++;
                 }
-
             } else if (Character.isDigit(line.charAt(0))) {
                 LOGGER.debug("Adding serial task: " + line);
                 // Pattern assignee = Pattern.compile("[+]\\w");
@@ -105,15 +113,17 @@ public class ProcessDefiner {
                 // boolean found = matcher.find();
                 // LOGGER.debug(matcher.group());
 
-                Task currentElement = getTask(line);
+                Activity currentElement = getActivity(line);
 
                 process.addFlowElement(currentElement);
-                process.addFlowElement(new SequenceFlow(
+                SequenceFlow seqFlow = new SequenceFlow(
+                        previousElement.getId(), currentElement.getId());
+                seqFlow.setId(String.format("%1$s-%2$s",
                         previousElement.getId(), currentElement.getId()));
+                process.addFlowElement(seqFlow);
                 previousElement = currentElement;
                 // }else if (isUnordered) {
                 //
-
             }
 
             // Now data ...
@@ -128,7 +138,9 @@ public class ProcessDefiner {
 
         LOGGER.debug("Adding end event");
         EndEvent currentElement = new EndEvent();
-        currentElement.setId(generateId());
+        currentElement.setId("endEvent");
+        // TODO need to fix label bounds
+        // currentElement.setName("End event");
         process.addFlowElement(currentElement);
         process.addFlowElement(new SequenceFlow(previousElement.getId(),
                 currentElement.getId()));
@@ -137,12 +149,17 @@ public class ProcessDefiner {
         return bpmnModel;
     }
 
-    protected Task getTask(String markdown) {
-        Task currentElement = null;
-        TaskSubType taskType = getTaskType(markdown);
+    protected Activity getActivity(String markdown) {
+        Activity currentElement = null;
+        ActivityModel activityModel = parseLine(markdown);
+        TaskSubType taskType = activityModel.subType;
         switch (taskType) {
         case BUSINESS_RULE:
             currentElement = new BusinessRuleTask();
+            break;
+        case CALL_ACTIVITY:
+            currentElement = new CallActivity();
+            ((CallActivity) currentElement).setCalledElement(activityModel.actor);
             break;
         case GET:
         case LINK:
@@ -163,6 +180,7 @@ public class ProcessDefiner {
         case SCRIPT:
         case JAVASCRIPT:
             currentElement = new ScriptTask();
+            ((ScriptTask) currentElement).setScript("// TODO");
             break;
         case SEND:
             currentElement = new SendTask();
@@ -178,26 +196,42 @@ public class ProcessDefiner {
             break;
         }
 
-        currentElement.setId(generateId());
-        String text;
-        if (markdown.contains("+")) {
-            text = markdown.substring(
-                    markdown.indexOf(' ', markdown.indexOf('+'))).trim();
-        } else {
-            text = markdown.trim();
-        }
-        if (text.indexOf('.') != -1) {
-            currentElement.setName(text.substring(0, text.indexOf('.')));
-            currentElement
-                    .setDocumentation(text.substring(text.indexOf('.') + 1));
-        } else if (text.length() > MAX_TASK_NAME_LENGTH) {
-            currentElement.setName(text.substring(0, MAX_TASK_NAME_LENGTH - 1)
-                    + "…");
-            currentElement.setDocumentation(text);
-        } else {
-            currentElement.setName(text);
-        }
+        currentElement.setId(toIdentifier(activityModel.name));
+        currentElement.setName(wrapLines(activityModel.name));
+        currentElement.setDocumentation(activityModel.doc);
         return currentElement;
+    }
+
+    private String toIdentifier(String text) {
+        if (text == null) return generateId();
+        String leadingCaps = toLeadingCaps(text).replaceAll("[\\s-\\.]", "");
+        return leadingCaps.substring(0,1).toLowerCase()+leadingCaps.substring(1);
+    }
+
+    private String toLeadingCaps(String text) {
+        if (text == null) return generateId();
+        String[] strings = text.split(" ");
+        StringBuffer sb = new StringBuffer();
+        for (String s : strings) {
+            sb.append(Character.toUpperCase(s.charAt(0))).append(s.substring(1)).append(" ");
+        }
+        return sb.toString();
+    }
+
+    protected String wrapLines(String name) {
+        StringBuffer sb = new StringBuffer();
+        while (name.length() > MAX_TASK_NAME_LENGTH) {
+            int idx = name.indexOf(' ', MAX_TASK_NAME_LENGTH);
+            if (idx == -1) {
+                sb.append(name.substring(0).trim()).append('\n');
+                name = "";
+            } else {
+                sb.append(name.substring(0, idx).trim()).append('\n');
+                name = name.substring(idx).trim();
+            }
+        }
+        sb.append(name);
+        return sb.toString().trim();
     }
 
     protected void setResources(UserTask task, String markdown) {
@@ -211,17 +245,33 @@ public class ProcessDefiner {
         }
     }
 
-    protected TaskSubType getTaskType(String markdown) {
-        int start = markdown.indexOf(":") + 1;
-        if (start > 0) {
-            int end = markdown.indexOf(' ', start);
-            String sType = markdown.substring(start, end >= start ? end
-                    : markdown.length());
-            return TaskSubType.parse(sType);
-        } else if (markdown.contains("+")) {
-            return TaskSubType.USER;
+    protected ActivityModel parseLine(String markdown) {
+        LOGGER.info("parseLine: {}", markdown);
+        Pattern p = Pattern.compile("^([0-9]). (:(?<subType>[a-zA-Z]*) )?(\\+(?<owner>[a-zA-Z@\\.]*) )?(?<name>[a-zA-Z0-9!\"£$%^&\\*\\(\\)_\\-\\+=\\. ]+)(// ?(?<comment>.*))?$");
+        Matcher m = p.matcher(markdown);
+        if (!m.matches()) {
+            throw new IllegalArgumentException(String.format("%1$s is not a valid line of process markdown", markdown));
         }
-        return TaskSubType.LOG;
+        if (m.group("subType") == null && m.group("owner") != null) {
+            if (m.group("comment") == null) {
+                return new ActivityModel(m.group("name").trim(), m.group("owner"));
+            } else {
+                return new ActivityModel(m.group("name").trim(), m.group("owner"), m.group("comment").trim());
+            }
+        } else {
+            String actor = m.group("owner");
+            if (m.group("subType") != null && TaskSubType.parse(m.group("subType")) == TaskSubType.CALL_ACTIVITY) {
+                actor = m.group("subType");
+            }
+            if (m.group("comment") != null && m.group("subType") != null) {
+                return new ActivityModel(TaskSubType.parse(m.group("subType")), m.group("name").trim(), actor, m.group("comment").trim());
+            } else if (m.group("comment") == null && m.group("subType") != null) {
+                return new ActivityModel(TaskSubType.parse(m.group("subType")), m.group("name").trim(), actor);
+            } else if (m.group("comment") == null && m.group("subType") == null) {
+                return new ActivityModel(TaskSubType.LOG, m.group("name").trim(), actor);
+            }
+            throw new RuntimeException(String.format("%1$s is an unsupported combination of process markdown", markdown));
+        }
     }
 
     private String generateId() {
@@ -235,6 +285,8 @@ public class ProcessDefiner {
         BpmnXMLConverter converter = new BpmnXMLConverter();
 
         BpmnAutoLayout layout = new BpmnAutoLayout(model);
+        layout.setTaskHeight(TASK_HEIGHT);
+        layout.setTaskWidth(TASK_WIDTH);
         layout.execute();
 
         return getPreProcessor().transform(
