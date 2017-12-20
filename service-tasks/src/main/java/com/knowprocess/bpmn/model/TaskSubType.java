@@ -6,7 +6,7 @@ import java.util.List;
 import org.activiti.bpmn.model.ExtensionAttribute;
 
 public enum TaskSubType {
-    BUSINESS_RULE, DELETE, GET, JAVASCRIPT, LINK, LOG, MAILING_LIST, MAIL_TEMPLATE, POST, PUT, RECEIVE, SCRIPT, SEND, SERVICE, USER, USER_INFO;
+    BUSINESS_RULE, CALL_ACTIVITY, DELETE, GET, JAVASCRIPT, LINK, LOG, MAILING_LIST, MAIL_TEMPLATE, POST, PUT, RECEIVE, SCRIPT, SEND, SERVICE, USER, USER_INFO;
 
     public static TaskSubType parse(String name) {
         switch (name.toLowerCase()) {
@@ -14,6 +14,9 @@ public enum TaskSubType {
         case "decision":
         case "rule":
             return BUSINESS_RULE;
+        case "callactivity":
+        case "callprocess":
+            return CALL_ACTIVITY;
         case "delete":
             return DELETE;
         case "get":
@@ -38,7 +41,8 @@ public enum TaskSubType {
         case "user-info":
             return USER_INFO;
         default:
-            return LOG;
+            // Making an assumption that the unrecognised type is an existing process
+            return CALL_ACTIVITY;
         }
     }
 

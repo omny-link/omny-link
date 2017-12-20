@@ -1,0 +1,4 @@
+1. :service +system Create user in WordPress. // Role MUST be subscriber
+2. :SendMemo Send contact an email using the template above
+3: :script +system Update order fields
+4. :UpdateOrder Save order
