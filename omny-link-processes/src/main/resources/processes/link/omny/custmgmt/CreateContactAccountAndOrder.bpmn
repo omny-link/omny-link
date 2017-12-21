@@ -58,10 +58,17 @@ var json = execution.getVariable('json');
 var extContact = JSON.parse(json);
 //System.out.println('extContact: '+extContact);
 //System.out.println('external acct: '+extContact.account);
+var owner = extContact['admin_email'];
+// this is protection against something that only happens with WP-side bugs
+if (owner == undefined || owner == '') {
+  owner = execution.getEngineServices().getIdentityService()
+      .createUserQuery().userFirstName(execution.getTenantId()).userLastName('Bot')
+      .singleResult().getEmail();
+}
 
 // CONTACT
 var contact = extContact;
-if (contact.owner == undefined) contact.owner = extContact['admin_email'];
+if (contact.owner == undefined) contact.owner = owner;
 if (contact.stage == undefined) contact.stage = 'New';
 contact.tenantId = execution.tenantId;
 
@@ -70,7 +77,7 @@ var account = extContact.account;
 if (account != undefined) {
   if (account.accountType == undefined) account.accountType = contact.accountType;
   if (account.enquiryType == undefined) account.enquiryType = contact.enquiryType;
-  if (account.owner == undefined) account.owner = extContact['admin_email'];
+  if (account.owner == undefined) account.owner = owner;
   if (account.stage == undefined) account.stage = contact.stage;
   account.tenantId = execution.tenantId;
 }
@@ -78,7 +85,7 @@ if (account != undefined) {
 // ORDER
 var order = extContact.order;
 if (order != undefined) {
-  if (order.owner == undefined) order.owner = extContact['admin_email'];
+  if (order.owner == undefined) order.owner = owner;
   if (order.stage == undefined) order.stage = contact.stage;
   order.tenantId = execution.tenantId;
 }
