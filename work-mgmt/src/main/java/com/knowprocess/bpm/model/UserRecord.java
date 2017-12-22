@@ -121,10 +121,6 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
         return processEngine.getIdentityService().createUserQuery().count();
     }
 
-    public static List<UserRecord> findAllUserRecords() {
-        return findAllUserRecords("id", "asc");
-    }
-
     public static UserRecord findUserRecord(String id) {
         LOGGER.info(String.format("findUserRecord with id: %1$s", id));
         try {
@@ -222,7 +218,7 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
     }
 
     public static List<UserRecord> findAllUserRecords(String sortFieldName,
-            String sortOrder) {
+            String sortOrder, String tenantId) {
 
         // TODO would be nice to have groups here too but makes order of
         // magnitude slower and I've found no way to extract membership even if
@@ -230,7 +226,8 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
         // TODO honour sort order
         List<UserRecord> users = wrap(processEngine.getIdentityService()
                 .createNativeUserQuery()
-                .sql("SELECT * FROM ACT_ID_USER u ORDER BY id_;")
+                .sql("SELECT * FROM ACT_ID_USER u INNER JOIN ACT_ID_INFO i ON u.id_ = i.user_id_ WHERE i.key_ = 'tenant' and i.value_ = #{tenantId} ORDER BY u.id_;")
+                .parameter("tenantId", tenantId)
                 .list());
 
         return users;
@@ -345,7 +342,7 @@ public class UserRecord implements Serializable, Principal, User, UserDetails {
     /**
      * When setting the password it's ok to leave it empty (say to support
      * external authentication such as OAuth) but otherwise they must match.
-     * 
+     *
      * @return true if password is set legitimately.
      */
     public boolean isPasswordSetOk() {

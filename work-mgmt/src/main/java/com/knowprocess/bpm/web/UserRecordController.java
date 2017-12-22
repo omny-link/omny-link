@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -36,7 +38,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Controller
-@RequestMapping("/users")
 public class UserRecordController {
 
     protected static final String RESET_PWD_DEFINITION_KEY = "ResetPassword";
@@ -49,20 +50,23 @@ public class UserRecordController {
     @Autowired(required = true)
     ProcessEngine processEngine;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET, headers = "Accept=application/json")
-    public @ResponseBody List<UserRecord> showAllJson() {
+    @RequestMapping(value = "/{tenantId}/users/", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody List<UserRecord> showAllJson(
+            @PathVariable("tenantId") String tenantId) {
         LOGGER.info("showAllJson");
+        List<UserRecord> users
+                = UserRecord.findAllUserRecords("id", "asc", tenantId);
 
         // HttpHeaders headers = new HttpHeaders();
         // headers.add("Content-Type", "application/json; charset=utf-8");
 
-        List<UserRecord> users = UserRecord.findAllUserRecords();
         LOGGER.info("Users: " + users.size());
         return users;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
-    public @ResponseBody UserRecord showJson(@PathVariable("id") String id,
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody UserRecord showJson(
+            @PathVariable("id") String id,
             HttpServletRequest request) {
         LOGGER.info(String
                 .format("%1$s %2$s/%3$s", RequestMethod.GET, PATH, id));
@@ -74,7 +78,16 @@ public class UserRecordController {
         return wrap(showJson(id));
     }
 
-    protected @ResponseBody UserRecord showJson(@PathVariable("id") String id) {
+    @RequestMapping(value = "/{tenantId}/users/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+    public @ResponseBody UserRecord showJson(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id,
+            HttpServletRequest request) {
+        return showJson(id, request);
+    }
+
+    protected @ResponseBody UserRecord showJson(
+            @PathVariable("id") String id) {
         LOGGER.info("Find user with id: " + id);
         // HttpHeaders headers = new HttpHeaders();
         // headers.add("Content-Type", "application/json; charset=utf-8");
@@ -95,8 +108,10 @@ public class UserRecordController {
         return userRecord;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    @RequestMapping(value = "/{tenantId}/users/", method = RequestMethod.POST, headers = "Accept=application/json")
     public @ResponseBody UserRecord registerFromJson(
+            @PathVariable("tenantId") String tenantId,
             @RequestBody UserRecord userRecord) {
         LOGGER.info(String.format("Creating profile of %1$s",
                 userRecord.getEmail()));
@@ -108,11 +123,12 @@ public class UserRecordController {
         IdentityService idSvc = processEngine.getIdentityService();
         User user = idSvc.newUser(userRecord.getId().toLowerCase().trim());
         idSvc.saveUser(user);
-        return updateFromJson(userRecord, userRecord.getId());
+        return updateFromJson(tenantId, userRecord, userRecord.getId());
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    @RequestMapping(value = "/{tenantId}/users/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public @ResponseBody UserRecord updateFromJson(
+            @PathVariable("tenantId") String tenantId,
             @RequestBody UserRecord userRecord, @PathVariable("id") String id) {
         LOGGER.info(String.format("Updating profile of %1$s", id));
 
@@ -185,8 +201,9 @@ public class UserRecordController {
         return new UserRecord(user);
     }
 
-    @RequestMapping(value = "/{id}/info/{key}", method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(value = "/{tenantId}/users/{id}/info/{key}", method = RequestMethod.POST, headers = "Accept=application/json")
     public @ResponseBody void updateInfo(
+            @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id,
             @PathVariable("key") String key,
             @RequestBody UserInfo userInfo) {
@@ -196,7 +213,7 @@ public class UserRecordController {
         idSvc.setUserInfo(id, key, userInfo.getValue());
     }
 
-    @RequestMapping(value = "/{id}/reset-password", method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(value = "/users/{id}/reset-password", method = RequestMethod.POST, headers = "Accept=application/json")
     public @ResponseBody void updatePassword(
             @PathVariable("id") String id,
             @RequestParam(name = "password") String pwd,
@@ -213,8 +230,10 @@ public class UserRecordController {
         idSvc.saveUser(user);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-    public @ResponseBody void delete(@PathVariable("id") String id,
+    @RequestMapping(value = "/{tenantId}/users/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public @ResponseBody void delete(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id,
             HttpServletRequest request) {
         LOGGER.info(String.format("Deleting profile of %1$s", id));
 
@@ -223,18 +242,21 @@ public class UserRecordController {
         id = request.getServletPath().substring(
                 request.getServletPath().lastIndexOf('/') + 1);
 
-        delete(id);
+        delete(tenantId, id);
     }
 
-    public @ResponseBody void delete(@PathVariable("id") String id) {
+    public @ResponseBody void delete(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id) {
         LOGGER.info(String.format("Deleting profile of %1$s", id));
 
         IdentityService idSvc = processEngine.getIdentityService();
         idSvc.deleteUser(id);
     }
 
-    @RequestMapping(value = "/{id}/groups", method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/{tenantId}/users/{id}/groups", method = RequestMethod.GET, headers = "Accept=application/json")
     public @ResponseBody List<UserGroup> listGroups(
+            @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id) {
         LOGGER.info(String.format("List groups for %1$s", id));
 
@@ -242,8 +264,10 @@ public class UserRecordController {
         return UserGroup.wrap(idSvc.createGroupQuery().groupMember(id).list());
     }
 
-    @RequestMapping(value = "/{id}/groups/{group}", method = RequestMethod.POST, headers = "Accept=application/json")
-    public @ResponseBody void addGroupMembership(@PathVariable("id") String id,
+    @RequestMapping(value = "/{tenantId}/users/{id}/groups/{group}", method = RequestMethod.POST, headers = "Accept=application/json")
+    public @ResponseBody void addGroupMembership(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id,
             @PathVariable("group") String group) {
         LOGGER.info(String.format("Add group %2$s to profile of %1$s", id,
                 group));
@@ -267,8 +291,10 @@ public class UserRecordController {
         return resource;
     }
 
-    @RequestMapping(value = "/{id}/groups/{group}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-    public @ResponseBody void deleteGroupMembership(@PathVariable("id") String id,
+    @RequestMapping(value = "/{tenantId}/users/{id}/groups/{group}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public @ResponseBody void deleteGroupMembership(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id,
             @PathVariable("group") String group) {
         LOGGER.info(String.format("Delete group %2$s to profile of %1$s", id,
                 group));

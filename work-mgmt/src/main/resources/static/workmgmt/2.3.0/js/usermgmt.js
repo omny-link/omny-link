@@ -2,6 +2,7 @@ var ractive = new BaseRactive({
   el: 'container',
   template: '#template',
   data: {
+    entityPath: '/users',
     haveCustomExtension: function(extName) {
       return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
     },
@@ -55,7 +56,6 @@ var ractive = new BaseRactive({
       { "name": "userCurrentSect", "url": "/partials/user-current-sect.html"},
       { "name": "userListSect", "url": "/partials/user-list-sect.html"}
     ],
-    tenant: { id: 'omny' },
     title: 'User Management',
     users: []
   },
@@ -83,7 +83,7 @@ var ractive = new BaseRactive({
     console.log('addUserToGroup: '+newGroup);
 
     $.ajax({
-        url: ractive.getServer()+'/users/'+ractive.get('current.id')+'/groups/'+newGroup,
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/users/'+ractive.get('current.id')+'/groups/'+newGroup,
         type: 'POST',
         contentType: 'application/json',
         success: completeHandler = function() {
@@ -93,16 +93,19 @@ var ractive = new BaseRactive({
   },
   addUser: function (user) {
     console.log('addUser '+user+' ...');
+    ractive.set('saveObserver', false);
     ractive.set('currentAction', 'CREATE');
-    ractive.set('current', { groups: [] });
+    ractive.set('current', { tenant: ractive.get('tenant.id'), groups: [] });
     $('.create-field').show();
     $('.no-update-field').removeProp('readonly');
+    ractive.set('saveObserver', true);
+
     ractive.select(ractive.get('current'));
   },
-  delete: function (url) {
-    console.log('delete '+url+'...');
+  delete: function (obj) {
+    console.log('delete '+ractive.localId(obj)+'...');
     $.ajax({
-      url: url,
+      url: ractive.tenantUri(obj),
       type: 'DELETE',
       success: completeHandler = function() {
         ractive.fetch();
@@ -113,7 +116,7 @@ var ractive = new BaseRactive({
     console.log('deletUserFromGroup: '+group);
 
     $.ajax({
-        url: ractive.getServer()+'/users/'+ractive.get('current.id')+'/groups/'+group,
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/users/'+ractive.get('current.id')+'/groups/'+group,
         type: 'DELETE',
         contentType: 'application/json',
         success: completeHandler = function() {
@@ -123,23 +126,27 @@ var ractive = new BaseRactive({
   },
   edit: function(user) {
     console.log('editUser '+user+' ...');
+    ractive.set('saveObserver',false);
     $('.create-field').hide();
     $('.no-update-field').prop('readonly','readonly');
     ractive.set('currentAction', 'EDIT');
     ractive.set('current',user);
+    ractive.set('saveObserver',true);
     ractive.select(user);
   },
   fetch: function () {
     console.log('fetch...');
-    $.getJSON(ractive.getServer()+'/users/',  function( data ) {
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/users/',  function( data ) {
+      ractive.set('saveObserver', false);
       ractive.merge('users', data);
       if (ractive.hasRole('admin')) $('.admin').show();
       ractive.showSearchMatched();
+      ractive.set('saveObserver', true);
     });
   },
   fetchUserGroups: function () {
     console.log('fetchUserGroups...');
-    $.getJSON(ractive.getServer()+"/users/"+ractive.get('current.id')+'/groups',  function( data ) {
+    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/users/'+ractive.get('current.id')+'/groups',  function( data ) {
       ractive.merge('currentGroups', data);
     });
   },
@@ -150,27 +157,36 @@ var ractive = new BaseRactive({
   },
   save: function () {
     console.log('save '+ractive.get('current')+' ...');
-    if (!document.getElementById('userForm').checkValidity()) {
-      ractive.showFormError('userForm','Please correct the highlighted fields');
-      return ;
+    if (document.getElementById('userForm') == undefined) {
+      console.debug('still loading, safe to ignore');
+    } else if (document.getElementById('userForm').checkValidity()) {
+      var tmp = ractive.get('current');
+      delete tmp.authorities;
+      delete tmp.allowedTenantsAsList;
+      $.ajax({
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/users/'+(ractive.get('currentAction') == 'CREATE' ? '' : ractive.get('current.id')),
+        type: ractive.get('currentAction') == 'CREATE' ? 'POST' : 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(tmp),
+        success: completeHandler = function(data, textStatus, jqXHR) {
+          console.log('data: '+ data);
+          ractive.set('saveObserver',false);
+          ractive.showMessage('User has been saved successfully');
+          switch (jqXHR.status) {
+          case 201:
+            ractive.set('currentAction', 'UPDATE');
+            break;
+          }
+          ractive.fetch();
+          ractive.set('saveObserver',true);
+        }
+      });
+    } else {
+      console.warn('Cannot save yet as user is invalid');
+      $('#userForm :invalid').addClass('field-error');
+      ractive.showMessage('Cannot save yet as user is incomplete');
+      ractive.set('saveObserver', true);
     }
-    var tmp = ractive.get('current');
-    delete tmp.authorities;
-    $.ajax({
-      url: ractive.getServer()+'/users/'+(ractive.get('currentAction') == 'CREATE' ? '' : ractive.get('current.id')),
-      type: ractive.get('currentAction') == 'CREATE' ? 'POST' : 'PUT',
-      contentType: 'application/json',
-      data: JSON.stringify(tmp),
-      success: completeHandler = function(data) {
-        console.log('data: '+ data);
-        ractive.set('saveObserver',false);
-        ractive.showMessage('User has been saved successfully');
-        ractive.fetch();
-        ractive.showResults();
-        ractive.set('currentAction', 'UPDATE');
-        ractive.set('saveObserver',true);
-      }
-    });
   },
   saveUserInfo: function (info) {
     console.log('saveUserInfo '+info.key+' ...');
@@ -190,25 +206,34 @@ var ractive = new BaseRactive({
     });
   },
   select: function(user) {
+    ractive.set('saveObserver',false);
     if (user!=undefined && user['id']!=undefined) {
-      ractive.set('saveObserver',false);
-      $.getJSON(ractive.getServer()+'/users/'+user.id, function( data ) {
+      $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/users/'+user.id, function( data ) {
         console.log('found user '+JSON.stringify(data));
         ractive.set('saveObserver',false);
         ractive.set('current', data);
+        ractive.set('currentAction', 'UPDATE');
 
+        if ($(".tag-ctrl").is(":ui-tagit")) {
+          $(".tag-ctrl").tagit('destroy');
+          $('#curGroups').empty();
+        }
         for (var idx = 0 ; idx < data.groups.length ; idx++) {
           $('#curGroups').append('<li>'+data.groups[idx].id+'</li>');
         }
-        if ($("#curGroups").is(":ui-tagit")) $("#curGroups").tagit('destroy');
-        $("#curGroups").tagit({
+
+        $(".tag-ctrl").tagit({
           placeholderText: "Comma separated roles",
           readOnly: ractive.hasRole('admin') ? false : true,
           afterTagAdded: function(event, ui) {
             if (ui.duringInitialization) return;
-            else ractive.addUserToGroup(ui.tagLabel);
+            else {
+              ractive.set($(event.target).data('bind'),$(event.target).val());
+              ractive.addUserToGroup(ui.tagLabel);
+            }
           },
           afterTagRemoved: function(event, ui) {
+            ractive.set($(event.target).data('bind'),$(event.target).val());
             ractive.deleteUserFromGroup(ui.tagLabel);
           }
         });
@@ -220,6 +245,7 @@ var ractive = new BaseRactive({
         ractive.set('saveObserver',true);
       });
     }
+    ractive.set('saveObserver',true);
     ractive.hideResults();
     $('#currentSect').slideDown();
   },
@@ -282,16 +308,23 @@ var ractive = new BaseRactive({
     });
   }
 });
-
+//Save on model change
+//done this way rather than with on-* attributes because autocomplete
+//controls done that way save the oldValue
+ractive.observe('current.*', function(newValue, oldValue, keypath) {
+  ignored = [ ];
+  if (!ractive.get('saveObserver')) console.debug('Skipped save of '+keypath+' because in middle of other operation');
+  else if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1 && keypath.startsWith('current.')) ractive.save();
+  else {
+    console.warn('Skipped save triggered by change to: ' + keypath);
+    console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
+    console.log(' saveObserver: '+ractive.get('saveObserver'));
+  }
+});
 ractive.observe('current.email', function(newValue, oldValue, keypath) {
   console.log('email changed from '+oldValue+' to '+newValue);
   if (newValue == undefined) return;
+  newValue = newValue.toLowerCase().trim();
   ractive.set('current.email', newValue.toLowerCase().trim());
-  newValue = newValue.toLowerCase().trim();
-});
-ractive.observe('current.id', function(newValue, oldValue, keypath) {
-  console.log('id changed from '+oldValue+' to '+newValue);
-  if (newValue == undefined) return;
   ractive.set('current.id', newValue.toLowerCase().trim());
-  newValue = newValue.toLowerCase().trim();
 });
