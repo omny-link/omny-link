@@ -33,12 +33,14 @@ public class UserRecordControllerTest {
     private static final String LNAME = "Bear";
     private static final String FNAME = "Yogi";
     private static final String USERNAME = "yogi";
+
+    private static final String TENANT_ID = "acme";
     @Autowired
     public UserRecordController svc;
 
     public void tearDown() {
         try {
-            svc.delete(USERNAME);
+            svc.delete(TENANT_ID, USERNAME);
             UserRecord userRecord6 = svc.showJson(USERNAME);
             assertNull(userRecord6);
         } catch (Exception e) {
@@ -54,7 +56,7 @@ public class UserRecordControllerTest {
             userRecord.setEmail("yogi@knowprocess.com");
             userRecord.setFirstName(FNAME);
             userRecord.setLastName(LNAME);
-            UserRecord userRecord2 = svc.registerFromJson(userRecord);
+            UserRecord userRecord2 = svc.registerFromJson(TENANT_ID, userRecord);
     
             assertNotNull(userRecord2);
             assertEquals(USERNAME, userRecord2.getId());
@@ -71,7 +73,7 @@ public class UserRecordControllerTest {
             // UPDATE
             userRecord3.setFirstName(userRecord3.getFirstName() + SUFFIX);
             userRecord3.setLastName(userRecord3.getLastName() + SUFFIX);
-            UserRecord userRecord4 = svc.updateFromJson(userRecord3,
+            UserRecord userRecord4 = svc.updateFromJson(TENANT_ID, userRecord3,
                     userRecord3.getId());
             assertNotNull(userRecord4);
             assertEquals(USERNAME, userRecord4.getId());
@@ -86,7 +88,7 @@ public class UserRecordControllerTest {
             assertEquals("PASS2", user.getPassword());
     
             // DELETE
-            svc.delete(USERNAME);
+            svc.delete(TENANT_ID, USERNAME);
 	    } catch (PersistenceException e) {
 	        if (e.getCause() instanceof JdbcSQLException) {
 	            Assume.assumeTrue("Cannot test with h2 database due to DDL issue "+e.getMessage(), false);

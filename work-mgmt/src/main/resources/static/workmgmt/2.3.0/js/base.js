@@ -241,6 +241,7 @@ var BaseRactive = Ractive.extend({
     var username = $auth.getClaim('sub');
     console.log('getProfile: '+username);
     if (username) {
+      // NOTE: Don't have tenant yet
       $.getJSON(ractive.getServer()+'/users/'+username, function(profile) {
           ractive.set('saveObserver', false);
           ractive.set('profile',profile);

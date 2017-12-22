@@ -19,13 +19,13 @@
         </li>
         <li class="form-group">
           <label class="col-md-4 col-sm-4 required">{{#tenant.strings.firstName}}{{tenant.strings.firstName}}{{else}}First Name:{{/}}</label>
-          <input class="no-update-field form-control" id="curFirstName" required value="{{current.firstName}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
+          <input class="form-control" id="curFirstName" required value="{{current.firstName}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">First name</p>
         </li>
         <li class="form-group">
           <label class="col-md-4 col-sm-4 required">{{#tenant.strings.lastName}}{{tenant.strings.lastName}}{{else}}Last Name:{{/}}</label>
-          <input class="no-update-field form-control" id="curLastName" required value="{{current.lastName}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
+          <input class="form-control" id="curLastName" required value="{{current.lastName}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Last or family name</p>
         </li>
         {{# current.phone}}
           <li class="form-group">
@@ -43,7 +43,7 @@
         {{/}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4 required">{{#tenant.strings.tenant}}{{tenant.strings.tenant}}{{else}}Tenant:{{/}}</label>
-          <input class="no-update-field form-control" id="curTenant" required type="text" value="{{current.tenant}}">
+          <input class="no-update-field form-control" id="curTenant" readonly disabled type="text" value="{{current.tenant}}">
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">No update allowed</p>
         </li>
       </ul>
@@ -56,7 +56,7 @@
         <ul class="form edit-form">
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.roles}}{{tenant.strings.roles}}{{else}}Roles:{{/}}</label>
-            <ul class="tagit form-control col-md-8 col-sm-8 col-xs-8" id="curGroups"></ul>
+            <ul class="tag-ctrl tagit form-control col-md-8 col-sm-8 col-xs-8" id="curGroups"></ul>
           </li>
           <li style="clear:both">
             <button class="col-md-offset-4 col-sm-offset-4 btn" id="resetPwdBtn" on-click="togglePwdFields()">Reset Password</button>
