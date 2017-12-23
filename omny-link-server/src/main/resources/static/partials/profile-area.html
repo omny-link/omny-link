@@ -1,7 +1,7 @@
 <div class="profile pull-right">
   <form name="logoutForm" action="/logout" method="POST">
     {{#if matchRole('super_admin')}}
-      <select class="super-admin tenant" onchange="ractive.switchToTenant(this.value)">
+      <select class="super-admin tenant" on-change="switchToTenant()">
         {{#profile.allowedTenantsAsList}}
           <option value="{{.}}" {{#if . == tenant.id}}selected{{/if}}>{{.}}</option>
         {{/}}
