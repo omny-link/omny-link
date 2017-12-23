@@ -94,7 +94,7 @@ try {
       <extensionElements>
         <yaoqiang:label offset-x="0.0" offset-y="-10.0" x="0.0" y="6.0"/>
       </extensionElements>
-      <conditionExpression><![CDATA[${!omny_enquiry.isNull('message')}]]></conditionExpression>
+      <conditionExpression><![CDATA[${omny_enquiry.getJsonString('message') != null && !omny_enquiry.isNull('message')}]]></conditionExpression>
     </sequenceFlow>
     <callActivity calledElement="AddNoteToAccount" completionQuantity="1" id="_9" isForCompensation="false" name="Add enquiry &#10;to account" startQuantity="1">
       <extensionElements>
@@ -109,8 +109,7 @@ try {
       <outgoing>_13</outgoing>
     </callActivity>
     <sequenceFlow id="_10" name="account msg" sourceRef="_7" targetRef="_9">
-      <conditionExpression><![CDATA[${!omny_enquiry.isNull('account')
-  && !omny_enquiry.getJsonObject('account').isNull('message')}]]></conditionExpression>
+      <conditionExpression><![CDATA[${omny_enquiry.getJsonObject('account') != null && omny_enquiry.getJsonObject('account').getJsonString('message') != null && !omny_enquiry.getJsonObject('account').isNull('message')}]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway default="_12" gatewayDirection="Diverging" id="_7" name="Have message?">
       <incoming>_5</incoming>
