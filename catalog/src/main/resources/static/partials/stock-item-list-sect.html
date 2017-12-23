@@ -80,3 +80,20 @@
     </tfoot>
   </table>
 </section>
+
+<div id="upload" style="display:none">
+  <form action="/{{tenant.id}}/stock-items/uploadcsv" class="well form form-inline" enctype="multipart/form-data" id="uploadForm" method="post">
+    <fieldset>
+      <div class="form-group">
+        <input id="file" multiple="multiple" name="file" style="display: none" type="file" value="{{resourceFiles}}">
+        <input name="tenantId" id="tenantId" type="hidden" value="{{tenant.id}}">
+        <input class="form-control" name="resourceName" id="resourceName" placeholder="none selected" readonly disabled value="{{resourceName}}">
+        <button class="btn btn-primary" on-click="addResource()" type="button">Select Files</button>
+      </div>
+      <div class="pull-right">
+        <button class="btn" on-click="hideUpload()" type="button">Cancel</button>
+        <button class="btn" on-click="upload('uploadForm')" type="button">Upload</button>
+      </div>
+    </fieldset>
+  </form>
+</div>
