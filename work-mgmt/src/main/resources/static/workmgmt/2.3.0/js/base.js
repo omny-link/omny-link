@@ -671,7 +671,8 @@ var BaseRactive = Ractive.extend({
       return link.substring(0,idx);
     }
   },
-  switchToTenant: function(tenant) {
+  switchToTenant: function() {
+    var tenant = $('select.tenant').val();
     if (tenant==undefined || typeof tenant != 'string') {
       return false;
     }
