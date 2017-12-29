@@ -71,17 +71,28 @@ public class RestPost extends RestService implements JavaDelegate {
                 resource, "POST", requestHeaders, payload)) {
             // TODO response headers
 
-            if (outputVar == null) {
-                LOGGER.debug("No response variable requested");
-                responses.put("body",
-                        new Scanner(is).useDelimiter("\\A").next());
-            } else if (is == null) {
-                LOGGER.warn(
-                        "POST response contains no body, variable will be set to null");
-                responses.put("body", null);
+            if (is == null) {
+                if (outputVar == null) {
+                    LOGGER.debug(
+                            "POST response contains no body and none was requested");
+                } else {
+                    LOGGER.warn(
+                            "POST response contains no body, {} will be set to null",
+                            outputVar.getExpressionText());
+                    responses.put("body", null);
+                }
             } else {
-                responses.put(outputVar.getExpressionText(),
-                        new Scanner(is).useDelimiter("\\A").next());
+                if (outputVar == null) {
+                    LOGGER.warn("No response variable specified, setting response to 'body'");
+                    responses.put("body",
+                            new Scanner(is).useDelimiter("\\A").next());
+                } else {
+                    LOGGER.warn(
+                            "POST response received and written to {}",
+                            outputVar.getExpressionText());
+                    responses.put(outputVar.getExpressionText(),
+                            new Scanner(is).useDelimiter("\\A").next());
+                }
             }
             // setVarsFromResponseHeaders();
         } catch (Exception e) {

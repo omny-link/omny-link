@@ -100,6 +100,7 @@
     <callActivity calledElement="MergeMemoTemplate" completionQuantity="1" id="mergeMemoTemplate" isForCompensation="false" name="Merge template" startQuantity="1">
       <extensionElements>
         <activiti:in source="memoName" target="memoName"/>
+        <activiti:in source="memoVars" target="memoVars"/>
         <activiti:in source="contactId" target="contactId"/>
         <activiti:in source="accountId" target="accountId"/>
         <activiti:in source="toEmail" target="toEmail"/>

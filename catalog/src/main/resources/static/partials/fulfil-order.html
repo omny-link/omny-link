@@ -1,0 +1,45 @@
+<ul class="form edit-form">
+  <li class="form-group">
+    <label class="col-md-3 col-sm-3 col-xs-4">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}:</label>
+    <input class="form-control" id="purchaseOrderContact" readonly disabled value="{{formatContactId(instanceToStart.processVariables.contactLocalId)}}">
+    <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Person this {{tenant.strings.order.toLowerCase()}} is for</p>
+  </li>
+  <li class="form-group">
+    <label class="col-md-3 col-sm-3 col-xs-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
+    <input class="form-control" id="purchaseOrderOwner" readonly disabled value="{{current.owner}}">
+    <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">{{#tenant.strings.orderOwnerHint}}{{tenant.strings.orderOwnerHint}}{{else}}Person responsible for this {{tenant.strings.order.toLowerCase()}}{{/}}</p>
+  </li>
+  <li class="form-group">
+    <label class="col-md-3 col-sm-3 col-xs-4 col-xs-4">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}:</label>
+    <input class="form-control col-md-8 col-sm-8 col-xs-8" id="purchaseOrderDate" readonly disabled type="date" value="{{current.date}}"/>
+    <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} placed{{/}}</p>
+  </li>
+  {{#tenant.features.catalog}}
+    <li class="form-group">
+      <label class="col-md-3 col-sm-3 col-xs-4">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
+      {{#if current.orderItems}}
+        <input class="form-control" id="purchaseOrderStockItem" readonly disabled twoway="false" value="{{formatStockItemIds(current)}}">
+      {{else}}
+        <input class="form-control" id="purchaseOrderStockItem" readonly disabled value="{{#current.stockItem}}{{current.stockItem.name}}{{/}}">
+      {{/if}}
+      <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">{{tenant.strings.stockItem}} this {{tenant.strings.order.toLowerCase()}} is for</p>
+    </li>
+  {{/}}
+  {{#tenant.features.orderName}}
+    <li class="form-group">
+      <label class="col-md-3 col-sm-3 col-xs-4">{{#tenant.strings.orderName}}{{tenant.strings.orderName}}{{else}}Name{{/}}:</label>
+      <input class="form-control" id="purchaseOrderName" readonly disabled value="{{current.name}}">
+      <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">{{#tenant.strings.orderNameHint}}{{tenant.strings.orderNameHint}}{{/}}</p>
+    </li>
+  {{/}}
+  {{#if tenant.features.orderInvoiceRef}}
+    <li class="form-group">
+      <label class="col-md-3 col-sm-3 col-xs-4">{{#tenant.strings.invoiceRef}}{{tenant.strings.invoiceRef}}{{else}}Invoice Ref{{/}}:</label>
+      <input class="form-control" id="purchaseOrderInvoiceRef" readonly disabled value="{{current.invoiceRef}}">
+      <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference for {{tenant.strings.order.toLowerCase()}}{{/}}</p>
+    </li>
+  {{/if}}
+</ul>
+<script type="text/javascript">
+  $(document).ready(function() { $.getScript(ractive.getServer()+'/catalog/2.2.0/js/fulfil-order.js'); });
+</script>

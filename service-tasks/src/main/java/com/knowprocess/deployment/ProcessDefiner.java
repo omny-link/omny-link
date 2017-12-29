@@ -59,7 +59,7 @@ public class ProcessDefiner {
     protected BpmnModel parse(String markdown, String rootProcessName) {
         BpmnModel bpmnModel = new BpmnModel();
         org.activiti.bpmn.model.Process process = new org.activiti.bpmn.model.Process();
-        process.setId(generateId());
+        process.setId(toIdentifier(rootProcessName));
         process.setName(rootProcessName);
 
         LOGGER.debug("Adding start event");

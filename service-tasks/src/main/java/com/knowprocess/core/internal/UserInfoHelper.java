@@ -15,7 +15,7 @@ import com.knowprocess.exceptions.UserInfoNotFoundException;
 public class UserInfoHelper {
 
     public static final Logger LOGGER = LoggerFactory
-            .getLogger(BaseUserAwareTask.class);
+            .getLogger(UserInfoHelper.class);
 
     public String lookup(DelegateExecution execution, @Nonnull String usr,
             @Nonnull Expression expr) {
@@ -24,7 +24,7 @@ public class UserInfoHelper {
 
     public String lookup(DelegateExecution execution, @Nonnull String usr,
             @Nonnull String s) {
-
+        LOGGER.info("lookup: {} for {}", s, usr);
         try {
             if (s != null && s.startsWith("userInfo('")) {
                 String key = s.substring("userInfo(".length(), s.indexOf(')'));
