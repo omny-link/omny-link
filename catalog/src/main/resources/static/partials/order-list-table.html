@@ -11,7 +11,7 @@
       {{#tenant.features.orderName}}
         <th on-click="sort:name">{{#tenant.strings.orderName}}{{tenant.strings.orderName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn"></th>
       {{/}}
-      <th on-click="sort:contactName">Contact<span class="sortable {{ sorted('contactName') }} glyphicon glyphicon-btn "></th>
+      <th on-click="sort:contactName">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}<span class="sortable {{ sorted('contactName') }} glyphicon glyphicon-btn "></th>
       <th on-click="sort:date" style="width: 11em;" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}<span class="sortable {{ sorted('date') }} glyphicon glyphicon-btn "></th>
       {{#if !tenant.show.orderItems}} {{! If have order items we will not know the due date except if it as an approximation on the order}}
         <th on-click="sort:dueDate" style="width: 11em;" title="{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Expected delivery date{{/}}">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}<span class="sortable {{ sorted('dueDate') }} glyphicon glyphicon-btn "></th>
@@ -52,7 +52,7 @@
         {{/if}}
         <td on-click="edit(this)">{{stage}}</td>
         {{#tenant.features.catalog}}
-          <td on-click="edit(this)">{{#if orderItems}}{{formatStockItemIds(id)}}{{else}}{{stockItem.name}}{{/if}}</td>
+          <td on-click="edit(this)">{{#if orderItems}}See {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}{{/if}}</td>
         {{/}}
         {{#tenant.show.stockPricing}}
           <td on-click="edit(this)">{{price}}</td>

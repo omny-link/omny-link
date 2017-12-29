@@ -13,18 +13,19 @@
     <li on-click="filter:{idx:2,value:'active'}">Show Active</li>
     <li on-click="filter:{idx:3,value:'!active'}">Show Inactive</li>
     <li class="divider"></li>
+    <li on-click="filter:{idx:5,value:'created>{{daysAgo(7)}}'}">Recently created</li>
     <li on-click="filter:{idx:5,value:'updated>{{daysAgo(7)}}'}">Recently updated</li>
     <li on-click="filter:{idx:6,value:'date>{{daysAgo(7)}}'}">Recently confirmed</li>
     {{#if tenant.features.stage}}
       <li class="divider"></li>
       {{#orderStages:i}}
-        <li on-click="filter:{idx:{{8+i}}, value:'stage:{{name.toLowerCase().replace(/ /g,'_')}}'}">{{name}}</li>
+        <li on-click="filter:{idx:{{9+i}}, value:'stage:{{name.toLowerCase().replace(/ /g,'_')}}'}">{{name}}</li>
       {{/}}
     {{/if}}
     {{#if tenant.features.catalog && stockItems.length < 9}}
       <li class="divider"></li>
       {{#stockItems:i}}
-        <li on-click="filter:{idx:{{8+i}}, value:'{{name}}'}">{{name}}</li>
+        <li on-click="filter:{idx:{{9+i}}, value:'{{name}}'}">{{name}}</li>
       {{/}}
     {{/if}}
   </ul>
