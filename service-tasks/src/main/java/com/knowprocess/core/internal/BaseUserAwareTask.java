@@ -39,21 +39,33 @@ public abstract class BaseUserAwareTask implements JavaDelegate {
     }
 
     protected String getUsername(DelegateExecution execution) {
+        LOGGER.info("getUsername...");
         if (resourceUsername == null) {
+            LOGGER.info("... not specified");
             return null;
         } else if (resourceUsername.getExpressionText().equals(
                 "userInfo('tenant-bot')")) {
+            LOGGER.info("... use tenant bot");
             return lookupBotName(execution);
         } else if (resourceUsername.getExpressionText()
                 .startsWith("userInfo('")) {
+            LOGGER.info("... use property of tenant bot");
             return lookup(execution, lookupBotName(execution), resourceUsername);
         } else {
+            LOGGER.info("... use expression directly: {}", resourceUsername.getExpressionText());
             return (String) resourceUsername.getValue(execution);
         }
     }
 
-    private String lookupBotName(DelegateExecution execution) {
+    protected String lookupBotName(DelegateExecution execution) {
         return getUserInfoHelper().lookupBotName(execution);
+    }
+
+    /**
+     * No-op implementation for sub-classes to override.
+     */
+    @Override
+    public void execute(DelegateExecution execution) throws Exception {
     }
 
 }

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
@@ -90,6 +91,8 @@ public class BpmConfiguration extends AbstractProcessEngineAutoConfiguration {
         // instead diagrams created 'on the fly' by ProcessDefinitionController
         config.getProcessEngineConfiguration().setCreateDiagramOnDeploy(false);
 
+        exposeBeansToProcessEngine(config);
+        
         // override activity implementations
         config.setActivityBehaviorFactory(activityBehaviorFactory());
 
@@ -98,6 +101,25 @@ public class BpmConfiguration extends AbstractProcessEngineAutoConfiguration {
         config.setBeans(beans);
 
         return config;
+    }
+
+    protected void exposeBeansToProcessEngine(
+            SpringProcessEngineConfiguration config) {
+        if (config.getBeans() == null) {
+            config.setBeans(new HashMap<Object,Object>());
+        }
+        config.getBeans().putIfAbsent("gbpFormatter", gbpFormatter());
+        if (LOGGER.isInfoEnabled()) {
+            Map<Object, Object> beans = config.getBeans();
+            if (beans == null || beans.isEmpty()) {
+                LOGGER.info("No beans available to processes");
+            } else {
+                LOGGER.info("Beans available to processes:");
+                for (Entry<Object, Object> entries : config.getBeans().entrySet()) {
+                    LOGGER.info("  {}: {}", entries.getKey(), entries.getValue().getClass().getName());
+                }
+            }
+        }
     }
 
     @Bean

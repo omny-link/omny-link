@@ -17,22 +17,5 @@
   ractive.set('instanceToStart.processVariables.order.owner', $auth.getClaim('sub'));
   ractive.set('instanceToStart.processVariables.order.date', new Date());
   ractive.set('instanceToStart.processVariables.order.ref', -1);
-//  if (Array.findBy('name','Purchase Order',ractive.get('tenant.sequences'))!=undefined) {
-//    $.ajax({
-//      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/sequences/Purchase Order',
-//      type: 'GET',
-//      success: completeHandler = function(data) {
-//        ractive.set('saveObserver',true);
-//        ractive.set('instanceToStart.processVariables.order.ref',data.lastUsed);
-//        ractive.set('saveObserver',false);
-//      }
-//  });
-//  }
 
-//  return me;
 }($, $auth, ractive));
-
-//$(document).ready(function() {
-//  if (ractive.customActionCallbacks==undefined) ractive.customActionCallbacks = $.Callbacks();
-//  ractive.customActionCallbacks.add(function() { ractive.select(ractive.get('current')) });
-//});

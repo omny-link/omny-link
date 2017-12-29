@@ -291,8 +291,20 @@ public class OrderController {
             field.setOrder(order);
         }
         if (order.getStockItem() != null && order.getStockItem().getId() != null) {
+            LOGGER.debug("Looking up order's stock item for {}...",
+                    order.getStockItem().getId());
             order.setStockItem(
                     stockItemRepo.findOne(order.getStockItem().getId()));
+            LOGGER.debug("... found {} ({})", order.getStockItem().getName(),
+                    order.getStockItem().getId());
+        }
+        if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
+            for (OrderItem item : order.getOrderItems()) {
+                if (item.getStockItem() != null && item.getStockItem().getId() != null) {
+                    item.setStockItem(
+                            stockItemRepo.findOne(item.getStockItem().getId()));
+                }
+            }
         }
         if (order.getParent() != null && order.getParent().getId() != null) {
             order.setParent(
@@ -353,15 +365,26 @@ public class OrderController {
     }
 
     private void fixUpOrderItems(String tenantId, Order order) {
+        LOGGER.debug("fixUpOrderItems for order {} ({}), {} items found",
+                order.getName(), order.getId(),
+                (order.getOrderItems() == null ? 0 : order.getOrderItems().size()));
         for (OrderItem item : order.getOrderItems()) {
             item.setTenantId(tenantId);
             item.setOrder(order);
             if (item.getStockItem() != null && item.getStockItem().getId() != null) {
+                LOGGER.debug("Looking up stock item for {}...",
+                        item.getStockItem().getId());
                 item.setStockItem(
                         stockItemRepo.findOne(item.getStockItem().getId()));
+                LOGGER.debug("... found {} ({})", item.getStockItem().getName(),
+                        item.getStockItem().getId());
             } else if (item.getCustomFieldValue("stockItemId") != null) { // HACK!
+                LOGGER.debug("Looking up stock item for custom field {}...",
+                        item.getCustomFieldValue("stockItemId"));
                 item.setStockItem(stockItemRepo.findOne(
                         Long.parseLong((String) item.getCustomFieldValue("stockItemId"))));
+                LOGGER.debug("... found {} ({})", item.getStockItem().getName(),
+                        item.getStockItem().getId());
             }
             for (CustomOrderItemField field : item.getCustomFields()) {
                 field.setOrderItem(item);
@@ -553,20 +576,27 @@ public class OrderController {
      *
      * @param tenantId
      * @param orderId
-     * @param stage Expected to be a human-readable string not JSON etc.
+     * @param stage
      */
-    @RequestMapping(value = "/{orderId}/stage", method = RequestMethod.POST)
+    @RequestMapping(value = "/{orderId}/stage/{stage}", method = RequestMethod.POST)
     public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId,
-            @RequestBody String stage) {
+            @PathVariable("stage") String stage,
+            @RequestParam(required = false, defaultValue = "false") boolean orderPlaced) {
         LOGGER.info(String.format("Setting order %1$s to stage %2$s",
                 orderId, stage));
-
         Order order = orderRepo.findOne(orderId);
-        order.setStage(stage);
-        order.setDate(new Date());
-        orderRepo.save(order);
+
+        String oldStage = order.getStage();
+        if (!oldStage.equals(stage) || orderPlaced) {
+            order.setStage(stage);
+            order.setDate(new Date());
+            orderRepo.save(order);
+        } else {
+            LOGGER.warn("Skipping update of order {} from stage {} to {}",
+                    orderId, oldStage, stage);
+        }
     }
 
     /**

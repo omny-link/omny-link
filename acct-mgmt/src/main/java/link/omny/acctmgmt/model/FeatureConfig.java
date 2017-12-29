@@ -53,6 +53,7 @@ public class FeatureConfig {
     private boolean parentOrg = false;
     private boolean poweredBy = true;
     private boolean phone3 = false;
+    private boolean purchaseOrders = false;
     @Column(name = "REFS")
     private boolean references = false;
     private boolean socialContact = true;
@@ -195,6 +196,9 @@ public class FeatureConfig {
             break;
         case "poweredBy":
             setPoweredBy(b);
+            break;
+        case "purchaseOrders":
+            setPurchaseOrders(b);
             break;
         case "references":
             setReferences(b);

@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -283,6 +284,13 @@ public class Order implements OrderWithSubEntities, Serializable {
         item.setTenantId(tenantId);
         getOrderItems().add(item);
         return this;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (type == null) {
+            type = "order";
+        }
     }
 
     @PreUpdate

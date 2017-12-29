@@ -789,16 +789,17 @@ public class ContactController extends BaseTenantAwareController{
 
         Contact contact = contactRepo.findOne(contactId);
         String oldStage = contact.getStage();
-        contact.setStage(stage);
-        contactRepo.save(contact);
+        if (!oldStage.equals(stage)) {
+            contact.setStage(stage);
+            contactRepo.save(contact);
 
-        addActivity(tenantId, contactId, "transition-to-stage",
-                String.format("From %1$s to %2$s", oldStage, stage));
-
+            addActivity(tenantId, contactId, "transition-to-stage",
+                    String.format("From %1$s to %2$s", oldStage, stage));
+        }
         // return contact;
     }
 
-        /**
+    /**
      * Change the sale stage the contact is at.
      */
     @RequestMapping(value = "/{contactId}/account", method = RequestMethod.PUT, consumes = "text/uri-list")
