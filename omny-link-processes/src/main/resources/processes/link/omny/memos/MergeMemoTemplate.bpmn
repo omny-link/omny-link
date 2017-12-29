@@ -127,22 +127,12 @@ if (execution.getVariable('accountId')!=undefined && execution.getVariable('acco
     </serviceTask>
     <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="getContact" implementation="##WebService" isForCompensation="false" name="Read contact" startQuantity="1">
       <extensionElements>
-        <activiti:field name="resourceUsername">
-          <activiti:string>userInfo('tenant-bot')</activiti:string>
-        </activiti:field>
-        <activiti:field name="resourcePassword">
-          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="jwtLoginResource">
-          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/${contactLocalId}</activiti:expression>
-        </activiti:field>
-        <activiti:field name="headers">
-          <activiti:string>Accept:application/json</activiti:string>
-        </activiti:field>
-        <activiti:field expression="contact" name="responseVar"/>
+        <activiti:field name="resourceUsername" stringValue="userInfo('tenant-bot')"/>
+        <activiti:field name="resourcePassword" expression="userInfo('cust-mgmt-secret')"/>
+        <activiti:field name="jwtLoginResource" expression="userInfo('jwt-login-url')"/>
+        <activiti:field name="globalResource" expression="userInfo('cust-mgmt-url')/${tenantId}/contacts/${contactLocalId}"/>
+        <activiti:field name="headers" stringValue="Accept:application/json"/>
+        <activiti:field name="responseVar" expression="contact"/>
       </extensionElements>
       <incoming>_12</incoming>
       <outgoing>_18</outgoing>
@@ -154,22 +144,12 @@ if (execution.getVariable('accountId')!=undefined && execution.getVariable('acco
     </endEvent>
     <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="readOwner" implementation="##WebService" isForCompensation="false" name="Read owner" startQuantity="1">
       <extensionElements>
-        <activiti:field name="resourceUsername">
-          <activiti:string>userInfo('tenant-bot')</activiti:string>
-        </activiti:field>
-        <activiti:field name="resourcePassword">
-          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="jwtLoginResource">
-          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/searchByEmail?email=${contact.getString('owner')}</activiti:expression>
-        </activiti:field>
-        <activiti:field name="headers">
-          <activiti:string>Accept:application/json</activiti:string>
-        </activiti:field>
-        <activiti:field expression="owner" name="responseVar"/>
+        <activiti:field name="resourceUsername" stringValue="userInfo('tenant-bot')"/>
+        <activiti:field name="resourcePassword" expression="userInfo('cust-mgmt-secret')"/>
+        <activiti:field name="jwtLoginResource" expression="userInfo('jwt-login-url')"/>
+        <activiti:field name="globalResource" expression="userInfo('cust-mgmt-url')/${tenantId}/contacts/searchByEmail?email=${contact.getString('owner')}"/>
+        <activiti:field name="headers" stringValue="Accept:application/json"/>
+        <activiti:field name="responseVar" expression="owner"/>
       </extensionElements>
       <incoming>_18</incoming>
       <outgoing>_61</outgoing>
@@ -177,22 +157,12 @@ if (execution.getVariable('accountId')!=undefined && execution.getVariable('acco
     <sequenceFlow id="_18" sourceRef="getContact" targetRef="readOwner"/>
     <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="readOrder" implementation="##WebService" isForCompensation="false" name="Read order" startQuantity="1">
       <extensionElements>
-        <activiti:field name="resourceUsername">
-          <activiti:string>userInfo('tenant-bot')</activiti:string>
-        </activiti:field>
-        <activiti:field name="resourcePassword">
-          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="jwtLoginResource">
-          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/orders/${orderLocalId}</activiti:expression>
-        </activiti:field>
-        <activiti:field name="headers">
-          <activiti:string>Accept:application/json</activiti:string>
-        </activiti:field>
-        <activiti:field expression="order" name="responseVar"/>
+        <activiti:field name="resourceUsername" stringValue="userInfo('tenant-bot')"/>
+        <activiti:field name="resourcePassword" expression="userInfo('cust-mgmt-secret')"/>
+        <activiti:field name="jwtLoginResource" expression="userInfo('jwt-login-url')"/>
+        <activiti:field name="globalResource" expression="userInfo('cust-mgmt-url')/${tenantId}/orders/${orderLocalId}"/>
+        <activiti:field name="headers" stringValue="Accept:application/json"/>
+        <activiti:field name="responseVar" expression="order"/>
       </extensionElements>
       <incoming>_26</incoming>
       <outgoing>_19</outgoing>
@@ -228,22 +198,12 @@ if (execution.getVariable('accountId')!=undefined && execution.getVariable('acco
     </exclusiveGateway>
     <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="readStockItem" implementation="##WebService" isForCompensation="false" name="Read stock item" startQuantity="1">
       <extensionElements>
-        <activiti:field name="resourceUsername">
-          <activiti:string>userInfo('tenant-bot')</activiti:string>
-        </activiti:field>
-        <activiti:field name="resourcePassword">
-          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="jwtLoginResource">
-          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/stock-items/${order.stockItem.id}</activiti:expression>
-        </activiti:field>
-        <activiti:field name="headers">
-          <activiti:string>Accept:application/json</activiti:string>
-        </activiti:field>
-        <activiti:field expression="stockItem" name="responseVar"/>
+        <activiti:field name="resourceUsername" stringValue="userInfo('tenant-bot')"/>
+        <activiti:field name="resourcePassword" expression="userInfo('cust-mgmt-secret')"/>
+        <activiti:field name="jwtLoginResource" expression="userInfo('jwt-login-url')"/>
+        <activiti:field name="globalResource" expression="userInfo('cust-mgmt-url')/${tenantId}/stock-items/${order.stockItem.id}"/>
+        <activiti:field name="headers" stringValue="Accept:application/json"/>
+        <activiti:field name="responseVar" expression="stockItem"/>        
       </extensionElements>
       <incoming>_23</incoming>
       <outgoing>_14</outgoing>
@@ -261,22 +221,12 @@ if (execution.getVariable('accountId')!=undefined && execution.getVariable('acco
     </exclusiveGateway>
     <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="_51" implementation="##WebService" isForCompensation="false" name="Read account" startQuantity="1">
       <extensionElements>
-        <activiti:field name="resourceUsername">
-          <activiti:string>userInfo('tenant-bot')</activiti:string>
-        </activiti:field>
-        <activiti:field name="resourcePassword">
-          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="jwtLoginResource">
-          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/accounts/${accountLocalId}</activiti:expression>
-        </activiti:field>
-        <activiti:field name="headers">
-          <activiti:string>Accept:application/json</activiti:string>
-        </activiti:field>
-        <activiti:field expression="account" name="responseVar"/>
+        <activiti:field name="resourceUsername" stringValue="userInfo('tenant-bot')"/>
+        <activiti:field name="resourcePassword" expression="userInfo('cust-mgmt-secret')"/>
+        <activiti:field name="jwtLoginResource" expression="userInfo('jwt-login-url')"/>
+        <activiti:field name="globalResource" expression="userInfo('cust-mgmt-url')/${tenantId}/accounts/${accountLocalId}"/>
+        <activiti:field name="headers" stringValue="Accept:application/json"/>
+        <activiti:field name="responseVar" expression="account"/>
       </extensionElements>
       <incoming>_52</incoming>
       <outgoing>_65</outgoing>

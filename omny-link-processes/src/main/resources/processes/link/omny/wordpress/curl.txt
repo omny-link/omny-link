@@ -1,0 +1,22 @@
+# WP-API is now part of WP core but still requires an authentication plugin such
+# as: https://github.com/WP-API/Basic-Auth
+# 
+# See documentation at: https://developer.wordpress.org/rest-api/reference/
+
+# GET users
+curl -u tim@knowprocess.com:iw5dZYEBl3y2 \
+  https://knowprocess.com/wp-json/wp/v2/users
+
+# POST new user
+curl -X POST -u tim@knowprocess.com:iw5dZYEBl3y2 \
+  -d 'username=fred@bedrock.com' \
+  -d 'email=fred@bedrock.com' \
+  -d 'password=foobar123' \
+  https://knowprocess.com/wp-json/wp/v2/users
+  
+curl -X POST -u account-management@heartsmartprimary.com:sakSYImy7UynoE0Z5lSor \
+  -d 'username=fred@bedrock.com' \
+  -d 'email=fred@bedrock.com' \
+  -d 'password=foobar123' \
+  https://heartsmartprimary.com/wp-json/wp/v2/users
+  

@@ -1,4 +1,4 @@
-package link.omny.acctmgmt.model;
+package link.omny.acctmgmt.web;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -28,8 +28,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import link.omny.acctmgmt.Application;
-import link.omny.acctmgmt.web.TenantConfigController;
-import link.omny.acctmgmt.web.TenantController;
+import link.omny.acctmgmt.model.Tenant;
+import link.omny.acctmgmt.model.TenantConfig;
+import link.omny.acctmgmt.model.TenantPartial;
+import link.omny.acctmgmt.model.TenantProcess;
+import link.omny.acctmgmt.model.TenantToolbarEntry;
+import link.omny.acctmgmt.model.TenantTypeaheadControl;
 import link.omny.acctmgmt.web.TenantController.TenantSummary;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -46,9 +50,6 @@ public class TenantConfigControllerTest {
     private static final String PARTIAL_EXTENSION = "/partials/contact-extension.html";
 
     private static final String PROCESS_DUMMY_1 = "processes/link/omny/acctmgmt/Dummy1.bpmn";
-
-    private static final String CONTROL_EXTENSION = "/data/" + TEST_TENANT_ID
-            + "/owners.json";
 
     // Use Boot to serve test data as if remote
     private static final String REMOTE_TEST_TENANT_CONFIG_URL = "http://localhost:8080/RemoteTestTenantConfig.json";

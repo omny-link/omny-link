@@ -23,24 +23,13 @@
     </startEvent>
     <serviceTask activiti:class="com.knowprocess.resource.spi.RestPut" completionQuantity="1" id="postOrder" implementation="##WebService" isForCompensation="false" name="PUT order" startQuantity="1">
       <extensionElements>
-        <activiti:field name="resourceUsername">
-          <activiti:string>userInfo('tenant-bot')</activiti:string>
-        </activiti:field>
-        <activiti:field name="resourcePassword">
-          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="jwtLoginResource">
-          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/orders/${orderId}</activiti:expression>
-        </activiti:field>
-        <activiti:field name="headers">
-          <activiti:string>Content-Type:application/json,Accept:application/json</activiti:string>
-        </activiti:field>
-        <activiti:field name="data">
-          <activiti:expression>${order}</activiti:expression>
-        </activiti:field>
+        <activiti:field name="resourceUsername" stringValue="userInfo('tenant-bot')"/>
+        <activiti:field name="resourcePassword" expression="userInfo('cust-mgmt-secret')"/>
+        <activiti:field name="jwtLoginResource" expression="userInfo('jwt-login-url')"/>
+        <activiti:field name="globalResource" expression="userInfo('cust-mgmt-url')/${tenantId}/orders/${orderId}"/>
+        <activiti:field name="headers" stringValue="Content-Type:application/json,Accept:application/json"/>
+        <activiti:field name="responseVar" expression="order"/>      
+        <activiti:field name="data" expression="${order}"/>
       </extensionElements>
       <incoming>_5</incoming>
       <outgoing>_7</outgoing>
