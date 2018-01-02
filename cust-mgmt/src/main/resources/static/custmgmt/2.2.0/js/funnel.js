@@ -329,7 +329,7 @@ var ractive = new BaseRactive({
   openInNewWindow: function(obj) {
     console.info('openInNewWindow');
     if (getSearchParameters()['o']!=undefined) {
-      window.open('/orders.html?q='+ractive.id(obj));
+      window.open('/orders.html?q='+ractive.id(obj)+'&v='+obj.type);
     } else if (ractive.get('tenant.features.accountView')) {
       window.open('/accounts.html?q='+ractive.id(obj));
     } else {
