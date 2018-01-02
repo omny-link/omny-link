@@ -65,7 +65,7 @@
         <td class="col-actions">
           <a class="clickable glyphicon glyphicon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeOrders(this)" style="display:none;" title="Merge two records"></a>
           <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
-          <a class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" {{#embedded==true}}onclick="window.open('/orders.html?v=po&amp;q={{id}}')"{{else}}on-click="edit(this, variant)"{{/}} title="View or edit this order"></a>
+          <a class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" on-click="edit(this, 'po')" title="View or edit this order"></a>
         </td>
       </tr>
     {{/if}}
