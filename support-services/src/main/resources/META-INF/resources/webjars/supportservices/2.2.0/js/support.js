@@ -13,7 +13,7 @@
     }
     ractive.set('saveObserver', false);
     if (ractive.get('current.documents') == undefined) ractive.set('current.documents', []);
-    if (ractive.get('current.documents.0.created') == undefined) return $($('#docsTable input:invalid')[0]).focus();
+    if (ractive.get('current.documents.0')!=undefined && ractive.get('current.documents.0.created') == undefined) return $($('#docsTable input:invalid')[0]).focus();
     var entityName = ractive.entityName(ractive.get('current')).singular();
     ractive.splice('current.documents', 0, 0, {
       author:$auth.getClaim('sub'), entityName: ractive.uri(ractive.get('current')), content: '', favorite: true
@@ -31,7 +31,7 @@
       return;
     }
     if (ractive.get('current.notes') == undefined) ractive.set('current.notes', []);
-    if (ractive.get('current.notes.0.created') == undefined) return $($('#notesTable textarea:invalid')[0]).focus();
+    if (ractive.get('current.notes.0')!=undefined && ractive.get('current.notes.0.created') == undefined) return $($('#notesTable textarea:invalid')[0]).focus();
     var entityName = ractive.entityName(ractive.get('current')).singular();
     ractive.splice('current.notes', 0, 0, {
       author:$auth.getClaim('sub'), entityName: ractive.uri(ractive.get('current')), content: '', favorite: true
