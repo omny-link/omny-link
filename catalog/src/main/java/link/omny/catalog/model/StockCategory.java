@@ -74,7 +74,6 @@ public class StockCategory implements ShortStockCategory, Serializable {
 
     @JsonProperty
     @JsonView({StockCategoryViews.Summary.class, StockItemViews.Detailed.class})
-    @Column(unique = true)
     @NotNull
     private String name;
 
