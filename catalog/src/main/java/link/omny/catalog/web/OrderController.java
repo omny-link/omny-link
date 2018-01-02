@@ -514,12 +514,13 @@ public class OrderController {
      */
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/{id}/feedback", method = RequestMethod.POST, consumes = { "application/json" })
-    @Transactional
     public @ResponseBody ResponseEntity<Object> addFeedback(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId, @RequestBody Feedback feedback) {
         Feedback existingFeedback = feedbackRepo.findByOrder(tenantId, orderId);
         if (existingFeedback == null) {
+            LOGGER.debug("Creating feedback on order {} for {}",
+                    orderId, tenantId);
             Order order = orderRepo.findOne(orderId);
             feedback.setTenantId(tenantId);
             feedback.setOrder(order);
@@ -529,9 +530,11 @@ public class OrderController {
             order.setLastUpdated(new Date());
             orderRepo.save(order);
         } else {
+            LOGGER.debug("Updating feedback {} of order {} for {}",
+                    existingFeedback.getId(), orderId, tenantId);
             NullAwareBeanUtils
-                    .copyNonNullProperties(feedback, existingFeedback);
-            feedbackRepo.save(existingFeedback);
+                    .copyNonNullProperties(feedback, existingFeedback, "order");
+            feedback = feedbackRepo.save(existingFeedback);
         }
 
         HashMap<String, String> vars = new HashMap<String, String>();
@@ -547,7 +550,6 @@ public class OrderController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}/order-items/{itemId}", method = RequestMethod.PUT, consumes = { "application/json" })
-    @Transactional
     public @ResponseBody void updateOrderItem(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
@@ -579,6 +581,7 @@ public class OrderController {
      * @param stage
      */
     @RequestMapping(value = "/{orderId}/stage/{stage}", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId,
