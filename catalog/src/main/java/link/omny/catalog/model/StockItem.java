@@ -81,7 +81,6 @@ public class StockItem implements ShortStockItem, Serializable {
     @JsonProperty
     @JsonView({ OrderViews.Summary.class, StockCategoryViews.Detailed.class,
             StockItemViews.Detailed.class })
-    @Column(unique = true)
     @NotNull
     private String name;
 
