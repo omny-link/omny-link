@@ -118,6 +118,20 @@ var ractive = new BaseRactive({
       else if (ractive.partials[ractive.get('tenant.id')+'LeiLink'] != undefined) return ractive.get('tenant.id')+'LeiLink';
       else return 'companyLeiLink';
     },
+    formatOrderVariant: function() {
+      if (ractive.get('orders') == undefined) {
+        var tmp = ractive.get('tenant.strings.orders');
+        if (ractive.get('tenant.features.purchaseOrders')==true) tmp+= (' / '+ractive.get('tenant.strings.purchaseOrders'));
+        return tmp;
+      } else {
+        var variants = $.unique(ractive.get('orders').map(function(el) { return el.type; } ));
+        if (variants.indexOf('po') && variants.indexOf('order'))
+          return ractive.get('tenant.strings.orders')+' / '+ractive.get('tenant.strings.purchaseOrders');
+        if (variants.indexOf('po'))
+          return ractive.get('tenant.strings.purchaseOrders');
+        else return ractive.get('tenant.strings.orders');
+      }
+    },
     formatStockItemIds: function(order) {
       // console.info('formatStockItemIds');
       var names = ractive.getStockItemNames(order);
