@@ -189,6 +189,18 @@ var ractive = new BaseRactive({
       { "name": "currentStockItemExtensionSect", "url": "/partials/stock-item-extension.html"}
     ],
   },
+  partials: {
+    'profileArea': '',
+    'titleArea': '',
+    'loginSect': '',
+    'stockItemListSect': '',
+    'currentStockItemSect': '',
+    'poweredBy': '',
+    'sidebar': '',
+    'helpModal': '',
+    'customActionModal': '',
+    'supportBar': ''
+  },
   add: function () {
     console.log('add...');
     $('h2.edit-form,h2.edit-field').hide();
