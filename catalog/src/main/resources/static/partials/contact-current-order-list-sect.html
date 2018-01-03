@@ -10,18 +10,20 @@
         <thead>
           <tr>
             <th on-click="['sortOrder',orderId]" title="Order reference">Ref.<span class="sortable {{ sortedOrder('orderId') }} glyphicon glyphicon-btn"></th>
-            {{#1==2}}
-              <th on-click="['sortOrder',name]">Name<span class="sortable {{ sortedOrder('name') }} glyphicon"></span></th>
-            {{/}}
             {{#entityPath=='/accounts'}}
               <th on-click="['sortOrder',contactName]">Contact<span class="sortable {{ sortedOrder('contactName') }} glyphicon"></span></th>
+            {{/}}
+            {{#tenant.features.orderName}}
+              <th on-click="['sortOrder',name]">Name<span class="sortable {{ sortedOrder('name') }} glyphicon"></span></th>
             {{/}}
             <th on-click="['sortOrder',date]" style="width: 11em;" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}<span class="sortable {{ sortedOrder('date') }} glyphicon glyphicon-btn "></th>
             {{#tenant.features.orderDueDate}}
               <th on-click="['sortOrder',dueDate]" style="width: 11em;" title="{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Expected delivery date{{/}}">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}<span class="sortable {{ sortedOrder('dueDate') }} glyphicon glyphicon-btn "></th>
             {{/}}
             <th on-click="['sortOrder',stage]" title="{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}Stage the order has reached{{/}}">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}<span class="sortable {{ sortedOrder('stage') }} glyphicon glyphicon-btn "></th>
-            <th on-click="['sortOrder',stockItemName]" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}<span class="sortable {{ sortedOrder('stockItemName') }} glyphicon glyphicon-btn "></th>
+            {{#tenant.features.catalog}}
+              <th on-click="['sortOrder',stockItemName]" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}<span class="sortable {{ sortedOrder('stockItemName') }} glyphicon glyphicon-btn "></th>
+            {{/}}
             {{#tenant.show.stockPricing}}
               <th on-click="['sortOrder',price]" style="width: 5em;" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}<span class="sortable {{ sortedOrder('price') }} glyphicon glyphicon-btn "></th>
             {{/}}
@@ -46,12 +48,12 @@
               <td data-order-id="{{localId}}" data-key="localId">
                 <span>{{localId}}</span>
               </td>
-              {{#1==2}}<td>{{name}}</td>{{/}}
               {{#entityPath=='/accounts'}}
                 <td data-order-id="{{localId}}" data-key="contactName">
                   <span>{{#contactId}}{{Array.findBy('selfRef','/contacts/'+contactId,current.contacts).fullName}}{{else}}{{contactId}}{{/}}</span>
                 </td>
               {{/}}
+              {{#tenant.features.orderName}}<td>{{name}}</td>{{/}}
               <td data-order-id="{{localId}}" data-key="date">
                 <span>{{formatDate(date)}}</span>
               </td>
@@ -67,23 +69,25 @@
               <td data-order-id="{{localId}}" data-key="stage">
                 <span>{{stage}}</span>
               </td>
-              {{#if tenant.show.orderItems && orderItems}}
-                <td data-order-id="{{localId}}" title="List of included {{#tenant.strings.stockItems}}{{tenant.strings.stockItems.toLowerCase()}}{{else}}stock items{{/}}">
-                  {{formatStockItemIds(.)}}
-                </td>
-              {{elseif !tenant.show.orderItems && ..stockItem}}
-                <td data-order-id="{{localId}}" title="{{#tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/}}">
-                  {{stockItem.name}}
-                </td>
-              {{else}}
-                <td data-order-id="{{localId}}" data-key="customFields.proposedStockItems">
-                  <span title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}">{{customFields['proposedStockItems']}}</span>
-                </td>
-              {{/if}}
-              {{#tenant.show.stockPricing}}
-                <td class="number" data-order-id="{{localId}}" data-key="price">
-                  <span title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{price}}</span>
-                </td>
+              {{#tenant.features.catalog}}
+                {{#if tenant.show.orderItems && orderItems}}
+                  <td data-order-id="{{localId}}" title="List of included {{#tenant.strings.stockItems}}{{tenant.strings.stockItems.toLowerCase()}}{{else}}stock items{{/}}">
+                    {{formatStockItemIds(.)}}
+                  </td>
+                {{elseif !tenant.show.orderItems && ..stockItem}}
+                  <td data-order-id="{{localId}}" title="{{#tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/}}">
+                    {{stockItem.name}}
+                  </td>
+                {{else}}
+                  <td data-order-id="{{localId}}" data-key="customFields.proposedStockItems">
+                    <span title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}">{{customFields['proposedStockItems']}}</span>
+                  </td>
+                {{/if}}
+                {{#tenant.show.stockPricing}}
+                  <td class="number" data-order-id="{{localId}}" data-key="price">
+                    <span title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{price}}</span>
+                  </td>
+                {{/}}
               {{/}}
               {{#if tenant.orderFields && tenant.show.orderFieldsOnContact != undefined}}
                 {{#tenant.orderFields}}
