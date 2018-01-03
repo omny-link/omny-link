@@ -11,10 +11,13 @@
           <tr>
             <th on-click="['sortOrder',orderId]" title="Order reference">Ref.<span class="sortable {{ sortedOrder('orderId') }} glyphicon glyphicon-btn"></th>
             {{#entityPath=='/accounts'}}
-              <th on-click="['sortOrder',contactName]">Contact<span class="sortable {{ sortedOrder('contactName') }} glyphicon"></span></th>
+              <th on-click="['sortOrder',contactName]"title="{{#tenant.strings.orderContactHint}}{{tenant.strings.orderContactHint}}{{else}}Contact Name{{/}}">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}<span class="sortable {{ sortedOrder('contactName') }} glyphicon"></span></th>
             {{/}}
             {{#tenant.features.orderName}}
-              <th on-click="['sortOrder',name]">Name<span class="sortable {{ sortedOrder('name') }} glyphicon"></span></th>
+              <th on-click="['sortOrder',name]" title="{{#tenant.strings.orderNameHint}}{{tenant.strings.orderNameHint}}{{else}}Name{{/}}">{{#tenant.strings.orderName}}{{tenant.strings.orderName}}{{else}}Name{{/}}<span class="sortable {{ sortedOrder('name') }} glyphicon"></span></th>
+            {{/}}
+            {{#tenant.features.purchaseOrders}}
+              <th on-click="['sortOrder',type]" title="{{#tenant.strings.orderTypeHint}}{{tenant.strings.orderTypeHint}}{{else}}Order Type{{/}}">{{#tenant.strings.orderType}}{{tenant.strings.orderType}}{{else}}Type{{/}}<span class="sortable {{ sortedOrder('type') }} glyphicon"></span></th>
             {{/}}
             <th on-click="['sortOrder',date]" style="width: 11em;" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}<span class="sortable {{ sortedOrder('date') }} glyphicon glyphicon-btn "></th>
             {{#tenant.features.orderDueDate}}
@@ -54,6 +57,7 @@
                 </td>
               {{/}}
               {{#tenant.features.orderName}}<td>{{name}}</td>{{/}}
+              {{#tenant.features.purchaseOrders}}<td>{{#tenant.strings['type']}}{{tenant.strings['type']}}{{else}}{{type}}{{/}}</td>{{/}}
               <td data-order-id="{{localId}}" data-key="date">
                 <span>{{formatDate(date)}}</span>
               </td>

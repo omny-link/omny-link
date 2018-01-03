@@ -143,9 +143,9 @@ var ractive = new BaseRactive({
             return tmp;
           } else {
             var variants = $.unique(ractive.get('orders').map(function(el) { return el.type; } ));
-            if (variants.indexOf('po') && variants.indexOf('order'))
+            if (variants.indexOf('po')!=-1 && variants.indexOf('order')!=-1)
               return ractive.get('tenant.strings.orders')+' / '+ractive.get('tenant.strings.purchaseOrders');
-            if (variants.indexOf('po'))
+            if (variants.indexOf('po')!=-1)
               return ractive.get('tenant.strings.purchaseOrders');
             else return ractive.get('tenant.strings.orders');
           }
