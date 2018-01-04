@@ -228,12 +228,10 @@ var ractive = new BaseRactive({
           afterTagAdded: function(event, ui) {
             if (ui.duringInitialization) return;
             else {
-              ractive.set($(event.target).data('bind'),$(event.target).val());
               ractive.addUserToGroup(ui.tagLabel);
             }
           },
           afterTagRemoved: function(event, ui) {
-            ractive.set($(event.target).data('bind'),$(event.target).val());
             ractive.deleteUserFromGroup(ui.tagLabel);
           }
         });
