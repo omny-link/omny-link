@@ -139,6 +139,8 @@ var ractive = new BaseRactive({
     $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/users/',  function( data ) {
       ractive.set('saveObserver', false);
       ractive.merge('users', data);
+      // srp#163 Workaround failure to apply branding on me.profile
+      if ($('.navbar-brand img').length == 0) ractive.applyBranding();
       if (ractive.hasRole('admin')) $('.admin').show();
       ractive.showSearchMatched();
       ractive.set('saveObserver', true);
