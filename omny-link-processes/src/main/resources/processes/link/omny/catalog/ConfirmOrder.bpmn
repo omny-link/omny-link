@@ -23,24 +23,12 @@
     <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="setOrderConfirmed" implementation="##WebService" isForCompensation="false" name="Set status to confirmed" startQuantity="1">
       <documentation id="setOrderConfirmed_D_1" textFormat="text/plain"><![CDATA[The order's status is set to 'confirmed' and order date to today.]]></documentation>
       <extensionElements>
-        <activiti:field name="resourceUsername">
-          <activiti:string>userInfo('tenant-bot')</activiti:string>
-        </activiti:field>
-        <activiti:field name="resourcePassword">
-          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="jwtLoginResource">
-          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${omny_orderConfirmation.getString('tenantId')}/orders/${omny_orderConfirmation.getString('orderId')}/stage</activiti:expression>
-        </activiti:field>
-        <activiti:field name="headers">
-          <activiti:string>Content-Type:text/plain,Accept:application/json</activiti:string>
-        </activiti:field>
-        <activiti:field name="data">
-          <activiti:expression>Confirmation received</activiti:expression>
-        </activiti:field>
+        <activiti:field name="resourceUsername" stringValue="userInfo('tenant-bot')"/>
+        <activiti:field expression="userInfo('cust-mgmt-secret')" name="resourcePassword"/>
+        <activiti:field expression="userInfo('jwt-login-url')" name="jwtLoginResource"/>
+        <activiti:field expression="userInfo('cust-mgmt-url')/${omny_orderConfirmation.getString('tenantId')}/orders/${omny_orderConfirmation.getString('orderId')}/stage/Confirmation received" name="globalResource"/>
+        <activiti:field name="headers" stringValue="Content-Type:text/plain,Accept:application/json"/>
+        <activiti:field name="data" expression=""/>
       </extensionElements>
       <incoming>_4</incoming>
       <outgoing>_2</outgoing>
@@ -80,7 +68,6 @@
         <activiti:in sourceExpression="${omny_orderConfirmation.getString('tenantId')}" target="tenantId"/>
         <activiti:in sourceExpression="/contacts/${order.getJsonNumber('contactId').toString()}" target="contactId"/>
         <activiti:in sourceExpression="${omny_orderConfirmation.getString('orderId')}" target="orderId"/>
-        <activiti:in source="initiator" target="initiator"/>
       </extensionElements>
       <incoming>_2</incoming>
       <outgoing>_9</outgoing>
