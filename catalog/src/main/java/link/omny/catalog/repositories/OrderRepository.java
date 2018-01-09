@@ -64,6 +64,10 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     List<Order> findAllForContacts(@Param("tenantId") String tenantId,
             @Param("contactIds") Long[] contactIds);
 
+    @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.id IN :orderIds ORDER BY o.lastUpdated DESC")
+    List<Order> findByIds(@Param("tenantId") String tenantId,
+            @Param("orderIds") Long[] orderIds);
+
     @Query("SELECT o FROM Order o WHERE o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
     List<Order> findPageForContacts(@Param("tenantId") String tenantId,
             @Param("contactIds") Long[] contactIds, Pageable pageable);
@@ -83,4 +87,5 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     @Query("DELETE FROM OrderItem i WHERE i.order.id = :orderId AND i.id = :orderItemId")
     @Modifying(clearAutomatically = true)
     public void deleteItem(@Param("orderId") Long orderId, @Param("orderItemId") Long orderItemId);
+
 }
