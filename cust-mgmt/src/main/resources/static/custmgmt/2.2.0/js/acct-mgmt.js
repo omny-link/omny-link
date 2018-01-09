@@ -90,8 +90,12 @@ var ractive = new BaseRactive({
         formatDate: function(timeString) {
           if (timeString == undefined || timeString.length==0)
             return 'n/a';
-          var d = ractive.parseDate(timeString);
-          return d.toLocaleDateString(navigator.languages);
+          try {
+            var d = ractive.parseDate(timeString);
+            return d.toLocaleDateString(navigator.languages);
+          } catch (e) {
+            return timeString;
+          }
         },
         formatDateTime: function(timeString) {
           if (timeString == undefined)

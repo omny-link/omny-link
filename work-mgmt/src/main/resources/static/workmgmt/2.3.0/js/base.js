@@ -486,7 +486,7 @@ var BaseRactive = Ractive.extend({
     var d = new Date(timeString);
     // IE strikes again
     if (d == 'Invalid Date') d = parseDateIEPolyFill(timeString);
-    return d;
+    return d == 'Invalid Date' ? timeString : d;
   },
   rewrite: function(id) {
     console.info('rewrite:'+id);
