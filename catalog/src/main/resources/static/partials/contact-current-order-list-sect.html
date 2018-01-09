@@ -62,13 +62,9 @@
                 <span>{{formatDate(date)}}</span>
               </td>
               {{#if tenant.features.orderDueDate}}
-                {{#if tenant.show.orderItems && orderItems}}
-                  <td data-order-id="{{localId}}">{{formatDate(orderItems.0.customFields.date)}}</td>
-                {{else}}
-                  <td data-order-id="{{localId}}" data-key="dueDate">
-                    <span>{{formatDate(dueDate)}}</span>
-                  </td>
-                {{/if}}
+                <td data-order-id="{{localId}}" data-key="dueDate">
+                  <span>{{formatDate(dueDate)}}</span>
+                </td>
               {{/if}}
               <td data-order-id="{{localId}}" data-key="stage">
                 <span>{{stage}}</span>
