@@ -5,14 +5,23 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class OrderTest {
+
+    private static ObjectMapper objectMapper;
+
+    @BeforeClass
+    public static void setUp() {
+        objectMapper = new ObjectMapper();
+    }
 
     @Test
     public void testCustomFieldEquals() {
@@ -43,7 +52,7 @@ public class OrderTest {
 
         orderItem1.addCustomField(
                 new CustomOrderItemField("colour", "Blue"));
-        
+
         assertEquals(1, order.getCustomFields().size());
         assertEquals(1, order.getOrderItems().size());
         assertEquals(1, order.getOrderItems().get(0).getCustomFields().size());
@@ -52,7 +61,6 @@ public class OrderTest {
 
     @Test
     public void testDeserializeOrderWithItems() {
-        ObjectMapper objectMapper = new ObjectMapper();
         InputStream is = null;
         try {
             is = getClass().getResourceAsStream(
@@ -71,6 +79,14 @@ public class OrderTest {
             fail();
         }
 
+    }
+
+    @Test
+    public void testPayload() throws IOException {
+        String json = "{\"feedback\":{\"customFields\":{\"coachComments\":\"Coach says went well\"}},\"orderLocalId\":\"2516\",\"ip\":\"80.234.225.146\",\"admin_email\":\"info@a-life.co.uk\",\"tenantId\":\"alife\"}";
+        Order order = objectMapper.readValue(json .getBytes(), Order.class);
+        assertEquals(1, order.getFeedback().getCustomFields().size());
+        assertEquals("Coach says went well", order.getFeedback().getCustomFieldValue("coachComments"));
     }
 
 }
