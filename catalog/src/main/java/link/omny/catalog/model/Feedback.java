@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.hateoas.Link;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -43,9 +44,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-// Property in Flexspace terminology 
+@JsonIgnoreProperties(allowGetters = true, value = { "selfRef" })
 @Data
-@EqualsAndHashCode(exclude = { "order" })
+@EqualsAndHashCode(exclude = { "links", "order" })
 @ToString(exclude = { "order" })
 @Entity
 @Table(name = "OL_FEEDBACK")
