@@ -1,5 +1,6 @@
 package link.omny.catalog.web;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
@@ -33,9 +34,12 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import link.omny.catalog.CatalogException;
 import link.omny.catalog.CatalogObjectNotFoundException;
 import link.omny.catalog.json.JsonCustomFeedbackFieldDeserializer;
 import link.omny.catalog.json.JsonCustomOrderFieldDeserializer;
@@ -75,6 +79,9 @@ public class OrderController {
             .getLogger(OrderController.class);
 
     @Autowired
+    protected ObjectMapper objectMapper;
+
+    @Autowired
     private FeedbackRepository feedbackRepo;
 
     @Autowired
@@ -88,7 +95,6 @@ public class OrderController {
 
     @Autowired
     private StockItemRepository stockItemRepo;
-
     /**
      * @return a complete order including its items and feedback.
      */
@@ -111,6 +117,52 @@ public class OrderController {
         order.setFeedback(feedbackRepo.findByOrder(tenantId, orderId));
         addLinks(tenantId, order);
         return order;
+    }
+
+    /**
+     * @return the specified orders including all items and feedback.
+     */
+    @RequestMapping(value = "/findByIdArray/{ids}", method = RequestMethod.GET)
+    @JsonView(OrderViews.Detailed.class)
+    @Transactional
+    public @ResponseBody List<Order> readOrders(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("ids") String orderIds) {
+        LOGGER.info(String.format("Read orders %1$s for tenant %2$s", orderIds,
+                tenantId));
+        List<Order> orders = orderRepo.findByIds(tenantId, parseOrderIds(orderIds));
+        for (Order order : orders) {
+            LOGGER.info(String.format(
+                    "Found order with %1$d order items and %2$s inc. feedback",
+                    order.getOrderItems().size(),
+                    order.getFeedback() == null ? "DOES NOT" : "DOES"));
+        
+            order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
+            order.setFeedback(feedbackRepo.findByOrder(tenantId, order.getId()));
+            addLinks(tenantId, order);
+        }
+        return orders;
+    }
+
+    protected Long[] parseOrderIds(String orderIds) {
+        Long[] ids;
+        try {
+            JsonNode tree = objectMapper.readTree(orderIds);
+            if (tree.isArray()) {
+                ids = new Long[tree.size()];
+                int idx = 0;
+                for (JsonNode node : tree) {
+                    ids[idx++] = node.asLong();
+                }
+            } else {
+                ids = new Long[1];
+                ids[0] = tree.asLong();
+            }
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            throw new CatalogException(String.format("Unable to parse order ids from %1$s", orderIds));
+        }
+        return ids;
     }
 
     /**
