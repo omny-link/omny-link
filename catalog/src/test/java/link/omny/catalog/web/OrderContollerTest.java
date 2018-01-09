@@ -58,6 +58,21 @@ public class OrderContollerTest {
     private OrderController svc;
 
     @Test
+    public void testParseSingleOrderId() {
+        Long[] ids = svc.parseOrderIds("12");
+        assertEquals(1, ids.length);
+        assertEquals(12l, ids[0].longValue());
+    }
+
+    @Test
+    public void testParseOrderIds() {
+        Long[] ids = svc.parseOrderIds("[12,15]");
+        assertEquals(2, ids.length);
+        assertEquals(12l, ids[0].longValue());
+        assertEquals(15l, ids[1].longValue());
+    }
+
+    @Test
     public void testSimpleOrderLifecycle() {
         Order order = createOrder();
         assertNotNull(order);
@@ -93,11 +108,19 @@ public class OrderContollerTest {
                 .getName());
         assertEquals(FEEDBACK_CUSTOM_VALUE, feedback3.getCustomFields().get(0)
                 .getValue());
+        
+        // check equivalence of readOrder and readOrders API
+        List<Order> orders = svc.readOrders(TENANT_ID, order.getId().toString());
+        Order order4 = orders.get(0);
+        assertEquals(order.getId(), order4.getId());
+        assertEquals(order.getName(), order4.getName());
+        assertEquals(order.getType(), order4.getType());
+        assertEquals(order.getOrderItems().size(), order4.getOrderItems().size());
 
         deleteOrder(order.getId());
 
-        ShortOrder order4 = retrieveOrder(order.getId());
-        assertEquals("deleted", order4.getStage());
+        ShortOrder order5 = retrieveOrder(order.getId());
+        assertEquals("deleted", order5.getStage());
     }
 
     @Test

@@ -552,10 +552,10 @@ var BaseRactive = Ractive.extend({
     console.log('showMessage: '+msg);
     if (additionalClass == undefined) additionalClass = 'bg-info text-info';
     if (msg === undefined) msg = 'Working...';
-    $('#messages').empty().append(msg).removeClass().addClass(additionalClass).show();
+    $('#messages, .messages').empty().append(msg).removeClass().addClass(additionalClass).show();
 //    document.getElementById('messages').scrollIntoView();
     if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
-      $('#messages').fadeOut();
+      $('#messages, .messages').fadeOut();
     }, EASING_DURATION*10);
     else $('#messages, .messages').append('<span class="text-danger pull-right glyphicon glyphicon-remove" onclick="ractive.hideMessage()"></span>');
   },
