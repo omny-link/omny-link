@@ -48,13 +48,15 @@ import link.omny.custmgmt.model.Note;
 import link.omny.supportservices.internal.CsvUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
 @Table(name = "OL_ORDER")
 @Data
-@ToString(exclude = { "orderItems" })
+@ToString(exclude = { "documents", "notes", "orderItems" })
+@EqualsAndHashCode(exclude = { "documents", "notes", "orderItems" })
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = true)
