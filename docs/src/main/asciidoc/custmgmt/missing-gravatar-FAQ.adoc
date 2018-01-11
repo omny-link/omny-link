@@ -14,6 +14,6 @@ you may wonder what's going on. Avatars are served by a two-step process:
 
 To understand what Omny is serving you may view this in a browser: 
 ....
-https://api.omny.link/flexspace/gravatars/<MD5 hash of email address>.png
+https://api.omny.link/acme/gravatars/<MD5 hash of email address>.png
 ....
-For example https://api.omny.link/flexspace/gravatars/5d2bef261599b9febbb5fb629025642c.png. Be aware that Gravatar will cache avatars for a period so changes to Omny contacts will typically not take effect for a few days.
+For example https://api.omny.link/acme/gravatars/5d2bef261599b9febbb5fb629025642c.png. Be aware that Gravatar will cache avatars for a period so changes to Omny contacts will typically not take effect for a few days.

@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  Copyright 2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/memos" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.22 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1486935383265" name="" targetNamespace="http://omny.link/memos" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
   <process id="MergeMemoTemplate" isClosed="false" isExecutable="true" name="Merge data into a template" processType="None">
     <documentation id="MergeMemoTemplate_D_1" textFormat="text/plain"><![CDATA[Merge data into a template, for instance as a preview before sending to a contact]]></documentation>
@@ -46,23 +61,13 @@
       <outputSet/>
     </startEvent>
     <serviceTask activiti:async="true" activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="getMemo" implementation="##WebService" isForCompensation="false" name="Read memo" startQuantity="1">
-      <documentation id="getMemo_D_1" textFormat="text/plain"><![CDATA[READ MEMO DOCS]]></documentation>
+      <documentation id="getMemo_D_1" textFormat="text/plain"><![CDATA[READ MEMO]]></documentation>
       <extensionElements>
-        <activiti:field name="resourceUsername">
-          <activiti:string>userInfo('tenant-bot')</activiti:string>
-        </activiti:field>
-        <activiti:field name="resourcePassword">
-          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="jwtLoginResource">
-          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
-        </activiti:field>
-        <activiti:field name="globalResource">
-          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/memos/${memoName}</activiti:expression>
-        </activiti:field>
-        <activiti:field name="headers">
-          <activiti:string>Accept:application/json</activiti:string>
-        </activiti:field>
+        <activiti:field name="resourceUsername" stringValue="userInfo('tenant-bot')"/>
+        <activiti:field expression="userInfo('cust-mgmt-secret')" name="resourcePassword"/>
+        <activiti:field expression="userInfo('jwt-login-url')" name="jwtLoginResource"/>
+        <activiti:field expression="userInfo('cust-mgmt-url')/${tenantId}/memos/${memoName}" name="globalResource"/>
+        <activiti:field name="headers" stringValue="Accept:application/json"/>
         <activiti:field expression="memo" name="responseVar"/>
       </extensionElements>
       <incoming>_9</incoming>

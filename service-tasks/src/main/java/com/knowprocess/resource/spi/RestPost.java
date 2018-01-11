@@ -1,3 +1,18 @@
+/*******************************************************************************
+ *Copyright 2018 Tim Stephenson and contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package com.knowprocess.resource.spi;
 
 import java.io.InputStream;
@@ -70,37 +85,41 @@ public class RestPost extends RestService implements JavaDelegate {
         try (InputStream is = urlResource.getResource(
                 resource, "POST", requestHeaders, payload)) {
             // TODO response headers
-
-            if (is == null) {
-                if (outputVar == null) {
-                    LOGGER.debug(
-                            "POST response contains no body and none was requested");
-                } else {
-                    LOGGER.warn(
-                            "POST response contains no body, {} will be set to null",
-                            outputVar.getExpressionText());
-                    responses.put("body", null);
-                }
-            } else {
-                if (outputVar == null) {
-                    LOGGER.warn("No response variable specified, setting response to 'body'");
-                    responses.put("body",
-                            new Scanner(is).useDelimiter("\\A").next());
-                } else {
-                    LOGGER.warn(
-                            "POST response received and written to {}",
-                            outputVar.getExpressionText());
-                    responses.put(outputVar.getExpressionText(),
-                            new Scanner(is).useDelimiter("\\A").next());
-                }
-            }
             // setVarsFromResponseHeaders();
+
+            extractOutput(responses, is);
         } catch (Exception e) {
             LOGGER.error(
                     String.format("Exception in %1$s", getClass().getName()),
                     e);
         }
         return responses;
+    }
+
+    private void extractOutput(final Map<String, Object> responses, final InputStream is) {
+        if (is == null) {
+            if (outputVar == null) {
+                LOGGER.debug(
+                        "POST response contains no body and none was requested");
+            } else {
+                LOGGER.warn(
+                        "POST response contains no body, {} will be set to null",
+                        outputVar.getExpressionText());
+                responses.put("body", null);
+            }
+        } else {
+            if (outputVar == null) {
+                LOGGER.warn("No response variable specified, setting response to 'body'");
+                responses.put("body",
+                        new Scanner(is).useDelimiter("\\A").next());
+            } else {
+                LOGGER.warn(
+                        "POST response received and written to {}",
+                        outputVar.getExpressionText());
+                responses.put(outputVar.getExpressionText(),
+                        new Scanner(is).useDelimiter("\\A").next());
+            }
+        }
     }
 
     /**
@@ -131,18 +150,19 @@ public class RestPost extends RestService implements JavaDelegate {
                 }
             }
 
-            if (outputVar == null) {
-                LOGGER.debug("No response variable requested");
-            }
-            if (is == null || Collections.singletonList("0")
-                    .equals(responseHeaders2.get("Content-Length"))) {
-                LOGGER.warn(
-                        "POST response contains no body, variable will be set to null");
-                responses.put("body", null);
-            } else {
-                responses.put("body",
-                        new Scanner(is).useDelimiter("\\A").next());
-            }
+            extractOutput(responses, is);
+//            if (outputVar == null) {
+//                LOGGER.debug("No response variable requested");
+//            }
+//            if (is == null || Collections.singletonList("0")
+//                    .equals(responseHeaders2.get("Content-Length"))) {
+//                LOGGER.warn(
+//                        "POST response contains no body, variable will be set to null");
+//                responses.put("body", null);
+//            } else {
+//                responses.put("body",
+//                        new Scanner(is).useDelimiter("\\A").next());
+//            }
             // setVarsFromResponseHeaders();
         } catch (Exception e) {
             LOGGER.error(

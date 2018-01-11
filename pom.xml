@@ -38,8 +38,8 @@
 
   <licenses>
     <license>
-      <name>GPL v2</name>
-      <url></url>
+      <name>Apache v2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
   </licenses>
 
@@ -68,12 +68,6 @@
    <dependency>
      <groupId>org.springframework.boot</groupId>
      <artifactId>spring-boot-starter-web</artifactId>
-     <!--exclusions>
-       <exclusion>
-         <artifactId>spring-boot-starter-logging</artifactId>
-         <groupId>org.springframework.boot</groupId>
-       </exclusion>
-     </exclusions-->
      <exclusions>
        <exclusion>
          <artifactId>logback-classic</artifactId>
@@ -160,16 +154,13 @@
 
   <modules>
     <module>acct-mgmt</module>
-    <module>activiti-miwg</module>
     <module>analytics</module>
     <module>catalog</module>
     <module>cust-mgmt</module>
     <module>docs</module>
     <module>fonts</module>
-    <!--module>integration-tests</module-->
     <module>omny-link-server</module>
     <module>omny-link-processes</module>
-    <!--module>rightmove</module-->
     <module>service-tasks</module>
     <module>support-services</module>
     <module>work-mgmt</module>

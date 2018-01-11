@@ -1,3 +1,18 @@
+/*******************************************************************************
+ *Copyright 2018 Tim Stephenson and contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package com.knowprocess.bpm.web;
 
 import static org.junit.Assert.assertNotNull;
@@ -48,7 +63,7 @@ public class SpamMsgDetectionTest {
 
     @Test
     public void issue50Test() {
-        String json = "{\"customFields\":{\"ebitda\":\"78000\",\"accountName\":\"Billington Travel\",\"surplus\":\"348000\",\"borrowing\":\"0\"},\"stage\":\"Enquiry\",\"accountType\":\"Customer\",\"enquiryType\":\"Valuation\",\"useEbitda\":\"ebitda\",\"firstName\":\"david\",\"lastName\":\"carter\",\"email\":\"dchome@live.co.uk\",\"tenantId\":\"firmgains\",\"admin_email\":\"john@unloq.co.uk\"}";
+        String json = "{\"customFields\":{\"ebitda\":\"78000\",\"accountName\":\"Billington Travel\",\"surplus\":\"348000\",\"borrowing\":\"0\"},\"stage\":\"Enquiry\",\"accountType\":\"Customer\",\"enquiryType\":\"Valuation\",\"useEbitda\":\"ebitda\",\"firstName\":\"david\",\"lastName\":\"carter\",\"email\":\"dchome@live.co.uk\",\"tenantId\":\"client1\",\"admin_email\":\"john@unloq.co.uk\"}";
         assertTrue(!svc.isEmptyJson(json));
     }
 
@@ -59,14 +74,14 @@ public class SpamMsgDetectionTest {
     }
 
     @Test
-    @Deployment(resources = { "processes/NoOp.bpmn" }, tenantId = "carquake")
+    @Deployment(resources = { "processes/NoOp.bpmn" }, tenantId = "omny")
     public void issue51NoPayloadTest() {
         new ProcessInstance().setProcessEngine(activitiRule.getProcessEngine());
         svc.setProcessEngine(activitiRule.getProcessEngine());
         svc.messageRegistry = new MessageRegistry();
         svc.jsonManager = new JsonManager();
         Map<String, Object> vars = new HashMap<String, Object>();
-        ProcessInstance instance = svc.handleMep("carquake", "omny.noOp",
+        ProcessInstance instance = svc.handleMep("omny", "omny.noOp",
                 "biz key", null, vars, 0);
 
         assertNotNull(instance);

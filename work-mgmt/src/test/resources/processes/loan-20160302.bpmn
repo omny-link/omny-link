@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--
+  Copyright 2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
 <semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:trisobpmn="http://www.trisotech.com/2014/triso/bpmn" xmlns:triso="http://www.trisotech.com/2015/triso/modeling" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:trisofeed="http://trisotech.com/feed" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:ns1="http://www.omg.org/bpmn20" xmlns:rss="http://purl.org/rss/2.0/" xmlns="http://www.omg.org/bpmn20" id="m50e3b26d-ffac-46ce-a5b0-b8162893aa53"         exporter="BPMN Modeler" exporterVersion="5.0.22" trisobpmn:logoChoice="Default" name="Branch office - ADONIS" targetNamespace="http://www.omg.org/bpmn20" expressionLanguage="http://www.w3.org/1999/XPath" typeLanguage="http://www.w3.org/2001/XMLSchema">
     <semantic:message id="_818c795e-c545-46b2-baa3-59031f076035" name="Application load offer"/>
     <semantic:dataStore capacity="0" isUnlimited="false" name="Loan offer" id="REF-c42deb6e-90c9-4993-b2f2-da7a46876987"/>
@@ -106,7 +121,8 @@
         <semantic:endEvent id="m990616f0-960b-4186-b830-f57bb432bf5d" name="Shelved offer">
             <semantic:incoming>m88c846f9-b4e1-443d-be42-c94d02dcf2a1</semantic:incoming>
         </semantic:endEvent>
-        <semantic:receiveTask id="m2d2340d6-908c-4137-b163-0217e5ef94e7" name="Receive signedloan offer" startQuantity="1" completionQuantity="1" isForCompensation="false" implementation="##WebService" operationRef="_7fa43299-02e9-444d-9158-37d5420c2cb7" instantiate="false" messageRef="_818c795e-c545-46b2-baa3-59031f076035">
+        <semantic:receiveTask id="m2d2340d6-908c-4137-b163-0217e5ef94e7" name="Receive signed
+loan offer" startQuantity="1" completionQuantity="1" isForCompensation="false" implementation="##WebService" operationRef="_7fa43299-02e9-444d-9158-37d5420c2cb7" instantiate="false" messageRef="_818c795e-c545-46b2-baa3-59031f076035">
             <semantic:incoming>b7e29e6f-8870-4ed6-9f26-43619cd9e061</semantic:incoming>
             <semantic:outgoing>_ac109a47-37f9-4350-9242-d9237b302400</semantic:outgoing>
             <semantic:ioSpecification>
