@@ -8,7 +8,7 @@
     "medium": "CPC",
     "source": "Google",
     "stage": "Enquiry",
-    "tenantId": "gardenatics",
+    "tenantId": "acme",
     "title": "Mrs"
   },
   { 
@@ -19,6 +19,6 @@
     "medium": "CPC",
     "source": "Google",
     "stage": "Enquiry",
-    "tenantId": "firmgains"
+    "tenantId": "client1"
   }  
 ]

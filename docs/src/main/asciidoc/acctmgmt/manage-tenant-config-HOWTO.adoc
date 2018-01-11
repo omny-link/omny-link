@@ -13,8 +13,8 @@ Below you see the basic structure.
 [source,json]
 --------------
   { 
-    "id": "alife",
-    "name": "A-Life",
+    "id": "acme",
+    "name": "ACME Inc.",
     "theme": {
       ...
     },
