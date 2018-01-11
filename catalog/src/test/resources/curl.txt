@@ -1,110 +1,125 @@
+#-------------------------------------------------------------------------------
+# Copyright 2018 Tim Stephenson and contributors
+# 
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+#  use this file except in compliance with the License.  You may obtain a copy
+#  of the License at
+# 
+#    http://www.apache.org/licenses/LICENSE-2.0
+# 
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations under
+#  the License.
+#-------------------------------------------------------------------------------
 # List all stock categories (properties) 
-curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/stock-categories/
 
 # GET a single stock category by id
-curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/32
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/stock-categories/32
 
 # PUT a single stock category
-curl -v -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -u tstephen:tstephen \
--d '{"selfRef":"/stock-categories/84","name":"third","description":null,"address1":null,"address2":null,"town":null,"cityOrCounty":null,"postCode":null,"country":null,"distance":"0","tags":"","mapUrl":"http://www.google.com/maps/place/null","lat":null,"lng":null,"directionsByRoad":null,"directionsByPublicTransport":null,"directionsByAir":null,"videoCode":"","status":"","offerStatus":null,"offerTitle":null,"offerDescription":null,"offerCallToAction":null,"offerUrl":null,"created":"2017-03-06T22:08:39.000+0000","lastUpdated":"2017-03-06T22:08:39.000+0000","_links":{"self":{"href":"/stock-categories/84"}},"id":"84","tenantId":"heartsmart"}' \
-http://localhost:8082/heartsmart/stock-categories/84
+curl -v -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -u USR:PWD \
+-d '{"selfRef":"/stock-categories/84","name":"third","description":null,"address1":null,"address2":null,"town":null,"cityOrCounty":null,"postCode":null,"country":null,"distance":"0","tags":"","mapUrl":"http://www.google.com/maps/place/null","lat":null,"lng":null,"directionsByRoad":null,"directionsByPublicTransport":null,"directionsByAir":null,"videoCode":"","status":"","offerStatus":null,"offerTitle":null,"offerDescription":null,"offerCallToAction":null,"offerUrl":null,"created":"2017-03-06T22:08:39.000+0000","lastUpdated":"2017-03-06T22:08:39.000+0000","_links":{"self":{"href":"/stock-categories/84"}},"id":"84","tenantId":"hs"}' \
+http://localhost:8082/hs/stock-categories/84
 
 curl -X PUT -v  -H "Accept:application/json" -H "Content-Type:application/json" \
-  -d '{"accountId":"17","orderItems":[{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"09:00-10:00","year":"N"}},{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"10:00-11:00","year":"R"}}],"tenantId":"alife"}'\
-  -u tstephen:tstephen http://localhost:8082/alife/orders/73
+  -d '{"accountId":"17","orderItems":[{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"09:00-10:00","year":"N"}},{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"10:00-11:00","year":"R"}}],"tenantId":"aclient"}'\
+  -u USR:PWD http://localhost:8082/aclient/orders/73
 
 # List all stock items (individual lettings)
-curl -v -H "Accept:application/json" -u tstephen:tstephen https://api.omny.link/flexspace/stock-items/
+curl -v -H "Accept:application/json" -u USR:PWD https://api.omny.link/acme/stock-items/
 
 # Access a single stock item
-curl -v -H "Accept:application/json" -u tstephen:tstephen https://api.omny.link/stock-items/1535
-curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/flexspace/stock-items/58416
+curl -v -H "Accept:application/json" -u USR:PWD https://api.omny.link/stock-items/1535
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/stock-items/58416
 # Get timings
 curl --max-time 10000 -w "@omny-link-server/src/test/resources/curl-format.txt" \
   -H "Accept:application/json" -u iciTche0nS16HiNoBe:6E34DErsERSS5SeY57 \
   -o /dev/null -s  https://api.omny.link/stock-items/1703
 
 # GET single location
-curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByName?name=Glasgow
-curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByName?name=West%20Bromwich
+curl -v -H 'Accept:application/json' -u USR:PWD https://api.omny.link/acme/stock-categories/findByName?name=Glasgow
+curl -v -H 'Accept:application/json' -u USR:PWD https://api.omny.link/acme/stock-categories/findByName?name=West%20Bromwich
 
 # Location based search
-curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByLocation?q=Corsham
-curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham
+curl -v -H 'Accept:application/json' -u USR:PWD https://api.omny.link/acme/stock-categories/findByLocation?q=Corsham
+curl -v -H 'Accept:application/json' -u USR:PWD http://localhost:8082/acme/stock-categories/findByLocation?q=Corsham
 curl --max-time 10000 -w "@omny-link-server/src/test/resources/curl-format.txt" \
-  -H "Accept:application/json" -u tstephen:tstephen \
+  -H "Accept:application/json" -u USR:PWD \
   -o /dev/null -s \
-  http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham
+  http://localhost:8082/acme/stock-categories/findByLocation?q=Corsham
 
-curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByLocation?q=Corsham&type=Office
-curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham&type=Office
+curl -v -H 'Accept:application/json' -u USR:PWD https://api.omny.link/acme/stock-categories/findByLocation?q=Corsham&type=Office
+curl -v -H 'Accept:application/json' -u USR:PWD http://localhost:8082/acme/stock-categories/findByLocation?q=Corsham&type=Office
 
-curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation
+curl -v -H 'Accept:application/json' -u USR:PWD http://localhost:8082/acme/stock-categories/findByLocation
 
-curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByLocation?type=Office
-curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?type=Office
+curl -v -H 'Accept:application/json' -u USR:PWD https://api.omny.link/acme/stock-categories/findByLocation?type=Office
+curl -v -H 'Accept:application/json' -u USR:PWD http://localhost:8082/acme/stock-categories/findByLocation?type=Office
 
-curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByName?name=Swindon
+curl -v -H 'Accept:application/json' -u USR:PWD http://localhost:8082/acme/stock-categories/findByName?name=Swindon
 
 # Search for offers
-curl -v -H 'Accept:application/json' -u tstephen:tstephen https://api.omny.link/flexspace/stock-categories/findByLocation?q=Corsham&offers=true
-curl -v -H 'Accept:application/json' -u tstephen:tstephen http://localhost:8082/flexspace/stock-categories/findByLocation?q=Corsham&offers=true
+curl -v -H 'Accept:application/json' -u USR:PWD https://api.omny.link/acme/stock-categories/findByLocation?q=Corsham&offers=true
+curl -v -H 'Accept:application/json' -u USR:PWD http://localhost:8082/acme/stock-categories/findByLocation?q=Corsham&offers=true
 
 # List orders for tenant
-curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/orders/
 curl --max-time 10000 -w "@catalog/src/test/resources/curl-format.txt" \
-  -H "Accept:application/json" -u tstephen:tstephen \
-  -o /dev/null -s http://localhost:8082/alife/orders/
+  -H "Accept:application/json" -u USR:PWD \
+  -o /dev/null -s http://localhost:8082/aclient/orders/
 
 # List orders for contact
-curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/findByContacts/16692
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/orders/findByContacts/16692
 
 # List orders for multiple contacts
-curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/findByContacts/40,45,48
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/orders/findByContacts/40,45,48
 
 # Fetch single order
-curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/192
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/orders/192
 
 # Create Order
 curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" \
   -d '{ "orderItems": [{"date":"21/09/2016","time":"09:00-10:00","group":"Y2","type":"Health"},{"date":"21/09/2016","time":"10:00-11:00","group":"Y3","type":"Health"},{"date":"21/09/2016","time":"11:00-12:00","group":"Y4","type":"Health"}]}'\
-  -u tstephen:tstephen http://localhost:8082/alife/orders/
+  -u USR:PWD http://localhost:8082/aclient/orders/
 curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" \
   -d '{  "contactId" : "35", "name" : "CPR", "date" : "2016-10-10", "price" : "£100", "stockItem" : "Training" }' \
-  -u tstephen:tstephen http://localhost:8082/rowden/orders/
+  -u USR:PWD http://localhost:8082/rowden/orders/
 
 # Create order via process
-curl -u tstephen:tstephen  -v 'http://localhost:8082/rowden/process-instances/' -H 'Content-Type: application/json' -H 'Accept: application/json' \
+curl -u USR:PWD  -v 'http://localhost:8082/rowden/process-instances/' -H 'Content-Type: application/json' -H 'Accept: application/json' \
   -d '{"processDefinitionId":"AddOrderToContact","businessKey":"Gareth G","label":"Add Record","processVariables":{"initiator":"tim@omny.link","tenantId":"rowden","contactId":"http://localhost:8082/contacts/35","contactShortId":"35","order":{"name":"3","date":"2016-03-03","price":""}}}'
 
 # Update order with order items
 curl -X PUT -v  -H "Accept:application/json" -H "Content-Type:application/json" \
-  -d '{"accountId":"17","orderItems":[{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"09:00-10:00","year":"N"}},{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"10:00-11:00","year":"R"}}],"tenantId":"alife"}'\
-  -u tstephen:tstephen http://localhost:8082/alife/orders/73
+  -d '{"accountId":"17","orderItems":[{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"09:00-10:00","year":"N"}},{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"10:00-11:00","year":"R"}}],"tenantId":"aclient"}'\
+  -u USR:PWD http://localhost:8082/aclient/orders/73
 
 # Update order WITHOUT order items
 curl -X PUT -v  -H "Accept:application/json" -H "Content-Type:application/json" \
-  -d '{"id":7090,"name":"Lease / License","description":null,"date":null,"dueDate":null,"stage":"Enquiry","price":null,"tax":null,"invoiceRef":null,"contactId":4077,"created":1489177722000,"lastUpdated":1489177722000,"tenantId":"flexspace","customFields":{},"feedback":null,"stockItem":"/stock-items/59191","contact":{"selfRef":"http://localhost:8082/contacts/4077","firstName":"Liam","lastName":"Lord","fullName":"Liam Lord","email":"sarah@knowprocess.com","accountName":"Platinum Mad","owner":"tim@omny.link","stage":"Complete","enquiryType":"Contact Us","accountType":"Customer","tags":"","alerts":[],"tenantId":"flexspace","firstContact":"2016-06-14T20:16:57.000+0000","lastUpdated":"2017-03-06T12:36:08.000+0000","links":[{"rel":"self","href":"http://localhost:8082/contacts/4077"},{"rel":"account","href":"/accounts/2773"}],"name":"Liam Lord"}}'\
-  -u tstephen:tstephen http://localhost:8082/flexspace/orders/7090
+  -d '{"id":7090,"name":"Lease / License","description":null,"date":null,"dueDate":null,"stage":"Enquiry","price":null,"tax":null,"invoiceRef":null,"contactId":4077,"created":1489177722000,"lastUpdated":1489177722000,"tenantId":"acme","customFields":{},"feedback":null,"stockItem":"/stock-items/59191","contact":{"selfRef":"http://localhost:8082/contacts/4077","firstName":"Liam","lastName":"Lord","fullName":"Liam Lord","email":"sarah@knowprocess.com","accountName":"Platinum Mad","owner":"tim@omny.link","stage":"Complete","enquiryType":"Contact Us","accountType":"Customer","tags":"","alerts":[],"tenantId":"acme","firstContact":"2016-06-14T20:16:57.000+0000","lastUpdated":"2017-03-06T12:36:08.000+0000","links":[{"rel":"self","href":"http://localhost:8082/contacts/4077"},{"rel":"account","href":"/accounts/2773"}],"name":"Liam Lord"}}'\
+  -u USR:PWD http://localhost:8082/acme/orders/7090
 
 # Set order stage
-curl -X POST -u tstephen:tstephen -v 'http://localhost:8082/alife/orders/214/stage' \
+curl -X POST -u USR:PWD -v 'http://localhost:8082/aclient/orders/214/stage' \
   -H 'Content-Type: application/json' -H 'Accept: application/json' \
   -d '{"stage":"Feedback received"}'
 
 # Add order item to order
-curl -X POST -u tstephen:tstephen -v 'http://localhost:8082/alife/orders/214/order-items' \
+curl -X POST -u USR:PWD -v 'http://localhost:8082/aclient/orders/214/order-items' \
   -H 'Content-Type: application/json' -H 'Accept: application/json' \
   -d '{"customFields": { "location": "Hall" }}'
 
 # Delete an order item
-curl -v -X DELETE -H 'Accept:application/json'  http://tim%40omny.link:tstephen12@localhost:8082/alife/orders/121/order-items/188/
+curl -v -X DELETE -H 'Accept:application/json'  http://tim%40omny.link:tstephen12@localhost:8082/aclient/orders/121/order-items/188/
 
 # Add feedback to Order
 curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" \
   -d '{ "description":"Healthy session at Acme Primary", "customFields": { "coachComments": "New head (Gina Cook) from next year" }}' \
-  -u tstephen:tstephen http://localhost:8082/alife/orders/214/feedback
+  -u USR:PWD http://localhost:8082/aclient/orders/214/feedback
 
 # GET order feedback
-curl -v -H "Accept:application/json" -u tstephen:tstephen http://localhost:8082/alife/orders/216/feedback
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/orders/216/feedback
   
