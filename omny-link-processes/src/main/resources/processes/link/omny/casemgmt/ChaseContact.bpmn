@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  Copyright 2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/casemgmt" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1421859323498" name="" targetNamespace="http://omny.link/casemgmt" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
   <message id="omny.contactRequiredInfo" name="omny.contactRequiredInfo"/>
   <process activiti:initiator="tstephen" id="ChaseContact" isClosed="false" isExecutable="true" name="Chase a contact for a reply" processType="None">
@@ -56,7 +71,7 @@
     </boundaryEvent>
     <callActivity calledElement="SendAlert" completionQuantity="1" id="notifyNonReceipt" isForCompensation="false" name="Notify &#10;non-receipt" startQuantity="1">
       <extensionElements>
-        <activiti:in sourceExpression="tim@omny.link" target="addressee"/>
+        <activiti:in sourceExpression="tim@knowprocess.com" target="addressee"/>
         <activiti:in sourceExpression="Omny Link: Contact has not responded to your request yet" target="subject"/>
         <activiti:in sourceExpression="Please review here: &lt;a href=https://api.omny.link/contacts.html?q=${contactId}>Click to open Omny&lt;/a>" target="message"/>
         <activiti:in source="tenantId" target="tenantId"/>
@@ -96,7 +111,7 @@ if (noOfChases != 0) {
       <extensionElements>
         <activiti:in source="memoName" target="memoName"/>
         <activiti:in source="tenantId" target="tenantId"/>
-        <activiti:in sourceExpression="tim@omny.link" target="addressee"/>
+        <activiti:in sourceExpression="tim@knowprocess.com" target="addressee"/>
         <activiti:in source="orderId" target="orderId"/>
       </extensionElements>
       <incoming>_39</incoming>

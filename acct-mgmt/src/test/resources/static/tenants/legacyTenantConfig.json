@@ -1,5 +1,5 @@
 { 
-  "id": "firmgains", 
+  "id": "client1", 
   "show": { "account":true, "activityAnalysis":true, "companyBackground": true, "marketing":true },
   "accountFields": [ 
     { "label": "EBITDA", "key": "ebitda"},
@@ -44,7 +44,7 @@
     { "label": "Recommend follow up (no mail sent)", "key": "RecommendFollowUp" },
     { "label": "Run email follow up", "key": "FollowUpOneContact" },
     { "key": "divider" },
-    { "label": "Send email (legacy)", "key": "SendContactEmail", "form": "/partials/firmgains/PickMail.html" }
+    { "label": "Send email (legacy)", "key": "SendContactEmail", "form": "/partials/client1/PickMail.html" }
   ],
   "omnyBar": [
     { "url": "work.html", "classes": "glyphicon glyphicon-inbox", "description": "View your list of active tasks here", "title": "Work Management" },
@@ -56,30 +56,30 @@
     { "url": "definitions.html", "classes": "glyphicon omny-icon-process-model", "description": "View your process definitions here", "title": "Process Definitions" }    
   ],
   "partials": [
-    { "name": "firmgainsContactExtension", "url": "/partials/firmgains/contact-extension.html"},
-    { "name": "firmgainsCustomerExtension", "url": "/partials/firmgains/customer-extension.html"},
-    { "name": "firmgainsBrokerExtension", "url": "/partials/firmgains/broker-extension.html"},
-    { "name": "firmgainsBuyingExtension", "url": "/partials/firmgains/buyer-extension.html"},
-    { "name": "firmgainsPartnerExtension", "url": "/partials/firmgains/broker-extension.html"},
-    { "name": "firmgainsSellingExtension", "url": "/partials/firmgains/customer-extension.html"},
-    { "name": "firmgainsSendContactEmail", "url": "/partials/firmgains/PickMail.html"},
-    { "name": "firmgainsSendMemo", "url": "/partials/pick-memo.html"}
+    { "name": "client1ContactExtension", "url": "/partials/client1/contact-extension.html"},
+    { "name": "client1CustomerExtension", "url": "/partials/client1/customer-extension.html"},
+    { "name": "client1BrokerExtension", "url": "/partials/client1/broker-extension.html"},
+    { "name": "client1BuyingExtension", "url": "/partials/client1/buyer-extension.html"},
+    { "name": "client1PartnerExtension", "url": "/partials/client1/broker-extension.html"},
+    { "name": "client1SellingExtension", "url": "/partials/client1/customer-extension.html"},
+    { "name": "client1SendContactEmail", "url": "/partials/client1/PickMail.html"},
+    { "name": "client1SendMemo", "url": "/partials/pick-memo.html"}
   ],
   "standardOperatingProcedures": [
     { "name": "Dummy Process", "ref": "Dummy1" }
   ],  
   "typeaheadControls": [
-    { "selector": "#curMedium", "url": "/data/firmgains/media.json"},
-    { "selector": "#curSource", "url": "/data/firmgains/sources.json"},
-    { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/firmgains/account-types.json"},
+    { "selector": "#curMedium", "url": "/data/client1/media.json"},
+    { "selector": "#curSource", "url": "/data/client1/sources.json"},
+    { "name": "accountTypes", "selector": "#curAccountType", "url": "/data/client1/account-types.json"},
     { "selector": "#curCountry", "url": "/data/countries.json"},
-    { "name": "enquiryTypes", "selector": "#curEnquiryType", "url": "/data/firmgains/enquiry-types.json"},
-    { "selector": "#curOwner", "url": "/data/firmgains/owners.json"},
-    { "selector": "#who", "url": "/data/firmgains/owners.json"},
-    { "selector": "#curPartnersContacted", "url": "/data/firmgains/partners.json"},
-    { "selector": "#curRegion", "url": "/data/firmgains/regions.json"},
-    { "selector": "#curSector", "url": "/data/firmgains/sectors.json"},
-    { "name": "stages", "selector": "#curStage", "url": "/data/firmgains/stages.json"},
-    { "selector": "#curPreferredTiming", "url": "/data/firmgains/timings.json"}
+    { "name": "enquiryTypes", "selector": "#curEnquiryType", "url": "/data/client1/enquiry-types.json"},
+    { "selector": "#curOwner", "url": "/data/client1/owners.json"},
+    { "selector": "#who", "url": "/data/client1/owners.json"},
+    { "selector": "#curPartnersContacted", "url": "/data/client1/partners.json"},
+    { "selector": "#curRegion", "url": "/data/client1/regions.json"},
+    { "selector": "#curSector", "url": "/data/client1/sectors.json"},
+    { "name": "stages", "selector": "#curStage", "url": "/data/client1/stages.json"},
+    { "selector": "#curPreferredTiming", "url": "/data/client1/timings.json"}
   ]
 }

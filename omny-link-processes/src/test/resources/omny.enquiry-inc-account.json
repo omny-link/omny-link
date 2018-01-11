@@ -6,6 +6,6 @@
   "owner":"tim@omny.link",
   "type":"Enquiry",
   "message":"Hello there, I'd like to arrange some A-Life workshops please",
-  "tenantId":"alife",
-  "account": { "name": "Springfield Primary", "tenantId":"alife" }
+  "tenantId":"aclient",
+  "account": { "name": "Springfield Primary", "tenantId":"aclient" }
 }
