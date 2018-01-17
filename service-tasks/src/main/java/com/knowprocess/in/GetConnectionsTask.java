@@ -33,10 +33,10 @@ import org.activiti.engine.delegate.JavaDelegate;
 import com.google.code.linkedinapi.schema.Connections;
 import com.google.code.linkedinapi.schema.Person;
 import com.knowprocess.beans.ConversionTask;
+import com.knowprocess.beans.model.Contact;
 import com.knowprocess.in.filters.IdListFilter;
 import com.knowprocess.in.filters.MatchAllFilter;
 import com.knowprocess.in.filters.NameFilter;
-import com.knowprocess.sugarcrm.api.SugarLead;
 
 public class GetConnectionsTask extends LinkedInTask implements JavaDelegate {
 
@@ -158,19 +158,18 @@ public class GetConnectionsTask extends LinkedInTask implements JavaDelegate {
                 getConnectionsAsJson(connections, filter));
 
         // TODO This is an expedient hack, need to remove!
-        List<SugarLead> sugarLeadList = new ArrayList<SugarLead>();
+        List<Contact> leadList = new ArrayList<Contact>();
         ConversionTask cs = new ConversionTask();
         for (Person p : connections.getPersonList()) {
             if (filter.match(p)) {
                 try {
-                    sugarLeadList.add((SugarLead) cs
-                            .convert(p, SugarLead.class));
+                    leadList.add((Contact) cs.convert(p, Contact.class));
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
                 }
             }
         }
-        execution.setVariable("sugarLeadList", sugarLeadList);
+        execution.setVariable("leadList", leadList);
 
     }
 
