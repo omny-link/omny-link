@@ -300,7 +300,8 @@ public class UserRecordController {
     private UserRecordResource wrap(UserRecord user) {
         UserRecordResource resource = new UserRecordResource();
         BeanUtils.copyProperties(user, resource);
-        Link detail = new Link(getGlobalUri(user).toString());
+        Link detail = new Link(String.format(
+                "/%1$s/users/%2$s", user.getTenant(), user.getId()));
         resource.add(detail);
         resource.setSelfRef(detail.getHref());
         return resource;
@@ -316,19 +317,6 @@ public class UserRecordController {
 
         IdentityService idSvc = processEngine.getIdentityService();
         idSvc.deleteMembership(id, group.toLowerCase());
-    }
-
-    protected URI getGlobalUri(UserRecord user) {
-        try {
-            UriComponentsBuilder builder = MvcUriComponentsBuilder
-                    .fromController(getClass());
-            String uri = builder.build().toUriString()
-                    .replace("{tenantId}/", "");
-            return new URI(uri + "/" + user.getId());
-        } catch (URISyntaxException e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
-        }
     }
 
     @Data
