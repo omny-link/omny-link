@@ -238,7 +238,7 @@ public class OrderController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
         StringBuilder sb = new StringBuilder()
-                .append("id,name,ref,type,description,date,dueDate,stage,price,tax,invoiceRef,owner,contactId,tenantId,created,lastUpdated,");
+                .append("id,name,ref,type,description,date,dueDate,stage,price,tax,invoiceRef,owner,contactId,stockItemId,tenantId,created,lastUpdated,");
         List<String> customFieldNames = orderRepo.findCustomFieldNames(tenantId);
         LOGGER.info("Found {} custom field names while exporting orders for {}: {}",
                 customFieldNames.size(), tenantId, customFieldNames);
