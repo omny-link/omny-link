@@ -429,6 +429,28 @@ public class Account implements Serializable {
         return sb.toString();
     }
 
+    public List<Note> getNotes() {
+        if (notes == null) {
+            notes = new ArrayList<Note>();
+        }
+        return notes;
+    }
+
+    public List<Document> getDocuments() {
+        if (documents == null) {
+            documents = new ArrayList<Document>();
+        }
+        return documents;
+    }
+
+    public void addNote(Note note) {
+        getNotes().add(note);
+    }
+
+    public void addDocument(Document doc) {
+        getDocuments().add(doc);
+    }
+
     @PreUpdate
     public void preUpdate() {
         lastUpdated = new Date();
@@ -436,7 +458,10 @@ public class Account implements Serializable {
 
     public String toCsv() {
         StringBuilder sb = new StringBuilder()
-                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
+                        + "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
+                        + "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
+                        + "%s,%s,%s,%s",
                         id, name,
                         companyNumber == null ? "" : companyNumber,
                         aliases == null ? "" : aliases,
@@ -465,7 +490,9 @@ public class Account implements Serializable {
                         description == null ? "" : CsvUtils.quoteIfNeeded(description),
                         incorporationYear == null ? "" : incorporationYear,
                         noOfEmployees == null ? "" : noOfEmployees,
-                        tenantId, firstContact, lastUpdated));
+                        tenantId, firstContact, lastUpdated,
+                        getConsolidatedNotes(),
+                        getConsolidatedDocuments()));
         if (customHeadings == null) {
             LOGGER.warn("No custom headings specified, so only standard fields can be included");
         } else {
@@ -477,6 +504,27 @@ public class Account implements Serializable {
         return sb.toString();
     }
 
+    private String getConsolidatedNotes() {
+        StringBuffer sb = new StringBuffer();
+        for (Note note : getNotes()) {
+            if (note.getContent() != null) {
+                sb.append(String.format("%s %s: %s;",
+                        note.getCreated(), note.getAuthor(),
+                        note.getContent()));
+            }
+        }
+        return CsvUtils.quoteIfNeeded(sb.toString());
+    }
+
+    private String getConsolidatedDocuments() {
+        StringBuffer sb = new StringBuffer();
+        for (Document doc : getDocuments()) {
+            sb.append(String.format("%s %s: %s %s;",
+                    doc.getCreated(), doc.getAuthor(), doc.getName(), doc.getUrl()));
+        }
+        return CsvUtils.quoteIfNeeded(sb.toString());
+    }
+
     @Override
     public String toString() {
         return String
@@ -486,5 +534,4 @@ public class Account implements Serializable {
                         noOfEmployees, tenantId, firstContact, lastUpdated,
                         customFields);
     }
-
 }

@@ -18,16 +18,21 @@ package link.omny.catalog.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Date;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import link.omny.custmgmt.model.Note;
 
 public class OrderTest {
 
@@ -104,4 +109,25 @@ public class OrderTest {
         assertEquals("Coach says went well", order.getFeedback().getCustomFieldValue("coachComments"));
     }
 
+    @Test
+    public void testToCsv() throws IOException {
+        Date now = new Date();
+        Order order = new Order(1l, 1l, "My first order",
+                "A description including\nseveral\nline breaks",
+                "order", now, now, "confirmed",
+                new BigDecimal("100"),new BigDecimal("20"));
+        order.addNote(new Note(1l, "tim@knowprocess.com", now,
+                "A single-line note", true, false));
+        order.addNote(new Note(2l, "tim@knowprocess.com", now,
+                "A note\nthat spans multiple lines", true, false));
+        assertEquals(2,  order.getNotes().size());
+
+        String csv = order.toCsv();
+        assertTrue(csv.startsWith(
+                "1,My first order,1,order,\"A description including\n"
+                + "several\nline breaks\",,,New enquiry,100,20,,,,,null,"));
+        assertTrue(csv.contains("tim@knowprocess.com: A single-line note"));
+        assertTrue(csv.contains("tim@knowprocess.com: A note\n"
+                + "that spans multiple lines;"));
+    }
 }

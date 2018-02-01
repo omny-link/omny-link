@@ -131,8 +131,14 @@ public class Note implements Serializable {
     @Override
     public String toString() {
         return String.format(
-                "Note [id=%s, author=%s, created=%s, favorite=%b, content=%s]",
-                id, author, created, favorite, content);
+                "Note [id=%s, author=%s, created=%s, favorite=%b, confidential=%b, content=%s]",
+                id, author, created, favorite, confidential, content);
+    }
+
+    public String toCsv() {
+        return String.format(
+                "%s,%s,%s,%b,%b,%s]",
+                id, author, created, favorite, confidential, content);
     }
 
 }
