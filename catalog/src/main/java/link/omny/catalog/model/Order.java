@@ -317,7 +317,7 @@ public class Order implements OrderWithSubEntities, Serializable {
 
     public String toCsv() {
         StringBuilder sb = new StringBuilder()
-                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
                         id,
                         name,
                         ref == null ? "" : ref,
@@ -331,6 +331,7 @@ public class Order implements OrderWithSubEntities, Serializable {
                         invoiceRef == null ? "" : invoiceRef,
                         owner == null ? "" : owner,
                         contactId == null ? "" : contactId,
+                        stockItem == null ? "" : stockItem.getId(),
                         tenantId, created, lastUpdated));
         if (customHeadings == null) {
             LOGGER.warn("No custom headings specified, so only standard fields can be included");
