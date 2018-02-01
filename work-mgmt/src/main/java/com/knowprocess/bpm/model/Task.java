@@ -38,6 +38,8 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.knowprocess.bpm.impl.CsvUtils;
+
 @Data
 @Component
 public class Task implements Serializable, org.activiti.engine.task.Task {
@@ -284,6 +286,20 @@ public class Task implements Serializable, org.activiti.engine.task.Task {
     @JsonIgnore
     public void setDelegationState(DelegationState arg0) {
         LOGGER.error("Delegation not implemented");
+    }
+
+    public String getCsvHeaders() {
+        return "id,createTime,dueDate,description,name,businessKey,tenantId";
+    }
+
+    public String toCsv() {
+        return String.format(
+                "%s,%s,%s,%s,%s,%s,%s",
+                id, createTime, dueDate,
+                description == null ? "" : CsvUtils.quoteIfNeeded(description),
+                name == null ? "" : CsvUtils.quoteIfNeeded(name),
+                businessKey == null ? "" : CsvUtils.quoteIfNeeded(businessKey),
+                tenantId);
     }
 
 	// public String toJson() {

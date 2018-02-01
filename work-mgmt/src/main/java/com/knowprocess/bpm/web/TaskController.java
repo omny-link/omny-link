@@ -180,13 +180,28 @@ public class TaskController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("varName") String varName,
             @PathVariable("varValue") String varValue) {
-        LOGGER.info(String.format("listInstancesForVar %1$s %2$s ", varName,
-                varValue));
+        LOGGER.info("list tasks for var {} like {} ", varName, varValue);
 
         List<Task> tasks = Task.wrap(processEngine.getTaskService()
                 .createTaskQuery()
                 .taskTenantId(tenantId)
                 .processVariableValueLike(varName, ("%/" + varValue))
+                .list());
+        for (Task task : tasks) {
+            setCustomTaskName(task);
+        }
+
+        return tasks;
+    }
+
+    @RequestMapping(value = "/{tenantId}/tasks/", method = RequestMethod.GET, headers = "Accept=text/csv")
+    public @ResponseBody List<Task> listForTenant(
+            @PathVariable("tenantId") String tenantId) {
+        LOGGER.info("list task for tenant {}", tenantId);
+
+        List<Task> tasks = Task.wrap(processEngine.getTaskService()
+                .createTaskQuery()
+                .taskTenantId(tenantId)
                 .list());
         for (Task task : tasks) {
             setCustomTaskName(task);
