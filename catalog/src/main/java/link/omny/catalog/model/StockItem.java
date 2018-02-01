@@ -477,8 +477,9 @@ public class StockItem implements ShortStockItem, Serializable {
 
     public String toCsv() {
         StringBuilder sb = new StringBuilder()
-                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
                         id,
+                        stockCategory == null ? "" : stockCategory.getId(),
                         name,
                         description == null ? "" : CsvUtils.quoteIfNeeded(description),
                         size,

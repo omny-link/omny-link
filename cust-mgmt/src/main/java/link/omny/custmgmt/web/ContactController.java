@@ -227,7 +227,8 @@ public class ContactController extends BaseTenantAwareController{
             @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        StringBuilder sb = new StringBuilder().append("firstName,lastName,title,"
+        StringBuilder sb = new StringBuilder().append("id,accountId,"
+                + "firstName,lastName,title,"
                 + "isMainContact,address1,address2,town,countyOrCity,country,"
                 + "postCode,email,jobTitle,phone1,phone2,owner,stage,"
                 + "stageReason,stageDate,enquiryType,accountType,"

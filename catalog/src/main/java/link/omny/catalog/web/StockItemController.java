@@ -177,7 +177,7 @@ public class StockItemController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
         StringBuilder sb = new StringBuilder()
-                .append("id,name,description,size,sizeString,unit,price,"
+                .append("id,stockCategoryId,name,description,size,sizeString,unit,price,"
                         + "tags,videoCode,status,offerStatus,"
                         + "offerTitle,offerDescription,offerCallToAction,"
                         + "offerUrl,tenantId,created,lastUpdated,");
