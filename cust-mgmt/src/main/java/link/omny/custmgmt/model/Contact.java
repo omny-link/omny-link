@@ -571,6 +571,28 @@ public class Contact implements Serializable {
                 getLastName().charAt(0));
     }
 
+    public List<Note> getNotes() {
+        if (notes == null) {
+            notes = new ArrayList<Note>();
+        }
+        return notes;
+    }
+
+    public List<Document> getDocuments() {
+        if (documents == null) {
+            documents = new ArrayList<Document>();
+        }
+        return documents;
+    }
+
+    public void addNote(Note note) {
+        getNotes().add(note);
+    }
+
+    public void addDocument(Document doc) {
+        getDocuments().add(doc);
+    }
+
     @PrePersist
     public void prePersist() {
         if (LOGGER.isWarnEnabled() && firstContact != null) {
@@ -833,7 +855,7 @@ public class Contact implements Serializable {
                 + "%11$s,%12$s,%13$s,%14$s,%15$s,%16$b,%17$s,%18$s,%19$s,"
                 + "%20$s,%21$s,%22$s,%23$s,%24$s,%25$s,%26$b,%27$s,%28$s,%29$s,"
                 + "%30$s,%31$s,%32$s,%33$s,%34$b,%35$s,%36$s,%37$s,%38$s,%39$s,"
-                + "%40$s,%41$s",
+                + "%40$s,%41$s,%42$s,%43$s",
                 getId(),
                 getAccountId(),
                 getFirstName(),
@@ -877,7 +899,9 @@ public class Contact implements Serializable {
                 getTimeSinceLogin(),
                 getTimeSinceFirstLogin(),
                 getTimeSinceRegistered(),
-                getTimeSinceEmail()));
+                getTimeSinceEmail(),
+                getConsolidatedNotes(),
+                getConsolidatedDocuments()));
         if (customHeadings == null) {
             LOGGER.warn("No custom headings specified, so only standard fields can be included");
         } else {
@@ -887,6 +911,25 @@ public class Contact implements Serializable {
             }
         }
         return sb.toString();
+    }
+
+    private String getConsolidatedNotes() {
+        StringBuffer sb = new StringBuffer();
+        for (Note note : getNotes()) {
+            sb.append(String.format("%s %s: %s;",
+                    note.getCreated(), note.getAuthor(),
+                    note.getContent()));
+        }
+        return CsvUtils.quoteIfNeeded(sb.toString());
+    }
+
+    private String getConsolidatedDocuments() {
+        StringBuffer sb = new StringBuffer();
+        for (Document doc : getDocuments()) {
+            sb.append(String.format("%s %s: %s %s;",
+                    doc.getCreated(), doc.getAuthor(), doc.getName(), doc.getUrl()));
+        }
+        return CsvUtils.quoteIfNeeded(sb.toString());
     }
 
     @Override

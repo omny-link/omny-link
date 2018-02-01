@@ -235,7 +235,7 @@ public class ContactController extends BaseTenantAwareController{
                 + "isExistingCustomer,source,medium,campaign,keyword,"
                 + "isDoNotCall,isDoNotEmail,tags,uuid,twitter,linkedIn,"
                 + "facebook,tenantId,firstContact,lastUpdated,timeSinceLogin,"
-                + "timeSinceFirstLogin,timeSinceRegistered,timeSinceEmail");
+                + "timeSinceFirstLogin,timeSinceRegistered,timeSinceEmail,notes,documents,");
         List<String> customFieldNames = contactRepo.findCustomFieldNames(tenantId);
         LOGGER.info("Found {} custom field names while exporting contacts for {}: {}",
                 customFieldNames.size(), tenantId, customFieldNames);

@@ -229,6 +229,18 @@ public class Order implements OrderWithSubEntities, Serializable {
         setName(name);
     }
 
+    public Order(Long id, Long ref, String name, String desc, String type,
+            Date date, Date dueDate, String stage, BigDecimal price, BigDecimal tax) {
+        this(name);
+        setId(id);
+        setRef(ref);
+        setDescription(desc);
+        setType(type);
+        setStage(stage);
+        setPrice(price);
+        setTax(tax);
+    }
+
     @JsonProperty
     @JsonView(OrderViews.Summary.class)
     public Long getLocalId() {
@@ -303,6 +315,28 @@ public class Order implements OrderWithSubEntities, Serializable {
         return this;
     }
 
+    public List<Note> getNotes() {
+        if (notes == null) {
+            notes = new ArrayList<Note>();
+        }
+        return notes;
+    }
+
+    public List<Document> getDocuments() {
+        if (documents == null) {
+            documents = new ArrayList<Document>();
+        }
+        return documents;
+    }
+
+    public void addNote(Note note) {
+        getNotes().add(note);
+    }
+
+    public void addDocument(Document doc) {
+        getDocuments().add(doc);
+    }
+
     @PrePersist
     public void prePersist() {
         if (type == null) {
@@ -317,7 +351,8 @@ public class Order implements OrderWithSubEntities, Serializable {
 
     public String toCsv() {
         StringBuilder sb = new StringBuilder()
-                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
+                        + "%s,%s,%s,%s,%s,%s",
                         id,
                         name,
                         ref == null ? "" : ref,
@@ -332,7 +367,9 @@ public class Order implements OrderWithSubEntities, Serializable {
                         owner == null ? "" : owner,
                         contactId == null ? "" : contactId,
                         stockItem == null ? "" : stockItem.getId(),
-                        tenantId, created, lastUpdated));
+                        tenantId, created, lastUpdated,
+                        getConsolidatedNotes(),
+                        getConsolidatedDocuments()));
         if (customHeadings == null) {
             LOGGER.warn("No custom headings specified, so only standard fields can be included");
         } else {
@@ -343,4 +380,26 @@ public class Order implements OrderWithSubEntities, Serializable {
         }
         return sb.toString();
     }
+
+    private String getConsolidatedNotes() {
+        StringBuffer sb = new StringBuffer();
+        for (Note note : getNotes()) {
+            if (note.getContent() != null) {
+                sb.append(String.format("%s %s: %s;",
+                        note.getCreated(), note.getAuthor(),
+                        note.getContent()));
+            }
+        }
+        return CsvUtils.quoteIfNeeded(sb.toString());
+    }
+
+    private String getConsolidatedDocuments() {
+        StringBuffer sb = new StringBuffer();
+        for (Document doc : getDocuments()) {
+            sb.append(String.format("%s %s: %s %s;",
+                    doc.getCreated(), doc.getAuthor(), doc.getName(), doc.getUrl()));
+        }
+        return CsvUtils.quoteIfNeeded(sb.toString());
+    }
+
 }

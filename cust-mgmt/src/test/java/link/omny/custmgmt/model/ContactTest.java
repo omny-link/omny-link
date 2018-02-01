@@ -23,6 +23,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Scanner;
 
 import org.junit.Test;
@@ -195,6 +196,27 @@ public class ContactTest {
             e.printStackTrace();
             fail("Unable to parse JSON");
         }
+    }
+
+    @Test
+    public void testToCsv() throws IOException {
+        Date now = new Date();
+        Contact contact = new Contact();
+        contact.setId(1l);
+        contact.setAccountId(1l);
+        contact.setFirstName("Fred");
+        contact.setLastName("Flintstone");
+        contact.addNote(new Note(1l, "tim@knowprocess.com", now,
+                "A single-line note", true, false));
+        contact.addNote(new Note(2l, "tim@knowprocess.com", now,
+                "A note\nthat spans multiple lines", true, false));
+        assertEquals(2,  contact.getNotes().size());
+        System.out.println(contact.toCsv());
+        String csv = contact.toCsv();
+        assertTrue(csv.startsWith("1,1,Fred,Flintstone,"));
+        assertTrue(csv.contains("tim@knowprocess.com: A single-line note"));
+        assertTrue(csv.contains("tim@knowprocess.com: A note\n"
+                + "that spans multiple lines;"));
     }
 
     private static String readFromClasspath(String resourceName) {

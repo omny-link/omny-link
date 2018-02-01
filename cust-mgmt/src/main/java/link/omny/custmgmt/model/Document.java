@@ -112,4 +112,10 @@ public class Document implements Serializable {
                 "Document [id=%s, author=%s, created=%s, name=%s, url=%s]", id,
                 author, created, name, url);
     }
+
+    public String toCsv() {
+        return String.format(
+                "%s,%s,%s,%s,%s]", id,
+                author, created, name, url);
+    }
 }

@@ -230,7 +230,7 @@ public class AccountController {
                         + "stageReason,stageDate,enquiryType,accountType,"
                         + "isExistingCustomer,tags,twitter,linkedIn,facebook,"
                         + "shortDesc,description,incorporationYear,noOfEmployees,"
-                        + "tenantId,firstContact,lastUpdated,");
+                        + "tenantId,firstContact,lastUpdated,notes,documents,");
         List<String> customFieldNames = accountRepo.findCustomFieldNames(tenantId);
         LOGGER.info("Found {} custom field names while exporting accounts for {}: {}",
                 customFieldNames.size(), tenantId, customFieldNames);
