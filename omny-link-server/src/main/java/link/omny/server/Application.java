@@ -40,6 +40,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.auth.AuthConfig;
 import com.knowprocess.bpm.BpmConfiguration;
+import com.knowprocess.bpm.web.converters.CsvBeanConverter;
 
 import io.onedecision.engine.OneDecisionConfig;
 import io.onedecision.engine.domain.OneDecisionDomainConfig;
@@ -53,7 +54,6 @@ import link.omny.custmgmt.model.Note;
 import link.omny.server.model.mixins.DocumentMixIn;
 import link.omny.server.model.mixins.LinkMixIn;
 import link.omny.server.model.mixins.NoteMixIn;
-import link.omny.server.web.converters.CsvBeanConverter;
 import link.omny.supportservices.SupportServicesConfig;
 
 @Configuration

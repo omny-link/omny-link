@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package link.omny.server.web.converters;
+package com.knowprocess.bpm.web.converters;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,8 +24,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import link.omny.custmgmt.model.Contact;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +48,8 @@ public class CsvBeanConverter extends
 
     protected boolean supports(Class<?> clazz) {
         LOGGER.debug("supports {}?", clazz.getName());
-        ArrayList<Contact> arrayList = new ArrayList<Contact>();
-        // for clazz.getGenericInterfaces())
-        // getInterfaces
+        ArrayList<? extends Serializable> arrayList
+                = new ArrayList<Serializable>();
         return clazz.isInstance(arrayList);
     }
 
@@ -64,6 +61,21 @@ public class CsvBeanConverter extends
                 "attachment; filename=\"export.csv\"");
         OutputStream out = output.getBody();
         Writer writer = new OutputStreamWriter(out);
+        if (list.size() > 0) {
+            Method method;
+            try {
+                Serializable bean = list.get(0);
+                method = bean.getClass().getMethod("getCsvHeaders", (Class[]) null);
+                writer.write((String) method.invoke(bean, (Object[]) null));
+                writer.write("\n");
+            } catch (NoSuchMethodException | SecurityException
+                    | IllegalAccessException | IllegalArgumentException
+                    | InvocationTargetException e) {
+                String msg = "Unable to serialize to CSV";
+                LOGGER.error(msg, e);
+                throw new IllegalArgumentException(msg, e);
+            }
+        }
 
         for (Object bean : list) {
             Method method;
