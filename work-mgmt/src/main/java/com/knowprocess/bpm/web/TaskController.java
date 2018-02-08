@@ -37,7 +37,10 @@ import org.activiti.engine.impl.identity.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -194,20 +197,32 @@ public class TaskController {
         return tasks;
     }
 
-    @RequestMapping(value = "/{tenantId}/tasks/", method = RequestMethod.GET, headers = "Accept=text/csv")
-    public @ResponseBody List<Task> listForTenant(
+    /**
+     * @return tasks for the tenant including a flattened set of data.
+     */
+    @RequestMapping(value = "/{tenantId}/tasks/", method = RequestMethod.GET, produces = "text/csv")
+    public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId) {
-        LOGGER.info("list task for tenant {}", tenantId);
+        StringBuilder sb = new StringBuilder().append("id,name,description,data\r\n");
 
-        List<Task> tasks = Task.wrap(processEngine.getTaskService()
-                .createTaskQuery()
-                .taskTenantId(tenantId)
-                .list());
-        for (Task task : tasks) {
-            setCustomTaskName(task);
+        List<org.activiti.engine.task.Task> tasks = processEngine.getTaskService().createTaskQuery().taskTenantId(tenantId).includeProcessVariables().list();
+        for (org.activiti.engine.task.Task t : tasks) {
+            sb.append(t.getProcessInstanceId()).append(",")
+                    .append(t.getName()).append(",")
+                    .append(t.getDescription()).append(",");
+            for (java.util.Map.Entry<String, Object> var : t.getProcessVariables().entrySet()) {
+                sb.append(var.getKey()).append("=").append(var.getValue()).append(",");
+            }
+            sb.append("\r\n");
         }
 
-        return tasks;
+        LOGGER.info("Exporting CSV tasks for {} generated {} bytes",
+                tenantId, sb.length());
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentLength(sb.length());
+        return new ResponseEntity<String>(
+                sb.toString(), httpHeaders, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{tenantId}/tasks/{username}", produces = {
