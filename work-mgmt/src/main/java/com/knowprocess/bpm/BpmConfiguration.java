@@ -63,10 +63,9 @@ import com.knowprocess.bpmn.BpmnRestHelper;
 
 @Configuration
 @ComponentScan(basePackages = { "com.knowprocess.bpm",
-        "com.knowprocess.services",
-        "com.knowprocess.decisions", "link.omny.acctmgmt" })
+        "com.knowprocess.services", "link.omny.acctmgmt" })
 @EntityScan({ "com.knowprocess.bpm", "link.omny.acctmgmt.model" })
-@EnableJpaRepositories({ "com.knowprocess.decisions.repositories",
+@EnableJpaRepositories({
         "com.knowprocess.bpm.repositories", "link.omny.acctmgmt.repositories" })
 @AutoConfigureBefore(DataSourceProcessEngineAutoConfiguration.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)

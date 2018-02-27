@@ -39,11 +39,11 @@ public class Svg2PngTest {
     
     @Test
     public void testSvgToPng() throws Exception {
-        byte[] pngBytes = svc.svgToPng(readFromClasspath("/B.2.0.svg"));
+        byte[] pngBytes = svc.svgToPng(readFromClasspath("/processes/NoOp.svg"));
         assertNotNull(pngBytes);
         FileOutputStream fos = null;
         try {
-            File pngFile = new File("target", "B.2.0.png");
+            File pngFile = new File("target", "NoOp.png");
             fos = new FileOutputStream(pngFile);
             fos.write(pngBytes);
             assertTrue(pngFile.exists());
