@@ -19,11 +19,11 @@
 # See documentation at: https://developer.wordpress.org/rest-api/reference/
 
 # GET users
-curl -u tim@knowprocess.com:iw5dZYEBl3y2 \
+curl -u USR:PWD \
   https://knowprocess.com/wp-json/wp/v2/users
 
 # POST new user
-curl -X POST -u tim@knowprocess.com:iw5dZYEBl3y2 \
+curl -X POST -u USR:PWD \
   -d 'username=fred@bedrock.com' \
   -d 'email=fred@bedrock.com' \
   -d 'password=foobar123' \
