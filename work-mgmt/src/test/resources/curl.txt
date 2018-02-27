@@ -41,7 +41,7 @@ curl -X POST -u USR:PWD -H "Accept:application/json" -v \
     -d 'json={ "id":"" }' http://localhost:8082/msg/client1/client1.contact.json
 
 # GET single process instance
-curl -X GET -u tim@omny.link:928nuffn -H "Accept:application/json" -v \
+curl -X GET -u USR:PWD -H "Accept:application/json" -v \
     https://api.omny.link/process-instances/25352397
 
 # DELETE single process instance
@@ -61,7 +61,7 @@ curl -X GET -u USR:PWD -H "Accept:application/json" -v \
    http://localhost:8083/users/jdoe/reset-password
 
 # GET instances for definition
-curl -X GET -u tim@omny.link:928nuffn -H "Accept:application/json" -v \
+curl -X GET -u USR:PWD -H "Accept:application/json" -v \
     https://api.omny.link/acme/process-definitions/RecordEnquiry:5:25072512/instances/
 
 

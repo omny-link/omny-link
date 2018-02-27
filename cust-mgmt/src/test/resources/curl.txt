@@ -98,10 +98,10 @@ curl --max-time 10000 -w "@omny-link-server/src/test/resources/curl-format.txt" 
   -o /dev/null -s http://localhost:8082/acme/accounts/
 
 GET notes for contact
-curl  -H 'Accept: application/json' -v -u tim@omny.link:tstephen12 http://localhost:8082/contacts/19/notes
+curl  -H 'Accept: application/json' -v -u USR:PWD http://localhost:8082/contacts/19/notes
 
 GET notes for account
-curl  -H 'Accept: application/json' -v -u tim@omny.link:tstephen12 http://localhost:8082/accounts/17/notes
+curl  -H 'Accept: application/json' -v -u USR:PWD http://localhost:8082/accounts/17/notes
 
 # UPLOAD JSON FILE OF CONTACTS
 curl -u USR:PWD -v \
