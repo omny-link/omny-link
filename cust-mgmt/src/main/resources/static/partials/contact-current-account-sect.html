@@ -1,0 +1,180 @@
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<form id="currentAccountForm" class="form">
+  <section id="currentAccount" style="clear: both">
+    {{#if primary == 'contacts'}}
+      <h2 title="Account details">
+	      <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+	      <span>{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}</span>
+	      <span class="alert-counter {{#alerts.notes}}alert-danger{{else}}alert-hidden{{/}}"> {{alerts.notes}}</span>
+      </h2>
+    {{/if}}
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12" {{#if primary == 'contacts'}}style="display:none"{{/if}}>
+      <ul class="form inline-form edit-form">
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4 required">Name:</label>
+          <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curAccountName" list="accounts" required value="{{current.account.name}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+        </li>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">{{# tenant.strings.companyNumber}}{{tenant.strings.companyNumber}}{{else}}Company Number{{/}}:</label>
+          <div class="input-group">
+            <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curCompanyNumber" {{#if tenant.strings.companyNumber == undefined}}pattern="[OCINS0-9]{0,2}[0-9]{4,6}" {{/if}}{{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.account.companyNumber}}">
+              <span class="input-group-addon">
+                {{#if current.account.companyNumber==undefined || current.account.companyNumber.length==0}}
+                  <span>N/A</span>
+                {{else}}
+                  {{>(formatLeiLink(current.account))}}
+                {{/if}}
+              </span>
+          </div>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
+        </li>
+        {{#if tenant.show.accountCompanyDetails}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4" style="line-height: 1.2em">{{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}}:</label>
+            <select class="col-md-8 col-sm-8 form-control" id="curNoOfEmployees" placeholder="Please choose the number of {{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}} you have">
+               <option value="Please select" selected="selected">Please select</option>
+               <option value="under10">less than 10</option>
+               <option value="10-49">10-49</option>
+               <option value="50-99">50-99</option>
+               <option value="100-249">100-249</option>
+               <option value="250-499">250-499</option>
+               <option value="500-999">500-999</option>
+               <option value="1000+">over 1000</option>
+             </select>
+             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">An approximate indication of the size of the {{#tenant.strings.account}}{{tenant.strings.account.toLowerCase()}}{{else}}account{{/}}</p>
+          </li>
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">Founded:</label>
+            <input autocomplete="off" class="form-control" id="curIncorporationYear" pattern="[0-9]{4}" placeholder="yyyy" value="{{current.account.incorporationYear}}"/>
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+          </li>
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">SIC:</label>
+            <input autocomplete="off" class="form-control" id="curSic" type="text" value="{{current.account.sic}}"/>
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Standard industrial classification of economic activities (SIC)</p>
+          </li>
+        {{/if}}
+      </ul>
+    </div>
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12" {{#if primary == 'contacts'}}style="display:none"{{/if}}>
+      <ul class="form inline-form edit-form">
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">Website:</label>
+          <div class="input-group">
+            <input class="col-md-8 col-sm-8 form-control" id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"/>
+            <span class="input-group-addon">
+              <a href="{{current.account.businessWebsite}}" target="_newtab"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+            </span>
+          </div>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
+        </li>
+        {{#if tenant.show.addressAccount}}
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">Address:</label>
+            <input class="col-md-8 col-sm-8 form-control" id="curAddress1" value="{{current.account.address1}}"/>
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+          </li>
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4"></label>
+            <input class="col-md-8 col-sm-8 form-control" id="curAddress2" value="{{current.account.address2}}"/>
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+          </li>
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4"></label>
+            <input class="col-md-8 col-sm-8 form-control" id="curTown" placeholder="Town or village" value="{{current.account.town}}"/>
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+          </li>
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4"></label>
+            <input class="col-md-8 col-sm-8 form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.account.countyOrCity}}"/>
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+          </li>
+          <li class="form-group">
+            <label class="col-md-4 col-sm-4">Post Code:</label>
+            <input class="col-md-8 col-sm-8 form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.account.postCode}}">
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+          </li>
+          {{#tenant.show.multiNational}}
+            <li class="form-group">
+              <label class="col-md-4 col-sm-4">Country:</label>
+              <input autocomplete="false" class="form-control" list="countries" placeholder="Start typing to filter options" id="curCountry" value="{{current.account.country}}">
+            </li>
+          {{/}}
+          {{#current.account.postCode}}
+            <li class="form-group">
+              <label class="col-md-4 col-sm-4">Map:</label>
+              <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.account.postCode}}" target="_blank"></a>
+            </li>
+          {{/}}
+          {{^current.account.postCode}}
+            {{#current.account.town || current.account.address1 || current.account.address2 || current.account.countyOrCity}}
+              <li class="form-group">
+                <label class="col-md-4 col-sm-4">Map:</label>
+                <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.account.address1}}+{{current.account.address2}}+{{current.account.town}}+{{current.account.countyOrCity}}" target="_blank"></a>
+              </li>
+            {{/}}
+          {{/}}
+        {{/if}}
+        {{#if tenant.show.socialAccount}}
+          <li class="form-group">
+            <div class="btn-group col-md-offset-4 col-sm-offset-4" role="group" aria-label="...">
+              <a class="glyphicon glyphicon-btn kp-icon-twitter{{^current.account.twitter}} disabled{{/}}" {{#current.account.twitter}}href="https://twitter.com/{{current.account.twitter}}"{{else}}disabled {{/}} target="_newtab"></a>
+              <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showSocial('twitter','current.account.twitter')"></a>
+            </div>
+            <div class="btn-group" role="group" aria-label="...">
+              <a class="glyphicon glyphicon-btn kp-icon-linkedin{{^current.account.linkedIn}} disabled{{/}}" {{#current.account.linkedIn}}href="{{current.account.linkedIn}}"{{else}}disabled {{/}} target="_newtab"></a>
+              <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showSocial('linkedIn','current.account.linkedIn')"></a>
+            </div>
+            <div class="btn-group" role="group" aria-label="...">
+              <a class="glyphicon glyphicon-btn kp-icon-facebook{{^current.account.facebook}} disabled{{/}}" {{#current.account.facebook}}href="{{current.account.facebook}}"{{/}} target="_newtab"></a>
+              <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showSocial('facebook','current.account.facebook')"></a>
+            </div>
+          </li>
+        {{/if}}
+      </ul>
+    </div>
+
+    {{#tenant.show.accountDescription}}
+      <div id="currentAccountDesc" class="col-md-12 col-sm-12 col-xs-12" {{#if primary == 'contacts'}}style="display:none"{{/if}}>
+        <ul class="form edit-form">
+          <li class="form-group">
+            <label class="textarea col-md-2 col-sm-4">{{#if tenant.strings.contactDescription}}{{tenant.strings.contactDescription}}{{else}}Additional info{{/if}}:</label>
+            <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" maxlength="1000" placeholder="{{#if tenant.strings.contactDescriptionHint}}{{tenant.strings.contactDescriptionHint}}{{else}}Additional info{{/if}}" value="{{current.account.description}}"></textarea>
+          </li>
+        </ul>
+      </div>
+    {{/}}
+
+    {{#tenant.show.financials}}
+      {{>('accountFinancials')}}
+    {{/}}
+
+  </section>
+
+  {{>(tenant.id+'AccountExtension')}}
+
+  <div id="currentAccountTypeExtended" style="clear: both">
+    {{>(tenant.id+current.accountType+'Extension')}}
+  </div>
+
+  {{#tenant.show.companyBackground}}
+    {{>currentCompanyBackground}}
+  {{/}}
+
+  {{>socialModal}}
+</form>

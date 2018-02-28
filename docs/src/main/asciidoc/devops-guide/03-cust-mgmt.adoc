@@ -1,0 +1,5 @@
+== Customer Management
+
+include::../custmgmt/enable-account-view-HOWTO.adoc[]
+
+include::../custmgmt/custmgmt-actions-HOWTO.adoc[]

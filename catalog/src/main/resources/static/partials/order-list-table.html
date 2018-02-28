@@ -1,0 +1,94 @@
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<table id="ordersTable" class="orders table table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      {{#matchRole('super_admin')}}
+        <th on-click="sort:id">Id<span class="sortable {{ sorted('id') }} glyphicon glyphicon-btn"></th>
+      {{/}}
+      {{#orders.0.ref}}
+        <th on-click="sort:ref">Ref<span class="sortable {{ sorted('ref') }} glyphicon glyphicon-btn"></th>
+      {{/}}
+      {{#tenant.features.orderName}}
+        <th on-click="sort:name">{{#tenant.strings.orderName}}{{tenant.strings.orderName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn"></th>
+      {{/}}
+      <th on-click="sort:contactName">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}<span class="sortable {{ sorted('contactName') }} glyphicon glyphicon-btn "></th>
+      <th on-click="sort:date" style="width: 11em;" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}<span class="sortable {{ sorted('date') }} glyphicon glyphicon-btn "></th>
+      {{#if !tenant.show.orderItems}} {{! If have order items we will not know the due date except if it as an approximation on the order}}
+        <th on-click="sort:dueDate" style="width: 11em;" title="{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Expected delivery date{{/}}">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}<span class="sortable {{ sorted('dueDate') }} glyphicon glyphicon-btn "></th>
+      {{/if}}
+      <th on-click="sort:stage" title="{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}Stage the order has reached{{/}}">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}<span class="sortable {{ sorted('stage') }} glyphicon glyphicon-btn "></th>
+      {{#tenant.features.catalog}}
+        <th on-click="sort:stockItemName" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}<span class="sortable {{ sorted('stockItemName') }} glyphicon glyphicon-btn "></th>
+      {{/}}
+      {{#tenant.show.stockPricing}}
+        <th on-click="sort:price" style="width: 5em;" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}<span class="sortable {{ sorted('price') }} glyphicon glyphicon-btn "></th>
+      {{/}}
+      {{#if tenant.show.orderInvoiceRef}}
+        <th on-click ="sort:invoiceRef" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">{{#tenant.strings.invoiceRef}}{{tenant.strings.invoiceRef}}{{else}}Invoice Ref{{/}}<span class="sortable {{ sorted('invoiceRef') }} glyphicon glyphicon-btn "></th>
+      {{/if}}
+      <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon glyphicon-btn "></th>
+      <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
+      <th class="col-actions">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{#each sort(orders,sortColumn,sortAsc):i}}
+    {{#if matchSearch(this) || embedded==true}}
+      <tr data-href="{{id}}">
+        <td on-click="edit(this)">{{i+1}}</td>
+        {{#matchRole('super_admin')}}
+          <td on-click="edit(this)">{{id}}</td>
+        {{/}}
+        {{#orders.0.ref}}
+          <td on-click="edit(this)">{{#ref}}{{ref}}{{else}}n/a{{/}}</td>
+        {{/}}
+        {{#tenant.features.orderName}}
+          <td on-click="edit(this)">{{name}}</td>
+        {{/}}
+        <td on-click="edit(this)">{{#contactId}}{{formatContactId(contactId)}}{{else}}n/a{{/}}</td>
+        <td on-click="edit(this)">{{formatDate(date)}}</td>
+        {{#if !tenant.show.orderItems}} {{! If have order items we will not know the due date except if it as an approximation on the order}}
+          <td on-click="edit(this)">{{formatDate(dueDate)}}</td>
+        {{/if}}
+        <td on-click="edit(this)">{{stage}}</td>
+        {{#tenant.features.catalog}}
+          <td on-click="edit(this)">{{#if orderItems}}See {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}{{/if}}</td>
+        {{/}}
+        {{#tenant.show.stockPricing}}
+          <td on-click="edit(this)">{{price}}</td>
+        {{/}}
+        {{#if tenant.show.orderInvoiceRef}}
+          <td on-click="edit(this)">{{invoiceRef}}</td>
+        {{/if}}
+        <td on-click="edit(this)">{{formatDate(created)}}</td>
+        <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
+        <td class="col-actions">
+          <a class="clickable glyphicon glyphicon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeOrders(this)" style="display:none;" title="Merge two records"></a>
+          <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+          <a class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" on-click="edit(this, 'po')" title="View or edit this order"></a>
+        </td>
+      </tr>
+    {{/if}}
+  {{/each}}
+  </tbody>
+  <tfoot>
+    {{# searchTerm!=undefined && embedded!=true}}
+      <tr><th colspan="12">{{searchMatched == 0 ? 'No' : searchMatched}} matching record{{searchMatched==1 ? '' : 's'}}</th></tr>
+    {{/}}
+  </tfoot>
+</table>

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  Copyright 2011-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://sourceforge.net/bpmn/definitions/ConfirmEmailDefinitions" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.22 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="ConfirmEmailDefinitions" name="" targetNamespace="http://sourceforge.net/bpmn/definitions/ConfirmEmailDefinitions" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <message id="omny.emailConfirmation" name="omny.emailConfirmation"/>
+  <process id="ConfirmEmail" isClosed="false" isExecutable="true" name="Send a contact a templated email" processType="None">
+    <documentation id="ConfirmEmail_D_1" textFormat="text/plain"><![CDATA[Send a specific contact an email to verify the address.]]></documentation>
+    <extensionElements>
+      <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <sequenceFlow id="_15" sourceRef="startEvent" targetRef="readContact"/>
+    <sequenceFlow id="_26" sourceRef="sendMail" targetRef="recordEmailActivity"/>
+    <endEvent id="endWithConfirmation" name="End with &#10;confirmed registration">
+      <incoming>_6</incoming>
+    </endEvent>
+    <sequenceFlow id="_11" sourceRef="readContact" targetRef="sendMail"/>
+    <startEvent id="startEvent" isInterrupting="true" name="Start Event" parallelMultiple="false">
+      <outgoing>_15</outgoing>
+    </startEvent>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="readContact" implementation="##WebService" isForCompensation="false" name="Read &#10;Contact" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername">
+          <activiti:string><![CDATA[userInfo('tenant-bot')]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="globalResource">
+          <activiti:expression>${contactId}?projection=complete</activiti:expression>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field expression="contact" name="responseVar"/>
+      </extensionElements>
+      <incoming>_15</incoming>
+      <outgoing>_11</outgoing>
+    </serviceTask>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="recordEmailActivity" implementation="##WebService" isForCompensation="false" name="Record &#10;email activity" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername">
+          <activiti:string><![CDATA[userInfo('tenant-bot')]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="globalResource">
+          <activiti:expression><![CDATA[userInfo('cust-mgmt-url')/${tenantId}/contacts/${contact.getInt('id')}/activities]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field name="data">
+          <activiti:expression><![CDATA[type=email&content=Sent email confirmation code.}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field expression="activityId=Location" name="responseHeaders"/>
+      </extensionElements>
+      <incoming>_26</incoming>
+      <outgoing>_27</outgoing>
+    </serviceTask>
+    <callActivity calledElement="SendAddressConfirmationEmail" completionQuantity="1" id="sendMail" isForCompensation="false" name="Send mail" startQuantity="1">
+      <extensionElements>
+        <activiti:in sourceExpression="Account activation code" target="subject"/>
+        <activiti:in sourceExpression="${contact.getString('email')}" target="contactEmail"/>
+        <activiti:in sourceExpression="${contact.getString('firstName')}" target="contactFirstName"/>
+        <activiti:in sourceExpression="http://api.omny.link:8082/${tenantId}/contacts" target="baseUrl"/>
+        <activiti:in sourceExpression="The Omny Link Team" target="signOff"/>
+        <activiti:in sourceExpression="${contact}" target="contact"/>
+      </extensionElements>
+      <incoming>_11</incoming>
+      <outgoing>_26</outgoing>
+    </callActivity>
+    <sequenceFlow id="_27" sourceRef="recordEmailActivity" targetRef="awaitConfirmation"/>
+    <endEvent id="EndEvent_192ol92" name="End without confirmation">
+      <incoming>_3</incoming>
+    </endEvent>
+    <sequenceFlow id="_3" sourceRef="expireConfirmationListener" targetRef="EndEvent_192ol92"/>
+    <receiveTask completionQuantity="1" id="awaitConfirmation" implementation="##WebService" instantiate="false" isForCompensation="false" messageRef="omny.emailConfirmation" name="Await confirmation message" startQuantity="1">
+      <incoming>_27</incoming>
+      <outgoing>_5</outgoing>
+    </receiveTask>
+    <boundaryEvent attachedToRef="awaitConfirmation" cancelActivity="true" id="expireConfirmationListener" name="Expire&#10;after &#10;3 days" parallelMultiple="false">
+      <extensionElements>
+        <yaoqiang:style align="right" labelPosition="left" verticalAlign="middle" verticalLabelPosition="bottom"/>
+        <yaoqiang:label offset-x="45" offset-y="-16.0" x="0.0" y="1.0"/>
+      </extensionElements>
+      <outgoing>_3</outgoing>
+      <timerEventDefinition id="expireConfirmationListener_ED_1">
+        <timeDuration><![CDATA[P3D]]></timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestGet" completionQuantity="1" id="_4" implementation="##WebService" isForCompensation="false" name="Mark contact &#10;email confirmed" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername">
+          <activiti:string><![CDATA[userInfo('tenant-bot')]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="resourcePassword">
+          <activiti:expression>userInfo('cust-mgmt-secret')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="jwtLoginResource">
+          <activiti:expression>userInfo('jwt-login-url')</activiti:expression>
+        </activiti:field>
+        <activiti:field name="globalResource">
+          <activiti:expression>userInfo('cust-mgmt-url')/${tenantId}/contacts/${contact.getInt('id')}/${contactEmail}/</activiti:expression>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>Accept:application/json</activiti:string>
+        </activiti:field>
+        <activiti:field name="data">
+          <activiti:expression><![CDATA[emailConfirmationCode=${contact.getString('emailConfirmationCode')}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field expression="confirmed" name="responseVar"/>
+      </extensionElements>
+      <incoming>_5</incoming>
+      <outgoing>_6</outgoing>
+    </serviceTask>
+    <sequenceFlow id="_5" sourceRef="awaitConfirmation" targetRef="_4"/>
+    <sequenceFlow id="_6" sourceRef="_4" targetRef="endWithConfirmation"/>
+    <textAnnotation id="_7" textFormat="text/plain">
+      <text>SEND CONTACT EMAIL 
+CONFIRMING ADDRESS</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="Untitled Diagram" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="ConfirmEmail">
+      <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
+        <dc:Bounds height="32.0" width="32.0" x="47.0" y="210.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="63.0" x="31.5" y="251.107421875"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="readContact" id="Yaoqiang-readContact">
+        <dc:Bounds height="70.0" width="109.0" x="137.83333333333334" y="191.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="48.0" x="168.33333333333334" y="211.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7">
+        <dc:Bounds height="55.0" width="179.0" x="47.0" y="42.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="130.0" x="47.0" y="55.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sendMail" id="Yaoqiang-sendMail" isExpanded="false">
+        <dc:Bounds height="70.0" width="109.0" x="267.1666666666667" y="191.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="57.0" x="293.1666666666667" y="218.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endWithConfirmation" id="Yaoqiang-endWithConfirmation">
+        <dc:Bounds height="32.0" width="32.0" x="823.0000000000001" y="210.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="127.0" x="775.5000000000001" y="243.0224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="recordEmailActivity" id="Yaoqiang-recordEmailActivity">
+        <dc:Bounds height="70.0" width="109.0" x="396.5" y="191.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="75.0" x="413.5" y="211.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="EndEvent_192ol92" id="Yaoqiang-EndEvent_192ol92">
+        <dc:Bounds height="32.0" width="32.0" x="823.0" y="324.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="141.0" x="770.5" y="360.6123046875"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="awaitConfirmation" id="Yaoqiang-awaitConfirmation">
+        <dc:Bounds height="70.0" width="109.0" x="525.8333333333334" y="191.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="46.955078125" width="75.0" x="542.8333333333334" y="204.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4">
+        <dc:Bounds height="70.0" width="109.0" x="655.1666666666667" y="191.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="92.0" x="663.6666666666667" y="211.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="expireConfirmationListener" id="Yaoqiang-expireConfirmationListener">
+        <dc:Bounds height="32.0" width="32.0" x="570.8333333333334" y="245.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="46.955078125" width="41.0" x="529.8333333333334" y="271.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_15" id="Yaoqiang-_15">
+        <di:waypoint x="79.04545454545462" y="226.0"/>
+        <di:waypoint x="138.04545454545462" y="226.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="105.54545454545462" y="216.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_6" id="Yaoqiang-_6">
+        <di:waypoint x="764.0454545454546" y="226.0"/>
+        <di:waypoint x="705.0" y="236.0"/>
+        <di:waypoint x="705.0" y="236.0"/>
+        <di:waypoint x="823.0454545454546" y="226.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="790.5454545454546" y="216.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_11" id="Yaoqiang-_11">
+        <di:waypoint x="247.04545454545462" y="226.0"/>
+        <di:waypoint x="267.0454545454546" y="226.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="254.04545454545462" y="216.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
+        <di:waypoint x="635.0454545454546" y="226.0"/>
+        <di:waypoint x="705.0" y="236.0"/>
+        <di:waypoint x="705.0" y="236.0"/>
+        <di:waypoint x="655.0454545454546" y="226.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="642.0454545454546" y="216.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
+        <di:waypoint x="585.8636363636364" y="276.95629361052005"/>
+        <di:waypoint x="585.8636363636364" y="338.18181818181813"/>
+        <di:waypoint x="823.1490960040769" y="338.18181818181813"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="670.8936038982076" y="328.70427911931813"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_27" id="Yaoqiang-_27">
+        <di:waypoint x="505.0454545454546" y="226.0"/>
+        <di:waypoint x="526.0454545454546" y="226.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="512.5454545454546" y="216.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_26" id="Yaoqiang-_26">
+        <di:waypoint x="376.0454545454546" y="226.0"/>
+        <di:waypoint x="396.0454545454546" y="226.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="383.0454545454546" y="216.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

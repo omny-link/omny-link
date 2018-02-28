@@ -1,0 +1,207 @@
+#-------------------------------------------------------------------------------
+# Copyright 2015-2018 Tim Stephenson and contributors
+# 
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+#  use this file except in compliance with the License.  You may obtain a copy
+#  of the License at
+# 
+#    http://www.apache.org/licenses/LICENSE-2.0
+# 
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations under
+#  the License.
+#-------------------------------------------------------------------------------
+{
+  "id": "",
+  "entities": [
+    {
+      "id":null,
+      "name":"Account",
+      "description":"An account is associated with zero or more Contacts, zero to many Notes and zero to many Documents. An Account typically has one contact though may have more.","imageUrl":"images/domain/account-context.png","firstCreated":null,"lastUpdated":null,"tenantId":null,
+      "fields":[
+        {"id":null,"name":"name","label":"Name","hint":"Account Name","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"companyNumber","label":"Company Number","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"sic","label":"SIC Code","hint":"Standard Industry Classification of economic activities","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"aliases","label":"Aliases","hint":"Any other name the organisation is also known by","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"businessWebsite","label":"Website","hint":"Remember to include http:// or https://","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"email","label":"Email","hint":"Collective email address for the organisation","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"emailConfirmed","label":"Confirmed?","hint":"","required":true,"type":"checkbox","validation":null,"builtIn":true},
+        {"id":null,"name":"emailHash","label":"Email Hash","hint":"The hash is used to create avatars amongst other things","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"phone1","label":"Preferred Phone","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"phone2","label":"Alternate Phone","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"address1","label":"Address","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"address2","label":"","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"town","label":"Town","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"countyOrCity","label":"County or City","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"postCode","label":"Post Code","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"country","label":"Country","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"twitter","label":"Twitter","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"facebook","label":"Facebook","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"shortDesc","label":"Short Description","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"description","label":"Description","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"incorporationYear","label":"Founded In","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"noOfEmployees","label":"No. FTEs","hint":"The number of full time equivalent staff","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"existingCustomer","label":"Existing?","hint":"Is this an existing customer?","required":true,"type":"checkbox","validation":null,"builtIn":true},
+        {"id":null,"name":"stage","label":"Stage","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"stageReason","label":"Loss Reason","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"stageDate","label":"Date of Loss","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"enquiryType","label":"Enquiry Type","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"accountType","label":"Account Type","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"owner","label":"Owner","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"alerts","label":"Alerts","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"tags","label":"Tags","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"parentOrg","label":"Parent Organisation","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"tenantId","label":"Tenant Id","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"firstContact","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"lastUpdated","label":"Last Updated","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true}
+      ]
+    },
+    {
+      "id":null,
+      "name":"Contact",
+      "description":"A Contact is associated with up to one Account, zero to many Notes and zero to many Documents. An Account typically has one contact though may have more.","imageUrl":"images/domain/contact-context.png","firstCreated":null,"lastUpdated":null,"tenantId":null,
+      "fields":[
+        {"id":null,"name":"firstName","label":"First Name","hint":"Your first or given name","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"lastName","label":"Last Name","hint":"Your last or family name","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"title","label":"Title","hint":"Your title or salutation","required":false,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"email","label":"Email Address","hint":"Your business email address","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"phone","label":"Preferred Phone Number","hint":"Your preferred telephone number","required":false,"type":"tel","validation":"\\+?[0-9, ]{0,13}","builtIn":true},
+        {"id":null,"name":"mainContact","label":"mainContact","hint":"Is this the main contact for the organisation","required":true,"type":"checkbox","validation":null,"builtIn":true},
+        {"id":null,"name":"jobTitle","label":"Job Title","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"email","label":"Email","hint":"Collective email address for the organisation","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"emailConfirmed","label":"Confirmed?","hint":"","required":true,"type":"checkbox","validation":null,"builtIn":true},
+        {"id":null,"name":"emailHash","label":"Email Hash","hint":"The hash is used to create avatars amongst other things","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"doNotEmail","label":"Do Not Email","hint":"","required":true,"type":"checkbox","validation":null,"builtIn":true},
+        {"id":null,"name":"phone1","label":"Preferred Phone","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"phone2","label":"Alternate Phone","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"phone3","label":"Second Alternate Phone","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"doNotCall","label":"Do Not Call","hint":"","required":true,"type":"checkbox","validation":null,"builtIn":true},
+        {"id":null,"name":"address1","label":"Address","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"address2","label":"","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"town","label":"Town","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"countyOrCity","label":"County or City","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"postCode","label":"Post Code","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"country","label":"Country","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"twitter","label":"Twitter","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"facebook","label":"Facebook","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"shortDesc","label":"Short Description","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"description","label":"Description","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"stage","label":"Stage","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"stageReason","label":"Loss Reason","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"stageDate","label":"Date of Loss","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"source","label":"Source","hint":"Source populated automatically by Cost Per Click (CPC) provider","required":false,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"source2","label":"How Heard Of Us?","hint":"Self-declared source of the contact / lead","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"medium","label":"Medium","hint":"Medium populated by CPC provider","required":false,"type":"text","validation":"","builtIn":true},
+        {"id":null,"name":"keyword","label":"Keyword","hint":"Keyword populated by CPC provder","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"enquiryType","label":"Enquiry Type","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"accountType","label":"Account Type","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"owner","label":"Owner","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"alerts","label":"Alerts","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"tags","label":"Tags","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"parentOrg","label":"Parent Organisation","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"firstContact","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"lastUpdated","label":"Last Updated","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"tenantId","label":"Tenant Id","hint":"","required":true,"type":"text","validation":null,"builtIn":true}
+      ]
+    },
+    {
+      "id":null,
+      "name":"Order",
+      "description":"An order for a product or service to deliver. For product companies this is effectively a shopping basket.","imageUrl":"images/domain/order-context.png","firstCreated":null,"lastUpdated":null,"tenantId":null,
+      "fields":[
+        {"id":null,"name":"name","label":"Name","hint":"Is the order has a name or identifer it is referred to by","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"description","label":"Description","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"date","label":"Order Date","hint":"Typically when the order was placed","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"stage","label":"Stage","hint":"How far the order has progressed","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"price","label":"Price","hint":"If the order is priced separately to the stock, typically for services","required":true,"type":"number","validation":null,"builtIn":true},
+        {"id":null,"name":"tax","label":"Tax due on the order","hint":"Typically when the order was placed","required":true,"type":"number","validation":null,"builtIn":true},
+        {"id":null,"name":"created","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"lastUpdated","label":"Last Updated","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"tenantId","label":"Tenant Id","hint":"","required":true,"type":"text","validation":null,"builtIn":true}
+      ]
+    },
+    {
+      "id":null,
+      "name":"Order Item",
+      "description":"A distinct item that is part of an order","imageUrl":"images/domain/order-item-context.png","firstCreated":null,"lastUpdated":null,"tenantId":null,
+      "fields":[
+        {"id":null,"name":"type","label":"Type","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"status","label":"Status","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"price","label":"Price","hint":"If the item is priced separately to the stock, perhaps due to a discount","required":true,"type":"number","validation":null,"builtIn":true},
+        {"id":null,"name":"created","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"lastUpdated","label":"Last Updated","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"tenantId","label":"Tenant Id","hint":"","required":true,"type":"text","validation":null,"builtIn":true}
+      ]
+    },
+    {
+      "id":null,
+      "name":"Feedback",
+      "description":"User feedback on an order","imageUrl":"images/domain/feedback-context.png","firstCreated":null,"lastUpdated":null,"tenantId":null,
+      "fields":[
+        {"id":null,"name":"type","label":"Type","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"description","label":"Description","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"created","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"lastUpdated","label":"Last Updated","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"tenantId","label":"Tenant Id","hint":"","required":true,"type":"text","validation":null,"builtIn":true}
+      ]
+    },
+    {
+      "id":null,
+      "name":"Stock Item",
+      "description":"A type of stock, usually identified by a SKU","imageUrl":"images/domain/stock-item-context.png","firstCreated":null,"lastUpdated":null,"tenantId":null,
+      "fields":[
+        {"id":null,"name":"name","label":"Name","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"description","label":"Status","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"status","label":"Status","hint":"","required":true,"type":"list","validation":null,"builtIn":true},
+        {"id":null,"name":"price","label":"Price","hint":"","required":true,"type":"number","validation":null,"builtIn":true},
+        {"id":null,"name":"size","label":"Size","hint":"","required":true,"type":"number","validation":null,"builtIn":true},
+        {"id":null,"name":"unit","label":"Unit","hint":"Unit of measure, e.g. sq feet","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"tags","label":"Tags","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"videoCode","label":"Video","hint":"This may be an embed code such as YouTube or Vimeo offer or simply a URL","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"offerStatus","label":"Offer Status","hint":"","required":true,"type":"list","validation":null,"builtIn":true},
+        {"id":null,"name":"offerTitle","label":"Offer Title","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"offerDescription","label":"Offer Description","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"offerCallToAction","label":"Offer Call To Action","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"offerUrl","label":"URL","hint":"Where to find more information","required":true,"type":"url","validation":null,"builtIn":true},        {"id":null,"name":"created","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"created","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"lastUpdated","label":"Last Updated","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"tenantId","label":"Tenant Id","hint":"","required":true,"type":"text","validation":null,"builtIn":true}
+      ]
+    },
+    {
+      "id":null,
+      "name":"Stock Category",
+      "description":"A means of classifying stock items","imageUrl":"images/domain/stock-category-context.png","firstCreated":null,"lastUpdated":null,"tenantId":null,
+      "fields":[
+        {"id":null,"name":"name","label":"Name","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"description","label":"Status","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"productSheetUrl","label":"Product Sheet URL","hint":"Typically a PDF resource","required":true,"type":"url","validation":null,"builtIn":true},        {"id":null,"name":"created","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"status","label":"Status","hint":"","required":true,"type":"list","validation":null,"builtIn":true},
+        {"id":null,"name":"address1","label":"Address","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"address2","label":"","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"town","label":"Town","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"countyOrCity","label":"County or City","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"postCode","label":"Post Code","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"country","label":"Country","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"lat","label":"Latitude","hint":"","required":true,"type":"number","validation":null,"builtIn":true},
+        {"id":null,"name":"lng","label":"Longitude","hint":"","required":true,"type":"number","validation":null,"builtIn":true},
+        {"id":null,"name":"mapUrl","label":"URL","hint":"Where to find more information","required":true,"type":"url","validation":null,"builtIn":true},        {"id":null,"name":"created","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"directionsByRoad","label":"Directions By Road","hint":"","required":true,"type":"url","validation":null,"builtIn":true},        {"id":null,"name":"created","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"directionsByPublicTransport","label":"Directions By Public Transport","hint":"","required":true,"type":"url","validation":null,"builtIn":true},        {"id":null,"name":"created","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"directionsByAir","label":"Directions By Air","hint":"","required":true,"type":"url","validation":null,"builtIn":true},        {"id":null,"name":"created","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"tags","label":"Tags","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"videoCode","label":"Video","hint":"This may be an embed code such as YouTube or Vimeo offer or simply a URL","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"offerStatus","label":"Offer Status","hint":"","required":true,"type":"list","validation":null,"builtIn":true},
+        {"id":null,"name":"offerTitle","label":"Offer Title","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"offerDescription","label":"Offer Description","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"offerCallToAction","label":"Offer Call To Action","hint":"","required":true,"type":"text","validation":null,"builtIn":true},
+        {"id":null,"name":"offerUrl","label":"URL","hint":"Where to find more information","required":true,"type":"url","validation":null,"builtIn":true},        {"id":null,"name":"created","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"created","label":"Created","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"lastUpdated","label":"Last Updated","hint":"","required":true,"type":"datetime","validation":null,"builtIn":true},
+        {"id":null,"name":"tenantId","label":"Tenant Id","hint":"","required":true,"type":"text","validation":null,"builtIn":true}
+      ]
+    }
+  ]
+}

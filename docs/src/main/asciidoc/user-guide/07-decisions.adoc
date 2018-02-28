@@ -1,0 +1,7 @@
+== Decisions
+
+include::../decisions/upload-decision-model.adoc[]
+
+include::../decisions/view-decision-model.adoc[]
+
+include::../decisions/tweak-prod-decisions.adoc[]

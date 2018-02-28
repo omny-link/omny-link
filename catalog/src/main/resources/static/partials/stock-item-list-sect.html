@@ -1,0 +1,114 @@
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<section class="container container-sticky">
+  <h2 class="navbar-sticky">
+    {{>navbar}}
+    {{>profileArea}}
+  </h2>
+</section>
+<section class="resultsSect" id="stockItemsSect">
+  <h2 class="navbar-top">
+    {{>navbar}}
+    <span class="pull-right">
+      {{#if tenant.stockItemActions!=undefined && tenant.stockItemActions.length>0 }}
+        <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
+            <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+          </a>
+          <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+            {{#each tenant.stockItemActions }}
+              {{#name}}
+                <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', undefined{{#url}}, '{{url}}'{{/url}})">{{name}}</li>
+              {{else}}
+                <li class="divider"></li>
+              {{/}}
+            {{/each}}
+          </ul>
+        </span>
+      {{/if}}
+    </span>
+  </h2>
+  <table id="stockItemsTable" class="stockItems table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th on-click="sort:name">{{#tenant.strings.stockItemName}}{{tenant.strings.stockItemName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn "></th>
+        {{#tenant.show.stockCategory}}
+          <th on-click="sort:stockCategoryName">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}<span class="sortable {{ sorted('stockCategoryName') }} glyphicon"></th>
+        {{/}}
+        {{#if stockTypes!=undefined}}
+          <th on-click="sort:tags">{{#tenant.strings.tags}}{{tenant.strings.tags}}{{else}}Tags{{/}}<span class="sortable {{ sorted('tags') }} glyphicon"></th>
+        {{/if}}
+        <th on-click="sort:status">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}<span class="sortable {{ sorted('status') }} glyphicon glyphicon-btn "></th>
+        {{#tenant.show.stockPricing}}
+          <th on-click="sort:unitPrice">{{#tenant.strings.unitPrice}}{{tenant.strings.unitPrice}}{{else}}Unit Price{{/}}<span class="sortable {{ sorted('unitPrice') }} glyphicon"></th>
+        {{/}}
+        <th on-click="sort:created">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}Created{{/}}<span class="sortable {{ sorted('created') }} glyphicon"></th>
+        <th class="" on-click="sort:lastUpdated">{{#tenant.strings.latUpdated}}{{tenant.strings.lastUpdated}}{{else}}Last Updated{{/}}<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
+        <th class="col-actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {{#each sort(stockItems,sortColumn,sortAsc):i}}
+      {{# matchSearch(this) && matchFilter(this) }}
+          <tr data-href="{{selfRef}}">
+            <td on-click="edit(this)">{{i+1}}</td>
+            <td on-click="edit(this)">{{name}}</td>
+            {{#tenant.show.stockCategory}}
+              <td on-click="edit(this)">{{stockCategoryName}}</td>
+            {{/}}
+            {{#if stockTypes != undefined}}
+              <td on-click="edit(this)">{{tags}}</td>
+            {{/if}}
+            <td on-click="edit(this)">{{status}}</td>
+            {{#tenant.show.stockPricing}}
+              <td on-click="edit(this)">{{#price == undefined || price == 0}}P.O.A.{{else}}{{price}}{{/}}</td>
+            {{/}}
+            <td on-click="edit(this)">{{formatDate(created)}}</td>
+            <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
+            <td class="col-actions">
+              <a class="clickable glyphicon glyphicon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeStockItems(this)" style="display:none;" title="Merge two records"></a>
+              <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+              <a class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this stockItem"></a>
+            </td>
+          </tr>
+      {{/}}
+    {{/each}}
+    </tbody>
+    <tfoot>
+      {{# searchTerm!=undefined }}
+        <tr><th colspan="9">{{searchMatched == 0 ? 'No' : searchMatched}} matching record{{searchMatched==1 ? '' : 's'}}</th></tr>
+      {{/}} 
+    </tfoot>
+  </table>
+</section>
+
+<div id="upload" style="display:none">
+  <form action="/{{tenant.id}}/stock-items/uploadcsv" class="well form form-inline" enctype="multipart/form-data" id="uploadForm" method="post">
+    <fieldset>
+      <div class="form-group">
+        <input id="file" multiple="multiple" name="file" style="display: none" type="file" value="{{resourceFiles}}">
+        <input name="tenantId" id="tenantId" type="hidden" value="{{tenant.id}}">
+        <input class="form-control" name="resourceName" id="resourceName" placeholder="none selected" readonly disabled value="{{resourceName}}">
+        <button class="btn btn-primary" on-click="addResource()" type="button">Select Files</button>
+      </div>
+      <div class="pull-right">
+        <button class="btn" on-click="hideUpload()" type="button">Cancel</button>
+        <button class="btn" on-click="upload('uploadForm')" type="button">Upload</button>
+      </div>
+    </fieldset>
+  </form>
+</div>

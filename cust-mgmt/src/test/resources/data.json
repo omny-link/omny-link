@@ -1,0 +1,24 @@
+[
+  { 
+    "_class": "link.omny.custmgmt.model.Contact", 
+    "email": "mrsmiggins@thepieshop.co.uk",
+    "enquiryType": "Treehouse",
+    "firstName": "Amy", 
+    "lastName": "Miggins",
+    "medium": "CPC",
+    "source": "Google",
+    "stage": "Enquiry",
+    "tenantId": "acme",
+    "title": "Mrs"
+  },
+  { 
+    "_class": "link.omny.custmgmt.model.Contact", 
+    "email": "fred@bedrock.com",
+    "firstName": "Fred", 
+    "lastName": "Flintstone",
+    "medium": "CPC",
+    "source": "Google",
+    "stage": "Enquiry",
+    "tenantId": "client1"
+  }  
+]

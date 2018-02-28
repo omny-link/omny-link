@@ -1,0 +1,122 @@
+#-------------------------------------------------------------------------------
+# Copyright 2015-2018 Tim Stephenson and contributors
+# 
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+#  use this file except in compliance with the License.  You may obtain a copy
+#  of the License at
+# 
+#    http://www.apache.org/licenses/LICENSE-2.0
+# 
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations under
+#  the License.
+#-------------------------------------------------------------------------------
+# Create activities
+curl -X POST -v -H "Content-Type:application/json" -u USR:PWD -d '{"type":"register","occurred":"2015-01-05T19:00:00"}' http://localhost:8082/activities/
+curl -X POST -v -H "Content-Type:application/json" -u USR:PWD -d '{"type":"login","occurred":"2015-01-05T19:05:00"}' http://localhost:8082/activities/
+curl -X POST -v -H "Content-Type:application/json" -u USR:PWD -d '{"type":"email","content":"welcome","occurred":"2015-01-05T19:10:00"}' http://localhost:8082/activities/
+
+# Link contact and activity
+curl -X PUT -v -H "Content-Type:text/uri-list" -u USR:PWD -d 'http://localhost:8082/activities/1' http://localhost:8082/contacts/1
+
+# Create contact 
+curl -X POST -H 'Content-Type:application/json' -u USR:PWD -d '{"firstName":"Tim","lastName":"Stephenson","email":"tim@omny.link","customFields":{"budget":"5000","appointmentDate":"2015-04-15","partner":"Fred"},"tenantId":"acme"}' http://localhost:8082/contacts/
+ 
+# Update contact 
+curl -X PUT -H 'Content-Type:application/json' -u USR:PWD -d '{"id" : 3,"owner" : "tstephen","customFields" : { },"tenantId" : "trakeo","lastUpdated" : "2015-11-02T17:02:53.000+0000","firstName" : "Tim","lastName" : "Stephenson","email" : "tim@thestephensons.me.uk","doNotCall" : false,"doNotEmail" : false,"firstContact" : "2015-11-02T17:02:52.000+0000", "notes" : [ ], "activities" : [ ],"emailConfirmationCode" : "901a7d9a-20e6-424c-8152-bc4fd1142b73","documents" : [ ],"emailConfirmed" : false,"_links" : {"self" : {"href" : "http://localhost:8083/contacts/3"},"contact" : {"href" : "http://localhost:8083/contacts/3{?projection}","templated" : true},"account" : {"href" : "http://localhost:8083/contacts/3/account"},"notes" : {"href" : "http://localhost:8083/contacts/3/notes"},"documents" : {"href" : "http://localhost:8083/contacts/3/documents"},"activity" : {"href" : "http://localhost:8083/contacts/3/activity"}}}' http://localhost:8083/contacts/3
+curl -X PUT -H 'Content-Type:application/json' -u USR:PWD -d '{"id" : 3,"owner" : "tstephen","tenantId" : "trakeo","lastUpdated" : "2015-11-02T17:02:53.000+0000","firstName" : "Tim","lastName" : "Stephenson","email" : "tim@thestephensons.me.uk","doNotCall" : false,"doNotEmail" : false,"firstContact" : "2015-11-02T17:02:52.000+0000", "notes" : [ ], "activities" : [ ],"emailConfirmationCode" : "901a7d9a-20e6-424c-8152-bc4fd1142b73","documents" : [ ],"emailConfirmed" : false,"_links" : {"self" : {"href" : "http://localhost:8083/contacts/3"},"contact" : {"href" : "http://localhost:8083/contacts/3{?projection}","templated" : true},"account" : {"href" : "http://localhost:8083/contacts/3/account"},"notes" : {"href" : "http://localhost:8083/contacts/3/notes"},"documents" : {"href" : "http://localhost:8083/contacts/3/documents"},"activity" : {"href" : "http://localhost:8083/contacts/3/activity"}}}' http://localhost:8083/contacts/3
+
+# Selective update contact 
+curl -X PUT -H 'Content-Type:application/json' -u USR:PWD -d '{"customFields":{"price":200,"pricePriority": 300}}' http://localhost:8082/omny/contacts/3955
+
+# Set contact's stage
+curl -X POST -H 'Content-Type:application/json' -u USR:PWD -d '' http://localhost:8083/acme/contacts/19242/stage/Cold
+
+# GET contacts for tenant
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/acme/contacts/
+curl --max-time 10000 -w "@omny-link-server/src/test/resources/curl-format.txt" \
+  -H "Accept:application/json" -u USR:PWD \
+  -o /dev/null -s http://localhost:8082/acme/contacts/
+
+# GET single contact
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD https://api.omny.link/contacts/9069?projection=complete
+ 
+# Run email decision on a contact  
+curl -X POST -H 'Accept:application/json' -H 'Content-Type:application/json' -u client1:client1 -d '{  "id" : 2419,  "fullName" : "G Bean",  "firstName" : "G",  "lastName" : "Bean",  "title" : "Mr",  "email" : "gbean@gmail.com",  "phone1" : null,  "phone2" : null,  "address1" : null,  "address2" : null,  "town" : null,  "countyOrCity" : null,  "postCode" : null,  "stage" : "",  "enquiryType" : null,  "accountType" : null,  "owner" : "rossm",  "doNotCall" : false,  "doNotEmail" : false,  "source" : null,  "medium" : null,  "campaign" : null,  "keyword" : null,  "firstContact" : "2015-04-22T17:56:03.000+0000",  "lastUpdated" : "2015-04-24T14:33:03.000+0000",  "tenantId" : "client1",  "customFields" : {    "partnersContacted" : "Avondale"  },  "activities" : [ {    "type" : "valuation",    "content" : "valuation",    "occurred" : "2015-04-22T23:00:00.000+0000",    "lastUpdated" : null  } ],  "_links" : {    "self" : {      "href" : "http://localhost:8082/contacts/2419{?projection}",      "templated" : true    },    "notes" : {      "href" : "http://localhost:8082/contacts/2419/notes"    },    "account" : {      "href" : "http://localhost:8082/contacts/2419/account"    },    "documents" : {      "href" : "http://localhost:8082/contacts/2419/documents"    },    "activity" : {      "href" : "http://localhost:8082/contacts/2419/activity"    }  }}' http://localhost:8082/client1/decisions/email
+
+curl -X POST -H 'Accept:application/json' -H 'Content-Type:application/json' -u client1:client1 -d '{"activities":[{"type":"valuation","content":"valuation","occurred":"2015-04-22T23:00:00.000+0000","lastUpdated":null}],"phone2":null,"address1":null,"address2":null,"countyOrCity":null,"postCode":null,"medium":null,"campaign":null,"keyword":null,"notes":[],"documents":[],"firstContact":"2015-04-22T17:56:03.000+0000","lastUpdated":"2015-04-24T14:33:03.000+0000","customFields":{"partnersContacted":"Avondale","shareOfBusiness":"50"},"tenantId":"client1","source":null,"stage":"","email":"gbean@gmail.com","account":{"id":1052,"name":"My Velo","companyNumber":null,"aliases":null,"businessWebsite":"","shortDesc":null,"description":null,"incorporationYear":null,"noOfEmployees":0,"tenantId":"client1","firstContact":"2015-03-15T16:08:00.000+0000","lastUpdated":"2015-03-16T12:17:00.000+0000","customFields":{"sugarId":"b75750e9-5c30-3873-6abe-5505ae9c7070","sector":"null","subSector":"null","currentYear":"null","region":"null","lastYear":"null","previousYear":"null","preferredTiming":"null","assets":"null","currentProfit":"null","currentTurnover":"null","lastProfit":"null","lastTurnover":"null","previousProfit":"null","previousTurnover":"null","shareOfBusiness":"null","adjustments":"0","borrowing":"0","depreciationAmortisation":"7000","ebitda":"16000","operatingProfit":"9000","highQuote":"184000","lowQuote":"120000","mediumQuote":"152000","surplus":"72000"}},"firstName":"G","lastName":"Bean","enquiryType":null,"title":"Mr","phone1":null,"doNotCall":false,"doNotEmail":false,"id":2419,"owner":"rossm","_links":{"self":{"href":"http://localhost:8082/contacts/2419{?projection}","templated":true},"activity":{"href":"http://localhost:8082/contacts/2419/activity"},"notes":{"href":"http://localhost:8082/contacts/2419/notes"},"account":{"href":"http://localhost:8082/contacts/2419/account"},"documents":{"href":"http://localhost:8082/contacts/2419/documents"}}}' http://localhost:8082/client1/decisions/email
+ 
+# Get all memo distributions
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/omny/memo-distributions/
+
+# Get 1 memo distribution
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/memo-distributions/1/
+# Get memo expanding any tags to individual recipient addresses
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/omny/memo-distributions/1/expandedTags
+
+# GET sales funnel (contacts driven)
+curl -X GET -H 'Content-Type:application/json' -u tstephen:bJzHd253lmLh -v http://localhost:8082/acme/funnel/contacts
+# GET sales funnel (accounts driven)
+curl -X GET -H 'Content-Type:application/json' -u tstephen:bJzHd253lmLh -v http://localhost:8082/aclient/funnel/accounts
+
+# GET all tenant's contacts (JSON)
+curl -H 'Accept:application/json' -u USR:PWD -v http://localhost:8082/corshamprimary/contacts/
+
+# GET all tenant's contacts (CSV)
+curl -H 'Accept:text/csv' -u USR:PWD -v http://localhost:8082/corshamprimary/contacts/contacts.csv
+
+# GET contact(s) matching email
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:8082/omny/contacts/searchByEmail?email=tim@knowprocess.com
+
+# GET contacts with a given tag
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:8082/omny/contacts/findByTag?tag=blue
+
+# GET contact with specific uuid
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:8082/omny/contacts/findByUuid?uuid=bee1b1d6-c533-4372-910c-04fadb4d58ae
+
+# GET contacts belonging to an account
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:8082/aclient/contacts/findByAccountId?accountId=13
+
+# record user activity
+curl -X POST -H 'Content-Type:application/json' -u USR:PWD -v -d '' http://localhost:8082/msg/omny/omny.userActivity.json
+
+# GET activities for contact
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/acme/activities/findByContactId/19
+
+# current active users
+#curl -H 'Accept:application/json' -u USR:PWD -v http://localhost:8082/acme/contacts/findActive
+
+# get gravatar (hash of tstephen)
+curl -X GET -u USR:PWD -v http://localhost:8082/omny/gravatars/7cb160cf07301abd60974781835c933e.png
+
+# GET accounts for tenant
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/acme/accounts/
+curl --max-time 10000 -w "@omny-link-server/src/test/resources/curl-format.txt" \
+  -H "Accept:application/json" -u USR:PWD \
+  -o /dev/null -s http://localhost:8082/acme/accounts/
+
+GET notes for contact
+curl  -H 'Accept: application/json' -v -u USR:PWD http://localhost:8082/contacts/19/notes
+
+GET notes for account
+curl  -H 'Accept: application/json' -v -u USR:PWD http://localhost:8082/accounts/17/notes
+
+# UPLOAD JSON FILE OF CONTACTS
+curl -u USR:PWD -v \
+  -F "filecomment=This is a JSON file" \
+  -F "file=@/home/tstephen/git/questionnaire/batch1.json" \
+  http://localhost:8082/corshamprimary/contacts/uploadjson
+
+# record enquiry
+curl -X POST -H 'Accept:application/json' -u USR:PWD -v \
+-d 'json={ "lastName":"Burns", "firstName":"Charles Montgomery Third", "email":"mrburns@springfieldpower.com", "phone1":"44987654321", "type":"Enquiry", "message":"Hello there", "tenantId":"omny" }' \
+http://localhost:8082/msg/acme/omny.enquiry.json
+
+# De-activate contacts
+curl -X POST -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/contacts/archive
+
+# De-activate accounts
+curl -X POST -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/accounts/archive
+

@@ -1,0 +1,9 @@
+== Communications
+
+include::../comms/maintain-template.adoc[]
+
+include::../comms/maintain-list.adoc[]
+
+include::../comms/send-memo.adoc[]
+
+include::../comms/send-to-list.adoc[]

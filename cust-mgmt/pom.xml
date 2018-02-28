@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>Customer Management</name>
+  <description>Customer Management</description>
+  <inceptionYear>2015</inceptionYear>
+
+  <groupId>link.omny.custmgmt</groupId>
+  <artifactId>custmgmt</artifactId>
+  <packaging>jar</packaging>
+
+  <parent>
+    <groupId>link.omny</groupId>
+    <artifactId>omny-link-root</artifactId>
+    <relativePath>..</relativePath>
+    <version>2.2.0</version>
+  </parent>
+
+  <properties>
+    <start-class>link.omny.custmgmt.Application</start-class>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.subethamail</groupId>
+      <artifactId>subethasmtp-wiser</artifactId>
+      <version>1.2</version>
+      <optional>true</optional>
+      <!-- Swagger UI requires at least 2.5 -->
+      <exclusions>
+        <exclusion>
+          <artifactId>servlet-api</artifactId>
+          <groupId>javax.servlet</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Parse and extract HTML parts -->
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+    <dependency>
+      <groupId>link.omny.support-services</groupId>
+      <artifactId>support-services</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.knowprocess</groupId>
+      <artifactId>auth</artifactId>
+      <version>${kp-auth.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.knowprocess.bpm</groupId>
+      <artifactId>work-mgmt</artifactId>
+      <version>${work-mgmt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.onedecision</groupId>
+      <artifactId>onedecision-engine</artifactId>
+      <version>${onedecision.version}</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/batik/batik-transcoder -->
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-transcoder</artifactId>
+      <version>1.6-1</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>xalan</artifactId>
+          <groupId>xalan</groupId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xercesImpl</artifactId>
+        </exclusion>
+        <exclusion>
+          <artifactId>xmlParserAPIs</artifactId>
+          <groupId>xml-apis</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Web jars -->
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>bootstrap</artifactId>
+      <version>3.3.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>ractive</artifactId>
+      <version>0.7.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery-ui</artifactId>
+      <version>1.11.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>chosen</artifactId>
+      <version>1.4.2</version>
+    </dependency>
+    <dependency>
+	    <groupId>org.webjars</groupId>
+	    <artifactId>ckeditor</artifactId>
+	    <version>4.4.7</version><!--  4.5.11 -->
+    </dependency>
+    <dependency>
+      <groupId>link.omny</groupId>
+      <artifactId>fonts</artifactId>
+      <version>${omny-link.version}</version>
+    </dependency>    
+
+    <!-- Without >=2.5.0 get Sax 2 parser exception on Batik transcoder -->
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>${xerces.version}</version>
+    </dependency>
+
+  </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Update from 2.2.1 dependency of fop -->
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <version>[2.5.0,)</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+            <configuration>
+              <classifier>exec</classifier>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

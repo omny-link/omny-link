@@ -1,0 +1,9 @@
+.classpath
+.project
+.settings/
+*.log*
+*.log.*
+*~
+application.properties
+log4j.properties
+target/

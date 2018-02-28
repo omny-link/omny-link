@@ -1,0 +1,72 @@
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<section class="currentOrderItemSect" data-id="{{id}}" style="display:none">
+    
+    {{#if tenant.orderItemFields.length>0 && haveCustomExtension('OrderItemExtension')}}
+      <div id="currentOrderItemExtended" style="clear: both">
+        {{>(tenant.id+'OrderItemExtension')}}
+      </div>
+    {{else}}
+      <h4>{{#tenant.strings.orderItem}}{{tenant.strings.orderItem}}{{/}}{{#current.orderItems[j].name}} - {{current.orderItems[j].name}}{{/}}{{#current.orderItems[j].stockItem.name}} - {{current.orderItems[j].stockItem.name}}{{/}}</h4>
+      <div id="currentOrderItemExtended" style="clear: both">
+        <div class="currentBody col-md-6 col-sm-12">
+          <ul class="form edit-form">
+            {{#tenant.features.catalog}}
+              <li class="form-group">
+                <label class="col-md-4 col-sm-4">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
+                <input class="form-control" list="stockItems" id="curStockItem{{j}}" value="{{current.orderItems[j].stockItem.name}}">
+                <p class="col-md-offset-4 col-sm-offset-4 help-block"></p>
+              </li>
+            {{/}}
+            {{#each tenant.orderItemFields.slice(0,Math.ceil(tenant.orderItemFields.length/2)):k}}
+              <li class="form-group">
+                <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
+                {{#if type=='list'}}
+                  <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}" value="{{current.orderItems[j].customFields[name]}}">
+                {{else}}
+                  <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type=='number'}}step="any"{{/}} type="{{type}}" value="{{current.orderItems[j].customFields[name]}}">
+                {{/if}}
+                <p class="col-md-offset-4 col-sm-offset-4 help-block">{{hint}}</p>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+        <div class="currentBody col-md-6 col-sm-12">
+          <ul class="form edit-form">
+            {{#tenant.strings.orderItemPriceHint}}
+              <li class="form-group">
+                <label class="col-md-4 col-sm-4">{{#tenant.strings.orderItemPrice}}{{tenant.strings.orderItemPrice}}{{else}}Price{{/}}:</label>
+                  <input class="form-control" id="curOrderItemPrice" type="{{type}}" value="{{current.orderItems[j].price}}">
+                <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderItemPriceHint}}{{tenant.strings.orderItemPriceHint}}{{else}}Price for the {{tenant.strings.orderItem}}{{/}}:</p>
+              </li>
+            {{/}}
+            {{#each tenant.orderItemFields.slice(Math.ceil(tenant.orderItemFields.length/2),tenant.orderItemFields.length):k}}
+              <li class="form-group">
+                <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
+                {{#if type=='list'}}
+                  <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}" value="{{current.orderItems[j].customFields[name]}}">
+                {{else}}
+                  <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type=='number'}}step="any"{{/}} type="{{type}}" value="{{current.orderItems[j].customFields[name]}}">
+                {{/if}}
+                <p class="col-md-offset-4 col-sm-offset-4 help-block">{{hint}}</p>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    {{/if}}
+    
+</section>

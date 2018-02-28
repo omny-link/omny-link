@@ -1,0 +1,15 @@
+[[search-stock-website]]
+=== icon:check-circle-o[] Search Stock (on website)
+
+Actor:
+
+==== User story
+
+==== User outcome
+
+==== Pre-requisites
+
+
+
+==== Order Form
+
