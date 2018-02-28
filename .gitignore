@@ -1,0 +1,31 @@
+*/.*
+.project
+.settings/
+**/*.bak
+*.class
+*.log*
+application.properties
+/log4j.properties
+target/
+
+# Mac 
+.DS_Store
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Patch backups
+**.orig
+**patch
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# test output that should be moved to target
+*jrxml.html
+omny-link-server/*jrxml.html

@@ -1,0 +1,11 @@
+[[architecture]]
+== Further Reading
+
+=== License
+
+Omny Link is open source under the https://www.apache.org/licenses/LICENSE-2.0.html[Apache v2 license].
+
+=== Dev-Ops
+
+More information on the architecture and how to build and host the software may
+be found in the link:devops.html[Dev-Ops guide].

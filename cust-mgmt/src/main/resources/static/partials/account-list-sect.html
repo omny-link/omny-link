@@ -1,0 +1,65 @@
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<section class="container container-sticky">
+  <h2 class="navbar-sticky">
+    {{>navbar}}
+    {{>profileArea}}
+  </h2>
+</section>
+
+<section id="pasteSect" style="display:none">
+  <h2>
+    Import
+    <a class="glyphicon glyphicon-btn glyphicon-import super-admin pull-right upload" aria-hidden="true" on-click="pasteImport()" title="Import data from file"></a>
+  </h2>
+  <div id="pasteZone" class="col-md-12 pasteZone">
+    <span class="target" style="border: #666 solid 1px">Paste your data here</span>
+  </div>
+
+  <div id="pastePreview" style="clear:both">
+    <table class="accounts table table-striped">
+      <thead>
+        {{#each pasteData.headers:idx}}
+          <th data-name="{{.}}" >
+            <span>{{.}}</span>
+            <span class="alert-warning glyphicon glyphicon-btn glyphicon-warning-sign" style="display:none" title="field '{{.}}' is not recognised"></span>
+          </th>
+        {{/each}}
+      </thead>
+      <tbody>
+        {{#each pasteData.rows:idx}}
+          <tr data-row="{{idx}}">
+            {{#each pasteData.rows[idx]:colIdx}}
+              <td data-col="{{colIdx}}">
+                <span>{{.}}</span>
+                <span class="alert-warning glyphicon glyphicon-btn glyphicon-warning-sign" style="display:none" title="'{{.}}' is not a valid value"></span>
+              </td>
+            {{/each}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
+<section class="resultsSect" id="accountsSect">
+  <h2 class="navbar-top">
+    {{>navbar}}
+    {{! TODO Untested<a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-cloud-upload power-user pull-right" aria-hidden="true" on-click="pasteInit()" title="Upload data from file"></a>}}
+  </h2>
+  {{>accountListTable}}
+</section>

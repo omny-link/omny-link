@@ -1,0 +1,64 @@
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<form id="currentMemoSignatoryForm" class="form">
+  <section id="currentAccount" style="clear: both">
+    <h3 title="Signatories">
+      <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-bottom" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+      <span>{{#tenant.strings.signatories}}{{tenant.strings.signatories}}{{else}}Signatories{{/}}</span>
+    </h3>
+    <p>Details of the position of the signatures within the document</p>
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+      <h4>{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}</h4>
+      <ul class="form inline-form edit-form">
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">{{# tenant.strings.page}}{{tenant.strings.page}}{{else}}Page{{/}}:</label>
+          <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curOwnerPage" type="number" value="{{current.signatories.0.signHereTab.page}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Page number signature should appear on</p>
+        </li>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">{{# tenant.strings.x}}{{tenant.strings.x}}{{else}}X Position{{/}}:</label>
+          <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curOwnerX" type="number" value="{{current.signatories.0.signHereTab.x}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Number of pixels from left edge of page</p>
+        </li>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">{{# tenant.strings.y}}{{tenant.stringsy}}{{else}}Y Position{{/}}:</label>
+          <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curOwnerY" type="number" value="{{current.signatories.0.signHereTab.y}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Number of pixels from top of page</p>
+        </li>
+      </ul>
+    </div>
+    <div class="currentBody col-md-6 col-sm-12 col-xs-12">
+      <h4>{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}</h4>
+      <ul class="form inline-form edit-form">
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">{{# tenant.strings.page}}{{tenant.strings.page}}{{else}}Page{{/}}:</label>
+          <input class="col-md-8 col-sm-8 form-control" id="curContactPage" type="number" value="{{current.signatories.1.signHereTab.page}}"/>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Page number signature should appear on</p>
+        </li>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">{{# tenant.strings.x}}{{tenant.strings.x}}{{else}}X Position{{/}}:</label>
+          <input class="col-md-8 col-sm-8 form-control" id="curContactX" type="number" value="{{current.signatories.1.signHereTab.x}}"/>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Number of pixels from left edge of page</p>
+        </li>
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">{{# tenant.strings.y}}{{tenant.strings.y}}{{else}}Y Position{{/}}:</label>
+          <input class="col-md-8 col-sm-8 form-control" id="curContactY" type="number" value="{{current.signatories.1.signHereTab.y}}"/>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Number of pixels from top of page</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+</form>

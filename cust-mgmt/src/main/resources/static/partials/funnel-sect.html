@@ -1,0 +1,54 @@
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<section class="container container-sticky">
+  <h2 class="navbar-sticky">
+    {{>navbar}}
+    {{>profileArea}}
+  </h2>
+</section>
+
+<section id="funnelCriteriaSect">
+  <h2 class="navbar-top">
+    {{>navbar}}
+  </h2>
+</section>
+
+<section id="funnelResultSect">
+  <div class="col-md-offset-1" id="funnel"></div>
+  <div class="col-md-1">&nbsp;</div>
+
+  <div id="funnelResultLegend2">
+    {{#report.stages['Cold']}}
+      <label id="stageCold">Cold:</label>
+      <span>{{report.stages['Cold']}}</span>
+    {{/}}
+    {{#report.stages['deleted']}}
+      <label id="stageDeleted">Deleted:</label>
+      <span>{{report.stages['deleted']}}</span>
+    {{/}}
+  </div>
+</section>
+
+<div style="clear:both;"></div>
+<section id="funnelResultTableSect" {{#if entityPath==undefined}}style="display:none"{{/if}}>
+  {{#if entityPath.indexOf('order')!=-1}}
+    {{>orderListTable}}
+  {{elseif tenant.features.accountView}}
+    {{>accountListTable}}
+  {{else}}
+    {{>contactListTable}}
+  {{/if}}
+</section>

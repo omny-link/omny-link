@@ -1,0 +1,8 @@
+{
+  "id":"acme",
+  "name":"ACME Inc",
+  "adminEmail":"tim@knowprocesss.com",
+  "adminFirstName":"Tim",
+  "adminLastName":"Stephenson",
+  "websiteIncluded": true
+}

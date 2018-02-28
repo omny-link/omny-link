@@ -1,0 +1,60 @@
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<section id="offerSect">
+  <h3>
+    <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+    <span>{{#tenant.strings.offer}}{{tenant.strings.offer}}{{else}}Offer{{/}}</span>
+  </h3>
+
+  <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
+    <ul class="form edit-form">
+      <li class="form-group">
+        <label class="col-md-4 col-sm-4">{{#tenant.strings.offerStatus}}{{tenant.strings.offerStatus}}{{else}}Status{{/}}:</label>
+        <input class="form-control" list="status" placeholder="Start typing to filter options" id="curOfferStatus" maxlength="20" value="{{current.offerStatus}}"/>
+        <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.offerStatusHint}}{{tenant.strings.offerStatusHint}}{{else}}Draft, Ready for review, Published etc.{{/}}</p>
+      </li>
+      <li class="form-group">
+        <label class="col-md-4 col-sm-4">{{#tenant.strings.offerTitle}}{{tenant.strings.offerTitle}}{{else}}Title{{/}}:</label>
+        <input class="form-control" id="curOfferTitle" maxlength="35" value="{{current.offerTitle}}"/>
+        <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.offerTitleHint}}{{tenant.strings.offerTitleHint}}{{else}}The top line of the offer{{/}}</p>
+      </li>
+    </ul>
+  </div>
+
+  <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
+    <ul class="form edit-form">
+      <li class="form-group">
+        <label class="col-md-4 col-sm-4">{{#tenant.strings.offerCallToAction}}{{tenant.strings.offerCallToAction}}{{else}}Call To Action{{/}}:</label>
+        <input class="form-control" id="curOfferCallToAction" maxlength="30" value="{{current.offerCallToAction}}"/>
+        <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.offerCallToActionHint}}{{tenant.strings.offerCallToActionHInt}}{{else}}Call to action is typically used as button text{{/}}</p>
+      </li>
+      <li class="form-group">
+        <label class="col-md-4 col-sm-4">{{#tenant.strings.offerUrl}}{{tenant.strings.offerUrl}}{{else}}URL{{/}}:</label>
+        <input class="form-control" placeholder="A relative or absolute URL to redirect to" id="curOfferUrl" value="{{current.offerUrl}}"/>
+        <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.offerUrlHint}}{{tenant.strings.offerUrlHint}}{{else}}If absolute, must begin with http:// or https://{{/}}</p>
+      </li>
+    </ul>
+  </div>
+
+  <div class="currentBody col-md-12" style="display:none">
+    <ul class="form edit-form">
+      <li class="form-group">
+        <label class="textarea col-md-2 col-sm-4">{{#tenant.strings.offerDescription}}{{tenant.strings.offerDescription}}{{else}}Description{{/}}:</label>
+        <textarea class="col-md-10 col-sm-8 form-control" id="curOfferDescription" maxlength="80" maxlength="250" value="{{current.offerDescription}}"></textarea>
+      </li>
+    </ul>
+  </div>
+</section>

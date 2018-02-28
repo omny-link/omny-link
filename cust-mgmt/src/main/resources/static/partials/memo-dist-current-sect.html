@@ -1,0 +1,81 @@
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<section id="currentSect" style="display:none">
+  <form id="currentForm" class="form form-inline">
+    <h2>Define Distribution
+      <a class="clickable glyphicon glyphicon-btn glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
+      <span class="pull-right">
+        <a class="clickable glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-copy" aria-hidden="true" on-click="clone(this)" title="Clone this record"></a>
+        <a class="clickable glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-send" aria-hidden="true" on-click="startDistribution(this)" title="Send"></a>
+        <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+      </span>
+    </h2>
+
+    <div class="currentBody col-md-6 col-sm-12">
+      <ul class="form edit-form">
+        <li>
+          <label class="col-md-4 required" for="curName">Name:</label>
+          <input class="form-control" id="curName" placeholder="An identifying name for this distribution" required {{#current.status!='Draft'}}disabled readonly{{/}} type="text" value="{{current.name}}"/>
+          <p class="col-md-offset-4 help-block">Give this distribution an identifying name</p>
+        </li>
+        <li>
+          <label class="col-md-4 control-label required" for="curMemoDisplay">Memo Template:</label>
+          <input autocomplete="off" class="form-control" id="curMemoDisplay" list="memos" placeholder="Please select a template" required {{#current.status!='Draft'}}disabled readonly{{/}} type="text" value="{{current.memoDisplay}}">
+          <input id="curMemoRef" required type="hidden" value="{{current.memoRef}}">
+          <p class="col-md-offset-4 help-block">The memo template to use for this distribution</p>
+        </li>
+        <li>
+          <label class="col-md-4 control-label required" for="curRecipients">List of recipients:</label>
+          <select id="curRecipients" class="form-control" multiple onchange="ractive.setRecipients(this)" {{#current.status!='Draft'}}disabled readonly{{/}} style="width:350px"></select>
+          <p class="col-md-offset-4 help-block">Individuals or lists to contact</p>
+        </li>
+      </ul>
+    </div>
+    <div class="currentBody col-md-6 col-sm-12">
+      <ul class="form edit-form">
+        <li>
+          <label class="col-md-4 control-label" for="curOwner">Owner: </label>
+          <input class="form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" {{#current.status!='Draft'}}disabled readonly{{/}} value="{{current.owner}}">
+          <p class="col-md-offset-4 help-block">The user responsible for the distribution.</p>
+          <!-- Usually the owner creates and resolves the distribution but may also transfer ownership to another user. -->
+        </li>
+        <li>
+          <label class="col-md-4 control-label">Status: </label>
+          <input class="form-control" disabled id="curStatus" readonly value="{{current.status}}">
+          {{#current['providerRef']}}
+            <input class="form-control" disabled id="curProviderRef" readonly value="{{current.providerRef}}">
+          {{/}}
+          <p class="col-md-offset-4 help-block">Draft until sent, then Sent until all contacts acknowledge, then Complete.</p>
+        </li>
+        <li>
+          <label class="col-md-4 control-label">Send at:</label>
+          <input class="form-control" id="curSendAtDate" style="float:left;width:159px" {{#current.status!='Draft'}}disabled readonly{{/}} type="date" value="{{current.sendAtDate}}">
+          <input class="form-control" id="curSendAtTime" style="float:left;;width:95px" {{#current.status!='Draft'}}disabled readonly{{/}} type="time" value="{{current.sendAtTime}}">
+          <input class="form-control" id="curSendAtTZ" pattern="GMT[+-][0-9]{2}:[0-9]{2}" placeholder="GMT-HH:MM" style="float:left;width:107px;" {{#current.status!='Draft'}}disabled readonly{{/}} type="text" value="{{current.sendAtTZ}}">
+        </li>
+      </ul>
+    </div>
+  </form>
+  
+  {{#current['providerRef']}}
+    <div style="clear: both"></div>
+  
+    <div id="providerStatusSect" style="clear: both">
+      <h2>Status</h2>
+      {{{formatObj(current.providerStatus.Data.0)}}}
+    </div>
+  {{/}}
+</section>

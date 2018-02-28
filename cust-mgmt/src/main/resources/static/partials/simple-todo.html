@@ -1,0 +1,50 @@
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<div class="form-group">
+  <label class="required" for="what">What needs to be done?</label>
+  <textarea class="form-control" id="what" placeholder="Type yourself a reminder of what to do" required value="{{instanceToStart.processVariables['what']}}"></textarea>
+  <p class="help-block field-hint field-error">Type yourself a reminder of what to do</p>
+</div>
+<div class="form-group">
+  <label class="required" for="when">When is it expected?</label>
+  <input type="date" class="form-control" id="when" placeholder="yyyy-mm-dd" required value="{{instanceToStart.processVariables['when']}}">
+  <p class="help-block field-hint field-error">Please pick when to be reminded.</p>
+</div>
+<div class="form-group">
+  <label for="who">Who will do it?</label>
+  <input class="form-control" id="who" list="owners" placeholder="Start typing to filter options" value="{{instanceToStart.processVariables['who']}}"/>
+  <p class="help-block field-hint field-error"></p>
+</div>
+<div class="form-group">
+  <label for="notify">Who should be kept informed (comma separated email addresses not limited to Omny users)?</label>
+  <input class="form-control" id="notify" list="owners" placeholder="Start typing to filter options" value="{{instanceToStart.processVariables['notify']}}"/>
+  <p class="help-block field-hint field-error"></p>
+</div>
+<div class="form-group">
+  <label for="where">Where's the best place?</label>
+  <input class="form-control" id="where" placeholder="" value="{{instanceToStart.processVariables['where']}}"/>
+  <p class="help-block field-hint field-error"></p>
+</div>
+<script>
+  $(document).ready(function() {
+    ractive.initAutoComplete();
+    validateCustomActionForm();
+    $('#customActionForm input,#customActionForm select,#customActionForm textarea').blur(function() {
+      console.log('blur custom action form field');
+      validateCustomActionForm();
+    });
+  });
+</script>

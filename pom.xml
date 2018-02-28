@@ -1,0 +1,293 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>Omny Link Root</name>
+  <groupId>link.omny</groupId>
+  <artifactId>omny-link-root</artifactId>
+  <packaging>pom</packaging>
+  <version>2.2.0</version>
+  
+  <organization>
+    <name>Omny Link</name>
+    <url>http://omny.link</url>
+  </organization>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>1.4.0.RELEASE</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
+
+  <properties>
+    <java.version>1.8</java.version>
+    <javax-json.version>1.0.4.20170227</javax-json.version>
+    <activiti.version>5.18.0.20151117</activiti.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <omny-link.version>2.2.0</omny-link.version>
+    <!-- Should express as range: [1.0,1.1) -->
+    <kp-auth.version>1.0.0.2</kp-auth.version>
+    <work-mgmt.version>2.3.0</work-mgmt.version>
+    <activiti.bdd.version>5.19.0.20161207</activiti.bdd.version>
+    <onedecision.version>1.2.0-RC1</onedecision.version>
+    <plantuml.version>8059</plantuml.version>
+    <rometools.version>1.7.0</rometools.version>
+    <xerces.version>2.11.0</xerces.version>
+  </properties>
+
+  <licenses>
+    <license>
+      <name>Apache v2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <issueManagement>
+    <system>Github</system>
+    <url>https://github.com/OmnyLink/OmnyLink/issues</url>
+  </issueManagement>
+
+  <scm>
+    <url>git@github.com:OmnyLink/OmnyLink.git</url>
+    <connection>scm:git:git@github.com:OmnyLink/OmnyLink.git</connection>
+    <developerConnection>scm:git:git@github.com:OmnyLink/OmnyLink.git</developerConnection>
+  </scm>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>kp-plugin-repo</id>
+      <url>https://knowprocess.com/maven/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <repositories>
+    <repository>
+      <id>kp-mvn-repo</id>
+      <url>https://knowprocess.com/maven/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>javax.json-patch-mvn-repo</id>
+      <url>https://raw.github.com/tstephen/jsonp/maven-repo/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <dependencies>
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-web</artifactId>
+     <exclusions>
+       <exclusion>
+         <artifactId>logback-classic</artifactId>
+         <groupId>ch.qos.logback</groupId>
+       </exclusion>
+       <exclusion>
+         <artifactId>log4j-over-slf4j</artifactId>
+         <groupId>org.slf4j</groupId>
+       </exclusion>
+     </exclusions>
+   </dependency>
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-data-jpa</artifactId>
+     <exclusions>
+       <exclusion>
+         <artifactId>tomcat-jdbc</artifactId>
+         <groupId>org.apache.tomcat</groupId>
+       </exclusion>
+       <exclusion>
+         <artifactId>xml-apis</artifactId>
+         <groupId>xml-apis</groupId>
+       </exclusion>
+     </exclusions>
+   </dependency>
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-data-rest</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-security</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-freemarker</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-test</artifactId>
+     <scope>test</scope>
+   </dependency>
+   <!-- Compiles against SLF4J but this is the implementation of choice -->
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-log4j2</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>com.h2database</groupId>
+     <artifactId>h2</artifactId>
+     <scope>test</scope>
+   </dependency>
+   <dependency>
+     <groupId>mysql</groupId>
+     <artifactId>mysql-connector-java</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>com.fasterxml.jackson.core</groupId>
+     <artifactId>jackson-databind</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>org.projectlombok</groupId>
+     <artifactId>lombok</artifactId>
+     <scope>provided</scope>
+   </dependency>
+   <!-- Use instead of tomcat jdbc default provided by Spring Boot as more reliable -->
+   <dependency>
+     <groupId>com.zaxxer</groupId>
+     <!-- drop -java6 suffix for Java 8 compiled version -->
+     <artifactId>HikariCP-java6</artifactId>
+   </dependency>
+
+  </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <version>1.4.0.RELEASE</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <modules>
+    <module>acct-mgmt</module>
+    <module>analytics</module>
+    <module>catalog</module>
+    <module>cust-mgmt</module>
+    <module>docs</module>
+    <module>fonts</module>
+    <module>omny-link-server</module>
+    <module>omny-link-processes</module>
+    <module>service-tasks</module>
+    <module>support-services</module>
+    <module>work-mgmt</module>
+  </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <showDeprecation>true</showDeprecation>
+          <showWarnings>true</showWarnings>
+          <optimize>true</optimize>
+        </configuration>
+      </plugin>
+      <!-- Plugin to automatically generated UML diagrams -->
+      <plugin>
+        <groupId>com.github.jeluard</groupId>
+        <artifactId>plantuml-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <phase>process-resources</phase>
+            <goals>
+            <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sourceFiles>
+            <directory>${basedir}</directory>
+            <includes>
+              <include>src/main/plantuml/**/*.puml</include>
+            </includes>
+          </sourceFiles>
+          <outputDirectory>${project.build.directory}/classes/static/images/domain</outputDirectory>
+          <flattenOutput>true</flattenOutput>
+          <format>svg</format>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>${plantuml.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <failIfNoTests>false</failIfNoTests>
+          <trimStackTrace>false</trimStackTrace>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <excludes>
+            <exclude>**/*TestCase.java</exclude>
+          </excludes>
+          <runOrder>alphabetical</runOrder>
+        </configuration>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.3.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.4.2</version>
+          <configuration>
+            <mavenExecutorId>forked-path</mavenExecutorId>
+            <useReleaseProfile>false</useReleaseProfile>
+            <arguments>${arguments} -Psonatype-oss-release</arguments>
+          </configuration>
+        </plugin>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>com.github.jeluard</groupId>
+                    <artifactId>
+                      plantuml-maven-plugin
+                    </artifactId>
+                    <versionRange>[1.2.1,)</versionRange>
+                    <goals>
+                      <goal>generate</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

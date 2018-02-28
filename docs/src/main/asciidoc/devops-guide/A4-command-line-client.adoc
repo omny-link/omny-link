@@ -1,0 +1,33 @@
+[[command-line-client]]
+== Command line client
+
+The command line client allows you to experiment with the REST services and to 
+schedule maintenance tasks easily using `cron`. The client exists mainly
+because the JSON web token authorisation used makes each API call a two step 
+process when using tools like `curl`; one to authenticate and one to invoke
+the API. The client is a python wrapper to encapsulate these in one command
+and offers options very similar to `curl`.
+
+=== Installation
+
+The script is a single python3 file that needs no external dependencies so 
+you can simply download the latest https://code.knowprocess.com/omny/platform/tree/master/python-client[here]
+and add it to your system's `PATH`.
+
+=== Running
+
+To find exactly what the options are run:
+----
+  omny.py --help
+----
+
+For example to set contacts to 'Cold' if they've not been updated in 2017 (the 
+`/contacts/archive` endpoint) for `omny` contacts you could:
+
+TIP: don't forget to change this to your own tenant id!
+
+----
+   omny.py -u me@omny.link:secret -v -X POST -d 'before=2017-01-01&stage=Cold' https://api.omny.link/omny/contacts/archive
+----
+
+See link:devops.html#api[here] for the full range of APIs available.

@@ -1,0 +1,135 @@
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<section id="currentSect" style="display:none">
+  <form class="inline-form form" id="currentForm">
+    <h2 class="">
+      <span contenteditable id="curName2" on-focus="editField('#curName2','current.name')" on-blur="updateField('#curName2','current.name')" value="{{current.name}}"></span>
+      <span class="pull-right">
+        <a class="glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" href="orders.html?q=stockItemId:{{current.id}}" target="orders" title="View related {{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}orders{{/}}"></a>
+        <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+        {{#if tenant.stockItemActions!=undefined && tenant.stockItemActions.length>0 }}
+          <span class="clickable dropdown" aria-hidden="true" title="Start Process">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
+              <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+            </a>
+            <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+              {{#each tenant.stockItemActions }}
+                {{#name && matchRole(role) && featureEnabled(feature)}}
+                  <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}})">{{name}}</li>
+                {{elseif name==undefined}}
+                  <li class="divider"></li>
+                {{/}}
+              {{/each}}
+            </ul>
+          </span>
+        {{/if}}
+      </span>
+    </h2>
+
+    <div class="currentBody col-md-6 col-sm-12">
+      <ul class="form edit-form">
+        {{#tenant.show.stockCategory}}
+	        <li class="form-group">
+	          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}:</label>
+	          <div class="input-group">
+              <input class="form-control" list="stockCategories" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.stockCategory.name}}">
+	            <span class="input-group-addon">
+                <a href="stock-categories.html?q={{current.stockCategory.id}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+              </span>
+            </div>
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>
+	        </li>
+	      {{/}}
+	      {{#if stockTypes!=undefined}}
+	        <li class="form-group">
+	          <label class="col-md-4 col-sm-4 col-xs-4 required">{{#tenant.strings.tags}}{{tenant.strings.tags}}{{else}}Tags{{/}}:</label>
+	          <input class="tag-ctrl form-control col-md-8 col-sm-8 col-xs-8" id="curTags" data-bind="current.tags" required/>
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.tagsHint}}{{tenant.strings.tagsHint}}{{else}}Tags allow multiple and free-form classification{{/}}</p>
+	        </li>
+	      {{/if}}
+        <li class="form-group">
+          <label class="col-md-4 col-sm-4">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}:</label>
+          <input class="form-control" id="curStatus" list="status" placeholder="Start typing to filter options" value="{{current.status}}"/>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.statusHint}}{{tenant.strings.statusHint}}{{else}}Draft, Ready for review, Published etc.{{/}}</p>
+        </li>
+        <li>
+          <label class="col-md-4 col-sm-4">{{#tenant.strings.videoCode}}{{tenant.strings.videoCode}}{{else}}Video Code{{/}}:</label>
+          <input class="form-control" id="curVideoCode" value="{{current.videoCode}}"/>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.videoCodeHint}}{{tenant.strings.videoCodeHint}}{{else}}This might be either embed code from YouTube, Vimeo etc. or simply a URL but must match API client code.{{/}}</p>
+        </li>
+      </ul>
+    </div>
+    {{#tenant.show.stockPricing}}
+	    <div class="currentBody col-md-6 col-sm-12">
+	      <ul class="form edit-form">
+	        <li class="form-group">
+	          <label class="col-md-4 col-sm-4">{{#tenant.strings.unitPrice}}{{tenant.strings.unitPrice}}{{else}}Unit Price{{/}}:</label>
+	          <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price of the {{tenant.strings.stockItem.toLowerCase()}}{{/}}</p>
+	        </li>
+	        <li class="form-group">
+	          <label class="col-md-4 col-sm-4">{{#tenant.strings.unit}}{{tenant.strings.unit}}{{else}}Unit of Measure{{/}}:</label>
+	          <input class="form-control" id="curUnit" value="{{current.unit}}">
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.unitHint}}{{tenant.strings.unitHint}}{{else}}Relevant unit of measure for the {{#if tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/if}}{{/}}</p>
+	        </li>
+	        <li class="form-group">
+	          <label class="col-md-4 col-sm-4">{{#tenant.strings.size}}{{tenant.strings.size}}{{else}}Size{{/}}:</label>
+	          <input class="form-control" id="curSize" type="number" value="{{current.size}}">
+	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.sizeHint}}{{tenant.strings.sizeHint}}{{else}}Number of UOMs in this {{tenant.strings.stockItem.toLowerCase()}}{{/}}</p>
+	        </li>
+	      </ul>
+	    </div>
+	  {{/}}
+
+    <div class="currentBody col-md-12">
+      <ul class="form edit-form">
+        <li class="form-group">
+          <label class="textarea col-md-2 col-sm-4">Description:</label>
+          <textarea class="col-sm-10 col-sm-8" id="curDescription" maxlength="250" rows="10" value="{{current.description}}"></textarea>
+        </li>
+      </ul>
+    </div>
+
+    {{#tenant.show.stockItemOffers}}
+      {{>currentOfferSect}}
+    {{/}}
+
+    {{#tenant.stockItemFields.length>0}}
+      {{#if haveCustomExtension('StockItemExtension')}}
+        <div id="currentStockItemExtended" style="clear: both">
+          {{>(tenant.id+'StockItemExtension')}}
+        </div>
+      {{else}}
+        <div id="currentStockItemExtended" style="clear: both">
+          {{>currentStockItemExtensionSect}}
+        </div>
+      {{/if}}
+    {{/}}
+  </form>
+
+  {{#if tenant.features.stockItemImages}}
+    {{>currentImageSect}}
+  {{/if}}
+
+  {{#if tenant.features.notesOnStockItem}}
+    {{>currentNoteListSect}}
+  {{/if}}
+
+  {{#if tenant.features.documentsOnStockItem}}
+    {{>currentDocumentListSect}}
+  {{/if}}
+
+</section>
