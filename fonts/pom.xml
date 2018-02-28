@@ -28,7 +28,7 @@
     <groupId>link.omny</groupId>
     <artifactId>omny-link-root</artifactId>
     <relativePath>..</relativePath>
-    <version>2.2.0</version>
+    <version>2.2.1</version>
   </parent>
 
   <properties>
