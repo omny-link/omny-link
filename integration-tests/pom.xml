@@ -28,8 +28,8 @@
     <java.version>1.8</java.version>
     <cucumber.java.version>1.2.5</cucumber.java.version>
     <commons-io.version>1.3.2</commons-io.version>
-    <omny-link.version>2.1.0-SNAPSHOT</omny-link.version>
-    <work-mgmt.version>2.2.0-SNAPSHOT</work-mgmt.version>
+    <omny-link.version>2.2.1</omny-link.version>
+    <work-mgmt.version>2.2.0</work-mgmt.version>
   </properties>
 
   <dependencies>

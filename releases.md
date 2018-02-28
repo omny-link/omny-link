@@ -1,7 +1,13 @@
 Release Notes
 =============
 
-## 2.2.0 - 27 Feb 2018
+## 2.2.1 - 28 Feb 2018
+
+- #608 export tasks
+- #607 export notes and docs along with the linked contact and account
+- #606 export internal ids
+
+## 2.2.0 - 17 Jan 2018
 
 - #613 prevent contacts / accounts relate to the tenant being deleted
 - #602 use a 'smart' label to the Orders section of Contacts
