@@ -177,7 +177,7 @@ public class ContactTest {
     }
 
     @Test
-    public void testParseJsonContact() {
+    public void testParseJsonContactWithOptIn() {
         String jsonInString = readFromClasspath("/omny.enquiry.json");
         assertNotNull(jsonInString);
 
@@ -190,7 +190,51 @@ public class ContactTest {
             assertEquals("Bart", contact.getFirstName());
             assertEquals("Simpson", contact.getLastName());
             assertEquals("google", contact.getSource());
+            assertEquals(true, contact.getEmailOptIn());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Unable to parse JSON");
+        }
+    }
+
+    @Test
+    public void testParseJsonContactWithOptOut() {
+        String jsonInString = readFromClasspath("/omny.enquiry-opt-out.json");
+        assertNotNull(jsonInString);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            Contact contact = mapper.readValue(jsonInString, Contact.class);
+
+            assertNotNull(contact);
+            assertEquals("Bart", contact.getFirstName());
+            assertEquals("Simpson", contact.getLastName());
             assertEquals("google", contact.getSource());
+            assertEquals(false, contact.getEmailOptIn());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Unable to parse JSON");
+        }
+    }
+
+    @Test
+    public void testParseJsonContactWithoutOptIn() {
+        String jsonInString = readFromClasspath("/omny.enquiry-without-opt-in.json");
+        assertNotNull(jsonInString);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            Contact contact = mapper.readValue(jsonInString, Contact.class);
+
+            assertNotNull(contact);
+            assertEquals("Bart", contact.getFirstName());
+            assertEquals("Simpson", contact.getLastName());
+            assertEquals("google", contact.getSource());
+            assertEquals(null, contact.getEmailOptIn());
 
         } catch (IOException e) {
             e.printStackTrace();

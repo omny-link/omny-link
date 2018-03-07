@@ -5,7 +5,7 @@
   "firstName":"Bart",
   "lastName":"Simpson",
   "email":"bart.simpson@example.com",
-  "emailOptIn": "I agree to the terms and conditions",
+  "emailOptIn": "No, never!",
   "phone1":"07788 123456",
   "tenantId":"springfield",
   "utm_source":"google",
