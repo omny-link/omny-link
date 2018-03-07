@@ -61,6 +61,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
+import link.omny.custmgmt.json.CustomBooleanDeserializer;
 import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.views.ContactViews;
@@ -140,8 +141,9 @@ public class Contact implements Serializable {
 
     @JsonProperty
     @JsonView({ ContactViews.Detailed.class })
+    @JsonDeserialize(using = CustomBooleanDeserializer.class)
     @Column(name = "email_optin")
-    private boolean emailOptIn;
+    private Boolean emailOptIn;
 
     @JsonProperty
     @JsonView({ ContactViews.Detailed.class })

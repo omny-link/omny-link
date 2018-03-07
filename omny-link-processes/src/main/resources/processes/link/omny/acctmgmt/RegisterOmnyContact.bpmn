@@ -109,9 +109,21 @@ execution.setVariable('pwd',user.getPassword());
 execution.setVariable('Location',execution.getVariable('contactId'));]]></script>
     </scriptTask>
     <sequenceFlow id="_3" sourceRef="_11" targetRef="assignRights"/>
-    <sequenceFlow id="_6" sourceRef="assignRights" targetRef="_4"/>
+    <sequenceFlow id="_6" sourceRef="assignRights" targetRef="_2"/>
+    <callActivity calledElement="AddActivityToContact" completionQuantity="1" id="_2" isForCompensation="false" name="Add registration&#10;activity" startQuantity="1">
+      <extensionElements>
+        <activiti:in sourceExpression="registration" target="activityType"/>
+        <activiti:in sourceExpression="Agreed terms and conditions and opt-in set to: ${!kp_registration.containsValue('emailOptIn') || kp_registration.isNull('emailOptIn') ? 'false' : 'true'}" target="activityContent"/>
+        <activiti:in source="contactId" target="contactId"/>
+        <activiti:in source="tenantId" target="tenantId"/>
+        <activiti:out source="activityId" target="activityId"/>
+      </extensionElements>
+      <incoming>_6</incoming>
+      <outgoing>_5</outgoing>
+    </callActivity>
+    <sequenceFlow id="_5" sourceRef="_2" targetRef="_4"/>
     <textAnnotation id="_12" textFormat="text/plain">
-      <text>REGISTER OMNY LINK ACCOUNT</text>
+      <text>REGISTER USER ACCOUNT</text>
     </textAnnotation>
   </process>
   <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-RegisterOmnyContact" name="Register Omny user" resolution="96.0">
