@@ -907,7 +907,7 @@ public class ContactController extends BaseTenantAwareController{
         private String address;
         private String email;
         private boolean emailConfirmed;
-        private boolean emailOptIn;
+        private Boolean emailOptIn;
         private String jobTitle;
         private String phone1;
         private String phone2;
