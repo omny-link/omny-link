@@ -230,12 +230,7 @@ var ractive = new BaseRactive({
   activeStages: function() {
     console.info('activeStages');
     var activeStages = [];
-    if (getSearchParameters()['o']!=undefined) {
-      var stages = ractive.get('orderStages');
-    } else {
-      var stages = ractive.get('contactStages') == undefined
-          ? ractive.get('accountStages') : ractive.get('contactStages');
-    }
+    var stages = ractive.get('stages');
     $.each(stages, function(i,d) {
       if (d['idx']>=0) activeStages.push(d.name);
     });
@@ -250,10 +245,13 @@ var ractive = new BaseRactive({
     ractive.initControls();
     if (getSearchParameters()['o']!=undefined) {
       var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/funnel';
+      ractive.set('stages', ractive.get('orderStages'));
     } else if (ractive.get('tenant.features.accountView')) {
       var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/accounts';
+      ractive.set('stages', ractive.get('accountStages'));
     } else {
       var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/contacts';
+      ractive.set('stages', ractive.get('contactStages'));
     }
     $.ajax({
       dataType: "json",
