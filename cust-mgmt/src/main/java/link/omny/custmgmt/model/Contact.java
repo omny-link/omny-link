@@ -675,7 +675,7 @@ public class Contact implements Serializable {
         return sb.toString();
     }
 
-    private long getTimeSinceLast(String type) {
+    private long getTimeSinceLast(ActivityType type) {
         long time = -1;
         try {
             Activity lastEmail = getLastActivityOfType(type);
@@ -691,7 +691,7 @@ public class Contact implements Serializable {
         return time;
     }
 
-    private long getTimeSinceFirst(String type) {
+    private long getTimeSinceFirst(ActivityType type) {
         long time = -1;
         try {
             Activity lastEmail = getFirstActivityOfType(type);
@@ -707,34 +707,28 @@ public class Contact implements Serializable {
         return time;
     }
 
-    @JsonProperty("timeSinceBusinessPlanDownload")
-    public long getTimeSinceBusinessPlanDownload() {
-        return getTimeSinceLast("businessPlanDownload");
-    }
-
     @JsonProperty("timeSinceLogin")
+    @JsonView({ ContactViews.Detailed.class })
     public long getTimeSinceLogin() {
-        return getTimeSinceLast("login");
+        return getTimeSinceLast(ActivityType.LOGIN);
     }
 
     @JsonProperty("timeSinceFirstLogin")
+    @JsonView({ ContactViews.Detailed.class })
     public long getTimeSinceFirstLogin() {
-        return getTimeSinceFirst("login");
+        return getTimeSinceFirst(ActivityType.LOGIN);
     }
 
     @JsonProperty("timeSinceRegistered")
+    @JsonView({ ContactViews.Detailed.class })
     public long getTimeSinceRegistered() {
-        return getTimeSinceLast("register");
+        return getTimeSinceLast(ActivityType.REGISTRATION);
     }
 
     @JsonProperty("timeSinceEmail")
+    @JsonView({ ContactViews.Detailed.class })
     public long getTimeSinceEmail() {
-        return getTimeSinceLast("email");
-    }
-
-    @JsonProperty("timeSinceValuation")
-    public long getTimeSinceValuation() {
-        return getTimeSinceLast("valuation");
+        return getTimeSinceLast(ActivityType.EMAIL);
     }
 
     public boolean haveSentEmail(String emailName) {
@@ -779,12 +773,13 @@ public class Contact implements Serializable {
         return activities;
     }
 
-    public Activity getLastActivityOfType(String type) {
+    protected Activity getLastActivityOfType(ActivityType type) {
         LOGGER.info("getLastActivityOfType: " + type);
         Activity lastAct = null;
         try {
             for (Activity act : getActivities()) {
-                if (type.equalsIgnoreCase(act.getType()) && (lastAct == null
+                if (type.toString().equalsIgnoreCase(act.getType())
+                        && (lastAct == null
                         || lastAct.getOccurred().before(act.getOccurred()))) {
                     lastAct = act;
                 }
@@ -796,12 +791,13 @@ public class Contact implements Serializable {
         return lastAct;
     }
 
-    public Activity getFirstActivityOfType(String type) {
+    protected Activity getFirstActivityOfType(ActivityType type) {
         LOGGER.info("getFirstActivityOfType: " + type);
         Activity firstAct = null;
         try {
             for (Activity act : getActivities()) {
-                if (type.equalsIgnoreCase(act.getType()) && (firstAct == null
+                if (type.toString().equalsIgnoreCase(act.getType())
+                        && (firstAct == null
                         || firstAct.getOccurred().after(act.getOccurred()))) {
                     firstAct = act;
                 }

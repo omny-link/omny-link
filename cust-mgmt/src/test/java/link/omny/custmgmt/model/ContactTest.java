@@ -173,7 +173,7 @@ public class ContactTest {
     @Test
     public void testCalculatedActivityFields() {
         Contact contact = new Contact();
-        assertEquals(null, contact.getLastActivityOfType("foo"));
+        assertEquals(null, contact.getLastActivityOfType(ActivityType.LOGIN));
     }
 
     @Test

@@ -72,6 +72,7 @@ import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Activity;
+import link.omny.custmgmt.model.ActivityType;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomContactField;
 import link.omny.custmgmt.model.CustomField;
@@ -824,8 +825,9 @@ public class ContactController extends BaseTenantAwareController{
 
         contactRepo.setAccount(contactId, acctId);
 
-        addActivity(tenantId, contactId, "link-account",
-                String.format("Linked for %1$s", accountUri));
+        addActivity(tenantId, contactId,
+                new Activity(ActivityType.LINK_ACCOUNT_TO_CONTACT,
+                new Date(), String.format("Linked for %1$s", accountUri)));
     }
 
     /**
@@ -863,7 +865,7 @@ public class ContactController extends BaseTenantAwareController{
             @PathVariable("contactId") Long contactId,
             @RequestParam("type") String type,
             @RequestParam("content") String content) {
-        return addActivity(tenantId, contactId, new Activity(type, new Date(), content));
+        return addActivity(tenantId, contactId, new Activity(ActivityType.valueOf(type), new Date(), content));
     }
 
     /**
@@ -1032,7 +1034,6 @@ public class ContactController extends BaseTenantAwareController{
         private String tenantId;
         private Date firstContact;
         private Date lastUpdated;
-        private long timeSinceBusinessPlanDownload;
         private long timeSinceLogin;
         private long timeSinceFirstLogin;
         private long timeSinceRegistered;
