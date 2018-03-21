@@ -86,14 +86,31 @@ public class Activity implements Serializable {
         setOccurred(new Date());
     }
 
+    /**
+     * @deprecated {@link #Activity(ActivityType, Date)}
+     */
     public Activity(String type, Date occurred) {
         super();
         setType(type);
         setOccurred(occurred);
     }
 
+    public Activity(ActivityType type, Date occurred) {
+        super();
+        setType(type.toString());
+        setOccurred(occurred);
+    }
+
+    /**
+     * @deprecated {@link #Activity(ActivityType, Date)}
+     */
     public Activity(String type, Date occurred, String content) {
         this(type, occurred);
+        setContent(content);
+    }
+
+    public Activity(ActivityType type, Date occurred, String content) {
+        this(type.toString(), occurred);
         setContent(content);
     }
 
