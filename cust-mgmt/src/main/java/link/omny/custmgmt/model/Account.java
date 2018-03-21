@@ -311,7 +311,7 @@ public class Account implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "account", targetEntity = CustomAccountField.class)
     @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
-    @JsonView({ AccountViews.Detailed.class })
+    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     private List<CustomAccountField> customFields;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
