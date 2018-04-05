@@ -816,6 +816,9 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
 });
 
 ractive.observe('current.price', function(newValue, oldValue, keypath) {
+  if (!ractive.get('saveObserver')) {
+    console.debug('Skipped calculation of tax on '+newValue+' because in middle of other operation');
+  }
   console.info('current price change: '+newValue +','+oldValue);
   if (newValue!=undefined) ractive.set('current.tax', parseFloat(newValue*0.2));
 });
