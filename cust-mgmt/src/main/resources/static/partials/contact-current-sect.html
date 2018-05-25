@@ -44,8 +44,8 @@
           <span class="hidden-sm hidden-xs">{{current.email}}</span>
         {{/if}}
         <span class="pull-right">
-          {{#matchRole('admin')}}
-            <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="@this.delete(current)" style="top: -1px;" title="Delete this record"></a>
+          {{#matchRole('admin' && (current.stage==undefined || current.stage.toLowerCase()!='read-only'))}}
+            <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="@this.delete(current)" title="Delete this record"></a>
           {{/}}
           <a class="clickable glyphicon glyphicon-btn glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
           {{#if tenant.contactActions!=undefined && tenant.contactActions.length>0 }}

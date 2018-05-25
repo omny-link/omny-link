@@ -488,11 +488,6 @@ input[type="checkbox"].form-control:focus {
 .glyphicon-remove {
   padding: 4px 7px;
 }
-/* Weird edge case */
-#currentContactForm .table .glyphicon-remove,
-#currentOrderForm .table .glyphicon-remove {
-  padding: 6px;
-}
 .glyphicon-success {
   color: #3c763d;
   background-color: #dff0d8;
