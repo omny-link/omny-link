@@ -71,6 +71,9 @@ var ractive = new BaseRactive({
         return json;
       }
     },
+    gravatar: function(email) {
+      return ractive.gravatar(email);
+    },
     hash: function(email) {
       if (email == undefined) return '';
       console.log('hash '+email+' = '+ractive.hash(email));
