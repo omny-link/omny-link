@@ -1,60 +1,26 @@
 @startuml
-!include stylesheet.puml.txt
+!include /home/tstephen/git/crm/docs/src/main/plantuml/stylesheet.puml.txt
 
 node "Omny Link" {
-  HTTP -down- [acctmgmt] : REST
-  note left of [acctmgmt]
-    Relies on everything else because
-    provides unified admin of them
-  end note
-  HTTP -down- [catalog] : REST
-  HTTP -down- [custmgmt] : REST    
-  note right of [custmgmt]
-    Only requires work-mgmt for a couple of 
-    utility classes and reset password. 
-    TODO de-couple
-  end note
-
-  HTTP -down- [work-mgmt] : REST
-  [work-mgmt] -down- [activiti]
-
-  [support-services]
-  note left of [support-services]
-    Notes, Documents, Media
-  end note
-  
-  HTTP -down- [onedecision]
-
-  [service-tasks]
+  HTTP -- [catalog] : REST
+  HTTP -- [custmgmt] : REST
 
   [catalog] ..> [custmgmt] : use
   [catalog] ..> [support-services] : use
 
-  [custmgmt] ..> [work-mgmt] : use
   [custmgmt] ..> [support-services] : use
 
-  [acctmgmt] ..> [catalog] : use
-  [acctmgmt] ..> [custmgmt] : use
-  [acctmgmt] ..> [support-services] : use
-  [acctmgmt] ..> [work-mgmt] : use
-  [acctmgmt] ..> [support-services] : use
-
-  [work-mgmt] ..> [service-tasks] : use
-
-  [acctmgmt] ..> [OL_* tables] : use
   [catalog] ..> [OL_* tables] : use
   [custmgmt] ..> [OL_* tables] : use
-  [work-mgmt] ..> [ACT_* tables] : use
-  [activiti] ..> [ACT_* tables] : use
-  [onedecision] ..> [OD_* tables] : use
 }
 
+[support-services]
+note left of [support-services]
+  Notes, Documents, Media
+end note
+
 database "MySql" {
-  folder "ACT_* tables" {
-  }
   frame "OL_* tables" {
-  }
-  frame "OD_* tables" {
   }
 }
 @enduml

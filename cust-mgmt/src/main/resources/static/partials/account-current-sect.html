@@ -31,25 +31,25 @@
          {{#if tenant.features.addressAccount && (current.name != undefined && current.name != '')}}
            <span>{{#if current.town}}, {{current.town}}{{/if}}{{#if current.countyOrCity}}, {{current.countyOrCity}}{{/if}}</span>
              {{#current.postCode}}
-                <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
+                <a class="glyphicon icon-btn glyphicon icon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
              {{/}}
              {{^current.postCode}}
                {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
-                 <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
+                 <a class="glyphicon icon-btn glyphicon icon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
                {{/}}
              {{/}}
           {{/if}}
           <span class="pull-right">
             {{#matchRole('admin')}}
-              <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="deleteAccount(current)" style="top:-1px" title="Delete this record"></a>
+              <a class="clickable glyphicon icon-btn glyphicon-remove" aria-hidden="true" on-click="deleteAccount(current)" title="Delete this record"></a>
             {{/}}
-            <a class="clickable glyphicon glyphicon-btn glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
+            <a class="clickable glyphicon icon-btn glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
             {{#if tenant.accountActions!=undefined && tenant.accountActions.length>0 }}
               <span class="clickable dropdown" aria-hidden="true" title="Start Process">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
-                  <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
+                  <a class="clickable glyphicon icon-btn glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
                 </a>
-                <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+                <ul class="dropdown dropdown-menu" id="customActionMenu" role="menu">
                   {{#each tenant.accountActions }}
                     {{#name}}
                       <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{current.name}}')" title="{{name}}">{{name}}</li>
@@ -67,16 +67,16 @@
             <span>{{Array.findBy('mainContact',true,current.contacts).lastName}}</span>
             {{#if (Array.findBy('mainContact',true,current.contacts).phone1 != undefined || Array.findBy('mainContact',true,current.contacts).phone2 != undefined) && (Array.findBy('mainContact',true,current.contacts).phone1 != '' || Array.findBy('mainContact',true,current.contacts).phone2 != '')}}
               {{#if (Array.findBy('mainContact',true,current.contacts).phone1 != undefined && Array.findBy('mainContact',true,current.contacts).phone1 != '')}}
-                <a class="clickable glyphicon glyphicon-btn glyphicon-earphone" href="tel:{{Array.findBy('mainContact',true,current.contacts).phone1}}" title="Click to call"></a>
+                <a class="clickable glyphicon icon-btn glyphicon-earphone" href="tel:{{Array.findBy('mainContact',true,current.contacts).phone1}}" title="Click to call"></a>
                 <span class="hidden-sm hidden-xs">{{Array.findBy('mainContact',true,current.contacts).phone1}}</span>
               {{/if}}
               {{#if (Array.findBy('mainContact',true,current.contacts).phone2 != undefined && Array.findBy('mainContact',true,current.contacts).phone2 != '')}}
-                <a class="clickable glyphicon glyphicon-btn glyphicon-earphone" href="tel:{{Array.findBy('mainContact',true,current.contacts).phone2}}" title="Click to call"></a>
+                <a class="clickable glyphicon icon-btn glyphicon-earphone" href="tel:{{Array.findBy('mainContact',true,current.contacts).phone2}}" title="Click to call"></a>
                 <span class="hidden-sm hidden-xs"> {{Array.findBy('mainContact',true,current.contacts).phone2}}</span>
               {{/if}}
             {{/if}}
             {{#if Array.findBy('mainContact',true,current.contacts).email != undefined && Array.findBy('mainContact',true,current.contacts).email != ''}}
-              <a class="clickable glyphicon glyphicon-btn glyphicon-envelope" href="mailto:{{Array.findBy('mainContact',true,current.contacts).email}}" title="Click to email"></a>
+              <a class="clickable glyphicon icon-btn glyphicon-envelope" href="mailto:{{Array.findBy('mainContact',true,current.contacts).email}}" title="Click to email"></a>
               <span class="hidden-sm hidden-xs">{{Array.findBy('mainContact',true,current.contacts).email}}</span>
             {{/if}}
           </span>
@@ -186,7 +186,7 @@
           <div class="input-group">
             <input class="col-md-8 col-sm-8 form-control" id="curBusinessWebsite" type="url" value="{{current.businessWebsite}}"/>
             <span class="input-group-addon">
-              <a href="{{current.businessWebsite}}" target="_newtab"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+              <a href="{{current.businessWebsite}}" target="_newtab"><span class="glyphicon icon-btn glyphicon-new-window"></span></a>
             </span>
           </div>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Remember to include http:// (or https://)</p>
@@ -237,10 +237,10 @@
               <input class="col-md-8 col-sm-8 form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}">
               <span class="input-group-addon">
                 {{#current.postCode}}
-                  <a class="glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
+                  <a class="glyphicon icon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
                 {{else}}
                   {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
-                    <a class="glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
+                    <a class="glyphicon icon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
                   {{else}}
                     <span>N/A</span>
                   {{/}}
@@ -260,16 +260,16 @@
         {{#if tenant.features.socialAccount}}
           <li class="form-group">
             <div class="btn-group col-md-offset-4 col-sm-offset-4" role="group" aria-label="...">
-              <a class="glyphicon glyphicon-btn kp-icon-twitter{{^current.twitter}} disabled{{/}}" {{#current.twitter}}href="https://twitter.com/{{current.twitter}}"{{else}}disabled {{/}} target="_newtab"></a>
-              <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showSocial('twitter','current.twitter')"></a>
+              <a class="glyphicon icon-btn kp-icon-twitter{{^current.twitter}} disabled{{/}}" {{#current.twitter}}href="https://twitter.com/{{current.twitter}}"{{else}}disabled {{/}} target="_newtab"></a>
+              <a class="glyphicon icon-btn glyphicon-pencil" on-click="showSocial('twitter','current.twitter')"></a>
             </div>
             <div class="btn-group" role="group" aria-label="...">
-              <a class="glyphicon glyphicon-btn kp-icon-linkedin{{^current.linkedIn}} disabled{{/}}" {{#current.linkedIn}}href="{{current.linkedIn}}"{{else}}disabled {{/}} target="_newtab"></a>
-              <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showSocial('linkedIn','current.linkedIn')"></a>
+              <a class="glyphicon icon-btn kp-icon-linkedin{{^current.linkedIn}} disabled{{/}}" {{#current.linkedIn}}href="{{current.linkedIn}}"{{else}}disabled {{/}} target="_newtab"></a>
+              <a class="glyphicon icon-btn glyphicon-pencil" on-click="showSocial('linkedIn','current.linkedIn')"></a>
             </div>
             <div class="btn-group" role="group" aria-label="...">
-              <a class="glyphicon glyphicon-btn kp-icon-facebook{{^current.facebook}} disabled{{/}}" {{#current.facebook}}href="{{current.facebook}}"{{/}} target="_newtab"></a>
-              <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showSocial('facebook','current.facebook')"></a>
+              <a class="glyphicon icon-btn kp-icon-facebook{{^current.facebook}} disabled{{/}}" {{#current.facebook}}href="{{current.facebook}}"{{/}} target="_newtab"></a>
+              <a class="glyphicon icon-btn glyphicon-pencil" on-click="showSocial('facebook','current.facebook')"></a>
             </div>
           </li>
         {{/if}}
@@ -305,7 +305,7 @@
   {{#true}}
    <section id="accountContactsSect">
      <h3>
-       <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+       <span class="ol-collapse glyphicon icon-btn kp-icon-caret-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
        <span> {{#tenant.strings.contacts}}{{tenant.strings.contacts}}{{else}}Contacts{{/}}</span>
      </h3>
      <div class="col-md-12" style="display:none">
@@ -314,11 +314,11 @@
             <thead>
               <tr>
                 <th>Main Contact</th>
-                <th class="col-md-2 col-sm-2" on-click="sortContact:fullName">Name<span class="sortable {{ sortedContact('fullName') }} glyphicon glyphicon-btn "></th>
-                <th class="col-md-2 col-sm-2" on-click="sortContact:jobTitle">Job Title<span class="sortable {{ sortedContact('jobTitle') }} glyphicon glyphicon-btn "></th>
-                <th class="col-md-2 col-sm-2" on-click="sortContact:email">Email<span class="sortable {{ sortedContact('email') }} glyphicon glyphicon-btn "></th>
-                <th class="col-md-2 col-sm-2" on-click="sortContact:emailOptIn">Opt in<span class="sortable {{ sortedContact('emailOptIn') }} glyphicon glyphicon-btn "></th>
-                <th class="col-md-2 col-sm-2" on-click="sortContact:phone1">Phone<span class="sortable {{ sortedContact('phone1') }} glyphicon glyphicon-btn "></th>
+                <th class="col-md-2 col-sm-2" on-click="sortContact:fullName">Name<span class="sortable {{ sortedContact('fullName') }} glyphicon icon-btn "></th>
+                <th class="col-md-2 col-sm-2" on-click="sortContact:jobTitle">Job Title<span class="sortable {{ sortedContact('jobTitle') }} glyphicon icon-btn "></th>
+                <th class="col-md-2 col-sm-2" on-click="sortContact:email">Email<span class="sortable {{ sortedContact('email') }} glyphicon icon-btn "></th>
+                <th class="col-md-2 col-sm-2" on-click="sortContact:emailOptIn">Opt in<span class="sortable {{ sortedContact('emailOptIn') }} glyphicon icon-btn "></th>
+                <th class="col-md-2 col-sm-2" on-click="sortContact:phone1">Phone<span class="sortable {{ sortedContact('phone1') }} glyphicon icon-btn "></th>
                 <th>Twitter</th>
                 <th>Linked In</th>
                 <th>Facebook</th>
@@ -355,30 +355,30 @@
                   </td>
                   <td class="btn-group-social">
                     <div class="btn-group" role="group" aria-label="...">
-                      <a class="glyphicon glyphicon-btn kp-icon-twitter{{^twitter}} disabled{{/}}" {{#twitter}}href="https://twitter.com/{{twitter}}"{{else}}disabled {{/}} target="_newtab" title="{{^twitter}} None entered, click on edit icon to set Twitter handle{{/}}"></a>
-                      <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showContactSocial(this, 'twitter', 'currentContact.twitter')"></a>
+                      <a class="glyphicon icon-btn kp-icon-twitter{{^twitter}} disabled{{/}}" {{#twitter}}href="https://twitter.com/{{twitter}}"{{else}}disabled {{/}} target="_newtab" title="{{^twitter}} None entered, click on edit icon to set Twitter handle{{/}}"></a>
+                      <a class="glyphicon icon-btn glyphicon-pencil" on-click="showContactSocial(this, 'twitter', 'currentContact.twitter')"></a>
                     </div>
                   </td>
                   <td class="btn-group-social">
                     <div class="btn-group" role="group" aria-label="...">
-                      <a class="glyphicon glyphicon-btn kp-icon-linkedin{{^linkedIn}} disabled{{/}}" {{#linkedIn}}href="{{linkedIn}}"{{else}}disabled {{/}} target="_newtab" title="{{^linkedIn}} None entered, click on edit icon to set LinkedIn page{{/}}"></a>
-                      <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showContactSocial(this, 'linkedIn', 'currentContact.linkedIn')"></a>
+                      <a class="glyphicon icon-btn kp-icon-linkedin{{^linkedIn}} disabled{{/}}" {{#linkedIn}}href="{{linkedIn}}"{{else}}disabled {{/}} target="_newtab" title="{{^linkedIn}} None entered, click on edit icon to set LinkedIn page{{/}}"></a>
+                      <a class="glyphicon icon-btn glyphicon-pencil" on-click="showContactSocial(this, 'linkedIn', 'currentContact.linkedIn')"></a>
                     </div>
                   </td>
                   <td class="btn-group-social">
                     <div class="btn-group" role="group" aria-label="...">
-                      <a class="glyphicon glyphicon-btn kp-icon-facebook{{^facebook}} disabled{{/}}" {{#facebook}}href="{{facebook}}"{{else}}disabled {{/}} target="_newtab" title="{{^facebook}} None entered, click on edit icon to set FaceBook page{{/}}"></a>
-                      <a class="glyphicon glyphicon-btn glyphicon-pencil" on-click="showContactSocial(this, 'facebook', 'currentContact.facebook')"></a>
+                      <a class="glyphicon icon-btn kp-icon-facebook{{^facebook}} disabled{{/}}" {{#facebook}}href="{{facebook}}"{{else}}disabled {{/}} target="_newtab" title="{{^facebook}} None entered, click on edit icon to set FaceBook page{{/}}"></a>
+                      <a class="glyphicon icon-btn glyphicon-pencil" on-click="showContactSocial(this, 'facebook', 'currentContact.facebook')"></a>
                     </div>
                   </td>
                   <td>
-                    <a class="glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" on-click="toggleEditContact(.)" title="Edit this record"></a>
+                    <a class="glyphicon icon-btn glyphicon-pencil" aria-hidden="true" on-click="toggleEditContact(.)" title="Edit this record"></a>
                     {{#if tenant.contactActions!=undefined && tenant.contactActions.length>0 }}
                       <span class="clickable dropdown" aria-hidden="true" title="Start Process">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
-                          <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
+                          <a class="clickable glyphicon icon-btn glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
                         </a>
-                        <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+                        <ul class="dropdown dropdown-menu" id="customActionMenu" role="menu">
                           {{#each tenant.contactActions }}
                             {{#name}}
                               <li on-click="startCustomAction(ref, name, Array.findBy('selfRef',selfRef,current.contacts), url, fullName)" title="{{name}}">{{name}}</li>
@@ -390,7 +390,7 @@
                       </span>
                     {{/if}}
                     {{#matchRole('admin')  && selfRef}}
-                      <a class="glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="deleteContact(.)" title="Delete this record"></a>
+                      <a class="glyphicon icon-btn glyphicon-remove" aria-hidden="true" on-click="deleteContact(.)" title="Delete this record"></a>
                     {{/}}
                   </td>
                 </tr>

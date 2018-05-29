@@ -1,5 +1,5 @@
 <!--
-  Copyright 2018 Tim Stephenson and contributors
+  Copyright 2015-2018 Tim Stephenson and contributors
   
    Licensed under the Apache License, Version 2.0 (the "License"); you may not
    use this file except in compliance with the License.  You may obtain a copy
@@ -14,11 +14,11 @@
    the License.
 -->
 <form id="documentForm">
-  <section id="documentSect" style="clear: both">
+  <section id="documentSect">
    <h2>
-     <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+     <span class="ol-collapse glyphicon icon-btn kp-icon-caret-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
      <span>Documents</span>
-     <span class="clickable glyphicon glyphicon-btn glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')" title="Add a new Document"></span>
+     <span class="clickable glyphicon icon-btn glyphicon-plus" aria-hidden="true" onclick="ractive.addDoc('{{current._links.self.href}}')" title="Add a new Document"></span>
      <span class="alert-counter {{#alerts.documents}}alert-danger{{else}}alert-hidden{{/}}"> {{alerts.documents}}</span>
    </h2>
    <div style="display:none">
@@ -30,7 +30,7 @@
   	         <td class="field-author">{{{gravatar(author)}}}</td>
              {{#created}}
                <td class="field-text">{{name}}</td>
-               <td class="field-url"><a href="{{url}}" target="_newtab"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a></td>
+               <td class="field-url"><a href="{{url}}" target="_newtab"><span class="glyphicon icon-btn glyphicon-new-window"></span></a></td>
              {{else}}
                <td class="field-text" colspan="1">
                  <input class="form-control" id="docName" maxlength="60" placeholder="Name or title" required value="{{..name}}"/>

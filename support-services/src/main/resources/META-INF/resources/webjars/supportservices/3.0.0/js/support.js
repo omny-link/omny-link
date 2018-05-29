@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018 Tim Stephenson and contributors
+ * Copyright 2015-2018 Tim Stephenson and contributors
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -31,7 +31,8 @@
     if (ractive.get('current.documents.0')!=undefined && ractive.get('current.documents.0.created') == undefined) return $($('#docsTable input:invalid')[0]).focus();
     var entityName = ractive.entityName(ractive.get('current')).singular();
     ractive.splice('current.documents', 0, 0, {
-      author:$auth.getClaim('sub'), entityName: ractive.uri(ractive.get('current')), content: '', favorite: true
+      author: (window['$auth'] == undefined ? '' : $auth.getClaim('sub')),
+      entityName: ractive.uri(ractive.get('current')), content: '', favorite: true
     });
     ractive.set('saveObserver', true);
     if ($('#docsTable:visible').length==0) ractive.toggleSection($('#docsTable').closest('section'));
@@ -49,7 +50,8 @@
     if (ractive.get('current.notes.0')!=undefined && ractive.get('current.notes.0.created') == undefined) return $($('#notesTable textarea:invalid')[0]).focus();
     var entityName = ractive.entityName(ractive.get('current')).singular();
     ractive.splice('current.notes', 0, 0, {
-      author:$auth.getClaim('sub'), entityName: ractive.uri(ractive.get('current')), content: '', favorite: true
+      author: (window['$auth'] == undefined ? '' : $auth.getClaim('sub')),
+      entityName: ractive.uri(ractive.get('current')), content: '', favorite: true
     });
     ractive.set('saveObserver', true);
     if ($('#notesTable:visible').length==0) ractive.toggleSection($('#notesTable').closest('section'));
@@ -159,7 +161,7 @@
     console.info('toggleNoteConfidentiality: '+idx);
     ractive.set('current.notes.'+idx+'.confidential',!ractive.get('current.notes.'+idx+'.confidential'));
     var n = ractive.get('current.notes.'+idx);
-    var url = '/'+ractive.get('tenant.id')+'/notes/'+ractive.localId(n)+'/confidential';
+    var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/notes/'+ractive.localId(n)+'/confidential';
 
     $.ajax({
       url: url,
@@ -175,7 +177,7 @@
     console.info('toggleNoteFavorite: '+idx);
     ractive.set('current.notes.'+idx+'.favorite',!ractive.get('current.notes.'+idx+'.favorite'));
     var n = ractive.get('current.notes.'+idx);
-    var url = '/'+ractive.get('tenant.id')+'/notes/'+ractive.localId(n)+'/favorite';
+    var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/notes/'+ractive.localId(n)+'/favorite';
 
     $.ajax({
       url: url,

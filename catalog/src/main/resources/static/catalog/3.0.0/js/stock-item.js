@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018 Tim Stephenson and contributors
+ * Copyright 2015-2018 Tim Stephenson and contributors
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -81,12 +81,9 @@ var ractive = new BaseRactive({
     formatJson: function(json) {
       console.log('formatJson: '+json);
       try {
-        var obj = JSON.parse(json);
-        var html = '';
-        $.each(Object.keys(obj), function(i,d) {
-          html += (typeof obj[d] == 'object' ? '' : '<b>'+d+'</b>: '+obj[d]+'<br/>');
-        });
-        return html;
+        var obj = json;
+        if (typeof json == 'string') obj = JSON.parse(json);
+        return ractive.json2Html(obj);
       } catch (e) {
         // So it wasn't JSON
         return json;
@@ -112,7 +109,7 @@ var ractive = new BaseRactive({
     haveCustomExtension: function(extName) {
       return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
     },
-    helpUrl: '//omny.link/user-help/stock-items/#the_title',
+    helpUrl: '//omny-link.github.io/user-help/stock-items/',
     matchFilter: function(obj) {
       var filter = ractive.get('filter');
       //console.info('matchFilter: '+JSON.stringify(filter));
@@ -233,7 +230,11 @@ var ractive = new BaseRactive({
       ractive.showMessage('You must have created your '+ractive.get('tenant.strings.stockItem')+' before adding images');
       return;
     }
-    ractive.set('current.image', { author:$auth.getClaim('sub'), stockItem: ractive.uri(stockItem), url: undefined});
+    ractive.set('current.image', {
+      author: (window['$auth'] == undefined ? undefined : $auth.getClaim('sub')),
+      stockItem: ractive.uri(stockItem),
+      url: undefined
+    });
     $('#imagesTable tr:nth-child(1)').slideDown();
   },
   delete: function (obj) {
@@ -343,8 +344,8 @@ var ractive = new BaseRactive({
   filter: function(filter) {
     console.log('filter: '+JSON.stringify(filter));
     ractive.set('filter',filter);
-    $('.omny-dropdown.dropdown-menu li').removeClass('selected')
-    $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
+    $('.dropdown.dropdown-menu li').removeClass('selected')
+    $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
     ractive.set('searchMatched',$('#stockItemsTable tbody tr:visible').length);
     $('input[type="search"]').blur();
   },
@@ -456,7 +457,7 @@ var ractive = new BaseRactive({
     ractive.set('saveObserver',false);
     if (stockItem.stockCategory == undefined || stockItem.stockCategory == '') stockItem.stockCategory = new Object();
     // default owner to current user
-    if (stockItem.owner == undefined || stockItem.owner == '') stockItem.owner = $auth.getClaim('sub');
+    if ((stockItem.owner == undefined || stockItem.owner == '') && window['$auth']!=undefined) stockItem.owner = $auth.getClaim('sub');
 	  // adapt between Spring Hateos and Spring Data Rest
 	  if (stockItem._links == undefined && stockItem.links != undefined) {
 	    stockItem._links = stockItem.links;
@@ -495,7 +496,7 @@ var ractive = new BaseRactive({
     this.showMessage(msg, addClass);
   },
   showResults: function() {
-    $('#stockItemsTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
+    $('#stockItemsTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
     $('#currentSect').slideUp();
     $('#stockItemsTable').slideDown({ queue: true });
   },
@@ -509,7 +510,7 @@ var ractive = new BaseRactive({
   },
   toggleResults: function() {
     console.log('toggleResults');
-    $('#stockItemsTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
+    $('#stockItemsTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
     $('#stockItemsTable').slideToggle();
   },
   /**

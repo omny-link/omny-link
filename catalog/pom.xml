@@ -18,7 +18,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <name>Catalogue</name>
+  <name>Product / Service Catalogue</name>
   <inceptionYear>2016</inceptionYear>
 
   <groupId>link.omny.catalog</groupId>
@@ -73,12 +73,6 @@
       <artifactId>custmgmt</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>link.omny.support-services</groupId>
-      <artifactId>support-services</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <!-- Generates REST documentation -->
     <!-- Web jars -->
     <dependency>
       <groupId>org.webjars</groupId>

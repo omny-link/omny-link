@@ -20,7 +20,7 @@
       {{#tenant.features.merge}}
         <th><input class="checkbox" type="checkbox"/></th>
       {{/}}
-      <th on-click="['sort','fullName']">Full Name<span class="sortable {{ sorted('fullName') }} glyphicon glyphicon-btn "></th>
+      <th on-click="['sort','fullName']">Full Name<span class="sortable {{ sorted('fullName') }} glyphicon icon-btn "></th>
       {{#tenant.features.account}}<th on-click="['sort','accountName']">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
       {{#tenant.features.marketing || tenant.features.stage}}
         <th on-click="['sort','stage']">{{#tenant.strings.contactStage}}{{tenant.strings.contactStage}}{{else}}Stage{{/}}<span class="sortable {{ sorted('stage') }} glyphicon"></th>
@@ -62,10 +62,10 @@
           <td on-click="edit(this)"><span class="alert-counter {{#alerts.length>0}}alert-danger{{else}}alert-success{{/}}">{{#alerts}}{{alerts.length}}{{else}}0{{/}}</span></td>
           <td on-click="edit(this)">{{{formatTags(tags)}}}</td>
           <td class="col-xs-2 col-actions">
-            <a class="clickable glyphicon glyphicon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeContacts(this)" style="display:none;" title="Merge two records"></a>
-            <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="@this.delete(.)" title="Delete this record"></a>
-            <a class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" on-click="edit(this)" title="View or edit this contact"></a>
-            <a class="clickable glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" on-click="openInNewWindow(this)" style="display:none" title="View or edit this contact"></a>
+            <a class="clickable glyphicon icon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeContacts(this)" style="display:none;" title="Merge two records"></a>
+            <a class="clickable admin glyphicon icon-btn glyphicon-remove" aria-hidden="true" on-click="@this.delete(.)" title="Delete this record"></a>
+            <a class="clickable glyphicon icon-btn glyphicon-pencil" aria-hidden="true" on-click="edit(this)" title="View or edit this contact"></a>
+            <a class="clickable glyphicon icon-btn glyphicon-new-window" aria-hidden="true" on-click="openInNewWindow(this)" style="display:none" title="View or edit this contact"></a>
           </td>
         </tr>
       {{/}}

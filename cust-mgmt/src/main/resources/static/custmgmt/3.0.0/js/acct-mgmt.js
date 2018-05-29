@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018 Tim Stephenson and contributors
+ * Copyright 2015-2018 Tim Stephenson and contributors
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -137,13 +137,9 @@ var ractive = new BaseRactive({
         formatJson: function(json) {
           console.log('formatJson: ' + json);
           try {
-            var obj = JSON.parse(json);
-            var html = '';
-            $.each(Object.keys(obj), function(i, d) {
-              html += (typeof obj[d] == 'object' ? '': '<b>' + d + '</b>: '
-                  + obj[d] + '<br/>');
-            });
-            return html;
+            var obj = json;
+            if (typeof json == 'string') obj = JSON.parse(json);
+            return ractive.json2Html(obj);
           } catch (e) {
             // So it wasn't JSON
             return json;
@@ -213,14 +209,7 @@ var ractive = new BaseRactive({
           return html;
         },
         gravatar: function(email) {
-          if (email == undefined)
-            return '';
-          return '<img class="img-rounded" style="width:36px" src="//www.gravatar.com/avatar/'
-              + ractive.hash(email)
-              + '?s=36&d=https%3A%2F%2Fapi.omny.link%2F'
-              + ractive.get('tenant.id')
-              + '%2Fgravatars%2F'
-              + ractive.hash(email) + '.png"/>'
+          return ractive.gravatar(email);
         },
         hash: function(email) {
           if (email == undefined)
@@ -238,7 +227,7 @@ var ractive = new BaseRactive({
             return d.name == 'stageReasons';
           }).length > 0;
         },
-        helpUrl: '//omny.link/user-help/accounts/#the_title',
+        helpUrl: '//omny-link.github.io/user-help/accounts/',
         inactiveStages: function() {
           return ractive.inactiveStages();
         },
@@ -369,12 +358,21 @@ var ractive = new BaseRactive({
           { "name": "currentDocumentListSect", "url": "/webjars/supportservices/3.0.0/partials/current-document-list-sect.html" },
           { "name": "currentNoteListSect", "url": "/webjars/supportservices/3.0.0/partials/current-note-list-sect.html" },
           { "name": "currentOrderListSect", "url": "/partials/contact-current-order-list-sect.html" },
+          { "name": "customActionModal", "url": "/partials/custom-action-modal.html" },
           { "name": "fieldExtension", "url": "/partials/field-extension.html"},
+          { "name": "helpModal", "url": "/partials/help-modal.html" },
+          { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
+          { "name": "profileArea", "url": "/partials/profile-area.html" },
           { "name": "socialModal", "url": "/partials/social-modal.html" },
           { "name": "sidebar", "url": "/partials/sidebar.html" },
           { "name": "titleArea", "url": "/partials/title-area.html" },
           { "name": "navbar", "url": "/partials/account-navbar.html" },
           { "name": "supportBar", "url": "/webjars/supportservices/3.0.0/partials/support-bar.html" }
+        ],
+        workPartials: [
+          { "name": "currentTaskListSect", "url": "/partials/task-list-sect.html" },
+          { "name": "instanceListSect", "url": "/partials/instance-list-sect.html" },
+          { "name": "taskListTable", "url": "/partials/task-list-table.html" }
         ],
         uniq: function(fieldName, arr) {
           return Array.uniq(fieldName, arr);
@@ -785,8 +783,8 @@ var ractive = new BaseRactive({
         return entity['fullName'] == ractive.get('fullName');
       },
       hideResults: function() {
-        $('#accountsTableToggle').removeClass('glyphicon-triangle-bottom')
-            .addClass('glyphicon-triangle-right');
+        $('#accountsTableToggle').removeClass('kp-icon-caret-down')
+            .addClass('kp-icon-caret-right');
         $('#accountsTable').slideUp();
         $('#currentSect').slideDown({
           queue: true
@@ -896,7 +894,7 @@ var ractive = new BaseRactive({
           if (obj['lastName'] == undefined)
             obj['lastName'] = 'Other';
           if (obj['email'] == undefined)
-            obj['email'] = 'info@omny.link';
+            obj['email'] = 'info@example.com';
           if (obj['enquiryType'] == undefined)
             obj['enquiryType'] = 'User Import';
 
@@ -1329,16 +1327,31 @@ var ractive = new BaseRactive({
       },
       setMainContact: function(contactRef) {
         console.info('setMainContact: ' + contactRef);
+        ractive.set('saveObserver', false);
         for (idx in ractive.get('current.contacts')) {
-          ractive.set('currentContact', ractive.get('current.contacts.' + idx));
           if (ractive.get('current.contacts.' + idx + '.selfRef') != contactRef) {
             ractive.set('current.contacts.' + idx + '.mainContact', false);
-            ractive.saveContact();
           } else {
             ractive.set('current.contacts.' + idx + '.mainContact', true);
-            ractive.saveContact();
           }
+          ractive.set('currentContact', ractive.get('current.contacts.' + idx));
+          ractive.saveContact();
         }
+        // allow saveContact to set saveObserver back to true when done
+      },
+      setOptIn: function(contactRef) {
+        console.info('setOptIn: ' + contactRef);
+        ractive.set('saveObserver', false);
+        for (idx in ractive.get('current.contacts')) {
+          if (ractive.get('current.contacts.' + idx + '.selfRef') != contactRef) {
+            ractive.set('current.contacts.' + idx + '.emailOptIn', false);
+          } else {
+            ractive.set('current.contacts.' + idx + '.emailOptIn', true);
+          }
+          ractive.set('currentContact', ractive.get('current.contacts.' + idx));
+          ractive.saveContact();
+        }
+        // allow saveContact to set saveObserver back to true when done
       },
       showActivityIndicator: function(msg, addClass) {
         document.body.style.cursor = 'progress';
@@ -1362,8 +1375,8 @@ var ractive = new BaseRactive({
         ractive.showSocial(networkName, keypath);
       },
       showResults: function() {
-        $('#accountsTableToggle').addClass('glyphicon-triangle-bottom')
-            .removeClass('glyphicon-triangle-right');
+        $('#accountsTableToggle').addClass('kp-icon-caret-down')
+            .removeClass('kp-icon-caret-right');
         $('#currentSect').slideUp();
         $('#accountsTable').slideDown({
           queue: true
@@ -1423,8 +1436,8 @@ var ractive = new BaseRactive({
       },
       toggleResults: function() {
         console.info('toggleResults');
-        $('#accountsTableToggle').toggleClass('glyphicon-triangle-bottom')
-            .toggleClass('glyphicon-triangle-right');
+        $('#accountsTableToggle').toggleClass('kp-icon-caret-down')
+            .toggleClass('kp-icon-caret-right');
         $('#accountsTable').slideToggle();
       },
       /**
@@ -1469,9 +1482,13 @@ var ractive = new BaseRactive({
 ractive.observe('profile', function(newValue, oldValue, keypath) {
   console.log('profile changed');
   if ((ractive.get('searchTerm') == undefined || ractive.get('searchTerm').length==0) && newValue!=undefined) {
-    $('.omny-dropdown.dropdown-menu li:nth-child(3)').addClass('selected');
+    $('.dropdown.dropdown-menu li:nth-child(3)').addClass('selected');
     ractive.search('active owner:'+newValue.id);
   }
+});
+
+ractive.observe('tenant.features.workManagement', function(newValue, oldValue, keypath) {
+  if (newValue == true) ractive.loadStandardPartials(ractive.get('workPartials')); 
 });
 
 // Save on model change
@@ -1483,7 +1500,8 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
   if (!ractive.get('saveObserver')) console.debug('Skipped save of '+keypath+' because in middle of other operation');
 //    else if (keypath=='current.notes') ractive.saveNote();
 //    else if (keypath=='current.documents') ractive.saveDoc();
-  else if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1 && keypath == 'current.contact' && !keypath.endsWith('mainContact')) ractive.saveContact();
+  else if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1 && keypath == 'current.contact'
+    && !keypath.endsWith('mainContact') && !keypath.endsWith('emailOptIn')) ractive.saveContact();
   else if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1 && keypath.startsWith('current.')) ractive.saveAccount();
   else {
      console.warn('Skipped save triggered by change to: ' + keypath);
@@ -1516,8 +1534,8 @@ ractive.observe('current.businessWebsite', function(newValue, oldValue, keypath)
 
 ractive.on('filter', function(event, filter) {
   console.info('filter on ' + JSON.stringify(event) + ',' + filter.idx);
-  $('.omny-dropdown.dropdown-menu li').removeClass('selected');
-  $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
+  $('.dropdown.dropdown-menu li').removeClass('selected');
+  $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
   ractive.search(filter.value);
 });
 ractive.on('sortContact', function(event, column) {

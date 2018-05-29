@@ -16,7 +16,7 @@
 {{#if tenant.features.activityAnalysis}}
   <section id="activityAnalysisSect" style="clear:both">
     <h2>
-      <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+      <span class="ol-collapse glyphicon icon-btn kp-icon-caret-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
       <span>Activity at a glance</span>
       {{#alerts['activityAnalysis']}}<span class="alert-counter alert-danger"> {{alerts['activityAnalysis']}}</span>{{/}}
     </h2>
@@ -56,9 +56,9 @@
     {{/if}}
   </section>
 
-  <section id="activitySect" style="clear: both">
+  <section id="activitySect">
     <h2 title="Activities are added automatically by the workflows">
-      <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+      <span class="ol-collapse glyphicon icon-btn kp-icon-caret-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
       <span>Activities in detail</span>
       {{#alerts['activities']}}<span class="alert-counter alert-danger"> {{alerts['activities']}}</span>{{/}}
     </h2>

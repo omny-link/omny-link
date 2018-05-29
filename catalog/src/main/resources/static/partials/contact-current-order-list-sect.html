@@ -15,16 +15,16 @@
 -->
 <section id="orderSect">
   <h3>
-    <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+    <span class="ol-collapse glyphicon icon-btn kp-icon-caret-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
     <span>{{formatOrderVariant()}}</span>
-    <a class="clickable glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" href="/orders.html{{#current.contactIds}}?q=contactId:{{current.contactIds}}{{else}}{{current.id}}{{/}}" target="_blank" title="Open {{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}orders{{/}} view"></a>
+    <a class="clickable glyphicon icon-btn glyphicon-new-window" aria-hidden="true" href="/orders.html{{#current.contactIds}}?q=contactId:{{current.contactIds}}{{else}}{{current.id}}{{/}}" target="_blank" title="Open {{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}orders{{/}} view"></a>
   </h3>
   <div class="col-md-12" id="currentOrders" style="display:none">
     <form id="currentOrderForm">
       <table class="table table-striped">
         <thead>
           <tr>
-            <th on-click="['sortOrder',orderId]" title="Order reference">Ref.<span class="sortable {{ sortedOrder('orderId') }} glyphicon glyphicon-btn"></th>
+            <th on-click="['sortOrder',orderId]" title="Order reference">Ref.<span class="sortable {{ sortedOrder('orderId') }} glyphicon icon-btn"></th>
             {{#entityPath=='/accounts'}}
               <th on-click="['sortOrder',contactName]"title="{{#tenant.strings.orderContactHint}}{{tenant.strings.orderContactHint}}{{else}}Contact Name{{/}}">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}<span class="sortable {{ sortedOrder('contactName') }} glyphicon"></span></th>
             {{/}}
@@ -34,16 +34,16 @@
             {{#tenant.features.purchaseOrders}}
               <th on-click="['sortOrder',type]" title="{{#tenant.strings.orderTypeHint}}{{tenant.strings.orderTypeHint}}{{else}}Order Type{{/}}">{{#tenant.strings.orderType}}{{tenant.strings.orderType}}{{else}}Type{{/}}<span class="sortable {{ sortedOrder('type') }} glyphicon"></span></th>
             {{/}}
-            <th on-click="['sortOrder',date]" style="width: 11em;" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}<span class="sortable {{ sortedOrder('date') }} glyphicon glyphicon-btn "></th>
+            <th on-click="['sortOrder',date]" style="width: 11em;" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}<span class="sortable {{ sortedOrder('date') }} glyphicon icon-btn "></th>
             {{#tenant.features.orderDueDate}}
-              <th on-click="['sortOrder',dueDate]" style="width: 11em;" title="{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Expected delivery date{{/}}">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}<span class="sortable {{ sortedOrder('dueDate') }} glyphicon glyphicon-btn "></th>
+              <th on-click="['sortOrder',dueDate]" style="width: 11em;" title="{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Expected delivery date{{/}}">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}<span class="sortable {{ sortedOrder('dueDate') }} glyphicon icon-btn "></th>
             {{/}}
-            <th on-click="['sortOrder',stage]" title="{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}Stage the order has reached{{/}}">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}<span class="sortable {{ sortedOrder('stage') }} glyphicon glyphicon-btn "></th>
+            <th on-click="['sortOrder',stage]" title="{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}Stage the order has reached{{/}}">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}<span class="sortable {{ sortedOrder('stage') }} glyphicon icon-btn "></th>
             {{#tenant.features.catalog}}
-              <th on-click="['sortOrder',stockItemName]" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}<span class="sortable {{ sortedOrder('stockItemName') }} glyphicon glyphicon-btn "></th>
+              <th on-click="['sortOrder',stockItemName]" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}<span class="sortable {{ sortedOrder('stockItemName') }} glyphicon icon-btn "></th>
             {{/}}
             {{#tenant.features.stockPricing}}
-              <th on-click="['sortOrder',price]" style="width: 5em;" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}<span class="sortable {{ sortedOrder('price') }} glyphicon glyphicon-btn "></th>
+              <th on-click="['sortOrder',price]" style="width: 5em;" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}<span class="sortable {{ sortedOrder('price') }} glyphicon icon-btn "></th>
             {{/}}
             {{#if tenant.orderFields && tenant.features.orderFieldsOnContact != undefined}}
               {{#tenant.orderFields}}
@@ -54,9 +54,9 @@
               {{/}}
             {{/if}}
             {{#if tenant.features.orderInvoiceRef}}
-              <th on-click="['sortOrder',invoiceRef]" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">Invoice Ref<span class="sortable {{ sortedOrder('invoiceRef') }} glyphicon glyphicon-btn "></th>
+              <th on-click="['sortOrder',invoiceRef]" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">Invoice Ref<span class="sortable {{ sortedOrder('invoiceRef') }} glyphicon icon-btn "></th>
             {{/if}}
-            {{#1==2}}<th on-click="['sortOrder',created]">Created<span class="sortable {{ sortedOrder('created') }} glyphicon glyphicon-btn "></th>{{/}}
+            {{#1==2}}<th on-click="['sortOrder',created]">Created<span class="sortable {{ sortedOrder('created') }} glyphicon icon-btn "></th>{{/}}
             <th>Actions</th>
           </tr>
         </thead>
@@ -132,19 +132,19 @@
                 </td>
               {{/if}}
               <td class="col-actions">
-                <a class="glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" href="orders.html?q={{#orderId}}{{orderId}}{{else}}{{localId}}{{/}}" target="_blank" title="Edit this record"></a>
-                <a class="glyphicon glyphicon-btn glyphicon-duplicate" aria-hidden="true" on-click="cloneOrder(.)" title="Duplicate this record"></a>
+                <a class="glyphicon icon-btn glyphicon-pencil" aria-hidden="true" href="orders.html?q={{#orderId}}{{orderId}}{{else}}{{localId}}{{/}}" target="_blank" title="Edit this record"></a>
+                <a class="glyphicon icon-btn glyphicon-duplicate" aria-hidden="true" on-click="cloneOrder(.)" title="Duplicate this record"></a>
                 {{#if tenant.features.orderItems && orderItems}}
-                  <a class="glyphicon glyphicon-btn {{#tenant.strings.orderItemIcon}}{{tenant.strings.orderItemIcon}}{{else}}glyphicon-th-list{{/}}" aria-hidden="true"
+                  <a class="glyphicon icon-btn {{#tenant.strings.orderItemIcon}}{{tenant.strings.orderItemIcon}}{{else}}glyphicon-th-list{{/}}" aria-hidden="true"
                      on-click="toggleOrderSubEntity(this,'orderItems')"
                      title="Show {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}"></a>
                 {{elseif tenant.features.orderItems}}
-                  <a class="glyphicon glyphicon-btn {{#tenant.strings.orderItemIcon}}{{tenant.strings.orderItemIcon}}{{else}}glyphicon-th-list{{/}}" aria-hidden="true"
+                  <a class="glyphicon icon-btn {{#tenant.strings.orderItemIcon}}{{tenant.strings.orderItemIcon}}{{else}}glyphicon-th-list{{/}}" aria-hidden="true"
                      on-click="addOrderItems(selfRef, true)"
                      title="{{#tenant.strings.addOrderItems}}{{tenant.strings.addOrderItems}}{{else}}Create Order Items{{/}}"></a>
                 {{/if}}
-                {{#if tenant.features.feedback}}<a class="glyphicon glyphicon-btn glyphicon-comment" aria-hidden="true" on-click="toggleOrderSubEntity(this,'feedback')" title="Show Feedback"></a>{{/if}}
-                {{#if matchRole('admin')}}<a class="glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="deleteOrder(.)" title="Delete this record"></a>{{/if}}
+                {{#if tenant.features.feedback}}<a class="glyphicon icon-btn glyphicon-comment" aria-hidden="true" on-click="toggleOrderSubEntity(this,'feedback')" title="Show Feedback"></a>{{/if}}
+                {{#if matchRole('admin')}}<a class="glyphicon icon-btn glyphicon-remove" aria-hidden="true" on-click="deleteOrder(.)" title="Delete this record"></a>{{/if}}
               </td>
             </tr>
             {{#if tenant.features.orderItems}}

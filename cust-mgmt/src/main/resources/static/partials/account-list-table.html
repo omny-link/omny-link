@@ -58,10 +58,10 @@
             <td on-click="edit(this)"><span class="alert-counter {{#alerts.length>0}}alert-danger{{else}}alert-success{{/}}">{{#alerts}}{{alerts.length}}{{else}}0{{/}}</span></td>
             <td on-click="edit(this)">{{{formatTags(tags)}}}</td>
             <td class="col-actions">
-              <a class="clickable glyphicon glyphicon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeContacts(this)" style="display:none;" title="Merge two records"></a>
-            <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="deleteAccount(this)" title="Delete this record"></a>
-            <a class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" on-click="edit(this)" title="View or edit this contact"></a>
-            <a class="clickable glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" on-click="openInNewWindow(this)" style="display:none" title="View or edit this contact"></a>
+              <a class="clickable glyphicon icon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeContacts(this)" style="display:none;" title="Merge two records"></a>
+            <a class="clickable admin glyphicon icon-btn glyphicon-remove" aria-hidden="true" on-click="deleteAccount(this)" title="Delete this record"></a>
+            <a class="clickable glyphicon icon-btn glyphicon-pencil" aria-hidden="true" on-click="edit(this)" title="View or edit this contact"></a>
+            <a class="clickable glyphicon icon-btn glyphicon-new-window" aria-hidden="true" on-click="openInNewWindow(this)" style="display:none" title="View or edit this contact"></a>
           </td>
         </tr>
       {{/}}

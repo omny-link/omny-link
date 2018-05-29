@@ -19,7 +19,7 @@
     "contactManagement": true,
 
     "documents": true, "documentsOnOrder": true, "documentsOnStockCategory": true, "documentsOnStockItem": true,
-    "financials":true, "marketing":true, "merge":false,
+    "financials":false, "marketing":true, "marketingDigital": true, "merge":false,
     "notesOnOrder": true, "notesOnStockCategory": true,"notesOnStockItem": true,
     "supportBar": false, "workManagement": false,
 
@@ -27,7 +27,7 @@
     "comms": true,
     "enquiryType": true,
     "feedback": false,
-    "marketingDigital": true,
+    
     "multiNational": false,
     "declaredSource": false,
     "documentSigning": false,
@@ -55,9 +55,6 @@
   },
   "accountFields": [
   ],
-  "contactActions": [
-    { "name": "Send email", "ref": "SendMemo", "url": true  }
-  ],
   "contactFields": [
   ],
   "partials": [
@@ -69,6 +66,8 @@
     "initialResponseThreshold":7
   },
   "strings": {
+    "order": "Order",
+    "orders": "Orders",
     "org": "Organisation",
     "orgHint": "The department or organisation unit the user belongs to"
   },
@@ -77,16 +76,25 @@
     { "name": "WelcomeNewUser", "ref": "WelcomeNewUser" }
   ],
   "toolbar": [
-    { "url": "work.html", "icon": "glyphicon-inbox", "description": "View your list of active tasks here", "feature":"workManagement", "name": "Work Management" },
-    { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
-    { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates", "role": "admin"  },
+    { "url": "contacts.html", "icon": "kp-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
+    { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates" },
     { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View your contacts funnel", "name": "Contacts Funnel" },
-    { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },
-    { "url": "admin/users.html", "icon": "glyphicon-user", "name": "User Management", "description": "Manage users", "role": "super_admin" },
-    { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status", "description": "Check various aspects of the tenant's configuration", "role": "admin" }
+    { "url": "funnel.html?o=order", "icon": "glyphicon-filter", "description": "View your orders funnel", "name": "Orders Funnel" },
+    { "url": "orders.html", "icon": "glyphicon-barcode", "description": "View your orders", "name": "Orders" },
+    { "url": "stock-items.html", "icon": "glyphicon-gift", "description": "View your stock items", "name": "Stock Items" },
+    { "url": "stock-categories.html", "icon": "glyphicon-gift", "description": "View your stock categories", "name": "Stock Catgeories" }
   ],
   "typeaheadControls": [
-    { "name": "accountTypes", "ref": "#curAccountType", "values": [
+    { "name": "accountStages", "ref": "#curStage", "values": [
+      {  "idx": -1, "id": "Discover", "name": "Discover"  },
+      {  "idx": 2, "id": "Define Solution", "name": "Define Solution"  },
+      {  "idx": 3, "id": "Propose", "name": "Propose"  },
+      {  "idx": 4, "id": "Closing", "name": "Closing"  },
+      {  "idx": 5, "id": "Implement", "name": "Implement"  },
+      {  "idx": -1, "id": "Review", "name": "Review"  },
+      {  "idx": -1, "id": "On hold", "name": "On hold"  },
+      {  "idx": -1, "id": "Cold", "name": "Cold"  }
+    ]},{ "name": "accountTypes", "ref": "#curAccountType", "values": [
       {"id":"Other", "name":"Other"}
     ]},{ "name": "contactStages", "ref": "#curStage", "values": [
       {  "idx": -1, "id": "Discover", "name": "Discover"  },
@@ -116,8 +124,6 @@
       { "id":"Pending Review", "name":"Pending Review" },
       { "id":"Published", "name":"Published" }
     ]}
-  ],
-  "workActions": [
   ]
 }
 

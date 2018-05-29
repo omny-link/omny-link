@@ -13,19 +13,19 @@
    License for the specific language governing permissions and limitations under
    the License.
 -->
-<a id="contactsTableToggle" class="clickable glyphicon glyphicon-btn glyphicon-triangle-bottom" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the contact table"></a>
+<a id="contactsTableToggle" class="clickable glyphicon icon-btn kp-icon-caret-down" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the contact table"></a>
 <span>
   {{#tenant.strings.contacts}}{{tenant.strings.contacts}}{{else}}Contacts{{/}}
 </span>
-<a class="clickable glyphicon glyphicon-btn glyphicon-plus" aria-hidden="true" on-click="addContact()" title="Add a new contact"></a>
-<a class="clickable glyphicon glyphicon-btn glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+<a class="clickable glyphicon icon-btn glyphicon-plus" aria-hidden="true" on-click="addContact()" title="Add a new contact"></a>
+<a class="clickable glyphicon icon-btn glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
 <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-<a class="glyphicon glyphicon-btn glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
+<a class="glyphicon icon-btn glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
 <a class="clickable dropdown filter" aria-hidden="true" id="filterBtn" title="Show filters">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <a class="clickable glyphicon glyphicon-btn glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
+    <a class="clickable glyphicon icon-btn glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
   </a>
-  <ul class="omny-dropdown dropdown-menu" id="filterMenu" role="menu">
+  <ul class="dropdown dropdown-menu" id="filterMenu" role="menu">
     <li on-click="['filter',{idx:1,value:''}]">Show All</li>
     <li on-click="['filter',{idx:2,value:'active'}]">Show Active</li>
     <li on-click="['filter',{idx:3,value:'active owner:'+profile.id}]">Show Mine</li>

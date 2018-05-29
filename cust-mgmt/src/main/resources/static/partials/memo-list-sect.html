@@ -27,11 +27,6 @@
     <thead>
       <tr>
         <th></th>
-        <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn "></th>
-        <th on-click="sort:status">Status<span class="sortable {{ sorted('status') }} glyphicon glyphicon-btn "></th>
-        <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon glyphicon-btn "></th>
-        <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon glyphicon-btn "></th>
-        <th on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon glyphicon-btn "></th>
         <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon icon-btn "></th>
         <th on-click="sort:status">Status<span class="sortable {{ sorted('status') }} glyphicon icon-btn "></th>
         <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon icon-btn "></th>
@@ -51,9 +46,9 @@
           <td on-click="edit(i,this)">{{formatDate(created)}}</td>
           <td on-click="edit(i,this)">{{formatDate(lastUpdated)}}</td>
           <td class="col-actions">
-            <a class="clickable glyphicon glyphicon-btn glyphicon-duplicate" aria-hidden="true" on-click="clone(this)" title="Clone this record"></a>
-            <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
-            <a class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" on-click="edit(i,this)" title="View or edit this memo"></a>
+            <a class="clickable glyphicon icon-btn glyphicon-duplicate" aria-hidden="true" on-click="clone(this)" title="Clone this record"></a>
+            <a class="clickable glyphicon icon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+            <a class="clickable glyphicon icon-btn glyphicon-pencil" aria-hidden="true" on-click="edit(i,this)" title="View or edit this memo"></a>
           </td>
         </tr>
       {{/}}

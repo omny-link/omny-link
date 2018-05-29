@@ -27,8 +27,8 @@
     <thead>
       <tr>
         <th></th>
-        <th on-click="sort:name">{{#tenant.strings.stockCategoryName}}{{tenant.strings.stockCategoryName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn "></th>
-        <th on-click="sort:status">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}<span class="sortable {{ sorted('status') }} glyphicon glyphicon-btn "></th>
+        <th on-click="sort:name">{{#tenant.strings.stockCategoryName}}{{tenant.strings.stockCategoryName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon icon-btn "></th>
+        <th on-click="sort:status">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}<span class="sortable {{ sorted('status') }} glyphicon icon-btn "></th>
         <th on-click="sort:created">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}Created{{/}}<span class="sortable {{ sorted('created') }} glyphicon"></th>
         <th class="" on-click="sort:lastUpdated">{{#tenant.strings.latUpdated}}{{tenant.strings.lastUpdated}}{{else}}Last Updated{{/}}<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
         <th class="col-actions">Actions</th>
@@ -44,9 +44,9 @@
             <td on-click="edit(this)">{{formatDate(created)}}</td>
             <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
             <td class="col-actions">
-              <a class="clickable glyphicon glyphicon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeStockCategories(this)" style="display:none;" title="Merge two records"></a>
-              <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
-              <a class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this stockItem"></a>
+              <a class="clickable glyphicon icon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeStockCategories(this)" style="display:none;" title="Merge two records"></a>
+              <a class="clickable admin glyphicon icon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+              <a class="clickable glyphicon icon-btn glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this stockItem"></a>
             </td>
           </tr>
       {{/}}

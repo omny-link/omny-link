@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018 Tim Stephenson and contributors
+ * Copyright 2015-2018 Tim Stephenson and contributors
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -121,12 +121,9 @@ var ractive = new BaseRactive({
     formatJson: function(json) {
       //console.info('formatJson: '+json);
       try {
-        var obj = JSON.parse(json);
-        var html = '';
-        $.each(Object.keys(obj), function(i,d) {
-          html += (typeof obj[d] == 'object' ? '' : '<b>'+d+'</b>: '+obj[d]+'<br/>');
-        });
-        return html;
+        var obj = json;
+        if (typeof json == 'string') obj = JSON.parse(json);
+        return ractive.json2Html(obj);
       } catch (e) {
         // So it wasn't JSON
         return json;
@@ -196,7 +193,7 @@ var ractive = new BaseRactive({
     haveCustomExtension: function(extName) {
       return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
     },
-    helpUrl: '//omny.link/user-help/orders/#the_title',
+    helpUrl: '//omny-link.github.io/user-help/orders/',
     lessThan24hAgo: function(isoDateTime) {
       if (isoDateTime == undefined || (new Date().getTime()-new Date(isoDateTime).getTime()) < 1000*60*60*24) {
         return true;
@@ -318,7 +315,7 @@ var ractive = new BaseRactive({
     var order = {
         name: ractive.get('tenant.strings.order') == undefined ? 'Order' : ractive.get('tenant.strings.order'),
         orderItems: [],
-        owner: $auth.getClaim('sub'),
+        owner: window['$auth'] == undefined ? undefined : $auth.getClaim('sub'),
         stage: ractive.initialOrderStage(),
         tenantId: ractive.get('tenant.id'),
         type: ractive.get('variant')
@@ -464,13 +461,13 @@ var ractive = new BaseRactive({
   filter: function(filter) {
     console.info('filter: '+JSON.stringify(filter));
     ractive.set('filter',filter);
-    $('.omny-dropdown.dropdown-menu li').removeClass('selected')
-    $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
+    $('.dropdown.dropdown-menu li').removeClass('selected')
+    $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
     ractive.showSearchMatched();
     $('input[type="search"]').blur();
   },
   hideResults: function() {
-    $('#ordersTableToggle').addClass('glyphicon-triangle-right').removeClass('glyphicon-triangle-bottom');
+    $('#ordersTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
     $('#ordersTable').slideUp();
     $('#currentSect').slideDown({ queue: true });
   },
@@ -484,8 +481,8 @@ var ractive = new BaseRactive({
     console.info('oninit');
     this.on( 'filter', function ( event, filter ) {
       console.info('filter on '+JSON.stringify(event)+','+filter.idx);
-      $('.omny-dropdown.dropdown-menu li').removeClass('selected');
-      $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
+      $('.dropdown.dropdown-menu li').removeClass('selected');
+      $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
       ractive.search(filter.value);
     });
     this.on( 'sortOrder', function ( event, column ) {
@@ -658,7 +655,8 @@ var ractive = new BaseRactive({
     console.info('select: '+JSON.stringify(order));
     ractive.set('saveObserver',false);
     // default owner to current user
-    if (order['owner'] == undefined || order['owner'] == '') order.owner = $auth.getClaim('sub');
+    if ((order['owner'] == undefined || order['owner'] == '') && window['$auth']!=undefined)
+      order.owner = $auth.getClaim('sub');
     if (ractive.uri(order) != undefined) {
       console.log('loading detail for '+ractive.uri(order));
       $.getJSON(ractive.tenantUri(order), function( data ) {
@@ -696,7 +694,7 @@ var ractive = new BaseRactive({
     this.showMessage(msg, addClass);
   },
   showResults: function() {
-    $('#ordersTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
+    $('#ordersTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
     $('#currentSect').slideUp();
     $('#ordersTable').slideDown({ queue: true });
   },
@@ -723,7 +721,7 @@ var ractive = new BaseRactive({
   },
   toggleResults: function() {
     console.info('toggleResults');
-    $('#ordersTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
+    $('#ordersTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
     $('#ordersTable').slideToggle();
   },
   updateContactId: function(newVal, keypath) {

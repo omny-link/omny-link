@@ -27,12 +27,12 @@
     <thead>
       <tr>
         <th></th>
-        <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn "></th>
+        <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon icon-btn "></th>
         <!--th>Memo</th-->
-        <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon glyphicon-btn "></th>
-        <th on-click="sort:status">Status<span class="sortable {{ sorted('status') }} glyphicon glyphicon-btn "></th>
-        <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon glyphicon-btn "></th>
-        <th on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon glyphicon-btn "></th>
+        <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon icon-btn "></th>
+        <th on-click="sort:status">Status<span class="sortable {{ sorted('status') }} glyphicon icon-btn "></th>
+        <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon icon-btn "></th>
+        <th on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon icon-btn "></th>
         <th class="col-actions">Actions</th>
       </tr>
     </thead>
@@ -48,9 +48,9 @@
             <td>{{formatDate(created)}}</td>
             <td>{{formatDate(lastUpdated)}}</td>
             <td class="col-actions">
-              <a class="clickable glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-copy" aria-hidden="true" on-click="clone(this)" title="Clone this record"></a>
-              <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
-              <a class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this memo distribution"></a>
+              <a class="clickable glyphicon icon-btn glyphicon icon-btn glyphicon-copy" aria-hidden="true" on-click="clone(this)" title="Clone this record"></a>
+              <a class="clickable glyphicon icon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+              <a class="clickable glyphicon icon-btn glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this memo distribution"></a>
             </td>
           </tr>
       {{/}}
