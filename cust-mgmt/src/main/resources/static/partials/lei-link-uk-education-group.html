@@ -14,7 +14,7 @@
    the License.
 -->
 {{#if current.accountType=='Establishment Group'}}
-  <a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/{{parseInt(current.companyNumber)}}" target="edubaseGroup"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+  <a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/{{parseInt(current.companyNumber)}}" target="edubaseGroup"><span class="glyphicon icon-btn glyphicon-new-window"></span></a>
 {{elseif current.parentOrg!=''}}
-  <a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/{{parseInt(current.parentOrg)}}" target="edubaseGroup"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+  <a href="https://get-information-schools.service.gov.uk/Groups/Group/Details/{{parseInt(current.parentOrg)}}" target="edubaseGroup"><span class="glyphicon icon-btn glyphicon-new-window"></span></a>
 {{/if}}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018 Tim Stephenson and contributors
+ * Copyright 2015-2018 Tim Stephenson and contributors
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -60,12 +60,9 @@ var ractive = new BaseRactive({
     formatJson: function(json) {
       console.log('formatJson: '+json);
       try {
-        var obj = JSON.parse(json);
-        var html = '';
-        $.each(Object.keys(obj), function(i,d) {
-          html += (typeof obj[d] == 'object' ? '' : '<b>'+d+'</b>: '+obj[d]+'<br/>');
-        });
-        return html;
+        var obj = json;
+        if (typeof json == 'string') obj = JSON.parse(json);
+        return ractive.json2Html(obj);
       } catch (e) {
         // So it wasn't JSON
         return json;
@@ -79,7 +76,7 @@ var ractive = new BaseRactive({
       console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
-    helpUrl: '//omny.link/user-help/memo/#the_title',
+    helpUrl: '//omny-link.github.io/user-help/memo/',
     matchFilter: function(obj) {
       if (ractive.get('filter')==undefined) return true;
       else return ractive.get('filter').value.toLowerCase()==obj[ractive.get('filter').field].toLowerCase();
@@ -294,7 +291,7 @@ var ractive = new BaseRactive({
     return uri;
   },
   hideResults: function() {
-    $('#memosTableToggle').addClass('glyphicon-triangle-right').removeClass('glyphicon-triangle-bottom');
+    $('#memosTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
     $('#memosTable').slideUp();
   },
   initEditor: function() {
@@ -407,7 +404,7 @@ var ractive = new BaseRactive({
     this.showMessage(msg, addClass);
   },
   showResults: function() {
-    $('#memosTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
+    $('#memosTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
     $('#currentSect').slideUp();
     $('#memosTable').slideDown({ queue: true });
   },
@@ -424,7 +421,7 @@ var ractive = new BaseRactive({
   },
   toggleResults: function() {
     console.log('toggleResults');
-    $('#memosTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
+    $('#memosTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
     $('#memosTable').slideToggle();
   }
 });

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright 2018 Tim Stephenson and contributors
- * 
+ * Copyright 2015-2018 Tim Stephenson and contributors
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
  *  of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -122,12 +122,9 @@ var ractive = new BaseRactive({
     formatJson: function(json) {
       console.log('formatJson: '+json);
       try {
-        var obj = JSON.parse(json);
-        var html = '';
-        $.each(Object.keys(obj), function(i,d) {
-          html += (typeof obj[d] == 'object' ? '' : '<b>'+d+'</b>: '+obj[d]+'<br/>');
-        });
-        return html;
+        var obj = json;
+        if (typeof json == 'string') obj = JSON.parse(json);
+        return ractive.json2Html(obj);
       } catch (e) {
         // So it wasn't JSON
         return json;
@@ -167,10 +164,6 @@ var ractive = new BaseRactive({
       });
       return html;
     },
-    gravatar: function(email) {
-      if (email == undefined) return '';
-      return '<img class="img-rounded" style="width:36px" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36&d=https%3A%2F%2Fapi.omny.link%2F'+ractive.get('tenant.id')+'%2Fgravatars%2F'+ractive.hash(email)+'.png"/>'
-    },
     hash: function(email) {
       if (email == undefined) return '';
       return ractive.hash(email);
@@ -185,7 +178,7 @@ var ractive = new BaseRactive({
         return d.name=='stageReasons';
       }).length > 0;
     },
-    helpUrl: '//omny.link/user-help/contacts/#the_title',
+    helpUrl: '//omny-link.github.io/user-help/contacts/',
     inactiveStages: function() {
       return ractive.inactiveStages();
     },
@@ -291,12 +284,21 @@ var ractive = new BaseRactive({
       { "name": "currentDocumentListSect", "url": "/webjars/supportservices/3.0.0/partials/current-document-list-sect.html"},
       { "name": "currentNoteListSect", "url": "/webjars/supportservices/3.0.0/partials/current-note-list-sect.html"},
       { "name": "currentOrderListSect", "url" : "/partials/contact-current-order-list-sect.html"},
+      { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
       { "name": "fieldExtension", "url": "/partials/field-extension.html"},
+      { "name": "helpModal", "url": "/partials/help-modal.html"},
+      { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
+      { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "socialModal", "url": "/partials/social-modal.html" },
       { "name": "titleArea", "url": "/partials/title-area.html"},
-      { "name": "mergeModal", "url": "/partials/contact-merge-sect.html"},
-      { "name": "navbar", "url": "/partials/contact-navbar.html"}
+      { "name": "navbar", "url": "/partials/contact-navbar.html"},
+      { "name": "supportBar", "url": "/webjars/supportservices/3.0.0/partials/support-bar.html"}
+    ],
+    workPartials: [
+      { "name": "currentTaskListSect", "url": "/partials/task-list-sect.html"},
+      { "name": "instanceListSect", "url": "/partials/instance-list-sect.html"},
+      { "name": "taskListTable", "url": "/partials/task-list-table.html"}
     ]
   },
   partials: {
@@ -524,6 +526,25 @@ var ractive = new BaseRactive({
       }
     });
   },
+  fetchTasks: function (contactId) {
+    console.info('fetchTasks...');
+
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/tasks/findByVar/contactId/'+contactId,
+      crossDomain: true,
+      success: function( data ) {
+        console.log('fetched '+data.length+' tasks');
+        ractive.set('saveObserver', false);
+        ractive.set('xTasks',data);
+        ractive.set('current.tasks',data);
+        ractive.sortChildren('tasks','dueDate',false);
+        ractive.set('saveObserver', true);
+        ractive.set('alerts.tasks',data.length);
+      }
+    });
+  },
   findContact: function(contactId) {
     console.log('findContact: '+contactId);
     var c;
@@ -535,7 +556,7 @@ var ractive = new BaseRactive({
     return c;
   },
   hideResults: function() {
-    $('#contactsTableToggle').removeClass('glyphicon-triangle-bottom').addClass('glyphicon-triangle-right');
+    $('#contactsTableToggle').removeClass('kp-icon-caret-down').addClass('kp-icon-caret-right');
     $('#contactsTable').slideUp();
     $('#currentSect').slideDown({ queue: true });
   },
@@ -591,8 +612,8 @@ var ractive = new BaseRactive({
     console.log('oninit');
     this.on( 'filter', function ( event, filter ) {
       console.info('filter on '+JSON.stringify(event)+','+filter.idx);
-      $('.omny-dropdown.dropdown-menu li').removeClass('selected');
-      $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
+      $('.dropdown.dropdown-menu li').removeClass('selected');
+      $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
       ractive.search(filter.value);
     });
     this.on( 'sortOrder', function ( event, column ) {
@@ -649,7 +670,7 @@ var ractive = new BaseRactive({
       });
       if (obj['firstName']==undefined) obj['firstName'] = 'Ann';
       if (obj['lastName']==undefined) obj['lastName'] = 'Other';
-      if (obj['email']==undefined) obj['email'] = 'info@omny.link';
+      if (obj['email']==undefined) obj['email'] = 'info@example.com';
       if (obj['enquiryType']==undefined) obj['enquiryType'] = 'User Import';
 
       obj['tenantId'] = ractive.get('tenant.id');
@@ -958,7 +979,8 @@ var ractive = new BaseRactive({
           //ractive.fetchStockItems();
           ractive.fetchOrders(ractive.get('current'));
         }
-        if (ractive['fetchTasks']!=undefined) ractive.fetchTasks(ractive.localId(ractive.get('current')));
+        if (ractive.get('tenant.features.workManagement'))
+          ractive.fetchTasks(ractive.localId(ractive.get('current')));
 
         ractive.initControls();
         ractive.initTags();
@@ -1041,7 +1063,7 @@ var ractive = new BaseRactive({
     ractive.set('alerts',alerts);
   },
   showResults: function() {
-    $('#contactsTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
+    $('#contactsTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
     $('#currentSect').slideUp();
     $('#contactsTable').slideDown({ queue: true });
   },
@@ -1055,7 +1077,7 @@ var ractive = new BaseRactive({
   },
   toggleResults: function() {
     console.info('toggleResults');
-    $('#contactsTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
+    $('#contactsTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
     $('#contactsTable').slideToggle();
   },
   /**
@@ -1101,9 +1123,13 @@ $(document).ready(function() {
   ractive.observe('profile', function(newValue, oldValue, keypath) {
     console.log('profile changed');
     if ((ractive.get('searchTerm') == undefined || ractive.get('searchTerm').length==0) && newValue!=undefined) {
-      $('.omny-dropdown.dropdown-menu li:nth-child(3)').addClass('selected');
+      $('.dropdown.dropdown-menu li:nth-child(3)').addClass('selected');
       ractive.search('active owner:'+newValue.id);
     }
+  });
+
+  ractive.observe('tenant.features.workManagement', function(newValue, oldValue, keypath) {
+    if (newValue == true) ractive.loadStandardPartials(ractive.get('workPartials'));
   });
 
   // Save on model change

@@ -23,7 +23,7 @@
 <section id="pasteSect" style="display:none">
   <h2>
     Import
-    <a class="glyphicon glyphicon-btn glyphicon-import super-admin pull-right upload" aria-hidden="true" on-click="pasteImport()" title="Import data from file"></a>
+    <a class="glyphicon icon-btn glyphicon-import super-admin pull-right upload" aria-hidden="true" on-click="pasteImport()" title="Import data from file"></a>
   </h2>
   <div id="pasteZone" class="col-md-12 pasteZone">
     <span class="target" style="border: #666 solid 1px">Paste your data here</span>
@@ -35,7 +35,7 @@
         {{#each pasteData.headers:idx}}
           <th data-name="{{.}}" >
             <span>{{.}}</span>
-            <span class="alert-warning glyphicon glyphicon-btn glyphicon-warning-sign" style="display:none" title="field '{{.}}' is not recognised"></span>
+            <span class="alert-warning glyphicon icon-btn glyphicon-warning-sign" style="display:none" title="field '{{.}}' is not recognised"></span>
           </th>
         {{/each}}
       </thead>
@@ -45,7 +45,7 @@
             {{#each pasteData.rows[idx]:colIdx}}
               <td data-col="{{colIdx}}">
                 <span>{{.}}</span>
-                <span class="alert-warning glyphicon glyphicon-btn glyphicon-warning-sign" style="display:none" title="'{{.}}' is not a valid value"></span>
+                <span class="alert-warning glyphicon icon-btn glyphicon-warning-sign" style="display:none" title="'{{.}}' is not a valid value"></span>
               </td>
             {{/each}}
           </tr>
@@ -59,7 +59,7 @@
 <section class="resultsSect" id="accountsSect">
   <h2 class="navbar-top">
     {{>navbar}}
-    {{! TODO Untested<a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-cloud-upload power-user pull-right" aria-hidden="true" on-click="pasteInit()" title="Upload data from file"></a>}}
+    {{! TODO Untested<a class="glyphicon icon-btn glyphicon icon-btn glyphicon-cloud-upload power-user pull-right" aria-hidden="true" on-click="pasteInit()" title="Upload data from file"></a>}}
   </h2>
   {{>accountListTable}}
 </section>

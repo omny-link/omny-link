@@ -18,30 +18,30 @@
     <tr>
       <th></th>
       {{#matchRole('super_admin')}}
-        <th on-click="sort:id">Id<span class="sortable {{ sorted('id') }} glyphicon glyphicon-btn"></th>
+        <th on-click="sort:id">Id<span class="sortable {{ sorted('id') }} glyphicon icon-btn"></th>
       {{/}}
       {{#orders.0.ref}}
-        <th on-click="sort:ref">Ref<span class="sortable {{ sorted('ref') }} glyphicon glyphicon-btn"></th>
+        <th on-click="sort:ref">Ref<span class="sortable {{ sorted('ref') }} glyphicon icon-btn"></th>
       {{/}}
       {{#tenant.features.orderName}}
-        <th on-click="sort:name">{{#tenant.strings.orderName}}{{tenant.strings.orderName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn"></th>
+        <th on-click="sort:name">{{#tenant.strings.orderName}}{{tenant.strings.orderName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon icon-btn"></th>
       {{/}}
-      <th on-click="sort:contactName">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}<span class="sortable {{ sorted('contactName') }} glyphicon glyphicon-btn "></th>
-      <th on-click="sort:date" style="width: 11em;" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}<span class="sortable {{ sorted('date') }} glyphicon glyphicon-btn "></th>
+      <th on-click="sort:contactName">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}<span class="sortable {{ sorted('contactName') }} glyphicon icon-btn "></th>
+      <th on-click="sort:date" style="width: 11em;" title="{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date order placed{{/}}">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}<span class="sortable {{ sorted('date') }} glyphicon icon-btn "></th>
       {{#if !tenant.features.orderItems}} {{! If have order items we will not know the due date except if it as an approximation on the order}}
-        <th on-click="sort:dueDate" style="width: 11em;" title="{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Expected delivery date{{/}}">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}<span class="sortable {{ sorted('dueDate') }} glyphicon glyphicon-btn "></th>
+        <th on-click="sort:dueDate" style="width: 11em;" title="{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Expected delivery date{{/}}">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}<span class="sortable {{ sorted('dueDate') }} glyphicon icon-btn "></th>
       {{/if}}
-      <th on-click="sort:stage" title="{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}Stage the order has reached{{/}}">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}<span class="sortable {{ sorted('stage') }} glyphicon glyphicon-btn "></th>
+      <th on-click="sort:stage" title="{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}Stage the order has reached{{/}}">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}<span class="sortable {{ sorted('stage') }} glyphicon icon-btn "></th>
       {{#tenant.features.catalog}}
-        <th on-click="sort:stockItemName" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}<span class="sortable {{ sorted('stockItemName') }} glyphicon glyphicon-btn "></th>
+        <th on-click="sort:stockItemName" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}<span class="sortable {{ sorted('stockItemName') }} glyphicon icon-btn "></th>
       {{/}}
       {{#tenant.features.stockPricing}}
-        <th on-click="sort:price" style="width: 5em;" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}<span class="sortable {{ sorted('price') }} glyphicon glyphicon-btn "></th>
+        <th on-click="sort:price" style="width: 5em;" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}<span class="sortable {{ sorted('price') }} glyphicon icon-btn "></th>
       {{/}}
       {{#if tenant.features.orderInvoiceRef}}
-        <th on-click ="sort:invoiceRef" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">{{#tenant.strings.invoiceRef}}{{tenant.strings.invoiceRef}}{{else}}Invoice Ref{{/}}<span class="sortable {{ sorted('invoiceRef') }} glyphicon glyphicon-btn "></th>
+        <th on-click ="sort:invoiceRef" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">{{#tenant.strings.invoiceRef}}{{tenant.strings.invoiceRef}}{{else}}Invoice Ref{{/}}<span class="sortable {{ sorted('invoiceRef') }} glyphicon icon-btn "></th>
       {{/if}}
-      <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon glyphicon-btn "></th>
+      <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon icon-btn "></th>
       <th class="" on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
       <th class="col-actions">Actions</th>
     </tr>
@@ -78,9 +78,9 @@
         <td on-click="edit(this)">{{formatDate(created)}}</td>
         <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
         <td class="col-actions">
-          <a class="clickable glyphicon glyphicon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeOrders(this)" style="display:none;" title="Merge two records"></a>
-          <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
-          <a class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" on-click="edit(this, 'po')" title="View or edit this order"></a>
+          <a class="clickable glyphicon icon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeOrders(this)" style="display:none;" title="Merge two records"></a>
+          <a class="clickable admin glyphicon icon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+          <a class="clickable glyphicon icon-btn glyphicon-pencil" aria-hidden="true" on-click="edit(this, 'po')" title="View or edit this order"></a>
         </td>
       </tr>
     {{/if}}

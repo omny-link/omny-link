@@ -27,7 +27,7 @@
         <span contenteditable id="curName2" on-focus="editField('#curName2','current.name')" on-blur="updateField('#curName2','current.name')">{{current.name}}</span>
         <span class="pull-right">
           {{#tenant.features.notesOnStockCategories}}
-            <a class="glyphicon glyphicon-btn glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
+            <a class="glyphicon icon-btn glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
           {{/}}
         </span>
       </h2>
@@ -64,7 +64,7 @@
     {{#tenant.features.stockLocation}}
       <section id="currentLocation">
         <h3>
-          <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+          <span class="ol-collapse glyphicon icon-btn kp-icon-caret-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
           <span>Location</span>
         </h3>
 
@@ -79,11 +79,11 @@
               <li><label class="col-md-4 col-sm-4">Country:</label><input autocomplete="off" class="form-control" list="countrys" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}"></li>
             {{/}}
             {{#current.postCode}}
-              <li><label class="col-md-4 col-sm-4">Map:</label><a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
+              <li><label class="col-md-4 col-sm-4">Map:</label><a class="glyphicon icon-btn glyphicon icon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
             {{/}}
             {{^current.postCode}}
               {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
-                <li><label class="col-md-4 col-sm-4">Map:</label><a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
+                <li><label class="col-md-4 col-sm-4">Map:</label><a class="glyphicon icon-btn glyphicon icon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
               {{/}}
             {{/}}
           </ul>

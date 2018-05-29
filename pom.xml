@@ -10,7 +10,7 @@
   
   <organization>
     <name>Omny Link</name>
-    <url>http://omny.link</url>
+    <url>https://github.com/omny-link</url>
   </organization>
 
   <parent>
@@ -149,7 +149,7 @@
     <module>catalog</module>
     <module>cust-mgmt</module>
     <module>docs</module>
-    <module>omny-link-server</module>
+    <module>crm-server</module>
     <module>support-services</module>
   </modules>
 

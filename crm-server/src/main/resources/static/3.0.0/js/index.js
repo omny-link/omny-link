@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018 Tim Stephenson and contributors
+ * Copyright 2015-2018 Tim Stephenson and contributors
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -22,7 +22,7 @@ var ractive = new BaseRactive({
   lazy: true,
   template: '#template',
   data: {
-    intro: "Let's get started right away by introducing the Omny Bar icons:",
+    intro: "Let's get started right away by introducing the toolbar icons:",
     title: $env.appName,
     tagLine: $env.tagLine,
     featureEnabled: function(feature) {
@@ -30,15 +30,11 @@ var ractive = new BaseRactive({
       if (feature==undefined || feature.length==0) return true;
       else return ractive.get('tenant.features.'+feature);
     },
-    gravatar: function(email) {
-      if (email == undefined) return '';
-      return '<img class="img-rounded" style="width:36px" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36&d=https%3A%2F%2Fapi.omny.link%2F'+ractive.get('tenant.id')+'%2Fgravatars%2F'+ractive.hash(email)+'.png"/>'
-    },
     hash: function(email) {
       if (email == undefined) return '';
       return ractive.hash(email);
     },
-    helpUrl: '//omny.link/user-help/#the_title',
+    helpUrl: '//omny-link.github.io/user-help/',
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {
@@ -50,7 +46,6 @@ var ractive = new BaseRactive({
     },
     stdPartials: [
       { "name": "helpModal", "url": "/partials/help-modal.html"},
-      { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},

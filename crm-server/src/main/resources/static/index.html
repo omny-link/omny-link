@@ -18,9 +18,9 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset='utf-8'>
-  <title>Omny Link</title>
+  <title></title>
   <link href="/webjars/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/omny/3.0.0/css/base.css" rel="stylesheet">
+  <link href="/3.0.0/css/base.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/icon/omny-icon-16x16.png" />
 </head>
 <body>
@@ -43,8 +43,8 @@
           {{#if matchRole(role)  && featureEnabled(feature)}}
             <li>
               <a href="{{context}}{{url}}">
-                <span class="glyphicon glyphicon-btn {{role}} {{icon}}" style="display:inline-block" title="{{title}}"></span>
-                <span>{{title}}</span>
+                <span class="glyphicon icon-btn {{role}} {{icon}}" style="display:inline-block" title="{{name}}"></span>
+                <span>{{name}}</span>
               </a>
               <span>{{description}}</span>
             </li>
@@ -59,16 +59,12 @@
   <script src="/webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <script src="/webjars/ractive/0.7.3/ractive.min.js"></script>
 
-  <script src="/js/autoNumeric.js"></script>
-  <script src="/webjars/md5/2.2/md5.min.js"></script>
-
   <script src="js/env.js"></script>
-  <script src="/workmgmt/2.3.0/js/activity.js"></script>
-  <script src="/workmgmt/2.3.0/js/string-functions.js"></script>
-  <script src="/workmgmt/2.3.0/js/i18n.js"></script>
+  <script src="/3.0.0/js/string-functions.js"></script>
+  <script src="/3.0.0/js/i18n.js"></script>
 
-  <script src="/workmgmt/2.3.0/js/base.js"></script>
-  <script src="/omny/3.0.0/js/index.js"></script>
+  <script src="/3.0.0/js/base.js"></script>
+  <script src="/3.0.0/js/index.js"></script>
   
 
 </body>

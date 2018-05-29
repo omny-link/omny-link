@@ -114,7 +114,12 @@ var BaseRactive = Ractive.extend({
       success: function( data ) {
         console.info('CSV received, first record: '+data.substring(0,data.indexOf('\n')));
         var entityLabel = ractive.get('tenant.strings.'+entityName.toCamelCase())==undefined ? entityName : ractive.get('tenant.strings.'+entityName.toCamelCase());
-        ractive.downloadUri(encodeURI("data:text/csv;charset=utf-8,"+data), entityLabel+".csv");
+        try {
+          var blob = new Blob([data], {type : 'text/csv'});
+          ractive.downloadUri(URL.createObjectURL(blob), entityLabel+".csv");
+        } catch (e) {
+          ractive.showError('Your browser does not support downloading large files, please try a more modern one.');
+        }
       }
     });
   },
@@ -261,6 +266,13 @@ var BaseRactive = Ractive.extend({
     });
     return stockItemNames.join();
   },
+  gravatar: function(email) {
+    if (email == undefined) return '';
+    else return '<img class="img-rounded" style="width:36px" src="//www.gravatar.com/avatar/'
+        +ractive.hash(email)+'?s=36&d='
+        +encodeURIComponent(ractive.getServer()+'/'+ractive.get('tenant.id')+'/gravatars/')
+        +ractive.hash(email)+'.png"/>';
+  },
   hash: function(email) {
     if (email==undefined) return;
     return hex_md5(email.trim().toLowerCase());
@@ -403,6 +415,21 @@ var BaseRactive = Ractive.extend({
       if (parseInt(d['idx'])==0) rtn = d.name;
     });
     return rtn;
+  },
+  json2Html: function(obj) {
+    var html = '<ul class="field-json">';
+    $.each(Object.keys(obj), function(i,d) {
+      if (typeof obj[d] == 'object' && obj[d]['valueType'] != undefined && (obj[d]['string'] == undefined)) { // empty javax.json.JsonObject
+        console.info('Supressing empty value '+d);
+      } else if (typeof obj[d] == 'object' && obj[d]['valueType'] != undefined) { // populated javax.json.JsonObject
+        html += '<li><label style="text-align:right;padding-right:10px">'+d.toLabel()+':</label><span class="col-scroll">'+obj[d]['string']+'</span>';
+      } else if (typeof obj[d] == 'object') { // child object
+        html += '<table class="table table-striped"><tr><th>' + d.toLabel() +'</th><td>'+ ractive.json2Html(obj[d])+'</td></tr></table>';
+      } else {
+        html += '<label>'+d.toLabel()+':</label><span class="col-scroll">'+obj[d]+'</span>';
+      }
+    });
+    return html;
   },
   loadStandardPartial: function(name,url) {
     //console.log('loading...: '+d.name)
@@ -651,11 +678,11 @@ var BaseRactive = Ractive.extend({
   toggleSection: function(sect) {
     console.info('toggleSection: '+$(sect).attr('id'));
     $('#'+$(sect).attr('id')+'>div').toggle();
-    $('#'+$(sect).attr('id')+' .ol-collapse').toggleClass('glyphicon-triangle-right').toggleClass('glyphicon-triangle-bottom');
+    $('#'+$(sect).attr('id')+' .ol-collapse').toggleClass('kp-icon-caret-right').toggleClass('kp-icon-caret-down');
   },
   toggleSidebar: function() {
     console.info('toggleSidebar');
-    $('.omny-bar-left').toggle(EASING_DURATION);
+    $('.toolbar-left').toggle(EASING_DURATION);
   },
   upload: function(formId) {
     console.log('upload, id: '+formId);

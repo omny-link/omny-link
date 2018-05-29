@@ -26,9 +26,9 @@
       {{#if tenant.stockItemActions!=undefined && tenant.stockItemActions.length>0 }}
         <span class="clickable dropdown" aria-hidden="true" title="Start Process">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
-            <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+            <a class="clickable glyphicon icon-btn glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
           </a>
-          <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+          <ul class="dropdown dropdown-menu" id="customActionMenu" role="menu">
             {{#each tenant.stockItemActions }}
               {{#name}}
                 <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', undefined{{#url}}, '{{url}}'{{/url}})">{{name}}</li>
@@ -45,14 +45,14 @@
     <thead>
       <tr>
         <th></th>
-        <th on-click="sort:name">{{#tenant.strings.stockItemName}}{{tenant.strings.stockItemName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn "></th>
+        <th on-click="sort:name">{{#tenant.strings.stockItemName}}{{tenant.strings.stockItemName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon icon-btn "></th>
         {{#tenant.features.stockCategory}}
           <th on-click="sort:stockCategoryName">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}<span class="sortable {{ sorted('stockCategoryName') }} glyphicon"></th>
         {{/}}
         {{#if stockTypes!=undefined}}
           <th on-click="sort:tags">{{#tenant.strings.tags}}{{tenant.strings.tags}}{{else}}Tags{{/}}<span class="sortable {{ sorted('tags') }} glyphicon"></th>
         {{/if}}
-        <th on-click="sort:status">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}<span class="sortable {{ sorted('status') }} glyphicon glyphicon-btn "></th>
+        <th on-click="sort:status">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}<span class="sortable {{ sorted('status') }} glyphicon icon-btn "></th>
         {{#tenant.features.stockPricing}}
           <th on-click="sort:unitPrice">{{#tenant.strings.unitPrice}}{{tenant.strings.unitPrice}}{{else}}Unit Price{{/}}<span class="sortable {{ sorted('unitPrice') }} glyphicon"></th>
         {{/}}
@@ -80,9 +80,9 @@
             <td on-click="edit(this)">{{formatDate(created)}}</td>
             <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
             <td class="col-actions">
-              <a class="clickable glyphicon glyphicon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeStockItems(this)" style="display:none;" title="Merge two records"></a>
-              <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
-              <a class="clickable glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this stockItem"></a>
+              <a class="clickable glyphicon icon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeStockItems(this)" style="display:none;" title="Merge two records"></a>
+              <a class="clickable admin glyphicon icon-btn glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+              <a class="clickable glyphicon icon-btn glyphicon-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this stockItem"></a>
             </td>
           </tr>
       {{/}}

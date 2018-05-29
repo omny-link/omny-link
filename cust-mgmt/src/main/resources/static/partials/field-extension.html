@@ -46,15 +46,15 @@
           value="{{current.customFields[name]}}"/>
       {{#if type=="url"}}
         <span class="input-group-addon">
-          <a href="{{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+          <a href="{{current.customFields[name]}}" target="_blank"><span class="glyphicon icon-btn glyphicon-new-window"></span></a>
         </span>
       {{elseif type=="account"}}
         <span class="input-group-addon">
-          <a href="accounts.html?q={{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+          <a href="accounts.html?q={{current.customFields[name]}}" target="_blank"><span class="glyphicon icon-btn glyphicon-new-window"></span></a>
         </span>
       {{elseif type=="contact"}}
         <span class="input-group-addon">
-          <a href="contacts.html?q={{current.customFields[name]}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+          <a href="contacts.html?q={{current.customFields[name]}}" target="_blank"><span class="glyphicon icon-btn glyphicon-new-window"></span></a>
         </span>
       {{/if}}
     </div>

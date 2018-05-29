@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018 Tim Stephenson and contributors
+ * Copyright 2015-2018 Tim Stephenson and contributors
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -122,16 +122,12 @@ var ractive = new BaseRactive({
         }
       }
     },
-    gravatar: function(email) {
-      if (email == undefined) return '';
-      return '<img class="img-rounded" style="width:36px" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36&d=https%3A%2F%2Fapi.omny.link%2F'+ractive.get('tenant.id')+'%2Fgravatars%2F'+ractive.hash(email)+'.png"/>'
-    },
     hash: function(email) {
       if (email == undefined) return '';
       //console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
-    helpUrl: '//omny.link/user-help/funnel/#the_title',
+    helpUrl: '//omny-link.github.io/user-help/funnel/',
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {

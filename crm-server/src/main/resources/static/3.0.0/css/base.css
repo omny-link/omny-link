@@ -17,10 +17,6 @@
 @import url('//fonts.googleapis.com/css?family=Roboto:400italic,400,700');
 @import url('https://api.knowprocess.com/webjars/knowprocess-icons/3.0.0/style.css');
 
-h1, h2, h3, h4, h5, h6 {
- font-family: sans-serif;
-}
-
 /* END FONTS */
 
 /*
@@ -47,17 +43,11 @@ h1, h2, h3, h4, h5, h6 {
 
 body {
   color: #6f6f71;
-  font-family: Roboto/*CalibriRegular*/;
+  font-family: Roboto, sans-serif;
   font-size: 16px;
 }
 h1 {
-	color: #0e9acd;
-}
-h2 {
-	font-size: 24px;
-}
-h3 {
-  font-size: 24px;
+  color: #0e9acd;
 }
 h4 {
   font-size: 20px;
@@ -162,10 +152,12 @@ not sure if anything requires it
 section .active {
 	display: inline;
 }*/
+section h2, h3, h4 {
+  padding-bottom: 2px;
+}
 section h2 {
   border-bottom: solid 1px #ff6c06;
   color: #0e9acd;
-  padding-bottom: 5px;
   padding-top: 10px;
   padding-left: 20px;
   padding-right: 20px;
@@ -204,7 +196,8 @@ section h3 a.glyphicon {
 	margin-top:-10px;
 	margin-right: 2px;
 }
-section h2 .glyphicon-search {
+section h2 .glyphicon-search,
+section h2 .kp-icon-search {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 15px;
   border-top-left-radius: 0;
@@ -212,8 +205,8 @@ section h2 .glyphicon-search {
   font-size: 20px;
   margin-left: 0px;
   position: relative;
-  left: -7px;
-  top: 1px;
+  left: -9px;
+  top: 0px;
 }
 section h2 .entity {
   border-bottom-right-radius: 0px !important;
@@ -464,7 +457,8 @@ input[type="checkbox"].form-control:focus {
   color: #6f6f71;
   background-color: #b7b7b7;
 }
-.glyphicon-btn {
+.glyphicon-btn,
+.icon-btn {
   border: solid 1px;
 }
 .glyphicon {
@@ -528,12 +522,7 @@ h2 a.glyphicon:hover {
 .sort-desc {
   border: none;
   font-size: .7em;
-}
-.sort-asc::after {
-  content: '\e253';
-}
-.sort-desc::after {
-  content: '\e252';
+  font-family: 'knowprocess';
 }
 
 .help-block {
@@ -671,14 +660,14 @@ h2 a.glyphicon:hover {
 
 /* END ACTIVE TABLE */
 
-/* OMNY BAR */
+/* TOOLBAR */
 @media screen {
-	.omny-bar {
+	.toolbar {
 	  background-color: #eee;
 	  color: #ff6c06;
 	  position: fixed;
 	}
-	.omny-bar-left {
+	.toolbar-left {
 	  border-bottom-style: none;
 	  border-right-style: double;
 	  border-top-style: none;
@@ -689,41 +678,41 @@ h2 a.glyphicon:hover {
 	  width: 50px;
 	  z-index: 300;
 	}
-	.omny-bar-left .page {
+	.toolbar-left .page {
 		position: relative;
 		top: 20px;
 	}
-	.omny-bar-left .powered-by-icon img {
+	.toolbar-left .powered-by-icon img {
 	  position: fixed;
 	  bottom: 10px;
 	  width: 40px;
 	}
-	.omny-bar li.admin-bar span {
+	.toolbar li.admin-bar span {
 	  /*color: red;*/
 	}
-	.omny-bar li {
+	.toolbar li {
 	  list-style: none;
 	  margin-left: -36px;
 	}
-	.omny-bar li span.glyphicon:hover,
-	.omny-bar li span.glyphicon:active,
-	.omny-bar li span.glyphicon.active {
+	.toolbar li span.glyphicon:hover,
+	.toolbar li span.glyphicon:active,
+	.toolbar li span.glyphicon.active {
 	  color: #fcf8e3;
 	  background-color: #ff6c06;
 	}
-	.omny-bar li span:not(.active) {
+	.toolbar li span:not(.active) {
 	  border: 0px;
 	}
-	.omny-bar-left li span:not(.active):not(:active):not(:hover) {
+	.toolbar-left li span:not(.active):not(:active):not(:hover) {
 	  border-bottom: solid 1px #ff6c06;
 	  border-bottom-right-radius: 0;
 	  border-bottom-left-radius: 0;
 	}
-	.omny-bar li:last-child span {
+	.toolbar li:last-child span {
 	  border-bottom: 0;
 	}
 
-	.omny-bar-top {
+	.toolbar-top {
 	  border-bottom-right-radius: 5px;
 	  border-bottom-left-radius: 5px;
 	  border-bottom-style: double;
@@ -736,25 +725,25 @@ h2 a.glyphicon:hover {
 	  right: 20%;
 	}
 
-	.omny-bar-top ul>li {
+	.toolbar-top ul>li {
 	  float: left;
 	  position: relative;
 	  display: block;
 	}
-	.omny-bar-top ul>li>a {
+	.toolbar-top ul>li>a {
 		border-radius: 4px;
 	  position: relative;
 	  display: block;
 	  padding: 5px 7px;
 	}
-	.omny-bar-top ul>li+li {
+	.toolbar-top ul>li+li {
 	  margin-left: 2px;
 	}
-	.omny-bar-top .glyphicon {
+	.toolbar-top .glyphicon {
 		padding: 10px
 	}
 
-	.omny-burger {
+	.menu-burger {
 	  /*border-bottom-style: double;
 	  border-right-style: double;*/
 		left: 0px;
@@ -763,7 +752,7 @@ h2 a.glyphicon:hover {
 		z-index: 300;
 	}
 }
-/* END OMNY BAR */
+/* END TOOLBAR */
 
 /* SUPPORT BAR */
 @media screen {
@@ -794,21 +783,21 @@ h2 a.glyphicon:hover {
 .currentBody {
 	margin-top: 10px;
 }
-.omny-filter.dropdown-menu li:nth-child(1) {
+.filter.dropdown-menu li:nth-child(1) {
   margin-top: 10px;
 }
-.omny-dropdown.dropdown-menu li {
+.dropdown.dropdown-menu li {
 	height: 25px;
 	padding-left: 10px;
   text-transform: none;
 }
-.omny-dropdown.dropdown-menu li.selected::after {
+.dropdown.dropdown-menu li.selected::after {
   content: "\e013";
-  font-family: 'Glyphicons Halflings';
+  font-family: 'knowprocess';
   float: right;
   margin-right: 10px;
 }
-.omny-dropdown.dropdown-menu li.divider {
+.dropdown.dropdown-menu li.divider {
   background-color: #ff6c06;
 	height: 1px;
   margin: 0 10px 10px 10px;
@@ -1827,7 +1816,7 @@ you can use the generic selector below, but it's slower:
 /* PRINT */
 @media print {
   .beta,
-  .omny-bar,
+  .toolbar,
   .profile {
     display:none;
   }

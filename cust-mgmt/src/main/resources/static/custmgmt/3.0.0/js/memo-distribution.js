@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018 Tim Stephenson and contributors
+ * Copyright 2015-2018 Tim Stephenson and contributors
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -79,7 +79,7 @@ var ractive = new BaseRactive({
       console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
-    helpUrl: '//omny.link/user-help/memo-distribution/#the_title',
+    helpUrl: '//omny-link.github.io/user-help/memo-distribution/',
     matchFilter: function(obj) {
       if (ractive.get('filter')==undefined) return true;
       else return ractive.get('filter').value.toLowerCase()==obj[ractive.get('filter').field].toLowerCase();
@@ -335,7 +335,7 @@ var ractive = new BaseRactive({
     return name;
   },
   hideResults: function() {
-    $('#memoDistributionsTableToggle').addClass('glyphicon-triangle-right').removeClass('glyphicon-triangle-bottom');
+    $('#memoDistributionsTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
     $('#memoDistributionsTable').slideUp();
   },
   save: function () {
@@ -482,13 +482,13 @@ var ractive = new BaseRactive({
     this.showMessage(msg, addClass);
   },
   showResults: function() {
-    $('#memoDistributionsTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
+    $('#memoDistributionsTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
     $('#currentSect').slideUp();
     $('#memoDistributionsTable').slideDown({ queue: true });
   },
   toggleResults: function() {
     console.log('toggleResults');
-    $('#memoDistributionsTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
+    $('#memoDistributionsTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
     $('#memoDistributionsTable').slideToggle();
   }
 });
