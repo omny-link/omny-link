@@ -590,11 +590,14 @@ public class OrderController {
         if (existingFeedback == null) {
             LOGGER.debug("Creating feedback on order {} for {}",
                     orderId, tenantId);
-            Order order = orderRepo.findOne(orderId);
             feedback.setTenantId(tenantId);
-            feedback.setOrder(order);
+            for (CustomFeedbackField cf : feedback.getCustomFields()) {
+                cf.setFeedback(feedback);
+            }
             feedback = feedbackRepo.save(feedback);
 
+            Order order = orderRepo.findOne(orderId);
+            feedback.setOrder(order);
             order.setFeedback(feedback);
             order.setLastUpdated(new Date());
             orderRepo.save(order);
