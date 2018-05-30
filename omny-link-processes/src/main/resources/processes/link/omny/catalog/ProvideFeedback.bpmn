@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
   Copyright 2011-2018 Tim Stephenson and contributors
-  
-   Licensed under the Apache License, Version 2.0 (the "License"); you may not
-   use this file except in compliance with the License.  You may obtain a copy
-   of the License at
-  
+
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+  use this file except in compliance with the License.  You may obtain a copy
+  of the License at
+
      http://www.apache.org/licenses/LICENSE-2.0
-  
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-   License for the specific language governing permissions and limitations under
-   the License.
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+  License for the specific language governing permissions and limitations under
+  the License.
 -->
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/catalog" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="5.0" expressionLanguage="http://activiti.org/Juel" id="_1483034361361" name="" targetNamespace="http://omny.link/catalog" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
   <message id="omny.feedback" name="omny.feedback"/>
@@ -48,7 +48,7 @@
       <outgoing>_3</outgoing>
     </serviceTask>
     <sequenceFlow id="_4" sourceRef="startEvent" targetRef="saveFeedback"/>
-    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="setOrderStage" implementation="##WebService" isForCompensation="false" name="Set stage to feedback received" startQuantity="1">
+    <serviceTask activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="setOrderStage" implementation="##WebService" isForCompensation="false" name="Set stage to&#10;feedback received" startQuantity="1">
       <extensionElements>
         <activiti:field name="resourceUsername" stringValue="userInfo('tenant-bot')"/>
         <activiti:field expression="userInfo('cust-mgmt-secret')" name="resourcePassword"/>
@@ -74,7 +74,7 @@
       <incoming>_9</incoming>
       <outgoing>_10</outgoing>
     </serviceTask>
-    <callActivity calledElement="SendMemo" completionQuantity="1" id="_7" isForCompensation="false" name="Send feedback&#10;confirmation" startQuantity="1">
+    <callActivity activiti:async="true" calledElement="SendMemo" completionQuantity="1" id="_7" isForCompensation="false" name="Send feedback&#10;confirmation" startQuantity="1">
       <extensionElements>
         <activiti:in sourceExpression="ThanksForFeedback" target="memoName"/>
         <activiti:in sourceExpression="${omny_feedback.getString('tenantId')}" target="tenantId"/>
@@ -84,24 +84,24 @@
       <incoming>_10</incoming>
       <outgoing>_12</outgoing>
     </callActivity>
-    <sequenceFlow id="_9" name="No" sourceRef="_2" targetRef="_6">
+    <sequenceFlow id="_9" name="Yes" sourceRef="_2" targetRef="_6">
       <extensionElements>
         <yaoqiang:label offset-x="14.0" offset-y="-1.0" x="0.0" y="15.0"/>
       </extensionElements>
+      <conditionExpression><![CDATA[${omny_feedback.containsKey('isClient')}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_10" sourceRef="_6" targetRef="_7"/>
     <sequenceFlow id="_12" sourceRef="_7" targetRef="_8"/>
-    <endEvent id="_13" name="End of coach&#10;feedback">
+    <endEvent id="_13" name="End internal&#10;feedback">
       <incoming>_14</incoming>
       <inputSet/>
     </endEvent>
-    <sequenceFlow id="_14" name="Yes" sourceRef="_2" targetRef="_13">
+    <sequenceFlow id="_14" name="No" sourceRef="_2" targetRef="_13">
       <extensionElements>
         <yaoqiang:label offset-x="0.0" offset-y="-18.0" x="-1.0" y="-16.0"/>
       </extensionElements>
-      <conditionExpression><![CDATA[${omny_feedback.getJsonObject('customFields').containsKey('coachComments')}]]></conditionExpression>
     </sequenceFlow>
-    <exclusiveGateway default="_9" gatewayDirection="Diverging" id="_2" name="is this coach&#10;feedback?">
+    <exclusiveGateway default="_14" gatewayDirection="Diverging" id="_2" name="is this client&#10;feedback?">
       <extensionElements>
         <yaoqiang:label offset-x="61.0" offset-y="-35.0"/>
       </extensionElements>
@@ -109,15 +109,12 @@
       <outgoing>_9</outgoing>
       <outgoing>_14</outgoing>
     </exclusiveGateway>
-    <endEvent id="_8" name="End of school&#10;feedback">
+    <endEvent id="_8" name="End client&#10;feedback">
       <incoming>_12</incoming>
       <inputSet/>
     </endEvent>
     <textAnnotation id="_11" textFormat="text/plain">
       <text>PROVIDE FEEDBACK</text>
-    </textAnnotation>
-    <textAnnotation id="_15" textFormat="text/plain">
-      <text>No address available to send a confirmation to coach.</text>
     </textAnnotation>
   </process>
   <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-ProvideFeedback" name="Provide feedback" resolution="96.0">
@@ -125,112 +122,106 @@
       <bpmndi:BPMNShape bpmnElement="saveFeedback" id="Yaoqiang-saveFeedback">
         <omgdc:Bounds height="88.0" width="125.0" x="154.5" y="187.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8" width="89.0" x="172.5" y="223.6"/>
+          <omgdc:Bounds height="20.98" width="80.0" x="177.0" y="222.51"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="startEvent" id="Yaoqiang-startEvent">
         <omgdc:Bounds height="32.0" width="32.0" x="73.0" y="215.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8" width="93.0" x="43.5" y="249.6"/>
+          <omgdc:Bounds height="20.98" width="86.0" x="47.0" y="248.51"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
         <omgdc:Bounds height="31.0" width="135.0" x="73.0" y="102.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8" width="119.0" x="73.0" y="110.1"/>
+          <omgdc:Bounds height="20.98" width="111.0" x="73.0" y="109.01"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="setOrderStage" id="Yaoqiang-setOrderStage">
         <omgdc:Bounds height="88.0" width="125.0" x="312.5" y="187.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="32.8" width="110.0" x="320.0" y="216.6"/>
+          <omgdc:Bounds height="36.98" width="100.0" x="325.0" y="214.51"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6">
         <omgdc:Bounds height="88.0" width="125.0" x="564.7352941176471" y="283.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8" width="70.0" x="592.24" y="319.6"/>
+          <omgdc:Bounds height="20.98" width="65.0" x="594.74" y="318.51"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7" isExpanded="false">
         <omgdc:Bounds height="88.0" width="125.0" x="732.0882352941177" y="283.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="32.8" width="89.0" x="750.09" y="312.6"/>
+          <omgdc:Bounds height="36.98" width="82.0" x="753.59" y="310.51"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_13" id="Yaoqiang-_13">
-        <omgdc:Bounds height="32.0" width="32.0" x="892.0" y="157.49999999999997"/>
+        <omgdc:Bounds height="32.0" width="32.0" x="892.0" y="127.49999999999997"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="32.8" width="79.0" x="868.5" y="191.04"/>
+          <omgdc:Bounds height="36.98" width="70.0" x="873.0" y="158.93"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2" isMarkerVisible="true">
         <omgdc:Bounds height="42.0" width="42.0" x="469.5588235294118" y="209.61764705882348"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="32.8" width="76.0" x="513.56" y="218.62"/>
+          <omgdc:Bounds height="36.98" width="67.0" x="518.06" y="218.62"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_8" id="Yaoqiang-_8">
         <omgdc:Bounds height="32.0" width="32.0" x="892.0" y="311.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="32.8" width="82.0" x="867.0" y="345.48"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_15" id="Yaoqiang-_15">
-        <omgdc:Bounds height="22.0" width="358.0" x="507.0" y="143.0"/>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8" width="313.0" x="507.0" y="146.6"/>
+          <omgdc:Bounds height="36.98" width="57.0" x="879.5" y="343.37"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9">
-        <omgdi:waypoint x="490.0" y="250.17647058823525"/>
+        <omgdi:waypoint x="490.0" y="251.0"/>
         <omgdi:waypoint x="490.0" y="324.0"/>
-        <omgdi:waypoint x="564.9705882352941" y="324.0"/>
+        <omgdi:waypoint x="564.875" y="324.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8" width="21.0" x="494.07" y="298.6"/>
+          <omgdc:Bounds height="20.98" width="23.0" x="493.44" y="297.51"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_14" id="Yaoqiang-_14">
-        <omgdi:waypoint x="491.0" y="209.17647058823525"/>
-        <omgdi:waypoint x="491.0" y="173.0"/>
-        <omgdi:waypoint x="891.971264071367" y="173.0"/>
+        <omgdi:waypoint x="491.0" y="210.0"/>
+        <omgdi:waypoint x="491.0" y="143.0"/>
+        <omgdi:waypoint x="891.8989436968944" y="143.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8" width="26.0" x="494.0" y="181.77"/>
+          <omgdc:Bounds height="20.98" width="21.0" x="496.5" y="181.51"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
-        <omgdi:waypoint x="856.9705882352941" y="327.0"/>
-        <omgdi:waypoint x="891.971264071367" y="327.0"/>
+        <omgdi:waypoint x="856.875" y="327.0"/>
+        <omgdi:waypoint x="891.8754882887008" y="327.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8" width="6.0" x="871.47" y="317.6"/>
+          <omgdc:Bounds height="20.98" width="6.0" x="871.38" y="316.51"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_5" id="Yaoqiang-_5">
-        <omgdi:waypoint x="437.97058823529414" y="231.0"/>
-        <omgdi:waypoint x="470.44117647058823" y="230.61764705882348"/>
+        <omgdi:waypoint x="437.875" y="231.0"/>
+        <omgdi:waypoint x="470.1323529411765" y="230.61764705882348"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8" width="6.0" x="451.01" y="221.22"/>
+          <omgdc:Bounds height="20.98" width="6.0" x="450.81" y="220.13"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_10" id="Yaoqiang-_10">
-        <omgdi:waypoint x="689.9705882352941" y="327.0"/>
-        <omgdi:waypoint x="731.9705882352941" y="327.0"/>
+        <omgdi:waypoint x="689.875" y="327.0"/>
+        <omgdi:waypoint x="731.875" y="327.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8" width="6.0" x="707.97" y="317.6"/>
+          <omgdc:Bounds height="20.98" width="6.0" x="707.88" y="316.51"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_4" id="Yaoqiang-_4">
-        <omgdi:waypoint x="104.96991239922126" y="231.0"/>
-        <omgdi:waypoint x="154.97058823529414" y="231.0"/>
+        <omgdi:waypoint x="104.87451171129919" y="231.0"/>
+        <omgdi:waypoint x="154.875" y="231.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8" width="6.0" x="126.97" y="221.6"/>
+          <omgdc:Bounds height="20.98" width="6.0" x="126.87" y="220.51"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">
-        <omgdi:waypoint x="279.97058823529414" y="231.0"/>
-        <omgdi:waypoint x="312.97058823529414" y="231.0"/>
+        <omgdi:waypoint x="279.875" y="231.0"/>
+        <omgdi:waypoint x="312.875" y="231.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8" width="6.0" x="293.47" y="221.6"/>
+          <omgdc:Bounds height="20.98" width="6.0" x="293.38" y="220.51"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
