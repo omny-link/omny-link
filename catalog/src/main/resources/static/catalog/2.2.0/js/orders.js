@@ -563,18 +563,18 @@ var ractive = new BaseRactive({
   saveFeedback: function() {
     console.info('saveFeedback: ...');
     ractive.set('saveObserver', false);
-    if (document.getElementById('currentOrderItemForm') == undefined) {
+    if (document.getElementById('currentFeedbackForm') == undefined) {
       console.debug('still loading, safe to ignore');
-    } else if (document.getElementById('currentOrderItemForm').checkValidity()) {
-      var tmp = ractive.get('current.orderItems.'+ractive.get('currentOrderItemIdx'));
+    } else if (document.getElementById('currentFeedbackForm').checkValidity()) {
+      var tmp = ractive.get('current.feedback');
       tmp.orderId = ractive.get('current.id');
       tmp.tenantId = ractive.get('tenant.id');
 
-      console.log('ready to save order item' + JSON.stringify(tmp) + ' ...');
+      console.log('ready to save feedback' + JSON.stringify(tmp) + ' ...');
       $.ajax({
         url: tmp.id === undefined
-          ? ractive.getServer() + '/' + ractive.get('tenant.id') + '/orders/' + tmp.orderId + '/order-items'
-         : ractive.getServer() + '/' + ractive.get('tenant.id') + '/orders/' + tmp.orderId + '/order-items/'+tmp.id,
+            ? ractive.tenantUri(ractive.get('current')) + '/feedback'
+            : ractive.tenantUri(ractive.get('current')) + '/feedback/'+tmp.id,
         type: tmp.id === undefined ? 'POST': 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
@@ -582,29 +582,22 @@ var ractive = new BaseRactive({
           //console.log('data: '+ data);
           var location = jqXHR.getResponseHeader('Location');
           ractive.set('saveObserver',false);
-          if (location != undefined) ractive.set('orders.'+ractive.get('currentOrderIdx')+'.orderItems._links.self.href',location);
+          if (location != undefined) ractive.set('orders.'+ractive.get('currentOrderIdx')+'.feedback._links.self.href',location);
           switch (jqXHR.status) {
           case 201:
-
-            // TODO selecting the order works for refreshing the order items but messes up subsequent edits which are applied to the wrong item
-         // TODO cannot select directly as have no hateos links
-            //ractive.select(Array.findBy('selfRef', ractive.get('current.id'), ractive.get('orders')));
-//
             var currentIdx = ractive.get('orders').push(ractive.get('current'))-1;
-//            ractive.set('currentIdx',currentIdx);
             break;
           case 204:
-//            ractive.splice('orders',ractive.get('currentIdx'),1,ractive.get('current'));
             break;
           }
-          ractive.showMessage(ractive.get('tenant.strings.orderItem')+' saved');
+          ractive.showMessage(ractive.get('tenant.strings.feedback')+' saved');
           ractive.set('saveObserver',true);
         }
       });
     } else {
-      var msg = 'Cannot save yet as order item is invalid';
+      var msg = 'Cannot save yet as feedback is invalid';
       console.warn(msg);
-      $('#currentOrderItemForm :invalid').addClass('field-error');
+      $('#currentFeedbackForm :invalid').addClass('field-error');
       ractive.showMessage(msg);
       ractive.set('saveObserver', true);
     }

@@ -18,8 +18,8 @@
     <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
     <span>{{#tenant.strings.feedback}}{{tenant.strings.feedback}}{{else}}Feedback{{/}}</span>
   </h3>
-  <div class="col-md-12" id="currentFeedback" style="display:none">
-    <form id="currentFeedbackForm">
+  <div id="currentFeedback" style="display:none">
+    <form id="currentFeedbackForm" class="inline-form form">
       {{#if current.feedback==undefined || current.feedback.length==0}}
         No feedback has been submitted yet.
       {{else}}
@@ -33,11 +33,7 @@
                </li>
              {{/if}}
              {{#each tenant.feedbackFields.slice(0,Math.ceil(tenant.feedbackFields.length/2)):j}}
-               <li class="form-group">
-                 <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
-                 <input class="form-control" id="cur{{name.toLeadingCaps()}}" value="{{current.feedback.customFields[name]}}">
-                 <p class="col-md-offset-4 col-sm-offset-4 help-block field-error">{{hint}}</p>
-               </li>
+               {{>fieldExtension { current: current.feedback} }}
              {{/each}}
            </ul>
          </div>
@@ -51,11 +47,7 @@
                </li>
              {{/if}}
              {{#each tenant.feedbackFields.slice(Math.ceil(tenant.feedbackFields.length/2),tenant.feedbackFields.length):j}}
-               <li class="form-group">
-                 <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
-                 <input class="form-control" id="cur{{name.toLeadingCaps()}}" value="{{current.feedback.customFields[name]}}">
-                 <p class="col-md-offset-4 col-sm-offset-4 help-block field-error">{{hint}}</p>
-               </li>
+               {{>fieldExtension { current: current.feedback} }}
              {{/each}}
            </ul>
          </div>
