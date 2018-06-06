@@ -77,6 +77,7 @@ import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
+import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.web.NumberSequenceController;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -151,7 +152,7 @@ public class OrderController {
                     "Found order with %1$d order items and %2$s inc. feedback",
                     order.getOrderItems().size(),
                     order.getFeedback() == null ? "DOES NOT" : "DOES"));
-        
+
             order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
             order.setFeedback(feedbackRepo.findByOrder(tenantId, order.getId()));
             addLinks(tenantId, order);
@@ -583,24 +584,45 @@ public class OrderController {
      */
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/{id}/feedback", method = RequestMethod.POST, consumes = { "application/json" })
+    @Transactional
     public @ResponseBody ResponseEntity<Object> addFeedback(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId, @RequestBody Feedback feedback) {
+        LOGGER.debug("Creating feedback on order {} for {}",
+                orderId, tenantId);
+        feedback.setTenantId(tenantId);
+        for (CustomFeedbackField cf : feedback.getCustomFields()) {
+            cf.setFeedback(feedback);
+        }
+        feedback = feedbackRepo.save(feedback);
+
+        Order order = orderRepo.findOne(orderId);
+        feedback.setOrder(order);
+        order.setFeedback(feedback);
+        order.setLastUpdated(new Date());
+        orderRepo.save(order);
+
+        HashMap<String, String> vars = new HashMap<String, String>();
+        vars.put("tenantId", tenantId);
+        vars.put("id", orderId.toString());
+        vars.put("feedbackId", feedback.getId().toString());
+
+        return getCreatedResponseEntity("/{id}/feedback/{feedbackId}",vars);
+    }
+
+    /**
+     * Update existing order feedback.
+     * @return
+     */
+    @RequestMapping(value = "/{id}/feedback/{feedbackId}", method = RequestMethod.PUT, consumes = { "application/json" })
+    public @ResponseBody ResponseEntity<Object> updateFeedback(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") Long orderId,
+            @PathVariable("feedbackId") Long feedbackId,
+            @RequestBody Feedback feedback) {
         Feedback existingFeedback = feedbackRepo.findByOrder(tenantId, orderId);
         if (existingFeedback == null) {
-            LOGGER.debug("Creating feedback on order {} for {}",
-                    orderId, tenantId);
-            feedback.setTenantId(tenantId);
-            for (CustomFeedbackField cf : feedback.getCustomFields()) {
-                cf.setFeedback(feedback);
-            }
-            feedback = feedbackRepo.save(feedback);
-
-            Order order = orderRepo.findOne(orderId);
-            feedback.setOrder(order);
-            order.setFeedback(feedback);
-            order.setLastUpdated(new Date());
-            orderRepo.save(order);
+            throw new BusinessEntityNotFoundException("feedback", String.valueOf(feedbackId));
         } else {
             LOGGER.debug("Updating feedback {} of order {} for {}",
                     existingFeedback.getId(), orderId, tenantId);
