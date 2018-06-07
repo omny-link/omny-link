@@ -157,6 +157,31 @@ public class MemoController extends BaseTenantAwareController {
     }
 
     /**
+     * @return memos for the specified tenant and status.
+     */
+    @RequestMapping(value = "/findByStatus/{status}", method = RequestMethod.GET)
+    public @ResponseBody List<ResourceSupport> findByStatusForTenant(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("status") String status,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        LOGGER.info("List memos with status {} for tenant {}", status, tenantId);
+
+        List<Memo> list;
+        if (limit == null) {
+            list = memoRepo.findByStatusForTenant(status.toLowerCase(),
+                    tenantId);
+        } else {
+            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            list = memoRepo.findPageByStatusForTenant(
+                    status.toLowerCase(), tenantId, pageable);
+        }
+        LOGGER.info("Found {} memos", list.size());
+
+        return wrap(list);
+    }
+
+    /**
      * Return just the matching memo.
      * 
      * @param idOrName

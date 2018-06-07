@@ -40,6 +40,14 @@ public interface MemoRepository extends CrudRepository<Memo, Long> {
     List<Memo> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
+    @Query("SELECT m FROM Memo m WHERE m.tenantId = :tenantId AND LOWER(m.status) = :status ORDER BY m.name ASC")
+    List<Memo> findByStatusForTenant(@Param("status") String status,
+            @Param("tenantId") String tenantId);
+
+    @Query("SELECT m FROM Memo m WHERE m.tenantId = :tenantId AND LOWER(m.status) = :status ORDER BY m.name ASC")
+    List<Memo> findPageByStatusForTenant(@Param("status") String status,
+            @Param("tenantId") String tenantId, Pageable pageable);
+
     @Query("SELECT m FROM Memo m WHERE m.tenantId = :tenantId AND m.name = :name AND (status IS NULL OR status != 'deleted')")
     Memo findByName(@Param("name") String name,
             @Param("tenantId") String tenantId);
