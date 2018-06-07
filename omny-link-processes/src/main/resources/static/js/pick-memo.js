@@ -157,7 +157,7 @@
     console.log('fetchMemos...');
     $.ajax({
       dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/memos/',
+      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/memos/findByStatus/Published',
       crossDomain: true,
       success: function( data ) {
         console.log('Found '+data.length+' memos.');
