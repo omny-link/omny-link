@@ -39,9 +39,6 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,8 +55,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.knowprocess.bpm.impl.DateUtils;
 
+import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.model.Contact;
@@ -168,16 +165,14 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/accounts/archive", method = RequestMethod.POST, headers = "Accept=application/json")
-    @Secured("ROLE_ADMIN")
     @Transactional
     public @ResponseBody Integer archiveAccounts(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "before", required = false) String before) {
-        Date beforeDate = before == null
+        Date beforeDate = before == null 
                 ? DateUtils.oneMonthAgo() : DateUtils.parseDate(before);
-        LOGGER.info(String.format(
-                "Place on hold accounts of %1$s older than %2$s", tenantId,
-                beforeDate.toString()));
+        LOGGER.info("Place on hold accounts of {} older than {}",
+                        tenantId, beforeDate.toString());
 
         return accountRepo.updateStage("On hold", beforeDate, tenantId);
     }
@@ -190,7 +185,6 @@ public class AccountController {
 //  public @ResponseBody List<Account> listForTenantAsJson(
     public @ResponseBody List<ShortAccount> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
-            @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
         return wrap(listForTenant(tenantId, page, limit));
@@ -220,7 +214,6 @@ public class AccountController {
     @RequestMapping(value = "/accounts/", method = RequestMethod.GET, produces = "text/csv")
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
-            @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
         StringBuilder sb = new StringBuilder()

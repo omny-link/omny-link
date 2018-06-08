@@ -46,7 +46,6 @@ import link.omny.catalog.model.StockItem;
 import link.omny.catalog.model.api.ShortStockCategory;
 import link.omny.catalog.model.api.ShortStockItem;
 import link.omny.catalog.repositories.StockCategoryRepository;
-import link.omny.catalog.web.StockCategoryController.ShortStockCategoryResource;
 import link.omny.catalog.web.StockCategoryController.ShortStockItemResource;
 
 /**
@@ -108,10 +107,7 @@ public class StockControllerTest {
         assertNotNull(category2.getCreated());
 
 //        findAll(category, officeItem, warehouseItem);
-        findNearReading(borehamwoodCat, officeItem);
         findOffice(borehamwoodCat, officeItem);
-        findOfficeNearReading(borehamwoodCat, officeItem);
-        findOffersNearReading(borehamwoodCat, officeItem);
 
         ShortStockCategory category3 = findByName(borehamwoodCat, officeItem,
                 warehouseItem);
@@ -143,8 +139,8 @@ public class StockControllerTest {
 
     protected void findAll(StockCategory category, StockItem officeItem,
             StockItem warehouseItem) throws IOException {
-        List<ShortStockCategoryResource> categoryResults = categoryController
-                .findByLocation(TENANT_ID, null, null, null, false, null, null);
+        List<StockCategory> categoryResults = categoryController
+                .listForTenant(TENANT_ID, null, null);
         assertEquals(1, categoryResults.size());
 
         checkCategory(category, categoryResults.get(0));
@@ -158,43 +154,12 @@ public class StockControllerTest {
 
     protected void findOffice(StockCategory category, StockItem officeItem)
             throws IOException {
-        List<ShortStockCategoryResource> categoryResults = categoryController
-                .findByLocation(TENANT_ID, null, "Office", null, false, null,
-                        null);
+        List<StockCategory> categoryResults = categoryController
+                .listForTenant(TENANT_ID, null, null);
+        // TODO need to filter for just type = Office
         assertEquals(2, categoryResults.get(0).getStockItems().size());
 
         checkCategory(category, categoryResults.get(0));
-        checkOfficeItem(category, officeItem, categoryResults.get(0));
-    }
-
-    protected void findNearReading(StockCategory category, StockItem officeItem)
-            throws IOException {
-        List<ShortStockCategoryResource> categoryResults = categoryController
-                .findByLocation(TENANT_ID, "Reading", null, null, false, null,
-                        null);
-        assertEquals(3, categoryResults.get(0).getStockItems().size());
-
-        checkCategory(category, categoryResults.get(0));
-        checkOfficeItem(category, officeItem, categoryResults.get(0));
-    }
-
-    protected void findOfficeNearReading(StockCategory category,
-            StockItem officeItem) throws IOException {
-        List<ShortStockCategoryResource> categoryResults = categoryController
-                .findByLocation(TENANT_ID, "Reading", "Office", null, false,
-                        null, null);
-        assertEquals(2, categoryResults.get(0).getStockItems().size());
-
-        checkOfficeItem(category, officeItem, categoryResults.get(0));
-    }
-
-    protected void findOffersNearReading(StockCategory category,
-            StockItem officeItem) throws IOException {
-        List<ShortStockCategoryResource> categoryResults = categoryController
-                .findByLocation(TENANT_ID, "Reading", null, null, true, null,
-                        null);
-        assertEquals(3, categoryResults.get(0).getStockItems().size());
-
         checkOfficeItem(category, officeItem, categoryResults.get(0));
     }
 

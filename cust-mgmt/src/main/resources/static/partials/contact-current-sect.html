@@ -66,13 +66,13 @@
           {{/if}}
         </span>
         <span>
-          {{#if tenant.show.addressContact && current.postCode}}
+          {{#if tenant.features.addressContact && current.postCode}}
             <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
           {{/if}}
           {{#if current.postCode == undefined && (current.town || current.address1 || current.address2 || current.countyOrCity)}}
             <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
           {{/if}}
-          {{#if tenant.show.addressAccount && (current.account.name != undefined && current.account.name != '')}}
+          {{#if tenant.features.addressAccount && (current.account.name != undefined && current.account.name != '')}}
            <span>{{current.account.name}}{{#if current.account.town}}, {{current.account.town}}{{/if}}{{#if current.account.countyOrCity}}, {{current.account.countyOrCity}}{{/if}}{{#if current.account.postCode}}, {{current.account.postCode}}{{/if}}</span>
              {{#current.account.postCode}}
                 <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.account.postCode}}" target="_blank"></a>
@@ -89,7 +89,7 @@
     
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        {{#if tenant.show.references || matchRole('admin') || matchRole('super-admin')}}
+        {{#if tenant.features.references || matchRole('admin') || matchRole('super-admin')}}
           <li>
             <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.id}}{{tenant.strings.id}}{{else}}Ref{{/}}:</label>
             <div class="input-group">
@@ -104,7 +104,7 @@
           <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
           <input class="form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" {{#if !matchRole('power_user')}}readonly disabled{{/if}} value="{{current.owner}}">
         </li>
-        {{#tenant.show.marketing}}
+        {{#tenant.features.marketing}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{# tenant.strings.existingCustomer}}{{tenant.strings.existingCustomer}}{{else}}Existing Customer?{{/}}:</label>
             <label class="checkbox-inline">
@@ -113,7 +113,7 @@
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{# tenant.strings.existingCustomerHint}}{{tenant.strings.existingCustomerHint}}{{else}}Is this an existing customer, even if we are in a new sales cycle?{{/}}</p>
           </li>
         {{/}}
-        {{#tenant.show.marketing || tenant.show.stage}}
+        {{#tenant.features.marketing || tenant.features.stage}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.contactStage}}{{tenant.strings.contactStage}}{{else}}Stage{{/}}:</label>
             <input class="form-control" list="contactStages" placeholder="Start typing to filter options" id="curStage" on-blur="initAutoComplete()" value="{{current.stage}}">
@@ -136,7 +136,7 @@
     </div>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        {{#tenant.show.enquiryType}}
+        {{#tenant.features.enquiryType}}
           <li>
             <label class="col-md-4 col-sm-4 col-xs-4">{{# tenant.strings.enquiryType}}{{tenant.strings.enquiryType}}{{else}}Enquiry Type{{/}}:</label>
             <input class="form-control" list="enquiryTypes" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
@@ -155,7 +155,7 @@
       </ul>
     </div>
     
-    {{#tenant.show.contactDescription}}
+    {{#tenant.features.contactDescription}}
       <div id="currentContactDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12" style="display:inline">
         <ul class="form edit-form">
           <li class="form-group">
@@ -166,7 +166,7 @@
       </div>
     {{/}}
 
-    {{#tenant.show.contact}}
+    {{#tenant.features.contact}}
 	    <section id="connectionsSect">
 	      <h3>
 	        <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
@@ -189,7 +189,7 @@
 	            <input class="" id="curEmailConfirmed" type="checkbox" checked="{{current.emailConfirmed}}">
 	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Has this email been confirmed valid?</p>
 	          </li>
-	          {{#tenant.show.marketing}}
+	          {{#tenant.features.marketing}}
 	            <li>
 	              <label class="col-md-4 col-sm-4">{{#tenant.strings.doNotEmail}}{{tenant.strings.doNotEmail}}{{else}}Do Not Email{{/}}:</label>
 	              <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"> Owner preference
@@ -201,7 +201,7 @@
 	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This will be checked if the user has opted in to marketing emails</p>
 	            </li>
 	          {{/}}
-	          {{#if tenant.show.socialContact}}
+	          {{#if tenant.features.socialContact}}
 	            <li>
                 <div class="btn-group col-md-offset-4 col-sm-offset-4" role="group" aria-label="...">
                   <a class="glyphicon glyphicon-btn kp-icon-twitter{{^current.twitter}} disabled{{/}}" {{#current.twitter}}href="https://twitter.com/{{current.twitter}}"{{else}}disabled {{/}} target="_newtab"></a>
@@ -229,19 +229,19 @@
 	            <label class="col-md-4 col-sm-4">{{#tenant.strings.phone2}}{{tenant.strings.phone2}}{{else}}Alternate Phone{{/}}:</label>
 	            <input class="form-control" id="curPhone2" pattern="\+?[0-9, \-()]{0,15}" type="tel" value="{{current.phone2}}">
 	          </li>
-            {{#tenant.show.phone3}}
+            {{#tenant.features.phone3}}
               <li>
                 <label class="col-md-4 col-sm-4">{{#tenant.strings.phone3}}{{tenant.strings.phone3}}{{else}}Third Phone{{/}}:</label>
                 <input class="form-control" id="curPhone3" pattern="\+?[0-9, \-()]{0,15}" type="tel" value="{{current.phone3}}">
               </li>
             {{/}}
-	          {{#tenant.show.marketing}}
+	          {{#tenant.features.marketing}}
 	            <li>
 	              <label class="col-md-4 col-sm-4">{{#tenant.strings.doNotCall}}{{tenant.strings.doNotCall}}{{else}}Do Not Call{{/}}:</label>
 	              <input class="" id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}">
 	            </li>
 	          {{/}}
-	          {{#if tenant.show.addressContact}}
+	          {{#if tenant.features.addressContact}}
 	            <li>
 	              <label class="col-md-4 col-sm-4">{{#tenant.strings.address1}}{{tenant.strings.address1}}{{else}}Address{{/}}:</label>
 	              <input class="form-control" id="curAddress1" value="{{current.address1}}"/>
@@ -262,7 +262,7 @@
 	              <label class="col-md-4 col-sm-4">{{#tenant.strings.postCode}}{{tenant.strings.postCode}}{{else}}Post Code{{/}}:</label>
 	              <input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}">
 	            </li>
-	            {{#tenant.show.multiNational}}
+	            {{#tenant.features.multiNational}}
 	              <li>
 	                <label class="col-md-4 col-sm-4">{{#tenant.strings.country}}{{tenant.strings.country}}{{else}}Country{{/}}:</label>
 	                <input autocomplete="false" class="form-control" list="countrys" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}">
@@ -288,7 +288,7 @@
 	    </section>
 	  {{/}}
 
-    {{#tenant.show.marketing || tenant.show.marketingDigital}}
+    {{#tenant.features.marketing || tenant.features.marketingDigital}}
       <section id="marketingSect" style="clear:both;">
         <h3>
           <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
@@ -297,7 +297,7 @@
         </h3>
         <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
           <ul class="form edit-form">
-            {{#if tenant.show.marketingDigital && current.source}}
+            {{#if tenant.features.marketingDigital && current.source}}
               <li>
                 <label class="col-md-4 col-sm-4">{{#tenant.strings.source}}{{tenant.strings.source}}{{else}}Source{{/}}:</label>
                 <input class="form-control" list="sources" placeholder="Start typing to filter options" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}">
@@ -307,7 +307,7 @@
                 <input class="form-control" list="mediums" placeholder="Start typing to filter options" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}">
               </li>
             {{/if}}
-            {{#tenant.show.declaredSource}}
+            {{#tenant.features.declaredSource}}
               <li>
                 <label class="col-md-4 col-sm-4">{{#tenant.strings.source2}}{{tenant.strings.source2}}{{else}}How heard of us?{{/}}:</label>
                 <input class="form-control" list="source2s" id="curSource2" placeholder="Start typing to filter options" {{ (matchRole('sales_manager') || matchRole('admin') || matchRole('power_user')) ? '' : 'readonly disabled' }} value="{{current.source2}}">
@@ -317,13 +317,13 @@
         </div>
         <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
           <ul class="form edit-form">
-            {{#tenant.show.marketingDigital}}
+            {{#tenant.features.marketingDigital}}
               {{#if current.source}}
 	              <li>
 	                <label class="col-md-4 col-sm-4">{{#tenant.strings.campaign}}{{tenant.strings.campaign}}{{else}}Campaign{{/}}:</label>
 	                <input class="form-control" id="curCampaign" {{ current.campaign ? 'disabled readonly' : '' }} value="{{current.campaign}}">
 	              </li>
-              {{elseif tenant.show.marketingDigital}}
+              {{elseif tenant.features.marketingDigital}}
                 <li><label class="col-md-offset-4 col-sm-offset-4">{{# tenant.strings.noCPC}}{{tenant.strings.noCPC}}{{else}}No CPC data available{{/}}</label></li>
               {{/if}}
               <li>
@@ -338,9 +338,9 @@
           </ul>
         </div>
       </section>
-    {{/tenant.show.marketing}}
+    {{/tenant.features.marketing}}
 
-    {{#tenant.show.budget}}
+    {{#tenant.features.budget}}
       <section id="budgetSect" style="clear:both;">
         <h3>
           <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
@@ -379,11 +379,11 @@
     {{/if}}
   {{/}}
 
-  {{#tenant.show.account}}
+  {{#tenant.features.account}}
     {{>currentContactAccountSect { primary: 'contacts' }}}
   {{/}}
 
-  {{#if tenant.show.orders}}
+  {{#if tenant.features.orders}}
     {{>currentOrderListSect}}
   {{/if}}
 
@@ -399,7 +399,7 @@
 
   {{>currentNoteListSect}}
 
-  {{#if tenant.show.documents}}
+  {{#if tenant.features.documents}}
     {{>currentDocumentListSect}}
   {{/if}}
 

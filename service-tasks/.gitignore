@@ -1,9 +1,0 @@
-.bpmn
-.classpath
-.project
-.settings/
-*.bak
-*~
-/bin/
-src/main/resources/client_secret.json
-/target/

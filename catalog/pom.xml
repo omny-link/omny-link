@@ -69,16 +69,6 @@
 	    <version>1.2</version>
 	  </dependency>
     <dependency>
-      <groupId>com.knowprocess.bpm</groupId>
-      <artifactId>work-mgmt</artifactId>
-      <version>${work-mgmt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.onedecision</groupId>
-      <artifactId>onedecision-engine</artifactId>
-      <version>${onedecision.version}</version>
-    </dependency>
-    <dependency>
       <groupId>link.omny.custmgmt</groupId>
       <artifactId>custmgmt</artifactId>
       <version>${project.version}</version>
@@ -89,16 +79,6 @@
       <version>${project.version}</version>
     </dependency>
     <!-- Generates REST documentation -->
-    <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger2</artifactId>
-        <version>2.0.0</version>
-    </dependency>
-    <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger-ui</artifactId>
-        <version>2.0.0</version>
-    </dependency>
     <!-- Web jars -->
     <dependency>
       <groupId>org.webjars</groupId>
@@ -114,11 +94,6 @@
       <groupId>org.webjars</groupId>
       <artifactId>jquery-ui</artifactId>
       <version>1.11.4</version>
-    </dependency>
-    <dependency>
-      <groupId>link.omny</groupId>
-      <artifactId>fonts</artifactId>
-      <version>${omny-link.version}</version>
     </dependency>    
   </dependencies>
 

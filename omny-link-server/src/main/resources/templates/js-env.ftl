@@ -2,7 +2,8 @@ var $env = (function ($) {
   var me = {
     appName: '${appName}',
     server: '${restBaseUri}',
-    tagLine: '${tagLine}'
+    tagLine: '${tagLine}',
+    tenantConfig: '${tenantConfig}'
   };
 
   return me;

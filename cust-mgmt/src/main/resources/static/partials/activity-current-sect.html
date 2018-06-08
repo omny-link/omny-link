@@ -13,7 +13,7 @@
    License for the specific language governing permissions and limitations under
    the License.
 -->
-{{#if tenant.show.activityAnalysis}}
+{{#if tenant.features.activityAnalysis}}
   <section id="activityAnalysisSect" style="clear:both">
     <h2>
       <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
@@ -22,7 +22,7 @@
     </h2>
     <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
       <ul class="form edit-form">
-        {{#tenant.show.marketing || current.emailsSent>0}}
+        {{#tenant.features.marketing || current.emailsSent>0}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Since email:</label>
             <input class="col-md-8 col-sm-8 form-control" id="curTimeSinceEmail" disabled readonly twoway="false" value="{{formatAge(current.timeSinceEmail)}}">

@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,7 +82,7 @@ public class ContactAndAccountControllerTest {
         contactController.delete(TENANT_ID, contactId);
         // check clean
         List<ShortContact> list = contactController.listForTenantAsJson(
-                TENANT_ID, null, null, null);
+                TENANT_ID, null, null);
         assertEquals(0, list.size());
     }
 
@@ -134,7 +133,7 @@ public class ContactAndAccountControllerTest {
 
         // FETCH ALL CONTACTS
         List<ShortContact> contacts = contactController.listForTenantAsJson(
-                TENANT_ID, null, null, null);
+                TENANT_ID, null, null);
         assertEquals(1, contacts.size());
         // assertContactEquals(contact, acct, contacts);
     }

@@ -31,6 +31,7 @@ var ractive = new BaseRactive({
       console.log('alerts for '+selector);
       return $(selector+' :invalid').length;
     },
+    contactStages: [ "New" ],
     customField: function(obj, name) {
       if (obj['customFields']==undefined) {
         return undefined;
@@ -290,20 +291,12 @@ var ractive = new BaseRactive({
       { "name": "currentDocumentListSect", "url": "/webjars/supportservices/2.2.0/partials/current-document-list-sect.html"},
       { "name": "currentNoteListSect", "url": "/webjars/supportservices/2.2.0/partials/current-note-list-sect.html"},
       { "name": "currentOrderListSect", "url" : "/partials/contact-current-order-list-sect.html"},
-      { "name": "currentTaskListSect", "url": "/partials/task-list-sect.html"},
-      { "name": "customActionModal", "url": "/partials/custom-action-modal.html"},
       { "name": "fieldExtension", "url": "/partials/field-extension.html"},
-      { "name": "helpModal", "url": "/partials/help-modal.html"},
-      { "name": "instanceListSect", "url": "/partials/instance-list-sect.html"},
-      { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
-      { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "socialModal", "url": "/partials/social-modal.html" },
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "mergeModal", "url": "/partials/contact-merge-sect.html"},
-      { "name": "navbar", "url": "/partials/contact-navbar.html"},
-      { "name": "supportBar", "url": "/webjars/supportservices/2.2.0/partials/support-bar.html"},
-      { "name": "taskListTable", "url": "/partials/task-list-table.html"}
+      { "name": "navbar", "url": "/partials/contact-navbar.html"}
     ]
   },
   partials: {
@@ -331,8 +324,6 @@ var ractive = new BaseRactive({
     $('.create-form,create-field').show();
     ractive.select({
       account: {},
-      author:$auth.getClaim('sub'),
-      owner:$auth.getClaim('sub'),
       phone1:'', phone2:'',
       stage: ractive.initialContactStage(),
       tenantId: ractive.get('tenant.id'),
@@ -530,25 +521,6 @@ var ractive = new BaseRactive({
         }
         ractive.sortChildren('instances','occurred',false);
         ractive.set('saveObserver', true);
-      }
-    });
-  },
-  fetchTasks: function (contactId) {
-    console.info('fetchTasks...');
-
-    ractive.set('saveObserver', false);
-    $.ajax({
-      dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/tasks/findByVar/contactId/'+contactId,
-      crossDomain: true,
-      success: function( data ) {
-        console.log('fetched '+data.length+' tasks');
-        ractive.set('saveObserver', false);
-        ractive.set('xTasks',data);
-        ractive.set('current.tasks',data);
-        ractive.sortChildren('tasks','dueDate',false);
-        ractive.set('saveObserver', true);
-        ractive.set('alerts.tasks',data.length);
       }
     });
   },
@@ -961,7 +933,7 @@ var ractive = new BaseRactive({
 //    }
     if (contact.account == undefined || contact.account == '') contact.account = new Object();
     // default owner to current user
-    if (contact.owner == undefined || contact.owner == '') contact.owner = $auth.getClaim('sub');
+    if (window['$auth']!=undefined && (contact.owner == undefined || contact.owner == '')) contact.owner = $auth.getClaim('sub');
     // adapt between Spring Hateos and Spring Data Rest
     if (contact._links == undefined && contact.links != undefined) {
       contact._links = contact.links;
@@ -986,12 +958,10 @@ var ractive = new BaseRactive({
           //ractive.fetchStockItems();
           ractive.fetchOrders(ractive.get('current'));
         }
-        ractive.fetchTasks(ractive.localId(ractive.get('current')));
+        if (ractive['fetchTasks']!=undefined) ractive.fetchTasks(ractive.localId(ractive.get('current')));
 
         ractive.initControls();
         ractive.initTags();
-        // who knows why this is needed, but it is, at least for first time rendering
-        $('.autoNumeric').autoNumeric('update',{});
         //ractive.fetchNotes();
         ractive.sortChildren('notes','created',false);
 //        if (ractive.get('tenant.show.documents')) ractive.fetchDocs();

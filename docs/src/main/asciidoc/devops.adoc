@@ -4,16 +4,6 @@
 
 include::devops-guide/01-introduction.adoc[]
 
-include::devops-guide/02-acct-mgmt.adoc[]
-
-include::devops-guide/03-catalog.adoc[]
-
-include::devops-guide/03-cust-mgmt.adoc[]
-
-include::devops-guide/04-work-mgmt.adoc[]
-
-include::devops-guide/05-hosting.adoc[]
-
 include::devops-guide/A1-architecture.adoc[]
 
 include::devops-guide/A2-api.adoc[]

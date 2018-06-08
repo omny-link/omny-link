@@ -61,7 +61,7 @@
       </ul>
     </div>
 
-    {{#tenant.show.stockLocation}}
+    {{#tenant.features.stockLocation}}
       <section id="currentLocation">
         <h3>
           <span class="ol-collapse glyphicon glyphicon-btn glyphicon-triangle-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
@@ -110,7 +110,7 @@
       </section>
     {{/}}
 
-    {{#tenant.show.stockCategoryOffers}}
+    {{#tenant.features.stockCategoryOffers}}
       {{>currentOfferSect}}
     {{/}}
 

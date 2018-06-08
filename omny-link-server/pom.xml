@@ -77,38 +77,7 @@
         <artifactId>springfox-swagger-ui</artifactId>
         <version>2.0.0</version>
     </dependency>
-    <dependency>
-      <groupId>io.onedecision</groupId>
-      <artifactId>onedecision-domain</artifactId>
-      <version>${onedecision.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.onedecision</groupId>
-      <artifactId>onedecision-engine</artifactId>
-      <version>${onedecision.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.onedecision</groupId>
-      <artifactId>onedecision-ui</artifactId>
-      <version>${onedecision.version}</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>ractive</artifactId>
-          <groupId>org.webjars</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
 
-    <dependency>
-      <groupId>link.omny.acctmgmt</groupId>
-      <artifactId>acctmgmt</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>link.omny.analytics</groupId>
-      <artifactId>analytics</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <dependency>
       <groupId>link.omny.catalog</groupId>
       <artifactId>catalog</artifactId>
@@ -120,30 +89,9 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>link.omny</groupId>
-      <artifactId>omny-link-processes</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>link.omny.support-services</groupId>
       <artifactId>support-services</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.knowprocess</groupId>
-      <artifactId>auth</artifactId>
-      <version>${kp-auth.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.knowprocess.bpm</groupId>
-      <artifactId>work-mgmt</artifactId>
-      <version>${work-mgmt.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.h2database</groupId>
-          <artifactId>h2</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 
