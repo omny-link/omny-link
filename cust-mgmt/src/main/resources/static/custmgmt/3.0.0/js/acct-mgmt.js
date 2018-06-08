@@ -64,7 +64,7 @@ var ractive = new BaseRactive({
         featureEnabled: function(feature) {
           console.log('featureEnabled: '+feature);
           if (feature==undefined || feature.length==0) return true;
-          else return ractive.get('tenant.show.'+feature);
+          else return ractive.get('tenant.features.'+feature);
         },
         fields: [ "id", "country", "owner", "fullName", "title",
             "customFields", "tenantId", "lastUpdated", "firstName", "lastName",
@@ -366,23 +366,15 @@ var ractive = new BaseRactive({
           { "name": "companyLeiLink", "url": "/partials/lei-link-uk-company.html" },
           { "name": "currentAccountSect", "url": "/partials/account-current-sect.html" },
           { "name": "currentContactAccountSect", "url": "/partials/contact-current-account-sect.html" },
-          { "name": "currentDocumentListSect", "url": "/webjars/supportservices/2.2.0/partials/current-document-list-sect.html" },
-          { "name": "currentNoteListSect", "url": "/webjars/supportservices/2.2.0/partials/current-note-list-sect.html" },
+          { "name": "currentDocumentListSect", "url": "/webjars/supportservices/3.0.0/partials/current-document-list-sect.html" },
+          { "name": "currentNoteListSect", "url": "/webjars/supportservices/3.0.0/partials/current-note-list-sect.html" },
           { "name": "currentOrderListSect", "url": "/partials/contact-current-order-list-sect.html" },
-          { "name": "currentTaskListSect", "url": "/partials/task-list-sect.html" },
-          { "name": "customActionModal", "url": "/partials/custom-action-modal.html" },
           { "name": "fieldExtension", "url": "/partials/field-extension.html"},
-          { "name": "helpModal", "url": "/partials/help-modal.html" },
-          { "name": "instanceListSect", "url": "/partials/instance-list-sect.html" },
-          { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
-          { "name": "profileArea", "url": "/partials/profile-area.html" },
           { "name": "socialModal", "url": "/partials/social-modal.html" },
           { "name": "sidebar", "url": "/partials/sidebar.html" },
           { "name": "titleArea", "url": "/partials/title-area.html" },
-          /*{ "name": "mergeModal", "url": "/partials/contact-merge-sect.html" },*/
           { "name": "navbar", "url": "/partials/account-navbar.html" },
-          { "name": "supportBar", "url": "/webjars/supportservices/2.2.0/partials/support-bar.html" },
-          { "name": "taskListTable", "url": "/partials/task-list-table.html" }
+          { "name": "supportBar", "url": "/webjars/supportservices/3.0.0/partials/support-bar.html" }
         ],
         uniq: function(fieldName, arr) {
           return Array.uniq(fieldName, arr);
@@ -403,6 +395,7 @@ var ractive = new BaseRactive({
         poweredBy: '',
         profileArea: '',
         sidebar: '',
+        socialModal: '',
         titleArea: '',
         supportBar: ''
       },
@@ -412,7 +405,6 @@ var ractive = new BaseRactive({
         $('.create-form,create-field').show();
         var contact = {
           account: {},
-          author: $auth.getClaim('sub'),
           tenantId: ractive.get('tenant.id'),
           url: undefined
         };
@@ -652,14 +644,14 @@ var ractive = new BaseRactive({
             ractive.set('contactsTypeahead', contactData);
             console.log('fetched ' + data.length + ' contacts for account');
             ractive.set('saveObserver', true);
-            if (ractive.get('tenant.show.orders'))
+            if (ractive.get('tenant.features.orders'))
               ractive.fetchOrders(ractive.get('current'));
           }
         });
       },
       fetchFeedback: function(order) {
         console.info('fetchFeedback...');
-        if (ractive.get('tenant.show.orders')!=true) return;
+        if (ractive.get('tenant.features.orders')!=true) return;
         var orderId = ractive.id(order);
 
         ractive.set('saveObserver', false);
@@ -681,7 +673,7 @@ var ractive = new BaseRactive({
       },
       fetchOrders: function(account) {
         console.info('fetchOrders...');
-        if (ractive.get('tenant.show.orders') != true)
+        if (ractive.get('tenant.features.orders') != true)
           return;
 
         ractive.set('saveObserver', false);
@@ -1243,7 +1235,7 @@ var ractive = new BaseRactive({
         console.log('select: ' + account.selfRef);
         ractive.set('saveObserver', false);
         // default owner to current user
-        if (account.owner == undefined || account.owner == '')
+        if (window['$auth']!=undefined && (account.owner == undefined || account.owner == ''))
           account.owner = $auth.getClaim('sub');
         // adapt between Spring Hateos and Spring Data Rest
         if (account._links == undefined && account.links != undefined) {
@@ -1273,9 +1265,6 @@ var ractive = new BaseRactive({
 
               ractive.initControls();
               ractive.initTags();
-              // who knows why this is needed, but it is, at least for
-              // first time rendering
-              $('.autoNumeric').autoNumeric('update', {});
               ractive.sortChildren('notes','created',false);
               ractive.sortChildren('documents','created',false);
               ractive.addServiceLevelAlerts();

@@ -235,10 +235,10 @@ var BaseRactive = Ractive.extend({
   getStockItemNames : function (order) {
     var stockItemIds = [];
     if (order == undefined
-        || (!ractive.get('tenant.show.orderItems') && order['stockItem'] == undefined)
-        || (ractive.get('tenant.show.orderItems') && (order['orderItems'] == undefined || order.orderItems.length == 0)))
+        || (!ractive.get('tenant.features.orderItems') && order['stockItem'] == undefined)
+        || (ractive.get('tenant.features.orderItems') && (order['orderItems'] == undefined || order.orderItems.length == 0)))
       return;
-    else if (!ractive.get('tenant.show.orderItems')) {
+    else if (!ractive.get('tenant.features.orderItems')) {
       var id = ractive.id(order.stockItem);
       stockItemIds.push(id.substring(id.lastIndexOf('/') + 1));
     } else {
@@ -719,6 +719,7 @@ $(document).ready(function() {
   });
 
   ractive.loadStandardPartials(ractive.get('stdPartials'));
+  ractive.loadTenantConfig();
 
   $( document ).ajaxComplete(function( event, jqXHR, ajaxOptions ) {
     if (jqXHR.status > 0) ractive.showReconnected();

@@ -53,7 +53,7 @@ var ractive = new BaseRactive({
     featureEnabled: function(feature) {
       console.log('featureEnabled: '+feature);
       if (feature==undefined || feature.length==0) return true;
-      else return ractive.get('tenant.show.'+feature);
+      else return ractive.get('tenant.features.'+feature);
     },
     formatDate: function(timeString) {
       return new Date(timeString).toLocaleDateString(navigator.languages).replace('Invalid Date','n/a').replace('01/01/1970','n/a');
@@ -123,7 +123,7 @@ var ractive = new BaseRactive({
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
-      { "name": "supportBar", "url": "/webjars/supportservices/2.2.0/partials/support-bar.html"},
+      { "name": "supportBar", "url": "/webjars/supportservices/3.0.0/partials/support-bar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "memoDistListSect", "url": "/partials/memo-dist-list-sect.html"},
       { "name": "currentMemoDistSect", "url": "/partials/memo-dist-current-sect.html"}
@@ -406,8 +406,6 @@ var ractive = new BaseRactive({
         ractive.set('current', data);
         $('#curMemoDisplay').val(ractive.getMemoName(ractive.get('current.memoRef')))
         ractive.initControls();
-        // who knows why this is needed, but it is, at least for first time rendering
-        $('.autoNumeric').autoNumeric('update',{});
         ractive.set('saveObserver',true);
       });
     } else {

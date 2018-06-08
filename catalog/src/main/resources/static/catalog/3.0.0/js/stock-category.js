@@ -43,7 +43,7 @@ var ractive = new BaseRactive({
     featureEnabled: function(feature) {
       console.log('featureEnabled: '+feature);
       if (feature==undefined || feature.length==0) return true;
-      else return ractive.get('tenant.show.'+feature);
+      else return ractive.get('tenant.features.'+feature);
     },
     formatAge: function(timeString) {
       console.log('formatAge: '+timeString);
@@ -187,8 +187,8 @@ var ractive = new BaseRactive({
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
-      { "name": "currentDocumentListSect", "url": "/webjars/supportservices/2.2.0/partials/current-document-list-sect.html"},
-      { "name": "currentNoteListSect", "url": "/webjars/supportservices/2.2.0/partials/current-note-list-sect.html"},
+      { "name": "currentDocumentListSect", "url": "/webjars/supportservices/3.0.0/partials/current-document-list-sect.html"},
+      { "name": "currentNoteListSect", "url": "/webjars/supportservices/3.0.0/partials/current-note-list-sect.html"},
       { "name": "stockCategoryListSect", "url": "/partials/stock-category-list-sect.html"},
       { "name": "currentImageSect", "url": "/partials/image-current-sect.html"},
       { "name": "currentOfferSect", "url": "/partials/offer-current-sect.html"},
@@ -461,8 +461,6 @@ var ractive = new BaseRactive({
         ractive.initSelect(); // not (yet?) a standard control
         setTimeout(ractive.updateSelect, 500); // yes really!
         ractive.initTags(!ractive.hasRole('product_owner'));
-        // who knows why this is needed, but it is, at least for first time rendering
-        $('.autoNumeric').autoNumeric('update',{});
         if (ractive.get('tenant.features.stockCategoryImages')) ractive.fetchImages();
         ractive.initAccessControl();
 //        if (ractive.get('tenant.features.notesOnStockCategory')) ractive.fetchNotes();
