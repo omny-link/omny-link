@@ -42,18 +42,18 @@
             {{#tenant.features.catalog}}
               <th on-click="['sortOrder',stockItemName]" title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}<span class="sortable {{ sortedOrder('stockItemName') }} glyphicon glyphicon-btn "></th>
             {{/}}
-            {{#tenant.show.stockPricing}}
+            {{#tenant.features.stockPricing}}
               <th on-click="['sortOrder',price]" style="width: 5em;" title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}<span class="sortable {{ sortedOrder('price') }} glyphicon glyphicon-btn "></th>
             {{/}}
-            {{#if tenant.orderFields && tenant.show.orderFieldsOnContact != undefined}}
+            {{#if tenant.orderFields && tenant.features.orderFieldsOnContact != undefined}}
               {{#tenant.orderFields}}
-              <!-- /*tenant.show.orderFieldsOnContact != undefined && tenant.show.orderFieldsOnContact.indexOf(key) != -1*/ -->
-                {{#if tenant.show.orderFieldsOnContact != undefined && tenant.show.orderFieldsOnContact.indexOf(key) != -1 && tenant.show.orderFieldsOnContact.indexOf(key) != -1}}
+              <!-- /*tenant.features.orderFieldsOnContact != undefined && tenant.features.orderFieldsOnContact.indexOf(key) != -1*/ -->
+                {{#if tenant.features.orderFieldsOnContact != undefined && tenant.features.orderFieldsOnContact.indexOf(key) != -1 && tenant.features.orderFieldsOnContact.indexOf(key) != -1}}
                   <th on-click="['sortOrder',key]" title="{{hint}}">{{label == undefined ? key.toLabel() : label}}<span class="sortable {{ sortedOrder('{{key}}') }} glyphicon"></span></th>
                 {{/if}}
               {{/}}
             {{/if}}
-            {{#if tenant.show.orderInvoiceRef}}
+            {{#if tenant.features.orderInvoiceRef}}
               <th on-click="['sortOrder',invoiceRef]" style="width: 5em;" title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">Invoice Ref<span class="sortable {{ sortedOrder('invoiceRef') }} glyphicon glyphicon-btn "></th>
             {{/if}}
             {{#1==2}}<th on-click="['sortOrder',created]">Created<span class="sortable {{ sortedOrder('created') }} glyphicon glyphicon-btn "></th>{{/}}
@@ -62,7 +62,7 @@
         </thead>
         <tbody>
           {{#each sort(orders,sortOrderColumn,sortOrderAsc):i}}
-            <tr class="{{#if tenant.show.orderItems && orderItems}}alert-info{{elseif tenant.show.orderItems}}alert-warning{{/if}}">
+            <tr class="{{#if tenant.features.orderItems && orderItems}}alert-info{{elseif tenant.features.orderItems}}alert-warning{{/if}}">
               <td data-order-id="{{localId}}" data-key="localId">
                 <span>{{localId}}</span>
               </td>
@@ -85,11 +85,11 @@
                 <span>{{stage}}</span>
               </td>
               {{#tenant.features.catalog}}
-                {{#if tenant.show.orderItems && orderItems}}
+                {{#if tenant.features.orderItems && orderItems}}
                   <td data-order-id="{{localId}}" title="List of included {{#tenant.strings.stockItems}}{{tenant.strings.stockItems.toLowerCase()}}{{else}}stock items{{/}}">
                     {{formatStockItemIds(.)}}
                   </td>
-                {{elseif !tenant.show.orderItems && ..stockItem}}
+                {{elseif !tenant.features.orderItems && ..stockItem}}
                   <td data-order-id="{{localId}}" title="{{#tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/}}">
                     {{stockItem.name}}
                   </td>
@@ -98,15 +98,15 @@
                     <span title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}">{{customFields['proposedStockItems']}}</span>
                   </td>
                 {{/if}}
-                {{#tenant.show.stockPricing}}
+                {{#tenant.features.stockPricing}}
                   <td class="number" data-order-id="{{localId}}" data-key="price">
                     <span title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{price}}</span>
                   </td>
                 {{/}}
               {{/}}
-              {{#if tenant.orderFields && tenant.show.orderFieldsOnContact != undefined}}
+              {{#if tenant.orderFields && tenant.features.orderFieldsOnContact != undefined}}
                 {{#tenant.orderFields}}
-                  {{#if tenant.show.orderItems && orderItems && orderItems[0]!=undefined && index(orderItems[0],'customFields.'+key)!=undefined && tenant.show.orderFieldsOnContact.indexOf(key) != -1}}
+                  {{#if tenant.features.orderItems && orderItems && orderItems[0]!=undefined && index(orderItems[0],'customFields.'+key)!=undefined && tenant.features.orderFieldsOnContact.indexOf(key) != -1}}
                     <td data-order-id="{{localId}}" title="{{hint}}">
                       {{#if ..aggregation=='sum'}}
                         <span>{{formatSumOrderItemField(orders[i],..name)}}</span>
@@ -119,14 +119,14 @@
                         {{customFields[key]}}
                       {{/if}}
                     </td>
-                  {{elseif tenant.show.orderFieldsOnContact.indexOf(key) != -1}}
+                  {{elseif tenant.features.orderFieldsOnContact.indexOf(key) != -1}}
                     <td data-order-id="{{localId}}" title="{{hint}}">
                      <span title="{{hint}}">{{customFields[key]}}</span>
                     </td>
                   {{/if}}
                 {{/}}
               {{/if}}
-              {{#if tenant.show.orderInvoiceRef}}
+              {{#if tenant.features.orderInvoiceRef}}
                 <td data-order-id="{{localId}}" data-key="invoiceRef">
                   <span title="{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference{{/}}">{{invoiceRef}}</span>
                 </td>
@@ -134,20 +134,20 @@
               <td class="col-actions">
                 <a class="glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" href="orders.html?q={{#orderId}}{{orderId}}{{else}}{{localId}}{{/}}" target="_blank" title="Edit this record"></a>
                 <a class="glyphicon glyphicon-btn glyphicon-duplicate" aria-hidden="true" on-click="cloneOrder(.)" title="Duplicate this record"></a>
-                {{#if tenant.show.orderItems && orderItems}}
+                {{#if tenant.features.orderItems && orderItems}}
                   <a class="glyphicon glyphicon-btn {{#tenant.strings.orderItemIcon}}{{tenant.strings.orderItemIcon}}{{else}}glyphicon-th-list{{/}}" aria-hidden="true"
                      on-click="toggleOrderSubEntity(this,'orderItems')"
                      title="Show {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}"></a>
-                {{elseif tenant.show.orderItems}}
+                {{elseif tenant.features.orderItems}}
                   <a class="glyphicon glyphicon-btn {{#tenant.strings.orderItemIcon}}{{tenant.strings.orderItemIcon}}{{else}}glyphicon-th-list{{/}}" aria-hidden="true"
                      on-click="addOrderItems(selfRef, true)"
                      title="{{#tenant.strings.addOrderItems}}{{tenant.strings.addOrderItems}}{{else}}Create Order Items{{/}}"></a>
                 {{/if}}
-                {{#if tenant.show.feedback}}<a class="glyphicon glyphicon-btn glyphicon-comment" aria-hidden="true" on-click="toggleOrderSubEntity(this,'feedback')" title="Show Feedback"></a>{{/if}}
+                {{#if tenant.features.feedback}}<a class="glyphicon glyphicon-btn glyphicon-comment" aria-hidden="true" on-click="toggleOrderSubEntity(this,'feedback')" title="Show Feedback"></a>{{/if}}
                 {{#if matchRole('admin')}}<a class="glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="deleteOrder(.)" title="Delete this record"></a>{{/if}}
               </td>
             </tr>
-            {{#if tenant.show.orderItems}}
+            {{#if tenant.features.orderItems}}
               <tr class="orderItems" data-order-id="{{localId}}" style="display:none">
                 <th>
                   <div>{{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}</div>

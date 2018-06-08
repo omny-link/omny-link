@@ -22,17 +22,10 @@
 
   <properties>
     <java.version>1.8</java.version>
-    <javax-json.version>1.0.4.20170227</javax-json.version>
-    <activiti.version>5.18.0.20151117</activiti.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>2.2.1</omny-link.version>
-    <!-- Should express as range: [1.0,1.1) -->
-    <kp-auth.version>1.0.0.2</kp-auth.version>
-    <work-mgmt.version>2.3.0</work-mgmt.version>
-    <activiti.bdd.version>5.19.0.20161207</activiti.bdd.version>
-    <onedecision.version>1.2.0-RC1</onedecision.version>
     <plantuml.version>8059</plantuml.version>
-    <rometools.version>1.7.0</rometools.version>
+    <springfox.version>2.8.0</springfox.version>
     <xerces.version>2.11.0</xerces.version>
   </properties>
 
@@ -45,43 +38,14 @@
 
   <issueManagement>
     <system>Github</system>
-    <url>https://github.com/OmnyLink/OmnyLink/issues</url>
+    <url>https://github.com/omny-link/omny-link/issues</url>
   </issueManagement>
 
   <scm>
-    <url>git@github.com:OmnyLink/OmnyLink.git</url>
-    <connection>scm:git:git@github.com:OmnyLink/OmnyLink.git</connection>
-    <developerConnection>scm:git:git@github.com:OmnyLink/OmnyLink.git</developerConnection>
+    <url>git@github.com:omny-link/omny-link.git</url>
+    <connection>scm:git:git@github.com:omny-link/omny-link.git</connection>
+    <developerConnection>scm:git:git@github.com:omny-link/omny-link.git</developerConnection>
   </scm>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>kp-plugin-repo</id>
-      <url>https://knowprocess.com/maven/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </pluginRepository>
-  </pluginRepositories>
-
-  <repositories>
-    <repository>
-      <id>kp-mvn-repo</id>
-      <url>https://knowprocess.com/maven/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-    <repository>
-      <id>javax.json-patch-mvn-repo</id>
-      <url>https://raw.github.com/tstephen/jsonp/maven-repo/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <dependencies>
    <dependency>
@@ -118,10 +82,6 @@
    </dependency>
    <dependency>
      <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-security</artifactId>
-   </dependency>
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
      <artifactId>spring-boot-starter-freemarker</artifactId>
    </dependency>
    <dependency>
@@ -147,11 +107,25 @@
      <groupId>com.fasterxml.jackson.core</groupId>
      <artifactId>jackson-databind</artifactId>
    </dependency>
+
    <dependency>
      <groupId>org.projectlombok</groupId>
      <artifactId>lombok</artifactId>
      <scope>provided</scope>
    </dependency>
+
+    <!-- Generates REST documentation -->
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger2</artifactId>
+      <version>${springfox.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger-ui</artifactId>
+      <version>${springfox.version}</version>
+    </dependency>
+
    <!-- Use instead of tomcat jdbc default provided by Spring Boot as more reliable -->
    <dependency>
      <groupId>com.zaxxer</groupId>
@@ -172,17 +146,11 @@
   </dependencyManagement>
 
   <modules>
-    <module>acct-mgmt</module>
-    <module>analytics</module>
     <module>catalog</module>
     <module>cust-mgmt</module>
     <module>docs</module>
-    <module>fonts</module>
     <module>omny-link-server</module>
-    <module>omny-link-processes</module>
-    <module>service-tasks</module>
     <module>support-services</module>
-    <module>work-mgmt</module>
   </modules>
 
   <build>

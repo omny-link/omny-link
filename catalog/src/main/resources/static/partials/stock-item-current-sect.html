@@ -41,7 +41,7 @@
 
     <div class="currentBody col-md-6 col-sm-12">
       <ul class="form edit-form">
-        {{#tenant.show.stockCategory}}
+        {{#tenant.features.stockCategory}}
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}:</label>
 	          <div class="input-group">
@@ -72,7 +72,7 @@
         </li>
       </ul>
     </div>
-    {{#tenant.show.stockPricing}}
+    {{#tenant.features.stockPricing}}
 	    <div class="currentBody col-md-6 col-sm-12">
 	      <ul class="form edit-form">
 	        <li class="form-group">
@@ -103,7 +103,7 @@
       </ul>
     </div>
 
-    {{#tenant.show.stockItemOffers}}
+    {{#tenant.features.stockItemOffers}}
       {{>currentOfferSect}}
     {{/}}
 

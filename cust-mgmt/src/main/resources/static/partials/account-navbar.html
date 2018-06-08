@@ -32,21 +32,21 @@
     <li on-click="filter:{idx:4,value:'!active owner:{{profile.id}}'}">Show Mine (inactive)</li>
     <li class="divider"></li>
     <li on-click="filter:{idx:6,value:'updated>{{daysAgo(7)}}'}">Recently updated</li>
-    {{#if tenant.show.stage}}
+    {{#if tenant.features.stage}}
 	    <li class="divider"></li>
 	    {{#accountStages:i}}
 	      <li on-click="filter:{idx:{{8+i}},value:'stage:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
 	    {{/}}
     {{/if}}
-    {{#if tenant.show.enquiryType}}
+    {{#if tenant.features.enquiryType}}
       <li class="divider"></li>
       {{#enquiryTypes:j}}
-        <li on-click="filter:{idx:{{8+(tenant.show.stage?accountStages.length:1)+j}},value:'enquiry:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
+        <li on-click="filter:{idx:{{8+(tenant.features.stage?accountStages.length:1)+j}},value:'enquiry:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
       {{/}}
     {{/if}}
     <li class="divider"></li>
     {{#accountTypes:k}}
-      <li on-click="filter:{idx:{{8+(tenant.show.stage?accountStages.length:1)+(tenant.show.enquiryType?enquiryTypes.length:1)+k}},value:'type:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
+      <li on-click="filter:{idx:{{8+(tenant.features.stage?accountStages.length:1)+(tenant.features.enquiryType?enquiryTypes.length:1)+k}},value:'type:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
     {{/accountTypes}}
   </ul>
 </a>

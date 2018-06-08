@@ -39,8 +39,6 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -209,7 +207,6 @@ public class StockItemController {
     public @ResponseBody List<ShortStockItem> findByStatusForTenant(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("status") String status,
-            @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
         LOGGER.info(String.format("List stockItems for tenant %1$s", tenantId));

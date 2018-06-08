@@ -15,7 +15,6 @@
  ******************************************************************************/
 package link.omny.custmgmt.web;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -27,17 +26,12 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 import javax.validation.constraints.NotNull;
 
-import org.activiti.engine.IdentityService;
-import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.identity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
@@ -47,9 +41,6 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,9 +60,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.knowprocess.bpm.impl.DateUtils;
 
 import link.omny.custmgmt.internal.CsvImporter;
+import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
@@ -113,9 +104,6 @@ public class ContactController extends BaseTenantAwareController{
 
     // @Value("omny.minsConsideredActive:-60")
     private int minsConsideredActive = -60;
-
-    @Autowired
-    private ProcessEngine processEngine;
 
     /**
      * Imports JSON representation of contacts.
@@ -191,14 +179,12 @@ public class ContactController extends BaseTenantAwareController{
     @RequestMapping(value = "/contacts.csv", method = RequestMethod.GET, produces = "text/csv")
     public @ResponseBody ResponseEntity<String> listForTenantAsCsvAlt(
             @PathVariable("tenantId") String tenantId,
-            @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        return listForTenantAsCsv(tenantId, activeUser, page, limit);
+        return listForTenantAsCsv(tenantId, page, limit);
     }
 
     @RequestMapping(value = "/archive", method = RequestMethod.POST, headers = "Accept=application/json")
-    @Secured("ROLE_ADMIN")
     @Transactional
     public @ResponseBody Integer archiveContacts(
             @PathVariable("tenantId") String tenantId,
@@ -224,7 +210,6 @@ public class ContactController extends BaseTenantAwareController{
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
-            @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
         StringBuilder sb = new StringBuilder().append("id,accountId,"
@@ -244,7 +229,7 @@ public class ContactController extends BaseTenantAwareController{
         }
         sb.append("\r\n");
 
-        for (Contact contact : listForTenant(tenantId, activeUser, page, limit)) {
+        for (Contact contact : listForTenant(tenantId, page, limit)) {
             contact.setCustomHeadings(customFieldNames);
             sb.append(contact.toCsv()).append("\r\n");
         }
@@ -265,14 +250,13 @@ public class ContactController extends BaseTenantAwareController{
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody List<ShortContact> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
-            @AuthenticationPrincipal UserDetails activeUser,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        return wrapShort(listForTenant(tenantId, activeUser, page, limit));
+        return wrapShort(listForTenant(tenantId, page, limit));
     }
 
     public List<Contact> listForTenant(String tenantId,
-            UserDetails activeUser, Integer page, Integer limit) {
+            Integer page, Integer limit) {
         LOGGER.info(String.format("List contacts for tenant %1$s", tenantId));
 
         List<Contact> list;
@@ -595,94 +579,6 @@ public class ContactController extends BaseTenantAwareController{
         }
     }
 
-
-    /**
-     * Link anonymous contact to a known one.
-     */
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/merge/{email}/", method = RequestMethod.POST, produces = { "application/json" })
-    @Transactional(value = TxType.REQUIRED)
-    public @ResponseBody void linkToKnownContact(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("email") String email,
-            @RequestParam("uuid") String uuid) {
-        // Almost certainly only one contact but apparently we're not 100%
-        List<Contact> contacts = contactRepo.findByEmail(email, tenantId);
-
-        Contact anonContact = consolidateContactsWithUuid(uuid, tenantId);
-        if (anonContact.getEmail() == null) {
-            updateActivities(anonContact, contacts);
-
-            // move uuid and activities to existing un-anonymous contact
-            updateKnownContact(tenantId, uuid, contacts, anonContact);
-
-        } else {
-            LOGGER.info(String
-                    .format("UUID %1$s already linked to known contact %2$s, record login.",
-                            uuid, anonContact.getFullName()));
-            Activity entity = new Activity("login", new Date(), String.format(
-                    "User %1$s (%2$d) logged in", anonContact.getFullName(),
-                    anonContact.getId()));
-            anonContact.getActivities().add(entity);
-            contactRepo.save(anonContact);
-        }
-    }
-
-    // @Transactional(value = TxType.REQUIRES_NEW)
-    public void updateActivities(Contact anonContact, List<Contact> contacts) {
-        for (Contact contact : contacts) {
-            throw new IllegalStateException("Not yet implemented");
-//            activityRepo.updateContact(anonContact, contact);
-        }
-    }
-
-    public void updateKnownContact(String tenantId, String uuid,
-            List<Contact> contacts, Contact anonContact) {
-        for (Contact contact : contacts) {
-            contact.setUuid(uuid);
-            contact.setTenantId(tenantId);
-            contactRepo.save(contact);
-
-            Activity entity = new Activity("linkToKnownContact", new Date(),
-                    String.format("Linked %1$s (%2$d) to user %3$s (%4$d)",
-                            anonContact.getUuid(), anonContact.getId(),
-                            contact.getFullName(), contact.getId()));
-            anonContact.getActivities().add(entity);
-            contactRepo.save(anonContact);
-        }
-        if (contacts.size() > 0) {
-            contactRepo.delete(anonContact.getId());
-        }
-    }
-
-    /**
-     * Link anonymous contact's activities to the specified known contact.
-     */
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/merge/{email}/activities", method = RequestMethod.POST, produces = { "application/json" })
-    @Transactional(value = TxType.REQUIRES_NEW)
-    public @ResponseBody void linkActivitiesToKnownContact(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("email") String email,
-            @RequestParam("uuid") String uuid) {
-        LOGGER.info(String.format(
-                "linkActivitiesToKnownContact %1$s %2$s %3$s", tenantId, email,
-                uuid));
-
-        // Almost certainly only one contact but apparently we're not 100%
-        List<Contact> contacts = contactRepo.findByEmail(email, tenantId);
-
-        List<Contact> anonContacts = contactRepo.findAnonByUuid(uuid, tenantId);
-        // Contact anonContact = consolidateContactsWithUuid(uuid, tenantId);
-
-        for (Contact contact : contacts) {
-            for (Contact anonContact : anonContacts) {
-                throw new IllegalStateException("Not yet implemented");
-//                activityRepo.updateContact(anonContact, contact);
-            }
-        }
-    }
-
     /**
      * Delete an existing contact.
      */
@@ -901,45 +797,6 @@ public class ContactController extends BaseTenantAwareController{
         contact.confirmEmail(emailConfirmationCode);
         contactRepo.save(contact);
         return "emailConfirmation";
-    }
-
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{uuid}/reset-password", method = RequestMethod.POST, headers = "Accept=application/json")
-    public @ResponseBody void resetPassword(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("uuid") String uuid,
-            @RequestParam(name = "password") String pwd,
-            @RequestParam(name = "password2") String pwd2) {
-        LOGGER.info(String.format("Updating password of %1$s", uuid));
-
-        if (!pwd.equals(pwd2)) {
-            throw new IllegalArgumentException("Passwords do not match");
-        }
-
-        IdentityService idSvc = processEngine.getIdentityService();
-        List<Contact> contacts = contactRepo.findByUuid(uuid, tenantId);
-        if (contacts.size() > 0) {
-            try {
-                User user = idSvc.createUserQuery()
-                        .userId(contacts.get(0).getEmail())
-                        .memberOfGroup("user").singleResult();
-                user.setPassword(pwd);
-                idSvc.saveUser(user);
-            } catch (NullPointerException e) {
-                LOGGER.error(String.format("No user found with email %1$s",
-                        contacts.get(0).getEmail()), e);
-                throw new BusinessEntityNotFoundException("user", contacts.get(
-                        0).getEmail());
-            } catch (Exception e) {
-                LOGGER.error(String.format(
-                        "Email %1$s does not resolve to a unique user",
-                        contacts.get(0).getEmail()), e);
-                throw new BusinessEntityNotFoundException("user", contacts.get(
-                        0).getEmail());
-            }
-        } else {
-            throw new BusinessEntityNotFoundException("contact", uuid);
-        }
     }
 
     /**

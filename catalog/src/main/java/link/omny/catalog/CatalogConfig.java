@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.orm.jpa.EntityScan;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -34,7 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
-import link.omny.catalog.web.GeoLocationService;
 import link.omny.catalog.web.StockCategoryController.ShortStockCategoryResource;
 
 @Configuration
@@ -98,18 +96,6 @@ public class CatalogConfig extends RepositoryRestMvcConfiguration {
         }
 
         jackson2ObjectMapperBuilder.configure(objectMapper);
-    }
-
-    @Bean
-    public GeoLocationService geoLocationService() {
-        LOGGER.info(String.format(
-                "Configured catalog geo-coding cache to %1$s",
-                env.getProperty("omny.catalog.geoCodeCacheSize")));
-
-        GeoLocationService geoLocationService = new GeoLocationService(
-                Integer.parseInt(env
-                        .getProperty("omny.catalog.geoCodeCacheSize", "1000")));
-        return geoLocationService;
     }
 
 }

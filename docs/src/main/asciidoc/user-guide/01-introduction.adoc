@@ -1,20 +1,14 @@
 == Introduction
 
-Omny Link is an open source CRM. Unlike many such tools it is built specifically 
-with flexibility in mind because every customer needs to analyse their 
-customer data and react to events as the occur (or even try to anticipate them).
+Omny Link is an open source CRM. Unlike many such tools it is built 
+specifically with flexibility in mind because every customer needs to analyse their customer data and react to events as they occur.
 
 This flexibility is delivered because:
 
-* It is built _API-first_: First and foremost every service of the CRM is defined 
-as a set of micro-services that can be invoked directly by their REST API. Our 
-user interface is just one example of doing this.
-* It embeds a full BPMN 2 process engine: Pair this industry standard for 
-defining workflow with Omny REST services for highly agile and yet still 
-uniquely tailored solutions.
-* It also embeds a DMN decision engine: The decision engine allows formal
-description of how your business makes decisions and the ability to re-configure
-them as circumstances change.
+* Built _API-first_: First and foremost every service of the CRM is defined 
+as a set of micro-services that can be invoked directly by their REST API. A sample user interface is provided but is just one example of interacting with the API.
+* Standard fields: Experience shows these are the things required by all clients so they are 'built-in'.
+* Custom fields: Every business needs to store additional data specific to its sector, products and procedures. These are easily added to an installation through no-code configuration. 
 
 This documentation is structured around a set of user stories so you can quickly
 find the way that Omny is able to satisfy problems you already recognise.   

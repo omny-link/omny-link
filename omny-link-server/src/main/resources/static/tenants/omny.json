@@ -6,46 +6,63 @@
     "iconUrl": "/tenants/omny/images/icon/omny-icon-16x16.png"
   },
   "features": {
-    "account":true, "activityAnalysis":true, "activityTracker":true, "budget":true,
+    "account":true, "accountCode": false, "accountCompanyDetails": true,
+    "accountDescription": true,
+    "accountView": false,
+    "addressAccount": false, "addressContact": true,
+    "activityAnalysis":true, "activityTracker":true, "budget":true,
+
     "catalog": false, "companyBackground":false,
+
+    "contact": true,
+    "contactDescription": false,
+    "contactManagement": true,
+
     "documents": true, "documentsOnOrder": true, "documentsOnStockCategory": true, "documentsOnStockItem": true,
-    "financials":true, "marketing":true, "merge":true,
+    "financials":true, "marketing":true, "merge":false,
     "notesOnOrder": true, "notesOnStockCategory": true,"notesOnStockItem": true,
-    "supportBar": true, "workManagement": true
+    "supportBar": false, "workManagement": false,
+
+
+    "comms": true,
+    "enquiryType": true,
+    "feedback": false,
+    "marketingDigital": true,
+    "multiNational": false,
+    "declaredSource": false,
+    "documentSigning": false,
+    "orders": false,
+    "orderDueDate": false,
+    "orderInvoiceRef": true,
+    "orderName": false,
+    "orderItems": false,
+    "parentOrg": false,
+    "poweredBy": true,
+    "phone3": false,
+    "purchaseOrders": false,
+    "references": false,
+    "socialContact": true,
+    "socialAccount": true,
+    "stockCategory": false,
+    "stockCategoryImages": false,
+    "stockCategoryOffers": true,
+    "offers": false,
+    "stockItemImages": false,
+    "stockItemOffers": false,
+    "stockLocation": false,
+    "stockPricing": true,
+    "stage": true
   },
   "accountFields": [
   ],
   "contactActions": [
-    { "feature":"workManagement", "name": "Add task", "ref": "SimpleToDo", "url": true },
     { "name": "Send email", "ref": "SendMemo", "url": true  }
   ],
   "contactFields": [
   ],
-  "toolbar": [
-    { "url": "work.html", "icon": "glyphicon-inbox", "description": "View your list of active tasks here", "feature":"workManagement", "name": "Work Management" },
-    { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
-    { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates", "role": "admin"  },
-    { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View your contacts funnel", "name": "Contacts Funnel" },
-    { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },
-    { "url": "admin/users.html", "icon": "glyphicon-user", "name": "User Management", "description": "Manage users", "role": "super_admin" },
-    { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status", "description": "Check various aspects of the tenant's configuration", "role": "admin" }
-  ],
   "partials": [
-    { "name": "omnySimpleToDo", "url": "/partials/simple-todo.html"}
   ],
   "processes": [
-    { "name": "Add activity to contact", "ref": "AddActivityToContact", "url": "processes/link/omny/custmgmt/AddActivityToContact.bpmn" },
-    { "name": "Add note to contact", "ref": "AddNoteToContact", "url": "processes/link/omny/custmgmt/AddNoteToContact.bpmn" },
-    { "name": "Create contact, account and order", "ref": "CreateContactAndAccount", "url": "processes/link/omny/custmgmt/CreateContactAccountAndOrder.bpmn" },
-    { "name": "De-duplicate contact and account", "ref": "DedupeContact", "url": "processes/link/omny/custmgmt/DedupeContact.bpmn" },
-    { "name": "Merge memo", "ref": "MergeMemoTemplate", "url": "processes/link/omny/memos/MergeMemoTemplate.bpmn" },
-    { "name": "Record an enquiry", "ref": "RecordEnquiry", "url": "processes/link/omny/website/RecordEnquiry.bpmn" },
-    { "name": "Select enquiry response", "ref": "SelectEnquiryResponse", "url": "processes/link/omny/mail/SelectDefaultEnquiryResponse.bpmn" },
-    { "name": "Send memo", "ref": "SendMemo", "url": "processes/link/omny/memos/SendMemo.bpmn" },
-    { "name": "Send alert", "ref": "SendAlert", "url": "processes/link/omny/alerts/SendAlertEmail.bpmn" },
-    { "name": "Set contact stage", "ref": "SetContactStage", "url": "processes/link/omny/custmgmt/SetContactStage.bpmn" },
-    { "name": "Catch all", "ref": "CatchAllProcess", "url": "processes/link/omny/support/CatchAllProcess.bpmn" },
-    { "name": "Add task", "ref": "SimpleToDo", "url": "processes/link/omny/casemgmt/SimpleToDo.bpmn" }
   ],
   "serviceLevel": {
     "inactiveStages":["cold","discovery","on hold","review"],
@@ -59,10 +76,19 @@
     { "name": "ThankYouForEnquiry", "ref": "ThankYouForEnquiry" },
     { "name": "WelcomeNewUser", "ref": "WelcomeNewUser" }
   ],
+  "toolbar": [
+    { "url": "work.html", "icon": "glyphicon-inbox", "description": "View your list of active tasks here", "feature":"workManagement", "name": "Work Management" },
+    { "url": "contacts.html", "icon": "omny-icon-address-book", "description": "Find a particular contact", "name": "Contact Management" },
+    { "url": "memo.html", "icon": "glyphicon-envelope", "name": "Templates", "description": "Create and edit your message templates", "role": "admin"  },
+    { "url": "funnel.html", "icon": "glyphicon-filter", "description": "View your contacts funnel", "name": "Contacts Funnel" },
+    { "url": "definitions.html", "icon": "omny-icon-process-model", "description": "View your process definitions here", "name": "Process Definitions" },
+    { "url": "admin/users.html", "icon": "glyphicon-user", "name": "User Management", "description": "Manage users", "role": "super_admin" },
+    { "url": "status.html", "icon": "glyphicon-thumbs-up", "name": "Status", "description": "Check various aspects of the tenant's configuration", "role": "admin" }
+  ],
   "typeaheadControls": [
-    { "name": "accountTypes", "ref": "#curAccountType", "url": "/data/account-types.json"},
-    { "name": "commsPreference", "ref": "#curCommsPreference", "url": "/data/comms-preference.json"},
-    { "name": "contactStages", "ref": "#curStage", "values": [
+    { "name": "accountTypes", "ref": "#curAccountType", "values": [
+      {"id":"Other", "name":"Other"}
+    ]},{ "name": "contactStages", "ref": "#curStage", "values": [
       {  "idx": -1, "id": "Discover", "name": "Discover"  },
       {  "idx": 2, "id": "Define Solution", "name": "Define Solution"  },
       {  "idx": 3, "id": "Propose", "name": "Propose"  },
@@ -71,25 +97,25 @@
       {  "idx": -1, "id": "Review", "name": "Review"  },
       {  "idx": -1, "id": "On hold", "name": "On hold"  },
       {  "idx": -1, "id": "Cold", "name": "Cold"  }
-    ]},
-    { "name": "enquiryTypes", "ref": "#curEnquiryType", "values": [
+    ]},{ "name": "enquiryTypes", "ref": "#curEnquiryType", "values": [
       {  "id": "Customer", "name": "Customer"  },
       {  "id": "Trial", "name": "Trial"  }
-    ]},
-    { "name": "orderStages", "ref": "#curStage", "url": "/data/stages.json"},
-    { "name": "mediums", "ref": "#curMedium", "values": [
+    ]},{ "name": "orderStages", "ref": "#curStage", "values": [
+      {"id":"Other", "name":"Other"}
+    ]},{ "name": "mediums", "ref": "#curMedium", "values": [
         {  "name": "CPC"  },
         {  "name": "Direct"  },
         {  "name": "Organic"  },
         {  "name": "Partner Referral"  },
         {  "name": "Referral"  }
       ]
-    },
-    { "name": "sectors", "ref": "#curSector", "values": [
+    },{ "name": "sources", "ref": "#curSource", "values": [
       {"id":"Other", "name":"Other"}
-    ]},
-    { "name": "sources", "ref": "#curSource", "url": "/data/sources.json"},
-    { "name": "status", "ref": "#curStatus", "url": "/data/status.json"}
+    ]},{ "name": "status", "ref": "#curStatus", "values": [
+      { "id":"Draft", "name":"Draft" },
+      { "id":"Pending Review", "name":"Pending Review" },
+      { "id":"Published", "name":"Published" }
+    ]}
   ],
   "workActions": [
   ]

@@ -21,7 +21,7 @@
     <li>
       <span class="clickable glyphicon glyphicon-btn glyphicon-menu-hamburger" on-click="toggleSidebar()" title="{{title}}"></span>
     </li>
-    {{#tenant.omnyBar}}
+    {{#tenant.toolbar}}
       {{#if matchRole(role) && featureEnabled(feature)}}
 	      <li class="page"><a href="{{url}}">
 	        <span class="{{classes}} {{#active==url}}active{{/}}" title="{{title}}"></span>

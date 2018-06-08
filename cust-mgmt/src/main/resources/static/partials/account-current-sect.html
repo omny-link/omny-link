@@ -28,7 +28,7 @@
          {{/}}
          <span contenteditable id="curName2" on-focus="editField('#curName2','current.Name')" on-blur="updateField('#curName2','current.name')">{{current.name}}</span>
 
-         {{#if tenant.show.addressAccount && (current.name != undefined && current.name != '')}}
+         {{#if tenant.features.addressAccount && (current.name != undefined && current.name != '')}}
            <span>{{#if current.town}}, {{current.town}}{{/if}}{{#if current.countyOrCity}}, {{current.countyOrCity}}{{/if}}</span>
              {{#current.postCode}}
                 <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
@@ -127,14 +127,14 @@
           </label>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Is this an existing customer, even if we are in a new sales cycle?</p>
         </li>
-        {{#if tenant.show.stage}}
+        {{#if tenant.features.stage}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.accountStage}}{{tenant.strings.accountStage}}{{else}}Stage{{/}}:</label>
             <input class="form-control" list="accountStages" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">How far through the sales pipeline are you with this account?</p>
           </li>
         {{/if}}
-        {{#if tenant.show.accountCompanyDetails}}
+        {{#if tenant.features.accountCompanyDetails}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.founded}}{{tenant.strings.founded}}{{else}}Founded{{/}}:</label>
             <input autocomplete="off" class="form-control" id="curIncorporationYear" pattern="[0-9]{4}" placeholder="yyyy" value="{{current.incorporationYear}}"/>
@@ -210,7 +210,7 @@
           <input class="form-control" id="curPhone1" pattern="\+?[0-9, \-()]{0,15}" type="tel" value="{{current.phone1}}">
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>
         </li>
-        {{#if tenant.show.addressAccount}}
+        {{#if tenant.features.addressAccount}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">{{#tenant.strings.address}}{{tenant.strings.address}}{{else}}Address{{/}}:</label>
             <input class="col-md-8 col-sm-8 form-control" id="curAddress1" value="{{current.address1}}"/>
@@ -250,14 +250,14 @@
             </div>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
           </li>
-          {{#tenant.show.multiNational}}
+          {{#tenant.features.multiNational}}
             <li class="form-group">
               <label class="col-md-4 col-sm-4">{{#tenant.strings.country}}{{tenant.strings.country}}{{else}}Country{{/}}:</label>
               <input autocomplete="false" class="form-control" list="countries" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}">
             </li>
           {{/}}
         {{/if}}
-        {{#if tenant.show.socialAccount}}
+        {{#if tenant.features.socialAccount}}
           <li class="form-group">
             <div class="btn-group col-md-offset-4 col-sm-offset-4" role="group" aria-label="...">
               <a class="glyphicon glyphicon-btn kp-icon-twitter{{^current.twitter}} disabled{{/}}" {{#current.twitter}}href="https://twitter.com/{{current.twitter}}"{{else}}disabled {{/}} target="_newtab"></a>
@@ -276,7 +276,7 @@
       </ul>
     </div>
 
-    {{#tenant.show.accountDescription}}
+    {{#tenant.features.accountDescription}}
       <div id="currentAccountDesc" class="col-md-12 col-sm-12 col-xs-12">
           <ul class="form edit-form">
             <li class="form-group">
@@ -288,7 +288,7 @@
     {{/}}
   </form>
 
-  {{#tenant.show.financials}}
+  {{#tenant.features.financials}}
     {{>('accountFinancials')}}
   {{/}}
 
@@ -298,7 +298,7 @@
     {{/}}
   </div>
 
-  {{#tenant.show.companyBackground}}
+  {{#tenant.features.companyBackground}}
     {{>currentCompanyBackground}}
   {{/}}
 
@@ -402,7 +402,7 @@
     </section>
   {{/}}
 
-  {{#if tenant.show.orders}}
+  {{#if tenant.features.orders}}
     {{>currentOrderListSect}}
   {{/if}}
 
@@ -418,7 +418,7 @@
 
   {{>currentNoteListSect}}
 
-  {{#if tenant.show.documents}}
+  {{#if tenant.features.documents}}
     {{>currentDocumentListSect}}
   {{/if}}
 

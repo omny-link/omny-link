@@ -32,21 +32,21 @@
     <li on-click="['filter',{idx:4,value:'!active owner:'+profile.id}]">Show Mine (inactive)</li>
     <li class="divider"></li>
     <li on-click="['filter',{idx:6,value:'updated>'+daysAgo(7)}]">Recently updated</li>
-    {{#if tenant.show.stage}}
+    {{#if tenant.features.stage}}
 	    <li class="divider"></li>
 	    {{#contactStages:i}}
 	      <li on-click="['filter',{idx:(8+i),value:'stage:'+id.replace(/ /g,'_')}]">{{name}}</li>
 	    {{/}}
     {{/if}}
-    {{#if tenant.show.enquiryType && enquiryTypes.length < 10}}
+    {{#if tenant.features.enquiryType && enquiryTypes.length < 10}}
       <li class="divider"></li>
       {{#enquiryTypes:j}}
-        <li on-click="['filter',{idx:(8+(tenant.show.stage?1:0)+contactStages.length+j),value:'enquiry:'+id.replace(/ /g,'_')}]">{{name}}</li>
+        <li on-click="['filter',{idx:(8+(tenant.features.stage?1:0)+contactStages.length+j),value:'enquiry:'+id.replace(/ /g,'_')}]">{{name}}</li>
       {{/}}
     {{/if}}
     <li class="divider"></li>
     {{#accountTypes:k}}
-      <li on-click="['filter',{idx:(8+(tenant.show.stage?1:0)+(tenant.show.enquiryType?1:0)+contactStages.length+enquiryTypes.length+k),value:'type:'+id.replace(/ /g,'_')}]">{{name}}</li>
+      <li on-click="['filter',{idx:(8+(tenant.features.stage?1:0)+(tenant.features.enquiryType?1:0)+contactStages.length+enquiryTypes.length+k),value:'type:'+id.replace(/ /g,'_')}]">{{name}}</li>
     {{/accountTypes}}
   </ul>
 </a>
