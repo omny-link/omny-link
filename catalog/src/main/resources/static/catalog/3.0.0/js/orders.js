@@ -51,7 +51,7 @@ var ractive = new BaseRactive({
     featureEnabled: function(feature) {
       //console.info('featureEnabled: '+feature);
       if (feature==undefined || feature.length==0) return true;
-      else return ractive.get('tenant.show.'+feature);
+      else return ractive.get('tenant.features.'+feature);
     },
     formatAge: function(timeString) {
       console.info('formatAge: '+timeString);
@@ -284,8 +284,8 @@ var ractive = new BaseRactive({
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "orderListSect", "url": "/partials/order-list-sect.html"},
       { "name": "orderListTable", "url": "/partials/order-list-table.html"},
-      { "name": "currentDocumentListSect", "url": "/webjars/supportservices/2.2.0/partials/current-document-list-sect.html"},
-      { "name": "currentNoteListSect", "url": "/webjars/supportservices/2.2.0/partials/current-note-list-sect.html"},
+      { "name": "currentDocumentListSect", "url": "/webjars/supportservices/3.0.0/partials/current-document-list-sect.html"},
+      { "name": "currentNoteListSect", "url": "/webjars/supportservices/3.0.0/partials/current-note-list-sect.html"},
       { "name": "currentOrderSect", "url": "/partials/order-current-sect.html"},
       { "name": "currentOrderExtensionSect", "url": "/partials/order-extension.html"},
       { "name": "currentPurchaseOrderExtensionSect", "url": "/partials/purchase-order-extension.html"},
@@ -676,8 +676,6 @@ var ractive = new BaseRactive({
         ractive.set('current', data);
         ractive.initControls();
         ractive.initTags();
-        // who knows why this is needed, but it is, at least for first time rendering
-        $('.autoNumeric').autoNumeric('update',{});
         if (ractive.get('tenant.features.notesOnOrder')==true) ractive.sortChildren('notes','created',false);
         if (ractive.get('tenant.features.documentsOnOrder')==true) ractive.sortChildren('documents','created',false);
         if (ractive.get('currentOrderItemId')!=undefined) {

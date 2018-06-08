@@ -28,8 +28,7 @@
     <java.version>1.8</java.version>
     <cucumber.java.version>1.2.5</cucumber.java.version>
     <commons-io.version>1.3.2</commons-io.version>
-    <omny-link.version>2.2.1</omny-link.version>
-    <work-mgmt.version>2.2.0</work-mgmt.version>
+    <omny-link.version>3.0.0-SNAPSHOT</omny-link.version>
   </properties>
 
   <dependencies>
@@ -88,17 +87,6 @@
       <groupId>link.omny.catalog</groupId>
       <artifactId>catalog</artifactId>
       <version>${omny-link.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.knowprocess.bpm</groupId>
-      <artifactId>work-mgmt</artifactId>
-      <version>${work-mgmt.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.h2database</groupId>
-          <artifactId>h2</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
   </dependencies>
