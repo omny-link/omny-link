@@ -46,25 +46,32 @@
           value="{{current.customFields[name]}}"/>
       {{#if type=="url"}}
         <span class="input-group-addon">
-          <a href="{{current.customFields[name]}}" target="_blank"><span class="glyphicon icon-btn glyphicon-new-window"></span></a>
+          <a href="{{current.customFields[name]}}" target="_blank"><span class="glyphicon icon-btn kp-icon-new-tab"></span></a>
         </span>
       {{elseif type=="account"}}
         <span class="input-group-addon">
-          <a href="accounts.html?q={{current.customFields[name]}}" target="_blank"><span class="glyphicon icon-btn glyphicon-new-window"></span></a>
+          <a href="accounts.html?q={{current.customFields[name]}}" target="_blank"><span class="glyphicon icon-btn kp-icon-new-tab"></span></a>
         </span>
       {{elseif type=="contact"}}
         <span class="input-group-addon">
-          <a href="contacts.html?q={{current.customFields[name]}}" target="_blank"><span class="glyphicon icon-btn glyphicon-new-window"></span></a>
+          <a href="contacts.html?q={{current.customFields[name]}}" target="_blank"><span class="glyphicon icon-btn kp-icon-new-tab"></span></a>
         </span>
       {{/if}}
     </div>
   {{else}}
-    <input class="form-control" id="cur{{name.toLeadingCaps()}}"
-        {{#if type=='list'}}list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}"{{/if}}
-        placeholder="{{placeholder}}"
-        {{#type=='number'}}step="any"{{/}}
-        {{#type}}type="{{type}}" {{/}}
-        value="{{current.customFields[name]}}">
+    {{#if type=='checkbox'}}
+      <input class="form-control" id="cur{{name.toLeadingCaps()}}"
+          {{#type}}type="{{type}}" {{/}}
+          checked="{{current.customFields[name]}}">
+    {{else}}
+      <input class="form-control" id="cur{{name.toLeadingCaps()}}"
+          {{#if type=='list'}}list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}"{{/if}}
+          placeholder="{{placeholder}}"
+          {{#type=='number'}}step="any"{{/}}
+          {{#type}}type="{{type}}" {{/}}
+          value="{{current.customFields[name]}}">
+    {{/if}}
   {{/if}}
   <p class="col-md-offset-4 col-sm-offset-4 help-block">{{hint}}</p>
 </li>
+
