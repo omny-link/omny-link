@@ -126,7 +126,6 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
             @Param("tenantId") String tenantId);
 
     @Query("SELECT c FROM Contact c INNER JOIN c.account a WHERE a.id = :accountId AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId ORDER BY c.lastName DESC")
-    @EntityGraph("contactWithAccount")
     List<Contact> findByAccountId(@Param("accountId") Long accountId,
             @Param("tenantId") String tenantId);
 
