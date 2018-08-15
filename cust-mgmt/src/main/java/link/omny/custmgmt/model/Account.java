@@ -30,6 +30,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -50,6 +51,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.JsonCustomAccountFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.views.AccountViews;
@@ -281,12 +283,12 @@ public class Account implements Serializable {
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "first_contact", updatable = false)
     @JsonProperty
-    @JsonView( { AccountViews.Summary.class } )
+    @JsonView({ AccountViews.Summary.class, ContactViews.Detailed.class })
     private Date firstContact;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
-    @JsonView( { AccountViews.Summary.class } )
+    @JsonView({ AccountViews.Summary.class, ContactViews.Detailed.class })
     @Column(name = "last_updated")
     private Date lastUpdated;
 
@@ -449,6 +451,17 @@ public class Account implements Serializable {
 
     public void addDocument(Document doc) {
         getDocuments().add(doc);
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (LOGGER.isWarnEnabled() && firstContact != null) {
+            LOGGER.warn(String.format(
+                    "Overwriting create date %1$s with 'now'.", firstContact));
+        }
+        firstContact = new Date();
+
+        NullAwareBeanUtils.trimStringProperties(this);
     }
 
     @PreUpdate

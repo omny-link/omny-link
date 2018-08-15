@@ -77,6 +77,7 @@ import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.Document;
 import link.omny.custmgmt.model.Note;
+import link.omny.custmgmt.repositories.NoteRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.web.NumberSequenceController;
 import lombok.Data;
@@ -102,6 +103,9 @@ public class OrderController {
 
     @Autowired
     private OrderRepository orderRepo;
+
+    @Autowired
+    private NoteRepository noteRepo;
 
     @Autowired
     private OrderItemRepository orderItemRepo;
@@ -227,7 +231,7 @@ public class OrderController {
         }
         LOGGER.info(String.format("Found %1$s orders", list.size()));
 
-        return list;
+        return addLinks(tenantId, list);
     }
 
     /**
@@ -418,7 +422,7 @@ public class OrderController {
             @RequestBody Order updatedOrder) {
         Order order = orderRepo.findOne(orderId);
 
-        NullAwareBeanUtils.copyNonNullProperties(updatedOrder, order, "id", "stockItem");
+        NullAwareBeanUtils.copyNonNullProperties(updatedOrder, order, "id", "documents", "notes", "stockItem");
         mergeStockItem(updatedOrder, order);
 
         fixUpOrderItems(tenantId, order);
@@ -550,6 +554,7 @@ public class OrderController {
         order.setLastUpdated(new Date());
         orderRepo.save(order);
         note = order.getNotes().get(order.getNotes().size()-1);
+        noteRepo.save(note);
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -686,7 +691,7 @@ public class OrderController {
         Order order = orderRepo.findOne(orderId);
 
         String oldStage = order.getStage();
-        if (!oldStage.equals(stage) || orderPlaced) {
+        if (oldStage == null || !oldStage.equals(stage) || orderPlaced) {
             order.setStage(stage);
             order.setDate(new Date());
             orderRepo.save(order);
@@ -825,6 +830,13 @@ public class OrderController {
         private Date created;
         private Date lastUpdated;
         private String tenantId;
+    }
+
+    private List<Order> addLinks(String tenantId, List<Order> list) {
+        for (Order order : list) {
+            addLinks(tenantId, order);
+        }
+        return list;
     }
 
     private Order addLinks(String tenantId, Order order) {
