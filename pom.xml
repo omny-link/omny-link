@@ -108,7 +108,7 @@
    <dependency>
      <groupId>com.h2database</groupId>
      <artifactId>h2</artifactId>
-     <scope>test</scope>
+     <scope>provided</scope>
    </dependency>
    <dependency>
      <groupId>mysql</groupId>
@@ -142,6 +142,13 @@
      <groupId>com.zaxxer</groupId>
      <!-- drop -java6 suffix for Java 8 compiled version -->
      <artifactId>HikariCP-java6</artifactId>
+   </dependency>
+
+   <!-- Jasmine used to integration test REST API -->
+   <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jasmine</artifactId>
+      <version>2.4.1</version>
    </dependency>
 
   </dependencies>

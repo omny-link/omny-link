@@ -563,7 +563,7 @@ public class ContactController extends BaseTenantAwareController{
             updatedContact.setLastName(contact.getLastName());
         }
         NullAwareBeanUtils.copyNonNullProperties(updatedContact, contact, "id",
-                "account");
+                "account", "activities", "notes", "documents");
         contact.setTenantId(tenantId);
         contact.setLastUpdated(new Date());
         contactRepo.save(contact);
@@ -693,7 +693,7 @@ public class ContactController extends BaseTenantAwareController{
      * Change the sale stage the contact is at.
      */
     @RequestMapping(value = "/{contactId}/stage/{stage}", method = RequestMethod.POST)
-    public @ResponseBody void setStage(
+    public @ResponseBody ResponseEntity<Contact> setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @PathVariable("stage") String stage) {
@@ -702,14 +702,17 @@ public class ContactController extends BaseTenantAwareController{
 
         Contact contact = contactRepo.findOne(contactId);
         String oldStage = contact.getStage();
-        if (!oldStage.equals(stage)) {
+        if (oldStage == null || !oldStage.equals(stage)) {
             contact.setStage(stage);
             contactRepo.save(contact);
 
-            addActivity(tenantId, contactId, "transition-to-stage",
-                    String.format("From %1$s to %2$s", oldStage, stage));
+            Activity activity = new Activity(ActivityType.TRANSITION_TO_STAGE,
+                    new Date(), String.format("From %1$s to %2$s", oldStage, stage));
+            addActivity(tenantId, contactId, activity);
         }
-        // return contact;
+
+        return new ResponseEntity<Contact>(contact,
+                new HttpHeaders(), HttpStatus.NO_CONTENT);
     }
 
     /**

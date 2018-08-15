@@ -59,6 +59,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Activity;
+import link.omny.custmgmt.model.ActivityType;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomAccountField;
 import link.omny.custmgmt.model.Document;
@@ -109,7 +110,7 @@ public class AccountController {
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                .path("/{id}/activities/{activityId}")
+                .path("/accounts/{id}/activities/{activityId}")
                 .buildAndExpand(tenantId, account.getId(), activity.getId())
                 .toUri();
         headers.setLocation(uri);
@@ -127,7 +128,8 @@ public class AccountController {
             @PathVariable("accountId") Long accountId,
             @RequestParam("type") String type,
             @RequestParam("content") String content) {
-        return addActivity(tenantId, accountId, new Activity(type, new Date(), content));
+        return addActivity(tenantId, accountId,
+                new Activity(ActivityType.valueOf(type), new Date(), content));
     }
 
     /**
@@ -169,7 +171,7 @@ public class AccountController {
     public @ResponseBody Integer archiveAccounts(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "before", required = false) String before) {
-        Date beforeDate = before == null 
+        Date beforeDate = before == null
                 ? DateUtils.oneMonthAgo() : DateUtils.parseDate(before);
         LOGGER.info("Place on hold accounts of {} older than {}",
                         tenantId, beforeDate.toString());
@@ -350,7 +352,7 @@ public class AccountController {
             @RequestBody Account updatedAccount) {
         Account account = accountRepo.findOne(accountId);
 
-        BeanUtils.copyProperties(updatedAccount, account, "id", "notes", "documents");
+        BeanUtils.copyProperties(updatedAccount, account, "id", "activities", "notes", "documents");
         account.setTenantId(tenantId);
         accountRepo.save(account);
     }
@@ -391,7 +393,7 @@ public class AccountController {
     /**
      * Add a document to the specified account.
      */
-    @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.PUT)
+    @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.POST)
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Document doc) {
@@ -403,7 +405,7 @@ public class AccountController {
 
          HttpHeaders headers = new HttpHeaders();
          URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                 .path("/{id}/documents/{docId}")
+                 .path("/accounts/{id}/documents/{docId}")
                  .buildAndExpand(tenantId, account.getId(), doc.getId())
                  .toUri();
          headers.setLocation(uri);
@@ -419,7 +421,7 @@ public class AccountController {
      *
      * @return The document created.
      */
-    @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.POST)
+    @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
     public @ResponseBody Document addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
@@ -434,7 +436,7 @@ public class AccountController {
      * Add a note to the specified account.
      * @return the created note.
      */
-    @RequestMapping(value = "/accounts/{accountId}/notes", method = RequestMethod.PUT)
+    @RequestMapping(value = "/accounts/{accountId}/notes", method = RequestMethod.POST)
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Note note) {
@@ -446,7 +448,7 @@ public class AccountController {
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                .path("/{id}/notes/{noteId}")
+                .path("/accounts/{id}/notes/{noteId}")
                 .buildAndExpand(tenantId, account.getId(), note.getId())
                 .toUri();
         headers.setLocation(uri);
@@ -461,7 +463,7 @@ public class AccountController {
      *
      * @return The note created.
      */
-    @RequestMapping(value = "/accounts/{accountId}/notes", method = RequestMethod.POST)
+    @RequestMapping(value = "/accounts/{accountId}/notes", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
     public @ResponseBody Note addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
