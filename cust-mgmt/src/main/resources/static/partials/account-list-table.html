@@ -1,12 +1,12 @@
 <!--
   Copyright 2015-2018 Tim Stephenson and contributors
-  
+
    Licensed under the Apache License, Version 2.0 (the "License"); you may not
    use this file except in compliance with the License.  You may obtain a copy
    of the License at
-  
+
      http://www.apache.org/licenses/LICENSE-2.0
-  
+
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -55,7 +55,7 @@
             <td on-click="edit(this)">{{{gravatar(owner)}}}</td>
             <td on-click="edit(this)">{{formatDate(firstContact)}}</td>
             <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
-            <td on-click="edit(this)"><span class="alert-counter {{#alerts.length>0}}alert-danger{{else}}alert-success{{/}}">{{#alerts}}{{alerts.length}}{{else}}0{{/}}</span></td>
+            <td on-click="edit(this)"><span class="alert-counter {{#formatAlertCount(alerts)>0}}alert-danger{{else}}alert-success{{/}}">{{#alerts}}{{formatAlertCount(alerts)}}{{else}}0{{/}}</span></td>
             <td on-click="edit(this)">{{{formatTags(tags)}}}</td>
             <td class="col-actions">
               <a class="clickable glyphicon icon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeContacts(this)" style="display:none;" title="Merge two records"></a>
