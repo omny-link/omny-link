@@ -391,6 +391,65 @@ public class AccountController {
     }
 
     /**
+     * Update the alerts of the specified account.
+     *
+     * @param tenantId
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/accounts/{accountId}/alerts/", method = RequestMethod.POST)
+    public @ResponseBody void setAlerts(@PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId,
+            @RequestBody String alerts) {
+        Account account = accountRepo.findOne(accountId);
+        account.setAlerts(alerts);
+        account.setTenantId(tenantId);
+        accountRepo.save(account);
+    }
+
+    /**
+     * Change the sale stage the account is at.
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/accounts/{accountId}/stage/{stage}", method = RequestMethod.POST)
+    public @ResponseBody ResponseEntity<Account> setStage(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId,
+            @PathVariable("stage") String stage) {
+        LOGGER.info(String.format("Setting contact %1$s to stage %2$s",
+                accountId, stage));
+
+        Account account = accountRepo.findOne(accountId);
+        String oldStage = account.getStage();
+        if (oldStage == null || !oldStage.equals(stage)) {
+            account.setStage(stage);
+            accountRepo.save(account);
+
+            Activity activity = new Activity(ActivityType.TRANSITION_TO_STAGE,
+                    new Date(), String.format("From %1$s to %2$s", oldStage, stage));
+            addActivity(tenantId, accountId, activity);
+        }
+
+        return new ResponseEntity<Account>(account,
+                new HttpHeaders(), HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * Update the tags of the specified account.
+     *
+     * @param tenantId
+     */
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @RequestMapping(value = "/accounts/{accountId}/tags/", method = RequestMethod.POST)
+    public @ResponseBody void setTags(@PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId,
+            @RequestBody String tags) {
+        Account account = accountRepo.findOne(accountId);
+        account.setAlerts(tags);
+        account.setTenantId(tenantId);
+        accountRepo.save(account);
+    }
+
+    /**
      * Add a document to the specified account.
      */
     @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.POST)

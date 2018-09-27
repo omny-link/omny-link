@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2018 Tim Stephenson and contributors
- * 
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
  *  of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -38,15 +38,21 @@ var ractive = new BaseRactive({
       if (feature==undefined || feature.length==0) return true;
       else return ractive.get('tenant.features.'+feature);
     },
+    formatAccountId: function(contactId) {
+      console.info('formatAccountId');
+      if (contactId == undefined) return contactId;
+      var contact = Array.findBy('selfRef','/contacts/'+contactId,ractive.get('contacts'));
+      return contact == undefined ? 'n/a' : contact.accountName;
+    },
     formatAge: function(timeString) {
       console.log('formatAge: '+timeString);
       return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
     },
-    formatAccountId: function(contactId) {
-      console.info('formatContactId');
-      if (contactId == undefined) return contactId;
-      var contact = Array.findBy('selfRef','/contacts/'+contactId,ractive.get('contacts'));
-      return contact == undefined ? 'n/a' : contact.accountName;
+    formatAlertCount: function(alerts) {
+      console.log('formatAlerts');
+      if (typeof alerts == 'string') alerts = JSON.parse(alerts);
+
+      return alerts == undefined ? 0 : Object.keys(alerts).length;
     },
     formatContactId: function(contactId) {
       console.info('formatContactId');
