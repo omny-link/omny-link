@@ -223,6 +223,7 @@ var ractive = new BaseRactive({
           var match = ( (obj.selfRef!=undefined && obj.selfRef.indexOf(searchTerm)>=0)
               || (obj.localId!=undefined && searchTerm.indexOf(obj.localId)>=0)
               || (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm)>=0)
+              || (obj.invoiceRef!=undefined && obj.invoiceRef.toLowerCase().indexOf(searchTerm)>=0)
               || (searchTerm.startsWith('stage:') && obj.stage!=undefined && obj.stage.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.replace(/ /g,'_').substring(6))==0)
               || (obj.date!=undefined && searchTerm.startsWith('date>') && new Date(obj.date)>new Date(ractive.get('searchTerm').substring(8)))
               || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
