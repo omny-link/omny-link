@@ -21,6 +21,8 @@
   </parent>
 
   <properties>
+    <batik.version>1.9.1</batik.version>
+    <jasmine-boot.version>1.0.0.20181021</jasmine-boot.version>
     <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>${project.version}</omny-link.version>

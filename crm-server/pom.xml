@@ -33,7 +33,6 @@
 
   <properties>
     <start-class>link.omny.server.Application</start-class>
-    <jasmine-boot.version>1.0.0.20180827</jasmine-boot.version>
   </properties>
 
   <pluginRepositories>
