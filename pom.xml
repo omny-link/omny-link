@@ -227,6 +227,8 @@
             <exclude>**/*TestCase.java</exclude>
           </excludes>
           <runOrder>alphabetical</runOrder>
+          <!-- See: https://issues.apache.org/jira/browse/SUREFIRE-1588 -->
+          <useSystemClassLoader>false</useSystemClassLoader>
         </configuration>
       </plugin>
     </plugins>

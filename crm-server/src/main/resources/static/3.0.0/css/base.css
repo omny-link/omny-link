@@ -536,6 +536,10 @@ h2 a.glyphicon:hover {
 .modal .help-block {
   margin-top: -0.1em;
 }
+.modal iframe {
+  border: 0;
+  width: 100%;
+}
 .help-block-lg {
   line-height: 1.2em;
   font-size: 0.8em;

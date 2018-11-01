@@ -268,7 +268,7 @@ var BaseRactive = Ractive.extend({
   },
   gravatar: function(email) {
     if (email == undefined) return '';
-    else return '<img class="img-rounded" style="width:36px" src="//www.gravatar.com/avatar/'
+    else return '<img class="img-rounded" src="//www.gravatar.com/avatar/'
         +ractive.hash(email)+'?s=36&d='
         +encodeURIComponent(ractive.getServer()+'/'+ractive.get('tenant.id')+'/gravatars/')
         +ractive.hash(email)+'.png"/>';
@@ -354,6 +354,9 @@ var BaseRactive = Ractive.extend({
     $( "body" ).keypress(function( event ) {
       if (event.target.tagName.toLowerCase() == 'input' || event.target.tagName.toLowerCase() == 'textarea') return;
       switch (event.which) { // ref http://keycode.info/
+      case 13: // enter
+        $(event.target).blur().focus();
+        break;
       case 47: // forward slash on both Mac and Linux
       case 191: // forward slash (allegedly)
         $('.search').focus();
