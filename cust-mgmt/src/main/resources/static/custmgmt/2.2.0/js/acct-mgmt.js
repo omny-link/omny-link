@@ -379,7 +379,7 @@ var ractive = new BaseRactive({
           { "name": "socialModal", "url": "/partials/social-modal.html" },
           { "name": "sidebar", "url": "/partials/sidebar.html" },
           { "name": "titleArea", "url": "/partials/title-area.html" },
-          /*{ "name": "mergeModal", "url": "/partials/contact-merge-sect.html" },*/
+          { "name": "toolbar", "url": "/partials/toolbar.html" },
           { "name": "navbar", "url": "/partials/account-navbar.html" },
           { "name": "supportBar", "url": "/webjars/supportservices/2.2.0/partials/support-bar.html" },
           { "name": "taskListTable", "url": "/partials/task-list-table.html" }
@@ -404,6 +404,7 @@ var ractive = new BaseRactive({
         profileArea: '',
         sidebar: '',
         titleArea: '',
+        toolbar: '',
         supportBar: ''
       },
       add: function() {

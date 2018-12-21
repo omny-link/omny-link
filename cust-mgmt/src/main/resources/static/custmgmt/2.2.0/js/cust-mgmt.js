@@ -298,6 +298,7 @@ var ractive = new BaseRactive({
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "toolbar", "url": "/partials/toolbar.html"},
       { "name": "socialModal", "url": "/partials/social-modal.html" },
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "mergeModal", "url": "/partials/contact-merge-sect.html"},
@@ -323,6 +324,7 @@ var ractive = new BaseRactive({
     profileArea: '',
     sidebar: '',
     titleArea: '',
+    toolbar: '',
     supportBar: ''
   },
   addContact: function () {

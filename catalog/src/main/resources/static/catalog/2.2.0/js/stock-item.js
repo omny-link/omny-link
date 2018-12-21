@@ -194,6 +194,7 @@ var ractive = new BaseRactive({
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "toolbar", "url": "/partials/toolbar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "stockItemListSect", "url": "/partials/stock-item-list-sect.html"},
       { "name": "currentDocumentListSect", "url": "/webjars/supportservices/2.2.0/partials/current-document-list-sect.html"},
@@ -214,7 +215,8 @@ var ractive = new BaseRactive({
     'sidebar': '',
     'helpModal': '',
     'customActionModal': '',
-    'supportBar': ''
+    'supportBar': '',
+    'toolbar': ''
   },
   add: function () {
     console.log('add...');
