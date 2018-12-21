@@ -279,6 +279,7 @@ var ractive = new BaseRactive({
       { "name": "loginSect", "url": "/webjars/auth/1.0.0/partials/login-sect.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "toolbar", "url": "/partials/toolbar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
       { "name": "orderListSect", "url": "/partials/order-list-sect.html"},
       { "name": "orderListTable", "url": "/partials/order-list-table.html"},
@@ -305,6 +306,7 @@ var ractive = new BaseRactive({
     'currentOrderSect': '',
     'poweredBy': '',
     'sidebar': '',
+    'toolbar': '',
     'helpModal': '',
     'customActionModal': '',
     'orderListTable': ''

@@ -48,6 +48,7 @@ var ractive = new BaseRactive({
       { "name": "helpModal", "url": "/partials/help-modal.html"},
       { "name": "profileArea", "url": "/partials/profile-area.html"},
       { "name": "sidebar", "url": "/partials/sidebar.html"},
+      { "name": "toolbar", "url": "/partials/toolbar.html"},
       { "name": "titleArea", "url": "/partials/title-area.html"},
     ],
   },
@@ -57,7 +58,8 @@ var ractive = new BaseRactive({
     'profileArea': '',
     'sidebar': '',
     'supportBar': '',
-    'titleArea': ''
+    'titleArea': '',
+    'toolbar': ''
   },
   fetch: function () {
     console.info('fetch...');

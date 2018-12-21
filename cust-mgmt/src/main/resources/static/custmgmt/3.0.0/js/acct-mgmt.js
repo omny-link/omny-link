@@ -366,6 +366,7 @@ var ractive = new BaseRactive({
           { "name": "socialModal", "url": "/partials/social-modal.html" },
           { "name": "sidebar", "url": "/partials/sidebar.html" },
           { "name": "titleArea", "url": "/partials/title-area.html" },
+          { "name": "toolbar", "url": "/partials/toolbar.html" },
           { "name": "navbar", "url": "/partials/account-navbar.html" },
           { "name": "supportBar", "url": "/webjars/supportservices/3.0.0/partials/support-bar.html" }
         ],
@@ -395,6 +396,7 @@ var ractive = new BaseRactive({
         sidebar: '',
         socialModal: '',
         titleArea: '',
+        toolbar: '',
         supportBar: ''
       },
       add: function() {

@@ -444,7 +444,7 @@ public class AccountController {
             @PathVariable("accountId") Long accountId,
             @RequestBody String tags) {
         Account account = accountRepo.findOne(accountId);
-        account.setAlerts(tags);
+        account.setTags(tags);
         account.setTenantId(tenantId);
         accountRepo.save(account);
     }
