@@ -81,8 +81,8 @@ public class ContactAndAccountControllerTest {
     public void tearDown() {
         contactController.delete(TENANT_ID, contactId);
         // check clean
-        List<ShortContact> list = contactController.listForTenantAsJson(
-                TENANT_ID, null, null);
+        List<ShortContact> list = (List<ShortContact>) contactController.listForTenantAsJson(
+                TENANT_ID, null, null, false);
         assertEquals(0, list.size());
     }
 
@@ -132,8 +132,8 @@ public class ContactAndAccountControllerTest {
         assertTrue(lastUpdated.getTime() <= contact2.getLastUpdated().getTime());
 
         // FETCH ALL CONTACTS
-        List<ShortContact> contacts = contactController.listForTenantAsJson(
-                TENANT_ID, null, null);
+        List<ShortContact> contacts = (List<ShortContact>) contactController.listForTenantAsJson(
+                TENANT_ID, null, null, false);
         assertEquals(1, contacts.size());
         // assertContactEquals(contact, acct, contacts);
     }
