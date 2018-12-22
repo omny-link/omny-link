@@ -1,0 +1,61 @@
+<!--
+  Copyright 2015-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<section class="container container-sticky">
+  <h2 class="navbar-sticky">
+    {{>navbar}}
+    {{>profileArea}}
+  </h2>
+</section>
+<section class="resultsSect" id="directorySect">
+  <h2 class="navbar-top">
+    {{>navbar}}
+  </h2>
+  <table id="directoryTable" class="directory table table-striped">
+    <tbody>
+      {{#each sort(contacts,'lastName',true):i}}
+        {{# matchSearch(this) }}
+          <tr {{#if stage!=undefined}}class="{{stage.toSlug()}}"{{/if}} data-href="{{selfRef}}">
+            <th>
+              {{lastName}}, {{firstName}} {{formatSpouse(customFields['spouse'])}}
+              {{#tenant.features.marketing || tenant.features.stage}}({{stage}}){{/}}
+            </th>
+          </tr>
+          <tr><td>
+            {{#address}}{{address}}<br/>{{/}}
+            {{#phone1}}{{phone1}} {{#if phone1.startsWith('07') && spouse}}({{firstName}}){{/if}}<br/>{{/}}
+            {{#phone2}}{{phone2}} {{#if phone2.startsWith('07') && spouse}}({{firstName}}){{/if}}<br/>{{/}}
+            {{#email && email != 'null'}}{{email}}<br/>{{/}}
+            {{#if spouse}}
+              {{#spouse.phone1 && phone1!=spouse.phone1}}
+                {{spouse.phone1}} {{#if spouse.phone1.startsWith('07')}}({{spouse.firstName}}){{/if}}<br/>
+              {{/}}
+              {{#spouse.phone2 && phone2!=spouse.phone2}}
+                {{spouse.phone2}} {{#if spouse.phone2.startsWith('07')}}({{spouse.firstName}}){{/if}}<br/>
+              {{/}}
+              {{#spouse.email && email!=spouse.email}}
+                {{spouse.email}}<br/>
+              {{/}}
+            {{/if}}
+            {{#customFields['childrenNames']}}<label>Children:</label> {{customFields['childrenNames']}}{{/}}
+          </td></tr>
+        {{/}}
+      {{/each}}
+    </tbody>
+    <tfoot>
+      <tr><th>{{searchMatched == 0 ? 'No' : searchMatched}} matching contact{{searchMatched==1 ? '' : 's'}}</th></tr>
+    </tfoot>
+  </table>
+</section>

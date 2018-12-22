@@ -89,7 +89,7 @@ import lombok.EqualsAndHashCode;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/contacts")
-public class ContactController extends BaseTenantAwareController{
+public class ContactController extends BaseTenantAwareController {
 
     static final Logger LOGGER = LoggerFactory
             .getLogger(ContactController.class);
@@ -249,41 +249,25 @@ public class ContactController extends BaseTenantAwareController{
      * @return contacts for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
-    public @ResponseBody List<ShortContact> listForTenantAsJson(
+    public @ResponseBody List<? extends ResourceSupport> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "limit", required = false) Integer limit) {
-        return wrapShort(listForTenant(tenantId, page, limit));
+            @RequestParam(value = "limit", required = false) Integer limit,
+            @RequestParam(value = "returnFull", required = false) boolean returnFull) {
+        if (returnFull) {
+            return wrap(listForTenant(tenantId, page, limit));
+        } else {
+            return wrapShort(listForTenant(tenantId, page, limit));
+        }
     }
 
-    public List<Contact> listForTenant(String tenantId,
+    protected List<Contact> listForTenant(String tenantId,
             Integer page, Integer limit) {
         LOGGER.info(String.format("List contacts for tenant %1$s", tenantId));
 
         List<Contact> list;
         if (limit == null) {
-            // TODO unfortunately activeUser is null, prob some kind of class
-            // cast error it seems
-            // Use SecurityContextHolder as temporary fallback
-            // Authentication authentication =
-            // SecurityContextHolder.getContext()
-            // .getAuthentication();
-
-            // if (LOGGER.isDebugEnabled()) {
-            // for (GrantedAuthority a : authentication.getAuthorities()) {
-            // System.out.println("  " + a.getAuthority());
-            // System.out.println("  "
-            // + a.getAuthority().equals("ROLE_editor"));
-            // System.out.println("  " + a.getAuthority().equals("editor"));
-            // }
-            // }
-
-            // if (authentication.getAuthorities().contains("ROLE_editor")) {
             list = contactRepo.findAllForTenant(tenantId);
-            // } else {
-            // list = contactRepo.findAllForTenantOwnedByUser(tenantId,
-            // authentication.getName());
-            // }
         } else {
             Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
             list = contactRepo.findPageForTenant(tenantId, pageable);
