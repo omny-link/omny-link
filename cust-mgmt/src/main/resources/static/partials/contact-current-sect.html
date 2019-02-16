@@ -1,12 +1,12 @@
 <!--
   Copyright 2015-2018 Tim Stephenson and contributors
-  
+
    Licensed under the Apache License, Version 2.0 (the "License"); you may not
    use this file except in compliance with the License.  You may obtain a copy
    of the License at
-  
+
      http://www.apache.org/licenses/LICENSE-2.0
-  
+
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -22,7 +22,7 @@
         <input class="create-field form-control col-xs-2" id="curLastName" placeholder="Last Name" required value="{{current.lastName}}"/>
       </h2>
     {{/}}
-    
+
     {{#current.selfRef}}
       <h2 class="edit-form">
         <img class="img-rounded" src="//www.gravatar.com/avatar/{{hash(current.email)}}?d=blank&s=36" style="margin-top:-10px"/>
@@ -86,7 +86,7 @@
         </span>
       </h2>
     {{/}}
-    
+
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         {{#if tenant.features.references || matchRole('admin') || matchRole('super-admin')}}
@@ -123,12 +123,12 @@
             <li class="form-group">
               <label class="col-md-4 col-sm-4">{{#tenant.strings.stageReason}}{{tenant.strings.stageReason}}{{else}}Loss Reason{{/}}:</label>
               <input class="form-control" list="stageReasons" placeholder="Start typing to filter options" id="curStageReason" {{# current.stage=='Cold' }} required{{/}} value="{{current.stageReason}}">
-              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.stageReasonHint}}{{tenant.strings.stageReasonHint}}{{else}}&nbsp;{{/}}</p>
             </li>
             <li class="form-group">
               <label class="col-md-4 col-sm-4">{{#tenant.strings.stageDate}}{{tenant.strings.stageDate}}{{else}}Loss Date{{/}}:</label>
               <input class="form-control" id="curStageDate" value="{{formatDate(current.stageDate)}}">
-              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
+              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.stageDateHint}}{{tenant.strings.stageDateHint}}{{else}}&nbsp;{{/}}</p>
             </li>
           {{/}}
         {{/}}
@@ -140,13 +140,13 @@
           <li>
             <label class="col-md-4 col-sm-4 col-xs-4">{{# tenant.strings.enquiryType}}{{tenant.strings.enquiryType}}{{else}}Enquiry Type{{/}}:</label>
             <input class="form-control" list="enquiryTypes" placeholder="Start typing to filter options" id="curEnquiryType" value="{{current.enquiryType}}">
-            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">The nature of the initial contact</p>
+            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{# tenant.strings.enquiryTypeHint}}{{tenant.strings.enquiryTypeHint}}{{else}}The nature of the initial contact{{/}}</p>
           </li>
         {{/}}
         <li>
           <label class="col-md-4 col-sm-4 col-xs-4">{{# tenant.strings.accountType}}{{tenant.strings.accountType}}{{else}}Account Type{{/}}:</label>
           <input class="form-control" list="accountTypes" placeholder="Start typing to filter options" id="curAccountType" value="{{current.accountType}}">
-          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Defines the nature of the relationship with this contact</p>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{# tenant.strings.accountTypeHint}}{{tenant.strings.accountTypeHint}}{{else}}Defines the nature of the relationship with this contact.{{/}}</p>
         </li>
         <li>
           <label class="col-md-4 col-sm-4 col-xs-4">{{# tenant.strings.tags}}{{tenant.strings.tags}}{{else}}Tags{{/}}:</label>
@@ -154,7 +154,7 @@
         </li>
       </ul>
     </div>
-    
+
     {{#tenant.features.contactDescription}}
       <div id="currentContactDesc" style="clear: both" class="col-md-12 col-sm-12 col-xs-12" style="display:inline">
         <ul class="form edit-form">
@@ -187,18 +187,18 @@
 	          <li>
 	            <label class="col-md-4 col-sm-4">{{#tenant.strings.emailConfirmed}}{{tenant.strings.emailConfirmed}}{{else}}Confirmed?{{/}}:</label>
 	            <input class="" id="curEmailConfirmed" type="checkbox" checked="{{current.emailConfirmed}}">
-	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Has this email been confirmed valid?</p>
+	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.emailConfirmedHint}}{{tenant.strings.emailConfirmedHint}}{{else}}Has this email been confirmed valid?{{/}}</p>
 	          </li>
 	          {{#tenant.features.marketing}}
 	            <li>
 	              <label class="col-md-4 col-sm-4">{{#tenant.strings.doNotEmail}}{{tenant.strings.doNotEmail}}{{else}}Do Not Email{{/}}:</label>
 	              <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"> Owner preference
-	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Check this if the user should not receive automated emails, for example during sensitive negotiations</p>  
+	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.doNotEmail}}{{tenant.strings.doNotEmail}}{{else}}Check this if the user should not receive automated emails, for example during sensitive negotiations{{/}}</p>
 	            </li>
 	            <li>
 	              <label class="col-md-4 col-sm-4">{{#tenant.strings.emailOptIn}}{{tenant.strings.emailOptIn}}{{else}}Opt in{{/}}:</label>
 	              <input class="" id="curemailOptIn" type="checkbox" checked="{{current.emailOptIn}}"> User preference
-	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">This will be checked if the user has opted in to marketing emails</p>
+	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.emailOptIn}}{{tenant.strings.emailOptIn}}{{else}}This will be checked if the user has opted in to marketing emails{{/}}</p>
 	            </li>
 	          {{/}}
 	          {{#if tenant.features.socialContact}}
