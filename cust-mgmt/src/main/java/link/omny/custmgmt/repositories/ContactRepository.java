@@ -36,7 +36,8 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     @EntityGraph("contactWithAccount")
     Contact findOne(@Param("id") Long id);
 
-    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (c.stage IS NULL OR c.stage != 'deleted') ORDER BY c.lastUpdated DESC")
+    @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId "
+            + "AND (c.stage IS NULL OR c.stage != 'deleted') ORDER BY c.id ASC")
     List<Contact> findAllForTenant(@Param("tenantId") String tenantId);
 
     @Query("SELECT COUNT(c) FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (c.stage IS NULL OR c.stage != 'deleted')")
