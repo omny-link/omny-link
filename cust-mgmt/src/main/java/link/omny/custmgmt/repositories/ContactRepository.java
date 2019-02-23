@@ -134,6 +134,9 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     List<Contact> findByAccountType(@Param("accountType") String accountType,
             @Param("tenantId") String tenantId);
 
+    @Query("SELECT c FROM Contact c INNER JOIN c.customFields cf WHERE cf.name = :key AND cf.value = :value AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId")
+    List<Contact> findByCustomField(@Param("key") String key, @Param("value") String value, @Param("tenantId") String tenantId);
+
     @Query(value = "SELECT DISTINCT(cf.name) FROM OL_CONTACT c INNER JOIN OL_CONTACT_CUSTOM cf on c.id = cf.contact_id WHERE (c.stage IS NULL OR c.stage != 'deleted') AND c.tenant_id = :tenantId ", nativeQuery = true)
     List<String> findCustomFieldNames(@Param("tenantId") String tenantId);
 
