@@ -328,6 +328,24 @@ public class ContactController extends BaseTenantAwareController {
     }
 
     /**
+     * Return just the contacts matching the custom field.
+     *
+     * @return contacts for that tenant.
+     */
+    @RequestMapping(value = "/searchByCustomField/{key}/{value}", method = RequestMethod.GET)
+    public @ResponseBody List<ContactResource> searchByCustomField(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("key") String key,
+            @PathVariable("value") String value) {
+        LOGGER.debug("List contacts for custom field {}={}", key, value);
+
+        List<Contact> list = contactRepo.findByCustomField(key, value, tenantId);
+        LOGGER.info(String.format("Found %1$s contacts", list.size()));
+
+        return wrap(list);
+    }
+
+    /**
      * Return just the matching contacts (probably will be one in almost every
      * case).
      *
