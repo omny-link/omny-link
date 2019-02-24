@@ -62,7 +62,7 @@
     {{#if type=='checkbox'}}
       <input class="form-control" id="cur{{name.toLeadingCaps()}}"
           {{#type}}type="{{type}}" {{/}}
-          checked="{{current.customFields[name]=='true'}}">
+          checked="{{current.customFields[name]}}">
     {{else}}
       <input class="form-control" id="cur{{name.toLeadingCaps()}}"
           {{#if type=='list'}}list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}"{{/if}}
