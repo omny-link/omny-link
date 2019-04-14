@@ -75,13 +75,13 @@ public class Memo implements Serializable {
     @JsonProperty
     @JsonView({ MemoViews.Summary.class })
     @NotNull
-    @Size(max = 50)
+    @Size(max = 100)
     @Column(name = "name")
     private String name;
 
     @JsonProperty
     @JsonView({ MemoViews.Detailed.class })
-    @Size(max = 50)
+    @Size(max = 100)
     @Column(name = "title")
     private String title;
 
