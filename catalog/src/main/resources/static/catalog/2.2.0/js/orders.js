@@ -104,6 +104,17 @@ var ractive = new BaseRactive({
         return date.toLocaleDateString(navigator.languages);
       }
     },
+    formatDate6Digit: function(timeString) {
+      if (timeString == undefined || timeString.length==0) return 'n/a';
+      var date = ractive.parseDate(timeString);
+      if (date == 'Invalid Date') {
+        return timeString;
+      } else {
+          return ''+(date.getFullYear()-2000)
+          +(date.getMonth()<9 ? '0'+(date.getMonth()+1) : date.getMonth()+1+'')
+          +(date.getDate()<10 ? '0'+(date.getDate()) : date.getDate()+'');
+      }
+    },
     formatDateTime: function(timeString) {
       if (timeString==undefined) return 'n/a';
       var dts = new Date(timeString).toLocaleString(navigator.languages);

@@ -34,7 +34,9 @@
                 <th title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}</th>
               {{/}}
               {{#tenant.orderItemFields}}
-                <th title="{{hint}}">{{label == undefined ? key.toLabel() : label}}</th>
+                {{#if summary==true}}
+                  <th title="{{hint}}">{{label == undefined ? key.toLabel() : label}}</th>
+                {{/if}}
               {{/}}
               <th>Actions</th>
             </tr>
@@ -51,13 +53,15 @@
                   </td>
                 {{/}}
                 {{#tenant.orderItemFields}}
-                  <td on-click="toggleEditOrderItem(current.orderItems[j],j)" class="{{type}}">
-                    {{#if type=='date'}}
-                      <span title="{{hint}}">{{formatDate(customFields[key])}}</span>
-                    {{else}}
-                      <span title="{{hint}}" >{{customFields[key]}}</span>
-                    {{/if}}
-                  </td>
+                  {{#if summary==true}}
+                    <td on-click="toggleEditOrderItem(current.orderItems[j],j)" class="{{type}}">
+                      {{#if type=='date'}}
+                        <span title="{{hint}}">{{formatDate(customFields[key])}}</span>
+                      {{else}}
+                        <span title="{{hint}}" >{{customFields[key]}}</span>
+                      {{/if}}
+                    </td>
+                  {{/if}}
                 {{/}}
                 <td class="col-actions">
                   <a class="glyphicon glyphicon-btn glyphicon-pencil" aria-hidden="true" on-click="toggleEditOrderItem(current.orderItems[j],j)" title="Edit this record"></a>
