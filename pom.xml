@@ -31,6 +31,14 @@
     <xerces.version>2.11.0</xerces.version>
   </properties>
 
+  <distributionManagement>
+    <repository>
+      <id>kp-repo</id>
+      <name>KnowProcess public repository</name>
+      <url>scpexe://knowprocess.com/var/www-knowprocess/maven</url>
+    </repository>
+  </distributionManagement>
+
   <licenses>
     <license>
       <name>Apache v2.0</name>
@@ -59,6 +67,17 @@
       </releases>
     </pluginRepository>
   </pluginRepositories>
+
+  <repositories>
+     <repository>
+      <id>kp-mvn-repo</id>
+      <url>https://knowprocess.com/maven/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+  </repositories>
 
   <dependencies>
    <dependency>
@@ -174,6 +193,14 @@
   </modules>
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-ssh-external</artifactId>
+         <version>1.0-beta-6</version>
+      </extension>
+    </extensions>
+
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
