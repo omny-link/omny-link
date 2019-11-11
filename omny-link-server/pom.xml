@@ -21,7 +21,7 @@
   <name>Omny Link Server</name>
   <inceptionYear>2015</inceptionYear>
 
-  <artifactId>omny-link-server</artifactId>
+  <artifactId>omny-link</artifactId>
   <packaging>jar</packaging>
 
   <parent>
@@ -33,14 +33,16 @@
 
   <properties>
     <start-class>link.omny.server.Application</start-class>
+    <docker.repo>docker.io</docker.repo>
+    <docker.image.prefix>knowprocess</docker.image.prefix>
   </properties>
 
   <pluginRepositories>
-      <pluginRepository>
-        <id>spring-milestones</id>
-        <name>spring-milestones</name>
-        <url>http://repo.springsource.org/milestone/</url>
-      </pluginRepository>
+    <pluginRepository>
+      <id>spring-milestones</id>
+      <name>spring-milestones</name>
+      <url>http://repo.springsource.org/milestone/</url>
+    </pluginRepository>
   </pluginRepositories>
   <repositories>
       <repository>
@@ -123,6 +125,28 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>dockerfile-maven-plugin</artifactId>
+        <version>1.4.9</version>
+        <executions>
+          <execution>
+            <id>default</id>
+            <goals>
+              <goal>build</goal>
+              <goal>push</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <repository>${docker.repo}/${docker.image.prefix}/${project.artifactId}</repository>
+          <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+          <tag>${project.version}</tag>
+          <buildArgs>
+            <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+          </buildArgs>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
