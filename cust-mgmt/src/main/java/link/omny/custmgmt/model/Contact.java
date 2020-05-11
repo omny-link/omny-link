@@ -528,23 +528,26 @@ public class Contact implements Serializable {
         try {
             fName = name.substring(0, name.indexOf(' '));
             String remainder = name.substring(name.indexOf(' ') + 1);
-            if (remainder.contains(" ")) {
-                setFirstName(remainder.substring(0, remainder.indexOf(' ')));
-                remainder = remainder.substring(remainder.indexOf(' ') + 1);
+            switch (fName) {
+            case "Dr":
+            case "Mr":
+            case "Mrs":
+            case "Miss":
+                setTitle(fName);
+                if (remainder.contains(" ")) {
+                    setFirstName(
+                            remainder.substring(0, remainder.indexOf(' ')));
+                    remainder = remainder.substring(remainder.indexOf(' ') + 1);
+                }
+                break;
+            default:
+                setTitle(null);
+                setFirstName(fName);
             }
             setLastName(remainder);
         } catch (StringIndexOutOfBoundsException e) {
-            fName = name;
-        }
-        switch (fName) {
-        case "Dr":
-        case "Mr":
-        case "Mrs":
-        case "Miss":
-            setTitle(fName);
-            break;
-        default:
-            setFirstName(fName);
+            setFirstName(name);
+            setLastName(null);
         }
     }
 

@@ -52,7 +52,11 @@ public class ContactTest {
         assertEquals("W", contact.getFirstName());
         assertEquals("Bell", contact.getLastName());
 
-        contact.setLastName(null);
+        contact.setFullName("Hugo de Beauvoir");
+        assertNull(contact.getTitle());
+        assertEquals("Hugo", contact.getFirstName());
+        assertEquals("de Beauvoir", contact.getLastName());
+
         contact.setFullName("??");
         assertEquals("??", contact.getFirstName());
         assertEquals(null, contact.getLastName());
