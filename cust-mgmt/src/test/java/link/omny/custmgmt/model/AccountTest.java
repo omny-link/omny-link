@@ -172,16 +172,23 @@ public class AccountTest {
         Account acct = new Account();
         acct.setId(1l);
         acct.setName("ACME Inc.");
+        acct.setDescription("test description containing newline\n"
+                + "and a quotation \"quotation 1\"\n");
         acct.addNote(new Note(1l, "tim@knowprocess.com", now,
                 "A single-line note", true, false));
         acct.addNote(new Note(2l, "tim@knowprocess.com", now,
                 "A note\nthat spans multiple lines", true, false));
-        assertEquals(2,  acct.getNotes().size());
+        acct.addNote(new Note(2l, "tim@knowprocess.com", now,
+                "\"quotation 1\"\n\"quotation 2\"",
+                true, false));
+        assertEquals(3, acct.getNotes().size());
         System.out.println(acct.toCsv());
         String csv = acct.toCsv();
         assertTrue(csv.startsWith("1,ACME Inc."));
         assertTrue(csv.contains("tim@knowprocess.com: A single-line note"));
         assertTrue(csv.contains("tim@knowprocess.com: A note\n"
                 + "that spans multiple lines;"));
+        assertTrue(csv.contains(
+                "tim@knowprocess.com: \"quotation 1\";\"quotation 2\""));
     }
 }
