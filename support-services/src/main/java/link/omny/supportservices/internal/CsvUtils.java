@@ -17,11 +17,13 @@ package link.omny.supportservices.internal;
 
 public class CsvUtils {
 
-    public static String quoteIfNeeded(String text) {
-        if (text.indexOf(',') == -1 && text.indexOf('\n') == -1) {
+    public static String quoteIfNeeded(final String text) {
+        if (text == null) {
             return text;
+        } else if (text.indexOf(',') == -1 && text.indexOf('\n') == -1) {
+            return text.trim();
         } else {
-            return "\"" + text + "\"";
+            return "\"" + text.trim() + "\"";
         }
     }
 

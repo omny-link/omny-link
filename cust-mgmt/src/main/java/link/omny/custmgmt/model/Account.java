@@ -487,7 +487,9 @@ public class Account implements Serializable {
                         linkedIn == null ? "" : linkedIn,
                         facebook == null ? "" : facebook,
                         shortDesc == null ? "" : CsvUtils.quoteIfNeeded(shortDesc),
-                        description == null ? "" : CsvUtils.quoteIfNeeded(description),
+                        description == null ? ""
+                                : CsvUtils.quoteIfNeeded(
+                                        description.replace('"', '\'')),
                         incorporationYear == null ? "" : incorporationYear,
                         noOfEmployees == null ? "" : noOfEmployees,
                         tenantId, firstContact, lastUpdated,
@@ -498,7 +500,8 @@ public class Account implements Serializable {
         } else {
             for (String fieldName : customHeadings) {
                 String val = getCustomFieldValue(fieldName);
-                sb.append(',').append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
+                sb.append(',').append(val == null ? ""
+                        : CsvUtils.quoteIfNeeded(val.replace('"', '\'')));
             }
         }
         return sb.toString();
@@ -508,9 +511,11 @@ public class Account implements Serializable {
         StringBuffer sb = new StringBuffer();
         for (Note note : getNotes()) {
             if (note.getContent() != null) {
+                // Note that content containing quotes or new lines is fine
+                // but containing quotenewline messes up spreadsheet imports
                 sb.append(String.format("%s %s: %s;",
                         note.getCreated(), note.getAuthor(),
-                        note.getContent()));
+                        note.getContent().replace("\"\n", "\";")));
             }
         }
         return CsvUtils.quoteIfNeeded(sb.toString());
