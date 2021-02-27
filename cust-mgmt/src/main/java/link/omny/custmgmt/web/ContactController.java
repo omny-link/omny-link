@@ -339,31 +339,12 @@ public class ContactController extends BaseTenantAwareController{
             @RequestParam("lastName") String lastName,
             @RequestParam("firstName") String firstName,
             @RequestParam("accountName") String accountName) {
-
         LOGGER.debug(String.format(
                 "List contacts for account and name %1$s, %2$s %3$s",
                 accountName, lastName, firstName));
 
         List<Contact> list = contactRepo.findByFirstNameLastNameAndAccountName(
                 firstName, lastName, accountName);
-        LOGGER.info(String.format("Found %1$s contacts", list.size()));
-
-        return wrap(list);
-    }
-
-    /**
-     * Return just the contacts matching the custom field.
-     *
-     * @return contacts for that tenant.
-     */
-    @RequestMapping(value = "/searchByCustomField/{key}/{value}", method = RequestMethod.GET)
-    public @ResponseBody List<ContactResource> searchByCustomField(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("key") String key,
-            @PathVariable("value") String value) {
-        LOGGER.debug("List contacts for custom field {}={}", key, value);
-
-        List<Contact> list = contactRepo.findByCustomField(key, value, tenantId);
         LOGGER.info(String.format("Found %1$s contacts", list.size()));
 
         return wrap(list);
@@ -478,6 +459,24 @@ public class ContactController extends BaseTenantAwareController{
             @RequestParam("accountType") String accountType) {
         LOGGER.debug(String.format("Find contact for account %1$s", accountType));
         return wrap(contactRepo.findByAccountType(accountType, tenantId));
+    }
+
+    /**
+     * Return just the contacts matching the custom field.
+     *
+     * @return contacts matching the custom field for that tenant.
+     */
+    @RequestMapping(value = "/findByCustomField/{key}/{value}", method = RequestMethod.GET)
+    public @ResponseBody List<ContactResource> findByCustomField(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("key") String key,
+            @PathVariable("value") String value) {
+        LOGGER.debug("List contacts for custom field {}={}", key, value);
+
+        List<Contact> list = contactRepo.findByCustomField(key, value, tenantId);
+        LOGGER.info(String.format("Found %1$s contacts", list.size()));
+
+        return wrap(list);
     }
 
     /**

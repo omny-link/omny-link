@@ -349,6 +349,27 @@ public class AccountController {
     }
 
     /**
+     * Return accounts with the matching custom field.
+     *
+     * @return the account with this name.
+     * @throws BusinessEntityNotFoundException
+     */
+    @JsonView(AccountViews.Summary.class)
+    @RequestMapping(value = "/accounts/findByCustomField/{name}/{value}", method = RequestMethod.GET)
+    public @ResponseBody List<Account> findByCustomField(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("name") String name,
+            @PathVariable("value") String value)
+            throws BusinessEntityNotFoundException {
+        LOGGER.debug("Find account with custom field {}={}", name, value);
+
+        List<Account> accounts = accountRepo
+                .findByCustomFieldForTenant(name, value, tenantId);
+
+        return addLinks(tenantId, accounts);
+    }
+
+    /**
      * Update an existing account.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -612,6 +633,13 @@ public class AccountController {
                 tenantId, account.getId())));
         account.setLinks(links);
         return account;
+    }
+    
+    private List<Account> addLinks(String tenantId, List<Account> accounts) {
+        for (Account account : accounts) {
+            addLinks(tenantId, account);
+        }
+        return accounts;
     }
 }
 
