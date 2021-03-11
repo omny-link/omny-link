@@ -21,12 +21,12 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import link.omny.custmgmt.model.CustomField;
+import org.springframework.data.rest.core.annotation.RestResource;
+
+import link.omny.supportservices.model.CustomField;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import org.springframework.data.rest.core.annotation.RestResource;
 
 @Entity
 @Table(name = "OL_FEEDBACK_CUSTOM")

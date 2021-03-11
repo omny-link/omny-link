@@ -15,14 +15,14 @@
  ******************************************************************************/
 package link.omny.custmgmt.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ContactActivityTest {
 
@@ -30,7 +30,7 @@ public class ContactActivityTest {
     private static final long ONE_WEEK = 7 * 60 * ONE_MINUTE;
     private Contact contact;
 
-    @Before
+    @BeforeEach
     public void setUpBeforeClass() throws Exception {
         contact = new Contact();
         contact.getActivities().add(new Activity(ActivityType.REGISTRATION, null));

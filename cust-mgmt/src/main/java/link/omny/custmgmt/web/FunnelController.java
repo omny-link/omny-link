@@ -22,7 +22,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.ResourceSupport;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +33,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * REST web service for fetching contacts aggregated in a way convenient for
@@ -96,8 +94,7 @@ public class FunnelController {
     }
 
     @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class FunnelReport extends ResourceSupport {
+    public static class FunnelReport {
         @JsonProperty
         private Map<String, Number> stages;
 

@@ -17,9 +17,10 @@ package link.omny.catalog.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,16 +36,15 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.hateoas.Link;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -52,8 +52,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
 import link.omny.catalog.views.OrderViews;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
-import link.omny.custmgmt.model.CustomField;
+import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.CustomField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -100,6 +100,7 @@ public class OrderItem implements Serializable {
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonView(OrderViews.Detailed.class)
     private Date created;
 
@@ -113,6 +114,7 @@ public class OrderItem implements Serializable {
     // appears relevant switching to jackson-databind-2.7.3 made no difference
     //@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd")
     //@JsonFormat(shape=JsonFormat.Shape.OBJECT)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "last_updated")
     private Date lastUpdated;
 
@@ -123,6 +125,7 @@ public class OrderItem implements Serializable {
 
     @ManyToOne
     @RestResource(rel = "order")
+    @JsonBackReference
     private Order order;
 
     @JsonProperty
@@ -136,26 +139,21 @@ public class OrderItem implements Serializable {
     @JsonDeserialize(using = JsonCustomOrderItemFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     @JsonView(OrderViews.Detailed.class)
-    private List<CustomOrderItemField> customFields;
-
-    @Transient
-    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
-    @JsonProperty("links")
-    @JsonView({ OrderViews.Detailed.class })
-    private List<Link> links;
+    private Set<CustomOrderItemField> customFields;
 
     public OrderItem(String type) {
         this();
         setType(type);
     }
 
+    /** @deprecated */
     public String getSelfRef() {
         return String.format("/order-items/%1$d", id);
     }
 
-    public List<CustomOrderItemField> getCustomFields() {
+    public Set<CustomOrderItemField> getCustomFields() {
         if (customFields == null) {
-            customFields = new ArrayList<CustomOrderItemField>();
+            customFields = new HashSet<CustomOrderItemField>();
         }
         return customFields;
     }

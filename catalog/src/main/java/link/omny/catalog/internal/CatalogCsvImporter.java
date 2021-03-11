@@ -77,12 +77,8 @@ public class CatalogCsvImporter {
                             setField(stockItem.getStockCategory(), pd, record
                                     .get(name).trim());
                         } catch (NullPointerException e) {
-                            System.out.println(String.format(
-                                    "Unable to set %1$s on %2$s", name,
-                                    stockItem.getStockCategory()));
-                            LOGGER.error(String.format(
-                                    "Unable to set %1$s on %2$s", name,
-                                    stockItem.getStockCategory()));
+                            LOGGER.error("Unable to set {} on {}", name,
+                                    stockItem.getStockCategory());
                         }
                     }
                 }

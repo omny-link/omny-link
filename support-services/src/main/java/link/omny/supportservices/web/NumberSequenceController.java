@@ -15,7 +15,6 @@
  ******************************************************************************/
 package link.omny.supportservices.web;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -26,7 +25,6 @@ import javax.transaction.Transactional.TxType;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -90,10 +88,11 @@ public class NumberSequenceController {
     }
 
     private NumberSequence addLinks(String tenantId, NumberSequence seq) {
-        List<Link> links = new ArrayList<Link>();
-        links.add(new Link(String.format("/%1$s/sequences/%2$s", tenantId,
-                seq.getId())));
-        seq.setLinks(links);
+        // TODO 
+//        List<Link> links = new ArrayList<Link>();
+//        links.add(new Link(String.format("/%1$s/sequences/%2$s", tenantId,
+//                seq.getId())));
+//        seq.setLinks(links);
         return seq;
     }
 }

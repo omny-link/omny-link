@@ -15,20 +15,22 @@
  ******************************************************************************/
 package link.omny.custmgmt.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Scanner;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import link.omny.supportservices.model.Note;
 
 public class ContactTest {
 
@@ -108,10 +110,10 @@ public class ContactTest {
         c1.setCustomField(new CustomContactField("favouriteColour", "orange"));
         c2.setCustomField(new CustomContactField("favouriteColour", "orange"));
 
-        CustomContactField colour1 = c1.getCustomFields().get(0);
+        CustomContactField colour1 = c1.getCustomFields().iterator().next();
         colour1.setContact(c1);
         colour1.hashCode();
-        c2.getCustomFields().get(0).setContact(c2);
+        c2.getCustomFields().iterator().next().setContact(c2);
 
         c1.hashCode();
         assertEquals(c1, c2);
@@ -129,11 +131,11 @@ public class ContactTest {
 
         contact.setCustomFields(Collections.singletonList(field2));
         assertEquals(1, contact.getCustomFields().size());
-        assertEquals(field1.getId(), contact.getCustomFields().get(0).getId());
+        assertEquals(field1.getId(), contact.getCustomFields().iterator().next().getId());
 
         contact.addCustomField(field2);
         assertEquals(1, contact.getCustomFields().size());
-        assertEquals(field1.getId(), contact.getCustomFields().get(0).getId());
+        assertEquals(field1.getId(), contact.getCustomFields().iterator().next().getId());
     }
 
     @Test

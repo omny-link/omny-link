@@ -20,7 +20,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.custmgmt.model.Activity;
 
-@RepositoryRestResource(path = "/activities")
+@RepositoryRestResource(path = "activities")
 public interface ActivityRepository extends CrudRepository<Activity, Long> {
 
 //    @Query("SELECT a FROM Activity a JOIN a.contact c WHERE c.account.id = :accountId ORDER BY a.lastUpdated ASC")

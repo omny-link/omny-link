@@ -16,9 +16,9 @@
 package link.omny.catalog.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -33,35 +33,31 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.hateoas.Link;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import link.omny.catalog.json.JsonCustomFeedbackFieldDeserializer;
-import link.omny.catalog.views.FeedbackViews;
 import link.omny.catalog.views.OrderViews;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
-import link.omny.custmgmt.model.CustomField;
+import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.CustomField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@JsonIgnoreProperties(allowGetters = true, value = { "selfRef" })
 @Data
-@EqualsAndHashCode(exclude = { "links", "order" })
+@EqualsAndHashCode(exclude = { "order" })
 @ToString(exclude = { "order" })
 @Entity
 @Table(name = "OL_FEEDBACK")
@@ -95,12 +91,14 @@ public class Feedback implements Serializable {
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonView(OrderViews.Detailed.class)
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="last_updated")
     @JsonProperty
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     // See OrderItem.lastUpdated for explanation
     //@JsonView(OrderViews.Detailed.class)
     private Date lastUpdated;
@@ -112,19 +110,14 @@ public class Feedback implements Serializable {
 
     @OneToOne
     @RestResource(rel = "order")
+    @JsonBackReference
     private Order order;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "feedback", orphanRemoval = true)
     @JsonDeserialize(using = JsonCustomFeedbackFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     @JsonView(OrderViews.Detailed.class)
-    private List<CustomFeedbackField> customFields;
-
-    @Transient
-    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
-    @JsonProperty("links")
-    @JsonView({ OrderViews.Detailed.class, FeedbackViews.Summary.class })
-    private List<Link> links;
+    private Set<CustomFeedbackField> customFields;
 
     public Feedback(String desc, String type) {
         this();
@@ -132,18 +125,14 @@ public class Feedback implements Serializable {
         setType(type);
     }
 
-    public String getSelfRef() {
-        return String.format("/order-items/%1$d", id);
-    }
-
-    public List<CustomFeedbackField> getCustomFields() {
+    public Set<CustomFeedbackField> getCustomFields() {
         if (customFields == null) {
-            customFields = new ArrayList<CustomFeedbackField>();
+            customFields = new HashSet<CustomFeedbackField>();
         }
         return customFields;
     }
 
-    public void setCustomFields(List<CustomFeedbackField> fields) {
+    public void setCustomFields(Set<CustomFeedbackField> fields) {
         for (CustomFeedbackField newField : fields) {
             setCustomField(newField);
         }

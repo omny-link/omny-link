@@ -15,8 +15,10 @@
  ******************************************************************************/
 package link.omny.catalog.web;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,8 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,39 +49,27 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import link.omny.catalog.CatalogException;
 import link.omny.catalog.CatalogObjectNotFoundException;
-import link.omny.catalog.json.JsonCustomFeedbackFieldDeserializer;
-import link.omny.catalog.json.JsonCustomOrderFieldDeserializer;
-import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
 import link.omny.catalog.model.CustomFeedbackField;
 import link.omny.catalog.model.CustomOrderField;
 import link.omny.catalog.model.CustomOrderItemField;
 import link.omny.catalog.model.Feedback;
 import link.omny.catalog.model.Order;
 import link.omny.catalog.model.OrderItem;
-import link.omny.catalog.model.api.OrderWithSubEntities;
-import link.omny.catalog.model.api.ShortOrder;
-import link.omny.catalog.model.api.ShortStockItem;
 import link.omny.catalog.repositories.FeedbackRepository;
 import link.omny.catalog.repositories.OrderItemRepository;
 import link.omny.catalog.repositories.OrderRepository;
 import link.omny.catalog.repositories.StockItemRepository;
-import link.omny.catalog.views.OrderViews;
-import link.omny.custmgmt.internal.NullAwareBeanUtils;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
-import link.omny.custmgmt.model.Document;
-import link.omny.custmgmt.model.Note;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
+import link.omny.supportservices.internal.NullAwareBeanUtils;
+import link.omny.supportservices.model.Document;
+import link.omny.supportservices.model.Note;
 import link.omny.supportservices.web.NumberSequenceController;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * REST web service for accessing stock items.
@@ -111,53 +100,51 @@ public class OrderController {
 
     @Autowired
     private StockItemRepository stockItemRepo;
+
+    @Autowired
+    private StockItemController stockItemSvc;
+
     /**
      * @return a complete order including its items and feedback.
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @JsonView(OrderViews.Detailed.class)
     @Transactional
-    public @ResponseBody Order readOrder(
+    public @ResponseBody EntityModel<Order> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId) {
-        LOGGER.info(String.format("Read order %1$s for tenant %2$s", orderId,
-                tenantId));
+        LOGGER.info("Read order {} for tenant {}", orderId, tenantId);
 
-        Order order = orderRepo.findOne(orderId);
-        LOGGER.info(String.format(
-                "Found order with %1$d order items and %2$s inc. feedback",
+        Order order = findById(tenantId, orderId);
+        LOGGER.info(
+                "Found order with {} order items and {} inc. feedback",
                 order.getOrderItems().size(),
-                order.getFeedback() == null ? "DOES NOT" : "DOES"));
+                order.getFeedback() == null ? "DOES NOT" : "DOES");
 
         order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
         order.setFeedback(feedbackRepo.findByOrder(tenantId, orderId));
-        addLinks(tenantId, order);
-        return order;
+        return addLinks(tenantId, order);
     }
 
     /**
      * @return the specified orders including all items and feedback.
      */
     @RequestMapping(value = "/findByIdArray/{ids}", method = RequestMethod.GET)
-    @JsonView(OrderViews.Detailed.class)
     @Transactional
-    public @ResponseBody List<Order> readOrders(
+    public @ResponseBody List<EntityModel<Order>> readOrders(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("ids") String orderIds) {
-        LOGGER.info(String.format("Read orders %1$s for tenant %2$s", orderIds,
-                tenantId));
+        LOGGER.info("Read orders {} for tenant {}", orderIds, tenantId);
         List<Order> orders = orderRepo.findByIds(tenantId, parseOrderIds(orderIds));
         for (Order order : orders) {
-            LOGGER.info(String.format(
-                    "Found order with %1$d order items and %2$s inc. feedback",
+            LOGGER.info(
+                    "Found order with {} order items and {} inc. feedback",
                     order.getOrderItems().size(),
-                    order.getFeedback() == null ? "DOES NOT" : "DOES"));
+                    order.getFeedback() == null ? "DOES NOT" : "DOES");
 
             order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
             order.setFeedback(feedbackRepo.findByOrder(tenantId, order.getId()));
-            addLinks(tenantId, order);
         }
-        return orders;
+        return addLinks(tenantId, orders);
     }
 
     protected Long[] parseOrderIds(String orderIds) {
@@ -185,24 +172,22 @@ public class OrderController {
      * @return feedback for the specified order.
      */
     @RequestMapping(value = "/{id}/feedback", method = RequestMethod.GET)
-    public @ResponseBody FeedbackResource readFeedback(
+    public @ResponseBody Feedback readFeedback(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId) {
-        LOGGER.info(String.format(
-                "Read feedback for order %1$s of tenant %2$s", orderId,
-                tenantId));
+        LOGGER.info(
+                "Read feedback for order {} of tenant {}", orderId, tenantId);
 
         Feedback feedback = feedbackRepo.findByOrder(tenantId, orderId);
 
         if (feedback == null) {
-            LOGGER.info(String.format("No feedback for order %1$d", orderId));
+            LOGGER.info("No feedback for order {}", orderId);
             throw new CatalogObjectNotFoundException(String.format(
-                    "Unable to find object of type %1$s for order %2$s",
+                    "Unable to find object of type %1$d for order %2$s",
                     Feedback.class, orderId), Feedback.class, orderId);
         } else {
-            LOGGER.info(String.format("Found feedback for order %1$d: %2$s",
-                    orderId, feedback));
-            return wrap(feedback);
+            LOGGER.info("Found feedback for order {}: {}", orderId, feedback);
+            return feedback;
         }
     }
 
@@ -210,23 +195,25 @@ public class OrderController {
      * @return orders for the specified tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    @JsonView(OrderViews.Summary.class)
-    public @ResponseBody List<Order> listForTenant(
+    public @ResponseBody List<EntityModel<Order>> listEntitiesForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info(String.format("List orders for tenant %1$s",
-                tenantId));
+        return addLinks(tenantId, listForTenant(tenantId, page, limit));
+    }
+
+    protected List<Order> listForTenant(String tenantId, Integer page,
+            Integer limit) {
+        LOGGER.info("List orders for tenant {}", tenantId);
 
         List<Order> list;
         if (limit == null) {
             list = orderRepo.findAllForTenant(tenantId);
         } else {
-            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
             list = orderRepo.findPageForTenant(tenantId, pageable);
         }
-        LOGGER.info(String.format("Found %1$s orders", list.size()));
-
+        LOGGER.info("Found {} orders", list.size());
         return list;
     }
 
@@ -267,8 +254,7 @@ public class OrderController {
      * @return orders owned by the specified contact.
      */
     @RequestMapping(value = "/findByContact/{contactId}", method = RequestMethod.GET)
-    @JsonView(OrderViews.Detailed.class)
-    public @ResponseBody List<Order> listForContact(
+    public @ResponseBody List<EntityModel<Order>> listForContact(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -280,35 +266,38 @@ public class OrderController {
      * @return orders owned by the specified contact(s).
      */
     @RequestMapping(value = "/findByContacts/{contactIds}", method = RequestMethod.GET)
-    @JsonView(OrderViews.Detailed.class)
-    public @ResponseBody List<Order> listForContacts(
+    public @ResponseBody List<EntityModel<Order>> listForContacts(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactIds") Long[] contactIds,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info(String.format(
-                "List orders for contacts %1$s & tenant %2$s",
-                Arrays.asList(contactIds), tenantId));
+        LOGGER.info(
+                "List orders for contacts {} & tenant {}",
+                Arrays.asList(contactIds), tenantId);
 
         List<Order> list;
         if (limit == null) {
             list = orderRepo.findAllForContacts(tenantId, contactIds);
         } else {
-            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
             list = orderRepo
                     .findPageForContacts(tenantId, contactIds, pageable);
         }
-        LOGGER.info(String.format("Found %1$s orders", list.size()));
+        LOGGER.info("Found {} orders", list.size());
+        return addLinks(tenantId, list);
+    }
 
-        return list;
+    protected Order findById(final String tenantId, final Long id) {
+        return orderRepo.findById(id)
+                .orElseThrow(() -> new BusinessEntityNotFoundException(
+                        Order.class, id));
     }
 
     /**
      * @return orders of the specified type.
      */
     @RequestMapping(value = "/findByType/{type}", method = RequestMethod.GET)
-    @JsonView(OrderViews.Detailed.class)
-    public @ResponseBody List<Order> findByType(
+    public @ResponseBody List<EntityModel<Order>> findByType(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("type") String type,
             @RequestParam(value = "page", required = false) Integer page,
@@ -317,13 +306,12 @@ public class OrderController {
         if (limit == null) {
             list = orderRepo.findByTypeForTenant(tenantId, type);
         } else {
-            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
             list = orderRepo
                     .findPageByTypeForTenant(tenantId, type, pageable);
         }
-        LOGGER.info(String.format("Found %1$s orders", list.size()));
-
-        return list;
+        LOGGER.info("Found {} orders", list.size());
+        return addLinks(tenantId, list);
     }
 
     /**
@@ -332,12 +320,12 @@ public class OrderController {
     @RequestMapping(value = "/funnel", method = RequestMethod.GET)
     public @ResponseBody FunnelReport reportTenantByAccount(
             @PathVariable("tenantId") String tenantId) {
-        LOGGER.info(String.format("List account funnel for tenant %1$s", tenantId));
+        LOGGER.info("List account funnel for tenant {}", tenantId);
 
         FunnelReport rpt = new FunnelReport();
         List<Object[]> list = orderRepo
                 .findAllForTenantGroupByStage(tenantId);
-        LOGGER.debug(String.format("Found %1$s stages", list.size()));
+        LOGGER.debug("Found {} stages", list.size());
 
         for (Object[] objects : list) {
             rpt.addStage((String) objects[0], (Number) objects[1]);
@@ -351,7 +339,7 @@ public class OrderController {
      */
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public @ResponseBody ResponseEntity<?> create(
+    public @ResponseBody ResponseEntity<EntityModel<Order>> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Order order) {
         order.setTenantId(tenantId);
@@ -364,7 +352,7 @@ public class OrderController {
             LOGGER.debug("Looking up order's stock item for {}...",
                     order.getStockItem().getId());
             order.setStockItem(
-                    stockItemRepo.findOne(order.getStockItem().getId()));
+                    stockItemSvc.findById(tenantId, order.getStockItem().getId()));
             LOGGER.debug("... found {} ({})", order.getStockItem().getName(),
                     order.getStockItem().getId());
         }
@@ -372,13 +360,12 @@ public class OrderController {
             for (OrderItem item : order.getOrderItems()) {
                 if (item.getStockItem() != null && item.getStockItem().getId() != null) {
                     item.setStockItem(
-                            stockItemRepo.findOne(item.getStockItem().getId()));
+                            stockItemSvc.findById(tenantId, item.getStockItem().getId()));
                 }
             }
         }
         if (order.getParent() != null && order.getParent().getId() != null) {
-            order.setParent(
-                    orderRepo.findOne(order.getParent().getId()));
+            order.setParent(findById(tenantId, order.getParent().getId()));
         }
         if ("-1".equals(String.valueOf(order.getRef()))) {
             Long ref;
@@ -391,19 +378,20 @@ public class OrderController {
             }
             order.setRef(ref);
         }
-        orderRepo.save(order);
+        EntityModel<Order> entityModel = addLinks(tenantId, orderRepo.save(order));
+        HttpHeaders headers = headersWithLocation(entityModel.getLink("self").get().toUri());
+        return new ResponseEntity<EntityModel<Order>>(entityModel, headers, HttpStatus.CREATED);
+    }
 
-        HashMap<String, String> vars = new HashMap<String, String>();
-        vars.put("tenantId", tenantId);
-        vars.put("id", order.getId().toString());
-
-        return getCreatedResponseEntity("/{id}", vars);
+    protected HttpHeaders headersWithLocation(URI uri) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(uri);
+        return headers;
     }
 
     protected ResponseEntity<Object> getCreatedResponseEntity(String path, Map<String, String> vars) {
         URI location = MvcUriComponentsBuilder.fromController(getClass()).path(path).buildAndExpand(vars).toUri();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(location);
+        HttpHeaders headers = headersWithLocation(location);
         return new ResponseEntity<Object>(headers, HttpStatus.CREATED);
     }
 
@@ -416,7 +404,7 @@ public class OrderController {
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
             @RequestBody Order updatedOrder) {
-        Order order = orderRepo.findOne(orderId);
+        Order order = findById(tenantId, orderId);
 
         NullAwareBeanUtils.copyNonNullProperties(updatedOrder, order, "id", "stockItem");
         mergeStockItem(updatedOrder, order);
@@ -430,7 +418,8 @@ public class OrderController {
             order.setStockItem(null);
         } else if (!updatedOrder.getStockItem().equals(order.getStockItem())) {
             order.setStockItem(
-                    stockItemRepo.findOne(updatedOrder.getStockItem().getId()));
+                    stockItemSvc.findById(order.getTenantId(),
+                            updatedOrder.getStockItem().getId()));
         }
     }
 
@@ -445,14 +434,14 @@ public class OrderController {
                 LOGGER.debug("Looking up stock item for {}...",
                         item.getStockItem().getId());
                 item.setStockItem(
-                        stockItemRepo.findOne(item.getStockItem().getId()));
+                        stockItemSvc.findById(tenantId, item.getStockItem().getId()));
                 LOGGER.debug("... found {} ({})", item.getStockItem().getName(),
                         item.getStockItem().getId());
             } else if (item.getCustomFieldValue("stockItemId") != null) { // HACK!
                 LOGGER.debug("Looking up stock item for custom field {}...",
                         item.getCustomFieldValue("stockItemId"));
-                item.setStockItem(stockItemRepo.findOne(
-                        Long.parseLong((String) item.getCustomFieldValue("stockItemId"))));
+                item.setStockItem(stockItemSvc.findById(
+                        tenantId, Long.parseLong((String) item.getCustomFieldValue("stockItemId"))));
                 LOGGER.debug("... found {} ({})", item.getStockItem().getName(),
                         item.getStockItem().getId());
             }
@@ -472,14 +461,14 @@ public class OrderController {
     public @ResponseBody ResponseEntity<Object> addOrderItem(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId, @RequestBody OrderItem newItem) {
-        Order order = orderRepo.findOne(orderId);
+        Order order = findById(tenantId, orderId);
 
         for (CustomOrderItemField coif : newItem.getCustomFields()) {
             coif.setOrderItem(newItem);
         }
         if (newItem.getStockItem() != null && newItem.getStockItem().getId() != null) {
             newItem.setStockItem(
-                    stockItemRepo.findOne(newItem.getStockItem().getId()));
+                    stockItemSvc.findById(tenantId, newItem.getStockItem().getId()));
         }
 
         order.addOrderItem(newItem);
@@ -503,7 +492,7 @@ public class OrderController {
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId, @RequestBody Document doc) {
-         Order order = orderRepo.findOne(orderId);
+         Order order = findById(tenantId, orderId);
          order.getDocuments().add(doc);
          order.setLastUpdated(new Date());
          orderRepo.save(order);
@@ -545,7 +534,7 @@ public class OrderController {
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId, @RequestBody Note note) {
-        Order order = orderRepo.findOne(orderId);
+        Order order = findById(tenantId, orderId);
         order.getNotes().add(note);
         order.setLastUpdated(new Date());
         orderRepo.save(order);
@@ -596,7 +585,7 @@ public class OrderController {
         }
         feedback = feedbackRepo.save(feedback);
 
-        Order order = orderRepo.findOne(orderId);
+        Order order = findById(tenantId, orderId);
         feedback.setOrder(order);
         order.setFeedback(feedback);
         order.setLastUpdated(new Date());
@@ -622,7 +611,7 @@ public class OrderController {
             @RequestBody Feedback feedback) {
         Feedback existingFeedback = feedbackRepo.findByOrder(tenantId, orderId);
         if (existingFeedback == null) {
-            throw new BusinessEntityNotFoundException("feedback", String.valueOf(feedbackId));
+            throw new BusinessEntityNotFoundException(Feedback.class, feedbackId);
         } else {
             LOGGER.debug("Updating feedback {} of order {} for {}",
                     existingFeedback.getId(), orderId, tenantId);
@@ -649,7 +638,9 @@ public class OrderController {
             @PathVariable("id") Long orderId,
             @PathVariable("itemId") Long orderItemId,
             @RequestBody OrderItem updatedOrderItem) {
-        OrderItem item = orderItemRepo.findOne(orderItemId);
+        OrderItem item = orderItemRepo.findById(orderItemId)
+                .orElseThrow(() -> new BusinessEntityNotFoundException(
+                        OrderItem.class, orderItemId));
 
         NullAwareBeanUtils.copyNonNullProperties(updatedOrderItem, item, "id", "stockItem");
         item.setTenantId(tenantId);
@@ -681,9 +672,8 @@ public class OrderController {
             @PathVariable("orderId") Long orderId,
             @PathVariable("stage") String stage,
             @RequestParam(required = false, defaultValue = "false") boolean orderPlaced) {
-        LOGGER.info(String.format("Setting order %1$s to stage %2$s",
-                orderId, stage));
-        Order order = orderRepo.findOne(orderId);
+        LOGGER.info("Setting order {} to stage {}", orderId, stage);
+        Order order = findById(tenantId, orderId);
 
         String oldStage = order.getStage();
         if (!oldStage.equals(stage) || orderPlaced) {
@@ -704,7 +694,7 @@ public class OrderController {
     @Transactional
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId) {
-        orderRepo.delete(orderId);
+        orderRepo.deleteById(orderId);
     }
 
     /**
@@ -724,120 +714,23 @@ public class OrderController {
         orderRepo.deleteItem(orderId, orderItemId);
     }
 
-    private FeedbackResource wrap(Feedback feedback) {
-        FeedbackResource resource = new FeedbackResource();
 
-        NullAwareBeanUtils
-                .copyNonNullProperties(feedback, resource, "customFields");
-        resource.setFeedbackId(feedback.getId());
-        resource.setOrderId(feedback.getOrder().getId());
-
-        ArrayList<CustomFeedbackField> fields = new ArrayList<CustomFeedbackField>();
-        List<Long> fieldsSeen = new ArrayList<Long>();
-        for (CustomFeedbackField field : feedback.getCustomFields()) {
-            if (field.getFeedback().getId().equals(feedback.getId())
-                    && !fieldsSeen.contains(field.getId())) {
-                fields.add(field);
-                fieldsSeen.add(field.getId());
-            } else {
-                LOGGER.debug(String.format(
-                        "Removing duplicate field due to inner join: %1$s",
-                        feedback));
-            }
+    protected List<EntityModel<Order>> addLinks(final String tenantId, final List<Order> list) {
+        ArrayList<EntityModel<Order>> entities = new ArrayList<EntityModel<Order>>();
+        for (Order order : list) {
+            entities.add(addLinks(tenantId, order));
         }
-        resource.setCustomFields(fields);
+        return entities;
+    }
 
-        return resource;
+    protected EntityModel<Order> addLinks(final String tenantId, final Order order) {
+        return EntityModel.of(order, linkTo(methodOn(OrderController.class)
+                .findEntityById(tenantId, order.getId()))
+                .withSelfRel());
     }
 
     @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class OrderResource extends ShortOrderResource implements
-            OrderWithSubEntities {
-        private static final long serialVersionUID = -5578143108772043622L;
-        private List<OrderItem> orderItems;
-        private Feedback feedback;
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class ShortOrderResource extends ResourceSupport implements
-            ShortOrder {
-        private static final long serialVersionUID = 385801786736131068L;
-        private String selfRef;
-        private Long localId;
-        private String name;
-        private String description;
-        private Date date;
-        private String dueDate;
-        @JsonDeserialize(using = JsonCustomOrderFieldDeserializer.class)
-        @JsonSerialize(using = JsonCustomFieldSerializer.class)
-        private List<CustomOrderField> customFields;
-        private Long contactId;
-        private String stage;
-        private BigDecimal price;
-        private String invoiceRef;
-        private ShortStockItem stockItem;
-        private Date created;
-        private Date lastUpdated;
-        private String tenantId;
-
-        @Override
-        public void addCustomField(CustomOrderField customField) {
-            if (customFields == null) {
-                customFields = new ArrayList<CustomOrderField>();
-            }
-            customFields.add(customField);
-        }
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class FeedbackResource extends ResourceSupport {
-        private Long feedbackId;
-        private Long orderId;
-        private String selfRef;
-        private String description;
-        private BigDecimal price;
-        @JsonDeserialize(using = JsonCustomFeedbackFieldDeserializer.class)
-        @JsonSerialize(using = JsonCustomFieldSerializer.class)
-        private List<CustomFeedbackField> customFields;
-        private Date created;
-        private Date lastUpdated;
-        private String tenantId;
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class ShortOrderItemResource extends ResourceSupport {
-        private Long orderItemId;
-        private Long orderId;
-        private String selfRef;
-        private String name;
-        private String description;
-        private String status;
-        private BigDecimal price;
-        private Long stockItemId;
-        private String stockItemName;
-        @JsonDeserialize(using = JsonCustomOrderItemFieldDeserializer.class)
-        @JsonSerialize(using = JsonCustomFieldSerializer.class)
-        private List<CustomOrderItemField> customFields;
-        private Date created;
-        private Date lastUpdated;
-        private String tenantId;
-    }
-
-    private Order addLinks(String tenantId, Order order) {
-        List<Link> links = new ArrayList<Link>();
-        links.add(new Link(String.format("/%1$s/orders/%2$s",
-                tenantId, order.getId())));
-        order.setLinks(links);
-        return order;
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class FunnelReport extends ResourceSupport {
+    public static class FunnelReport {
         @JsonProperty
         private Map<String, Number> stages;
 

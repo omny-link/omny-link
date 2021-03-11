@@ -15,17 +15,16 @@
  ******************************************************************************/
 package link.omny.catalog.web;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.StockCategory;
 
 public class GeolocationServiceTest {
 
-    // disable cache for tests
-    protected GeoLocationService svc = new GeoLocationService(0);
+    protected GeoLocationService svc = new GeoLocationService();
 
     @Test
     public void testDistanceWatfordToAldermaston() {

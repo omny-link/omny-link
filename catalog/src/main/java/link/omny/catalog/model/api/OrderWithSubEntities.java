@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import link.omny.catalog.model.CustomOrderField;
 import link.omny.catalog.model.Feedback;
@@ -57,14 +58,14 @@ public interface OrderWithSubEntities extends ShortOrder, Serializable {
     Long getContactId();
 
     void setContactId(Long contactId);
-
-    Date getCreated();
-
-    void setCreated(Date created);
-
-    Date getLastUpdated();
-
-    void setLastUpdated(Date lastUpdated);
+//
+//    Date getCreated();
+//
+//    void setCreated(Date created);
+//
+//    Date getLastUpdated();
+//
+//    void setLastUpdated(Date lastUpdated);
 
     String getTenantId();
 
@@ -74,9 +75,9 @@ public interface OrderWithSubEntities extends ShortOrder, Serializable {
 
     void setFeedback(Feedback feedback);
 
-    List<CustomOrderField> getCustomFields();
+    Set<CustomOrderField> getCustomFields();
 
-    void setCustomFields(List<CustomOrderField> fields);
+    void setCustomFields(Set<CustomOrderField> fields);
 
     void addCustomField(CustomOrderField customField);
 

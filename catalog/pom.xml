@@ -18,10 +18,8 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <name>Catalogue</name>
-  <inceptionYear>2016</inceptionYear>
+  <name>Product / Service Catalogue</name>
 
-  <groupId>link.omny.catalog</groupId>
   <artifactId>catalog</artifactId>
   <packaging>jar</packaging>
 
@@ -32,32 +30,7 @@
     <version>3.0.0</version>
   </parent>
 
-  <properties>
-    <start-class>link.omny.catalog.Application</start-class>
-  </properties>
-
-  <repositories>
-      <repository>
-        <id>jcenter-snapshots</id>
-        <name>jcenter</name>
-        <url>https://jcenter.bintray.com/</url>
-      </repository>
-  </repositories>
-
   <dependencies>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
@@ -69,43 +42,10 @@
       <version>1.2</version>
     </dependency>
     <dependency>
-      <groupId>com.knowprocess.bpm</groupId>
-      <artifactId>work-mgmt</artifactId>
-      <version>${work-mgmt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.onedecision</groupId>
-      <artifactId>onedecision-engine</artifactId>
-      <version>${onedecision.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>link.omny.custmgmt</groupId>
-      <artifactId>custmgmt</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>link.omny.support-services</groupId>
+      <groupId>link.omny</groupId>
       <artifactId>support-services</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>repackage</goal>
-            </goals>
-            <configuration>
-              <classifier>exec</classifier>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

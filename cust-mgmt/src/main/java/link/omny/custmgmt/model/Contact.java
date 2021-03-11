@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -34,9 +36,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -47,25 +46,27 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.Link;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.CustomBooleanDeserializer;
 import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.views.ContactViews;
 import link.omny.supportservices.internal.CsvUtils;
+import link.omny.supportservices.internal.NullAwareBeanUtils;
+import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.CustomField;
+import link.omny.supportservices.model.Document;
+import link.omny.supportservices.model.Note;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -73,14 +74,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "OL_CONTACT")
-@NamedEntityGraphs({
-        @NamedEntityGraph(name = "contactWithAccount", attributeNodes = {
-                @NamedAttributeNode("account"),
-                @NamedAttributeNode("customFields") }),
-        @NamedEntityGraph(name = "contactWithActivities", attributeNodes = {
-                @NamedAttributeNode("activities") }) })
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = { "account" })
 @AllArgsConstructor
 @NoArgsConstructor
 public class Contact implements Serializable {
@@ -372,21 +367,16 @@ public class Contact implements Serializable {
     @Column(name = "tenant_id", nullable = false)
     private String tenantId;
 
-    @Transient
-    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
-    @JsonProperty("links")
-    @JsonView({ ContactViews.Summary.class })
-    private List<Link> links;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "contact", targetEntity = CustomContactField.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "contact", targetEntity = CustomContactField.class)
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
+    @JsonManagedReference
     @JsonView({ ContactViews.Detailed.class })
-    private List<CustomContactField> customFields;
+    private Set<CustomContactField> customFields;
 
-    public List<CustomContactField> getCustomFields() {
+    public Set<CustomContactField> getCustomFields() {
         if (customFields == null) {
-            customFields = new ArrayList<CustomContactField>();
+            customFields = new HashSet<CustomContactField>();
         }
         return customFields;
     }
@@ -429,7 +419,7 @@ public class Contact implements Serializable {
 
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
-    @ManyToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.LAZY)
     @NotFound(action = NotFoundAction.IGNORE)
     // TODO this fixes the inifite recursion but instead we get
     // [2015-03-04 15:09:15.977] boot - 15472 ERROR [http-nio-8082-exec-7] ---
@@ -443,7 +433,7 @@ public class Contact implements Serializable {
     // does not support them
     // at
     // com.fasterxml.jackson.databind.JsonDeserializer.findBackReference(JsonDeserializer.java:310)
-    // @JsonManagedReference
+    @JsonManagedReference
     private Account account;
 
     @JsonProperty
@@ -874,7 +864,6 @@ public class Contact implements Serializable {
                 jobTitle == null ? "" : jobTitle,
                 phone1 == null ? "" : phone1,
                 phone2 == null ? "" : phone2,
-                // getAccountName(),
                 owner == null ? "" : owner,
                 stage == null ? "" : stage,
                 stageReason == null ? "" : stageReason,
@@ -931,18 +920,6 @@ public class Contact implements Serializable {
                     doc.getCreated(), doc.getAuthor(), doc.getName(), doc.getUrl()));
         }
         return CsvUtils.quoteIfNeeded(sb.toString());
-    }
-
-    @Override
-    public String toString() {
-        return String.format(
-                "Contact [id=%s, firstName=%s, lastName=%s, title=%s, jobTitle=%s, email=%s, emailConfirmed=%s, emailConfirmationCode=%s, phone1=%s, phone2=%s, address1=%s, address2=%s, town=%s, countyOrCity=%s, postCode=%s, country=%s, stage=%s, enquiryType=%s, accountType=%s, owner=%s, doNotCall=%s, doNotEmail=%s, source=%s, medium=%s, campaign=%s, keyword=%s, alerts=%s, tags=%s, firstContact=%s, lastUpdated=%s, tenantId=%s, customFields=%s, account=%d]",
-                id, firstName, lastName, title, jobTitle, email, emailConfirmed,
-                uuid, phone1, phone2, address1, address2, town, countyOrCity,
-                postCode, country, stage, enquiryType, accountType, owner,
-                doNotCall, doNotEmail, source, medium, campaign, keyword,
-                alerts, tags, firstContact, lastUpdated, tenantId, customFields,
-                account == null ? null : account.getId());
     }
 
 }

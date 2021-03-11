@@ -15,18 +15,18 @@
  ******************************************************************************/
 package link.omny.custmgmt.internal;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class ContactAvatarServiceTest {
 
     private static ContactAvatarService avatarSvc;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
         avatarSvc = new ContactAvatarService("target");
     }

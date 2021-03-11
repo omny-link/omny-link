@@ -271,6 +271,7 @@ var ractive = new BaseRactive({
                 || (obj.phone1 != undefined && obj.phone1.indexOf(searchTerm) >= 0)
                 || (obj.phone2 != undefined && obj.phone2.indexOf(searchTerm) >= 0)
                 || (obj.accountName != undefined && obj.accountName.toLowerCase().indexOf(searchTerm) >= 0)
+                || (obj.account!=undefined && obj.account.name!=undefined && obj.account.name.toLowerCase().indexOf(searchTerm)>=0)
                 || (searchTerm.startsWith('type:') && obj.accountType!=undefined && obj.accountType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.replace(/ /g,'_').substring(5))==0)
                 || (searchTerm.startsWith('enquiry:') && obj.enquiryType!=undefined && obj.enquiryType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.replace(/ /g,'_').substring(8))==0)
                 || (searchTerm.startsWith('stage:') && obj.stage!=undefined && obj.stage.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.replace(/ /g,'_').substring(6))==0)
