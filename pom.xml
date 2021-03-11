@@ -1,4 +1,5 @@
-﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -7,7 +8,9 @@
   <artifactId>omny-link-root</artifactId>
   <packaging>pom</packaging>
   <version>3.0.0</version>
-  
+
+  <inceptionYear>2015</inceptionYear>
+
   <organization>
     <name>Omny Link</name>
     <url>https://github.com/omny-link</url>
@@ -16,7 +19,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.4.0.RELEASE</version>
+    <version>2.4.3</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
@@ -24,13 +27,13 @@
     <batik.version>1.9.1</batik.version>
     <jasmine-boot.version>1.0.0.20181021</jasmine-boot.version>
     <java.version>1.8</java.version>
-    <javax-json.version>1.0.4.20170227</javax-json.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <omny-link.version>3.0.0</omny-link.version>
-    <onedecision.version>1.2.0-RC1</onedecision.version>
     <kp-icons.version>3.1.0</kp-icons.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <omny-link.version>${project.version}</omny-link.version>
     <plantuml.version>8059</plantuml.version>
-    <work-mgmt.version>2.3.0</work-mgmt.version>
+    <spring-boot.version>2.4.3</spring-boot.version>
+    <springfox.version>2.8.0</springfox.version>
+    <xerces.version>2.11.0</xerces.version>
   </properties>
 
   <distributionManagement>
@@ -54,9 +57,9 @@
   </issueManagement>
 
   <scm>
-    <url>git@github.com:OmnyLink/OmnyLink.git</url>
-    <connection>scm:git:git@github.com:OmnyLink/OmnyLink.git</connection>
-    <developerConnection>scm:git:git@github.com:OmnyLink/OmnyLink.git</developerConnection>
+    <url>git@github.com:omny-link/omny-link.git</url>
+    <connection>scm:git:git@github.com:omny-link/omny-link.git</connection>
+    <developerConnection>scm:git:git@github.com:omny-link/omny-link.git</developerConnection>
   </scm>
 
   <pluginRepositories>
@@ -79,90 +82,69 @@
         <enabled>true</enabled>
       </releases>
     </repository>
-    <repository>
-      <id>javax.json-patch-mvn-repo</id>
-      <url>https://raw.github.com/tstephen/jsonp/maven-repo/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
   </repositories>
 
   <dependencies>
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-web</artifactId>
-     <exclusions>
-       <exclusion>
-         <artifactId>logback-classic</artifactId>
-         <groupId>ch.qos.logback</groupId>
-       </exclusion>
-       <exclusion>
-         <artifactId>log4j-over-slf4j</artifactId>
-         <groupId>org.slf4j</groupId>
-       </exclusion>
-     </exclusions>
-   </dependency>
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-data-jpa</artifactId>
-     <exclusions>
-       <exclusion>
-         <artifactId>tomcat-jdbc</artifactId>
-         <groupId>org.apache.tomcat</groupId>
-       </exclusion>
-       <exclusion>
-         <artifactId>xml-apis</artifactId>
-         <groupId>xml-apis</groupId>
-       </exclusion>
-     </exclusions>
-   </dependency>
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-data-rest</artifactId>
-   </dependency>
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-security</artifactId>
-   </dependency>
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-freemarker</artifactId>
-   </dependency>
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-test</artifactId>
-     <scope>test</scope>
-   </dependency>
-   <!-- Compiles against SLF4J but this is the implementation of choice -->
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-log4j2</artifactId>
-   </dependency>
-   <dependency>
-     <groupId>com.h2database</groupId>
-     <artifactId>h2</artifactId>
-     <scope>test</scope>
-   </dependency>
-   <dependency>
-     <groupId>mysql</groupId>
-     <artifactId>mysql-connector-java</artifactId>
-   </dependency>
-   <dependency>
-     <groupId>com.fasterxml.jackson.core</groupId>
-     <artifactId>jackson-databind</artifactId>
-   </dependency>
-   <dependency>
-     <groupId>org.projectlombok</groupId>
-     <artifactId>lombok</artifactId>
-     <scope>provided</scope>
-   </dependency>
-   <!-- Use instead of tomcat jdbc default provided by Spring Boot as more reliable -->
-   <dependency>
-     <groupId>com.zaxxer</groupId>
-     <!-- drop -java6 suffix for Java 8 compiled version -->
-     <artifactId>HikariCP-java6</artifactId>
-   </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- Use instead of tomcat jdbc default provided by Spring Boot as more reliable -->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-hateoas</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <scope>runtime</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <!-- Compiles against SLF4J but this is the implementation of choice -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
 
   </dependencies>
 
@@ -170,7 +152,7 @@
     <module>catalog</module>
     <module>cust-mgmt</module>
     <module>docs</module>
-    <module>omny-link-server</module>
+    <module>crm-server</module>
     <module>support-services</module>
   </modules>
 
@@ -178,8 +160,8 @@
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
-         <artifactId>wagon-ssh-external</artifactId>
-         <version>1.0-beta-6</version>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>1.0-beta-6</version>
       </extension>
     </extensions>
 
@@ -203,7 +185,7 @@
           <execution>
             <phase>process-resources</phase>
             <goals>
-            <goal>generate</goal>
+              <goal>generate</goal>
             </goals>
           </execution>
         </executions>
@@ -240,6 +222,26 @@
           <useSystemClassLoader>false</useSystemClassLoader>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <!-- attach to Maven test phase -->
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -258,7 +260,8 @@
             <arguments>${arguments} -Psonatype-oss-release</arguments>
           </configuration>
         </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <!--This plugin's configuration is used to store Eclipse m2e settings only.
+          It has no influence on the Maven build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>

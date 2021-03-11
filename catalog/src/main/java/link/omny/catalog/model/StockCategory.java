@@ -19,7 +19,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -38,12 +40,11 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.Link;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -54,11 +55,11 @@ import link.omny.catalog.json.JsonCustomStockCategoryFieldDeserializer;
 import link.omny.catalog.model.api.ShortStockCategory;
 import link.omny.catalog.views.StockCategoryViews;
 import link.omny.catalog.views.StockItemViews;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
-import link.omny.custmgmt.model.CustomField;
-import link.omny.custmgmt.model.Document;
-import link.omny.custmgmt.model.Note;
 import link.omny.supportservices.internal.CsvUtils;
+import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.CustomField;
+import link.omny.supportservices.model.Document;
+import link.omny.supportservices.model.Note;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -236,11 +237,13 @@ public class StockCategory implements ShortStockCategory, Serializable {
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonView(StockCategoryViews.Detailed.class)
     private Date created = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonView(StockCategoryViews.Detailed.class)
     @Column(name = "last_updated")
     private Date lastUpdated;
@@ -259,17 +262,11 @@ public class StockCategory implements ShortStockCategory, Serializable {
     @JsonDeserialize(using = JsonCustomStockCategoryFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
-    private List<CustomStockCategoryField> customFields;
+    private Set<CustomStockCategoryField> customFields;
 
     @JsonView(StockCategoryViews.Detailed.class)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockCategory", targetEntity = StockItem.class)
     private List<StockItem> stockItems;
-
-    @Transient
-    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
-    @JsonProperty("links")
-    @JsonView(StockCategoryViews.Summary.class)
-    private List<Link> links;
 
     @Transient
     private List<String> customHeadings;
@@ -279,14 +276,14 @@ public class StockCategory implements ShortStockCategory, Serializable {
         setName(name);
     }
 
-    public List<CustomStockCategoryField> getCustomFields() {
+    public Set<CustomStockCategoryField> getCustomFields() {
         if (customFields == null) {
-            customFields = new ArrayList<CustomStockCategoryField>();
+            customFields = new HashSet<CustomStockCategoryField>();
         }
         return customFields;
     }
 
-    public void setCustomFields(List<CustomStockCategoryField> fields) {
+    public void setCustomFields(Set<CustomStockCategoryField> fields) {
         for (CustomStockCategoryField newField : fields) {
             setCustomField(newField);
         }
@@ -411,8 +408,7 @@ public class StockCategory implements ShortStockCategory, Serializable {
     @PrePersist
     public void preInsert() {
         if (LOGGER.isWarnEnabled() && created != null) {
-            LOGGER.warn(String.format(
-                    "Overwriting creation date %1$s with 'now'.", created));
+            LOGGER.warn("Overwriting creation date {} with 'now'.", created);
         }
         created = new Date();
     }

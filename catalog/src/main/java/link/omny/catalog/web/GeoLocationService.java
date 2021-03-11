@@ -15,69 +15,10 @@
  ******************************************************************************/
 package link.omny.catalog.web;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLEncoder;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import link.omny.catalog.internal.LruCache;
 import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.StockCategory;
 
 public class GeoLocationService {
-
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(GeoLocationService.class);
-
-    private static final String GEOCODING_URL = "https://maps.googleapis.com/maps/api/geocode/json?address=%1$s,UK";
-
-    private LruCache<String, GeoPoint> cache ;
-
-    public GeoLocationService(int cacheSize) {
-        cache = new LruCache<String, GeoPoint>(cacheSize);
-    }
-
-    public GeoPoint locate(@NotNull String q) throws IOException {
-        if (cache.containsKey(q)) {
-            LOGGER.debug(String.format("  Geo-coding cache hit for: %1$s", q));
-            return cache.get(q);
-        }
-
-        JsonReader jsonReader = null;
-        URL url = new URL(String.format(GEOCODING_URL,
-                URLEncoder.encode(q, "UTF-8")));
-        try (InputStream is = (InputStream) url.getContent()) {
-            long start = System.currentTimeMillis();
-            LOGGER.debug("  Geo-coding url constructed: {}", url);
-
-            jsonReader = Json.createReader(new InputStreamReader(is));
-            JsonObject obj = jsonReader.readObject();
-            JsonObject location = ((JsonObject) obj.getJsonArray("results")
-                    .get(0)).getJsonObject("geometry")
-                    .getJsonObject("location");
-
-            GeoPoint geoPoint = new GeoPoint(location.getJsonNumber("lat")
-                    .doubleValue(), location.getJsonNumber("lng").doubleValue());
-            cache.put(q, geoPoint);
-
-            LOGGER.info("Geo-coding took {} ms",
-                    (System.currentTimeMillis() - start));
-            return geoPoint;
-        } catch (IndexOutOfBoundsException | NullPointerException e) {
-            LOGGER.warn("Location {} could not be geocoded, constructed URL: {}",
-                    q, url.toExternalForm());
-            return null;
-        }
-    }
 
     public double distance(GeoPoint target, StockCategory stockCategory) {
         stockCategory.setDistance(Haversine.distance(

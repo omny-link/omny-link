@@ -19,7 +19,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -40,27 +42,26 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.hateoas.Link;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import link.omny.catalog.json.JsonCustomOrderFieldDeserializer;
-import link.omny.catalog.model.api.OrderWithSubEntities;
 import link.omny.catalog.views.OrderViews;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
-import link.omny.custmgmt.model.CustomField;
-import link.omny.custmgmt.model.Document;
-import link.omny.custmgmt.model.Note;
 import link.omny.supportservices.internal.CsvUtils;
+import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.CustomField;
+import link.omny.supportservices.model.Document;
+import link.omny.supportservices.model.Note;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -71,11 +72,11 @@ import lombok.ToString;
 @Table(name = "OL_ORDER")
 @Data
 @ToString(exclude = { "documents", "notes", "orderItems" })
-@EqualsAndHashCode(exclude = { "documents", "notes", "orderItems" })
+@EqualsAndHashCode(callSuper = true, exclude = { "documents", "notes", "orderItems" })
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = true)
-public class Order implements OrderWithSubEntities, Serializable {
+public class Order extends Auditable<String> implements Serializable {
 
     private static final long serialVersionUID = -2334761729349848501L;
 
@@ -115,11 +116,13 @@ public class Order implements OrderWithSubEntities, Serializable {
 
     @Temporal(TemporalType.DATE)
     @JsonProperty
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonView(OrderViews.Summary.class)
     private Date date;
 
     @JsonProperty
     @Size(max = 50)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonView(OrderViews.Summary.class)
     @Column(name = "due_date")
     private String dueDate;
@@ -164,19 +167,6 @@ public class Order implements OrderWithSubEntities, Serializable {
     @Column(name = "contact_id")
     private Long contactId;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
-    @JsonProperty
-    @JsonView(OrderViews.Summary.class)
-    private Date created = new Date();
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonProperty
-    @JsonView(OrderViews.Summary.class)
-    @Column(name = "last_updated")
-    private Date lastUpdated;
-
     @JsonProperty
     @JsonView(OrderViews.Summary.class)
     @Column(name = "tenant_id")
@@ -195,14 +185,16 @@ public class Order implements OrderWithSubEntities, Serializable {
     @JsonDeserialize(using = JsonCustomOrderFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     @JsonView(OrderViews.Detailed.class)
-    private List<CustomOrderField> customFields;
+    private Set<CustomOrderField> customFields;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "order", targetEntity = OrderItem.class)
     @JsonView(OrderViews.Detailed.class)
+    @JsonManagedReference
     private List<OrderItem> orderItems;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JsonView( { OrderViews.Detailed.class } )
+    @JsonManagedReference
     private Feedback feedback;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -214,12 +206,6 @@ public class Order implements OrderWithSubEntities, Serializable {
     @JoinColumn(name = "order_id")
     @JsonView({ OrderViews.Detailed.class })
     private List<Document> documents;
-
-    @Transient
-    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
-    @JsonProperty("links")
-    @JsonView({ OrderViews.Summary.class })
-    private List<Link> links;
 
     @Transient
     private List<String> customHeadings;
@@ -247,18 +233,18 @@ public class Order implements OrderWithSubEntities, Serializable {
         return id;
     }
 
-    public List<CustomOrderField> getCustomFields() {
+    public Set<CustomOrderField> getCustomFields() {
         if (customFields == null) {
-            customFields = new ArrayList<CustomOrderField>();
+            customFields = new HashSet<CustomOrderField>();
         }
         return customFields;
     }
 
-    public void setCustomFields(List<CustomOrderField> fields) {
+    public void setCustomFields(Set<CustomOrderField> fields) {
         for (CustomOrderField newField : fields) {
             setCustomField(newField);
         }
-        // setLastUpdated(new Date());
+        setLastUpdated(new Date());
     }
 
     public String getCustomFieldValue(@NotNull String fieldName) {
@@ -346,7 +332,6 @@ public class Order implements OrderWithSubEntities, Serializable {
 
     @PreUpdate
     public void preUpdate() {
-        lastUpdated = new Date();
     }
 
     public String toCsv() {

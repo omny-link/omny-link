@@ -15,19 +15,16 @@
  ******************************************************************************/
 package link.omny.catalog.web;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
+import org.junit.jupiter.api.Test;
 
 import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.StockCategory;
 
-import org.junit.Test;
-
 public class GeolocationServiceTest {
 
-    // disable cache for tests
-    protected GeoLocationService svc = new GeoLocationService(0);
+    protected GeoLocationService svc = new GeoLocationService();
 
     @Test
     public void testDistanceWatfordToAldermaston() {
@@ -54,11 +51,4 @@ public class GeolocationServiceTest {
         assertEquals(17.0d, distance, 0.1);
     }
 
-    @Test
-    public void testLocate() throws IOException {
-        GeoPoint corsham = svc.locate("SN13 9BS");
-
-        assertEquals(51.43, corsham.getLat(), 0.1);
-        assertEquals(-2.1, corsham.getLng(), 0.1);
-    }
 }

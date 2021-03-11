@@ -15,29 +15,20 @@
  ******************************************************************************/
 package link.omny.custmgmt.web;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.MemoDistribution;
-import link.omny.custmgmt.model.Note;
-import link.omny.custmgmt.repositories.ContactRepository;
-import link.omny.custmgmt.repositories.MemoDistributionRepository;
-import link.omny.custmgmt.repositories.NoteRepository;
-import lombok.Data;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,6 +40,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.MemoDistribution;
+import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.repositories.MemoDistributionRepository;
+import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
+import link.omny.supportservices.model.Note;
+import link.omny.supportservices.repositories.NoteRepository;
+import lombok.Data;
 
 /**
  * REST web service for uploading and accessing a file of JSON Mailshots (over
@@ -103,7 +103,7 @@ public class MemoDistributionController {
             mailshot.setTenantId(tenantId);
         }
 
-        Iterable<MemoDistribution> result = mailshotRepo.save(list);
+        Iterable<MemoDistribution> result = mailshotRepo.saveAll(list);
         LOGGER.info("  saved.");
         return result;
     }
@@ -114,7 +114,7 @@ public class MemoDistributionController {
      * @return mailshots for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public @ResponseBody List<ShortMemoDistribution> listForTenant(
+    public @ResponseBody List<MemoDistribution> listForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
@@ -124,12 +124,21 @@ public class MemoDistributionController {
         if (limit == null) {
             list = mailshotRepo.findAllForTenant(tenantId);
         } else {
-            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
             list = mailshotRepo.findPageForTenant(tenantId, pageable);
         }
         LOGGER.info(String.format("Found %1$s mailshots", list.size()));
 
-        return wrap(list);
+        return list;
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public @ResponseBody MemoDistribution findById(
+            @PathVariable("tenantId") final String tenantId,
+            @PathVariable("tenantId") final Long id) {
+        return mailshotRepo.findById(id)
+                .orElseThrow(() -> new BusinessEntityNotFoundException(
+                        MemoDistribution.class, id));
     }
 
     /**
@@ -141,7 +150,7 @@ public class MemoDistributionController {
             @PathVariable("distributionId") Long distributionId) {
         LOGGER.info(String.format("getExpandedDistribution %1$s for tenant %2$s", distributionId, tenantId));
         
-        MemoDistribution dist = mailshotRepo.findOne(distributionId);
+        MemoDistribution dist = findById(tenantId, distributionId);
         for (String tag : dist.getRecipientTagList()) {
             List<Contact> list = contactRepo.findByTag("%" + tag + "%",
                     tenantId);
@@ -170,7 +179,7 @@ public class MemoDistributionController {
         if (limit == null) {
             list = mailshotRepo.findAllForTenant(tenantId);
         } else {
-            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
             list = mailshotRepo.findPageForTenant(tenantId, pageable);
         }
         LOGGER.info(String.format("Found %1$s mailshots", list.size()));
@@ -199,7 +208,7 @@ public class MemoDistributionController {
     public @ResponseBody void addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("mailshotId") Long mailshotId, @RequestBody Note note) {
-        MemoDistribution mailshot = mailshotRepo.findOne(mailshotId);
+        MemoDistribution mailshot = findById(tenantId, mailshotId);
         // note.setMailshot(mailshot);
         noteRepo.save(note);
         // necessary to force a save
@@ -209,38 +218,31 @@ public class MemoDistributionController {
         // return note;
     }
 
-    private List<ShortMemoDistribution> wrap(List<MemoDistribution> list) {
-        List<ShortMemoDistribution> resources = new ArrayList<ShortMemoDistribution>(
-                list.size());
-        for (MemoDistribution mailshot : list) {
-            resources.add(wrap(mailshot));
-        }
-        return resources;
-    }
-
-    private ShortMemoDistribution wrap(MemoDistribution mailshot) {
-        ShortMemoDistribution resource = new ShortMemoDistribution();
-        BeanUtils.copyProperties(mailshot, resource);
-        Link detail = linkTo(MemoDistributionRepository.class, mailshot.getId())
-                .withSelfRel();
-        resource.add(detail);
-        resource.setSelfRef(detail.getHref());
-        return resource;
-    }
-    
-    
-    private Link linkTo(Class<? extends CrudRepository> clazz, Long id) {
-        return new Link(clazz.getAnnotation(RepositoryRestResource.class)
-                .path() + "/" + id);
-    }
-
     @Data
-    public static class ShortMemoDistribution extends ResourceSupport {
+    public static class ShortMemoDistribution {
         private String selfRef;
         private String name;
         private String status;
         private String owner;
         private Date created;
         private Date lastUpdated;
-      }
+    }
+
+    protected List<EntityModel<MemoDistribution>> addLinks(
+            final String tenantId, final List<MemoDistribution> list) {
+        List<EntityModel<MemoDistribution>> entities
+                = new ArrayList<EntityModel<MemoDistribution>>();
+        for (MemoDistribution MemoDistribution : list) {
+            entities.add(addLinks(tenantId, MemoDistribution));
+        }
+        return entities;
+    }
+
+    protected EntityModel<MemoDistribution> addLinks(final String tenantId,
+            final MemoDistribution memoDistribution) {
+        return EntityModel.of(memoDistribution,
+                linkTo(methodOn(MemoDistributionController.class)
+                        .findById(tenantId, memoDistribution.getId()))
+                                .withSelfRel());
+    }
 }

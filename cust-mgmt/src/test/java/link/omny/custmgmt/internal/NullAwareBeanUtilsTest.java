@@ -15,12 +15,14 @@
  ******************************************************************************/
 package link.omny.custmgmt.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import link.omny.custmgmt.model.Contact;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import link.omny.custmgmt.model.Contact;
+import link.omny.supportservices.internal.NullAwareBeanUtils;
 
 public class NullAwareBeanUtilsTest {
 
@@ -30,7 +32,7 @@ public class NullAwareBeanUtilsTest {
     private static final String FIRST_NAME_2 = "Ralph";
     private static final String LAST_NAME_2 = "Wiggum";
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpBeforeClass() throws Exception {
     }
 

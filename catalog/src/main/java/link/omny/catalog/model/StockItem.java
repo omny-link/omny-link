@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -40,12 +42,11 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.Link;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -58,18 +59,18 @@ import link.omny.catalog.model.api.ShortStockItem;
 import link.omny.catalog.views.OrderViews;
 import link.omny.catalog.views.StockCategoryViews;
 import link.omny.catalog.views.StockItemViews;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
-import link.omny.custmgmt.model.CustomField;
-import link.omny.custmgmt.model.Document;
-import link.omny.custmgmt.model.Note;
 import link.omny.supportservices.internal.CsvUtils;
+import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.CustomField;
+import link.omny.supportservices.model.Document;
+import link.omny.supportservices.model.Note;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@ToString(exclude = { "sizeString" })
+@ToString(exclude = { "sizeString", "stockCategory", "notes", "documents" })
 @Entity
 @Table(name = "OL_STOCK_ITEM")
 @AllArgsConstructor
@@ -178,12 +179,14 @@ public class StockItem implements ShortStockItem, Serializable {
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonView({ OrderViews.Summary.class, StockCategoryViews.Detailed.class,
         StockItemViews.Detailed.class })
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "last_updated")
     private Date lastUpdated;
 
@@ -219,13 +222,7 @@ public class StockItem implements ShortStockItem, Serializable {
     @JsonDeserialize(using = JsonCustomStockItemFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
-    private List<CustomStockItemField> customFields;
-
-    @Transient
-    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
-    @JsonProperty("links")
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
-    private List<Link> links;
+    private Set<CustomStockItemField> customFields;
 
     public static final int CURRENCY_SCALE = 2;
 
@@ -243,18 +240,19 @@ public class StockItem implements ShortStockItem, Serializable {
         setStatus(status);
     }
 
+    /** @deprecated */
     public String getSelfRef() {
         return String.format("/stock-items/%1$d", id);
     }
 
-    public List<CustomStockItemField> getCustomFields() {
+    public Set<CustomStockItemField> getCustomFields() {
         if (customFields == null) {
-            customFields = new ArrayList<CustomStockItemField>();
+            customFields = new HashSet<CustomStockItemField>();
         }
         return customFields;
     }
 
-    public void setCustomFields(List<CustomStockItemField> fields) {
+    public void setCustomFields(Set<CustomStockItemField> fields) {
         for (CustomStockItemField newField : fields) {
             setCustomField(newField);
         }

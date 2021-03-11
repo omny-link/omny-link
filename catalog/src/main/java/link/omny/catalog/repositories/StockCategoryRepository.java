@@ -25,7 +25,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.catalog.model.StockCategory;
 
-@RepositoryRestResource(path = "/stock-categories", exported = false)
+@RepositoryRestResource(path = "stock-categories", exported = false)
 public interface StockCategoryRepository extends
         CrudRepository<StockCategory, Long> {
 

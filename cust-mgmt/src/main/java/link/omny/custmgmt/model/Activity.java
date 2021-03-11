@@ -33,10 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 
-import link.omny.custmgmt.model.views.AccountViews;
-import link.omny.custmgmt.model.views.ContactViews;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -59,12 +56,10 @@ public class Activity implements Serializable {
 
     @NotNull
     @JsonProperty
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     @Column(name = "type")
     private String type;
 
     @JsonProperty
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     @Column(name = "content")
     private String content;
 
@@ -72,12 +67,10 @@ public class Activity implements Serializable {
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name="occurred", updatable = false)
     @JsonProperty
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     private Date occurred;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     @Column(name = "last_updated")
     private Date lastUpdated;
 
@@ -110,7 +103,7 @@ public class Activity implements Serializable {
     }
 
     public Activity(ActivityType type, Date occurred, String content) {
-        this(type.toString(), occurred);
+        this(type, occurred);
         setContent(content);
     }
 

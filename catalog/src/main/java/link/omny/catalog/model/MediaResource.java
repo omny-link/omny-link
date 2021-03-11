@@ -17,7 +17,6 @@ package link.omny.catalog.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,14 +30,12 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.hateoas.Link;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -48,12 +45,14 @@ import link.omny.catalog.views.StockItemViews;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
 @Table(name = "OL_MEDIA_RES")
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = { "stockCategory", "stockItem" })
 public class MediaResource implements Serializable {
 
     private static final long serialVersionUID = 157180600778360331L;
@@ -78,12 +77,14 @@ public class MediaResource implements Serializable {
     private String author;
 
     @JsonProperty
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonView({ MediaResourceViews.Summary.class,
         StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonProperty
     @JsonView({ MediaResourceViews.Summary.class,
         StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
@@ -105,12 +106,6 @@ public class MediaResource implements Serializable {
     @RestResource(rel = "media")
     private StockItem stockItem;
 
-    @Transient
-    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
-    @JsonProperty("links")
-    @JsonView(MediaResourceViews.Summary.class)
-    private List<Link> links;
-
     public MediaResource(String author, String url) {
         setAuthor(author);
         setUrl(url);
@@ -126,10 +121,4 @@ public class MediaResource implements Serializable {
         lastUpdated = new Date();
     }
 
-    @Override
-    public String toString() {
-        return String.format(
-                "MediaResource [id=%s, author=%s, created=%s, url=%s]",
-                id, author, created, url);
-    }
 }

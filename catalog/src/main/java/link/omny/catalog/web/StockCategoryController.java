@@ -15,9 +15,11 @@
  ******************************************************************************/
 package link.omny.catalog.web;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.io.IOException;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,10 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,28 +54,18 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import link.omny.catalog.CatalogException;
-import link.omny.catalog.json.JsonCustomStockCategoryFieldDeserializer;
 import link.omny.catalog.model.CustomStockCategoryField;
-import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.MediaResource;
 import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
-import link.omny.catalog.model.api.ShortStockCategory;
-import link.omny.catalog.model.api.ShortStockItem;
 import link.omny.catalog.repositories.MediaResourceRepository;
 import link.omny.catalog.repositories.StockCategoryRepository;
 import link.omny.catalog.views.MediaResourceViews;
 import link.omny.catalog.views.StockCategoryViews;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
-import link.omny.custmgmt.model.Document;
-import link.omny.custmgmt.model.Note;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import link.omny.supportservices.model.Document;
+import link.omny.supportservices.model.Note;
 
 /**
  * REST web service for accessing stock items.
@@ -104,7 +93,7 @@ public class StockCategoryController {
     private MediaResourceRepository mediaResourceRepo;
 
     @Autowired
-    private GeoLocationService geo;
+    private MediaResourceController mediaResourceSvc;
 
     public int getSearchRadius() {
         if (iSearchRadius == 0) {
@@ -130,8 +119,7 @@ public class StockCategoryController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
             throws IOException {
-        LOGGER.info(String.format("Uploading CSV stockCategories for: %1$s",
-                tenantId));
+        LOGGER.info("Uploading CSV stockCategories for: {}", tenantId);
 
         throw new RuntimeException("Not yet implemented");
 
@@ -140,13 +128,12 @@ public class StockCategoryController {
         // new StringReader(
         // content), content.substring(0, content.indexOf('\n'))
         // .split(","));
-        // LOGGER.info(String.format("  found %1$d stockCategorys",
-        // list.size()));
+        // LOGGER.info("  found {} stockCategorys", list.size());
         // for (StockCategory stockCategory : list) {
         // stockCategory.setTenantId(tenantId);
         // }
         //
-        // Iterable<StockCategory> result = stockCategoryRepo.save(list);
+        // Iterable<StockCategory> result = stockCategoryRepo.saveAll(list);
         // LOGGER.info("  saved.");
         // return result;
     }
@@ -157,27 +144,25 @@ public class StockCategoryController {
      * @return stockCategories for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public @ResponseBody List<? extends ShortStockCategory> listForTenantAsJson(
+    public @ResponseBody List<EntityModel<StockCategory>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        return wrapShort(listForTenant(tenantId, page, limit));
+        return addLinks(tenantId, listForTenant(tenantId, page, limit));
     }
 
     protected List<StockCategory> listForTenant(String tenantId,
             Integer page, Integer limit) {
-        LOGGER.info(String.format("List stockCategories for tenant %1$s",
-                tenantId));
+        LOGGER.info("List stockCategories for tenant {}", tenantId);
 
         List<StockCategory> list;
         if (limit == null) {
             list = stockCategoryRepo.findAllForTenant(tenantId);
         } else {
-            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
             list = stockCategoryRepo.findPageForTenant(tenantId, pageable);
         }
-        LOGGER.info(String.format("Found %1$s stock categories", list.size()));
-
+        LOGGER.info("Found {} stock categories", list.size());
         return list;
     }
 
@@ -223,14 +208,17 @@ public class StockCategoryController {
      */
     @JsonView(MediaResourceViews.Summary.class)
     @RequestMapping(value = "/{stockCategoryId}/images", method = RequestMethod.GET)
-    public @ResponseBody List<MediaResource> listImages(
+    public @ResponseBody List<EntityModel<MediaResource>> listImages(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockCategoryId") Long stockCategoryId) {
          List<MediaResource> resources = mediaResourceRepo.findByStockCategoryId(stockCategoryId);
-         for (MediaResource resource : resources) {
-             addLinks(tenantId, stockCategoryId, resource);
-         }
-         return resources;
+         return mediaResourceSvc.addLinks(tenantId, resources);
+    }
+
+    protected StockCategory findById(final String tenantId, final Long id) {
+        return stockCategoryRepo.findById(id)
+                .orElseThrow(() -> new BusinessEntityNotFoundException(
+                        StockCategory.class, id));
     }
 
     /**
@@ -242,13 +230,13 @@ public class StockCategoryController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @Transactional
     @JsonView(StockCategoryViews.Detailed.class)
-    public @ResponseBody StockCategory findById(
+    public @ResponseBody StockCategory findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id)
             throws BusinessEntityNotFoundException {
         LOGGER.debug(String.format("Find stock category for id %1$s", id));
 
-        StockCategory category = stockCategoryRepo.findOne(Long.parseLong(id));
+        StockCategory category = findById(tenantId, Long.parseLong(id));
         addLinks(tenantId, category);
         return category;
     }
@@ -266,126 +254,17 @@ public class StockCategoryController {
         if (type != null && tag == null) {
             tag = type;
         }
-        LOGGER.info(String.format("findByName %1$s, tag %2$s for tenant %3$s",
-                name, tag, tenantId));
+        LOGGER.info("findByName {}, tag {} for tenant {}", name, tag, tenantId);
 
         StockCategory category = stockCategoryRepo.findByName(name, tenantId);
         if (category == null) {
             throw new EntityNotFoundException(String.format(
                     "No Stock Category with name %1$s", name));
         }
-        geocode(category);
 
         filter(category, expandTags(tag));
 
         return category;
-    }
-
-    /**
-     * Return Stock Categories for a specific tenant within a given distance of
-     * the search location.
-     *
-     * @return stockCategories for that tenant.
-     * @throws IOException
-     *             If unable to contact the geo-coding service or it in turn
-     *             throws an exception.
-     */
-    @RequestMapping(value = "/findByLocation", method = RequestMethod.GET)
-    @Transactional(readOnly = true)
-    public @ResponseBody List<ShortStockCategoryResource> findByLocation(
-            @PathVariable("tenantId") String tenantId,
-            @RequestParam(value = "q", required = false) String q,
-            @RequestParam(value = "tag", required = false) String tag,
-            @RequestParam(value = "type", required = false) String type,
-            @RequestParam(value = "offers", required = false) boolean offers,
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "limit", required = false) Integer limit)
-            throws IOException {
-        // backwards compatibility
-        if (type != null && tag == null) {
-            tag = type;
-        }
-        LOGGER.info("List stockCategories for tenant: {}, q: {}, tag: {}, offers: {}",
-                        tenantId, q, tag, offers);
-
-        List<StockCategory> list = new ArrayList<StockCategory>();
-        GeoPoint qPoint = null;
-        if (q != null && q.trim().length() > 0) {
-            try {
-                qPoint = geo.locate(q);
-            } catch (UnknownHostException e) {
-                LOGGER.error(
-                        "Unable to geo locate '{}', will return unfiltered list", q);
-                q = null;
-            }
-        }
-
-        // TODO need to make this some kind of extension point
-        List<String> tags = expandTags(tag);
-
-        List<StockCategory> tmpList = findStockCategories(tenantId, offers);
-        for (StockCategory stockCategory : tmpList) {
-            // Capture tags now before filtering
-            String allTagsAvail = stockCategory.getTags();
-            try {
-                geocode(stockCategory);
-
-                if (matchQuery(q, qPoint, stockCategory)) {
-                    filter(stockCategory, tags);
-                    list.add(stockCategory);
-                }
-            } catch (CatalogException e) {
-                LOGGER.error("Unable to geo locate '{}', will return unfiltered list",
-                                stockCategory.getPostCode());
-                filter(stockCategory, tags);
-                list.add(stockCategory);
-            } catch (Exception e) {
-                LOGGER.error(
-                        "Exception calculating distance of {} from {}",
-                        stockCategory.getName(), q, e);
-            }
-            // set unfiltered tag list
-            stockCategory.setTags(allTagsAvail);
-        }
-        Collections
-                .sort(list,
-                        (o1, o2) -> ((int) o1.getDistance())
-                                - ((int) o2.getDistance()));
-
-        LOGGER.info("Found {} stock categories", list.size());
-        return wrap(list);
-    }
-
-    protected void geocode(StockCategory stockCategory) {
-        if (stockCategory.getLng() == null
-                && stockCategory.getPostCode() != null) {
-            try {
-                stockCategory.setGeoPoint(geo.locate(stockCategory
-                    .getPostCode()));
-                stockCategoryRepo.save(stockCategory);
-            } catch (IOException e) {
-
-                String msg  = String
-                        .format("Unable to geo locate '%1$s', details follow",
-                                stockCategory.getPostCode());
-                LOGGER.error(msg, e);
-                throw new CatalogException(msg);
-            }
-        } else if (stockCategory.getLng() == null) {
-            LOGGER.warn("Skipping geo-coding because postcode of stock category {} is missing",
-                            stockCategory.getId());
-        }
-    }
-
-    private List<StockCategory> findStockCategories(String tenantId,
-            boolean offers) {
-        if (offers) {
-            return stockCategoryRepo.findByStatusAndOffersForTenant(tenantId,
-                    PUBLISHED, PUBLISHED);
-        } else {
-            return stockCategoryRepo.findByStatusForTenant(tenantId,
-                    PUBLISHED);
-        }
     }
 
     private List<String> expandTags(String tag) {
@@ -418,14 +297,6 @@ public class StockCategoryController {
             }
         }
         stockCategory.setStockItems(filteredItems);
-    }
-
-    private boolean matchQuery(String q, GeoPoint qPoint,
-            StockCategory stockCategory) {
-        return q == null
-                || q.trim().length() == 0
-                || stockCategory.getGeoPoint() == null
-                || geo.distance(qPoint, stockCategory) <= getSearchRadius();
     }
 
     /**
@@ -469,7 +340,7 @@ public class StockCategoryController {
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockCategoryId") Long stockCategoryId, @RequestBody Document doc) {
-         StockCategory stockCategory = stockCategoryRepo.findOne(stockCategoryId);
+         StockCategory stockCategory = findById(tenantId, stockCategoryId);
          stockCategory.getDocuments().add(doc);
          stockCategory.setLastUpdated(new Date());
          stockCategoryRepo.save(stockCategory);
@@ -513,7 +384,7 @@ public class StockCategoryController {
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockCategoryId") Long stockCategoryId, @RequestBody Note note) {
-        StockCategory stockCategory = stockCategoryRepo.findOne(stockCategoryId);
+        StockCategory stockCategory = findById(tenantId, stockCategoryId);
         stockCategory.getNotes().add(note);
         stockCategory.setLastUpdated(new Date());
         stockCategoryRepo.save(stockCategory);
@@ -565,7 +436,7 @@ public class StockCategoryController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockCategoryId") Long stockCategoryId,
             @RequestBody MediaResource mediaResource) {
-        StockCategory stockCategory = stockCategoryRepo.findOne(stockCategoryId);
+        StockCategory stockCategory = findById(tenantId, stockCategoryId);
         mediaResource.setStockCategory(stockCategory);
         mediaResourceRepo.save(mediaResource);
         // necessary to force a save
@@ -581,13 +452,7 @@ public class StockCategoryController {
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long stockCategoryId,
             @RequestBody StockCategory updatedStockCategory) {
-        StockCategory stockCategory = stockCategoryRepo
-                .findOne(stockCategoryId);
-        try {
-            geocode(stockCategory);
-        } catch (CatalogException e) {
-            ; // already logged
-        }
+        StockCategory stockCategory = findById(tenantId, stockCategoryId);
 
         BeanUtils.copyProperties(updatedStockCategory, stockCategory, "id",
                 "item");
@@ -605,7 +470,9 @@ public class StockCategoryController {
             @PathVariable("id") Long resourceId,
             @RequestBody MediaResource updatedResource) {
         MediaResource resource = mediaResourceRepo
-                .findOne(resourceId);
+                .findById(resourceId)
+                .orElseThrow(() -> new BusinessEntityNotFoundException(
+                        StockCategory.class, resourceId));
         BeanUtils.copyProperties(updatedResource, resource, "id", "stockCategory");
         mediaResourceRepo.save(resource);
     }
@@ -618,7 +485,7 @@ public class StockCategoryController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long stockCategoryId) {
-        stockCategoryRepo.delete(stockCategoryId);
+        stockCategoryRepo.deleteById(stockCategoryId);
     }
 
     /**
@@ -629,157 +496,21 @@ public class StockCategoryController {
     public @ResponseBody void deleteImage(@PathVariable("tenantId") String tenantId,
             @PathVariable("stockCategoryId") Long stockCategoryId,
             @PathVariable("id") Long imageId) {
-        mediaResourceRepo.delete(imageId);
+        mediaResourceRepo.deleteById(imageId);
     }
 
-    private List<? extends ShortStockCategory> wrapShort(List<StockCategory> list) {
-        List<ShortStockCategoryResource> resources = new ArrayList<ShortStockCategoryResource>(
-                list.size());
-        for (StockCategory stockCategory : list) {
-            resources.add(wrapShort(stockCategory));
+    protected List<EntityModel<StockCategory>> addLinks(final String tenantId, final List<StockCategory> list) {
+        ArrayList<EntityModel<StockCategory>> entities = new ArrayList<EntityModel<StockCategory>>();
+        for (StockCategory account : list) {
+            entities.add(addLinks(tenantId, account));
         }
-        return resources;
+        return entities;
     }
 
-    private ShortStockCategoryResource wrapShort(StockCategory stockCategory) {
-        ShortStockCategoryResource resource = new ShortStockCategoryResource();
-
-        // NB exclude tags as otherwise stock items will be loaded too!
-        BeanUtils.copyProperties(stockCategory, resource, "customFields", "stockItems", "tags");
-
-        // Not set by BeanUtils due to diff type
-        resource.setDistance(String.valueOf(Math.round(stockCategory
-                .getDistance())));
-
-        Link detail = linkTo(StockCategoryRepository.class,
-                stockCategory.getId()).withSelfRel();
-        resource.add(detail);
-        resource.setSelfRef(detail.getHref());
-        return resource;
-    }
-
-    private List<ShortStockCategoryResource> wrap(List<StockCategory> list) {
-        List<ShortStockCategoryResource> resources = new ArrayList<ShortStockCategoryResource>(
-                list.size());
-        for (StockCategory stockCategory : list) {
-            resources.add(wrap(stockCategory));
-        }
-        return resources;
-    }
-
-    private ShortStockCategoryResource wrap(StockCategory stockCategory) {
-        ShortStockCategoryResource resource = new ShortStockCategoryResource();
-
-        BeanUtils.copyProperties(stockCategory, resource);
-
-        // Not set by BeanUtils due to diff type
-        resource.setDistance(String.valueOf(Math.round(stockCategory
-                .getDistance())));
-
-        ArrayList<ShortStockItemResource> items = new ArrayList<ShortStockItemResource>();
-        for (StockItem item : stockCategory.getStockItems()) {
-            items.add(wrap(item));
-        }
-        resource.setStockItems(items);
-
-        Link detail = linkTo(StockCategoryRepository.class,
-                stockCategory.getId()).withSelfRel();
-        resource.add(detail);
-        resource.setSelfRef(detail.getHref());
-        return resource;
-    }
-
-    private ShortStockItemResource wrap(StockItem item) {
-        ShortStockItemResource resource = new ShortStockItemResource();
-
-        BeanUtils.copyProperties(item, resource);
-        resource.setStockItemId(item.getId());
-
-        return resource;
-    }
-
-    private Link linkTo(
-            @SuppressWarnings("rawtypes") Class<? extends CrudRepository> clazz,
-            Long id) {
-        return new Link(clazz.getAnnotation(RepositoryRestResource.class)
-                .path() + "/" + id);
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class ShortStockCategoryResource extends ResourceSupport implements ShortStockCategory {
-        private String selfRef;
-        private String name;
-        private String description;
-        private String address1;
-        private String address2;
-        private String town;
-        private String cityOrCounty;
-        private String postCode;
-        private String country;
-        private String distance;
-        private List<? extends ShortStockItem> stockItems;
-        @JsonDeserialize(using = JsonCustomStockCategoryFieldDeserializer.class)
-        @JsonSerialize(using = JsonCustomFieldSerializer.class)
-        private List<CustomStockCategoryField> customFields;
-        private List<MediaResource> images;
-        private String tags;
-        private String mapUrl;
-        private Double lat;
-        private Double lng;
-        private String directionsByRoad;
-        private String directionsByPublicTransport;
-        private String directionsByAir;
-        private String videoCode;
-        private String productSheetUrl;
-        private String status;
-        private String offerStatus;
-        private String offerTitle;
-        private String offerDescription;
-        private String offerCallToAction;
-        private String offerUrl;
-        private Date created;
-        private Date lastUpdated;
-        /**
-         * Legacy support
-         * @deprecated
-         */
-        @Override
-        public String getCountyOrCity() {
-            return cityOrCounty;
-        }
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class ShortStockItemResource extends ResourceSupport implements ShortStockItem {
-        private Long stockItemId;
-        private String selfRef;
-        private String name;
-        private String description;
-        private String size;
-        private String sizeString;
-        private String unit;
-        private String price;
-        private String tags;
-        private String status;
-        private Date created;
-        private Date lastUpdated;
-        private String tenantId;
-        private List<MediaResource> images;
-    }
-
-    private void addLinks(String tenantId, StockCategory category) {
-        List<Link> links = new ArrayList<Link>();
-        links.add(new Link(String.format("/%1$s/stock-categories/%2$s",
-                tenantId, category.getId())));
-        category.setLinks(links);
-    }
-
-    private void addLinks(String tenantId, Long stockCategoryId, MediaResource resource) {
-        List<Link> links = new ArrayList<Link>();
-        links.add(new Link(String.format("/%1$s/stock-categories/%2$s/images/%3$s",
-                tenantId, stockCategoryId, resource.getId())));
-        resource.setLinks(links);
+    protected EntityModel<StockCategory> addLinks(final String tenantId, final StockCategory account) {
+        return EntityModel.of(account,
+                linkTo(methodOn(StockCategoryController.class)
+                        .findEntityById(tenantId, account.getId().toString()))
+                                .withSelfRel());
     }
 }

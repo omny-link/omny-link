@@ -15,12 +15,12 @@
  ******************************************************************************/
 package link.omny.catalog.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class StockCategoryTest {
 
@@ -36,10 +36,10 @@ public class StockCategoryTest {
                 "field1", "foo");
         assertNull(field2.getId());
         
-        stockCategory.setCustomFields(Collections.singletonList(field2));
+        stockCategory.setCustomFields(Collections.singleton(field2));
         
         assertEquals(1, stockCategory.getCustomFields().size());
-        assertEquals(field1.getId(), stockCategory.getCustomFields().get(0)
+        assertEquals(field1.getId(), stockCategory.getCustomFields().iterator().next()
                 .getId());
     }
 

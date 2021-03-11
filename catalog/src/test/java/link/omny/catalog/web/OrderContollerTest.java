@@ -15,35 +15,33 @@
  ******************************************************************************/
 package link.omny.catalog.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import link.omny.catalog.TestApplication;
+import link.omny.catalog.CatalogTestApplication;
 import link.omny.catalog.model.CustomFeedbackField;
 import link.omny.catalog.model.CustomOrderField;
 import link.omny.catalog.model.CustomOrderItemField;
 import link.omny.catalog.model.Feedback;
 import link.omny.catalog.model.Order;
 import link.omny.catalog.model.OrderItem;
-import link.omny.catalog.model.api.OrderWithSubEntities;
-import link.omny.catalog.model.api.ShortOrder;
-import link.omny.catalog.web.OrderController.FeedbackResource;
 
 /**
  * @author Tim Stephenson
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = TestApplication.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = CatalogTestApplication.class)
 @WebAppConfiguration
 public class OrderContollerTest {
     private static final String CUST_FIELD_COLOUR = "colour";
@@ -96,18 +94,18 @@ public class OrderContollerTest {
         assertEquals(CONTACT_ID, order.getContactId());
         assertEquals(2, order.getPrice().scale());
 
-        OrderWithSubEntities order2 = retrieveOrder(order.getId());
+        Order order2 = retrieveOrder(order.getId());
         assertNotNull(order2);
         assertEquals(2, order2.getCustomFields().size());
 
         order.setInvoiceRef(INVOICE_REF);
-        ShortOrder order3 = updateOrder(order.getId(), order);
+        Order order3 = updateOrder(order.getId(), order);
         assertNotNull(order3);
         assertEquals(INVOICE_REF, order3.getInvoiceRef());
 
         Feedback feedback = createFeedback();
         addFeedback(order.getId(), feedback);
-        FeedbackResource feedback2 = retrieveFeedback(order.getId());
+        Feedback feedback2 = retrieveFeedback(order.getId());
         assertNotNull(feedback2);
         // h2 database does not do created time default
         // assertNotNull(orderIncFeedback.getFeedback().getCreated());
@@ -116,17 +114,17 @@ public class OrderContollerTest {
         feedback.addCustomField(new CustomFeedbackField(FEEDBACK_CUSTOM_KEY,
                 FEEDBACK_CUSTOM_VALUE));
         addFeedback(order.getId(), feedback);
-        FeedbackResource feedback3 = retrieveFeedback(order.getId());
+        Feedback feedback3 = retrieveFeedback(order.getId());
         assertNotNull(feedback3);
         assertEquals(1, feedback3.getCustomFields().size());
-        assertEquals(FEEDBACK_CUSTOM_KEY, feedback3.getCustomFields().get(0)
+        assertEquals(FEEDBACK_CUSTOM_KEY, feedback3.getCustomFields().iterator().next()
                 .getName());
-        assertEquals(FEEDBACK_CUSTOM_VALUE, feedback3.getCustomFields().get(0)
+        assertEquals(FEEDBACK_CUSTOM_VALUE, feedback3.getCustomFields().iterator().next()
                 .getValue());
         
         // check equivalence of readOrder and readOrders API
-        List<Order> orders = svc.readOrders(TENANT_ID, order.getId().toString());
-        Order order4 = orders.get(0);
+        List<EntityModel<Order>> orders = svc.readOrders(TENANT_ID, order.getId().toString());
+        Order order4 = orders.get(0).getContent();
         assertEquals(order.getId(), order4.getId());
         assertEquals(order.getName(), order4.getName());
         assertEquals(order.getType(), order4.getType());
@@ -134,7 +132,7 @@ public class OrderContollerTest {
 
         deleteOrder(order.getId());
 
-        ShortOrder order5 = retrieveOrder(order.getId());
+        Order order5 = retrieveOrder(order.getId());
         assertEquals("deleted", order5.getStage());
     }
 
@@ -148,7 +146,7 @@ public class OrderContollerTest {
         assertEquals(PRICE, orderItem.getPrice());
         assertEquals("Avocado", orderItem.getCustomFieldValue(CUST_FIELD_COLOUR));
 
-        OrderWithSubEntities order2 = retrieveOrder(order.getId());
+        Order order2 = retrieveOrder(order.getId());
         assertNotNull(order2);
 
         // Update price
@@ -157,7 +155,7 @@ public class OrderContollerTest {
         assertEquals(PRICE, orderItem2.getPrice());
         order.getOrderItems().get(0).setPrice(PRICE_INCREASED);
         updateOrder(order.getId(), order);
-        OrderWithSubEntities order2b = retrieveOrder(order.getId());
+        Order order2b = retrieveOrder(order.getId());
         assertNotNull(order2b);
         OrderItem orderItem2b = order2b.getOrderItems().get(0);
         assertEquals(PRICE_INCREASED.doubleValue(), orderItem2b.getPrice()
@@ -167,14 +165,14 @@ public class OrderContollerTest {
         order.getOrderItems().get(0).setCustomField(
                         new CustomOrderItemField(CUST_FIELD_COLOUR, "Absinthe"));
         updateOrder(order.getId(), order);
-        OrderWithSubEntities order2c = retrieveOrder(order.getId());
+        Order order2c = retrieveOrder(order.getId());
         assertNotNull(order2c);
         OrderItem orderItem2c = order2c.getOrderItems().get(0);
         assertEquals(1, orderItem2c.getCustomFields().size());
         // assertEquals("Absinthe", orderItem2c.getCustomFields());
 
         order.setInvoiceRef(INVOICE_REF);
-        ShortOrder order3 = updateOrder(order.getId(), order);
+        Order order3 = updateOrder(order.getId(), order);
         assertNotNull(order3);
         assertEquals(INVOICE_REF, order3.getInvoiceRef());
 
@@ -184,7 +182,7 @@ public class OrderContollerTest {
 
         deleteOrder(order.getId());
 
-        ShortOrder order4 = retrieveOrder(order.getId());
+        Order order4 = retrieveOrder(order.getId());
         assertEquals("deleted", order4.getStage());
     }
 
@@ -231,23 +229,23 @@ public class OrderContollerTest {
         return order;
     }
 
-    private ShortOrder retrieveOrder() {
+    private Order retrieveOrder() {
         List<Order> allOrders = svc.listForTenant(TENANT_ID, null, null);
         assertEquals(1, allOrders.size());
         return allOrders.get(0);
     }
 
-    private OrderWithSubEntities retrieveOrder(Long orderId) {
-        return svc.readOrder(TENANT_ID, orderId);
+    private Order retrieveOrder(Long orderId) {
+        return svc.findEntityById(TENANT_ID, orderId).getContent();
     }
 
-    private FeedbackResource retrieveFeedback(Long orderId) {
+    private Feedback retrieveFeedback(Long orderId) {
         return svc.readFeedback(TENANT_ID, orderId);
     }
 
-    private ShortOrder updateOrder(Long orderId, Order updatedOrder) {
+    private Order updateOrder(Long orderId, Order updatedOrder) {
         svc.update(TENANT_ID, orderId, updatedOrder);
-        ShortOrder retrievedOrder = retrieveOrder();
+        Order retrievedOrder = retrieveOrder();
         return retrievedOrder;
     }
 

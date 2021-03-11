@@ -15,45 +15,41 @@
  ******************************************************************************/
 package link.omny.catalog.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import link.omny.catalog.TestApplication;
+import link.omny.catalog.CatalogTestApplication;
 import link.omny.catalog.model.CustomStockItemField;
 import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
 import link.omny.catalog.model.api.ShortStockCategory;
 import link.omny.catalog.model.api.ShortStockItem;
-import link.omny.catalog.repositories.StockCategoryRepository;
-import link.omny.catalog.web.StockCategoryController.ShortStockCategoryResource;
-import link.omny.catalog.web.StockCategoryController.ShortStockItemResource;
 
 /**
  * @author Tim Stephenson
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = TestApplication.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = CatalogTestApplication.class)
 @WebAppConfiguration
 public class StockControllerTest {
 
@@ -63,9 +59,6 @@ public class StockControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private StockCategoryRepository categoryRepo;
 
     @Autowired
     private StockCategoryController categoryController;
@@ -79,7 +72,7 @@ public class StockControllerTest {
 
     private DateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    @After
+    @AfterEach
     public void tearDown() {
         categoryController.delete(TENANT_ID, categoryId);
         // check clean
@@ -93,25 +86,19 @@ public class StockControllerTest {
         StockCategory borehamwoodCat = createCategory();
 
         StockItem officeItem = createOfficeItem(borehamwoodCat);
-        addItemToCategory(borehamwoodCat, officeItem.getSelfRef());
+        addItemToCategory(borehamwoodCat, getRef(officeItem));
 
         StockItem warehouseItem = createWarehouseItem(borehamwoodCat);
-        addItemToCategory(borehamwoodCat, warehouseItem.getSelfRef());
+        addItemToCategory(borehamwoodCat, getRef(warehouseItem));
 
         StockItem businessUnitItem = createBusinessUnitItem(borehamwoodCat);
-        addItemToCategory(borehamwoodCat, businessUnitItem.getSelfRef());
+        addItemToCategory(borehamwoodCat, getRef(businessUnitItem));
 
         StockItem unpublishedItem = createUnpublishedItem(borehamwoodCat);
-        addItemToCategory(borehamwoodCat, unpublishedItem.getSelfRef());
+        addItemToCategory(borehamwoodCat, getRef(unpublishedItem));
 
-        StockCategory category2 = categoryRepo.findOne(categoryId);
+        StockCategory category2 = categoryController.findById(TENANT_ID, categoryId);
         assertNotNull(category2.getCreated());
-
-//        findAll(category, officeItem, warehouseItem);
-        findNearReading(borehamwoodCat, officeItem);
-        findOffice(borehamwoodCat, officeItem);
-        findOfficeNearReading(borehamwoodCat, officeItem);
-        findOffersNearReading(borehamwoodCat, officeItem);
 
         ShortStockCategory category3 = findByName(borehamwoodCat, officeItem,
                 warehouseItem);
@@ -119,83 +106,55 @@ public class StockControllerTest {
         update((StockCategory) category3);
     }
 
+    private String getRef(StockItem item) {
+        return String.format("/%1$s/stock-items/%2$d", TENANT_ID, item.getId());
+    }
+
     protected void update(StockCategory category) {
-        Long itemId = category.getStockItems().get(0).getId();
-        StockItem stockItem = itemController.findById(
-                category.getTenantId(), itemId.toString());
+        Long itemId = category.getStockItems().iterator().next().getId();
+        StockItem stockItem = itemController.findEntityById(
+                category.getTenantId(), itemId.toString()).getContent();
         assertNotNull(stockItem.getId());
 
         GregorianCalendar cal = new GregorianCalendar();
         // StockItem stockItem = new StockItem();
         stockItem.setId(itemId);
-        stockItem.setCustomFields(
-                Collections.singletonList(
-                        new CustomStockItemField("tenancyEndDate",
-                                isoFormatter.format(cal.getTime()))));
+        stockItem.addCustomField(new CustomStockItemField("tenancyEndDate",
+                isoFormatter.format(cal.getTime())));
 
         itemController.update(TENANT_ID, stockItem.getId(), stockItem);
 
-        StockItem stockItem2 = itemController.findById(
-                category.getTenantId(), itemId.toString());
+        StockItem stockItem2 = itemController.findEntityById(
+                category.getTenantId(), itemId.toString()).getContent();
         assertEquals(stockItem.getCustomFields().size(), stockItem2
                 .getCustomFields().size());
     }
 
     protected void findAll(StockCategory category, StockItem officeItem,
             StockItem warehouseItem) throws IOException {
-        List<ShortStockCategoryResource> categoryResults = categoryController
-                .findByLocation(TENANT_ID, null, null, null, false, null, null);
+        List<StockCategory> categoryResults = categoryController
+                .listForTenant(TENANT_ID, null, null);
         assertEquals(1, categoryResults.size());
 
-        checkCategory(category, categoryResults.get(0));
+        checkCategory(category, categoryResults.iterator().next());
 
         // check item
-        assertNotNull(categoryResults.get(0).getStockItems());
-        assertEquals(3, categoryResults.get(0).getStockItems().size());
+        assertNotNull(categoryResults.iterator().next().getStockItems());
+        assertEquals(3, categoryResults.iterator().next().getStockItems().size());
 
-        checkOfficeItem(category, officeItem, categoryResults.get(0));
+        checkOfficeItem(category, officeItem, categoryResults.iterator().next());
     }
 
+ // TODO fix removal of geocoder
     protected void findOffice(StockCategory category, StockItem officeItem)
             throws IOException {
-        List<ShortStockCategoryResource> categoryResults = categoryController
-                .findByLocation(TENANT_ID, null, "Office", null, false, null,
-                        null);
-        assertEquals(2, categoryResults.get(0).getStockItems().size());
+        List<StockCategory> categoryResults = categoryController
+                .listForTenant(TENANT_ID, null, null);
+        // TODO need to filter for just type = Office
+        assertEquals(2, categoryResults.iterator().next().getStockItems().size());
 
-        checkCategory(category, categoryResults.get(0));
-        checkOfficeItem(category, officeItem, categoryResults.get(0));
-    }
-
-    protected void findNearReading(StockCategory category, StockItem officeItem)
-            throws IOException {
-        List<ShortStockCategoryResource> categoryResults = categoryController
-                .findByLocation(TENANT_ID, "Reading", null, null, false, null,
-                        null);
-        assertEquals(3, categoryResults.get(0).getStockItems().size());
-
-        checkCategory(category, categoryResults.get(0));
-        checkOfficeItem(category, officeItem, categoryResults.get(0));
-    }
-
-    protected void findOfficeNearReading(StockCategory category,
-            StockItem officeItem) throws IOException {
-        List<ShortStockCategoryResource> categoryResults = categoryController
-                .findByLocation(TENANT_ID, "Reading", "Office", null, false,
-                        null, null);
-        assertEquals(2, categoryResults.get(0).getStockItems().size());
-
-        checkOfficeItem(category, officeItem, categoryResults.get(0));
-    }
-
-    protected void findOffersNearReading(StockCategory category,
-            StockItem officeItem) throws IOException {
-        List<ShortStockCategoryResource> categoryResults = categoryController
-                .findByLocation(TENANT_ID, "Reading", null, null, true, null,
-                        null);
-        assertEquals(3, categoryResults.get(0).getStockItems().size());
-
-        checkOfficeItem(category, officeItem, categoryResults.get(0));
+        checkCategory(category, categoryResults.iterator().next());
+        checkOfficeItem(category, officeItem, categoryResults.iterator().next());
     }
 
     protected ShortStockCategory findByName(StockCategory category,
@@ -231,22 +190,16 @@ public class StockControllerTest {
 
     protected void checkOfficeItem(StockCategory category, StockItem officeItem,
             ShortStockCategory categoryFound) {
-        assertEquals(officeItem.getName(), categoryFound.getStockItems().get(0)
+        assertEquals(officeItem.getName(), categoryFound.getStockItems().iterator().next()
                 .getName());
         assertEquals("Published", officeItem.getStatus());
 
         assertNotNull(category.getImages());
-        ShortStockItem foundItem = categoryFound.getStockItems().get(0);
-        Long itemId;
-        if (foundItem instanceof ShortStockItemResource) {
-            assertEquals(StockItem.DEFAULT_IMAGE_COUNT, ((ShortStockItemResource) foundItem).getImages().size());
-            itemId = ((ShortStockItemResource) foundItem).getStockItemId();
-        } else {
-            assertEquals(StockItem.DEFAULT_IMAGE_COUNT, ((StockItem) foundItem).getImages().size());
-            itemId = ((StockItem) foundItem).getId();
-        }
+        ShortStockItem foundItem = categoryFound.getStockItems().iterator().next();
+        assertEquals(StockItem.DEFAULT_IMAGE_COUNT, ((StockItem) foundItem).getImages().size());
+        Long itemId = ((StockItem) foundItem).getId();
         // check custom fields (needs extra fetch as not all included in search)
-        StockItem stockItem = itemController.findById(category.getTenantId(), itemId.toString());
+        StockItem stockItem = itemController.findEntityById(category.getTenantId(), itemId.toString()).getContent();
         assertNotNull(stockItem.getId());
         assertEquals(officeItem.getCustomFields().size(), stockItem
                 .getCustomFields().size());
@@ -270,9 +223,9 @@ public class StockControllerTest {
         // check REST headers
         List<String> locationHdrs = categoryResp.getHeaders().get("Location");
         assertEquals(1, locationHdrs.size());
-        assertNotNull(locationHdrs.get(0));
-        categoryId = Long.parseLong(locationHdrs.get(0).substring(
-                locationHdrs.get(0).lastIndexOf('/') + 1));
+        assertNotNull(locationHdrs.iterator().next());
+        categoryId = Long.parseLong(locationHdrs.iterator().next().substring(
+                locationHdrs.iterator().next().lastIndexOf('/') + 1));
 
         // assert derived fields
         assertEquals("", category.getVideoCode());
@@ -293,8 +246,7 @@ public class StockControllerTest {
 
         assertEquals("trademark", item.getName());
         assertEquals("Office", item.getTags());
-        assertEquals("vacant", item.getCustomFields().get(0).getName());
-        assertEquals("true", item.getCustomFields().get(0).getValue());
+        assertEquals(2, item.getCustomFields().size());
         assertEquals("true", item.getCustomFieldValue("vacant"));
 
         // assert derived fields
@@ -357,7 +309,7 @@ public class StockControllerTest {
         assertEquals(HttpStatus.CREATED, itemResp.getStatusCode());
         List<String> locationHdrs = itemResp.getHeaders().get("Location");
         assertEquals(1, locationHdrs.size());
-        itemUri = locationHdrs.get(0);
+        itemUri = locationHdrs.iterator().next();
         assertNotNull(itemUri);
         return itemUri;
     }
@@ -398,8 +350,7 @@ public class StockControllerTest {
         assertEquals("trademark", item.getName());
         assertEquals("Office", item.getTags());
         assertEquals("Published", item.getStatus());
-        assertEquals("vacant", item.getCustomFields().get(0).getName());
-        assertEquals("true", item.getCustomFields().get(0).getValue());
+        assertEquals(2, item.getCustomFields().size());
         assertEquals("true", item.getCustomFieldValue("vacant"));
 
         return item;

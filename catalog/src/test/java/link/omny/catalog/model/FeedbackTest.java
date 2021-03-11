@@ -15,16 +15,16 @@
  ******************************************************************************/
 package link.omny.catalog.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,7 +32,7 @@ public class FeedbackTest {
 
     private static ObjectMapper objectMapper;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         objectMapper = new ObjectMapper();
     }
@@ -51,21 +51,20 @@ public class FeedbackTest {
     public void testMergeCustomFields() {
         Feedback feedback = new Feedback();
         CustomFeedbackField field1 = new CustomFeedbackField("field1", "foo");
-        field1.setId(1l);
         feedback.addCustomField(field1);
 
         CustomFeedbackField field2 = new CustomFeedbackField("field1", "foo");
         assertNull(field2.getId());
-        feedback.setCustomFields(Collections.singletonList(field2));
+        feedback.setCustomFields(Collections.singleton(field2));
 
         assertEquals(1, feedback.getCustomFields().size());
-        assertEquals(field1.getId(), feedback.getCustomFields().get(0).getId());
+        assertEquals(field1.getId(), feedback.getCustomFields().iterator().next().getId());
 
         StringWriter out = new StringWriter();
         try {
             objectMapper.writeValue(out, feedback);
             Feedback feedback2 = objectMapper.readValue(out.toString().getBytes(), Feedback.class);
-            assertEquals(feedback, feedback2);
+            assertEquals(feedback.toString(), feedback2.toString());
             assertEquals(1, feedback.getCustomFields().size());
             assertEquals(feedback.getCustomFields().size(), feedback2.getCustomFields().size());
             assertEquals("foo", feedback2.getCustomFieldValue("field1"));

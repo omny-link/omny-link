@@ -17,7 +17,7 @@ package link.omny.catalog.model.api;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import link.omny.catalog.model.CustomOrderItemField;
 
@@ -40,8 +40,8 @@ public interface ShortOrderItem {
      void setStockItemId(Long stockItemId);
      String getStockItemName();
      void setStockItemName(String stockItemName);
-     List<CustomOrderItemField> getCustomFields();
-     void setCustomFields(List<CustomOrderItemField> customFields);
+     Set<CustomOrderItemField> getCustomFields();
+     void setCustomFields(Set<CustomOrderItemField> customFields);
      Date getCreated();
      void setCreated(Date created);
      Date getLastUpdated();

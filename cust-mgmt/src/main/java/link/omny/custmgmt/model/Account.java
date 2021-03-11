@@ -19,7 +19,9 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,29 +41,34 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.Link;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import link.omny.custmgmt.json.JsonCustomAccountFieldDeserializer;
-import link.omny.custmgmt.json.JsonCustomFieldSerializer;
 import link.omny.custmgmt.model.views.AccountViews;
 import link.omny.custmgmt.model.views.ContactViews;
 import link.omny.supportservices.internal.CsvUtils;
+import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.CustomField;
+import link.omny.supportservices.model.Document;
+import link.omny.supportservices.model.Note;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "OL_ACCOUNT")
 @Data
+@EqualsAndHashCode(exclude = { "contact" })
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account implements Serializable {
@@ -290,29 +297,16 @@ public class Account implements Serializable {
     @Column(name = "last_updated")
     private Date lastUpdated;
 
-    @Transient
-    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
-    @JsonProperty("links")
-    @JsonView({ AccountViews.Summary.class })
-    private List<Link> links;
-
-    @JsonProperty
-    @JsonView({ AccountViews.Summary.class })
-    public String getSelfRef() {
-        return id == null ? null
-                : String.format("/%1$s/accounts/%2$d", tenantId, id);
-    }
-
     @OneToMany(mappedBy = "account", targetEntity = Contact.class)
     // TODO See Contact.account for details of limitation
-    // @JsonBackReference
+    @JsonBackReference
     private List<Contact> contact;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "account", targetEntity = CustomAccountField.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "account", targetEntity = CustomAccountField.class)
+    @JsonManagedReference
     @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
-    private List<CustomAccountField> customFields;
+    private Set<CustomAccountField> customFields;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "account_id")
@@ -332,9 +326,9 @@ public class Account implements Serializable {
     @JsonView({ AccountViews.Detailed.class })
     private List<Document> documents;
 
-    public List<CustomAccountField> getCustomFields() {
+    public Set<CustomAccountField> getCustomFields() {
         if (customFields == null) {
-            customFields = new ArrayList<CustomAccountField>();
+            customFields = new HashSet<CustomAccountField>();
         }
         return customFields;
     }
