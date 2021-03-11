@@ -20,11 +20,10 @@
   <parent>
     <groupId>link.omny</groupId>
     <artifactId>omny-link-root</artifactId>
-    <version>3.0.0.20180827</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
 
-  <name>support-services</name>
-  <groupId>link.omny.support-services</groupId>
+  <name>Support services</name>
   <artifactId>support-services</artifactId>
 
   <properties>
@@ -32,24 +31,6 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
   </dependencies>
+
 </project>

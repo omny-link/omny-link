@@ -1,12 +1,12 @@
 {"properties": [
   {
-    "name": "omny.catalog.search-radius",
+    "name": "crm.catalog.search-radius",
     "type": "java.lang.String",
-    "description": "A description for 'omny.catalog.search-radius'"
+    "description": "A description for 'crm.catalog.search-radius'"
   },
   {
-    "name": "omny.catalog.geo-code-cache-size",
+    "name": "crm.catalog.geo-code-cache-size",
     "type": "java.lang.String",
-    "description": "A description for 'omny.catalog.geo-code-cache-size'"
+    "description": "A description for 'crm.catalog.geo-code-cache-size'"
   }
 ]}

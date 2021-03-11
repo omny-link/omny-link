@@ -6,7 +6,9 @@
   <groupId>link.omny</groupId>
   <artifactId>omny-link-root</artifactId>
   <packaging>pom</packaging>
-  <version>3.0.0.20180827</version>
+  <version>3.0.0-SNAPSHOT</version>
+  
+  <inceptionYear>2015</inceptionYear>
   
   <organization>
     <name>Omny Link</name>
@@ -16,7 +18,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.4.0.RELEASE</version>
+    <version>2.4.3</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
@@ -27,6 +29,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>${project.version}</omny-link.version>
     <plantuml.version>8059</plantuml.version>
+    <spring-boot.version>2.4.3</spring-boot.version>
     <springfox.version>2.8.0</springfox.version>
     <xerces.version>2.11.0</xerces.version>
   </properties>
@@ -80,109 +83,62 @@
   </repositories>
 
   <dependencies>
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-web</artifactId>
-     <exclusions>
-       <exclusion>
-         <artifactId>logback-classic</artifactId>
-         <groupId>ch.qos.logback</groupId>
-       </exclusion>
-       <exclusion>
-         <artifactId>log4j-over-slf4j</artifactId>
-         <groupId>org.slf4j</groupId>
-       </exclusion>
-     </exclusions>
-   </dependency>
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-data-jpa</artifactId>
-     <exclusions>
-       <exclusion>
-         <artifactId>tomcat-jdbc</artifactId>
-         <groupId>org.apache.tomcat</groupId>
-       </exclusion>
-       <exclusion>
-         <artifactId>xml-apis</artifactId>
-         <groupId>xml-apis</groupId>
-       </exclusion>
-     </exclusions>
-   </dependency>
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-data-rest</artifactId>
-   </dependency>
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-freemarker</artifactId>
-   </dependency>
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-test</artifactId>
-     <scope>test</scope>
-   </dependency>
-   <!-- Compiles against SLF4J but this is the implementation of choice -->
-   <dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-log4j2</artifactId>
-   </dependency>
-   <dependency>
-     <groupId>com.h2database</groupId>
-     <artifactId>h2</artifactId>
-     <scope>provided</scope>
-   </dependency>
-   <dependency>
-     <groupId>mysql</groupId>
-     <artifactId>mysql-connector-java</artifactId>
-   </dependency>
-   <dependency>
-     <groupId>com.fasterxml.jackson.core</groupId>
-     <artifactId>jackson-databind</artifactId>
-   </dependency>
-
-   <dependency>
-     <groupId>org.projectlombok</groupId>
-     <artifactId>lombok</artifactId>
-     <scope>provided</scope>
-   </dependency>
-
-    <!-- Generates REST documentation -->
-    <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-swagger2</artifactId>
-      <version>${springfox.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-swagger-ui</artifactId>
-      <version>${springfox.version}</version>
-    </dependency>
-
+        <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <scope>test</scope>
+      </dependency>
    <!-- Use instead of tomcat jdbc default provided by Spring Boot as more reliable -->
    <dependency>
      <groupId>com.zaxxer</groupId>
-     <!-- drop -java6 suffix for Java 8 compiled version -->
-     <artifactId>HikariCP-java6</artifactId>
+     <artifactId>HikariCP</artifactId>
    </dependency>
 
-   <!-- Jasmine used to integration test REST API -->
-   <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>jasmine</artifactId>
-      <version>2.4.1</version>
-   </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+        <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-rest</artifactId>
+    </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
 
-  </dependencies>
-
-  <dependencyManagement>
-    <dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+           <!-- Compiles against SLF4J but this is the implementation of choice -->
       <dependency>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-        <version>1.4.0.RELEASE</version>
+        <artifactId>spring-boot-starter-log4j2</artifactId>
       </dependency>
-    </dependencies>
-  </dependencyManagement>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+        <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+  </dependencies>
 
   <modules>
     <module>catalog</module>

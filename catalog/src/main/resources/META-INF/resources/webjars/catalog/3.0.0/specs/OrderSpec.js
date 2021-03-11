@@ -13,8 +13,8 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-describe("Contact Management API", function() {
-  var tenantId = 'omny';
+describe("Product catalogue", function() {
+  var tenantId = 'acme';
   var $rh = new RestEntityHelper({
     server: window['$env'] == undefined ? 'http://localhost:8080' : $env.server,
     tenantId: tenantId

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package link.omny.custmgmt.model;
+package link.omny.supportservices.model;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -31,91 +31,105 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 
-import link.omny.custmgmt.model.views.AccountViews;
-import link.omny.custmgmt.model.views.ContactViews;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name = "OL_DOCUMENT")
+@Table(name = "OL_NOTE")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Document implements Serializable {
+public class Note implements Serializable {
 
-    private static final long serialVersionUID = 157180600778360331L;
+    private static final long serialVersionUID = 6032851169275605576L;
 
-    protected static final Logger LOGGER = LoggerFactory
-            .getLogger(Document.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(Note.class);
+
+    /**
+     * Permits auto-filled columns such as created date to be suspended.
+     */
+    private static boolean bulkImport;
+
+    public static void setBulkImport(boolean b) {
+        bulkImport = b;
+    }
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     private Long id;
 
     @JsonProperty
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     @Size(max = 50)
     @Column(name = "author")
     private String author;
 
     @JsonProperty
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     @Column(name = "created")
     private Date created;
 
     @JsonProperty
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
-    @Size(max = 60)
-    @Column(name = "name")
-    private String name;
+    @Column(name = "content")
+    private String content;
 
     @JsonProperty
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
-    @Column(name = "url")
-    private String url;
-
-    @JsonProperty
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     @Column(name = "favorite")
     private boolean favorite = true;
 
     @JsonProperty
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     @Column(name = "confidential")
     private boolean confidential = false;
 
-    public Document(String author, String url) {
-        setAuthor(author);
-        setUrl(url);
-    }
-
-    public Document(String author, String name, String url) {
-        setAuthor(author);
-        setName(name);
-        setUrl(url);
-    }
+    // This advises to avoid back reference in a composition relationship
+    // http://stackoverflow.com/questions/25311978/posting-a-onetomany-sub-resource-association-in-spring-data-rest/25451662#25451662
+    // However doing so means we are trapped in the POST sub-entity + PUT
+    // association trap, hence doing it this way
+    // @RestResource(rel = "noteAccount")
+    // @ManyToOne(targetEntity = Account.class)
+    // @JoinColumn(name = "account_id")
+    //// @JsonIgnore
+    //// @JsonBackReference
+    // private Account account;
+    //
+    // @RestResource(rel = "noteContact")
+    // @ManyToOne(targetEntity = Contact.class)
+    // @JoinColumn(name = "contact_id")
+    //// @JsonIgnore
+    //// @JsonBackReference
+    // private Contact contact;
 
     @PrePersist
     void preInsert() {
-        created = new Date();
+        if (!bulkImport) {
+            created = new Date();
+        }
+    }
+
+    public Note(String author, String content) {
+        super();
+        setAuthor(author);
+        setContent(content);
+    }
+
+    public Note(String author, String content, boolean favorite) {
+        this(author, content);
+        setFavorite(favorite);
     }
 
     @Override
     public String toString() {
         return String.format(
-                "Document [id=%s, author=%s, created=%s, name=%s, url=%s]", id,
-                author, created, name, url);
+                "Note [id=%s, author=%s, created=%s, favorite=%b, confidential=%b, content=%s]",
+                id, author, created, favorite, confidential, content);
     }
 
     public String toCsv() {
         return String.format(
-                "%s,%s,%s,%s,%s]", id,
-                author, created, name, url);
+                "%s,%s,%s,%b,%b,%s]",
+                id, author, created, favorite, confidential, content);
     }
+
 }

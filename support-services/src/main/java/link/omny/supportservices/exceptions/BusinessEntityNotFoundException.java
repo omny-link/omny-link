@@ -22,23 +22,37 @@ package link.omny.supportservices.exceptions;
  */
 public class BusinessEntityNotFoundException extends RuntimeException {
 
+    private static final long serialVersionUID = 7932887356223861356L;
     private String entity;
-    private String id;
+    private Object id;
 
+    /**
+     * @deprecated
+     */
     public BusinessEntityNotFoundException(String entity, String id) {
         super();
         this.entity = entity;
         this.id = id;
     }
 
-    private static final long serialVersionUID = 7932887356223861356L;
+    public BusinessEntityNotFoundException(Class<?> entity, Long id) {
+        super();
+        this.entity = entity.getSimpleName();
+        this.id = id;
+    }
+
+    public BusinessEntityNotFoundException(Class<?> entity, String id) {
+        super();
+        this.entity = entity.getSimpleName();
+        this.id = id;
+    }
 
     public String getEntity() {
         return entity;
     }
 
     public String getId() {
-        return id;
+        return id.toString();
     }
 
 }

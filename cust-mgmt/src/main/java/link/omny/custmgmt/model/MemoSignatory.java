@@ -31,9 +31,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 
-import link.omny.custmgmt.model.views.MemoViews;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -49,16 +47,13 @@ public class MemoSignatory implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
-    @JsonView({ MemoViews.Summary.class })
     private Long id;
 
     @JsonProperty
-    @JsonView({ MemoViews.Summary.class })
     @Column(name = "email")
     private String email;
 
     @JsonProperty
-    @JsonView({ MemoViews.Summary.class })
     @Column(name = "name")
     private String name;
     
@@ -76,7 +71,6 @@ public class MemoSignatory implements Serializable {
     }
     
     @JsonProperty
-    @JsonView({ MemoViews.Detailed.class })
     @Transient
     protected List<SignHereTab> getSignHereTabs() {
         List<SignHereTab> signHereTabs = new ArrayList<SignHereTab>();
@@ -96,7 +90,6 @@ public class MemoSignatory implements Serializable {
     }
     
     @JsonProperty
-    @JsonView({ MemoViews.Detailed.class })
     @Transient
     public SignHereTab getSignHereTab() {
         try {
@@ -126,13 +119,10 @@ public class MemoSignatory implements Serializable {
     @NoArgsConstructor
     public class SignHereTab {
         @JsonProperty
-        @JsonView({ MemoViews.Summary.class })
         private int x;
         @JsonProperty
-        @JsonView({ MemoViews.Summary.class })
         private int y;
         @JsonProperty
-        @JsonView({ MemoViews.Summary.class })
         private int page;
 
 

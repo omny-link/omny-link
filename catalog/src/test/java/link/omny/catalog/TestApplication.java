@@ -16,19 +16,17 @@
 package link.omny.catalog;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import link.omny.custmgmt.CustMgmtConfig;
 import link.omny.supportservices.SupportServicesConfig;
 
-@EnableAutoConfiguration
-@Configuration
-@Import({ CustMgmtConfig.class, CatalogConfig.class, SupportServicesConfig.class })
+@SpringBootTest@SpringBootApplication
+@Import({ CatalogConfig.class, SupportServicesConfig.class })
 @ComponentScan(basePackages = { "link.omny.catalog" })
 public class TestApplication extends WebMvcConfigurerAdapter {
 

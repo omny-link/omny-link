@@ -15,9 +15,10 @@
  ******************************************************************************/
 package link.omny.custmgmt.web;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,10 +31,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,20 +45,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.model.Memo;
-import link.omny.custmgmt.model.Note;
-import link.omny.custmgmt.model.views.MemoViews;
 import link.omny.custmgmt.repositories.MemoRepository;
 import link.omny.custmgmt.repositories.MemoSignatoryRepository;
-import link.omny.custmgmt.repositories.NoteRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
+import link.omny.supportservices.internal.NullAwareBeanUtils;
+import link.omny.supportservices.model.Note;
+import link.omny.supportservices.repositories.NoteRepository;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * REST web service for uploading and accessing a file of JSON memos (over
@@ -70,7 +65,7 @@ import lombok.EqualsAndHashCode;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/memos")
-public class MemoController extends BaseTenantAwareController {
+public class MemoController {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MemoController.class);
@@ -104,18 +99,18 @@ public class MemoController extends BaseTenantAwareController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
             throws IOException {
-        LOGGER.info(String.format("Uploading memos for: %1$s", tenantId));
+        LOGGER.info("Uploading memos for: {}", tenantId);
         String content = new String(file.getBytes());
 
         List<Memo> list = objectMapper.readValue(content,
                 new TypeReference<List<Memo>>() {
                 });
-        LOGGER.info(String.format("  found %1$d memos", list.size()));
+        LOGGER.info("  found {} memos", list.size());
         for (Memo message : list) {
             message.setTenantId(tenantId);
         }
 
-        Iterable<Memo> result = memoRepo.save(list);
+        Iterable<Memo> result = memoRepo.saveAll(list);
         LOGGER.info("  saved.");
         return result;
     }
@@ -126,18 +121,16 @@ public class MemoController extends BaseTenantAwareController {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public @ResponseBody ResponseEntity<?> create(
+    public @ResponseBody ResponseEntity<EntityModel<Memo>> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Memo memo) {
         memo.setTenantId(tenantId);
 
-        memo = memoRepo.save(memo);
+        EntityModel<Memo> entity = addLinks(tenantId, memoRepo.save(memo));
+        LOGGER.debug("Created memo {}", entity.getLink("self"));
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(getGlobalUri(memo.getId()));
-
-        // TODO migrate to http://host/tenant/contacts/id
-        // headers.setLocation(getTenantBasedUri(tenantId, contact));
+        headers.setLocation(entity.getLink("self").get().toUri());
 
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
@@ -148,19 +141,19 @@ public class MemoController extends BaseTenantAwareController {
      * @return memos for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public @ResponseBody List<ResourceSupport> listForTenant(
+    public @ResponseBody List<EntityModel<Memo>> listForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info(String.format("List memos for tenant %1$s", tenantId));
-        return wrap(listAsCsv(tenantId, page, limit));
+        LOGGER.info("List memos for tenant {}", tenantId);
+        return addLinks(tenantId, listAsCsv(tenantId, page, limit));
     }
 
     /**
      * @return memos for the specified tenant and status.
      */
     @RequestMapping(value = "/findByStatus/{status}", method = RequestMethod.GET)
-    public @ResponseBody List<ResourceSupport> findByStatusForTenant(
+    public @ResponseBody List<EntityModel<Memo>> findByStatusForTenant(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("status") String status,
             @RequestParam(value = "page", required = false) Integer page,
@@ -172,13 +165,18 @@ public class MemoController extends BaseTenantAwareController {
             list = memoRepo.findByStatusForTenant(status.toLowerCase(),
                     tenantId);
         } else {
-            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
             list = memoRepo.findPageByStatusForTenant(
                     status.toLowerCase(), tenantId, pageable);
         }
         LOGGER.info("Found {} memos", list.size());
+        return addLinks(tenantId, list);
+    }
 
-        return wrap(list);
+    protected Memo findById(final String tenantId, final Long id) {
+        return memoRepo.findById(id)
+                .orElseThrow(() -> new BusinessEntityNotFoundException(
+                        Memo.class, id));
     }
 
     /**
@@ -191,23 +189,20 @@ public class MemoController extends BaseTenantAwareController {
      */
     @RequestMapping(value = "/{idOrName}", method = RequestMethod.GET)
 //    @Transactional
-    @JsonView(MemoViews.Detailed.class)
     public @ResponseBody Memo findById(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("idOrName") String idOrName)
-            throws BusinessEntityNotFoundException {
-        LOGGER.debug(String.format("Find memo %1$s", idOrName));
+            @PathVariable("idOrName") String idOrName) {
+        LOGGER.debug("Find memo {}", idOrName);
 
         Memo memo;
         try {
-            memo = memoRepo.findOne(Long.parseLong(idOrName));
+            memo = findById(tenantId, Long.parseLong(idOrName));
         } catch (NumberFormatException e) {
             memo = memoRepo.findByName(idOrName, tenantId);
         }
         if (memo == null) {
-            LOGGER.error(String.format("Unable to find memo from %1$s",
-                    idOrName));
-            throw new BusinessEntityNotFoundException("Memo", idOrName);
+            LOGGER.error("Unable to find memo from {}", idOrName);
+            throw new BusinessEntityNotFoundException(Memo.class, idOrName);
         }
         return memo;
 //        return wrap(memo, new MemoResource());
@@ -223,31 +218,27 @@ public class MemoController extends BaseTenantAwareController {
      */
     @RequestMapping(value = "/{idOrName}/clone", method = RequestMethod.POST)
     @Transactional
-    @JsonView(MemoViews.Detailed.class)
-    public @ResponseBody Memo clone(
+    public @ResponseBody EntityModel<Memo> clone(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("idOrName") String idOrName)
-            throws BusinessEntityNotFoundException {
-        LOGGER.debug(String.format("Clone memo %1$s", idOrName));
+            @PathVariable("idOrName") String idOrName) {
+        LOGGER.debug("Clone memo {}", idOrName);
 
         Memo memo;
         try {
-            memo = memoRepo.findOne(Long.parseLong(idOrName));
+            memo = findById(tenantId, Long.parseLong(idOrName));
         } catch (NumberFormatException e) {
             memo = memoRepo.findByName(idOrName, tenantId);
         }
         if (memo == null) {
-            LOGGER.error(String.format("Unable to find memo from %1$s",
-                    idOrName));
-            throw new BusinessEntityNotFoundException("Memo", idOrName);
+            LOGGER.error("Unable to find memo from {}", idOrName);
+            throw new BusinessEntityNotFoundException(Memo.class, idOrName);
         }
         Memo resource = new Memo();
         BeanUtils.copyProperties(memo, resource, "id");
         resource.setName(memo.getName() + "Copy");
+        resource.setStatus("Draft");
         memoRepo.save(resource);
-        addLinks(tenantId, resource);
-        return resource;
-//        return wrap(resource, new MemoResource());
+        return addLinks(tenantId, resource);
     }
 
     /**
@@ -258,17 +249,16 @@ public class MemoController extends BaseTenantAwareController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info(String.format("Export memos for tenant %1$s", tenantId));
+        LOGGER.info("Export memos for tenant {}", tenantId);
 
         List<Memo> list;
         if (limit == null) {
             list = memoRepo.findAllForTenant(tenantId);
         } else {
-            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
             list = memoRepo.findPageForTenant(tenantId, pageable);
         }
-        LOGGER.info(String.format("Found %1$s memos", list.size()));
-
+        LOGGER.info("Found {} memos", list.size());
         return list;
     }
 
@@ -282,7 +272,7 @@ public class MemoController extends BaseTenantAwareController {
             @PathVariable("id") Long memoId,
             @RequestBody Memo updatedMemo) {
         memoSignatoryRepo.deleteAllForMemo(updatedMemo.getId());
-        Memo memo = memoRepo.findOne(memoId);
+        Memo memo = findById(tenantId, memoId);
         NullAwareBeanUtils.copyNonNullProperties(updatedMemo, memo, "id", "signatories");
         memo.addAllSignatories(updatedMemo.getSignatories());
         memo.setTenantId(tenantId);
@@ -296,7 +286,7 @@ public class MemoController extends BaseTenantAwareController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long memoId) {
-        memoRepo.delete(memoId);
+        memoRepo.deleteById(memoId);
     }
 
     /**
@@ -319,7 +309,7 @@ public class MemoController extends BaseTenantAwareController {
     public @ResponseBody void addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("messageId") Long messageId, @RequestBody Note note) {
-        Memo message = memoRepo.findOne(messageId);
+        Memo message = findById(tenantId, messageId);
         // note.setMessage(message);
         noteRepo.save(note);
         // necessary to force a save
@@ -329,41 +319,8 @@ public class MemoController extends BaseTenantAwareController {
         // return note;
     }
 
-    private List<ResourceSupport> wrap(List<Memo> list) {
-        List<ResourceSupport> resources = new ArrayList<ResourceSupport>(
-                list.size());
-        for (Memo message : list) {
-            resources.add(wrap(message, new ShortMemo()));
-        }
-        return resources;
-    }
-
-    private ResourceSupport wrap(Memo message, ResourceSupport resource) {
-        BeanUtils.copyProperties(message, resource);
-        try {
-            Link detail = linkTo(MemoRepository.class, message.getId())
-                    .withSelfRel();
-            resource.add(detail);
-            Method method = resource.getClass().getMethod("setSelfRef", String.class);
-            method.invoke(resource, detail.getHref());
-        } catch (NoSuchMethodException | IllegalAccessException
-                | IllegalArgumentException | InvocationTargetException e) {
-            LOGGER.error("Unable to set self reference.", e);
-        }
-        return resource;
-    }
-    
-    
-    private Link linkTo(
-            @SuppressWarnings("rawtypes") Class<? extends CrudRepository> clazz,
-            Long id) {
-        return new Link(clazz.getAnnotation(RepositoryRestResource.class)
-                .path() + "/" + id);
-    }
-
     @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class ShortMemo extends ResourceSupport {
+    public static class ShortMemo {
         private String selfRef;
         private String name;
         private String title;
@@ -373,11 +330,18 @@ public class MemoController extends BaseTenantAwareController {
         private Date created;
         private Date lastUpdated;
       }
+    
+    protected List<EntityModel<Memo>> addLinks(final String tenantId, final List<Memo> list) {
+        ArrayList<EntityModel<Memo>> entities = new ArrayList<EntityModel<Memo>>();
+        for (Memo memo : list) {
+            entities.add(addLinks(tenantId, memo));
+        }
+        return entities;
+    }
 
-    private void addLinks(String tenantId, Memo memo) {
-        List<Link> links = new ArrayList<Link>();
-        links.add(new Link(String.format("/%1$s/memos/%2$s",
-                tenantId, memo.getId())));
-        memo.setLinks(links);
+    protected EntityModel<Memo> addLinks(final String tenantId, final Memo memo) {
+        return EntityModel.of(memo,
+                linkTo(methodOn(MemoController.class).findById(tenantId, memo.getId()))
+                        .withSelfRel());
     }
 }

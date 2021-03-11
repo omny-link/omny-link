@@ -15,17 +15,17 @@
  ******************************************************************************/
 package link.omny.catalog.json;
 
-import java.util.List;
+import java.util.Set;
 import java.util.Map.Entry;
-
-import link.omny.catalog.model.CustomStockCategoryField;
-import link.omny.custmgmt.json.JsonCustomFieldDeserializer;
-import link.omny.custmgmt.model.CustomField;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import link.omny.catalog.model.CustomStockCategoryField;
+import link.omny.supportservices.json.JsonCustomFieldDeserializer;
+import link.omny.supportservices.model.CustomField;
+
 public class JsonCustomStockCategoryFieldDeserializer extends
-        JsonCustomFieldDeserializer<List<CustomStockCategoryField>> {
+        JsonCustomFieldDeserializer<Set<CustomStockCategoryField>> {
 
     protected CustomField newInstance(Entry<String, JsonNode> entry) {
         return new CustomStockCategoryField(entry.getKey(), entry.getValue()

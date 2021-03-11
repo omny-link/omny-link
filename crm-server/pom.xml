@@ -1,133 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright 2015-2018 Tim Stephenson and contributors
-  
-   Licensed under the Apache License, Version 2.0 (the "License"); you may not
-   use this file except in compliance with the License.  You may obtain a copy
-   of the License at
-  
-     http://www.apache.org/licenses/LICENSE-2.0
-  
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-   License for the specific language governing permissions and limitations under
-   the License.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<!-- Copyright 2015-2018 Tim Stephenson and contributors Licensed under the Apache 
+  License, Version 2.0 (the "License"); you may not use this file except in compliance 
+  with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+  Unless required by applicable law or agreed to in writing, software distributed under 
+  the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+  OF ANY KIND, either express or implied. See the License for the specific language 
+  governing permissions and limitations under the License. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <name>Omny Link Server</name>
-  <inceptionYear>2015</inceptionYear>
 
-  <artifactId>omny-link</artifactId>
+  <artifactId>crm-server</artifactId>
   <packaging>jar</packaging>
 
   <parent>
     <groupId>link.omny</groupId>
     <artifactId>omny-link-root</artifactId>
-    <version>3.0.0.20180827</version>
+    <version>3.0.0-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 
   <properties>
     <start-class>link.omny.server.Application</start-class>
+    
     <docker.repo>docker.io</docker.repo>
     <docker.image.prefix>knowprocess</docker.image.prefix>
+    <jasmine-boot.version>1.0.0.20181021</jasmine-boot.version>
   </properties>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>spring-milestones</id>
-      <name>spring-milestones</name>
-      <url>http://repo.springsource.org/milestone/</url>
-    </pluginRepository>
-  </pluginRepositories>
-  <repositories>
-      <repository>
-        <id>jcenter-snapshots</id>
-        <name>jcenter</name>
-        <url>https://jcenter.bintray.com/</url>
-      </repository>
-      <repository>
-        <id>spring-milestones</id>
-        <name>spring-milestones</name>
-        <url>http://repo.springsource.org/milestone/</url>
-      </repository>
-  </repositories>
-
   <dependencies>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
     </dependency>
-
-    <!-- Generates REST documentation -->
     <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger2</artifactId>
-        <version>2.0.0</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger-ui</artifactId>
-        <version>2.0.0</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <scope>runtime</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
     </dependency>
 
     <dependency>
-      <groupId>link.omny.catalog</groupId>
+      <groupId>link.omny</groupId>
       <artifactId>catalog</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>link.omny.custmgmt</groupId>
+      <groupId>link.omny</groupId>
       <artifactId>custmgmt</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>link.omny.support-services</groupId>
+      <groupId>link.omny</groupId>
       <artifactId>support-services</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- Used to integration test REST API -->
+    <!-- provides REST self-test used during build but also potentially at runtime -->
     <dependency>
       <groupId>com.knowprocess.jasmine-boot</groupId>
       <artifactId>jasmine-boot</artifactId>
       <version>${jasmine-boot.version}</version>
-      <optional>true</optional>
     </dependency>
+
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    
   </dependencies>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>dockerfile-maven-plugin</artifactId>
-        <version>1.4.9</version>
-        <executions>
-          <execution>
-            <id>default</id>
-            <goals>
-              <goal>build</goal>
-              <goal>push</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <repository>${docker.repo}/${docker.image.prefix}/${project.artifactId}</repository>
-          <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
-          <tag>${project.version}</tag>
-          <buildArgs>
-            <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
-          </buildArgs>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -200,6 +168,17 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <image>
+            <name>docker.io/knowprocess/omny-link</name>
+          </image>
+          <excludes>
+            <exclude>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </exclude>
+          </excludes>
+        </configuration>
         <executions>
           <execution>
             <id>pre-integration-test</id>
@@ -211,6 +190,12 @@
             <id>post-integration-test</id>
             <goals>
               <goal>stop</goal>
+            </goals>
+          </execution>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>build-image</goal>
             </goals>
           </execution>
         </executions>

@@ -15,12 +15,12 @@
  ******************************************************************************/
 package link.omny.catalog.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class OrderItemTest {
 
@@ -52,7 +52,7 @@ public class OrderItemTest {
         assertEquals(2, orderItem.getCustomFields().size());
         assertEquals("bar", orderItem.getCustomFieldValue("field1"));
         assertEquals("Blue", orderItem.getCustomFieldValue("colour"));
-        assertEquals(field1.getId(), orderItem.getCustomFields().get(0).getId());
+        assertEquals(field1.getId(), orderItem.getCustomFields().iterator().next().getId());
     }
 
 }

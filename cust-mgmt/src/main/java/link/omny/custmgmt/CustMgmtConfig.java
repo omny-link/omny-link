@@ -15,29 +15,16 @@
  ******************************************************************************/
 package link.omny.custmgmt;
 
-import org.springframework.boot.orm.jpa.EntityScan;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
-import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
-
-import link.omny.custmgmt.model.Account;
-import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.MemoDistribution;
 
 @Configuration
 @ComponentScan(basePackages = { "link.omny.custmgmt" })
 @EntityScan({ "link.omny.custmgmt.model" })
 @EnableJpaRepositories({ "link.omny.custmgmt.repositories" })
-public class CustMgmtConfig extends RepositoryRestMvcConfiguration {
-
-    @Override
-    protected void configureRepositoryRestConfiguration(
-            RepositoryRestConfiguration config) {
-        config.exposeIdsFor(Contact.class, Account.class,
-                MemoDistribution.class);
-    }
+public class CustMgmtConfig {
 
 }
 

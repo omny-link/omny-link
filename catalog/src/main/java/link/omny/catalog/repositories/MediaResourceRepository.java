@@ -23,7 +23,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.catalog.model.MediaResource;
 
-@RepositoryRestResource(path = "/media")
+@RepositoryRestResource(path = "media")
 public interface MediaResourceRepository extends
         CrudRepository<MediaResource, Long> {
 

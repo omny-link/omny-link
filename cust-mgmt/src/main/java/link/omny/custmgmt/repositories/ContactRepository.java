@@ -29,12 +29,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.ContactExcept;
 
-@RepositoryRestResource(excerptProjection = ContactExcept.class, path = "/contacts")
+@RepositoryRestResource(excerptProjection = ContactExcept.class, path = "contacts")
 public interface ContactRepository extends CrudRepository<Contact, Long> {
-
-    @Override
-    @EntityGraph("contactWithAccount")
-    Contact findOne(@Param("id") Long id);
 
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId "
             + "AND (c.stage IS NULL OR c.stage != 'deleted') ORDER BY c.id ASC")
@@ -140,17 +136,17 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     @Query(value = "SELECT DISTINCT(cf.name) FROM OL_CONTACT c INNER JOIN OL_CONTACT_CUSTOM cf on c.id = cf.contact_id WHERE (c.stage IS NULL OR c.stage != 'deleted') AND c.tenant_id = :tenantId ", nativeQuery = true)
     List<String> findCustomFieldNames(@Param("tenantId") String tenantId);
 
-    @Query(value = "UPDATE OL_CONTACT c set c.account_id = :accountId WHERE c.id = :contactId", nativeQuery = true)
+    @Query(value = "UPDATE OL_CONTACT c SET account_id = :accountId WHERE c.id = :contactId", nativeQuery = true)
     @Modifying(clearAutomatically = true)
     void setAccount(@Param("contactId") Long contactId, @Param("accountId") Long accountId);
 
-    @Query(value = "UPDATE Contact c set c.stage = :stage WHERE (c.lastUpdated < :before OR c.lastUpdated IS NULL) AND c.stage NOT IN ('deleted','Cold') AND c.tenantId = :tenantId")
+    @Query(value = "UPDATE Contact c SET c.stage = :stage WHERE (c.lastUpdated < :before OR c.lastUpdated IS NULL) AND c.stage NOT IN ('deleted','Cold') AND c.tenantId = :tenantId")
     @Modifying(clearAutomatically = true)
     int updateStage(@Param("stage") String stage, @Param("before") Date before, @Param("tenantId") String tenantId);
 
     @Override
-    @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = :id")
+    @Query("UPDATE #{#entityName} x SET x.stage = 'deleted' WHERE x.id = :id")
     @Modifying(clearAutomatically = true)
-    void delete(@Param("id") Long id);
+    void deleteById(@Param("id") Long id);
 
 }

@@ -18,7 +18,7 @@ package link.omny.catalog.model.api;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import link.omny.catalog.model.CustomOrderField;
 
@@ -68,9 +68,9 @@ public interface ShortOrder extends Serializable {
 
     void setTenantId(String tenantId);
 
-    List<CustomOrderField> getCustomFields();
+    Set<CustomOrderField> getCustomFields();
 
-    void setCustomFields(List<CustomOrderField> fields);
+    void setCustomFields(Set<CustomOrderField> fields);
 
     void addCustomField(CustomOrderField customField);
 

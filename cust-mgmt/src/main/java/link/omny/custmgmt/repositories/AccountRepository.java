@@ -27,7 +27,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.custmgmt.model.Account;
 
-@RepositoryRestResource(path = "/accounts")
+@RepositoryRestResource(path = "accounts")
 public interface AccountRepository extends CrudRepository<Account, Long> {
 
     @Query("SELECT a FROM Account a INNER JOIN a.customFields c WHERE (a.stage IS NULL OR a.stage != 'deleted') AND a.tenantId = :tenantId AND c.name='orgCode' AND c.value = :code ORDER BY a.lastUpdated DESC")
@@ -68,6 +68,6 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
     @Override
     @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = :id")
     @Modifying(clearAutomatically = true)
-    public void delete(@Param("id") Long id);
+    public void deleteById(@Param("id") Long id);
 
 }

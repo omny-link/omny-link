@@ -1,7 +1,7 @@
 package link.omny.server;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,7 +15,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +28,7 @@ public class RestApiIT {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
+    @Disabled
     public void testAccountApi() throws IOException {
         StringBuilder sb = createScript(
                 "classpath:META-INF/resources/webjars/jasmine-boot/1.0.0/js/rest-helper.js",
@@ -49,6 +51,7 @@ public class RestApiIT {
     }
 
     @Test
+    @Disabled
     public void testOrderApi() throws IOException {
         StringBuilder sb = createScript(
                 "classpath:META-INF/resources/webjars/jasmine-boot/1.0.0/js/rest-helper.js",
@@ -62,8 +65,8 @@ public class RestApiIT {
     private void assertNoFailedExpectations(JsonNode report) {
         for (Iterator<JsonNode> it = report.get("results").elements() ; it.hasNext() ; ) {
             JsonNode result = (JsonNode) it.next();
-            assertEquals("Spec failed: " + result.get("fullName").asText(),
-                    0, result.get("failedExpectations").size());
+            assertEquals(0, result.get("failedExpectations").size(),
+                    "Spec failed: " + result.get("fullName").asText());
         }
     }
 
