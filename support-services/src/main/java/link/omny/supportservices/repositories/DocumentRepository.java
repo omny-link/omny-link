@@ -13,14 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package link.omny.custmgmt.repositories;
-
-import link.omny.custmgmt.model.Document;
+package link.omny.supportservices.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(path = "/documents")
+import link.omny.supportservices.model.Document;
+
+@RepositoryRestResource(path = "documents")
 public interface DocumentRepository extends CrudRepository<Document, Long> {
 
 }

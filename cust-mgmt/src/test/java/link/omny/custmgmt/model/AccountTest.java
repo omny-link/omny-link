@@ -15,9 +15,9 @@
  ******************************************************************************/
 package link.omny.custmgmt.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -29,14 +29,16 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import link.omny.supportservices.model.Note;
 
 public class AccountTest {
 
     private static Validator validator;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
@@ -54,11 +56,11 @@ public class AccountTest {
         
         account.setCustomFields(Collections.singletonList(field2));
         assertEquals(1, account.getCustomFields().size());
-        assertEquals(field1.getId(), account.getCustomFields().get(0).getId());
+        assertEquals(field1.getId(), account.getCustomFields().iterator().next().getId());
         
         account.addCustomField(field2);
         assertEquals(1, account.getCustomFields().size());
-        assertEquals(field1.getId(), account.getCustomFields().get(0).getId());
+        assertEquals(field1.getId(), account.getCustomFields().iterator().next().getId());
     }
 
     @Test
@@ -72,7 +74,7 @@ public class AccountTest {
         Account.setCustomFields(Collections.singletonList(field1));
 
         assertEquals(1, Account.getCustomFields().size());
-        assertEquals("11241500.00", Account.getCustomFields().get(0)
+        assertEquals("11241500.00", Account.getCustomFields().iterator().next()
                 .getValue());
     }
 
@@ -87,7 +89,7 @@ public class AccountTest {
         Account.setCustomFields(Collections.singletonList(field1));
 
         assertEquals(1, Account.getCustomFields().size());
-        assertEquals("N/A", Account.getCustomFields().get(0).getValue());
+        assertEquals("N/A", Account.getCustomFields().iterator().next().getValue());
     }
 
     @Test

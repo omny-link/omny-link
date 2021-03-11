@@ -15,6 +15,9 @@
  ******************************************************************************/
 package link.omny.custmgmt.web;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -32,10 +35,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +51,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,14 +61,11 @@ import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.model.ActivityType;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomAccountField;
-import link.omny.custmgmt.model.Document;
-import link.omny.custmgmt.model.Note;
-import link.omny.custmgmt.model.views.AccountViews;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import link.omny.supportservices.model.Document;
+import link.omny.supportservices.model.Note;
 
 /**
  * REST web service for uploading and accessing a file of JSON Accounts (over
@@ -102,7 +98,7 @@ public class AccountController {
     public @ResponseBody ResponseEntity<Activity> addActivity(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Activity activity) {
-        Account account = accountRepo.findOne(accountId);
+        Account account = findById(tenantId, accountId);
         account.getActivities().add(activity);
         account.setLastUpdated(new Date());
         accountRepo.save(account);
@@ -149,18 +145,18 @@ public class AccountController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
             throws IOException {
-        LOGGER.info(String.format("Uploading accounts for: %1$s", tenantId));
+        LOGGER.info("Uploading accounts for: {}", tenantId);
         String content = new String(file.getBytes());
 
         List<Account> list = objectMapper.readValue(content,
                 new TypeReference<List<Account>>() {
                 });
-        LOGGER.info(String.format("  found %1$d accounts", list.size()));
+        LOGGER.info("  found {} accounts", list.size());
         for (Account account : list) {
             account.setTenantId(tenantId);
         }
 
-        Iterable<Account> result = accountRepo.save(list);
+        Iterable<Account> result = accountRepo.saveAll(list);
         LOGGER.info("  saved.");
 
         return result;
@@ -183,27 +179,25 @@ public class AccountController {
      * @return Accounts for a specific tenant.
      */
     @RequestMapping(value = "/accounts/", method = RequestMethod.GET)
-//  @JsonView(AccountViews.Summary.class)
-//  public @ResponseBody List<Account> listForTenantAsJson(
-    public @ResponseBody List<ShortAccount> listForTenantAsJson(
+    public @ResponseBody List<EntityModel<Account>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        return wrap(listForTenant(tenantId, page, limit));
+        return addLinks(tenantId, listForTenant(tenantId, page, limit));
     }
 
     protected List<Account> listForTenant(
             String tenantId, Integer page, Integer limit) {
-        LOGGER.info(String.format("List accounts for tenant %1$s", tenantId));
+        LOGGER.info("List accounts for tenant {}", tenantId);
 
         List<Account> list;
         if (limit == null) {
             list = accountRepo.findAllForTenant(tenantId);
         } else {
-            Pageable pageable = new PageRequest(page == null ? 0 : page, limit);
+            Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
             list = accountRepo.findPageForTenant(tenantId, pageable);
         }
-        LOGGER.info(String.format("Found %1$s accounts", list.size()));
+        LOGGER.info("Found {} accounts", list.size());
 
         return list;
     }
@@ -251,13 +245,12 @@ public class AccountController {
      * @return Account id-name pairs for a specific tenant.
      */
     @RequestMapping(value = "/account-pairs/", method = RequestMethod.GET)
-    @JsonView(AccountViews.Pair.class)
     public @ResponseBody List<Account> listPairForTenant(
             @PathVariable("tenantId") String tenantId) {
-        LOGGER.info(String.format("List account id-name pairs for tenant %1$s", tenantId));
+        LOGGER.info("List account id-name pairs for tenant {}", tenantId);
 
         List<Account> list = accountRepo.findAllForTenant(tenantId);
-        LOGGER.info(String.format("Found %1$s accounts", list.size()));
+        LOGGER.info("Found {} accounts", list.size());
 
         return list;
     }
@@ -291,28 +284,30 @@ public class AccountController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
+    protected Account findById(final String tenantId, final Long id) {
+        return accountRepo.findById(id)
+                .orElseThrow(() -> new BusinessEntityNotFoundException(
+                        Account.class, id));
+    }
+
     /**
      * Return just the matching account.
      *
      * @return the account with this id.
      * @throws BusinessEntityNotFoundException
      */
-    @JsonView(AccountViews.Detailed.class)
     @RequestMapping(value = "/accounts/{id}", method = RequestMethod.GET)
-    public @ResponseBody Account findById(
+    public @ResponseBody EntityModel<Account> findEntityById(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("id") String id)
+            @PathVariable("id") String idOrCode)
             throws BusinessEntityNotFoundException {
-        LOGGER.debug(String.format("Find account for id %1$s", id));
+        LOGGER.debug("Find account for id {}", idOrCode);
 
         Account account;
         try {
-            account = accountRepo.findOne(Long.parseLong(id));
+            account = findById(tenantId, Long.parseLong(idOrCode));
         } catch (NumberFormatException e) {
-            account = accountRepo.findByCodeForTenant(id, tenantId);
-        }
-        if (account == null) {
-            throw new BusinessEntityNotFoundException("account", id);
+            account = accountRepo.findByCodeForTenant(idOrCode, tenantId);
         }
         account.getActivities(); // force load
 
@@ -325,17 +320,16 @@ public class AccountController {
      * @return the account with this name.
      * @throws BusinessEntityNotFoundException
      */
-    @JsonView(AccountViews.Detailed.class)
     @RequestMapping(value = "/accounts/findByName/{name}", method = RequestMethod.GET)
-    public @ResponseBody Account findByName(
+    public @ResponseBody EntityModel<Account> findByName(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("name") String name)
             throws BusinessEntityNotFoundException {
-        LOGGER.debug(String.format("Find account with name %1$s", name));
+        LOGGER.debug("Find account with name {}", name);
 
         Account account = accountRepo.findByNameForTenant(name, tenantId);
         if (account == null) {
-            throw new BusinessEntityNotFoundException("account", name);
+            throw new BusinessEntityNotFoundException(Account.class, name);
         }
         account.getActivities(); // force load
 
@@ -348,9 +342,8 @@ public class AccountController {
      * @return the account with this name.
      * @throws BusinessEntityNotFoundException
      */
-    @JsonView(AccountViews.Summary.class)
     @RequestMapping(value = "/accounts/findByCustomField/{name}/{value}", method = RequestMethod.GET)
-    public @ResponseBody List<Account> findByCustomField(
+    public @ResponseBody List<EntityModel<Account>> findByCustomField(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("name") String name,
             @PathVariable("value") String value)
@@ -371,7 +364,7 @@ public class AccountController {
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
             @RequestBody Account updatedAccount) {
-        Account account = accountRepo.findOne(accountId);
+        Account account = findById(tenantId, accountId);
 
         BeanUtils.copyProperties(updatedAccount, account, "id", "activities", "notes", "documents");
         account.setTenantId(tenantId);
@@ -387,7 +380,7 @@ public class AccountController {
     public @ResponseBody void updateCustomFields(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
             @RequestBody Object customFields) throws IOException {
-        Account account = accountRepo.findOne(accountId);
+        Account account = findById(tenantId, accountId);
 
         if (customFields instanceof String) {
             JsonNode jsonNode = objectMapper.readTree((String) customFields);
@@ -421,7 +414,7 @@ public class AccountController {
     public @ResponseBody void setAlerts(@PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestBody String alerts) {
-        Account account = accountRepo.findOne(accountId);
+        Account account = findById(tenantId, accountId);
         account.setAlerts(alerts);
         account.setTenantId(tenantId);
         accountRepo.save(account);
@@ -436,10 +429,9 @@ public class AccountController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @PathVariable("stage") String stage) {
-        LOGGER.info(String.format("Setting contact %1$s to stage %2$s",
-                accountId, stage));
+        LOGGER.info("Setting contact {} to stage {}", accountId, stage);
 
-        Account account = accountRepo.findOne(accountId);
+        Account account = findById(tenantId, accountId);
         String oldStage = account.getStage();
         if (oldStage == null || !oldStage.equals(stage)) {
             account.setStage(stage);
@@ -464,7 +456,7 @@ public class AccountController {
     public @ResponseBody void setTags(@PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestBody String tags) {
-        Account account = accountRepo.findOne(accountId);
+        Account account = findById(tenantId, accountId);
         account.setTags(tags);
         account.setTenantId(tenantId);
         accountRepo.save(account);
@@ -477,7 +469,7 @@ public class AccountController {
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Document doc) {
-         Account account = accountRepo.findOne(accountId);
+         Account account = findById(tenantId, accountId);
          account.getDocuments().add(doc);
          account.setLastUpdated(new Date());
          accountRepo.save(account);
@@ -520,7 +512,7 @@ public class AccountController {
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Note note) {
-        Account account = accountRepo.findOne(accountId);
+        Account account = findById(tenantId, accountId);
         account.getNotes().add(note);
         account.setLastUpdated(new Date());
         accountRepo.save(account);
@@ -563,77 +555,25 @@ public class AccountController {
 
         List<Contact> contacts = contactRepo.findByAccountId(accountId, tenantId);
         for (Contact contact : contacts) {
-            contactRepo.delete(contact.getId());
+            contactRepo.deleteById(contact.getId());
         }
 
-        accountRepo.delete(accountId);
+        accountRepo.deleteById(accountId);
     }
 
-    private List<ShortAccount> wrap(List<Account> list) {
-        List<ShortAccount> resources = new ArrayList<ShortAccount>(list.size());
+    protected List<EntityModel<Account>> addLinks(final String tenantId, final List<Account> list) {
+        ArrayList<EntityModel<Account>> entities = new ArrayList<EntityModel<Account>>();
         for (Account account : list) {
-            resources.add(wrap(account));
+            entities.add(addLinks(tenantId, account));
         }
-        return resources;
+        return entities;
     }
 
-    private ShortAccount wrap(Account account) {
-        ShortAccount resource = new ShortAccount();
-        BeanUtils.copyProperties(account, resource);
-
-        String orgCode = (String) account.getCustomFieldValue("orgCode");
-        if (orgCode != null) {
-            resource.setOrgCode(orgCode);
-        }
-
-        Link detail = linkTo(AccountRepository.class, account.getId())
-                .withSelfRel();
-        resource.add(detail);
-        resource.setSelfRef(detail.getHref());
-        return resource;
-    }
-
-    private Link linkTo(
-            @SuppressWarnings("rawtypes") Class<? extends CrudRepository> clazz,
-            Long id) {
-        return new Link(clazz.getAnnotation(RepositoryRestResource.class)
-                .path() + "/" + id);
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class ShortAccount extends ResourceSupport {
-        private String selfRef;
-        private String name;
-        private String orgCode;
-        private String companyNumber;
-        private String businessWebsite;
-        private String email;
-        private String owner;
-        private String phone1;
-        private String parentOrg;
-        private String stage;
-        private String enquiryType;
-        private String accountType;
-        private String alerts;
-        private String tags;
-        private Date firstContact;
-        private Date lastUpdated;
-    }
-
-    private Account addLinks(String tenantId, Account account) {
-        List<Link> links = new ArrayList<Link>();
-        links.add(new Link(String.format("/%1$s/accounts/%2$s",
-                tenantId, account.getId())));
-        account.setLinks(links);
-        return account;
-    }
-    
-    private List<Account> addLinks(String tenantId, List<Account> accounts) {
-        for (Account account : accounts) {
-            addLinks(tenantId, account);
-        }
-        return accounts;
+    protected EntityModel<Account> addLinks(final String tenantId, final Account account) {
+        return EntityModel.of(account,
+                linkTo(methodOn(AccountController.class)
+                        .findEntityById(tenantId, account.getId().toString()))
+                                .withSelfRel());
     }
 }
 

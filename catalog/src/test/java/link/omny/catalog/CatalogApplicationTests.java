@@ -1,5 +1,5 @@
 /*******************************************************************************
- *Copyright 2015-2018 Tim Stephenson and contributors
+ *Copyright 2014-2021 Tim Stephenson and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -13,22 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package link.omny.custmgmt.json;
+package link.omny.catalog;
 
-import java.util.Set;
-import java.util.Map.Entry;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import link.omny.custmgmt.model.CustomContactField;
-import link.omny.supportservices.json.JsonCustomFieldDeserializer;
-import link.omny.supportservices.model.CustomField;
+@SpringBootTest(classes = TestApplication.class)
+public class CatalogApplicationTests {
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-public class JsonCustomContactFieldDeserializer extends
-        JsonCustomFieldDeserializer<Set<CustomContactField>> {
-
-    protected CustomField newInstance(Entry<String, JsonNode> entry) {
-        return new CustomContactField(entry.getKey(), entry.getValue().asText());
+    @Test
+    public void contextLoads() {
     }
 
 }

@@ -15,9 +15,9 @@
  ******************************************************************************/
 package link.omny.custmgmt.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -25,14 +25,14 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class ContactAvatarServiceTest {
 
     private static ContactAvatarService avatarSvc;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
         avatarSvc = new ContactAvatarService("target");
     }

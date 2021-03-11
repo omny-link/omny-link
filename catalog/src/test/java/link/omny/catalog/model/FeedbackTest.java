@@ -15,16 +15,16 @@
  ******************************************************************************/
 package link.omny.catalog.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,7 +32,7 @@ public class FeedbackTest {
 
     private static ObjectMapper objectMapper;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         objectMapper = new ObjectMapper();
     }
@@ -56,10 +56,10 @@ public class FeedbackTest {
 
         CustomFeedbackField field2 = new CustomFeedbackField("field1", "foo");
         assertNull(field2.getId());
-        feedback.setCustomFields(Collections.singletonList(field2));
+        feedback.setCustomFields(Collections.singleton(field2));
 
         assertEquals(1, feedback.getCustomFields().size());
-        assertEquals(field1.getId(), feedback.getCustomFields().get(0).getId());
+        assertEquals(field1.getId(), feedback.getCustomFields().iterator().next().getId());
 
         StringWriter out = new StringWriter();
         try {

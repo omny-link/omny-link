@@ -26,11 +26,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.catalog.model.Order;
 
-@RepositoryRestResource(path = "/orders")
+@RepositoryRestResource(path = "orders")
 public interface OrderRepository extends CrudRepository<Order, Long> {
-
-    @Override
-    Order findOne(Long id);
 
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
     List<Order> findAllForTenant(@Param("tenantId") String tenantId);
@@ -93,7 +90,7 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     @Override
     @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = :id")
     @Modifying(clearAutomatically = true)
-    public void delete(@Param("id") Long id);
+    public void deleteById(@Param("id") Long id);
 
     @Query("DELETE FROM CustomOrderItemField i WHERE i.orderItem.id = :orderItemId")
     @Modifying(clearAutomatically = true)

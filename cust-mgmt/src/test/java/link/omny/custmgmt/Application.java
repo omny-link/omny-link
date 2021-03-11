@@ -17,27 +17,15 @@ package link.omny.custmgmt;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import link.omny.supportservices.SupportServicesConfig;
 
 @EnableAutoConfiguration
 @Configuration
-@Import({ CustMgmtConfig.class })
-@ComponentScan(basePackages = { "link.omny.custmgmt", "io.onedecision.engine" })
-@EnableSwagger2
-public class Application extends WebMvcConfigurerAdapter {
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        // Allegedly sets welcome page though does not appear to be working
-        registry.addViewController("/").setViewName("index");
-        registry.addViewController("/login").setViewName("login");
-    }
+@Import({ CustMgmtConfig.class, SupportServicesConfig.class })
+public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

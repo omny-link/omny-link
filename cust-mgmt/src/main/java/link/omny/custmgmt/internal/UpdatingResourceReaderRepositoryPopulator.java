@@ -75,7 +75,7 @@ public class UpdatingResourceReaderRepositoryPopulator extends
             ClassLoader classLoader) {
         // TODO this is necessary because spring data classes are not extensible
         super(reader, classLoader);
-        Assert.notNull(reader);
+        Assert.notNull(reader, "The resource to be read must not be null");
 
         this.reader = reader;
         this.classLoader = classLoader;
@@ -92,7 +92,7 @@ public class UpdatingResourceReaderRepositoryPopulator extends
      * @throws IOException
      */
     public void setResourceLocation(String location) throws IOException {
-        Assert.hasText(location);
+        Assert.hasText(location, "Resource location must not be null");
         setResources(resolver.getResources(location));
     }
 
@@ -172,7 +172,9 @@ public class UpdatingResourceReaderRepositoryPopulator extends
     @SuppressWarnings({ "unchecked" })
     private void persist(Object object, Repositories repositories) {
         CrudRepository<Object, ?> repositoryFor = (CrudRepository<Object, ?>) repositories
-                .getRepositoryFor(object.getClass());
+                .getRepositoryFor(object.getClass())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("No repository for %1$s", object.getClass().getName())));
         LOGGER.debug(String.format("Persisting %s using repository %s", object,
                 repositoryFor));
         try {

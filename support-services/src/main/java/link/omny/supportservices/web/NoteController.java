@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package link.omny.custmgmt.web;
+package link.omny.supportservices.web;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,8 +32,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import link.omny.custmgmt.model.Note;
-import link.omny.custmgmt.repositories.NoteRepository;
+import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
+import link.omny.supportservices.model.Note;
+import link.omny.supportservices.repositories.NoteRepository;
 
 /**
  * REST web service for uploading and accessing a file of JSON Notes (over and
@@ -49,10 +50,16 @@ public class NoteController {
             .getLogger(NoteController.class);
 
     @Autowired
-    private NoteRepository repo;
+    private NoteRepository noteRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    protected Note findById(final String tenantId, final Long id) {
+        return noteRepo.findById(id)
+                .orElseThrow(() -> new BusinessEntityNotFoundException(
+                        Note.class, id));
+    }
 
     /**
      * Imports JSON representation of accounts.
@@ -80,7 +87,7 @@ public class NoteController {
         LOGGER.info(String.format("  found %1$d notes", list.size()));
 
         Note.setBulkImport(true);
-        Iterable<Note> result = repo.save(list);
+        Iterable<Note> result = noteRepo.saveAll(list);
         Note.setBulkImport(false);
         LOGGER.info("  saved.");
 
@@ -95,9 +102,9 @@ public class NoteController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("noteId") Long noteId,
             @RequestParam("favorite") boolean favorite) {
-        Note note = repo.findOne(noteId);
+        Note note = findById(tenantId, noteId);
         note.setFavorite(favorite);
-        repo.save(note);
+        noteRepo.save(note);
     }
 
     /**
@@ -108,8 +115,8 @@ public class NoteController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("noteId") Long noteId,
             @RequestParam("confidential") boolean confidential) {
-        Note note = repo.findOne(noteId);
+        Note note = findById(tenantId, noteId);
         note.setConfidential(confidential);
-        repo.save(note);
+        noteRepo.save(note);
     }
 }

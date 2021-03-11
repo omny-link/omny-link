@@ -15,11 +15,11 @@
  ******************************************************************************/
 package link.omny.catalog.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,18 +27,18 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import link.omny.custmgmt.model.Note;
+import link.omny.supportservices.model.Note;
 
 public class OrderTest {
 
     private static ObjectMapper objectMapper;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         objectMapper = new ObjectMapper();
     }
@@ -68,15 +68,15 @@ public class OrderTest {
 
         CustomOrderField field2 = new CustomOrderField("field1", "foo");
         assertNull(field2.getId());
-        order.setCustomFields(Collections.singletonList(field2));
+        order.setCustomFields(Collections.singleton(field2));
 
         orderItem1.addCustomField(
                 new CustomOrderItemField("colour", "Blue"));
 
         assertEquals(1, order.getCustomFields().size());
         assertEquals(1, order.getOrderItems().size());
-        assertEquals(1, order.getOrderItems().get(0).getCustomFields().size());
-        assertEquals(field1.getId(), order.getCustomFields().get(0).getId());
+        assertEquals(1, order.getOrderItems().iterator().next().getCustomFields().size());
+        assertEquals(field1.getId(), order.getCustomFields().iterator().next().getId());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class OrderTest {
             assertNotNull(order);
             assertNotNull(order.getOrderItems());
             assertEquals(2, order.getOrderItems().size());
-            OrderItem item1 = order.getOrderItems().get(0);
+            OrderItem item1 = order.getOrderItems().iterator().next();
             assertNotNull(item1.getStockItem());
             assertNotNull(item1.getStockItem().getId());
             assertNotNull(item1.getCustomFields());

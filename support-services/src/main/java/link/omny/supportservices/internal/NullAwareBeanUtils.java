@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package link.omny.custmgmt.internal;
+package link.omny.supportservices.internal;
 
 import java.beans.PropertyDescriptor;
 import java.util.HashSet;

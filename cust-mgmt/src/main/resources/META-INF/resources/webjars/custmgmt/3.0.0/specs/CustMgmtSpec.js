@@ -13,7 +13,7 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-describe("Contact Management API", function() {
+describe("Contact management", function() {
   var tenantId = 'acme';
   var $rh = new RestEntityHelper({
     server: window['$env'] == undefined ? 'http://localhost:8080' : $env.server,
@@ -228,15 +228,17 @@ describe("Contact Management API", function() {
       expect(contacts[0].firstName).toEqual(contact.firstName);
       expect(contacts[0].lastName).toEqual(contact.lastName);
       expect(contacts[0].email).toEqual(contact.email);
-      expect(contacts[0].accountName).toEqual(account.name);
+      expect(contacts[0].account.name).toEqual(account.name);
 
       done();
     });
   });
 
   it("fetches complete contact inc. child entities and check all fields are correct", function(done) {
-    console.log('tenantUri: '+$rh.tenantUri(contact));
-    $rh.getJSON($rh.tenantUri(contact),  function( data ) {
+	var uri = $rh.tenantUri(contact);
+    console.log('tenantUri: '+uri);
+    expect(uri).toBeDefined();
+    $rh.getJSON(uri,  function( data ) {
 
       expect($rh.localId(data)).toEqual($rh.localId(contact));
       expect(data.firstName).toEqual(contact.firstName);
@@ -252,11 +254,13 @@ describe("Contact Management API", function() {
       expect(data.account.name).toEqual(account.name);
       expect(data.account.firstContact).toBeDefined();
 
-      expect(data.activities.length).toEqual(2);
+      expect(data.activities.length).toEqual(3);
       expect(data.activities[0].type).toEqual(activity.type);
       expect(data.activities[0].content).toEqual(activity.content);
       expect(data.activities[1].type).toEqual('TRANSITION_TO_STAGE');
       expect(data.activities[1].content).toEqual('From null to tested');
+      expect(data.activities[2].type).toEqual('LINK_ACCOUNT_TO_CONTACT');
+      expect(data.activities[2].content).toMatch(/Linked account [0-9]* to contact [0-9]*/);
 
       expect(data.notes.length).toEqual(1);
       expect(data.notes[0].author).toEqual(note.author);
