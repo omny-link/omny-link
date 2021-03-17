@@ -1,0 +1,41 @@
+{
+  "short_name": "KnowProcess Repository",
+  "name": "KnowProcess Repository",
+  "background_color": "#779c95",
+  "theme_color": "#da472ae",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "http://localhost:8083/https://api.knowprocess.com/images/icon/knowprocess-icon-16x16.png",
+      "type": "image/png",
+      "sizes": "16x16"
+    },
+    {
+      "src": "http://localhost:8083/https://api.knowprocess.com/images/icon/knowprocess-icon-16x16.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "http://localhost:8083/images/icon/knowprocess-icon-72x72.png",
+      "type": "image/png",
+      "sizes": "72x72"
+    },
+    {
+      "src": "http://localhost:8083/images/icon/knowprocess-icon-96x96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "http://localhost:8083/images/icon/knowprocess-144x144.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "http://localhost:8083/images/icon/knowprocess-icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "index.html?launcher=true"
+}
+

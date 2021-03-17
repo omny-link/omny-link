@@ -1,5 +1,5 @@
 /*******************************************************************************
- *Copyright 2011-2018 Tim Stephenson and contributors
+ *Copyright 2014-2021 Tim Stephenson and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -20,30 +20,42 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class JsEnvironmentController {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(JsEnvironmentController.class);
 
-    @Value("${spring.application.name:Know Process}")
+    protected static final String ENV = "var $env = (function () {\n" +
+            "  var me = {\n" +
+            "    appName: '%1$s',\n" +
+            "    server: '%2$s',\n" +
+            "    tagLine: '%3$s'\n" +
+            "  };\n" +
+            "\n" +
+            "  return me;\n" +
+            "}());\n";
+
+    @Value("${spring.application.name:CRM}")
     protected String appName;
 
-    @Value("${kp.application.tag-line:}")
+    @Value("${crm.application.tag-line:}")
     protected String tagLine;
 
     @Value("${server.port:8080}")
     protected String serverPort;
 
-    @Value("${kp.application.base-uri:}")
+    @Value("${crm.application.base-uri:}")
     protected String restBaseUri;
 
-    @Value("${kp.application.tenant-config-url:}")
+    @Value("${crm.application.tenant-config-url:}")
     protected String tenantConfigUrl;
 
     public String getRestBaseUri() {
@@ -53,22 +65,15 @@ public class JsEnvironmentController {
         return restBaseUri;
     }
 
-    public String getTenantConfigUrl() {
-        if (tenantConfigUrl.length() == 0) {
-            tenantConfigUrl = getRestBaseUri() + "/tenants/omny.json";
-        }
-        return tenantConfigUrl;
-    }
-
     @RequestMapping(path = "/js/env.js", method = RequestMethod.GET)
-    public final String getEnvironment(HttpServletResponse resp, Model model)
+    public final ResponseEntity<String> getEnvironment(HttpServletResponse resp)
             throws Exception {
-        resp.setContentType("text/javascript");
-        model.addAttribute("appName", appName);
-        model.addAttribute("tagLine", tagLine);
-        model.addAttribute("restBaseUri", getRestBaseUri());
-        model.addAttribute("tenantConfig", getTenantConfigUrl());
-        return "/js-env";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "text/javascript");
+        return new ResponseEntity<String>(
+                String.format(ENV, appName, getRestBaseUri(), tagLine),
+                headers,
+                HttpStatus.OK);
     }
 
 }
