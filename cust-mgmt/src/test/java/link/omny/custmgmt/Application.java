@@ -30,11 +30,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.knowprocess.auth.AuthConfig;
-
 @EnableAutoConfiguration
 @Configuration
-@Import({ AuthConfig.class, CustMgmtConfig.class })
+@Import({ CustMgmtConfig.class })
 @ComponentScan(basePackages = { "link.omny.custmgmt", "io.onedecision.engine" })
 public class Application extends WebMvcConfigurerAdapter {
 

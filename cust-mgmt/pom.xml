@@ -30,7 +30,7 @@
     <groupId>link.omny</groupId>
     <artifactId>omny-link-root</artifactId>
     <relativePath>..</relativePath>
-    <version>2.2.4</version>
+    <version>3.0.0</version>
   </parent>
 
   <properties>
@@ -85,56 +85,12 @@
       <artifactId>support-services</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.knowprocess</groupId>
-      <artifactId>auth</artifactId>
-      <version>${kp-auth.version}</version>
-    </dependency>
     <!-- https://mvnrepository.com/artifact/batik/batik-transcoder -->
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-all</artifactId>
       <version>${batik.version}</version>
     </dependency>
-    <!-- Web jars -->
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>bootstrap</artifactId>
-      <version>3.3.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>ractive</artifactId>
-      <version>0.7.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>jquery-ui</artifactId>
-      <version>1.11.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars.bower</groupId>
-      <artifactId>chosen</artifactId>
-      <version>1.4.2</version>
-    </dependency>
-    <dependency>
-	    <groupId>org.webjars</groupId>
-	    <artifactId>ckeditor</artifactId>
-	    <version>4.4.7</version><!--  4.5.11 -->
-    </dependency>
-    <dependency>
-      <groupId>com.knowprocess</groupId>
-      <artifactId>icons</artifactId>
-      <version>${kp-icons.version}</version>
-    </dependency>
-
-    <!-- Without >=2.5.0 get Sax 2 parser exception on Batik transcoder -->
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>${xerces.version}</version>
-    </dependency>
-
   </dependencies>
 
   <dependencyManagement>

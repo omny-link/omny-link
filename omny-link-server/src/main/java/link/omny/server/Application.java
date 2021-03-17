@@ -38,7 +38,6 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.knowprocess.auth.AuthConfig;
 import com.knowprocess.bpm.web.converters.CsvBeanConverter;
 
 import io.onedecision.engine.OneDecisionConfig;
@@ -54,7 +53,7 @@ import link.omny.supportservices.SupportServicesConfig;
 
 @Configuration
 @EnableAutoConfiguration
-@Import({ AuthConfig.class, OneDecisionConfig.class, OneDecisionDomainConfig.class,
+@Import({ OneDecisionConfig.class, OneDecisionDomainConfig.class,
         CustMgmtConfig.class, CatalogConfig.class,
         SupportServicesConfig.class })
 @ComponentScan(basePackages = { "link.omny.acctmgmt",

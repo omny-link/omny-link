@@ -55,3 +55,11 @@ Getting started
   user: you@example.com
   pass: secret
   ```
+
+Security
+--------
+
+Roles expected:
+ - admin
+ - power-user
+ - product-owner

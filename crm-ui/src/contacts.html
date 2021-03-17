@@ -14,12 +14,14 @@
    the License.
 -->
 <!doctype html>
-<html lang='en'>
+<html lang='en-GB'>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset='utf-8'>
-  <title>Omny Link CRM from KnowProcess</title>
+  <title></title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha512-tqup5t5XyJXlvX8b/E9pI0swGA4AugszFqvdWASa2/484oj4HW7UaXKwRmnMLKFp3ZWeTwjjCh6J40AvdUQhrA==" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tag-it/2.0/css/jquery.tagit.min.css" integrity="sha512-s+2BTJw9ukw9xWjQlUYSRqzjCsVYs9FRaRvP4nNaguhBYC0P5BYKxY0lcjIcTFrphdschdavRSBFQ9fk41fQOQ==" crossorigin="anonymous" />
   <link href="/vsn/css/base.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="https://api.knowprocess.com/images/icon/knowprocess-icon-16x16.png" />
 </head>
@@ -27,43 +29,36 @@
   <div class="clearfix" id="messages"></div>
   <div class="container" id="container"></div>
   <script id='template' type='text/ractive'>
-
     {{>profileArea}}
-    {{>sidebar { active: 'index.html' }}}
-    {{>titleArea}}
+    {{>titleArea { title: title }}}
+
+    {{>contactListSect}}
+    {{>currentContactSect}}
+
+    {{>poweredBy}}
+    {{>sidebar { active: 'contacts.html' }}}
     {{>helpModal}}
-
-    <section class="resultsSect">
-      <h2>Oops! That page doesn't seem to exist, perhaps you meant one of these?</h2>
-      <ul style="list-style:none;">
-        {{#tenant.toolbar}}
-          {{#if matchRole(role)  && featureEnabled(feature)}}
-            <li>
-              <a href="{{context}}{{url}}">
-                <span class="glyphicon glyphicon-btn {{role}} {{icon}}" style="display:inline-block" title="{{title}}"></span>
-                <span>{{title}}</span>
-              </a>
-              <span>{{description}}</span>
-            </li>
-          {{/if}}
-        {{/}}
-      </ul>
-    </section>
-
+    {{>mergeModal}}
+    {{>customActionModal}}
+    {{>supportBar}}
   </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js" integrity="sha512-h9kKZlwV1xrIcr2LwAPZhjlkx+x62mNwuQK5PAu9d3D+JXMNlGx8akZbqpXvp0vA54rz+DrqYVrzUGDMhwKmwQ==" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ractive/0.7.3/ractive.min.js" integrity="sha512-Rc5U9ypL+59SbpoVDIlyoVe0fkRaMHY3BqgVGMuIm9A3/MNoOnN9ASwfC836TqTbRJ0MJv/npB1KhspFUXczpg==" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" integrity="sha512-BHDCWLtdp0XpAFccP2NifCbJfYoYhsRSZOUM3KnAxy2b/Ay3Bn91frud+3A95brA4wDWV3yEOZrJqgV8aZRXUQ==" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tag-it/2.0/js/tag-it.min.js" integrity="sha512-/+S+ux3SPgnYy6QTupGfK3nvRnXTYDRHtXMiaGsZaBHBa7sMWWHXdktMhfRlcx1ELUCLINAyWqiaC6a7EaIRtA==" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ractive/1.0.0-build-9/ractive.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/autolinker/1.6.2/Autolinker.min.js"></script>
 
   <script src="http://localhost:8080/js/env.js"></script>
+  
   <script src="/vsn/js/string-functions.js"></script>
   <script src="/vsn/js/i18n.js"></script>
 
   <script src="https://auth.knowprocess.com/auth/js/keycloak.js"></script>
   <script src="/vsn/js/base.js"></script>
-  <script src="/vsn/js/index.js"></script>
+  <script src="/vsn/js/cust-mgmt.js"></script>
   <script src="/vsn/js/support.js"></script>
-
+  
 </body>
 </html>

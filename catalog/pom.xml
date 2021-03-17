@@ -29,7 +29,7 @@
     <groupId>link.omny</groupId>
     <artifactId>omny-link-root</artifactId>
     <relativePath>..</relativePath>
-    <version>2.2.4</version>
+    <version>3.0.0</version>
   </parent>
 
   <properties>
@@ -58,16 +58,16 @@
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
     </dependency>
-		<dependency>
-		  <groupId>commons-io</groupId>
-		  <artifactId>commons-io</artifactId>
-		  <version>2.7</version>
-		</dependency>
     <dependency>
-	    <groupId>org.apache.commons</groupId>
-	    <artifactId>commons-csv</artifactId>
-	    <version>1.2</version>
-	  </dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>1.2</version>
+    </dependency>
     <dependency>
       <groupId>com.knowprocess.bpm</groupId>
       <artifactId>work-mgmt</artifactId>
@@ -88,38 +88,6 @@
       <artifactId>support-services</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- Generates REST documentation -->
-    <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger2</artifactId>
-        <version>2.0.0</version>
-    </dependency>
-    <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger-ui</artifactId>
-        <version>2.0.0</version>
-    </dependency>
-    <!-- Web jars -->
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>bootstrap</artifactId>
-      <version>3.3.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>ractive</artifactId>
-      <version>0.7.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>jquery-ui</artifactId>
-      <version>1.11.4</version>
-    </dependency>
-    <dependency>
-      <groupId>com.knowprocess</groupId>
-      <artifactId>icons</artifactId>
-      <version>${kp-icons.version}</version>
-    </dependency>    
   </dependencies>
 
   <build>

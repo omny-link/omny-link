@@ -1,0 +1,8 @@
+{
+  "realm": "knowprocess",
+  "auth-server-url": "https://auth.knowprocess.com/auth/",
+  "ssl-required": "external",
+  "resource": "crm",
+  "public-client": true,
+  "confidential-port": 0
+}

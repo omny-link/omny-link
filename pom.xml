@@ -6,7 +6,7 @@
   <groupId>link.omny</groupId>
   <artifactId>omny-link-root</artifactId>
   <packaging>pom</packaging>
-  <version>2.2.4</version>
+  <version>3.0.0</version>
   
   <organization>
     <name>Omny Link</name>
@@ -25,18 +25,12 @@
     <jasmine-boot.version>1.0.0.20181021</jasmine-boot.version>
     <java.version>1.8</java.version>
     <javax-json.version>1.0.4.20170227</javax-json.version>
-    <activiti.version>5.18.0.20151117</activiti.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <omny-link.version>2.2.4</omny-link.version>
-    <!-- Should express as range: [1.0,1.1) -->
-    <kp-auth.version>1.0.0.2</kp-auth.version>
-    <kp-icons.version>3.1.0</kp-icons.version>
-    <work-mgmt.version>2.3.0</work-mgmt.version>
-    <activiti.bdd.version>5.19.0.20161207</activiti.bdd.version>
+    <omny-link.version>3.0.0</omny-link.version>
     <onedecision.version>1.2.0-RC1</onedecision.version>
+    <kp-icons.version>3.1.0</kp-icons.version>
     <plantuml.version>8059</plantuml.version>
-    <rometools.version>1.7.0</rometools.version>
-    <xerces.version>2.11.0</xerces.version>
+    <work-mgmt.version>2.3.0</work-mgmt.version>
   </properties>
 
   <distributionManagement>
@@ -56,7 +50,7 @@
 
   <issueManagement>
     <system>Github</system>
-    <url>https://github.com/OmnyLink/OmnyLink/issues</url>
+    <url>https://github.com/omny-link/omny-link/issues</url>
   </issueManagement>
 
   <scm>
