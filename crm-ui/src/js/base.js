@@ -506,6 +506,7 @@ var BaseRactive = Ractive.extend({
       // console.log('... response: '+JSON.stringify(response));
       ractive.set('saveObserver', false);
       ractive.set('tenant', response);
+      ractive.fetch();
       ractive.applyBranding();
       ractive.initAutoComplete();
       ractive.set('saveObserver', true);
@@ -849,7 +850,6 @@ $(document).ready(function() {
         ractive.getProfile();
         ractive.set('tenant.id', profile.attributes['tenantId']);
         ractive.loadTenantConfig(ractive.get('tenant.id'));
-        ractive.fetch();
       }).catch(function(e) {
         console.error('Failed to load user profile: '+e);
       });
