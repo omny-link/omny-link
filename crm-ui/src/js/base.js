@@ -246,6 +246,9 @@ var BaseRactive = Ractive.extend({
   getServer: function() {
     return ractive.get('server')==undefined ? '' : ractive.get('server');
   },
+  getBpmServer: function() {
+    return 'https://api.knowprocess.com';
+  },
   getStockItemNames : function (order) {
     var stockItemIds = [];
     if (order == undefined
@@ -613,10 +616,69 @@ var BaseRactive = Ractive.extend({
     });
   },
   startCustomAction: function(key, label, object, form, businessKey) {
-    // TODO
+    console.log('startCustomAction: '+key+(object == undefined ? '' : ' for '+object.id));
+    var instanceToStart = {
+      processDefinitionKey: key,
+      businessKey: businessKey == undefined ? label : businessKey,
+      label: label,
+      processVariables: {
+        initiator: ractive.get('profile.username'),
+        tenantId: ractive.get('tenant.id'),
+      }
+    };
+
+    if (object != undefined) {
+      var singularEntityName = ractive.entityName(object).toCamelCase().singular();
+      instanceToStart.processVariables[singularEntityName+'Id'] = ractive.uri(object);
+      instanceToStart.processVariables[singularEntityName+'LocalId'] = ractive.localId(ractive.uri(object));
+      // backward compatibility on existing procs
+      instanceToStart.processVariables[singularEntityName+'localId'] = ractive.localId(ractive.uri(object));
+    }
+    console.log(JSON.stringify(instanceToStart));
+    // save what we know so far...
+    ractive.set('instanceToStart',instanceToStart);
+    ractive.initAutoComplete();
+    if (form == undefined || !form) {
+      // ... and submit
+      ractive.submitCustomAction();
+    } else {
+      // ... or display form, override submit handler with $('#submitCustomActionForm').off('click').on('click',function)
+      $('#submitCustomActionForm').off().on('click', ractive.submitCustomAction);
+      $('#customActionModalSect').modal('show');
+    }
   },
   submitCustomAction: function() {
-    // TODO
+    console.info('submitCustomAction');
+    if (document.getElementById('customActionForm').checkValidity()) {
+      if (ractive.get('instanceToStart.processDefinitionKeyOverride') != undefined) ractive.set('instanceToStart.processDefinitionKey', ractive.get('instanceToStart.processDefinitionKeyOverride'));
+      $.ajax({
+        url: ractive.getBpmServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(ractive.get('instanceToStart')),
+        success: function(data, textStatus, jqXHR) {
+          console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
+          if (ractive.get('instanceToStart.label')==ractive.get('instanceToStart.businessKey')) {
+            ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'"');
+          } else {
+            ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
+          }
+          $('#customActionModalSect').modal('hide');
+          if (document.location.href.endsWith('contacts.html')) {
+            ractive.select(ractive.get('current'));// refresh individual record
+          } else {
+            ractive.fetch(); // refresh list
+          }
+          // @deprecated use ractive's own callbacks
+          if (ractive.customActionCallbacks!=undefined) ractive.customActionCallbacks.fire(jqXHR.getResponseHeader('Location'));
+          ractive.fire('postCustomActionSubmit');
+          // cleanup ready for next time
+          $('#submitCustomActionForm').off('click');
+        },
+      });
+    } else {
+      ractive.showFormError('customActionForm','Please correct the highlighted fields');
+    }
   },
   stripProjection: function(link) {
     if (link==undefined) return;
@@ -802,6 +864,7 @@ $(document).ready(function() {
   });
 
   ractive.loadStandardPartials(ractive.get('stdPartials'));
+  ractive.loadStandardPartials(ractive.get('workPartials'));
 
   $( document ).ajaxComplete(function( event, jqXHR, ajaxOptions ) {
     if (jqXHR.status > 0) ractive.showReconnected();

@@ -303,9 +303,9 @@ var ractive = new BaseRactive({
       { "name": "supportBar", "url": "/partials/support-bar.html"}
     ],
     workPartials: [
-      { "name": "currentTaskListSect", "url": "/partials/task-list-sect.html"},
-      { "name": "instanceListSect", "url": "/partials/instance-list-sect.html"},
-      { "name": "taskListTable", "url": "/partials/task-list-table.html"}
+      { "name": "currentTaskListSect", "url": "https://api.knowprocess.com/partials/task-list-sect.html"},
+      { "name": "instanceListSect", "url": "https://api.knowprocess.com/partials/instance-list-sect.html"},
+      { "name": "taskListTable", "url": "https://api.knowprocess.com/partials/task-list-table.html"}
     ]
   },
   partials: {

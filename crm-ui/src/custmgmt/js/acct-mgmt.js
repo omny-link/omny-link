@@ -381,9 +381,9 @@ var ractive = new BaseRactive({
           { "name": "supportBar", "url": "/partials/support-bar.html" }
         ],
         workPartials: [
-          { "name": "currentTaskListSect", "url": "/partials/task-list-sect.html" },
-          { "name": "instanceListSect", "url": "/partials/instance-list-sect.html" },
-          { "name": "taskListTable", "url": "/partials/task-list-table.html" }
+          { "name": "currentTaskListSect", "url": "https://api.knowprocess.com/partials/task-list-sect.html" },
+          { "name": "instanceListSect", "url": "https://api.knowprocess.com/partials/instance-list-sect.html" },
+          { "name": "taskListTable", "url": "https://api.knowprocess.com/partials/task-list-table.html" }
         ],
         uniq: function(fieldName, arr) {
           return Array.uniq(fieldName, arr);
@@ -749,7 +749,7 @@ var ractive = new BaseRactive({
         ractive.set('saveObserver', false);
         $.ajax({
           dataType: "json",
-          url: ractive.getServer() + '/' + ractive.get('tenant.id')
+          url: ractive.getBpmServer() + '/' + ractive.get('tenant.id')
               + '/tasks/findByVar/accountId/' + accountId,
           crossDomain: true,
           success: function(data) {
