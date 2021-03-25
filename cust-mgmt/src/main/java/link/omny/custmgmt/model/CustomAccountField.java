@@ -21,7 +21,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import link.omny.supportservices.model.CustomField;
 import lombok.Data;
@@ -41,7 +41,7 @@ public class CustomAccountField extends CustomField {
     private static final long serialVersionUID = -4837634414877249693L;
 
     @ManyToOne(optional = false, targetEntity = Account.class)
-    @JsonBackReference
+    @JsonIgnore
     private Account account;
 
     public CustomAccountField(String key, String value) {

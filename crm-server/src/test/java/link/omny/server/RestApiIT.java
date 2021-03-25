@@ -13,9 +13,7 @@ import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,14 +26,13 @@ public class RestApiIT {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    @Disabled
     public void testAccountApi() throws IOException {
         StringBuilder sb = createScript(
                 "classpath:META-INF/resources/webjars/jasmine-boot/1.0.0/js/rest-helper.js",
                 "classpath:META-INF/resources/webjars/custmgmt/3.0.0/specs/AcctMgmtSpec.js" );
 
         JsonNode report = runScript(sb);
-        assertEquals(10, report.get("suite").get("totalSpecsDefined").asInt());
+        assertEquals(15, report.get("suite").get("totalSpecsDefined").asInt());
         assertNoFailedExpectations(report);
     }
 
@@ -51,14 +48,13 @@ public class RestApiIT {
     }
 
     @Test
-    @Disabled
     public void testOrderApi() throws IOException {
         StringBuilder sb = createScript(
                 "classpath:META-INF/resources/webjars/jasmine-boot/1.0.0/js/rest-helper.js",
                 "classpath:META-INF/resources/webjars/catalog/3.0.0/specs/OrderSpec.js" );
 
         JsonNode report = runScript(sb);
-        assertEquals(12, report.get("suite").get("totalSpecsDefined").asInt());
+        assertEquals(13, report.get("suite").get("totalSpecsDefined").asInt());
         assertNoFailedExpectations(report);
     }
 
@@ -78,7 +74,7 @@ public class RestApiIT {
             Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
             String report = (String) bindings.get("report");
             return objectMapper.readTree(report);
-        } catch (ScriptException e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             fail();
             return null;

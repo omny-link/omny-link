@@ -29,7 +29,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import link.omny.catalog.TestApplication;
+import link.omny.catalog.CatalogTestApplication;
 import link.omny.catalog.model.CustomFeedbackField;
 import link.omny.catalog.model.CustomOrderField;
 import link.omny.catalog.model.CustomOrderItemField;
@@ -41,7 +41,7 @@ import link.omny.catalog.model.OrderItem;
  * @author Tim Stephenson
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = TestApplication.class)
+@SpringBootTest(classes = CatalogTestApplication.class)
 @WebAppConfiguration
 public class OrderContollerTest {
     private static final String CUST_FIELD_COLOUR = "colour";

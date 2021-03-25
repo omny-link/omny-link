@@ -18,7 +18,7 @@ package link.omny.catalog;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = TestApplication.class)
+@SpringBootTest(classes = CatalogTestApplication.class)
 public class CatalogApplicationTests {
 
     @Test

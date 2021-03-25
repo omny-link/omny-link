@@ -1,11 +1,7 @@
 {
-  "customFields": {
-    "type":"A Custom Field"
-  },
   "firstName":"Bart",
   "lastName":"Simpson",
   "email":"bart.simpson@example.com",
-  "emailOptIn": "No, never!",
   "phone1":"07788 123456",
   "tenantId":"springfield",
   "utm_source":"google",
@@ -13,5 +9,8 @@
   "utm_campaign":"testing",
   "accountType":"Customer",
   "enquiryType":"testing",
-  "stage":"Enquiry"
+  "stage":"Enquiry",
+  "customFields": {
+    "drivingLicence":"false"
+  }
 }

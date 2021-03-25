@@ -21,14 +21,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import link.omny.supportservices.SupportServicesConfig;
 
 @SpringBootTest@SpringBootApplication
 @Import({ CatalogConfig.class, SupportServicesConfig.class })
 @ComponentScan(basePackages = { "link.omny.catalog" })
-public class TestApplication extends WebMvcConfigurerAdapter {
+public class CatalogTestApplication implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -38,6 +38,6 @@ public class TestApplication extends WebMvcConfigurerAdapter {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(TestApplication.class, args);
+        SpringApplication.run(CatalogTestApplication.class, args);
     }
 }

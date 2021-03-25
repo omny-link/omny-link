@@ -138,6 +138,20 @@ describe("Product catalogue", function() {
     });
   });
 
+  it("verifies the order's stage has been correctly set", function(done) {
+	$rh.ajax({
+	  url: $rh.tenantUri(order),
+	  type: 'GET',
+	  contentType: 'application/json',
+      success: function(data, textStatus, jqXHR) {
+        expect(jqXHR.status).toEqual(200);
+        expect(data.stage).toEqual('dispatched');
+        order = data;
+        done();
+      }
+    });
+  });
+	  
   it("updates the new order", function(done) {
     order.dueDate = '2017-02-15';
     order.owner = 'sales@slaterock.com';
@@ -189,7 +203,7 @@ describe("Product catalogue", function() {
       expect($rh.localId(data)).toEqual($rh.localId(order));
       expect(data.name).toEqual(order.name);
       expect(data.date).toEqual(order.date);
-      expect(''+data.price).toEqual(order.price);
+      expect(data.price).toEqual(order.price);
       expect(data.dueDate).toEqual(order.dueDate);
       expect(data.order).toEqual(order.order);
       expect(data.stage).toEqual('dispatched');

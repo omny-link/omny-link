@@ -41,11 +41,5 @@
 	"price": null,
 	"invoiceRef": null,
 	"created": "2016-11-16T12:40:03.000+0000",
-	"lastUpdated": "2016-11-17T09:31:01.000+0000",
-	"links": [
-		{
-			"rel": "self",
-			"href": "/orders/76"
-		}
-	]
+	"lastUpdated": "2016-11-17T09:31:01.000+0000"
 }

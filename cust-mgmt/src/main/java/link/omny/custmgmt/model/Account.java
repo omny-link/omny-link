@@ -46,8 +46,7 @@ import javax.validation.constraints.Size;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -299,13 +298,13 @@ public class Account implements Serializable {
     @Column(name = "last_updated")
     private Date lastUpdated;
 
-    @OneToMany(mappedBy = "account", targetEntity = Contact.class)
+    @OneToMany(mappedBy = "account", targetEntity = Contact.class, fetch = FetchType.LAZY)
     // TODO See Contact.account for details of limitation
-    @JsonBackReference
+    // @JsonBackReference
+    @JsonIgnore
     private List<Contact> contact;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "account", targetEntity = CustomAccountField.class)
-    @JsonManagedReference
     @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     private Set<CustomAccountField> customFields;
@@ -335,7 +334,7 @@ public class Account implements Serializable {
         return customFields;
     }
 
-    public void setCustomFields(List<CustomAccountField> fields) {
+    public void setCustomFields(Set<CustomAccountField> fields) {
         for (CustomAccountField newField : fields) {
             setCustomField(newField);
         }

@@ -39,7 +39,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import link.omny.catalog.TestApplication;
+import link.omny.catalog.CatalogTestApplication;
 import link.omny.catalog.model.CustomStockItemField;
 import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
@@ -50,7 +50,7 @@ import link.omny.catalog.model.api.ShortStockItem;
  * @author Tim Stephenson
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = TestApplication.class)
+@SpringBootTest(classes = CatalogTestApplication.class)
 @WebAppConfiguration
 public class StockControllerTest {
 
@@ -112,8 +112,9 @@ public class StockControllerTest {
 
     protected void update(StockCategory category) {
         Long itemId = category.getStockItems().iterator().next().getId();
-        StockItem stockItem = itemController.findById(
-                category.getTenantId(), itemId);
+        StockItem stockItem = itemController
+                .findEntityById(category.getTenantId(), itemId.toString())
+                .getContent();
         assertNotNull(stockItem.getId());
 
         GregorianCalendar cal = new GregorianCalendar();
@@ -126,13 +127,11 @@ public class StockControllerTest {
 
         itemController.update(TENANT_ID, stockItem.getId(), stockItem);
 
-        StockItem stockItem2 = itemController.findById(
-                category.getTenantId(), itemId);
-        System.out.println("  "+ stockItem);
-
-        System.out.println("  "+ stockItem2);
-//        assertEquals(stockItem.getCustomFields().size(), stockItem2
-//                .getCustomFields().size());
+        StockItem stockItem2 = itemController
+                .findEntityById(category.getTenantId(), itemId.toString())
+                .getContent();
+        assertEquals(stockItem.getCustomFields().size(), stockItem2
+                .getCustomFields().size());
     }
 
     protected void findAll(StockCategory category, StockItem officeItem,
@@ -204,7 +203,9 @@ public class StockControllerTest {
         assertEquals(StockItem.DEFAULT_IMAGE_COUNT, ((StockItem) foundItem).getImages().size());
         Long itemId = ((StockItem) foundItem).getId();
         // check custom fields (needs extra fetch as not all included in search)
-        StockItem stockItem = itemController.findById(category.getTenantId(), itemId);
+        StockItem stockItem = itemController
+                .findEntityById(category.getTenantId(), itemId.toString())
+                .getContent();
         assertNotNull(stockItem.getId());
         assertEquals(officeItem.getCustomFields().size(), stockItem
                 .getCustomFields().size());

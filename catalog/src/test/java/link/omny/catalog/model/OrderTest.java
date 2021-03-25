@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -77,6 +78,14 @@ public class OrderTest {
         assertEquals(1, order.getOrderItems().size());
         assertEquals(1, order.getOrderItems().iterator().next().getCustomFields().size());
         assertEquals(field1.getId(), order.getCustomFields().iterator().next().getId());
+        
+        File resultFile = new File("target", "order.json");
+        try {
+            objectMapper.writeValue(resultFile , order);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     @Test

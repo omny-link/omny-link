@@ -39,6 +39,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -684,9 +685,11 @@ public class OrderController {
         if (oldStage == null || !oldStage.equals(stage) || orderPlaced) {
             order.setStage(stage);
             order.setDate(new Date());
-            orderRepo.save(order);
+            order = orderRepo.save(order);
+            Assert.isTrue(order.getStage().equals(stage),
+                    String.format("Unable to set stage of %1$s to %2$s", orderId, stage));
         } else {
-            LOGGER.warn("Skipping update of order {} from stage {} to {}",
+            LOGGER.warn("Skipping unnecessary update of order {} from stage {} to {}",
                     orderId, oldStage, stage);
         }
     }

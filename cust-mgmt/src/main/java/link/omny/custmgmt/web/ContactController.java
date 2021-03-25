@@ -707,9 +707,10 @@ public class ContactController {
     }
 
     /**
-     * Change the sale stage the contact is at.
+     * Change the account the contact belongs to.
      */
     @RequestMapping(value = "/{contactId}/account", method = RequestMethod.PUT, consumes = "text/uri-list")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
     public @ResponseBody void setAccount(
             @PathVariable("tenantId") String tenantId,

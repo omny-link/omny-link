@@ -54,7 +54,7 @@ public class AccountTest {
         CustomAccountField field2 = new CustomAccountField("field1", "foo");
         assertNull(field2.getId());
         
-        account.setCustomFields(Collections.singletonList(field2));
+        account.setCustomFields(Collections.singleton(field2));
         assertEquals(1, account.getCustomFields().size());
         assertEquals(field1.getId(), account.getCustomFields().iterator().next().getId());
         
@@ -71,7 +71,7 @@ public class AccountTest {
         field1.setId(1l);
         Account.addCustomField(field1);
 
-        Account.setCustomFields(Collections.singletonList(field1));
+        Account.setCustomFields(Collections.singleton(field1));
 
         assertEquals(1, Account.getCustomFields().size());
         assertEquals("11241500.00", Account.getCustomFields().iterator().next()
@@ -86,7 +86,7 @@ public class AccountTest {
         field1.setId(1l);
         Account.addCustomField(field1);
 
-        Account.setCustomFields(Collections.singletonList(field1));
+        Account.setCustomFields(Collections.singleton(field1));
 
         assertEquals(1, Account.getCustomFields().size());
         assertEquals("N/A", Account.getCustomFields().iterator().next().getValue());

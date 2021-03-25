@@ -27,9 +27,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.ContactExcept;
 
-@RepositoryRestResource(excerptProjection = ContactExcept.class, path = "contacts")
+@RepositoryRestResource(exported = false, path = "contacts")
 public interface ContactRepository extends CrudRepository<Contact, Long> {
 
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId "
