@@ -397,7 +397,8 @@ var ractive = new BaseRactive({
   delete: function (obj) {
     console.log('delete '+obj+'...');
     $.ajax({
-        url: ractive.getServer()+'/contacts/'+ractive.id(obj),
+        url: ractive.tenantUri(obj),
+        contentType : 'application/json',
         type: 'DELETE',
         success: completeHandler = function(data) {
           ractive.fetch();
@@ -960,7 +961,7 @@ var ractive = new BaseRactive({
 //      // thousand accounts. Also a very rare case that it's needed
 //      ractive.fetchAccounts();
 //    }
-    if (contact.account == undefined || contact.account == '') contact.account = new Object();
+    if (contact['account'] == undefined || contact.account == '') contact.account = new Object();
     // default owner to current user
     if (contact.owner == undefined || contact.owner == '') contact.owner = ractive.get('profile.username');
     // adapt between Spring Hateos and Spring Data Rest
