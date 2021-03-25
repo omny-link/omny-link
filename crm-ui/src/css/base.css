@@ -460,13 +460,16 @@ input[type="checkbox"].form-control:focus {
   border: solid 1px;
 }
 .glyphicon {
-	font-size: 20px;
-  padding: 6px;
-  margin: 2px 1px;
   border-radius: 5px;
   color: #0e9acd;
+  font-size: 20px;
+  height: 36px;
   min-width: 36px;
+  padding: 6px 6px;
   text-align: center;
+  top: 0px;
+  vertical-align: middle;
+  width: 36px;
 }
 
 .glyphicon-new-window {
@@ -476,9 +479,6 @@ input[type="checkbox"].form-control:focus {
 #orderSect h3 .glyphicon-new-window {
   padding-top: 5px;
   padding-bottom: 3px;
-}
-.glyphicon-remove {
-  padding: 4px 7px;
 }
 .glyphicon-success {
   color: #3c763d;
@@ -556,11 +556,11 @@ h2 a.glyphicon:hover {
   max-width: 160px;
 }
 .navbar-top {
-	 background-color:white;
-	 z-index:200;
-	 position:relative;
-	 margin-top: 0;
-   padding-top: 20px;
+  background-color:white;
+  z-index:200;
+  position:relative;
+	margin-top: 0;
+  padding-top: 20px;
 }
 @media print {
 	.container-sticky {
@@ -609,7 +609,7 @@ h2 a.glyphicon:hover {
 .search {
 	display:inline;
 	position:relative;
-	bottom:5px;
+	bottom:7px;
 	width:25%; /* This is a problem for data explorer, consider .inline-form instead */
 }
 .search {
@@ -742,17 +742,15 @@ h2 a.glyphicon:hover {
 	  margin-left: 2px;
 	}
 	.toolbar-top .glyphicon {
-		padding: 10px
+		padding: 10px;
 	}
 
-	.menu-burger {
-	  /*border-bottom-style: double;
-	  border-right-style: double;*/
-		left: 0px;
-		position: fixed;
-		top: 0px;
-		z-index: 300;
-	}
+  .menu-burger {
+ 	  left: 1px;
+ 	  position: fixed;
+ 	  top: 1px;
+ 	  z-index: 300;
+  }
 }
 /* END TOOLBAR */
 
@@ -1079,7 +1077,8 @@ h4 a.glyphicon-remove {
     position: relative;
 }
 .profile-img img {
-	margin-top: -9px;
+  border: 1px solid #6f6f71;
+  margin-top: 1px;
 }
 .wizard {
 	clear: both;

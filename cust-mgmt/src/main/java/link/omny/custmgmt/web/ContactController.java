@@ -579,9 +579,7 @@ public class ContactController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = { "application/json" })
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long contactId) {
-        Contact contact = findById(tenantId, contactId);
-
-        contactRepo.delete(contact);
+        contactRepo.deleteById(contactId);
     }
 
     /**
