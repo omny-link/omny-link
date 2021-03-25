@@ -202,9 +202,9 @@ describe("Contact management", function() {
         expect(jqXHR.status).toEqual(201);
         account.links = [ { rel: 'self', href: location } ];
 
-        var contactAccountLink = $rh.uri(contact)+'/account';
+        var contactAccountLink = $rh.uri(contact);
         $rh.ajax({
-          url: contactAccountLink,
+          url: contactAccountLink+'/account',
           type: 'PUT',
           contentType: 'text/uri-list',
           data: location,

@@ -129,6 +129,29 @@ public class AccountController {
     }
 
     /**
+     * Link the contact to this account.
+     */
+    @RequestMapping(value = "/accounts/{accountId}/contact", method = RequestMethod.PUT, consumes = "text/uri-list")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    public @ResponseBody void addContact(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId,
+            @RequestBody String contactUri) {
+        LOGGER.info("Linking contact {} to account {}", contactUri, accountId);
+
+        Long contactId = Long.parseLong(contactUri.substring(contactUri
+                .lastIndexOf('/') + 1));
+
+        contactRepo.setAccount(contactId, accountId);
+
+        addActivity(tenantId, accountId,
+                new Activity(ActivityType.LINK_ACCOUNT_TO_CONTACT,
+                new Date(), String.format("Linked contact %1$d to account %2$d",
+                        contactId, accountId)));
+    }
+
+    /**
      * Imports JSON representation of accounts.
      *
      * <p>

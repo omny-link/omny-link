@@ -21,7 +21,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import link.omny.supportservices.model.CustomField;
 import lombok.Data;
@@ -39,7 +39,7 @@ public class CustomContactField extends CustomField {
     private static final long serialVersionUID = -7683896817261973079L;
 
     @ManyToOne(optional = false, targetEntity = Contact.class)
-    @JsonBackReference
+    @JsonIgnore
     private Contact contact;
 
     public CustomContactField(String key, Object value) {

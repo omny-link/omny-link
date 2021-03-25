@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -157,7 +156,7 @@ public class OrderItem implements Serializable {
         return customFields;
     }
 
-    public void setCustomFields(List<CustomOrderItemField> fields) {
+    public void setCustomFields(Set<CustomOrderItemField> fields) {
         for (CustomOrderItemField newField : fields) {
             setCustomField(newField);
         }

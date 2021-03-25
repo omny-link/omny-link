@@ -129,7 +129,7 @@ public class ContactTest {
         CustomContactField field2 = new CustomContactField("field1", "foo");
         assertNull(field2.getId());
 
-        contact.setCustomFields(Collections.singletonList(field2));
+        contact.setCustomFields(Collections.singleton(field2));
         assertEquals(1, contact.getCustomFields().size());
         assertEquals(field1.getId(), contact.getCustomFields().iterator().next().getId());
 
@@ -184,7 +184,7 @@ public class ContactTest {
 
     @Test
     public void testParseJsonContactWithOptIn() {
-        String jsonInString = readFromClasspath("/omny.enquiry.json");
+        String jsonInString = readFromClasspath("/contact.enquiry.json");
         assertNotNull(jsonInString);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -197,6 +197,30 @@ public class ContactTest {
             assertEquals("Simpson", contact.getLastName());
             assertEquals("google", contact.getSource());
             assertEquals(true, contact.getEmailOptIn());
+            assertEquals(1, contact.getCustomFields().size());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Unable to parse JSON");
+        }
+    }
+
+    @Test
+    public void testParseJsonContactAccount() {
+        String jsonInString = readFromClasspath("/contact-account.enquiry.json");
+        assertNotNull(jsonInString);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            Contact contact = mapper.readValue(jsonInString, Contact.class);
+
+            assertNotNull(contact);
+            assertEquals("Bart", contact.getFirstName());
+            assertEquals("Simpson", contact.getLastName());
+            assertEquals("google", contact.getSource());
+            assertEquals(true, contact.getEmailOptIn());
+            assertEquals(1, contact.getCustomFields().size());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -206,7 +230,7 @@ public class ContactTest {
 
     @Test
     public void testParseJsonContactWithOptOut() {
-        String jsonInString = readFromClasspath("/omny.enquiry-opt-out.json");
+        String jsonInString = readFromClasspath("/contact-opt-out.enquiry.json");
         assertNotNull(jsonInString);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -228,7 +252,7 @@ public class ContactTest {
 
     @Test
     public void testParseJsonContactWithoutOptIn() {
-        String jsonInString = readFromClasspath("/omny.enquiry-without-opt-in.json");
+        String jsonInString = readFromClasspath("/contact-without-opt-in.enquiry.json");
         assertNotNull(jsonInString);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -273,6 +297,7 @@ public class ContactTest {
         try (Scanner scanner = new Scanner(ContactTest.class.getResourceAsStream(resourceName))) {
             return scanner.useDelimiter("\\A").next();
         } catch (Exception e) {
+            fail("Unable to read test data from " + resourceName);
             throw e;
         }
     }

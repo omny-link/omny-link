@@ -1,10 +1,8 @@
 {
-  "customFields": {
-    "type":"A Custom Field"
-  },
   "firstName":"Bart",
   "lastName":"Simpson",
   "email":"bart.simpson@example.com",
+  "emailOptIn": "I agree to the terms and conditions",
   "phone1":"07788 123456",
   "tenantId":"springfield",
   "utm_source":"google",
@@ -12,5 +10,14 @@
   "utm_campaign":"testing",
   "accountType":"Customer",
   "enquiryType":"testing",
-  "stage":"Enquiry"
+  "stage":"Enquiry",
+  "customFields": {
+    "drivingLicence":"false"
+  },
+  "account": {
+    "customFields": {
+	  "jurisdiction":"UK"
+	},
+	"name": "ACME Inc."
+  }
 }

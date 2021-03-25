@@ -52,7 +52,7 @@ import org.hibernate.annotations.NotFoundAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -370,7 +370,6 @@ public class Contact implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "contact", targetEntity = CustomContactField.class)
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
-    @JsonManagedReference
     @JsonView({ ContactViews.Detailed.class })
     private Set<CustomContactField> customFields;
 
@@ -381,7 +380,7 @@ public class Contact implements Serializable {
         return customFields;
     }
 
-    public void setCustomFields(List<CustomContactField> fields) {
+    public void setCustomFields(Set<CustomContactField> fields) {
         for (CustomContactField newField : fields) {
             setCustomField(newField);
         }
@@ -419,7 +418,7 @@ public class Contact implements Serializable {
 
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
-    @ManyToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, optional = true)
     @NotFound(action = NotFoundAction.IGNORE)
     // TODO this fixes the inifite recursion but instead we get
     // [2015-03-04 15:09:15.977] boot - 15472 ERROR [http-nio-8082-exec-7] ---
@@ -433,7 +432,8 @@ public class Contact implements Serializable {
     // does not support them
     // at
     // com.fasterxml.jackson.databind.JsonDeserializer.findBackReference(JsonDeserializer.java:310)
-    @JsonManagedReference
+    // @JsonManagedReference()
+    @JsonIgnore
     private Account account;
 
     @JsonProperty
@@ -443,13 +443,6 @@ public class Contact implements Serializable {
     public Long getAccountId() {
         return getAccount() == null ? (accountId == null ? null : accountId)
                 : getAccount().getId();
-    }
-
-    @JsonProperty
-    @JsonView({ ContactViews.Summary.class })
-    public String getSelfRef() {
-        return id == null ? null
-                : String.format("/%1$s/contacts/%2$d", tenantId, id);
     }
 
     @OneToMany(cascade = CascadeType.ALL)

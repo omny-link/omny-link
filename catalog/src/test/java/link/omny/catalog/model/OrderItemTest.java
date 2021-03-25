@@ -44,7 +44,7 @@ public class OrderItemTest {
 
         CustomOrderItemField field2 = new CustomOrderItemField("field1", "bar");
         assertNull(field2.getId());
-        orderItem.setCustomFields(Collections.singletonList(field2));
+        orderItem.setCustomFields(Collections.singleton(field2));
 
         orderItem.addCustomField(
                 new CustomOrderItemField("colour", "Blue"));

@@ -50,25 +50,32 @@ public class FeedbackTest {
     @Test
     public void testMergeCustomFields() {
         Feedback feedback = new Feedback();
-        CustomFeedbackField field1 = new CustomFeedbackField("field1", "foo");
+        feedback.setId(1l);
+        feedback.setDescription("Great service!");
+        feedback.setType("customer");
+        CustomFeedbackField field1 = new CustomFeedbackField("name", "foo");
         field1.setId(1l);
         feedback.addCustomField(field1);
 
-        CustomFeedbackField field2 = new CustomFeedbackField("field1", "foo");
+        CustomFeedbackField field2 = new CustomFeedbackField("name", "bar");
         assertNull(field2.getId());
         feedback.setCustomFields(Collections.singleton(field2));
 
+        // ensure setting custom field has resulted in merge
         assertEquals(1, feedback.getCustomFields().size());
         assertEquals(field1.getId(), feedback.getCustomFields().iterator().next().getId());
+        assertEquals(field2.getValue(), feedback.getCustomFields().iterator().next().getValue());
 
         StringWriter out = new StringWriter();
         try {
             objectMapper.writeValue(out, feedback);
             Feedback feedback2 = objectMapper.readValue(out.toString().getBytes(), Feedback.class);
-            assertEquals(feedback, feedback2);
-            assertEquals(1, feedback.getCustomFields().size());
+            // Cannot use equals because serialisation converts customFields:List to object
+            assertEquals(feedback.getId(), feedback2.getId());
+            assertEquals(feedback.getDescription(), feedback2.getDescription());
+            assertEquals(feedback.getType(), feedback2.getType());
             assertEquals(feedback.getCustomFields().size(), feedback2.getCustomFields().size());
-            assertEquals("foo", feedback2.getCustomFieldValue("field1"));
+            assertEquals("bar", feedback2.getCustomFieldValue("name"));
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.getMessage());

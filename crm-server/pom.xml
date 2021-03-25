@@ -25,7 +25,6 @@
 
   <properties>
     <start-class>link.omny.server.Application</start-class>
-    
     <docker.repo>docker.io</docker.repo>
     <docker.image.prefix>knowprocess</docker.image.prefix>
     <jasmine-boot.version>1.0.0.20181021</jasmine-boot.version>

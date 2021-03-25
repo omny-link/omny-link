@@ -30,26 +30,25 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import link.omny.supportservices.model.CustomField;
 
-/**
- */
-public abstract class JsonCustomFieldDeserializer<T> extends
-        JsonDeserializer<Set<? extends CustomField>> {
+public abstract class JsonCustomFieldDeserializer<T>
+        extends JsonDeserializer<Set<? extends CustomField>> {
 
     @Override
     public Set<? extends CustomField> deserialize(JsonParser jp,
             DeserializationContext ctxt) throws IOException,
             JsonProcessingException {
-        Set<CustomField> Set = new HashSet<CustomField>();
+        Set<CustomField> set = new HashSet<CustomField>();
         ObjectCodec oc = jp.getCodec();
         JsonNode node = oc.readTree(jp);
 
         for (Iterator<Entry<String, JsonNode>> it = node.fields(); it.hasNext();) {
             Entry<String, JsonNode> entry = it.next();
             // if (!FIELDS.contains(entry.getKey())) {
-            Set.add((CustomField) newInstance(entry));
+            set.add((CustomField) newInstance(entry));
             // }
         }
-        return Set;
+
+        return set;
     }
 
     protected abstract Object newInstance(
