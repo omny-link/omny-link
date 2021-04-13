@@ -137,9 +137,6 @@ select:readonly,
 textarea:readonly {
   background-color: #cbcbcb;
 }
-.inline-form textarea.form-control {
-  margin-left:5px;
-}
 label.required::after {
   color: red;
   content: '*';
