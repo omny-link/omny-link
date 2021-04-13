@@ -107,7 +107,7 @@
         </li>
         {{#tenant.features.marketing}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{# tenant.strings.existingCustomer}}{{tenant.strings.existingCustomer}}{{else}}Existing Customer?{{/}}:</label>
+            <label class="col-md-4 col-sm-4 col-xs-4">{{# tenant.strings.existingCustomer}}{{tenant.strings.existingCustomer}}{{else}}Existing Customer?{{/}}:</label>
             <label class="checkbox-inline">
               <input type="checkbox" checked="{{current.existingCustomer}}">{{#if current.existingCustomer}}Yes{{else}}No{{/if}}
             </label>
@@ -116,18 +116,18 @@
         {{/}}
         {{#tenant.features.marketing || tenant.features.stage}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{#tenant.strings.contactStage}}{{tenant.strings.contactStage}}{{else}}Stage{{/}}:</label>
+            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.contactStage}}{{tenant.strings.contactStage}}{{else}}Stage{{/}}:</label>
             <input class="form-control" list="contactStages" placeholder="Start typing to filter options" id="curStage" on-blur="initAutoComplete()" value="{{current.stage}}">
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.contactStageHint}}{{tenant.strings.contactStageHint}}{{else}}How far through the sales pipeline are you with this contact?{{/}}</p>
           </li>
           {{# haveStageReasons() }}
             <li class="form-group">
-              <label class="col-md-4 col-sm-4">{{#tenant.strings.stageReason}}{{tenant.strings.stageReason}}{{else}}Loss Reason{{/}}:</label>
+              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.stageReason}}{{tenant.strings.stageReason}}{{else}}Loss Reason{{/}}:</label>
               <input class="form-control" list="stageReasons" placeholder="Start typing to filter options" id="curStageReason" {{# current.stage=='Cold' }} required{{/}} value="{{current.stageReason}}">
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.stageReasonHint}}{{tenant.strings.stageReasonHint}}{{else}}&nbsp;{{/}}</p>
             </li>
             <li class="form-group">
-              <label class="col-md-4 col-sm-4">{{#tenant.strings.stageDate}}{{tenant.strings.stageDate}}{{else}}Loss Date{{/}}:</label>
+              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.stageDate}}{{tenant.strings.stageDate}}{{else}}Loss Date{{/}}:</label>
               <input class="form-control" id="curStageDate" value="{{formatDate(current.stageDate)}}">
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.stageDateHint}}{{tenant.strings.stageDateHint}}{{else}}&nbsp;{{/}}</p>
             </li>
@@ -177,26 +177,27 @@
 	      <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
 	        <ul class="form edit-form">
 	          <li class="form-group">
-	            <label class="col-md-4 col-sm-4">{{#tenant.strings.jobTitle}}{{tenant.strings.jobTitle}}{{else}}Job Title{{/}}:</label>
+	            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.jobTitle}}{{tenant.strings.jobTitle}}{{else}}Job Title{{/}}:</label>
 	            <input class="form-control" id="curJobTitle" value="{{current.jobTitle}}"/>
+	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
 	          </li>
 	          <li>
-	            <label class="col-md-4 col-sm-4">{{#tenant.strings.email}}{{tenant.strings.email}}{{else}}Email{{/}}:</label>
+	            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.email}}{{tenant.strings.email}}{{else}}Email{{/}}:</label>
 	            <input class="form-control" id="curEmail" type="email" value="{{current.email}}">
 	          </li>
 	          <li>
-	            <label class="col-md-4 col-sm-4">{{#tenant.strings.emailConfirmed}}{{tenant.strings.emailConfirmed}}{{else}}Confirmed?{{/}}:</label>
+	            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.emailConfirmed}}{{tenant.strings.emailConfirmed}}{{else}}Confirmed?{{/}}:</label>
 	            <input class="" id="curEmailConfirmed" type="checkbox" checked="{{current.emailConfirmed}}">
 	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.emailConfirmedHint}}{{tenant.strings.emailConfirmedHint}}{{else}}Has this email been confirmed valid?{{/}}</p>
 	          </li>
 	          {{#tenant.features.marketing}}
 	            <li>
-	              <label class="col-md-4 col-sm-4">{{#tenant.strings.doNotEmail}}{{tenant.strings.doNotEmail}}{{else}}Do Not Email{{/}}:</label>
+	              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.doNotEmail}}{{tenant.strings.doNotEmail}}{{else}}Do Not Email{{/}}:</label>
 	              <input class="" id="curDoNotEmail" type="checkbox" checked="{{current.doNotEmail}}"> Owner preference
 	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.doNotEmail}}{{tenant.strings.doNotEmail}}{{else}}Check this if the user should not receive automated emails, for example during sensitive negotiations{{/}}</p>
 	            </li>
 	            <li>
-	              <label class="col-md-4 col-sm-4">{{#tenant.strings.emailOptIn}}{{tenant.strings.emailOptIn}}{{else}}Opt in{{/}}:</label>
+	              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.emailOptIn}}{{tenant.strings.emailOptIn}}{{else}}Opt in{{/}}:</label>
 	              <input class="" id="curemailOptIn" type="checkbox" checked="{{current.emailOptIn}}"> User preference
 	              <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.emailOptIn}}{{tenant.strings.emailOptIn}}{{else}}This will be checked if the user has opted in to marketing emails{{/}}</p>
 	            </li>
@@ -222,63 +223,63 @@
 	      <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
 	        <ul class="form edit-form">
 	          <li>
-	            <label class="col-md-4 col-sm-4">{{#tenant.strings.phone1}}{{tenant.strings.phone1}}{{else}}Preferred Phone{{/}}:</label>
+	            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.phone1}}{{tenant.strings.phone1}}{{else}}Preferred Phone{{/}}:</label>
 	            <input class="form-control" id="curPhone1" pattern="\+?[0-9, \-()]{0,15}" type="tel" value="{{current.phone1}}">
 	          </li>
 	          <li>
-	            <label class="col-md-4 col-sm-4">{{#tenant.strings.phone2}}{{tenant.strings.phone2}}{{else}}Alternate Phone{{/}}:</label>
+	            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.phone2}}{{tenant.strings.phone2}}{{else}}Alternate Phone{{/}}:</label>
 	            <input class="form-control" id="curPhone2" pattern="\+?[0-9, \-()]{0,15}" type="tel" value="{{current.phone2}}">
 	          </li>
             {{#tenant.show.phone3}}
               <li>
-                <label class="col-md-4 col-sm-4">{{#tenant.strings.phone3}}{{tenant.strings.phone3}}{{else}}Third Phone{{/}}:</label>
+                <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.phone3}}{{tenant.strings.phone3}}{{else}}Third Phone{{/}}:</label>
                 <input class="form-control" id="curPhone3" pattern="\+?[0-9, \-()]{0,15}" type="tel" value="{{current.phone3}}">
               </li>
             {{/}}
 	          {{#tenant.show.marketing}}
 	            <li>
-	              <label class="col-md-4 col-sm-4">{{#tenant.strings.doNotCall}}{{tenant.strings.doNotCall}}{{else}}Do Not Call{{/}}:</label>
+	              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.doNotCall}}{{tenant.strings.doNotCall}}{{else}}Do Not Call{{/}}:</label>
 	              <input class="" id="curDoNotCall" type="checkbox" checked="{{current.doNotCall}}">
 	            </li>
 	          {{/}}
 	          {{#if tenant.show.addressContact}}
 	            <li>
-	              <label class="col-md-4 col-sm-4">{{#tenant.strings.address1}}{{tenant.strings.address1}}{{else}}Address{{/}}:</label>
+	              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.address1}}{{tenant.strings.address1}}{{else}}Address{{/}}:</label>
 	              <input class="form-control" id="curAddress1" value="{{current.address1}}"/>
 	            </li>
 	            <li>
-	              <label class="col-md-4 col-sm-4">{{#tenant.strings.address2}}{{tenant.strings.address2}}{{/}}</label>
+	              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.address2}}{{tenant.strings.address2}}{{/}}</label>
 	              <input class="form-control" id="curAddress2" value="{{current.address2}}"/>
 	            </li>
 	            <li>
-	              <label class="col-md-4 col-sm-4">{{#tenant.strings.town}}{{tenant.strings.town}}{{/}}</label>
+	              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.town}}{{tenant.strings.town}}{{/}}</label>
 	              <input class="form-control" id="curTown" placeholder="Town or village" value="{{current.town}}"/>
 	            </li>
 	            <li>
-	              <label class="col-md-4 col-sm-4">{{#tenant.strings.countyOrCity}}{{tenant.strings.countyOrCity}}{{/}}</label>
+	              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.countyOrCity}}{{tenant.strings.countyOrCity}}{{/}}</label>
 	              <input class="form-control" id="curCountyOrCity" placeholder="City, county or other province" value="{{current.countyOrCity}}"/>
 	            </li>
 	            <li>
-	              <label class="col-md-4 col-sm-4">{{#tenant.strings.postCode}}{{tenant.strings.postCode}}{{else}}Post Code{{/}}:</label>
+	              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.postCode}}{{tenant.strings.postCode}}{{else}}Post Code{{/}}:</label>
 	              <input class="form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.postCode}}">
 	            </li>
 	            {{#tenant.show.multiNational}}
 	              <li>
-	                <label class="col-md-4 col-sm-4">{{#tenant.strings.country}}{{tenant.strings.country}}{{else}}Country{{/}}:</label>
+	                <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.country}}{{tenant.strings.country}}{{else}}Country{{/}}:</label>
 	                <input autocomplete="false" class="form-control" list="countrys" placeholder="Start typing to filter options" id="curCountry" value="{{current.country}}">
 	              </li>
 	            {{/}}
 	            {{#current.postCode}}
 	              <li>
-	                <label class="col-md-4 col-sm-4">{{#tenant.strings.map}}{{tenant.strings.map}}{{else}}Map{{/}}:</label>
-	                <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
+	                <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.map}}{{tenant.strings.map}}{{else}}Map{{/}}:</label>
+	                <a class="glyphicon icon-btn glyphicon icon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.postCode}}" target="_blank"></a>
 	              </li>
 	            {{/}}
 	            {{^current.postCode}}
 	              {{#current.town || current.address1 || current.address2 || current.countyOrCity}}
 	                <li>
-	                  <label class="col-md-4 col-sm-4">{{#tenant.strings.map}}{{tenant.strings.map}}{{else}}Map{{/}}:</label>
-	                  <a class="glyphicon glyphicon-btn glyphicon glyphicon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
+	                  <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.map}}{{tenant.strings.map}}{{else}}Map{{/}}:</label>
+	                  <a class="glyphicon icon-btn glyphicon icon-btn glyphicon-map-marker" href="//www.google.com/maps/place/{{current.address1}}+{{current.address2}}+{{current.town}}+{{current.countyOrCity}}" target="_blank"></a>
 	                </li>
 	              {{/}}
 	            {{/}}
@@ -299,17 +300,17 @@
           <ul class="form edit-form">
             {{#if tenant.show.marketingDigital && current.source}}
               <li>
-                <label class="col-md-4 col-sm-4">{{#tenant.strings.source}}{{tenant.strings.source}}{{else}}Source{{/}}:</label>
+                <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.source}}{{tenant.strings.source}}{{else}}Source{{/}}:</label>
                 <input class="form-control" list="sources" placeholder="Start typing to filter options" id="curSource" {{ current.source ? 'disabled readonly' : '' }} value="{{current.source}}">
               </li>
               <li>
-                <label class="col-md-4 col-sm-4">{{#tenant.strings.medium}}{{tenant.strings.medium}}{{else}}Medium{{/}}:</label>
+                <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.medium}}{{tenant.strings.medium}}{{else}}Medium{{/}}:</label>
                 <input class="form-control" list="mediums" placeholder="Start typing to filter options" id="curMedium" {{ current.medium ? 'disabled readonly' : '' }} value="{{current.medium}}">
               </li>
             {{/if}}
             {{#tenant.show.declaredSource}}
               <li>
-                <label class="col-md-4 col-sm-4">{{#tenant.strings.source2}}{{tenant.strings.source2}}{{else}}How heard of us?{{/}}:</label>
+                <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.source2}}{{tenant.strings.source2}}{{else}}How heard of us?{{/}}:</label>
                 <input class="form-control" list="source2s" id="curSource2" placeholder="Start typing to filter options" {{ (matchRole('sales_manager') || matchRole('admin') || matchRole('power_user')) ? '' : 'readonly disabled' }} value="{{current.source2}}">
               </li>
             {{/}}
@@ -320,18 +321,18 @@
             {{#tenant.show.marketingDigital}}
               {{#if current.source}}
 	              <li>
-	                <label class="col-md-4 col-sm-4">{{#tenant.strings.campaign}}{{tenant.strings.campaign}}{{else}}Campaign{{/}}:</label>
+	                <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.campaign}}{{tenant.strings.campaign}}{{else}}Campaign{{/}}:</label>
 	                <input class="form-control" id="curCampaign" {{ current.campaign ? 'disabled readonly' : '' }} value="{{current.campaign}}">
 	              </li>
               {{elseif tenant.show.marketingDigital}}
                 <li><label class="col-md-offset-4 col-sm-offset-4">{{# tenant.strings.noCPC}}{{tenant.strings.noCPC}}{{else}}No CPC data available{{/}}</label></li>
               {{/if}}
               <li>
-                <label class="col-md-4 col-sm-4">{{#tenant.strings.pageSubmitted}}{{tenant.strings.pageSubmitted}}{{else}}Page Submitted{{/}}:</label>
+                <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.pageSubmitted}}{{tenant.strings.pageSubmitted}}{{else}}Page Submitted{{/}}:</label>
                 <input class="form-control" id="curPageSubmitted" disabled readonly twoway="false" value="{{customField(current, 'pageSubmitted')}}">
               </li>
               <li>
-                <label class="col-md-4 col-sm-4">{{#tenant.strings.ipAddress}}{{tenant.strings.ipAddress}}{{else}}IP Address{{/}}:</label>
+                <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.ipAddress}}{{tenant.strings.ipAddress}}{{else}}IP Address{{/}}:</label>
                 <input class="form-control" id="curIpAddress" disabled readonly twoway="false" value="{{customField(current, 'ip')}}">
               </li>
             {{/}}
@@ -350,7 +351,7 @@
         <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
           <ul class="form edit-form">
             <li>
-              <label class="col-md-4 col-sm-4">{{#tenant.strings.budget}}{{tenant.strings.budget}}{{else}}Budget{{/}}:</label>
+              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.budget}}{{tenant.strings.budget}}{{else}}Budget{{/}}:</label>
               <input class="autoNumeric form-control" data-a-sign="£ " id="curBudget" on-blur="ractive.save()" value="{{current.customFields['budget']}}">
             </li>
           </ul>
@@ -358,7 +359,7 @@
         <div class="currentBody col-md-6 col-sm-12 col-xs-12" style="display:none">
           <ul class="form edit-form">
             <li>
-              <label class="col-md-4 col-sm-4">{{#tenant.strings.discussedBudget}}{{tenant.strings.discussedBudget}}{{else}}Discussed Budget?{{/}}:</label>
+              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.discussedBudget}}{{tenant.strings.discussedBudget}}{{else}}Discussed Budget?{{/}}:</label>
               <input class="form-control" id="curDiscussedBudget" on-blur="ractive.save()" type="checkbox" checked="{{current.customFields['discussedBudget']}}">
             </li>
           </ul>

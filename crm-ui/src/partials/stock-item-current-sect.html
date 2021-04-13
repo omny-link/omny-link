@@ -43,7 +43,7 @@
       <ul class="form edit-form">
         {{#tenant.show.stockCategory}}
 	        <li class="form-group">
-	          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}:</label>
+	          <label class="col-md-4 col-sm-4 col-xs-4 required">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}:</label>
 	          <div class="input-group">
               <input class="form-control" list="stockCategories" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.stockCategory.name}}">
 	            <span class="input-group-addon">
@@ -61,12 +61,12 @@
 	        </li>
 	      {{/if}}
         <li class="form-group">
-          <label class="col-md-4 col-sm-4">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}:</label>
+          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}:</label>
           <input class="form-control" id="curStatus" list="status" placeholder="Start typing to filter options" value="{{current.status}}"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.statusHint}}{{tenant.strings.statusHint}}{{else}}Draft, Ready for review, Published etc.{{/}}</p>
         </li>
         <li>
-          <label class="col-md-4 col-sm-4">{{#tenant.strings.videoCode}}{{tenant.strings.videoCode}}{{else}}Video Code{{/}}:</label>
+          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.videoCode}}{{tenant.strings.videoCode}}{{else}}Video Code{{/}}:</label>
           <input class="form-control" id="curVideoCode" value="{{current.videoCode}}"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.videoCodeHint}}{{tenant.strings.videoCodeHint}}{{else}}This might be either embed code from YouTube, Vimeo etc. or simply a URL but must match API client code.{{/}}</p>
         </li>
@@ -76,17 +76,17 @@
 	    <div class="currentBody col-md-6 col-sm-12">
 	      <ul class="form edit-form">
 	        <li class="form-group">
-	          <label class="col-md-4 col-sm-4">{{#tenant.strings.unitPrice}}{{tenant.strings.unitPrice}}{{else}}Unit Price{{/}}:</label>
+	          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.unitPrice}}{{tenant.strings.unitPrice}}{{else}}Unit Price{{/}}:</label>
 	          <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
 	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price of the {{tenant.strings.stockItem.toLowerCase()}}{{/}}</p>
 	        </li>
 	        <li class="form-group">
-	          <label class="col-md-4 col-sm-4">{{#tenant.strings.unit}}{{tenant.strings.unit}}{{else}}Unit of Measure{{/}}:</label>
+	          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.unit}}{{tenant.strings.unit}}{{else}}Unit of Measure{{/}}:</label>
 	          <input class="form-control" id="curUnit" value="{{current.unit}}">
 	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.unitHint}}{{tenant.strings.unitHint}}{{else}}Relevant unit of measure for the {{#if tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/if}}{{/}}</p>
 	        </li>
 	        <li class="form-group">
-	          <label class="col-md-4 col-sm-4">{{#tenant.strings.size}}{{tenant.strings.size}}{{else}}Size{{/}}:</label>
+	          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.size}}{{tenant.strings.size}}{{else}}Size{{/}}:</label>
 	          <input class="form-control" id="curSize" type="number" value="{{current.size}}">
 	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.sizeHint}}{{tenant.strings.sizeHint}}{{else}}Number of UOMs in this {{tenant.strings.stockItem.toLowerCase()}}{{/}}</p>
 	        </li>
@@ -97,7 +97,7 @@
     <div class="currentBody col-md-12">
       <ul class="form edit-form">
         <li class="form-group">
-          <label class="textarea col-md-2 col-sm-4">Description:</label>
+          <label class="textarea col-md-2 col-sm-4 col-xs-4">Description:</label>
           <textarea class="col-sm-10 col-sm-8" id="curDescription" maxlength="250" rows="10" value="{{current.description}}"></textarea>
         </li>
       </ul>

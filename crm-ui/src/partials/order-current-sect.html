@@ -68,16 +68,16 @@
         {{#current.ref}}
           <li class="form-group">
             {{#if (variant == 'po')}}
-              <label class="col-md-4 col-sm-4">{{#tenant.strings.purchaseOrderRef}}{{tenant.strings.purchaseOrderRef}}{{else}}Ref{{/}}:</label>
+              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.purchaseOrderRef}}{{tenant.strings.purchaseOrderRef}}{{else}}Ref{{/}}:</label>
             {{else}}
-              <label class="col-md-4 col-sm-4">{{#tenant.strings.orderRef}}{{tenant.strings.orderRef}}{{else}}Ref{{/}}:</label>
+              <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.orderRef}}{{tenant.strings.orderRef}}{{else}}Ref{{/}}:</label>
             {{/if}}
             <input class="form-control" disabled id="curRef" readonly value="{{current.ref}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderRefHint}}{{tenant.strings.orderRefHint}}{{else}}Reference is generated automatically{{/}}</p>
           </li>
         {{/}}
         <li class="form-group">
-          <label class="col-md-4 col-sm-4 required">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}:</label>
+          <label class="col-md-4 col-sm-4 col-xs-4 required">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}:</label>
           <div class="input-group">
             <input class="form-control" list="contacts" onblur="ractive.updateContactId(this.value)" placeholder="Start typing to filter options"
                 id="curContact" required value="{{#current.contactId}}{{formatContactId(current.contactId)}}{{/}}">
@@ -92,23 +92,23 @@
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Person this {{tenant.strings.order.toLowerCase()}} is for</p>
         </li>
         <li class="form-group">
-          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
+          <label class="col-md-4 col-sm-4 col-xs-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
           <input class="form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" {{#if !matchRole('power_user')}}readonly disabled{{/if}} value="{{current.owner}}">
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderOwnerHint}}{{tenant.strings.orderOwnerHint}}{{else}}Person responsible for this {{tenant.strings.order.toLowerCase()}}{{/}}</p>
         </li>
         <li class="form-group">
-          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}:</label>
+          <label class="col-md-4 col-sm-4 col-xs-4 col-xs-4">{{#tenant.strings.orderDate}}{{tenant.strings.orderDate}}{{else}}Order Date{{/}}:</label>
           <input class="form-control col-md-8 col-sm-8 col-xs-8" id="curDate" type="date" value="{{current.date}}"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderDateHint}}{{tenant.strings.orderDateHint}}{{else}}Date {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} placed{{/}}</p>
         </li>
         <li class="form-group">
-          <label class="col-md-4 col-sm-4">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}:</label>
+          <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}:</label>
           <input autocomplete="off" class="form-control" list="orderStages" placeholder="Start typing to filter options" id="curOrderStage" value="{{current.stage}}"/>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}Stage the {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} has reached{{/}}</p>
         </li>
         {{#tenant.features.orderDueDate}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}:</label>
+            <label class="col-md-4 col-sm-4 col-xs-4 col-xs-4">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}:</label>
             <input class="form-control col-md-8 col-sm-8 col-xs-8" id="curDueDate" {{#if !tenant.features.orderItems}}type="date" {{/if}}value="{{current.dueDate}}"/>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}Date {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} due to be delivered{{/}}</p>
           </li>
@@ -119,7 +119,7 @@
       <ul class="form edit-form">
         {{#tenant.features.catalog}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4 required">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
+            <label class="col-md-4 col-sm-4 col-xs-4 required">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
             <div class="input-group">
               {{#if current.orderItems}}
                 <input class="form-control" list="stockItems" onblur="ractive.updateStockItem(this.value)" placeholder="Start typing to filter options"
@@ -137,31 +137,31 @@
         {{/}}
         {{#tenant.features.orderName}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{#tenant.strings.orderName}}{{tenant.strings.orderName}}{{else}}Name{{/}}:</label>
+            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.orderName}}{{tenant.strings.orderName}}{{else}}Name{{/}}:</label>
             <input class="form-control" id="curName" value="{{current.name}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderNameHint}}{{tenant.strings.orderNameHint}}{{/}}</p>
           </li>
         {{/}}
         {{#tenant.features.stockPricing}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}:</label>
+            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}:</label>
             <input class="form-control" id="curPrice" step="any" type="number" value="{{current.price}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price for the {{tenant.strings.order.toLowerCase()}}{{/}}</p>
           </li>
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{#tenant.strings.tax}}{{tenant.strings.tax}}{{else}}VAT{{/}}:</label>
+            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.tax}}{{tenant.strings.tax}}{{else}}VAT{{/}}:</label>
             <input class="form-control" id="curTax" step="any" type="number" value="{{current.tax}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.taxHint}}{{tenant.strings.taxHint}}{{else}}Tax due on the {{tenant.strings.order.toLowerCase()}}{{/}}</p>
           </li>
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{#tenant.strings.totalPrice}}{{tenant.strings.totalPrice}}{{else}}Total Price{{/}}:</label>
+            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.totalPrice}}{{tenant.strings.totalPrice}}{{else}}Total Price{{/}}:</label>
             <input class="form-control" id="curTotalPrice" disabled readonly step="any" twoway="false" type="number" value="{{(isNaN(current.price) ? 0 : current.price)+(isNaN(current.tax) ? 0 : current.tax)}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.totalPriceHint}}{{tenant.strings.totalPriceHint}}{{else}}Total of price and VAT{{/}}</p>
           </li>
         {{/}}
         {{#if tenant.features.orderInvoiceRef}}
           <li class="form-group">
-            <label class="col-md-4 col-sm-4">{{#tenant.strings.invoiceRef}}{{tenant.strings.invoiceRef}}{{else}}Invoice Ref{{/}}:</label>
+            <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.invoiceRef}}{{tenant.strings.invoiceRef}}{{else}}Invoice Ref{{/}}:</label>
             <input class="form-control" id="curInvoiceRef" value="{{current.invoiceRef}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.invoiceRefHint}}{{tenant.strings.invoiceRefHint}}{{else}}Invoice reference for {{tenant.strings.order.toLowerCase()}}{{/}}</p>
           </li>
@@ -171,7 +171,7 @@
     <div id="currentOrderDesc" class="col-md-12 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         <li class="form-group">
-          <label class="textarea col-md-2 col-sm-4">{{#if tenant.strings.orderDescription}}{{tenant.strings.orderDescription}}{{else}}Additional info{{/if}}:</label>
+          <label class="textarea col-md-2 col-sm-4 col-xs-4">{{#if tenant.strings.orderDescription}}{{tenant.strings.orderDescription}}{{else}}Additional info{{/if}}:</label>
           <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" cols="80" maxlength="1000" placeholder="{{#if tenant.strings.orderDescriptionHint}}{{tenant.strings.orderDescriptionHint}}{{else}}Additional info{{/if}}" rows="3" value="{{current.description}}"></textarea>
         </li>
       </ul>

@@ -24,30 +24,30 @@
 
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li class="form-group"><label class="col-md-4 col-sm-4 required">Owner:</label><input class="col-md-8 col-sm-8 form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" required value="{{current.owner}}"></li>
+        <li class="form-group"><label class="col-md-4 col-sm-4 col-xs-3 required">Owner:</label><input class="col-md-8 col-sm-8 form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" required value="{{current.owner}}"></li>
         <li class="form-group">
-          <label class="col-md-4 col-sm-4 required">Status:</label>
+          <label class="col-md-4 col-sm-4 col-xs-3 required">Status:</label>
           <input class="col-md-8 col-sm-8 form-control" list="status" placeholder="Start typing to filter options" id="curStatus" required value="{{current.status}}">
-          <p class="col-md-offset-4 hidden-sm help-block">Draft, Ready for review, Published etc.</p>
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Draft, Ready for review, Published etc.</p>
         </li>
         <li class="form-group">
-          <label class="col-md-4 col-sm-4">Requires:</label>
-          <input class="col-md-8 col-sm-8 form-control" id="curRequiredVars" readonly disabled type="text" value="{{current.requiredVars}}">
-          <p class="col-md-offset-4 hidden-sm help-block">The fields required to fill the template, these are derived or set by an administrator.</p>
+          <label class="col-md-4 col-sm-4 col-xs-3">Requires:</label>
+          <input class="col-md-8 col-sm-8 col-xs-9 form-control" id="curRequiredVars" readonly disabled type="text" value="{{current.requiredVars}}">
+          <p class="col-md-offset-4 hidden-sm hidden-xs help-block">The fields required to fill the template, these are derived or set by an administrator.</p>
         </li>
       </ul>
     </div>
     <div class="col-md-6 col-sm-12 col-xs-12">
       <ul class="form edit-form">
-        <li class="form-group"><label class="col-md-4 col-sm-4 required">Name:</label><input class="col-md-8 col-sm-8 form-control" id="curName" pattern="[0-9a-zA-Z]*" required type="text" value="{{current.name}}"></li>
-        <li class="form-group"><label class="col-md-4 col-sm-4 required">Subject:</label><input class="col-md-8 col-sm-8 form-control" id="curSubject" required type="text" value="{{current.title}}"></li>
+        <li class="form-group"><label class="col-md-4 col-sm-4 col-xs-3 required">Name:</label><input class="col-md-8 col-sm-8 form-control" id="curName" pattern="[0-9a-zA-Z]*" required type="text" value="{{current.name}}"></li>
+        <li class="form-group"><label class="col-md-4 col-sm-4 col-xs-3 required">Subject:</label><input class="col-md-8 col-sm-8 form-control" id="curSubject" required type="text" value="{{current.title}}"></li>
       </ul>
     </div>
     <div style="clear: both" class="col-md-12 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         <li>
-          <label class="col-md-2 required">Template:</label>
-          <div class="col-md-9" style="margin: 0;padding: 0;width: 80%;">
+          <label class="col-md-2 col-sm-4 col-xs-3 required">Template:</label>
+          <div class="col-md-offset-2 col-sm-offset-4 col-xs-offset-3 col-md-10 col-sm-8 col-xs-9" style="padding-left: 5px;">
             <textarea class="rich-content" name="curRichContent" id="curRichContent" placeholder="Enter something ..." required rows="30" value="{{current.richContent}}" wrap="soft">
                 This is my textarea to be replaced with CKEditor.
             </textarea>
@@ -61,12 +61,12 @@
     <div class="col-md-12 col-sm-12 col-xs-12">
       <ul class="form edit-form">
         <li>
-          <label class="col-md-2 control-label">SMS / Tweet:</label>
-          <textarea id="curShortContent" class="col-md-9 form-control" cols="80" maxlength="140" required value="{{current.shortContent}}"></textarea>
+          <label class="col-md-2 col-sm-4 col-xs-3 control-label">SMS / Tweet:</label>
+          <textarea id="curShortContent" class="col-md-offset-2 col-sm-offset-4 col-xs-offset-3 col-md-10 col-sm-8 col-xs-9 form-control" cols="80" maxlength="140" required value="{{current.shortContent}}"></textarea>
           <div class="clearfix"></div>
-          <label class="col-md-offset-2">Characters used:</label>
+          <label class="col-md-offset-2 col-sm-offset-4 col-xs-offset-3">Characters used:</label>
           <span id="curChars" value="{{chars(current.shortContent)}}">{{chars(current.shortContent)}}</span>
-          <p class="col-md-offset-2 help-block">Consider embedding a URL to fuller information in these short form messages.</p>
+          <p class="col-md-offset-2 col-sm-offset-4 col-xs-offset-3 help-block">Consider embedding a URL to fuller information in these short form messages.</p>
         </li>
       </ul>
     </div>

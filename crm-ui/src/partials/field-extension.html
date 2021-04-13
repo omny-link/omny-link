@@ -14,7 +14,7 @@
    the License.
 -->
 <li class="form-group">
-  <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}{{#label!=''}}:{{/}}</label>
+  <label class="col-md-4 col-sm-4 col-xs-4">{{label == undefined ? name.toLabel() : label}}{{#label!=''}}:{{/}}</label>
   {{#if current.orderItems && current.orderItems[0].customFields[name] && ..aggregation!=undefined}}
     {{#if ..aggregation=='sum'}}
       <span>{{formatSumOrderItemField(current,name)}}</span>
@@ -72,5 +72,5 @@
           value="{{current.customFields[name]}}">
     {{/if}}
   {{/if}}
-  <p class="col-md-offset-4 col-sm-offset-4 help-block">{{hint}}</p>
+  <p class="col-md-offset-4 col-sm-offset-4 col-xs-offset-4 help-block">{{hint}}</p>
 </li>
