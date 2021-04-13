@@ -103,6 +103,7 @@
         <li class="form-group">
           <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
           <input class="form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" {{#if !matchRole('power_user')}}readonly disabled{{/if}} value="{{current.owner}}">
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{# tenant.strings.ownerHint}}{{tenant.strings.ownerHint}}{{else}}The account owner for this {{/}} {{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}contact{{/}}</p>
         </li>
         {{#tenant.features.marketing}}
           <li class="form-group">
@@ -178,7 +179,6 @@
 	          <li class="form-group">
 	            <label class="col-md-4 col-sm-4">{{#tenant.strings.jobTitle}}{{tenant.strings.jobTitle}}{{else}}Job Title{{/}}:</label>
 	            <input class="form-control" id="curJobTitle" value="{{current.jobTitle}}"/>
-	            <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
 	          </li>
 	          <li>
 	            <label class="col-md-4 col-sm-4">{{#tenant.strings.email}}{{tenant.strings.email}}{{else}}Email{{/}}:</label>
