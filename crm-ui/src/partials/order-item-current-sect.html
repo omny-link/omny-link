@@ -26,20 +26,20 @@
           <ul class="form edit-form">
             {{#tenant.features.catalog}}
               <li class="form-group">
-                <label class="col-md-4 col-sm-4">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
+                <label class="col-md-4 col-sm-3 col-xs-2">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
                 <input class="form-control" list="stockItems" id="curStockItem{{j}}" value="{{current.orderItems[j].stockItem.name}}">
-                <p class="col-md-offset-4 col-sm-offset-4 help-block"></p>
+                <p class="col-md-offset-4 col-sm-offset-3 hidden-xs help-block"></p>
               </li>
             {{/}}
             {{#each tenant.orderItemFields.slice(0,Math.ceil(tenant.orderItemFields.length/2)):k}}
               <li class="form-group">
-                <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
+                <label class="col-md-4 col-sm-3 col-xs-2">{{label == undefined ? name.toLabel() : label}}:</label>
                 {{#if type=='list'}}
                   <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}" value="{{current.orderItems[j].customFields[name]}}">
                 {{else}}
                   <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type=='number'}}step="any"{{/}} type="{{type}}" value="{{current.orderItems[j].customFields[name]}}">
                 {{/if}}
-                <p class="col-md-offset-4 col-sm-offset-4 help-block">{{hint}}</p>
+                <p class="col-md-offset-4 col-sm-offset-3 hidden-xs help-block">{{hint}}</p>
               </li>
             {{/each}}
           </ul>
@@ -48,20 +48,20 @@
           <ul class="form edit-form">
             {{#tenant.strings.orderItemPriceHint}}
               <li class="form-group">
-                <label class="col-md-4 col-sm-4">{{#tenant.strings.orderItemPrice}}{{tenant.strings.orderItemPrice}}{{else}}Price{{/}}:</label>
+                <label class="col-md-4 col-sm-3 col-xs-2">{{#tenant.strings.orderItemPrice}}{{tenant.strings.orderItemPrice}}{{else}}Price{{/}}:</label>
                   <input class="form-control" id="curOrderItemPrice" type="{{type}}" value="{{current.orderItems[j].price}}">
-                <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderItemPriceHint}}{{tenant.strings.orderItemPriceHint}}{{else}}Price for the {{tenant.strings.orderItem}}{{/}}:</p>
+                <p class="col-md-offset-4 col-sm-offset-3 hidden-xs help-block">{{#tenant.strings.orderItemPriceHint}}{{tenant.strings.orderItemPriceHint}}{{else}}Price for the {{tenant.strings.orderItem}}{{/}}:</p>
               </li>
             {{/}}
             {{#each tenant.orderItemFields.slice(Math.ceil(tenant.orderItemFields.length/2),tenant.orderItemFields.length):k}}
               <li class="form-group">
-                <label class="col-md-4 col-sm-4">{{label == undefined ? name.toLabel() : label}}:</label>
+                <label class="col-md-4 col-sm-3 col-xs-2">{{label == undefined ? name.toLabel() : label}}:</label>
                 {{#if type=='list'}}
                   <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}" value="{{current.orderItems[j].customFields[name]}}">
                 {{else}}
                   <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type=='number'}}step="any"{{/}} type="{{type}}" value="{{current.orderItems[j].customFields[name]}}">
                 {{/if}}
-                <p class="col-md-offset-4 col-sm-offset-4 help-block">{{hint}}</p>
+                <p class="col-md-offset-4 col-sm-offset-3 hidden-xs help-block">{{hint}}</p>
               </li>
             {{/each}}
           </ul>

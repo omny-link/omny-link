@@ -115,6 +115,13 @@ var ractive = new BaseRactive({
           +(date.getDate()<10 ? '0'+(date.getDate()) : date.getDate()+'');
       }
     },
+    formatDecimal: function(answer) {
+        try {
+          return answer == undefined ? '' : parseFloat(answer).formatDecimal(decimalPlaces);
+        } catch (e) {
+          return '';
+        }
+    },
     formatDateTime: function(timeString) {
       if (timeString==undefined) return 'n/a';
       var dts = new Date(timeString).toLocaleString(navigator.languages);

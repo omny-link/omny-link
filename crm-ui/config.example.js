@@ -24,6 +24,6 @@ module.exports = {
     css: {
       cssnano: true
     },
-    apiServerUrl:  'https://v3.knowprocess.com'
+    apiServerUrl:  'https://api.knowprocess.com'
   }
 };
