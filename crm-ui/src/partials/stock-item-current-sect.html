@@ -56,7 +56,7 @@
 	      {{#if stockTypes!=undefined}}
 	        <li class="form-group">
 	          <label class="col-md-4 col-sm-4 col-xs-4 required">{{#tenant.strings.tags}}{{tenant.strings.tags}}{{else}}Tags{{/}}:</label>
-	          <input class="tag-ctrl form-control col-md-8 col-sm-8 col-xs-8" id="curTags" data-bind="current.tags" required/>
+	          <input class="tag-ctrl form-control col-md-8 col-sm-8 col-xs-8" id="curTags" data-bind="current.tags" placeholder="Comma-separated values" required/>
 	          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.tagsHint}}{{tenant.strings.tagsHint}}{{else}}Tags allow multiple and free-form classification{{/}}</p>
 	        </li>
 	      {{/if}}
