@@ -151,7 +151,8 @@
         </li>
         <li>
           <label class="col-md-4 col-sm-4 col-xs-4">{{# tenant.strings.tags}}{{tenant.strings.tags}}{{else}}Tags{{/}}:</label>
-          <input class="tag-ctrl form-control col-md-8 col-sm-8 col-xs-8" id="curTags" data-bind="current.tags"/>
+          <input class="tag-ctrl form-control col-md-8 col-sm-8 col-xs-8" id="curTags" data-bind="current.tags" placeholder="Comma-separated values"/>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">Tags are arbitrary labels you apply to a record. Tip: to find all records tagged 'green' use #green in search</p>
         </li>
       </ul>
     </div>

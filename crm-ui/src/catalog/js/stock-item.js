@@ -224,7 +224,6 @@ var ractive = new BaseRactive({
         tenantId: ractive.get('tenant.id')
     };
     ractive.select( stockItem );
-    ractive.initTags();
   },
   addImage: function (stockItem) {
     console.log('addImage '+stockItem+' ...');

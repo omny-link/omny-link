@@ -417,7 +417,6 @@ var ractive = new BaseRactive({
           url: undefined
         };
         ractive.select(contact);
-        ractive.initTags();
       },
       addContact: function() {
         console.log('addContact ');

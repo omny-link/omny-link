@@ -340,7 +340,6 @@ var ractive = new BaseRactive({
       url: undefined
     });
     ractive.fetchAccounts();
-    ractive.initTags();
     ractive.showAlertCounters();
   },
   addSector: function () {

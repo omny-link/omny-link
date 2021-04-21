@@ -413,25 +413,22 @@ var BaseRactive = Ractive.extend({
   },
   initTags: function(readOnly) {
     console.info('initTags');
-    if (typeof $(".tag-ctrl")['tagit'] != 'function') return;
     ractive.set('saveObserver', false);
     $('[data-bind]').each(function(i,d) {
-      $(d).val(ractive.get($(d).data('bind'))).css('display','none');
+      $(d).val(ractive.get($(d).data('bind')));//.css('display','none');
     });
-
-    if ($(".tag-ctrl").is(":ui-tagit")) $(".tag-ctrl").tagit('destroy');
-    $(".tag-ctrl").tagit({
-      allowSpaces: true,
-      placeholderText: "Comma separated tags",
-      readOnly: readOnly==true ? true : false,
-      showAutocompleteOnFocus: true,
-      afterTagAdded: function(event, ui) {
+    if ($('input.tag-ctrl').length>0) {
+      $('input.tag-ctrl').tagsinput('destroy');
+      $('input.tag-ctrl').tagsinput({ });
+      $('input.tag-ctrl').on('itemAdded', function(event) {
         ractive.set($(event.target).data('bind'),$(event.target).val());
-      },
-      afterTagRemoved: function(event, ui) {
+        ractive.save();
+      });
+      $('input.tag-ctrl').on('itemRemoved', function(event) {
         ractive.set($(event.target).data('bind'),$(event.target).val());
-      }
-    });
+        ractive.save();
+      });
+    }
     ractive.set('saveObserver', true);
   },
   initialAccountStage: function() {
