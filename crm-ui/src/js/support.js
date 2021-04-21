@@ -143,7 +143,7 @@
   }
   ractive.toggleShowConfidentialNotes = function(btn) {
     console.info('toggleShowConfidentialNotes');
-    if (ractive.get('current.owner')!=ractive.get('profile.id')) {
+    if (ractive.get('current.owner')!=ractive.get('profile.username')) {
       ractive.showMessage('Since you\'re not the owner you cannot view confidential notes', 'alert-warning');
       return;
     }

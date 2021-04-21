@@ -426,7 +426,7 @@ var ractive = new BaseRactive({
         var obj = {
           account: ractive.uri(ractive.get('current')),
           mainContact: ractive.get('current.contacts').length==0 ? true: false,
-          owner: ractive.get('current.owner'),
+          owner: ractive.get('profile.username'),
           selfRef: '',
           tenant: ractive.get('tenant.id')
         }
