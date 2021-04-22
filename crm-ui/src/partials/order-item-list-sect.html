@@ -33,9 +33,9 @@
               {{#tenant.features.catalog}}
                 <th title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}</th>
               {{/}}
-              {{#tenant.orderItemFields}}
+              {{#tenant.orderItemFields:k}}
                 {{#if summary==true}}
-                  <th title="{{hint}}">{{label == undefined ? key.toLabel() : label}}</th>
+                  <th class="{{k>3 ? 'hidden-sm' : ''}} {{k>2 ? 'hidden-xs' : ''}}" title="{{hint}}">{{label == undefined ? name.toLabel() : label}}</th>
                 {{/if}}
               {{/}}
               <th>Actions</th>
@@ -52,13 +52,13 @@
                     <span title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#stockItem}}{{stockItem.name}}{{else}}n/a{{/}}</span>
                   </td>
                 {{/}}
-                {{#tenant.orderItemFields}}
+                {{#tenant.orderItemFields:k}}
                   {{#if summary==true}}
-                    <td on-click="toggleEditOrderItem(current.orderItems[j],j)" class="{{type}}">
+                    <td class="{{type}} {{k>3 ? 'hidden-sm' : ''}} {{k>2 ? 'hidden-xs' : ''}}" on-click="toggleEditOrderItem(current.orderItems[j],j)">
                       {{#if type=='date'}}
-                        <span title="{{hint}}">{{formatDate(customFields[key])}}</span>
+                        <span title="{{hint}}">{{formatDate(customFields[name])}}</span>
                       {{else}}
-                        <span title="{{hint}}" >{{customFields[key]}}</span>
+                        <span title="{{hint}}" >{{customFields[name]}}</span>
                       {{/if}}
                     </td>
                   {{/if}}
