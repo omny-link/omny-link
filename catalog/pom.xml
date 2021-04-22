@@ -116,9 +116,9 @@
       <version>1.11.4</version>
     </dependency>
     <dependency>
-      <groupId>link.omny</groupId>
-      <artifactId>fonts</artifactId>
-      <version>${omny-link.version}</version>
+      <groupId>com.knowprocess</groupId>
+      <artifactId>icons</artifactId>
+      <version>${kp-icons.version}</version>
     </dependency>    
   </dependencies>
 

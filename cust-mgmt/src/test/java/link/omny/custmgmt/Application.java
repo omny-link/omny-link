@@ -32,13 +32,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import com.knowprocess.auth.AuthConfig;
 
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
 @EnableAutoConfiguration
 @Configuration
 @Import({ AuthConfig.class, CustMgmtConfig.class })
 @ComponentScan(basePackages = { "link.omny.custmgmt", "io.onedecision.engine" })
-@EnableSwagger2
 public class Application extends WebMvcConfigurerAdapter {
 
     @Override

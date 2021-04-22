@@ -15,7 +15,6 @@
  ******************************************************************************/
 package link.omny.custmgmt.web;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -30,14 +29,10 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 import javax.validation.constraints.NotNull;
 
-import org.activiti.engine.IdentityService;
-import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.identity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
@@ -69,9 +64,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.knowprocess.bpm.impl.DateUtils;
 
 import link.omny.custmgmt.internal.CsvImporter;
+import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.internal.NullAwareBeanUtils;
 import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
 import link.omny.custmgmt.json.JsonCustomFieldSerializer;
@@ -113,9 +108,6 @@ public class ContactController extends BaseTenantAwareController{
 
     // @Value("omny.minsConsideredActive:-60")
     private int minsConsideredActive = -60;
-
-    @Autowired
-    private ProcessEngine processEngine;
 
     /**
      * Imports JSON representation of contacts.
@@ -901,45 +893,6 @@ public class ContactController extends BaseTenantAwareController{
         contact.confirmEmail(emailConfirmationCode);
         contactRepo.save(contact);
         return "emailConfirmation";
-    }
-
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{uuid}/reset-password", method = RequestMethod.POST, headers = "Accept=application/json")
-    public @ResponseBody void resetPassword(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("uuid") String uuid,
-            @RequestParam(name = "password") String pwd,
-            @RequestParam(name = "password2") String pwd2) {
-        LOGGER.info(String.format("Updating password of %1$s", uuid));
-
-        if (!pwd.equals(pwd2)) {
-            throw new IllegalArgumentException("Passwords do not match");
-        }
-
-        IdentityService idSvc = processEngine.getIdentityService();
-        List<Contact> contacts = contactRepo.findByUuid(uuid, tenantId);
-        if (contacts.size() > 0) {
-            try {
-                User user = idSvc.createUserQuery()
-                        .userId(contacts.get(0).getEmail())
-                        .memberOfGroup("user").singleResult();
-                user.setPassword(pwd);
-                idSvc.saveUser(user);
-            } catch (NullPointerException e) {
-                LOGGER.error(String.format("No user found with email %1$s",
-                        contacts.get(0).getEmail()), e);
-                throw new BusinessEntityNotFoundException("user", contacts.get(
-                        0).getEmail());
-            } catch (Exception e) {
-                LOGGER.error(String.format(
-                        "Email %1$s does not resolve to a unique user",
-                        contacts.get(0).getEmail()), e);
-                throw new BusinessEntityNotFoundException("user", contacts.get(
-                        0).getEmail());
-            }
-        } else {
-            throw new BusinessEntityNotFoundException("contact", uuid);
-        }
     }
 
     /**

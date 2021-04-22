@@ -28,6 +28,7 @@
     <omny-link.version>2.2.1</omny-link.version>
     <!-- Should express as range: [1.0,1.1) -->
     <kp-auth.version>1.0.0.2</kp-auth.version>
+    <kp-icons.version>3.0.0-SNAPSHOT</kp-icons.version>
     <work-mgmt.version>2.3.0</work-mgmt.version>
     <activiti.bdd.version>5.19.0.20161207</activiti.bdd.version>
     <onedecision.version>1.2.0-RC1</onedecision.version>
@@ -172,17 +173,11 @@
   </dependencyManagement>
 
   <modules>
-    <module>acct-mgmt</module>
-    <module>analytics</module>
     <module>catalog</module>
     <module>cust-mgmt</module>
     <module>docs</module>
-    <module>fonts</module>
     <module>omny-link-server</module>
-    <module>omny-link-processes</module>
-    <module>service-tasks</module>
     <module>support-services</module>
-    <module>work-mgmt</module>
   </modules>
 
   <build>

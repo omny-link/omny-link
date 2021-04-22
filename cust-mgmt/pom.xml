@@ -90,16 +90,6 @@
       <artifactId>auth</artifactId>
       <version>${kp-auth.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.knowprocess.bpm</groupId>
-      <artifactId>work-mgmt</artifactId>
-      <version>${work-mgmt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.onedecision</groupId>
-      <artifactId>onedecision-engine</artifactId>
-      <version>${onedecision.version}</version>
-    </dependency>
     <!-- https://mvnrepository.com/artifact/batik/batik-transcoder -->
     <dependency>
       <groupId>batik</groupId>
@@ -151,10 +141,10 @@
 	    <version>4.4.7</version><!--  4.5.11 -->
     </dependency>
     <dependency>
-      <groupId>link.omny</groupId>
-      <artifactId>fonts</artifactId>
-      <version>${omny-link.version}</version>
-    </dependency>    
+      <groupId>com.knowprocess</groupId>
+      <artifactId>icons</artifactId>
+      <version>${kp-icons.version}</version>
+    </dependency>
 
     <!-- Without >=2.5.0 get Sax 2 parser exception on Batik transcoder -->
     <dependency>

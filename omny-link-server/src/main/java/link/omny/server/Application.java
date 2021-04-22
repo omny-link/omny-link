@@ -39,14 +39,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knowprocess.auth.AuthConfig;
-import com.knowprocess.bpm.BpmConfiguration;
 import com.knowprocess.bpm.web.converters.CsvBeanConverter;
 
 import io.onedecision.engine.OneDecisionConfig;
 import io.onedecision.engine.domain.OneDecisionDomainConfig;
-import link.omny.acctmgmt.AcctMgmtConfig;
-import link.omny.acctmgmt.model.SystemConfig;
-import link.omny.analytics.AnalyticsConfig;
 import link.omny.catalog.CatalogConfig;
 import link.omny.custmgmt.CustMgmtConfig;
 import link.omny.custmgmt.model.Document;
@@ -59,10 +55,9 @@ import link.omny.supportservices.SupportServicesConfig;
 @Configuration
 @EnableAutoConfiguration
 @Import({ AuthConfig.class, OneDecisionConfig.class, OneDecisionDomainConfig.class,
-        AnalyticsConfig.class, AcctMgmtConfig.class,
-        BpmConfiguration.class, CustMgmtConfig.class, CatalogConfig.class,
+        CustMgmtConfig.class, CatalogConfig.class,
         SupportServicesConfig.class })
-@ComponentScan(basePackages = { "link.omny.acctmgmt", "link.omny.analytics",
+@ComponentScan(basePackages = { "link.omny.acctmgmt",
         "link.omny.catalog", "link.omny.custmgmt", "link.omny.server",
         "io.onedecision.engine" })
 public class Application extends WebMvcConfigurerAdapter {
@@ -78,11 +73,6 @@ public class Application extends WebMvcConfigurerAdapter {
 
     @Value("${omny.tomcat.connector2.scheme:http}")
     protected String connector2Scheme;
-
-    @Bean
-    public SystemConfig systemConfig() {
-        return new SystemConfig();
-    }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
