@@ -53,7 +53,6 @@ var ractive = new BaseRactive({
   },
   partials: {
     'helpModal': '',
-    'loginSect': '',
     'profileArea': '',
     'sidebar': '',
     'supportBar': '',

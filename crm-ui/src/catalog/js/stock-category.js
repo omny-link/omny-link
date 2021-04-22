@@ -195,7 +195,6 @@ var ractive = new BaseRactive({
   partials: {
     'profileArea': '',
     'titleArea': '',
-    'loginSect': '',
     'stockCategoryListSect': '',
     'currentStockCategorySect': '',
     'poweredBy': '',

@@ -1,0 +1,270 @@
+<!--
+  Copyright 2011-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1508240449292" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.22 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1508240449292" name="" targetNamespace="http://sourceforge.net/bpmn/definitions/_1508240449292" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <process id="SendDocumentToDocuSign" isClosed="false" isExecutable="true" name="Create a document and send it to DocuSign" processType="None">
+    <documentation id="SendDocumentToDocuSign_D_1" textFormat="text/plain"><![CDATA[Create a document by merging a template with the specified contact's data and send it to DocuSign]]></documentation>
+    <extensionElements>
+      <yaoqiang:description/>
+      <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <ioSpecification>
+      <dataInput id="_8" isCollection="false" name="memo"/>
+      <dataInput id="_10" isCollection="false" name="contact"/>
+      <dataInput id="_6" isCollection="false" name="order"/>
+      <dataInput id="_20" isCollection="false" name="owner"/>
+      <inputSet>
+        <dataInputRefs>_8</dataInputRefs>
+        <dataInputRefs>_10</dataInputRefs>
+        <dataInputRefs>_6</dataInputRefs>
+        <dataInputRefs>_20</dataInputRefs>
+      </inputSet>
+      <outputSet/>
+    </ioSpecification>
+    <startEvent id="_2" isInterrupting="true" name="Start Event" parallelMultiple="false">
+      <outgoing>_12</outgoing>
+      <outputSet/>
+    </startEvent>
+    <serviceTask activiti:class="com.knowprocess.services.pdf.Html2PdfService" completionQuantity="1" id="_16" implementation="##WebService" isForCompensation="false" name="Convert to PDF" startQuantity="1">
+      <extensionElements>
+        <activiti:field expression="${memo.getString('richContent','')}" name="data"/>
+        <activiti:field name="outputVariable" stringValue="document"/>
+      </extensionElements>
+      <incoming>_25</incoming>
+      <outgoing>_18</outgoing>
+    </serviceTask>
+    <serviceTask activiti:class="com.knowprocess.services.encode.Base64EncoderTask" completionQuantity="1" id="_5" implementation="##WebService" isForCompensation="false" name="Encode &#10;document" startQuantity="1">
+      <extensionElements>
+        <activiti:field expression="${document}" name="data"/>
+        <activiti:field name="outputVariable" stringValue="documentBase64"/>
+      </extensionElements>
+      <incoming>_18</incoming>
+      <outgoing>_9</outgoing>
+    </serviceTask>
+    <serviceTask activiti:async="true" activiti:class="com.knowprocess.resource.spi.RestPost" completionQuantity="1" id="_11" implementation="##WebService" isForCompensation="false" name="Send document&#10;to Docusign" startQuantity="1">
+      <extensionElements>
+        <activiti:field name="resourceUsername" stringValue="userInfo('tenant-bot')"/>
+        <activiti:field expression="userInfo('docusign-url')" name="globalResource"/>
+        <activiti:field expression="Accept:application/json,Content-Type:application/json,X-DocuSign-Authentication:userInfo('docusign-authentication')" name="headers"/>
+        <activiti:field name="data">
+          <field>
+            <activiti:expression>
+              <expression>{
+	          "status": "sent",
+	          "emailSubject": "${memo.getString('title','Here are the documents for your signature')}",
+	          "documents": [{ "documentId": "1", "name": "${order.getString('name', 'this document')}", "documentBase64": "${documentBase64}" }],
+	          "recipients": { "signers": [{
+	            "name": "${owner.getJsonObject(0).getString('fullName','')}","email": "${owner.getJsonObject(0).getString('email','')}", "recipientId": "1",
+	            "tabs": { "signHereTabs": [{
+	              "xPosition": "${memo.getJsonArray("signatories").getJsonObject(0).getJsonObject("signHereTab").getInt("x")}",
+	              "yPosition": "${memo.getJsonArray("signatories").getJsonObject(0).getJsonObject("signHereTab").getInt("y")}",
+	              "documentId": "1",
+	              "pageNumber": "${memo.getJsonArray("signatories").getJsonObject(0).getJsonObject("signHereTab").getInt("page")}" }] }
+	          },{
+	            "name": "${contact.getString('fullName','')}","email": "${contact.getString('email','')}", "recipientId": "2",
+	            "tabs": { "signHereTabs": [{
+	              "xPosition": "${memo.getJsonArray("signatories").getJsonObject(1).getJsonObject("signHereTab").getInt("x")}",
+	              "yPosition": "${memo.getJsonArray("signatories").getJsonObject(1).getJsonObject("signHereTab").getInt("y")}",
+	              "documentId": "1",
+	              "pageNumber": "${memo.getJsonArray("signatories").getJsonObject(1).getJsonObject("signHereTab").getInt("page")}" }] }
+	          }] }}</expression>
+            </activiti:expression>
+          </field>
+        </activiti:field>
+        <activiti:field expression="docusignResponse" name="responseVar"/>
+      </extensionElements>
+      <incoming>_9</incoming>
+      <outgoing>_19</outgoing>
+    </serviceTask>
+    <sequenceFlow id="_19" sourceRef="_11" targetRef="endEvent"/>
+    <sequenceFlow id="_9" sourceRef="_5" targetRef="_11"/>
+    <sequenceFlow id="_18" sourceRef="_16" targetRef="_5"/>
+    <sequenceFlow id="_12" sourceRef="_2" targetRef="_13"/>
+    <callActivity calledElement="callProcess" completionQuantity="1" id="_13" isForCompensation="false" name="Validate &#10;document" startQuantity="1">
+      <incoming>_12</incoming>
+      <outgoing>_14</outgoing>
+    </callActivity>
+    <sequenceFlow id="_14" sourceRef="_13" targetRef="_24"/>
+    <endEvent id="endEvent" name="End, document sent">
+      <incoming>_19</incoming>
+      <inputSet/>
+    </endEvent>
+    <sequenceFlow id="_25" name="Yes" sourceRef="_24" targetRef="_16"/>
+    <exclusiveGateway gatewayDirection="Diverging" id="_24" name="Is valid?">
+      <incoming>_14</incoming>
+      <outgoing>_25</outgoing>
+      <outgoing>_27</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="_27" sourceRef="_24" targetRef="_30"/>
+    <endEvent id="_28" name="End, no document sent">
+      <incoming>_29</incoming>
+      <inputSet/>
+    </endEvent>
+    <sequenceFlow id="_29" sourceRef="_30" targetRef="_28"/>
+    <callActivity calledElement="callProcess" completionQuantity="1" id="_30" isForCompensation="false" name="Alert owner&#10;of rejection" startQuantity="1">
+      <incoming>_27</incoming>
+      <outgoing>_29</outgoing>
+    </callActivity>
+    <textAnnotation id="_7" textFormat="text/plain">
+      <text>SEND A DOCUMENT TO DOCUSIGN</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-SendDocumentToDocuSign" name="Send document to Docusign" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="SendDocumentToDocuSign">
+      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
+        <dc:Bounds height="32.0" width="32.0" x="46.863636363636424" y="169.26470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="69.0" x="28.36" y="212.13"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_7" id="Yaoqiang-_7">
+        <dc:Bounds height="31.0" width="245.0" x="42.0" y="42.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="201.0" x="42.0" y="50.1"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_8" id="Yaoqiang-_8">
+        <dc:Bounds height="38.0" width="29.0" x="48.363636363636424" y="372.6136363636364"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="42.0" x="41.86" y="412.61"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_10" id="Yaoqiang-_10">
+        <dc:Bounds height="38.0" width="29.0" x="48.363636363636424" y="302.3181818181818"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="47.0" x="39.36" y="342.32"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6">
+        <dc:Bounds height="38.0" width="29.0" x="48.363636363636424" y="442.90909090909093"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="37.0" x="44.36" y="482.91"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_20" id="Yaoqiang-_20">
+        <dc:Bounds height="38.0" width="29.0" x="48.363636363636424" y="513.2045454545455"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="41.0" x="42.36" y="553.2"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_5" id="Yaoqiang-_5">
+        <dc:Bounds height="79.0" width="109.0" x="500.68181818181864" y="145.76470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8" width="62.0" x="524.18" y="170.86"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
+        <dc:Bounds height="79.0" width="109.0" x="639.8409090909097" y="145.76470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8" width="95.0" x="646.84" y="170.86"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_16" id="Yaoqiang-_16">
+        <dc:Bounds height="79.0" width="109.0" x="361.52272727272754" y="145.76470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="90.0" x="371.02" y="177.86"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_13" id="Yaoqiang-_13" isExpanded="false">
+        <dc:Bounds height="79.0" width="109.0" x="135.35294117647058" y="145.76470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8" width="62.0" x="158.85" y="170.86"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endEvent" id="Yaoqiang-endEvent">
+        <dc:Bounds height="32.0" width="32.0" x="817.5000000000009" y="169.26470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="120.0" x="773.5" y="211.47"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_24" id="Yaoqiang-_24" isMarkerVisible="true">
+        <dc:Bounds height="42.0" width="42.0" x="281.6470588235294" y="164.26470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="52.0" x="276.65" y="208.26"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_28" id="Yaoqiang-_28">
+        <dc:Bounds height="32.0" width="32.0" x="483.5294117647059" y="327.4117647058823"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="138.0" x="430.53" y="368.16"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_30" id="Yaoqiang-_30" isExpanded="false">
+        <dc:Bounds height="79.0" width="109.0" x="261.29411764705884" y="303.9117647058823"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.8" width="71.0" x="280.29" y="329.01"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_19" id="Yaoqiang-_19">
+        <di:waypoint x="748.375" y="185.26470588235293"/>
+        <di:waypoint x="817.3767301973556" y="185.26470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="779.88" y="175.86"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_18" id="Yaoqiang-_18">
+        <di:waypoint x="470.375" y="185.26470588235293"/>
+        <di:waypoint x="500.375" y="185.26470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="482.38" y="175.86"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_14" id="Yaoqiang-_14">
+        <di:waypoint x="244.375" y="185.26470588235293"/>
+        <di:waypoint x="281.6102941176471" y="185.26470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="259.99" y="175.86"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9">
+        <di:waypoint x="609.375" y="185.26470588235293"/>
+        <di:waypoint x="639.375" y="185.26470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="621.38" y="175.86"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12">
+        <di:waypoint x="78.3732698026443" y="185.26470588235293"/>
+        <di:waypoint x="135.375" y="185.26470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="103.87" y="175.86"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_29" id="Yaoqiang-_29">
+        <di:waypoint x="370.375" y="343.4117647058823"/>
+        <di:waypoint x="483.3752432976976" y="343.4117647058823"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="423.88" y="334.01"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_27" id="Yaoqiang-_27">
+        <di:waypoint x="302.6470588235294" y="206.2279411764706"/>
+        <di:waypoint x="302.6470588235294" y="303.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="6.0" x="299.65" y="245.46"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_25" id="Yaoqiang-_25">
+        <di:waypoint x="323.1397058823529" y="185.26470588235293"/>
+        <di:waypoint x="361.375" y="185.26470588235293"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.8" width="27.0" x="328.76" y="175.86"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

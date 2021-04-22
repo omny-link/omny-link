@@ -1,0 +1,37 @@
+#-------------------------------------------------------------------------------
+# Copyright 2011-2018 Tim Stephenson and contributors
+# 
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+#  use this file except in compliance with the License.  You may obtain a copy
+#  of the License at
+# 
+#    http://www.apache.org/licenses/LICENSE-2.0
+# 
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations under
+#  the License.
+#-------------------------------------------------------------------------------
+# WP-API is now part of WP core but still requires an authentication plugin such
+# as: https://github.com/WP-API/Basic-Auth
+# 
+# See documentation at: https://developer.wordpress.org/rest-api/reference/
+
+# GET users
+curl -u USR:PWD \
+  https://knowprocess.com/wp-json/wp/v2/users
+
+# POST new user
+curl -X POST -u USR:PWD \
+  -d 'username=fred@bedrock.com' \
+  -d 'email=fred@bedrock.com' \
+  -d 'password=foobar123' \
+  https://knowprocess.com/wp-json/wp/v2/users
+  
+curl -X POST -u account-management@hs.com:sakSYImy7UynoE0Z5lSor \
+  -d 'username=fred@bedrock.com' \
+  -d 'email=fred@bedrock.com' \
+  -d 'password=foobar123' \
+  https://hs.com/wp-json/wp/v2/users
+  

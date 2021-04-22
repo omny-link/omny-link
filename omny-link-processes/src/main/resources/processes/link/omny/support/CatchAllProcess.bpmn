@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  Copyright 2011-2018 Tim Stephenson and contributors
+  
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+  
+     http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://omny.link/support" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Yaoqiang BPMN Editor" exporterVersion="2.2.18 (GPLv3, Non-Commercial)" expressionLanguage="http://activiti.org/Juel" id="_1421859323498" name="" targetNamespace="http://omny.link/support" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <process id="CatchAllProcess" isClosed="false" isExecutable="true" name="Catch all handler that creates a user task to sort out whatever happened" processType="None">
+    <documentation id="CatchAllProcess_D_1" textFormat="text/plain"><![CDATA[Catch all handler when there is no process available for a received message]]></documentation>
+    <extensionElements>
+      <yaoqiang:pageFormat height="842.4" imageableHeight="832.4" imageableWidth="587.6" imageableX="5.0" imageableY="5.0" orientation="0" width="597.6"/>
+      <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
+    </extensionElements>
+    <startEvent id="_2" isInterrupting="true" name="Start Event" parallelMultiple="false">
+      <outgoing>_8</outgoing>
+      <outputSet/>
+    </startEvent>
+    <endEvent id="_5" name="End Event">
+      <incoming>_9</incoming>
+      <inputSet/>
+    </endEvent>
+    <userTask activiti:dueDate="P1D" activiti:formKey="/partials/simpleTodoFormExtension.html" completionQuantity="1" id="_3" implementation="##unspecified" isForCompensation="false" name="Deal with contact from the website" startQuantity="1">
+      <documentation id="_3_D_1" textFormat="text/plain"><![CDATA[
+        A form has been submitted from the web site that has no workflow associated with it so please review the form details below and decide what action is needed. 
+      ]]></documentation>
+      <extensionElements>
+        <activiti:formProperty expression="#{messageName}" id="messageName" name="Message Name"/>
+        <activiti:formProperty expression="#{query}" id="json" name="Form data"/>
+      </extensionElements>
+      <incoming>_8</incoming>
+      <outgoing>_9</outgoing>
+      <potentialOwner id="_90_RES_1" name="tenantAdmin">
+        <resourceAssignmentExpression>
+          <formalExpression><![CDATA[${tenantId}_admin]]></formalExpression>
+        </resourceAssignmentExpression>
+      </potentialOwner>
+      <potentialOwner id="_90_RES_2" name="superAdmin">
+        <resourceAssignmentExpression>
+          <formalExpression><![CDATA[super_admin]]></formalExpression>
+        </resourceAssignmentExpression>
+      </potentialOwner>
+    </userTask>
+    <sequenceFlow id="_8" sourceRef="_2" targetRef="_3"/>
+    <sequenceFlow id="_9" sourceRef="_3" targetRef="_5"/>
+    <textAnnotation id="_4" textFormat="text/plain">
+      <text>OMNY LINK SAFETY NET</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-_1" name="Catch all process" resolution="96.0">
+    <bpmndi:BPMNPlane bpmnElement="CatchAllProcess">
+      <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2">
+        <dc:Bounds height="32.0" width="32.0" x="85.65384615384616" y="248.13636363636363"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="63.0" x="70.15384615384619" y="288.8463245738636"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_3" id="Yaoqiang-_3">
+        <dc:Bounds height="70.0" width="108.0" x="243.23076923076917" y="229.13636363636363"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.955078125" width="97.0" x="248.73076923076917" y="249.65882457386363"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_5" id="Yaoqiang-_5">
+        <dc:Bounds height="32.0" width="32.0" x="476.8076923076922" y="248.13636363636363"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="58.0" x="463.8076923076922" y="288.8463245738636"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4">
+        <dc:Bounds height="34.0" width="190.0" x="86.0" y="102.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="133.0" x="86.0" y="111.5224609375"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9">
+        <di:waypoint x="351.07142857142856" y="264.1363636363636"/>
+        <di:waypoint x="477.0720096770225" y="264.1363636363636"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="411.0717191242255" y="254.65882457386363"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_8" id="Yaoqiang-_8">
+        <di:waypoint x="118.07084746583462" y="264.1363636363636"/>
+        <di:waypoint x="243.07142857142856" y="264.1363636363636"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="18.955078125" width="6.0" x="177.5711380186316" y="254.65882457386363"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

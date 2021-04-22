@@ -1,0 +1,4 @@
+. Delete all instances of a given process definition:
+----
+  echo "select CONCAT('./omny.py -u tim@omny.link:928nuffn -X DELETE http://localhost:8082/alife/process-instances/',proc_inst_id_) from ACT_RU_EXECUTION where proc_def_id_ = 'SendAlert:5:25462704';" | mysql ol_db > rm-sendalert5
+----
