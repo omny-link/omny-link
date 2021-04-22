@@ -309,9 +309,6 @@ var BaseRactive = Ractive.extend({
     }
     return false;
   },
-  hideLogin: function() {
-    $('#loginSect').slideUp();
-  },
   hideMessage: function() {
     $('#messages, .messages').hide();
   },
@@ -559,16 +556,21 @@ var BaseRactive = Ractive.extend({
       $('body').append('<div id="connectivityMessages" class="alert-warning">'+msg+'</div>').show();
     }
   },
+  showError: function(msg) {
+    this.showMessage(msg, 'alert-danger');
+  },
+  showFormError: function(formId, msg) {
+    this.showError(msg);
+    var selector = formId==undefined || formId=='' ? ':invalid' : '#'+formId+' :invalid';
+    $(selector).addClass('field-error');
+    $(selector)[0].focus();
+  },
   showHelp: function() {
     console.info('showHelp');
     $('iframe.helpContent')
         .attr('src',ractive.get('helpUrl'))
         .prop('height', window.innerHeight*0.8);
     $('#helpModal').modal({});
-  },
-  showLogin: function() {
-    console.info('showLogin');
-    $('#loginSect').slideDown();
   },
   showMessage: function(msg, additionalClass) {
     console.log('showMessage: '+msg);

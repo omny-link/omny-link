@@ -317,7 +317,6 @@ var ractive = new BaseRactive({
   partials: {
     'profileArea': '',
     'titleArea': '',
-    'loginSect': '',
     'orderListSect':'',
     'currentOrderSect': '',
     'poweredBy': '',
