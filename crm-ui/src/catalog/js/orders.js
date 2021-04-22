@@ -407,13 +407,16 @@ var ractive = new BaseRactive({
   },
   fetch: function() {
     console.info('fetch variant: '+ractive.get('variant'));
+    if (ractive.get('fetchInFlight')) return;
     ractive.set('saveObserver', false);
+    ractive.set('fetchInFlight', true);
     var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/findByType/'+ractive.get('variant');
     $.ajax({
       dataType: "json",
       url: url,
       crossDomain: true,
       success: function( data ) {
+        ractive.set('fetchInFlight', false);
         if (data['_embedded'] == undefined) {
           ractive.merge('orders', data);
         } else {
