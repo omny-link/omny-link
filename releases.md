@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+## 2.2.3 - 27 Aug 2018
+
+ - prevent duplicate contact listing on account page
+
 ## 2.2.2 - 19 Jul 2018
 
  - resolves #626 link to orders
