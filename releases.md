@@ -1,6 +1,22 @@
 Release Notes
 =============
 
+## 2.2.2 - 19 Jul 2018
+
+ - resolves #626 link to orders
+ - resolves #617 limit and sort offered memos
+ - resolves #625 ui to save feedback
+ - resolves #624 feedback custom fields
+ - fix owner gravatar (currently displaying email hash)
+ - avoid calc tax on load
+ - include account custom fields in contact detail view
+ - resolves #621 time since reg'n
+ - remove copyright from JSON (correct copyright, invalid JSON)
+ - resolves omny/alife#72 caused by #613
+ - resolves #618 make boolean fields more resilient
+ - remove stuff that doesn't belong with the crm
+ - remove stuff that doesn't belong with crm
+
 ## 2.2.1 - 28 Feb 2018
 
 - #608 export tasks
