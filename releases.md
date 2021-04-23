@@ -1,6 +1,26 @@
 Release Notes
 =============
 
+## 2.2.4 - 07 Jul 20
+
+ - better account export to csv
+ - resolves #2
+ - added container to build
+ - add accounts.findByCustomField
+ - allow selection of order item summary fields instead of using all
+ - extend max lengths of memo name and title
+ - fix default checkbox implementation
+ - search contact by custom field
+ - make sorting responsibility of client
+ - fix non-externalised strings
+ - reduce delete role from 'admin' to 'analyst'
+ - resolves omny/platform#631 relax mandatory email
+ - resolve puffin/srp#296 sidebar submenu
+ - workaround SUREFIRE-1588
+ - upgrade to batik 1.9.1
+ - resolves #629 add search on invoice ref
+ - Add account APIs to set stage, alerts and tags
+
 ## 2.2.3 - 27 Aug 2018
 
  - prevent duplicate contact listing on account page
