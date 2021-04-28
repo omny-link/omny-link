@@ -49,7 +49,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
                   <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
                 </a>
-                <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+                <ul class="dropdown dropdown-menu" id="customActionMenu" role="menu">
                   {{#each tenant.accountActions }}
                     {{#name}}
                       <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{current.name}}')" title="{{name}}">{{name}}</li>
@@ -378,7 +378,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
                           <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
                         </a>
-                        <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+                        <ul class="dropdown dropdown-menu" id="customActionMenu" role="menu">
                           {{#each tenant.contactActions }}
                             {{#name}}
                               <li on-click="startCustomAction(ref, name, Array.findBy('selfRef',selfRef,current.contacts), url, fullName)" title="{{name}}">{{name}}</li>

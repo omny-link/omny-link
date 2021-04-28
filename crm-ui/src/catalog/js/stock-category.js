@@ -108,7 +108,7 @@ var ractive = new BaseRactive({
     haveCustomExtension: function(extName) {
       return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
     },
-    helpUrl: '//omny.link/user-help/stock-categories/#the_title',
+    helpUrl: '//omny-link.github.io/user-help/stock-categories/#the_title',
     matchFilter: function(obj) {
       var filter = ractive.get('filter');
       //console.info('matchFilter: '+JSON.stringify(filter));
@@ -314,8 +314,8 @@ var ractive = new BaseRactive({
   filter: function(filter) {
     console.log('filter: '+JSON.stringify(filter));
     ractive.set('filter',filter);
-    $('.omny-dropdown.dropdown-menu li').removeClass('selected')
-    $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
+    $('.dropdown.dropdown-menu li').removeClass('selected')
+    $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
     ractive.showSearchMatched();
     $('input[type="search"]').blur();
   },

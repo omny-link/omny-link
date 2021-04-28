@@ -112,7 +112,7 @@ var ractive = new BaseRactive({
     haveCustomExtension: function(extName) {
       return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
     },
-    helpUrl: '//omny.link/user-help/stock-items/#the_title',
+    helpUrl: '//omny-link.github.io/user-help/stock-items/#the_title',
     matchFilter: function(obj) {
       var filter = ractive.get('filter');
       //console.info('matchFilter: '+JSON.stringify(filter));
@@ -345,8 +345,8 @@ var ractive = new BaseRactive({
   filter: function(filter) {
     console.log('filter: '+JSON.stringify(filter));
     ractive.set('filter',filter);
-    $('.omny-dropdown.dropdown-menu li').removeClass('selected')
-    $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
+    $('.dropdown.dropdown-menu li').removeClass('selected')
+    $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
     ractive.set('searchMatched',$('#stockItemsTable tbody tr:visible').length);
     $('input[type="search"]').blur();
   },
@@ -481,8 +481,6 @@ var ractive = new BaseRactive({
         if ('tenant.features.stockItemImages') ractive.fetchImages();
         ractive.initControls();
         ractive.initTags(!ractive.hasRole('product_owner'));
-        // who knows why this is needed, but it is, at least for first time rendering
-        $('.autoNumeric').autoNumeric('update',{});
         ractive.initAccessControl();
         ractive.set('saveObserver',true);
       });

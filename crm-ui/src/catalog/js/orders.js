@@ -30,6 +30,7 @@ var ractive = new BaseRactive({
     filter: {field: "stage", operator: "!in", value: "cold,complete"},
     saveObserver:false,
     server: $env.server,
+    taxRate: 0.2,
     title: 'Orders',
     variant: 'order',
     customField: function(obj, name) {
@@ -204,17 +205,15 @@ var ractive = new BaseRactive({
       return html;
     },
     gravatar: function(email) {
-      if (email == undefined) return '';
-      return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
+      return ractive.gravatar(email);
     },
     hash: function(email) {
-      if (email == undefined) return '';
       return ractive.hash(email);
     },
     haveCustomExtension: function(extName) {
       return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
     },
-    helpUrl: '//omny.link/user-help/orders/#the_title',
+    helpUrl: '//omny-link.github.io/user-help/orders/#the_title',
     lessThan24hAgo: function(isoDateTime) {
       if (isoDateTime == undefined || (new Date().getTime()-new Date(isoDateTime).getTime()) < 1000*60*60*24) {
         return true;
@@ -485,8 +484,8 @@ var ractive = new BaseRactive({
   filter: function(filter) {
     console.info('filter: '+JSON.stringify(filter));
     ractive.set('filter',filter);
-    $('.omny-dropdown.dropdown-menu li').removeClass('selected')
-    $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
+    $('.dropdown.dropdown-menu li').removeClass('selected')
+    $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
     ractive.showSearchMatched();
     $('input[type="search"]').blur();
   },
@@ -505,8 +504,8 @@ var ractive = new BaseRactive({
     console.info('oninit');
     this.on( 'filter', function ( event, filter ) {
       console.info('filter on '+JSON.stringify(event)+','+filter.idx);
-      $('.omny-dropdown.dropdown-menu li').removeClass('selected');
-      $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
+      $('.dropdown.dropdown-menu li').removeClass('selected');
+      $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
       ractive.search(filter.value);
     });
     this.on( 'sortOrder', function ( event, column ) {
@@ -538,6 +537,8 @@ var ractive = new BaseRactive({
       // without time json will not reach endpoint
       if (tmp.date != null) tmp.date += 'T00:00:00';
       tmp.tenantId = ractive.get('tenant.id');
+      tmp.price = parseFloat(tmp.price);
+      tmp.tax = parseFloat(tmp.tax);
 //      console.log('ready to save order'+JSON.stringify(tmp)+' ...');
       $.ajax({
         url: id === undefined ? ractive.getServer()+'/'+tmp.tenantId+'/orders/' : ractive.tenantUri(tmp),
@@ -691,8 +692,6 @@ var ractive = new BaseRactive({
         ractive.set('current', data);
         ractive.initControls();
         ractive.initTags();
-        // who knows why this is needed, but it is, at least for first time rendering
-        $('.autoNumeric').autoNumeric('update',{});
         if (ractive.get('tenant.features.notesOnOrder')==true) ractive.sortChildren('notes','created',false);
         if (ractive.get('tenant.features.documentsOnOrder')==true) ractive.sortChildren('documents','created',false);
         if (ractive.get('currentOrderItemId')!=undefined) {
@@ -837,7 +836,11 @@ ractive.observe('current.price', function(newValue, oldValue, keypath) {
     console.debug('Skipped calculation of tax on '+newValue+' because in middle of other operation');
   }
   console.info('current price change: '+newValue +','+oldValue);
-  if (newValue!=undefined) ractive.set('current.tax', parseFloat(newValue*0.2));
+  if (newValue!=undefined && newValue !== '') {
+    ractive.set('current.tax', parseFloat(String(newValue).replaceAll(/,/g, ''))*ractive.get('taxRate'));
+    ractive.set('current.totalPrice', parseFloat(String(newValue).replaceAll(/,/g, ''))*(1+ractive.get('taxRate')));
+    $('.autoNumeric').autoNumeric('update');
+  }
 });
 
 ractive.on( 'filter', function ( event, filter ) {

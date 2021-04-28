@@ -137,7 +137,7 @@ var ractive = new BaseRactive({
       //console.log('hash '+email+' = '+ractive.hash(email));
       return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
     },
-    helpUrl: '//omny.link/user-help/funnel/#the_title',
+    helpUrl: '//omny-link.github.io/user-help/funnel/#the_title',
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {

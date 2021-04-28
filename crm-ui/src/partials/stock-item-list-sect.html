@@ -28,7 +28,7 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
             <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
           </a>
-          <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+          <ul class="dropdown dropdown-menu" id="customActionMenu" role="menu">
             {{#each tenant.stockItemActions }}
               {{#name}}
                 <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', undefined{{#url}}, '{{url}}'{{/url}})">{{name}}</li>

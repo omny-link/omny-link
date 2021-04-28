@@ -38,7 +38,7 @@ var ractive = new BaseRactive({
       if (email == undefined) return '';
       return ractive.hash(email);
     },
-    helpUrl: '//omny.link/user-help/#the_title',
+    helpUrl: '//omny-link.github.io/user-help/#the_title',
     matchRole: function(role) {
       console.info('matchRole: '+role)
       if (role==undefined || ractive.hasRole(role)) {

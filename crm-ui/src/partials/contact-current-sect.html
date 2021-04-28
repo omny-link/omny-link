@@ -53,7 +53,7 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
                 <a class="clickable glyphicon glyphicon-btn glyphicon-play dropdown" aria-hidden="true" title="Perform action"> <span class="caret"></a>
               </a>
-              <ul class="omny-dropdown dropdown-menu" id="customActionMenu" role="menu">
+              <ul class="dropdown dropdown-menu" id="customActionMenu" role="menu">
                 {{#each tenant.contactActions }}
                   {{#name && matchRole(role) && featureEnabled(feature)}}
                     <li onclick="ractive.startCustomAction('{{ref}}', '{{name}}', ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{current.fullName.replace(/'/g,'&apos;')}}')" title="{{name}}">{{name}}</li>

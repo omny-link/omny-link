@@ -687,9 +687,6 @@ h2 a.glyphicon:hover {
 	  bottom: 10px;
 	  width: 40px;
 	}
-	.toolbar li.admin-bar span {
-	  /*color: red;*/
-	}
 	.toolbar li {
 	  list-style: none;
 	  margin-left: -36px;
@@ -803,13 +800,13 @@ h2 a.glyphicon:hover {
 #customActionBtn {
 	top: 1px;
 }
-#customActionMenu.omny-dropdown {
+#customActionMenu.dropdown {
 	left: -100px;
 }
 .create-form {
   height: 2.2em;
 }
-#filterMenu.omny-dropdown {
+#filterMenu.dropdown {
   width: 200px;
 }
 .form {

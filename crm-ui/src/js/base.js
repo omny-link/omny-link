@@ -351,6 +351,13 @@ var BaseRactive = Ractive.extend({
       });
     }
   },
+  initAutoNumeric: function() {
+    console.log('initAutoNumeric');
+    document.querySelectorAll('.autoNumeric').forEach(function(d,i) {
+      $('.autoNumeric').autoNumeric('destroy');
+      $('.autoNumeric').autoNumeric('init');
+    });
+  },
   initContentEditable: function() {
     console.log('initContentEditable');
     $("[contenteditable]").focus(function() {
@@ -362,6 +369,7 @@ var BaseRactive = Ractive.extend({
     console.log('initControls');
     ractive.initAbout();
     ractive.initAutoComplete();
+    ractive.initAutoNumeric();
     ractive.initContentEditable();
     ractive.initHelp();
     ractive.initShortKeys();
@@ -502,7 +510,6 @@ var BaseRactive = Ractive.extend({
       ractive.set('tenant', response);
       ractive.fetch();
       ractive.applyBranding();
-      ractive.initAutoComplete();
       ractive.set('saveObserver', true);
       if (ractive.tenantCallbacks!=undefined) ractive.tenantCallbacks.fire();
     });

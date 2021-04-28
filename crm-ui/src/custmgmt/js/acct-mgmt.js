@@ -238,7 +238,7 @@ var ractive = new BaseRactive({
             return d.name == 'stageReasons';
           }).length > 0;
         },
-        helpUrl: '//omny.link/user-help/accounts/#the_title',
+        helpUrl: '//omny-link.github.io/user-help/accounts/#the_title',
         inactiveStages: function() {
           return ractive.inactiveStages();
         },
@@ -1526,8 +1526,8 @@ ractive.observe('current.businessWebsite', function(newValue, oldValue, keypath)
 
 ractive.on('filter', function(event, filter) {
   console.info('filter on ' + JSON.stringify(event) + ',' + filter.idx);
-  $('.omny-dropdown.dropdown-menu li').removeClass('selected');
-  $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
+  $('.dropdown.dropdown-menu li').removeClass('selected');
+  $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
   ractive.search(filter.value);
 });
 ractive.on('sortContact', function(event, column) {
