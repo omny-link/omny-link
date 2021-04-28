@@ -556,6 +556,15 @@ var BaseRactive = Ractive.extend({
       $('body').append('<div id="connectivityMessages" class="alert-warning">'+msg+'</div>').show();
     }
   },
+  showError: function(msg) {
+    this.showMessage(msg, 'alert-danger');
+  },
+  showFormError: function(formId, msg) {
+    this.showError(msg);
+    var selector = formId==undefined || formId=='' ? ':invalid' : '#'+formId+' :invalid';
+    $(selector).addClass('field-error');
+    $(selector)[0].focus();
+  },
   showHelp: function() {
     console.info('showHelp');
     $('iframe.helpContent')
