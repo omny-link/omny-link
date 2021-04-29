@@ -46,14 +46,14 @@
       <tr>
         <th></th>
         <th on-click="sort:name">{{#tenant.strings.stockItemName}}{{tenant.strings.stockItemName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon glyphicon-btn "></th>
-        {{#tenant.show.stockCategory}}
+        {{#tenant.features.stockCategory}}
           <th on-click="sort:stockCategoryName">{{#tenant.strings.stockCategory}}{{tenant.strings.stockCategory}}{{else}}Category{{/}}<span class="sortable {{ sorted('stockCategoryName') }} glyphicon"></th>
         {{/}}
         {{#if stockTypes!=undefined}}
           <th on-click="sort:tags">{{#tenant.strings.tags}}{{tenant.strings.tags}}{{else}}Tags{{/}}<span class="sortable {{ sorted('tags') }} glyphicon"></th>
         {{/if}}
         <th on-click="sort:status">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}<span class="sortable {{ sorted('status') }} glyphicon glyphicon-btn "></th>
-        {{#tenant.show.stockPricing}}
+        {{#tenant.features.stockPricing}}
           <th on-click="sort:unitPrice">{{#tenant.strings.unitPrice}}{{tenant.strings.unitPrice}}{{else}}Unit Price{{/}}<span class="sortable {{ sorted('unitPrice') }} glyphicon"></th>
         {{/}}
         <th on-click="sort:created">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}Created{{/}}<span class="sortable {{ sorted('created') }} glyphicon"></th>
@@ -67,14 +67,14 @@
           <tr data-href="{{selfRef}}">
             <td on-click="edit(this)">{{i+1}}</td>
             <td on-click="edit(this)">{{name}}</td>
-            {{#tenant.show.stockCategory}}
+            {{#tenant.features.stockCategory}}
               <td on-click="edit(this)">{{stockCategoryName}}</td>
             {{/}}
             {{#if stockTypes != undefined}}
               <td on-click="edit(this)">{{tags}}</td>
             {{/if}}
             <td on-click="edit(this)">{{status}}</td>
-            {{#tenant.show.stockPricing}}
+            {{#tenant.features.stockPricing}}
               <td on-click="edit(this)">{{#price == undefined || price == 0}}P.O.A.{{else}}{{price}}{{/}}</td>
             {{/}}
             <td on-click="edit(this)">{{formatDate(created)}}</td>

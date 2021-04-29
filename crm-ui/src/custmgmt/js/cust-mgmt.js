@@ -52,7 +52,7 @@ var ractive = new BaseRactive({
     featureEnabled: function(feature) {
       console.log('featureEnabled: '+feature);
       if (feature==undefined || feature.length==0) return true;
-      else return ractive.get('tenant.show.'+feature);
+      else return ractive.get('tenant.features.'+feature);
     },
     fields: ["id", "country", "owner", "fullName", "title", "customFields",
               "tenantId", "lastUpdated", "firstName", "lastName", "tags",
@@ -167,11 +167,9 @@ var ractive = new BaseRactive({
       return html;
     },
     gravatar: function(email) {
-      if (email == undefined) return '';
-      return '<img class="img-rounded" style="width:36px" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36&d=https%3A%2F%2Fapi.omny.link%2F'+ractive.get('tenant.id')+'%2Fgravatars%2F'+ractive.hash(email)+'.png"/>'
+      return ractive.gravatar(email);
     },
     hash: function(email) {
-      if (email == undefined) return '';
       return ractive.hash(email);
     },
     haveCustomExtension: function(extName) {
@@ -457,7 +455,7 @@ var ractive = new BaseRactive({
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.hasRole('power-user')) $('.power-user').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
-        if (ractive.get('tenant.show.orders')) ractive.fetchStockItems();
+        if (ractive.get('tenant.features.orders')) ractive.fetchStockItems();
         ractive.set('contacts',data.map(function(obj) {
             obj.name = obj.fullName;
             return obj;
@@ -494,7 +492,7 @@ var ractive = new BaseRactive({
   },
   fetchOrders: function(contact) {
     console.info('fetchOrders...');
-    if (ractive.get('tenant.show.orders')!=true) return;
+    if (ractive.get('tenant.features.orders')!=true) return;
     var contactId = ractive.id(contact);
 
     ractive.set('saveObserver', false);
@@ -954,7 +952,7 @@ var ractive = new BaseRactive({
   select: function(contact) {
     console.log('select: '+JSON.stringify(contact));
     ractive.set('saveObserver',false);
-//    if (ractive.get('tenant.show.account')
+//    if (ractive.get('tenant.features.account')
 //        && (ractive.get('current.account')==undefined || ractive.get('current.account.name')=='')) {
 //      // This is not viable as it causes the UI to hang once have a couple of
 //      // thousand accounts. Also a very rare case that it's needed
@@ -982,7 +980,7 @@ var ractive = new BaseRactive({
         ractive.set('saveObserver',false);
         ractive.set('current', data);
 
-        if (ractive.get('tenant.show.orders')) {
+        if (ractive.get('tenant.features.orders')) {
           // TODO WIP
           //ractive.fetchStockItems();
           ractive.fetchOrders(ractive.get('current'));
@@ -995,7 +993,7 @@ var ractive = new BaseRactive({
         $('.autoNumeric').autoNumeric('update',{});
         //ractive.fetchNotes();
         ractive.sortChildren('notes','created',false);
-//        if (ractive.get('tenant.show.documents')) ractive.fetchDocs();
+//        if (ractive.get('tenant.features.documents')) ractive.fetchDocs();
         ractive.addServiceLevelAlerts();
         ractive.sortChildren('documents','created',false);
         ractive.analyzeEmailActivity(ractive.get('current.activities'));

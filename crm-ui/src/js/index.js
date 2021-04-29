@@ -28,7 +28,7 @@ var ractive = new BaseRactive({
     featureEnabled: function(feature) {
       console.log('featureEnabled: '+feature);
       if (feature==undefined || feature.length==0) return true;
-      else return ractive.get('tenant.show.'+feature);
+      else return ractive.get('tenant.features.'+feature);
     },
     gravatar: function(email) {
       if (email == undefined) return '';

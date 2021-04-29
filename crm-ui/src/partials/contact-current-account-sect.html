@@ -43,7 +43,7 @@
           </div>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
         </li>
-        {{#if tenant.show.accountCompanyDetails}}
+        {{#if tenant.features.accountCompanyDetails}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4" style="line-height: 1.2em">{{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}}:</label>
             <select class="col-md-8 col-sm-8 form-control" id="curNoOfEmployees" placeholder="Please choose the number of {{#tenant.strings.fte}}{{tenant.strings.fte}}{{else}}No. of FTEs{{/}} you have">
@@ -83,7 +83,7 @@
           </div>
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
         </li>
-        {{#if tenant.show.addressAccount}}
+        {{#if tenant.features.addressAccount}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4">Address:</label>
             <input class="col-md-8 col-sm-8 form-control" id="curAddress1" value="{{current.account.address1}}"/>
@@ -109,7 +109,7 @@
             <input class="col-md-8 col-sm-8 form-control" id="curPostCode" pattern="[a-z,A-Z,0-9, ]{5,9}" value="{{current.account.postCode}}">
             <p class="col-md-offset-4 hidden-sm hidden-xs help-block">&nbsp;</p>
           </li>
-          {{#tenant.show.multiNational}}
+          {{#tenant.features.multiNational}}
             <li class="form-group">
               <label class="col-md-4 col-sm-4">Country:</label>
               <input autocomplete="false" class="form-control" list="countries" placeholder="Start typing to filter options" id="curCountry" value="{{current.account.country}}">
@@ -130,7 +130,7 @@
             {{/}}
           {{/}}
         {{/if}}
-        {{#if tenant.show.socialAccount}}
+        {{#if tenant.features.socialAccount}}
           <li class="form-group">
             <div class="btn-group col-md-offset-4 col-sm-offset-4" role="group" aria-label="...">
               <a class="glyphicon glyphicon-btn kp-icon-twitter{{^current.account.twitter}} disabled{{/}}" {{#current.account.twitter}}href="https://twitter.com/{{current.account.twitter}}"{{else}}disabled {{/}} target="_newtab"></a>
@@ -149,7 +149,7 @@
       </ul>
     </div>
 
-    {{#tenant.show.accountDescription}}
+    {{#tenant.features.accountDescription}}
       <div id="currentAccountDesc" class="col-md-12 col-sm-12 col-xs-12" {{#if primary == 'contacts'}}style="display:none"{{/if}}>
         <ul class="form edit-form">
           <li class="form-group">
@@ -160,7 +160,7 @@
       </div>
     {{/}}
 
-    {{#tenant.show.financials}}
+    {{#tenant.features.financials}}
       {{>('accountFinancials')}}
     {{/}}
 
@@ -172,7 +172,7 @@
     {{>(tenant.id+current.accountType+'Extension')}}
   </div>
 
-  {{#tenant.show.companyBackground}}
+  {{#tenant.features.companyBackground}}
     {{>currentCompanyBackground}}
   {{/}}
 

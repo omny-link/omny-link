@@ -52,7 +52,7 @@ var ractive = new BaseRactive({
     featureEnabled: function(feature) {
       //console.info('featureEnabled: '+feature);
       if (feature==undefined || feature.length==0) return true;
-      else return ractive.get('tenant.show.'+feature);
+      else return ractive.get('tenant.features.'+feature);
     },
     formatAge: function(timeString) {
       console.info('formatAge: '+timeString);

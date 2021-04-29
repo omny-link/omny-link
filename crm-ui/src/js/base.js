@@ -282,7 +282,7 @@ var BaseRactive = Ractive.extend({
     if (email == undefined) return '';
     else return '<img class="img-rounded" src="//www.gravatar.com/avatar/'
         +ractive.hash(email)+'?s=36&d='
-        +encodeURIComponent(ractive.getServer()+'/'+ractive.get('tenant.id')+'/gravatars/')
+        +encodeURIComponent(ractive.getBpmServer()+'/'+ractive.get('tenant.id')+'/gravatars/')
         +ractive.hash(email)+'.png"/>';
   },
   hash: function(email) {

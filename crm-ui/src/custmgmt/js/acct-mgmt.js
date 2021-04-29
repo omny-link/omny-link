@@ -64,7 +64,7 @@ var ractive = new BaseRactive({
         featureEnabled: function(feature) {
           console.log('featureEnabled: '+feature);
           if (feature==undefined || feature.length==0) return true;
-          else return ractive.get('tenant.show.'+feature);
+          else return ractive.get('tenant.features.'+feature);
         },
         fields: [ "id", "country", "owner", "fullName", "title",
             "customFields", "tenantId", "lastUpdated", "firstName", "lastName",
@@ -213,18 +213,9 @@ var ractive = new BaseRactive({
           return html;
         },
         gravatar: function(email) {
-          if (email == undefined)
-            return '';
-          return '<img class="img-rounded" style="width:36px" src="//www.gravatar.com/avatar/'
-              + ractive.hash(email)
-              + '?s=36&d=https%3A%2F%2Fapi.omny.link%2F'
-              + ractive.get('tenant.id')
-              + '%2Fgravatars%2F'
-              + ractive.hash(email) + '.png"/>'
+          return ractive.gravatar(email);
         },
         hash: function(email) {
-          if (email == undefined)
-            return '';
           return ractive.hash(email);
         },
         haveCustomExtension: function(extName) {
@@ -651,14 +642,14 @@ var ractive = new BaseRactive({
             ractive.set('contactsTypeahead', contactData);
             console.log('fetched ' + data.length + ' contacts for account');
             ractive.set('saveObserver', true);
-            if (ractive.get('tenant.show.orders'))
+            if (ractive.get('tenant.features.orders'))
               ractive.fetchOrders(ractive.get('current'));
           }
         });
       },
       fetchFeedback: function(order) {
         console.info('fetchFeedback...');
-        if (ractive.get('tenant.show.orders')!=true) return;
+        if (ractive.get('tenant.features.orders')!=true) return;
         var orderId = ractive.id(order);
 
         ractive.set('saveObserver', false);
@@ -680,7 +671,7 @@ var ractive = new BaseRactive({
       },
       fetchOrders: function(account) {
         console.info('fetchOrders...');
-        if (ractive.get('tenant.show.orders') != true)
+        if (ractive.get('tenant.features.orders') != true)
           return;
 
         ractive.set('saveObserver', false);

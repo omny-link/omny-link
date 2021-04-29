@@ -17,14 +17,14 @@
     <thead>
       <tr>
         <th></th>
-        {{#tenant.show.merge}}
+        {{#tenant.features.merge}}
           <th><input class="checkbox" type="checkbox"/></th>
         {{/}}
         {{#accounts.0.orgCode}}
-          {{#tenant.show.account}}<th on-click="sort:orgCode">{{#tenant.strings.orgCode}}{{tenant.strings.orgCode}}{{else}}Code{{/}}<span class="sortable {{ sorted('orgCode') }} glyphicon"></th>{{/}}
+          {{#tenant.features.account}}<th on-click="sort:orgCode">{{#tenant.strings.orgCode}}{{tenant.strings.orgCode}}{{else}}Code{{/}}<span class="sortable {{ sorted('orgCode') }} glyphicon"></th>{{/}}
         {{/}}
-        {{#tenant.show.account}}<th on-click="sort:accountName">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
-        {{#tenant.show.marketing || tenant.show.stage}}
+        {{#tenant.features.account}}<th on-click="sort:accountName">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
+        {{#tenant.features.marketing || tenant.features.stage}}
           <th on-click="sort:stage">{{#tenant.strings.accountStage}}{{tenant.strings.accountStage}}{{else}}Stage{{/}}<span class="sortable {{ sorted('stage') }} glyphicon"></th>
         {{/}}
         <th on-click="sort:accountType">{{#tenant.strings.accountType}}{{tenant.strings.accountType}}{{else}}Account Type{{/}}<span class="sortable {{ sorted('accountType') }} glyphicon"></th>
@@ -41,14 +41,14 @@
         {{# matchSearch(this) }}
           <tr {{#if stage!=undefined}}class="{{stage.toSlug()}}"{{/if}} data-href="{{selfRef}}">
             <td on-click="edit(this)">{{i+1}}</td>
-            {{#tenant.show.merge}}
+            {{#tenant.features.merge}}
               <td><input class="checkbox" type="checkbox" on-change="selectMultiple(this)"/></td>
             {{/}}
             {{#accounts.0.orgCode}}
               <td on-click="edit(this)">{{orgCode}}</td>
             {{/}}
             <td on-click="edit(this)">{{name}}</td>
-            {{#tenant.show.marketing || tenant.show.stage}}
+            {{#tenant.features.marketing || tenant.features.stage}}
               <td on-click="edit(this)">{{stage}}</td>
             {{/}}
             <td on-click="edit(this)">{{accountType}}</td>
