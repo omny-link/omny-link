@@ -31,11 +31,9 @@ var ractive = new BaseRactive({
       else return ractive.get('tenant.features.'+feature);
     },
     gravatar: function(email) {
-      if (email == undefined) return '';
-      return '<img class="img-rounded" style="width:36px" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36&d=https%3A%2F%2Fapi.knowprocess.com%2F'+ractive.get('tenant.id')+'%2Fgravatars%2F'+ractive.hash(email)+'.png"/>'
+      return ractive.ractive(email);
     },
     hash: function(email) {
-      if (email == undefined) return '';
       return ractive.hash(email);
     },
     helpUrl: '//omny-link.github.io/user-help/#the_title',
