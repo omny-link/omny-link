@@ -29,9 +29,11 @@
     ractive.set('saveObserver', false);
     if (ractive.get('current.documents') == undefined) ractive.set('current.documents', []);
     if (ractive.get('current.documents.0')!=undefined && ractive.get('current.documents.0.created') == undefined) return $($('#docsTable input:invalid')[0]).focus();
-    var entityName = ractive.entityName(ractive.get('current')).singular();
     ractive.splice('current.documents', 0, 0, {
-      entityName: ractive.uri(ractive.get('current')), content: '', favorite: true
+      author: ractive.get('profile.username'),
+      content: '',
+      entityName: ractive.uri(ractive.get('current')),
+      favorite: true
     });
     ractive.set('saveObserver', true);
     if ($('#docsTable:visible').length==0) ractive.toggleSection($('#docsTable').closest('section'));
@@ -47,7 +49,6 @@
     }
     if (ractive.get('current.notes') == undefined) ractive.set('current.notes', []);
     if (ractive.get('current.notes.0')!=undefined && ractive.get('current.notes.0.created') == undefined) return $($('#notesTable textarea:invalid')[0]).focus();
-    var entityName = ractive.entityName(ractive.get('current')).singular();
     ractive.splice('current.notes', 0, 0, {
       entityName: ractive.uri(ractive.get('current')), content: '', favorite: true
     });
