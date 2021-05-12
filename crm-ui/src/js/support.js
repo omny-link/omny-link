@@ -50,7 +50,10 @@
     if (ractive.get('current.notes') == undefined) ractive.set('current.notes', []);
     if (ractive.get('current.notes.0')!=undefined && ractive.get('current.notes.0.created') == undefined) return $($('#notesTable textarea:invalid')[0]).focus();
     ractive.splice('current.notes', 0, 0, {
-      entityName: ractive.uri(ractive.get('current')), content: '', favorite: true
+      author: ractive.get('profile.username'),
+      content: '',
+      entityName: ractive.uri(ractive.get('current')),
+      favorite: true
     });
     ractive.set('saveObserver', true);
     if ($('#notesTable:visible').length==0) ractive.toggleSection($('#notesTable').closest('section'));
