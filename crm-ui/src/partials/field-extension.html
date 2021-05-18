@@ -67,11 +67,18 @@
       <input class="form-control" id="cur{{name.toLeadingCaps()}}"
           {{#if type=='list'}}list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}"{{/if}}
           placeholder="{{placeholder}}"
+          {{#if readonly}}disabled="disabled" readonly="readonly"{{/if}}
           {{#type=='number'}}step="any"{{/}}
           {{#type}}type="{{type}}" {{/}}
-          value="{{current.customFields[name]}}">
+          {{#if type=='date'}}
+            value="{{formatDate(current.customFields[name])}}"
+          {{elseif type=='datetime-local'}}
+            value="{{formatDateTime(current.customFields[name])}}"
+          {{else}}
+            value="{{current.customFields[name]}}"
+          {{/if}}
+          >
     {{/if}}
   {{/if}}
   <p class="col-md-offset-4 col-sm-offset-4 col-xs-offset-4 help-block">{{hint}}</p>
 </li>
-
