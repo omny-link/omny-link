@@ -98,6 +98,7 @@
                 <a href="contacts.html?searchTerm={{localId(current.selfRef)}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
               </span>
             </div>
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{# tenant.strings.selfRefHint}}{{tenant.strings.selfRefHint}}{{else}}Internal identifier for administrators only{{/}}</p>
           </li>
         {{/if}}
         <li class="form-group">

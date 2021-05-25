@@ -238,7 +238,7 @@ var BaseRactive = Ractive.extend({
       ractive.set('saveObserver', false);
       ractive.set('profile',profile);
       $('.profile-img').empty().append('<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34" title="'+ractive.get('profile.email')+'"/>');
-      if (ractive.hasRole('super_admin')) $('.super-admin').show();
+      if (ractive.hasRole('super-admin')) $('.super-admin').show();
       ractive.set('saveObserver', true);
       return profile;
     }

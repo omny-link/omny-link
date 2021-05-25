@@ -240,6 +240,9 @@ var ractive = new BaseRactive({
           }
           return false;
         },
+        localId: function(selfRef) {
+          return ractive.localId(selfRef);
+        },
         matchPage: function(pageName) {
           console.info('matchPage: ' + pageName);
           return document.location.href.indexOf(pageName) != -1;

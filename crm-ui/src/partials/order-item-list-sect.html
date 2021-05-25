@@ -27,7 +27,7 @@
         <table class="ol-order-items table table-striped">
           <thead>
             <tr>
-              {{#matchRole('super_admin')}}
+              {{#matchRole('super-admin')}}
                 <th></th>
               {{/}}
               {{#tenant.features.catalog}}
@@ -44,7 +44,7 @@
           <tbody>
             {{#current.orderItems:j}}
               <tr>
-                {{#matchRole('super_admin')}}
+                {{#matchRole('super-admin')}}
                   <td>{{current.orderItems[j].id}}</td>
                 {{/}}
                 {{#tenant.features.catalog}}

@@ -17,7 +17,7 @@
   <thead>
     <tr>
       <th></th>
-      {{#matchRole('super_admin')}}
+      {{#matchRole('super-admin')}}
         <th on-click="sort:id">Id<span class="sortable {{ sorted('id') }} glyphicon glyphicon-btn"></th>
       {{/}}
       {{#orders.0.ref}}
@@ -51,7 +51,7 @@
     {{#if matchSearch(this) || embedded==true}}
       <tr data-href="{{id}}">
         <td on-click="edit(this)">{{i+1}}</td>
-        {{#matchRole('super_admin')}}
+        {{#matchRole('super-admin')}}
           <td on-click="edit(this)">{{id}}</td>
         {{/}}
         {{#orders.0.ref}}
