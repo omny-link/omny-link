@@ -17,7 +17,6 @@ package link.omny.catalog.web;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,10 +57,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import link.omny.catalog.CatalogException;
 import link.omny.catalog.json.JsonCustomStockCategoryFieldDeserializer;
 import link.omny.catalog.model.CustomStockCategoryField;
-import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.MediaResource;
 import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
@@ -102,9 +99,6 @@ public class StockCategoryController {
 
     @Autowired
     private MediaResourceRepository mediaResourceRepo;
-
-    @Autowired
-    private GeoLocationService geo;
 
     public int getSearchRadius() {
         if (iSearchRadius == 0) {
@@ -274,118 +268,10 @@ public class StockCategoryController {
             throw new EntityNotFoundException(String.format(
                     "No Stock Category with name %1$s", name));
         }
-        geocode(category);
 
         filter(category, expandTags(tag));
 
         return category;
-    }
-
-    /**
-     * Return Stock Categories for a specific tenant within a given distance of
-     * the search location.
-     *
-     * @return stockCategories for that tenant.
-     * @throws IOException
-     *             If unable to contact the geo-coding service or it in turn
-     *             throws an exception.
-     */
-    @RequestMapping(value = "/findByLocation", method = RequestMethod.GET)
-    @Transactional(readOnly = true)
-    public @ResponseBody List<ShortStockCategoryResource> findByLocation(
-            @PathVariable("tenantId") String tenantId,
-            @RequestParam(value = "q", required = false) String q,
-            @RequestParam(value = "tag", required = false) String tag,
-            @RequestParam(value = "type", required = false) String type,
-            @RequestParam(value = "offers", required = false) boolean offers,
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "limit", required = false) Integer limit)
-            throws IOException {
-        // backwards compatibility
-        if (type != null && tag == null) {
-            tag = type;
-        }
-        LOGGER.info("List stockCategories for tenant: {}, q: {}, tag: {}, offers: {}",
-                        tenantId, q, tag, offers);
-
-        List<StockCategory> list = new ArrayList<StockCategory>();
-        GeoPoint qPoint = null;
-        if (q != null && q.trim().length() > 0) {
-            try {
-                qPoint = geo.locate(q);
-            } catch (UnknownHostException e) {
-                LOGGER.error(
-                        "Unable to geo locate '{}', will return unfiltered list", q);
-                q = null;
-            }
-        }
-
-        // TODO need to make this some kind of extension point
-        List<String> tags = expandTags(tag);
-
-        List<StockCategory> tmpList = findStockCategories(tenantId, offers);
-        for (StockCategory stockCategory : tmpList) {
-            // Capture tags now before filtering
-            String allTagsAvail = stockCategory.getTags();
-            try {
-                geocode(stockCategory);
-
-                if (matchQuery(q, qPoint, stockCategory)) {
-                    filter(stockCategory, tags);
-                    list.add(stockCategory);
-                }
-            } catch (CatalogException e) {
-                LOGGER.error("Unable to geo locate '{}', will return unfiltered list",
-                                stockCategory.getPostCode());
-                filter(stockCategory, tags);
-                list.add(stockCategory);
-            } catch (Exception e) {
-                LOGGER.error(
-                        "Exception calculating distance of {} from {}",
-                        stockCategory.getName(), q, e);
-            }
-            // set unfiltered tag list
-            stockCategory.setTags(allTagsAvail);
-        }
-        Collections
-                .sort(list,
-                        (o1, o2) -> ((int) o1.getDistance())
-                                - ((int) o2.getDistance()));
-
-        LOGGER.info("Found {} stock categories", list.size());
-        return wrap(list);
-    }
-
-    protected void geocode(StockCategory stockCategory) {
-        if (stockCategory.getLng() == null
-                && stockCategory.getPostCode() != null) {
-            try {
-                stockCategory.setGeoPoint(geo.locate(stockCategory
-                    .getPostCode()));
-                stockCategoryRepo.save(stockCategory);
-            } catch (IOException e) {
-
-                String msg  = String
-                        .format("Unable to geo locate '%1$s', details follow",
-                                stockCategory.getPostCode());
-                LOGGER.error(msg, e);
-                throw new CatalogException(msg);
-            }
-        } else if (stockCategory.getLng() == null) {
-            LOGGER.warn("Skipping geo-coding because postcode of stock category {} is missing",
-                            stockCategory.getId());
-        }
-    }
-
-    private List<StockCategory> findStockCategories(String tenantId,
-            boolean offers) {
-        if (offers) {
-            return stockCategoryRepo.findByStatusAndOffersForTenant(tenantId,
-                    PUBLISHED, PUBLISHED);
-        } else {
-            return stockCategoryRepo.findByStatusForTenant(tenantId,
-                    PUBLISHED);
-        }
     }
 
     private List<String> expandTags(String tag) {
@@ -418,14 +304,6 @@ public class StockCategoryController {
             }
         }
         stockCategory.setStockItems(filteredItems);
-    }
-
-    private boolean matchQuery(String q, GeoPoint qPoint,
-            StockCategory stockCategory) {
-        return q == null
-                || q.trim().length() == 0
-                || stockCategory.getGeoPoint() == null
-                || geo.distance(qPoint, stockCategory) <= getSearchRadius();
     }
 
     /**
@@ -583,11 +461,6 @@ public class StockCategoryController {
             @RequestBody StockCategory updatedStockCategory) {
         StockCategory stockCategory = stockCategoryRepo
                 .findOne(stockCategoryId);
-        try {
-            geocode(stockCategory);
-        } catch (CatalogException e) {
-            ; // already logged
-        }
 
         BeanUtils.copyProperties(updatedStockCategory, stockCategory, "id",
                 "item");
@@ -655,46 +528,6 @@ public class StockCategoryController {
                 stockCategory.getId()).withSelfRel();
         resource.add(detail);
         resource.setSelfRef(detail.getHref());
-        return resource;
-    }
-
-    private List<ShortStockCategoryResource> wrap(List<StockCategory> list) {
-        List<ShortStockCategoryResource> resources = new ArrayList<ShortStockCategoryResource>(
-                list.size());
-        for (StockCategory stockCategory : list) {
-            resources.add(wrap(stockCategory));
-        }
-        return resources;
-    }
-
-    private ShortStockCategoryResource wrap(StockCategory stockCategory) {
-        ShortStockCategoryResource resource = new ShortStockCategoryResource();
-
-        BeanUtils.copyProperties(stockCategory, resource);
-
-        // Not set by BeanUtils due to diff type
-        resource.setDistance(String.valueOf(Math.round(stockCategory
-                .getDistance())));
-
-        ArrayList<ShortStockItemResource> items = new ArrayList<ShortStockItemResource>();
-        for (StockItem item : stockCategory.getStockItems()) {
-            items.add(wrap(item));
-        }
-        resource.setStockItems(items);
-
-        Link detail = linkTo(StockCategoryRepository.class,
-                stockCategory.getId()).withSelfRel();
-        resource.add(detail);
-        resource.setSelfRef(detail.getHref());
-        return resource;
-    }
-
-    private ShortStockItemResource wrap(StockItem item) {
-        ShortStockItemResource resource = new ShortStockItemResource();
-
-        BeanUtils.copyProperties(item, resource);
-        resource.setStockItemId(item.getId());
-
         return resource;
     }
 

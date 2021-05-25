@@ -17,12 +17,10 @@ package link.omny.catalog.web;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
+import org.junit.Test;
 
 import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.StockCategory;
-
-import org.junit.Test;
 
 public class GeolocationServiceTest {
 
@@ -54,11 +52,4 @@ public class GeolocationServiceTest {
         assertEquals(17.0d, distance, 0.1);
     }
 
-    @Test
-    public void testLocate() throws IOException {
-        GeoPoint corsham = svc.locate("SN13 9BS");
-
-        assertEquals(51.43, corsham.getLat(), 0.1);
-        assertEquals(-2.1, corsham.getLng(), 0.1);
-    }
 }
