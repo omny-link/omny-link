@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -88,7 +88,7 @@ public class ContactAvatarService {
 
             t.transcode(input, output);
         } catch (Exception e) {
-            LOGGER.error(String.format("Unable to generate gravatar for %1$s", initials));
+            LOGGER.error("Unable to generate gravatar for {}", initials);
             try {
                 writeErrorAvatar(os);
             } catch (Exception e1) {
@@ -103,23 +103,10 @@ public class ContactAvatarService {
     }
 
     public void writeUnknownAvatar(OutputStream oos) {
-        writeStockAvatar("unknown", oos);
+        create("??", oos);
     }
 
     public void writeErrorAvatar(OutputStream oos) {
-        writeStockAvatar("error", oos);
-    }
-
-    private void writeStockAvatar(String avatarName, OutputStream oos) {
-        try (InputStream is = getClass().getResourceAsStream("/static/images/avatar-"+avatarName+".jpg")) {
-            byte[] buf = new byte[8192];
-            int c = 0;
-            while ((c = is.read(buf, 0, buf.length)) > 0) {
-                oos.write(buf, 0, c);
-                oos.flush();
-            }
-        } catch (Exception e) {
-            LOGGER.error("Unable to create error avatar", e);
-        }
+        create("XX", oos);
     }
 }

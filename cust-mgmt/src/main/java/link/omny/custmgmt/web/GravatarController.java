@@ -62,17 +62,16 @@ public class GravatarController {
         try {
             response.setContentType(MediaType.IMAGE_PNG_VALUE);
             if (contacts == null || contacts.size() < 1) {
-                LOGGER.warn(String.format(
-                        "Unable to find contact for email hash %1$s, displaying N/A",
-                        emailHash));
+                LOGGER.warn(
+                        "Unable to find contact for email hash {}, displaying N/A",
+                        emailHash);
                 avatarSvc.writeUnknownAvatar(response.getOutputStream());
             } else {
                 avatarSvc.create(contacts.get(0).initials(),
                         response.getOutputStream());
             }
         } catch (Exception e) {
-            LOGGER.error(String.format("Unable to create avatar for %1$s",
-                    emailHash), e);
+            LOGGER.error("Unable to create avatar for {}", emailHash, e);
         }
     }
 }
