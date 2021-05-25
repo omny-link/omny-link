@@ -16,7 +16,7 @@
 <section id="currentSect" style="display:none">
   <form class="inline-form form" id="currentForm">
     <h2 class="">
-      {{#matchRole('super_admin')}}
+      {{#matchRole('super-admin')}}
         <span>{{current.id}} - </span>
       {{/}}
       {{#current.ref}}
@@ -93,7 +93,7 @@
         </li>
         <li class="form-group">
           <label class="col-md-4 col-sm-4 col-xs-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
-          <input class="form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" {{#if !matchRole('power_user')}}readonly disabled{{/if}} value="{{current.owner}}">
+          <input class="form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" {{#if !matchRole('power-user')}}readonly disabled{{/if}} value="{{current.owner}}">
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#tenant.strings.orderOwnerHint}}{{tenant.strings.orderOwnerHint}}{{else}}Person responsible for this {{tenant.strings.order.toLowerCase()}}{{/}}</p>
         </li>
         <li class="form-group">

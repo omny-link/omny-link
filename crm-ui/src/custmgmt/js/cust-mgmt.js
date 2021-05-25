@@ -197,7 +197,7 @@ var ractive = new BaseRactive({
       return document.location.href.indexOf(pageName)!=-1;
     },
     matchRole: function(role) {
-      console.info('matchRole: '+role)
+      console.info('matchRole: '+role);
       if (role==undefined || ractive.hasRole(role)) {
         $('.'+role).show();
         return true;
@@ -1003,7 +1003,7 @@ var ractive = new BaseRactive({
         } else if (ractive.get('current.account.businessWebsite')==undefined || ractive.get('current.account.businessWebsite')=='') {
           ractive.inferDomainName();
         }
-        if (ractive.hasRole('admin')) $('.admin').show();
+        ractive.update('#currentSect'); // matchRole may return different now
         ractive.set('saveObserver',true);
       });
     } else {
