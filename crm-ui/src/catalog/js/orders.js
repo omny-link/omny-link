@@ -490,7 +490,7 @@ var ractive = new BaseRactive({
     $('input[type="search"]').blur();
   },
   hideResults: function() {
-    $('#ordersTableToggle').addClass('glyphicon-triangle-right').removeClass('glyphicon-triangle-bottom');
+    $('#ordersTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
     $('#ordersTable').slideUp();
     $('#currentSect').slideDown({ queue: true });
   },
@@ -719,7 +719,7 @@ var ractive = new BaseRactive({
     this.showMessage(msg, addClass);
   },
   showResults: function() {
-    $('#ordersTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
+    $('#ordersTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
     $('#currentSect').slideUp();
     $('#ordersTable').slideDown({ queue: true });
   },
@@ -746,7 +746,7 @@ var ractive = new BaseRactive({
   },
   toggleResults: function() {
     console.info('toggleResults');
-    $('#ordersTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
+    $('#ordersTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
     $('#ordersTable').slideToggle();
   },
   updateContactId: function(newVal, keypath) {
