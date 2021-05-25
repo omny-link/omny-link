@@ -333,7 +333,7 @@ var ractive = new BaseRactive({
     return name;
   },
   hideResults: function() {
-    $('#memoDistributionsTableToggle').addClass('glyphicon-triangle-right').removeClass('glyphicon-triangle-bottom');
+    $('#memoDistributionsTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
     $('#memoDistributionsTable').slideUp();
   },
   save: function () {
@@ -482,13 +482,13 @@ var ractive = new BaseRactive({
     this.showMessage(msg, addClass);
   },
   showResults: function() {
-    $('#memoDistributionsTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
+    $('#memoDistributionsTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
     $('#currentSect').slideUp();
     $('#memoDistributionsTable').slideDown({ queue: true });
   },
   toggleResults: function() {
     console.log('toggleResults');
-    $('#memoDistributionsTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
+    $('#memoDistributionsTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
     $('#memoDistributionsTable').slideToggle();
   }
 });

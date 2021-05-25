@@ -783,8 +783,8 @@ var ractive = new BaseRactive({
         return entity['fullName'] == ractive.get('fullName');
       },
       hideResults: function() {
-        $('#accountsTableToggle').removeClass('glyphicon-triangle-bottom')
-            .addClass('glyphicon-triangle-right');
+        $('#accountsTableToggle').removeClass('kp-icon-caret-down')
+            .addClass('kp-icon-caret-right');
         $('#accountsTable').slideUp();
         $('#currentSect').slideDown({
           queue: true
@@ -1363,8 +1363,8 @@ var ractive = new BaseRactive({
         ractive.showSocial(networkName, keypath);
       },
       showResults: function() {
-        $('#accountsTableToggle').addClass('glyphicon-triangle-bottom')
-            .removeClass('glyphicon-triangle-right');
+        $('#accountsTableToggle').addClass('kp-icon-caret-down')
+            .removeClass('kp-icon-caret-right');
         $('#currentSect').slideUp();
         $('#accountsTable').slideDown({
           queue: true
@@ -1424,8 +1424,8 @@ var ractive = new BaseRactive({
       },
       toggleResults: function() {
         console.info('toggleResults');
-        $('#accountsTableToggle').toggleClass('glyphicon-triangle-bottom')
-            .toggleClass('glyphicon-triangle-right');
+        $('#accountsTableToggle').toggleClass('kp-icon-caret-down')
+            .toggleClass('kp-icon-caret-right');
         $('#accountsTable').slideToggle();
       },
       /**

@@ -292,7 +292,7 @@ var ractive = new BaseRactive({
     return uri;
   },
   hideResults: function() {
-    $('#memosTableToggle').addClass('glyphicon-triangle-right').removeClass('glyphicon-triangle-bottom');
+    $('#memosTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
     $('#memosTable').slideUp();
   },
   initEditor: function() {
@@ -407,7 +407,7 @@ var ractive = new BaseRactive({
     this.showMessage(msg, addClass);
   },
   showResults: function() {
-    $('#memosTableToggle').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
+    $('#memosTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
     $('#currentSect').slideUp();
     $('#memosTable').slideDown({ queue: true });
   },
@@ -424,7 +424,7 @@ var ractive = new BaseRactive({
   },
   toggleResults: function() {
     console.log('toggleResults');
-    $('#memosTableToggle').toggleClass('glyphicon-triangle-bottom').toggleClass('glyphicon-triangle-right');
+    $('#memosTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
     $('#memosTable').slideToggle();
   }
 });
