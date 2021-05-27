@@ -494,6 +494,9 @@ var BaseRactive = Ractive.extend({
       ractive.set('tenant', response);
       ractive.fetch();
       ractive.applyBranding();
+      ractive.get('tenant.typeaheadControls').forEach(function(d) {
+        if (d['name'] != undefined && d['values'] != undefined) ractive.set(d.name, d.values);
+      });
       ractive.set('saveObserver', true);
       if (ractive.tenantCallbacks!=undefined) ractive.tenantCallbacks.fire();
     });

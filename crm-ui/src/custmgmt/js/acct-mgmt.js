@@ -401,13 +401,13 @@ var ractive = new BaseRactive({
         console.log('add...');
         $('h2.edit-form,h2.edit-field').hide();
         $('.create-form,create-field').show();
-        var contact = {
-          account: {},
-          author: $auth.getClaim('sub'),
+        var acct = {
+          name: '',
+          author: ractive.get('profile.username'),
           tenantId: ractive.get('tenant.id'),
           url: undefined
         };
-        ractive.select(contact);
+        ractive.select(acct);
       },
       addContact: function() {
         console.log('addContact ');
@@ -529,15 +529,15 @@ var ractive = new BaseRactive({
         ractive.set('currentOrderIdx', ractive.get('orders').length-1);
         ractive.saveOrder();
       },
-      edit: function(contact) {
-        console.log('edit: ' + contact.selfRef + '...');
+      edit: function(acct) {
+        console.log('edit acct: ' + ractive.localId(acct) + '...');
         $('h2.edit-form,h2.edit-field').show();
         $('.create-form,create-field').hide();
         ractive.set('saveObserver', false);
-        ractive.set('current.id', ractive.id(contact));
+        ractive.set('current.id', ractive.localId(acct));
         ractive.set('currentIdx', ractive.get(
-            ractive.get('entityPath').substring(1)).indexOf(contact));
-        ractive.select(contact);
+            ractive.get('entityPath').substring(1)).indexOf(acct));
+        ractive.select(acct);
       },
       editField: function(selector, path) {
         console.log('editField ' + path + '...');

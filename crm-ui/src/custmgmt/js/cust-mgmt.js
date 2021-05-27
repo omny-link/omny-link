@@ -330,8 +330,8 @@ var ractive = new BaseRactive({
     $('.create-form,create-field').show();
     ractive.select({
       account: {},
-      author:$auth.getClaim('sub'),
-      owner:$auth.getClaim('sub'),
+      author: ractive.get('profile.username'),
+      owner: ractive.get('profile.username'),
       phone1:'', phone2:'',
       stage: ractive.initialContactStage(),
       tenantId: ractive.get('tenant.id'),
@@ -779,6 +779,7 @@ var ractive = new BaseRactive({
       // cannot save contact and account in one (grrhh), this will clone...
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       //console.log('account: '+JSON.stringify(tmp.account));
+      delete tmp.alertsAsList;
       delete tmp.fullName;
       delete tmp.notes;
       delete tmp.documents;

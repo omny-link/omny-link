@@ -9,7 +9,7 @@ var replace     = require('gulp-replace');
 var rsync       = require('gulp-rsync');
 var through2    = require('through2');
 var zip         = require('gulp-zip');
-var vsn         = '3.0.0-SNAPSHOT';
+var vsn         = '3.0.0';
 
 var buildDir = 'target/classes';
 var finalName = 'crm-ui-'+vsn+'.jar'
