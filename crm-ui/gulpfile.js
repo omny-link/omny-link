@@ -9,7 +9,7 @@ var replace     = require('gulp-replace');
 var rsync       = require('gulp-rsync');
 var through2    = require('through2');
 var zip         = require('gulp-zip');
-var vsn         = '3.0.0-SNAPSHOT';
+var vsn         = '3.0.0';
 
 var buildDir = 'target/classes';
 var finalName = 'crm-ui-'+vsn+'.jar'
@@ -36,7 +36,8 @@ gulp.task('scripts', function() {
   return gulp.src([
     'src/js/**/*.js', '!src/js/**/*.min.js',
     'src/catalog/js/**/*.js', '!src/catalog/js/**/*.min.js',
-    'src/custmgmt/js/**/*.js', '!src/custmgmt/js/**/*.min.js'
+    'src/custmgmt/js/**/*.js', '!src/custmgmt/js/**/*.min.js',
+    'src/workmgmt/js/**/*.js', '!src/workmgmt/js/**/*.min.js'
   ])
   .pipe(replace('/vsn/', '/'+vsn+'/'))
   .pipe(config.js.minify ? babel({ presets: [ ["minify", { "builtIns": false }] ] }) : through2.obj())

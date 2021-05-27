@@ -158,7 +158,7 @@ var ractive = new BaseRactive({
       dataType: 'text',
       data: JSON.stringify({
         name: template.ref,
-        owner: $auth.getClaim('sub'),
+        owner: ractive.get('profile.username'),
         richContent: 'TODO',
         shortContent: 'TODO',
         status: 'Draft',
