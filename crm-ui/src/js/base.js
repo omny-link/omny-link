@@ -448,6 +448,16 @@ var BaseRactive = Ractive.extend({
     });
     return rtn;
   },
+  initiatorIcon: function(initiator) {
+    if (initiator==undefined || initiator=='anonymousUser') {
+      $('.initiator-img').empty().append('<img class="img-rounded" src="'
+          +(ractive.get('tenant.strings.botIcon') ? ractive.get('tenant.strings.botIcon') : '/images/icon/knowprocess-icon-48x48.png')
+          +'" width="34"/>');
+    } else {
+      $('.initiator-img').empty().append(ractive.gravatar(initiator));
+    }
+    ractive.set('saveObserver',true);
+  },
   json2Html: function(obj) {
     var html = '<ul class="field-json">';
     $.each(Object.keys(obj), function(i,d) {

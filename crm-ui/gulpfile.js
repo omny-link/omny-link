@@ -36,7 +36,8 @@ gulp.task('scripts', function() {
   return gulp.src([
     'src/js/**/*.js', '!src/js/**/*.min.js',
     'src/catalog/js/**/*.js', '!src/catalog/js/**/*.min.js',
-    'src/custmgmt/js/**/*.js', '!src/custmgmt/js/**/*.min.js'
+    'src/custmgmt/js/**/*.js', '!src/custmgmt/js/**/*.min.js',
+    'src/workmgmt/js/**/*.js', '!src/workmgmt/js/**/*.min.js'
   ])
   .pipe(replace('/vsn/', '/'+vsn+'/'))
   .pipe(config.js.minify ? babel({ presets: [ ["minify", { "builtIns": false }] ] }) : through2.obj())
