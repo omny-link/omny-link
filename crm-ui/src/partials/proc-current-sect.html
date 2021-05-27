@@ -1,0 +1,678 @@
+<!--
+  Copyright 2011-2018 Tim Stephenson and contributors
+
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not
+   use this file except in compliance with the License.  You may obtain a copy
+   of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+   License for the specific language governing permissions and limitations under
+   the License.
+-->
+<section id="currentSect" style="display:none">
+  <h2>
+    <span contenteditable="{{hasRole('admin')}}" twoway="false"
+          on-blur="updateBpmnObject(current.key, 'name', event.node.innerText)"
+          value="{{#current.name}}{{current.name}}{{else}}Untitled{{/}}"></span>
+    <span class="pull-right">
+      {{#if hasRole('admin')}}
+        <a class="glyphicon icon-btn kp-icon-bug details-control" on-click="toggleDebug()" title="Toggle developer debug features"></a>
+      {{/if}}
+      <a class="glyphicon icon-btn kp-icon-eye-blocked details-control" on-click="toggleDetails()" title="Toggle internal details"></a>
+      {{#current.deploymentId}}
+        {{#current.suspended}}
+          <a class="glyphicon icon-btn kp-icon-pause" aria-hidden="true" onclick="ractive.activate('{{current.id}}')" title="Activate"></a>
+        {{else}}
+          <a class="glyphicon icon-btn kp-icon-play" aria-hidden="true" onclick="ractive.startInstance('{{current.id}}', '{{current.name}}', '{{username}}')" title="Start instance"></a>
+          <a class="glyphicon icon-btn kp-icon-pause" aria-hidden="true" onclick="ractive.suspend('{{current.id}}')" title="Suspend"></a>
+        {{/}}
+      {{/}}
+      <a class="glyphicon icon-btn kp-icon-cloud-download" href="#" on-click="download()" title="Download the BPMN representation of the process"></a>
+      {{#if current.deploymentId}}
+        <a class="clickable glyphicon icon-btn kp-icon-remove" aria-hidden="true" onclick="ractive.delete({{current.deploymentId}})" title="Delete this definition"></a>
+      {{elseif bpmnUndoStack.length==0}}
+        <a class="clickable glyphicon icon-btn kp-icon-remove" aria-hidden="true" onclick="ractive.delete('{{current.id}}')" title="Delete this definition"></a>
+      {{else}}
+        <a class="glyphicon icon-btn kp-icon-cloud-upload" on-click="deployModeler()"></a>
+      {{/if}}
+    </span>
+  </h2>
+  <p>{{current.description}}</p>
+  <table class="table">
+    <thead>
+      <tr>
+        {{#if showDetails}}<th>Id</th>{{/if}}
+        {{#current.category}}<th>Category</th>{{/}}
+        {{#current.deployment.deploymentTime}}<th>Deployed At</th>{{/}}
+        {{#if showDetails}}<th>Hash</th>{{/if}}
+        {{#if showDetails}}<th>Deployment Id</th>{{/if}}
+        {{#current.deployment.name}}<th>Deployed from</th>{{/}}
+        <th>Active?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        {{#if showDetails}}<td>{{current.id}}</td>{{/if}}
+        <td contenteditable="{{hasRole('admin')}}" twoway="false"
+            on-blur="updateBpmnObject(current.bpmn, 'targetNamespace', event.node.innerText)"
+            value="{{current.category}}"></td>
+        {{#current.deployment.deploymentTime}}<td>{{formatDateTime(current.deployment.deploymentTime)}}</td>{{/}}
+        {{#if showDetails}}<td>{{current.md5Hash}};</td>{{/if}}
+        {{#if showDetails}}{{#current.deploymentId}}<td>{{current.deploymentId}}</td>{{else}}<td>Incomplete model cannot be run</td>{{/}}{{/if}}
+        {{#current.deployment.name}}<td>{{current.deployment.name}}</td>{{/}}
+        {{#bpmnUndoStack.length>0}}<td>Undeployed local changes</td>{{else}}<td>{{!current.suspended}}</td>{{/}}
+      </tr>
+    </tbody>
+  </table>
+  {{#if showDetails}}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            <span>Data Objects</span>
+            <span class="clickable icon-sm icon-btn kp-icon-plus" on-click="addProcessObject('dataObject')"></span>
+          </th>
+          <th>
+            <span>Data Stores</span>
+            <span class="clickable icon-sm icon-btn kp-icon-plus" on-click="addProcessObject('dataStore')"></span>
+          </th>
+          <th>
+            <span>Errors</span>
+            <span class="clickable icon-sm icon-btn kp-icon-plus" on-click="addProcessObject('error')"></span>
+          </th>
+          <th>
+            <span>Escalations</span>
+            <span class="clickable icon-sm icon-btn kp-icon-plus" on-click="addProcessObject('escalation')"></span>
+          </th>
+          <th>
+            <span>Messages</span>
+            <span class="clickable icon-sm icon-btn kp-icon-plus" on-click="addProcessObject('message')"></span>
+          </th>
+          <th>
+            <span>Resources</span>
+            <span class="clickable icon-sm icon-btn kp-icon-plus" on-click="addProcessObject('resource')"></span>
+          </th>
+          <th>
+            <span>Signals</span>
+            <span class="clickable icon-sm icon-btn kp-icon-plus" on-click="addProcessObject('signal')"></span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+         <td>
+           <ul>
+             {{# current.dataObjects }}
+               <li><a on-click="showSelectedId(..id)">{{(..name == undefined || ..name.length==0) ? ..id : ..name}}</a></li>
+             {{/}}
+           </ul>
+         </td>
+         <td>
+           <ul>
+             {{# current.dataStores }}
+               <li><a on-click="showSelectedId(..id)">{{(..name == undefined || ..name.length==0) ? ..id : ..name}}</a></li>
+             {{/}}
+           </ul>
+         </td>
+         <td>
+           <ul>
+             {{# current.errors }}
+               <li><a on-click="showSelectedId(..id)">{{(..name == undefined || ..name.length==0) ? ..id : ..name}}</a></li>
+             {{/}}
+           </ul>
+         </td>
+         <td>
+           <ul>
+             {{# current.escalations }}
+               <li><a on-click="showSelectedId(..id)">{{(..name == undefined || ..name.length==0) ? ..id : ..name}}</a></li>
+             {{/}}
+           </ul>
+         </td>
+         <td>
+           <ul>
+             {{# current.messages }}
+               <li><a on-click="showSelectedId(..id)">{{(..name == undefined || ..name.length==0) ? ..id : ..name}}</a></li>
+             {{/}}
+           </ul>
+         </td>
+         <td>
+           <ul>
+             {{# current.resources }}
+               <li><a on-click="showSelectedId(..id)">{{(..name == undefined || ..name.length==0) ? ..id : ..name}}</a></li>
+             {{/}}
+           </ul>
+         </td>
+         <td>
+           <ul>
+             {{# current.signals }}
+               <li><a on-click="showSelectedId(..id)">{{(..name == undefined || ..name.length==0) ? ..id : ..name}}</a></li>
+             {{/}}
+           </ul>
+         </td>
+        </tr>
+      </tbody>
+    </table>
+  {{/if}}
+  {{#if current.id}}
+    {{# current.diagrams:i}}
+      <section id="{{current.diagrams[i].id}}Sect">
+        <h3>
+          <!--span class="ol-collapse glyphicon icon-btn kp-icon-caret-right"></span-->
+          <span class="ol-collapse glyphicon icon-btn kp-icon-caret-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+          <span>Diagram: </span>
+          <span contenteditable="{{hasRole('admin')}}" value="{{current.diagrams[i].name}}"
+                on-blur="updateBpmnObject(current.diagrams[i].id, 'name', event.node.innerText)"></span>
+          <a class="glyphicon icon-btn kp-icon-image pull-right" href="{{tenantUri(current)}}/{{current.diagrams[i].id}}.png" target="_blank" title="Image of process diagram '{{current.diagrams[i].name}}'"></a>
+        </h3>
+        <div class="bpmnDiagram" style="display:none">{{{current.diagrams[i].image}}}</div>
+        {{#if selectedBpmnObject}}
+          <div class="bpmnProperties" style="display: {{# $('svg:visible').length > 0 && $('.selected').length < 1}}inline{{else}}none{{/}}">
+            <a class="pull-right clickable glyphicon kp-icon-remove" aria-hidden="true" on-click="hideBpmnProperties()" title="Hide BPMN properties"></a>
+            <div class="btn-toolbar bpmnToolbar" role="toolbar" aria-label="...">
+              <div class="btn-group" role="group" aria-label="...">
+                <div class="btn-group" role="group" id="callActivityBtn" title="BPMN Containers">
+                  <button type="button" class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" {{#if selectedIds.split(',').length > 1}}disabled{{/if}} aria-haspopup="true" aria-expanded="false">
+                    <span class="bpmn-icon-lane dropdown" aria-hidden="true" title="BPMN Containers"> <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown dropdown-menu" id="bpmnLaneMenu" role="menu">
+                    <li class="clickable" on-click="addProcessObject('participant')">Add pool below</li>
+                    <!--li class="clickable" on-click="addProcessObject('participant', 'collapsed')">Add collapsed pool below</li-->
+                    <li class="divider"></li>
+                    <li class="clickable" on-click="addProcessObject('lane', 'split')">Split lane</li>
+                    <li class="clickable" on-click="addProcessObject('lane', 'new-process')">Add lane below</li>
+                    <li class="divider"></li>
+                    <li class="clickable" on-click="addProcessObject('subProcess')">Expanded sub-process</li>
+                    <!--li class="clickable" on-click="addProcessObject('subProcess', 'collapsed')">Collapsed sub-process</li-->
+                  </ul>
+                </div>
+              </div>
+              <div class="btn-group" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" {{#if selectedIds.split(',').length > 1}}disabled{{/if}} aria-haspopup="true" aria-expanded="false">
+                    <span class="bpmn-icon-start-event-none dropdown" aria-hidden="true" title="BPMN Events"> <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown dropdown-menu" id="bpmnEventsMenu" role="menu">
+                    <li class="clickable" on-click="addProcessObject('startEvent')">Start event</li>
+                    <li class="divider"></li>
+                    <li class="clickable" on-click="addProcessObject('intermediateEvent')">Intermediate event</li>
+                    <li class="clickable" on-click="addProcessObject('boundaryEvent')">Boundary event</li>
+                    <li class="divider"></li>
+                    <li class="clickable" on-click="addProcessObject('endEvent')">End event</li>
+                  </ul>
+                </div>
+                <div class="btn-group" role="group" id="taskBtn" title="BPMN Tasks">
+                  <button type="button" class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" {{#if selectedIds.split(',').length > 1}}disabled{{/if}} aria-haspopup="true" aria-expanded="false">
+                    <span class="bpmn-icon-task-none dropdown" aria-hidden="true" title="BPMN Tasks"> <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown dropdown-menu" id="bpmnTasksMenu" role="menu">
+                    <li class="clickable" on-click="addProcessObject('task')">None task</li>
+                    <li class="clickable" on-click="addProcessObject('businessRuleTask')">Business rule task</li>
+                    <li class="clickable" on-click="addProcessObject('manualTask')">Manual task</li>
+                    <li class="clickable" on-click="addProcessObject('receiveTask')">Receive task</li>
+                    <li class="clickable" on-click="addProcessObject('scriptTask')">Script task</li>
+                    <li class="clickable" on-click="addProcessObject('sendTask')">Send task</li>
+                    <li class="clickable" on-click="addProcessObject('serviceTask')">Service task</li>
+                    <li class="clickable" on-click="addProcessObject('userTask')">User task</li>
+                  </ul>
+                </div>
+                <div class="btn-group" role="group" id="callActivityBtn" title="BPMN Call Activities">
+                  <button type="button" class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" {{#if selectedIds.split(',').length > 1}}disabled{{/if}} aria-haspopup="true" aria-expanded="false">
+                    <span class="bpmn-icon-call-activity dropdown" aria-hidden="true" title="BPMN Call Activities"> <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown dropdown-menu" id="bpmnCallActivitiesMenu" role="menu">
+                    <li class="clickable" on-click="addProcessObject('callActivity')">Call process</li>
+                    <li class="clickable" on-click="addProcessObject('callActivity')">Call business rule</li>
+                    <li class="clickable" on-click="addProcessObject('callActivity')">Call manual task</li>
+                    <li class="clickable" on-click="addProcessObject('callActivity')">Call script task</li>
+                    <li class="clickable" on-click="addProcessObject('callActivity')">Call service task</li>
+                    <li class="clickable" on-click="addProcessObject('callActivity')">Call user task</li>
+                  </ul>
+                </div>
+                <div class="btn-group" role="group" id="gatewayBtn" title="BPMN Gateways">
+                  <button type="button" class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" {{#if selectedIds.split(',').length > 1}}disabled{{/if}} aria-haspopup="true" aria-expanded="false">
+                    <span class="bpmn-icon-gateway-none dropdown" aria-hidden="true" title="BPMN Gateways"> <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown dropdown-menu" id="bpmnGatewaysMenu" role="menu">
+                    <li class="clickable" on-click="addProcessObject('complexGateway')">Complex gateway</li>
+                    <li class="clickable" on-click="addProcessObject('eventBasedGateway')">Event based gateway</li>
+                    <li class="clickable" on-click="addProcessObject('exclusiveGateway')">Exclusive gateway</li>
+                    <li class="clickable" on-click="addProcessObject('inclusiveGateway')">Inclusive gateway</li>
+                    <li class="clickable" on-click="addProcessObject('parallelGateway')">Parallel gateway</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="btn-group" role="group" aria-label="...">
+                <div class="btn-group" role="group" id="dataBtn" title="BPMN Data">
+                  <button type="button" class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" {{#if selectedIds.split(',').length > 1}}disabled{{/if}} aria-haspopup="true" aria-expanded="false">
+                    <span class="bpmn-icon-data-object dropdown" aria-hidden="true" title="BPMN Data"> <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown dropdown-menu" id="bpmnDataMenu" role="menu">
+                    <li class="clickable" on-click="addProcessObject('dataInput')">Data input</li>
+                    <li class="clickable" on-click="addProcessObject('dataObject')">Data object</li>
+                    <li class="clickable" on-click="addProcessObject('dataOutput')">Data output</li>
+                    <li class="clickable" on-click="addProcessObject('dataStore')">Data store</li>
+                    <li class="clickable" on-click="addProcessObject('dataObjectReference')">Data object reference</li>
+                    <li class="clickable" on-click="addProcessObject('dataStoreReference')">Data store reference</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="btn-group" role="group" aria-label="...">
+                <div class="btn-group" role="group" id="connectorBtn" title="BPMN Connector">
+                  <button type="button" class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" {{#if selectedIds.split(',').length != 2}}disabled{{/if}} aria-haspopup="true" aria-expanded="false">
+                    <span class="kp-icon-link dropdown" aria-hidden="true" title="BPMN Connector"> <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown dropdown-menu" id="bpmnFlowMenu" role="menu">
+                    <li class="clickable" on-click="addBpmnFlowLink('sequenceFlow')">Sequence flow</li>
+                    <li class="clickable" on-click="addBpmnFlowLink('messageFlow')">Message flow</li>
+                    <li class="clickable" on-click="addBpmnDataAssociation('dataAssociation')">Data association</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-lg btn-default" on-click="deleteBpmn()" {{#if selectedIds == undefined}}disabled{{/if}} aria-haspopup="true" aria-expanded="false">
+                  <span class="kp-icon-remove" aria-hidden="true" title="Delete BPMN"></span>
+                </button>
+              </div>
+              <div class="btn-group" role="group" aria-label="...">
+                <div class="btn-group" role="group" id="alignmentBtn" title="BPMN Alignment Tool">
+                  <button type="button" class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" {{#if selectedIds.split(',').length < 2}}disabled{{/if}} aria-haspopup="true" aria-expanded="false">
+                    <span class="kp-icon-middle-align dropdown" aria-hidden="true" title="BPMN Alignment Tool"> <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown dropdown-menu" id="bpmnAlignmentMenu" role="menu">
+                    <li class="clickable" on-click="alignBpmn('middle')">Align middle</li>
+                    <li class="clickable" on-click="alignBpmn('center')">Align center</li>
+                  </ul>
+                </div>
+                <!--button type="button" class="btn btn-lg btn-default" on-click="reverseBpmnFlow()" {{#if selectedIds.split(',').length != 1}}disabled{{/if}} aria-haspopup="true" aria-expanded="false">
+                  <span class="kp-icon-reverse dropdown" aria-hidden="true" title="Reverse connector"></span>
+                </button-->
+                <button type="button" class="btn btn-lg btn-default" on-click="tidyBpmn()" aria-haspopup="true" aria-expanded="false">
+                  <span class="kp-icon-magic dropdown" aria-hidden="true" title="BPMN Tidy"></span>
+                </button>
+                <!-- TODO sort out timing so renderBpmn does not attempt to transform Promise instead of Node
+                <button type="button" class="btn btn-lg btn-default" on-click="undoBpmn()" {{#if bpmnUndoStack.length < 1}}disabled{{/if}} aria-haspopup="true" aria-expanded="false">
+                  <span class="kp-icon-undo dropdown" aria-hidden="true" title="Undo"></span>
+                </button>
+                <button type="button" class="btn btn-lg btn-default" on-click="redoBpmn()" {{#if bpmnRedoStack.length < 1}}disabled{{/if}} aria-haspopup="true" aria-expanded="false">
+                  <span class="kp-icon-redo dropdown" aria-hidden="true" title="Redo"></span>
+                </button>-->
+              </div>
+            </div>
+
+            <h4>
+              <span>Properties</span>
+            </h4>
+            <table id="propertiesTable" class="table">
+              <tbody>
+                {{#if hasRole('admin') && showDetails}}
+                  <tr>
+                    <th class="col-md-3 a-secondary-label control-label">Id</th>
+                    <td class="col-md-9" colspan="4">{{selectedBpmnObject.id}}</td>
+                  </tr>
+                {{/if}}
+                <tr>
+                  <th class="col-md-3 a-secondary-label control-label">Name</th>
+                  <td class="col-md-9 form-control" colspan="4" contenteditable="{{hasRole('admin')}}"
+                          on-blur="updateBpmnObject(selected, 'name', event.node.innerText)" twoway="false"
+                          value="{{current.bpmn.querySelector('[id="'+selected+'"]').getAttribute('name')}}">
+                  </td>
+                </tr>
+                <tr>
+                  <th class="col-md-3 a-secondary-label control-label">Type</th>
+                  <td class="col-md-3 bpmnTypes">
+                    {{#current.bpmn.querySelector('[id="'+selectedBpmnObject.id+'"]').getAttribute('activiti:async')}}Asynchronous<br/>{{/}}
+
+                    {{#if selectedBpmnObject.element.localName.toLowerCase().indexOf('task') == -1}}
+                      {{selectedBpmnObject.element.localName.toLabel()}}
+                    {{else}}
+                      <select id="taskTypes"
+                          on-change="updateBpmnObject(selectedBpmnObject.element, 'type', event.node.value)">
+                        <option value="task" selected="{{selectedBpmnObject.element.localName=='task'}}">None</option>
+                        <option value="businessRuleTask" selected="{{selectedBpmnObject.element.localName=='businessRuleTask'}}">Business rule task</option>
+                        <option value="manualTask" selected="{{selectedBpmnObject.element.localName=='manualTask'}}">Manual task</option>
+                        <option value="receiveTask" selected="{{selectedBpmnObject.element.localName=='receiveTask'}}">Receive task</option>
+                        <option value="scriptTask" selected="{{selectedBpmnObject.element.localName=='scriptTask'}}">Script task</option>
+                        <option value="sendTask" selected="{{selectedBpmnObject.element.localName=='sendTask'}}">Send task</option>
+                        <option value="serviceTask" selected="{{selectedBpmnObject.element.localName=='serviceTask'}}">Service task</option>
+                        <option value="userTask" selected="{{selectedBpmnObject.element.localName=='userTask'}}">User task</option>
+                      </select>
+                    {{/if}}
+                  </td>
+                  <td class="col-md-3 bpmnSubTypes">
+                    <select id="startEventSubTypes" style="display:none"
+                            on-change="updateBpmnObject(selectedBpmnObject.element, 'subType', event.node.value)">
+                      <option value="none">None</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='conditionalEventDefinition'}}" value="conditional">Conditional</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='messageEventDefinition'}}" value="message">Message</option>
+                      <option selected="{{selectedBpmnObject.element.getAttribute('parallelMultiple')=='false'}}" value="multiple">Multiple</option>
+                      <option selected="{{selectedBpmnObject.element.getAttribute('parallelMultiple')=='true'}}" value="parallelMultiple">Parallel Multiple</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='signalEventDefinition'}}" value="signal">Signal</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='timerEventDefinition'}}" value="timer">Timer</option>
+                    </select>
+                    <select id="boundaryEventSubTypes" style="display:none"
+                          on-change="updateBpmnObject(selectedBpmnObject.element, 'subType', event.node.value)">
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='compensationEventDefinition'}}" value="compensation">Catch Compensation</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='errorEventDefinition'}}" value="error">Catch Error</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='escalationEventDefinition'}}" value="escalation">Catch Escalation</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='messageEventDefinition'}}" value="message">Catch Message</option>
+                      <option selected="{{selectedBpmnObject.element.getAttribute('parallelMultiple')=='false'}}" value="multiple">Catch Multiple</option>
+                      <option selected="{{selectedBpmnObject.element.getAttribute('parallelMultiple')=='true'}}" value="parallelMultiple">Catch Parallel Multiple</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='signalEventDefinition'}}" value="signal">Catch Signal</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='timerEventDefinition'}}" value="timer">Catch Timer</option>
+                    </select>
+                    <select id="intermediateEventSubTypes" style="display:none"
+                          on-change="updateBpmnObject(selectedBpmnObject.element, 'subType', event.node.value, event.node.getAttribute('data-throw'))">
+                      <option value="none">None</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='compensationEventDefinition'}}" value="compensation">Catch Compensation</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='linkEventDefinition'}}" value="link">Catch Link</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='messageEventDefinition'}}" value="message">Catch Message</option>
+                      <option selected="{{selectedBpmnObject.element.getAttribute('parallelMultiple')=='false'}}" value="multiple">Catch Multiple</option>
+                      <option selected="{{selectedBpmnObject.element.getAttribute('parallelMultiple')=='true'}}" value="parallelMultiple">Catch Parallel Multiple</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='signalEventDefinition'}}" value="signal">Catch Signal</option>
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='timerEventDefinition'}}" value="timer">Catch Timer</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.lastElementChild.localName=='compensationEventDefinition'}}" value="compensation">Throw Compensation</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.lastElementChild.localName=='escalationEventDefinition'}}" value="escalation">Throw Escalation</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.lastElementChild.localName=='linkEventDefinition'}}" value="link">Throw Link</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.lastElementChild.localName=='messageEventDefinition'}}" value="message">Throw Message</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.getAttribute('parallelMultiple')=='false'}}" value="multiple">Throw Multiple</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.lastElementChild.localName=='signalEventDefinition'}}" value="signal">Throw Signal</option>
+                    </select>
+                    <select id="endEventSubTypes" style="display:none"
+                        on-change="updateBpmnObject(selectedBpmnObject.element, 'subType', event.node.value)">
+                      <option selected="{{selectedBpmnObject.element.lastElementChild.localName=='EventDefinition'}}" value="">None</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.lastElementChild.localName=='compensationEventDefinition'}}" value="compensation">Throw Compensation</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.lastElementChild.localName=='errorEventDefinition'}}" value="error">Throw Error</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.lastElementChild.localName=='escalationEventDefinition'}}" value="escalation">Throw Escalation</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.lastElementChild.localName=='messageEventDefinition'}}" value="message">Throw Message</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.getAttribute('parallelMultiple')=='false'}}" value="multiple">Throw Multiple</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.lastElementChild.localName=='signalEventDefinition'}}" value="signal">Throw Signal</option>
+                      <option data-throw="true" selected="{{selectedBpmnObject.element.lastElementChild.localName=='terminateEventDefinition'}}" value="terminate">Throw Terminate</option>
+                    </select>
+                    <select id="gatewaySubTypes" style="display:none"
+                        on-change="updateBpmnObject(selectedBpmnObject.element, 'subType', event.node.value)">
+                      <option value="exclusiveGateway" selected="{{selectedBpmnObject.element.localName=='exclusiveGateway'}}">Exclusive</option>
+                      <option value="inclusive" selected="{{selectedBpmnObject.element.localName=='inclusiveGateway'}}">Inclusive</option>
+                      <option value="parallel" selected="{{selectedBpmnObject.element.localName=='parallelGateway'}}">Parallel</option>
+                      <option value="complex" selected="{{selectedBpmnObject.element.localName=='complexGateway'}}">Complex</option>
+                      <option value="eventBased" selected="{{selectedBpmnObject.element.localName=='eventBasedGateway'}}">Event-based</option>
+                    </select>
+                  </td>
+                  <td class="col-md-3">
+                    {{# selectedBpmnObject.element.localName=='serviceTask'}}
+                      <select id="serviceTaskTypes"
+                          on-change="updateBpmnObject(selectedBpmnObject.element, 'serviceType', event.node.value)">
+                        <option value="com.knowprocess.services.pdf.Html2PdfService" selected="{{current.bpmn.querySelector('#'+selected).getAttribute('activiti:class')=='com.knowprocess.services.pdf.Html2PdfService'}}">HTML 2 PDF</option>
+                        <option value="com.knowprocess.logging.LoggingService" selected="{{current.bpmn.querySelector('#'+selected).getAttribute('activiti:class')=='com.knowprocess.logging.LoggingService'}}">Logging Service</option>
+                        <option value="com.knowprocess.resource.spi.RestDelete" selected="{{current.bpmn.querySelector('#'+selected).getAttribute('activiti:class')=='com.knowprocess.resource.spi.RestDelete'}}">Rest DELETE</option>
+                        <option value="com.knowprocess.resource.spi.RestGet" selected="{{current.bpmn.querySelector('#'+selected).getAttribute('activiti:class')=='com.knowprocess.resource.spi.RestGet'}}">Rest GET</option>
+                        <option value="com.knowprocess.resource.spi.RestPost" selected="{{current.bpmn.querySelector('#'+selected).getAttribute('activiti:class')=='com.knowprocess.resource.spi.RestPost'}}">Rest POST</option>
+                        <option value="com.knowprocess.resource.spi.RestPut" selected="{{current.bpmn.querySelector('#'+selected).getAttribute('activiti:class')=='com.knowprocess.resource.spi.RestPut'}}">Rest PUT</option>
+                        <option value="com.knowprocess.el.TemplateTask" selected="{{current.bpmn.querySelector('#'+selected).getAttribute('activiti:class')=='com.knowprocess.el.TemplateTask'}}">Memo Template</option>
+                        <option value="com.knowprocess.xslt.TransformTask" selected="{{current.bpmn.querySelector('#'+selected).getAttribute('activiti:class')=='com.knowprocess.xslt.TransformTask'}}">XSL Transform</option>
+                      </select>
+                    {{/}}
+                  </td>
+                </tr>
+                <tr>
+                  <th class="col-md-3 a-secondary-label control-label">{{selectedBpmnObject.element.localName.toLabel()}} Definition</th>
+                  <td class="col-md-9" colspan="4">
+                    {{#if selectedBpmnObject.element.localName == 'boundaryEvent'}}
+                      <label for="isInterruptingCheckbox">Is interrupting: </label>
+                      <input id="isInterruptingCheckbox" type="checkbox"
+                          checked="{{selectedBpmnObject.element.getAttribute('cancelActivity')=='true'}}"
+                          on-change="updateBpmnObject(selected, 'cancelActivity', event.node.checked)">
+                      {{#if selectedBpmnObject.element.querySelectorAll('timerEventDefinition').length>0}}
+                        {{#selectedBpmnObject.timerCycle}}<label>Timer Cycle: </label>{{selectedBpmnObject.timerCycle}}{{/}}
+                        {{#selectedBpmnObject.timerDate}}<label>Timer Date: </label>{{selectedBpmnObject.timerDate}}{{/}}
+                        {{#selectedBpmnObject.timerDuration}}<label>Timer Duration: </label>{{selectedBpmnObject.timerDuration}}{{/}}
+                      {{/if}}
+                    {{elseif selectedBpmnObject.element.localName == 'callActivity'}}
+                      <label>Called Activity: </label> {{selectedBpmnObject.element.getAttribute('calledElement')}}
+                    {{elseif selectedBpmnObject.element.localName == 'dataObjectReference'}}
+                      <label>State: </label>
+                        {{#if current.bpmn.querySelector('[id="'+selectedBpmnObject.id+'"] dataState')}}
+                          <span class="form-control" contenteditable="{{hasRole('admin')}}"
+                                on-blur="updateBpmnObject(selected, 'dataState', event.node.innerText)">
+                            {{current.bpmn.querySelector('[id="'+selected+'"] dataState').getAttribute('name')}}
+                          </span>
+                        {{else}}
+                          <span class="form-control" contenteditable="{{hasRole('admin')}}"
+                                on-blur="updateBpmnObject(selected, 'dataState', event.node.innerText)">n/a</span>
+                        {{/if}}
+                      <br/>
+                      {{#if hasRole('admin') && showDetails}}
+                        <label>Referred object id: </label>
+                          {{#if current.bpmn.querySelector('[id="'+selectedBpmnObject.id+'"]').getAttribute('dataObjectRef')}}
+                              {{current.bpmn.querySelector('[id="'+selectedBpmnObject.id+'"]').getAttribute('dataObjectRef')}}
+                          {{else}}
+                            Unspecified
+                          {{/if}}
+                        <br/>
+                      {{/if}}
+                      <label>Referred object: </label>
+                        {{#if current.bpmn.querySelector('[id="'+selectedBpmnObject.id+'"]').getAttribute('dataObjectRef')==undefined}}
+                          <input class="form-control" list="dataObjects"
+                                 on-blur="updateBpmnObject(selected, 'dataObjectRef', event.node.value)"
+                                 placeholder="Please select a data object to reference"
+                                 required type="text">
+                        {{else}}
+                          {{current.bpmn.querySelector('[id="'+ (current.bpmn.querySelector('[id="'+selectedBpmnObject.id+'"]').getAttribute('dataObjectRef')) +'"]').getAttribute('name')}}
+                        {{/if}}
+                    {{elseif selectedBpmnObject.element.localName == 'dataStoreReference'}}
+                      <label>Data Store: </label> {{current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('name')}}<br/>
+                      <label>Type: </label> {{ current.bpmn.querySelectorAll('itemDefinition[id="'+current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('itemSubjectRef')+'"]')[0].getAttribute('structureRef') }}<br/>
+                      <label>Capacity: </label>
+                        {{#if current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('isUnlimited') && current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('isUnlimited')=='true'}}
+                          unlimited
+                        {{else}}
+                          {{current.bpmn.querySelectorAll('dataStore[id="'+selectedBpmnObject.element.getAttribute('dataStoreRef')+'"]')[0].getAttribute('capacity')}}
+                        {{/if}}
+                    {{elseif selectedBpmnObject.element.localName.indexOf('Event')!=-1 && selectedBpmnObject.element.querySelectorAll('messageEventDefinition').length>0}}
+                      <label>Message: </label> {{current.bpmn.querySelectorAll('message[id="'+selectedBpmnObject.element.querySelectorAll('messageEventDefinition')[0].getAttribute('messageRef')+'"]')[0].getAttribute('name')}}<br/>
+                    {{elseif selectedBpmnObject.element.localName == 'participant' || selectedBpmnObject.element.localName == 'subProcess'}}
+                      <label for="isExpandedCheckbox">Is expanded: </label>
+                      <input id="isExpandedCheckbox" type="checkbox" disabled
+                          checked="{{selectedBpmnObject.diElement.getAttribute('isExpanded')=='true'}}"
+                          on-change="updateBpmnObject(selected, 'isExpanded', event.node.checked)">
+                    {{elseif selectedBpmnObject.element.localName.indexOf('Event')!=-1 && selectedBpmnObject.element.querySelectorAll('signalEventDefinition').length>0}}
+                      <label>Signal: </label> {{current.bpmn.querySelectorAll('signal[id="'+selectedBpmnObject.element.querySelectorAll('signalEventDefinition')[0].getAttribute('signalRef')+'"]')[0].getAttribute('name')}}<br/>
+                    {{elseif selectedBpmnObject.element.localName == 'scriptTask'}}
+                      <pre>{{selectedBpmnObject.script}}</pre>
+                    {{elseif selectedBpmnObject.element.localName=='exclusiveGateway' || selectedBpmnObject.element.localName=='task ' || selectedBpmnObject.element.localName.indexOf('Task')!=-1}}
+                      <label for="defaultSeqFlow">Default: </label>
+                      <select id="defaultSeqFlow" on-change="updateBpmnObject(selectedBpmnObject.element, 'default', event.node.value)"></select>
+                    {{elseif selectedBpmnObject.element.localName == 'sequenceFlow'}}
+                      <label for="isConditionalCheckbox">Conditional: </label>
+                      <input id="isConditionalCheckbox" type="checkbox"
+                          checked="{{selectedBpmnObject.element.querySelector('conditionExpression')!=undefined}}"
+                          on-change="setConditional(selectedBpmnObject.element, event.node.checked)">
+                      <pre contenteditable="{{hasRole('admin')}}" twoway="false"
+                           on-blur="updateCondition(selectedBpmnObject.element, event.node.innerHTML)">{{selectedBpmnObject.element.querySelector('conditionExpression').innerHTML}}</pre>
+                    {{elseif (selectedBpmnObject.element.localName == 'userTask' || selectedBpmnObject.element.localName == 'manualTask')}}
+                      {{#selectedBpmnObject.element.getAttribute('activiti:assignee')!=undefined}}<label>Assign to: </label>{{selectedBpmnObject.element.getAttribute('activiti:assignee')}}<br/>{{/}}
+                      {{#selectedBpmnObject.element.getAttribute('activiti:candidateUsers')!=undefined}}<label>Offer to user: </label>{{selectedBpmnObject.element.getAttribute('activiti:candidateUsers')}}<br/>{{/}}
+                      {{#selectedBpmnObject.element.getAttribute('activiti:candidateGroups')!=undefined}}<label>Offer to group: </label>{{selectedBpmnObject.element.getAttribute('activiti:candidateGroups')}}<br/>{{/}}
+                      {{#selectedBpmnObject.element.querySelectorAll('resourceRef').length>0}}<label>Offer to: </label>{{current.bpmn.querySelectorAll('resource[id="'+selectedBpmnObject.element.querySelectorAll('resourceRef')[0].textContent+'"]')[0].getAttribute('name')}}<br/>{{/}}
+                      {{#selectedBpmnObject.element.querySelectorAll('formalExpression').length>0}}<label>Offer to: </label>{{selectedBpmnObject.element.querySelectorAll('formalExpression')[0].textContent}}<br/>{{/}}
+                    {{/if}}
+                    {{#if selectedBpmnObject.extensionDetails }}{{{selectedBpmnObject.extensionDetails}}}{{/if}}
+                  </td>
+                </tr>
+                {{#if isVisual(selectedBpmnObject.element)}}
+                  <tr>
+                    {{#if selectedBpmnObject.diElement.localName != 'BPMNEdge'}}
+                      <th class="col-md-3 a-secondary-label control-label">BPMN Shape</th>
+                      <td class="col-md-3" style="min-width:120px;">
+                        <ul>
+                          <li>
+                            <label>X,Y: </label>
+                            <span contenteditable="{{hasRole('admin')}}" twoway="false"
+                                  on-blur="updateBpmnObject(selectedBpmnObject.diElement.firstElementChild, 'x', event.node.innerText)"
+                                  value="{{selectedBpmnObject.diElement.firstElementChild.getAttribute('x')}}">
+                            </span>,
+                            <span contenteditable="{{hasRole('admin')}}" twoway="false"
+                                  on-blur="updateBpmnObject(selectedBpmnObject.diElement.firstElementChild, 'y', event.node.innerText)"
+                                  value="{{selectedBpmnObject.diElement.firstElementChild.getAttribute('y')}}">
+                            </span>
+                          </li>
+                          <li>
+                            <label>Height: </label>
+                            <span contenteditable="{{hasRole('admin')}}" twoway="false"
+                                on-blur="updateBpmnObject(selectedBpmnObject.diElement.firstElementChild, 'height', event.node.innerText)"
+                                value="{{#selectedBpmnObject.diElement.firstElementChild.getAttribute('height')}}{{selectedBpmnObject.diElement.firstElementChild.getAttribute('height')}}{{else}}n/a{{/}}">
+                            </span>
+                          </li>
+                          <li>
+                            <label>Width: </label>
+                            <span contenteditable="{{hasRole('admin')}}" twoway="false"
+                                on-blur="updateBpmnObject(selectedBpmnObject.diElement.firstElementChild, 'width', event.node.innerText)"
+                                value="{{#selectedBpmnObject.diElement.firstElementChild.getAttribute('width')}}{{selectedBpmnObject.diElement.firstElementChild.getAttribute('width')}}{{else}}n/a{{/}}">
+                            </span>
+                          </li>
+                          <li>
+                            {{#if selectedBpmnObject.element.localName=='exclusiveGateway'}}
+                              <label for="isMarkerVisibleCheckbox">Display marker: </label>
+                              <input id="isMarkerVisibleCheckbox" type="checkbox"
+                                  checked="{{#selectedBpmnObject.diElement.getAttribute('isMarkerVisible')}}{{selectedBpmnObject.diElement.getAttribute('isMarkerVisible')=='true'}}{{else}}false{{/}}"
+                                  on-change="updateBpmnObject(selectedBpmnObject.diElement, 'isMarkerVisible', event.node.checked)">
+                            {{/if}}
+                          </li>
+                        </ul>
+                      </td>
+                   {{else}}
+                      <th class="col-md-3 a-secondary-label control-label">Waypoints</th>
+                      <td class="col-md-3" style="min-width:120px;">
+                        <ul>
+                          {{#if selectedBpmnObject.diElement.children.0 && selectedBpmnObject.diElement.children.0.localName=='waypoint'}}
+                            <li>
+                              <label>X,Y: </label>
+                              <span contenteditable="{{hasRole('admin')}}"
+                                  on-blur="updateBpmnObject(selectedBpmnObject.diElement.children.0, 'x', event.node.innerText)"
+                                  value="{{selectedBpmnObject.diElement.children.0.getAttribute('x')}}"></span>,
+                              <span contenteditable="{{hasRole('admin')}}"
+                                  on-blur="updateBpmnObject(selectedBpmnObject.diElement.children.0, 'y', event.node.innerText)"
+                                  value="{{selectedBpmnObject.diElement.children.0.getAttribute('y')}}"></span>
+                              <span class="clickable icon-sm icon-btn kp-icon-remove" on-click="deleteBpmnWaypoint(0)"></span>
+                              <span class="clickable icon-sm icon-btn kp-icon-plus" on-click="addBpmnWaypoint(selected, 1)"></span>
+                            </li>
+                          {{/if}}
+                          {{#if selectedBpmnObject.diElement.children.1 && selectedBpmnObject.diElement.children.1.localName=='waypoint'}}
+                            <li>
+                              <label>X,Y: </label>
+                              <span contenteditable="{{hasRole('admin')}}"
+                              on-blur="updateBpmnObject(selectedBpmnObject.diElement.children.1, 'x', event.node.innerText)"
+                                  value="{{selectedBpmnObject.diElement.children.1.getAttribute('x')}}"></span>,
+                              <span contenteditable="{{hasRole('admin')}}"
+                                  on-blur="updateBpmnObject(selectedBpmnObject.diElement.children.1, 'y', event.node.innerText)"
+                                  value="{{selectedBpmnObject.diElement.children.1.getAttribute('y')}}"></span>
+                              <span class="clickable icon-sm icon-btn kp-icon-remove" on-click="deleteBpmnWaypoint(1)"></span>
+                            </li>
+                          {{/if}}
+                          {{#if selectedBpmnObject.diElement.children.2 && selectedBpmnObject.diElement.children.2.localName=='waypoint'}}
+                            <li>
+                              <label>X,Y: </label>
+                              <span contenteditable="{{hasRole('admin')}}"
+                                  on-blur="updateBpmnObject(selectedBpmnObject.diElement.children.2, 'x', event.node.innerText)"
+                                  value="{{selectedBpmnObject.diElement.children.2.getAttribute('x')}}"></span>,
+                              <span contenteditable="{{hasRole('admin')}}"
+                                  on-blur="updateBpmnObject(selectedBpmnObject.diElement.children.2, 'y', event.node.innerText)"
+                                  value="{{selectedBpmnObject.diElement.children.2.getAttribute('y')}}"></span>
+                              <span class="clickable icon-sm icon-btn kp-icon-remove" on-click="deleteBpmnWaypoint(2)"></span>
+                            </li>
+                          {{/if}}
+                          {{#if selectedBpmnObject.diElement.children.3 && selectedBpmnObject.diElement.children.3.localName=='waypoint'}}
+                            <li>
+                              <label>X,Y: </label>
+                              <span contenteditable="{{hasRole('admin')}}"
+                                  on-blur="updateBpmnObject(selectedBpmnObject.diElement.children.3, 'x', event.node.innerText)"
+                                  value="{{selectedBpmnObject.diElement.children.3.getAttribute('x')}}"></span>,
+                              <span contenteditable="{{hasRole('admin')}}"
+                                  on-blur="updateBpmnObject(selectedBpmnObject.diElement.children.3, 'y', event.node.innerText)"
+                                  value="{{selectedBpmnObject.diElement.children.3.getAttribute('y')}}"></span>
+                              <span class="clickable icon-sm icon-btn kp-icon-remove" on-click="deleteBpmnWaypoint(3)"></span>
+                            </li>
+                          {{/if}}
+                        </ul>
+                      </td>
+                    {{/if}}
+                    <th class="col-md-3 a-secondary-label control-label">Label</th>
+                    <td class="col-md-3" style="min-width:120px;">
+                      <ul>
+                        {{#if selectedBpmnObject.diElement.lastElementChild.firstElementChild}}
+                          <li>
+                            <label>X,Y: </label>
+                            <span contenteditable="{{hasRole('admin')}}" twoway="false"
+                                on-blur="updateBpmnObject(selectedBpmnObject.diElement.lastElementChild.firstElementChild, 'x', event.node.innerText)"
+                                value="{{selectedBpmnObject.diElement.lastElementChild.firstElementChild.getAttribute('x')}}">
+                            </span>,
+                            <span contenteditable="{{hasRole('admin')}}" twoway="false"
+                                on-blur="updateBpmnObject(selectedBpmnObject.diElement.lastElementChild.firstElementChild, 'y', event.node.innerText)"
+                                value="{{selectedBpmnObject.diElement.lastElementChild.firstElementChild.getAttribute('y')}}">
+                            </span>
+                          </li>
+                          <li>
+                            <label>Height: </label>
+                            <span contenteditable="{{hasRole('admin')}}" twoway="false"
+                                on-blur="updateBpmnObject(selectedBpmnObject.diElement.lastElementChild.firstElementChild, 'height', event.node.innerText)"
+                                value="{{selectedBpmnObject.diElement.lastElementChild.firstElementChild.getAttribute('height')}}">
+                            </span>
+                          </li>
+                          <li>
+                            <label>Width: </label>
+                            <span contenteditable="{{hasRole('admin')}}" twoway="false"
+                                on-blur="updateBpmnObject(selectedBpmnObject.diElement.lastElementChild.firstElementChild, 'width', event.node.innerText)"
+                                value="{{selectedBpmnObject.diElement.lastElementChild.firstElementChild.getAttribute('width')}}">
+                            </span>
+                          </li>
+                        {{else}}
+                          <li><label>n/a</label></li>
+                        {{/if}}
+                      </ul>
+                    </td>
+                  </tr>
+                {{/if}} {{!-- end isVisual --}}
+              <tbody>
+            </table>
+          </div>
+        {{/if}}
+      </section>
+    {{/}}
+  {{#current.deploymentId}}
+    {{>instanceListSect}}
+  {{/}}
+  {{^current.deploymentId}}
+    {{#if showDetails}}
+      <section id="issuesSect">
+        <h3>
+          <span class="ol-collapse glyphicon icon-btn kp-icon-caret-down" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+          <span>Items to be completed</span>
+        </h3>
+        <div>
+          <p>To be eligible for execution these parts of the model need to be completed.</p>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Issue</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#current.issues:i}}
+                <tr>
+                  <td><a href="#{{modelRef}}" data-ref="{{modelRef}}" onclick="$('#{{modelRef}}').click();">{{i+1}}</a></td>
+                  <!-- <td class="col-md-1">{{level}}</td> -->
+                  <td>{{description}}</td>
+                </tr>
+              {{/}}
+            </tbody>
+          </table>
+        </div>
+      </section><!-- /List of items to complete -->
+    {{/if}}
+  {{/}}  {{/if current.id}}
+
+</section>
