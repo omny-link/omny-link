@@ -1,6 +1,43 @@
 Release Notes
 =============
 
+## 3.0.0 - 27 May 21
+
+This release updates the identity management system to support more modern
+features like multi-factor authentication etc. It also separates the UI from
+the various backends in readiness to complete the migration to being fully
+cloud-native.
+
+ - align roles to keycloak so conditional elements display
+ - migrate to kp icons
+ - migrate process admin ui
+ - migrate work ui
+ - Bump browserslist from 4.16.3 to 4.16.6 in /crm-ui
+ - git add new contact / acct
+ - Bump hosted-git-info from 2.8.8 to 2.8.9 in /crm-ui
+ - short keys need to be disabled if focus is on an input field
+ - provide author for note
+ - Bump hosted-git-info from 2.8.8 to 2.8.9 in /crm-ui
+ - migrate status page
+ - provide author for doc
+ - adjust conditional templates for static tenant config
+ - fix autoNumeric & dropdown formatting post refactoring
+ - fix missing showX funcs
+ - fix order item display after static tenant config change
+ - optimise first load
+ - fix filters with new user profile
+ - move to bootstrap-tagsinput
+ - fix small screen layout
+ - fix free-form mail
+ - tidy css
+ - fix delete contact ui
+ - fix funnel after migration
+ - migrate acct actions
+ - refactor standalone crm-ui
+ - drop push to dockerhub, handle externally
+ - Bump commons-io from 2.4 to 2.7 in /catalog
+ - Bump commons-io from 2.4 to 2.7 in /cust-mgmt
+
 ## 2.2.4 - 07 Jul 20
 
  - better account export to csv

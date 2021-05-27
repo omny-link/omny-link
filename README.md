@@ -1,7 +1,7 @@
 Customer Management System
 ==========================
 
-A CRM system and product catalogue embedding Activiti process engine.
+A customer relationship management (CRM) system and product catalogue.
 
 Built on [Spring Boot](https://projects.spring.io/spring-boot/) as a series of micro-service REST APIs.
 
