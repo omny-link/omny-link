@@ -123,9 +123,9 @@
           </div>
           <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
         </li>
-        <li class="form-group">
+        <li class="form-group power-user">
           <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
-          <input class="form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" {{#if !matchRole('power-user')}}readonly disabled{{/if}} value="{{current.owner}}">
+          <input class="form-control" list="owners" placeholder="Start typing to filter options" id="curOwner" readonly disabled value="{{current.owner}}">
         </li>
         <li class="form-group">
           <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.existingCustomer}}{{tenant.strings.existingCustomer}}{{else}}Existing Customer?{{/}}:</label>

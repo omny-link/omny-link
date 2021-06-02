@@ -248,7 +248,6 @@ var ractive = new BaseRactive({
           return document.location.href.indexOf(pageName) != -1;
         },
         matchRole: function(role) {
-          // console.info('matchRole: ' + role)
           if (role == undefined || ractive.hasRole(role)) {
             $('.' + role).show();
             return true;
@@ -508,6 +507,18 @@ var ractive = new BaseRactive({
         if (msgs != undefined)
           ractive.showError(msgs);
       },
+      applyAccessControl: function() {
+        ractive.update('#currentSect'); // matchRole may return different now
+        if (ractive.hasRole('admin')) $('.admin').show();
+        if (ractive.hasRole('power-user')) {
+          document.querySelectorAll('.power-user [readonly]').forEach(function(d) {
+            d.removeAttribute('readonly');
+          });
+          document.querySelectorAll('.power-user [disabled]').forEach(function(d) {
+            d.removeAttribute('disabled');
+          });
+        }
+      },
       cloneOrder: function(order) {
         console.log('cloneOrder, id: '+ order.id+', name: '+order.name)
         var newOrder = JSON.parse(JSON.stringify(order));
@@ -612,9 +623,9 @@ var ractive = new BaseRactive({
           crossDomain: true,
           success: function(data) {
             if (data['_embedded'] == undefined) {
-              ractive.merge(entityName, data);
+              ractive.set(entityName, data);
             } else {
-              ractive.merge(entityName, data['_embedded'][entityName]);
+              ractive.set(entityName, data['_embedded'][entityName]);
             }
             if (ractive.hasRole('admin')) $('.admin').show();
             if (ractive.hasRole('power-user')) $('.power-user').show();
@@ -1273,7 +1284,7 @@ var ractive = new BaseRactive({
               ractive.sortChildren('documents','created',false);
               ractive.addServiceLevelAlerts();
               ractive.analyzeEmailActivity(ractive.get('current.activities'));
-              if (ractive.hasRole('admin')) $('.admin').show();
+              ractive.applyAccessControl();
               ractive.set('saveObserver', true);
             });
         } else {
