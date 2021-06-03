@@ -71,10 +71,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Entity
 @Table(name = "OL_CONTACT")
 @Data
+@Accessors(chain = true)
 @EqualsAndHashCode(exclude = { "account" })
 @AllArgsConstructor
 @NoArgsConstructor
@@ -398,12 +400,12 @@ public class Contact implements Serializable {
         return null;
     }
 
-    public void addCustomField(CustomContactField customField) {
+    public Contact addCustomField(CustomContactField customField) {
         customField.setContact(this);
-        setCustomField(customField);
+        return setCustomField(customField);
     }
 
-    protected void setCustomField(CustomContactField newField) {
+    protected Contact setCustomField(CustomContactField newField) {
         boolean found = false;
         for (CustomContactField field : getCustomFields()) {
             if (field.getName().equals(newField.getName())) {
@@ -416,6 +418,7 @@ public class Contact implements Serializable {
             newField.setContact(this);
             getCustomFields().add(newField);
         }
+        return this;
     }
 
     @JsonProperty

@@ -201,37 +201,17 @@ public class ContactAndAccountControllerTest {
     }
 
     protected Contact getContact() throws IOException {
-        String contactJson = "{\"firstName\":\"Fred\","
-                + "\"lastName\":\"Flintstone\","
-                + "\"email\":\"fred@bedrockslateandgravel.com\","
-                + "\"customFields\":{ \"eyeColor\": \"blue\" }}";
-
-        Contact contact = objectMapper.readValue(contactJson,
-                new TypeReference<Contact>() {
-                });
-        assertNotNull(contact);
-        assertEquals("Fred", contact.getFirstName());
-        assertEquals("Flintstone", contact.getLastName());
-        assertEquals("fred@bedrockslateandgravel.com", contact.getEmail());
-        assertEquals("blue", contact.getCustomFieldValue("eyeColor"));
-
-        return contact;
+        return new Contact()
+                .setFirstName("Fred")
+                .setLastName("Flintstone")
+                .setEmail("fred@bedrockslateandgravel.com")
+                .addCustomField(new CustomContactField("eyeColor", "blue"));
     }
 
     protected Account getAccount() throws IOException {
-        String acctJson = "{\"name\":\"trademark\","
-                + "\"companyNumber\":null,\"aliases\":null,"
-                + "\"businessWebsite\":\"\",\"shortDesc\":null,"
-                + "\"description\":\"test\",\"incorporationYear\":null,"
-                + "\"noOfEmployees\":null,\"tenantId\":\"client1\","
-                + "\"firstContact\":null,\"lastUpdated\":null,"
-                + "\"customFields\":{}}";
-
-        Account acct = objectMapper.readValue(acctJson,
-                new TypeReference<Account>() {
-                });
-        assertNotNull(acct);
-
-        return acct;
+        return new Account()
+                .setName("trademark")
+                .setDescription("test")
+                .setTenantId("client1");
     }
 }

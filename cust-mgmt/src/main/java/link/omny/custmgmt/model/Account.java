@@ -64,10 +64,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Entity
 @Table(name = "OL_ACCOUNT")
 @Data
+@Accessors(chain = true)
 @EqualsAndHashCode(exclude = { "contact" })
 @AllArgsConstructor
 @NoArgsConstructor
