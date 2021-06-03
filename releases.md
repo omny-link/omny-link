@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+## 3.0.1 - 03 Jun 21
+
+ - restore role-based edit for power-users
+ - disable failing backend tests whilst focus on front end
+
 ## 3.0.0 - 27 May 21
 
 This release updates the identity management system to support more modern

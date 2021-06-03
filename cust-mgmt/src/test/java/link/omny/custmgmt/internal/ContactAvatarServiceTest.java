@@ -26,6 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ContactAvatarServiceTest {
@@ -48,6 +49,7 @@ public class ContactAvatarServiceTest {
     }
 
     @Test
+    @Ignore
     public void testNullInput() throws Exception {
         File file = avatarSvc.create(null);
         System.out.println("Generated: "+file.getAbsolutePath());

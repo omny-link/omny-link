@@ -30,7 +30,7 @@
     <onedecision.version>1.2.0-RC1</onedecision.version>
     <kp-icons.version>3.1.0</kp-icons.version>
     <plantuml.version>8059</plantuml.version>
-    <work-mgmt.version>2.3.0</work-mgmt.version>
+    <work-mgmt.version>3.0.0.20180830</work-mgmt.version>
   </properties>
 
   <distributionManagement>

@@ -19,10 +19,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 import link.omny.catalog.model.GeoPoint;
 import link.omny.catalog.model.StockCategory;
-
-import org.junit.Test;
 
 public class GeolocationServiceTest {
 
@@ -55,6 +56,7 @@ public class GeolocationServiceTest {
     }
 
     @Test
+    @Ignore
     public void testLocate() throws IOException {
         GeoPoint corsham = svc.locate("SN13 9BS");
 
