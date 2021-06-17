@@ -56,6 +56,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import link.omny.catalog.CatalogException;
 import link.omny.catalog.CatalogObjectNotFoundException;
 import link.omny.catalog.model.CustomFeedbackField;
@@ -83,6 +85,7 @@ import lombok.Data;
  */
 @RestController
 @RequestMapping(value = "/{tenantId}/orders")
+@Api(tags = "Order API")
 public class OrderController {
 
     private static final Logger LOGGER = LoggerFactory
@@ -263,6 +266,7 @@ public class OrderController {
      * @return orders owned by the specified contact.
      */
     @GetMapping(value = "/findByContact/{contactId}")
+    @ApiOperation(value = "Find orders for a contact")
     public @ResponseBody List<EntityModel<Order>> listForContact(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
@@ -275,6 +279,7 @@ public class OrderController {
      * @return orders owned by the specified contact(s).
      */
     @GetMapping(value = "/findByContacts/{contactIds}")
+    @ApiOperation(value = "Find orders for a number of contacts")
     public @ResponseBody List<EntityModel<Order>> listForContacts(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactIds") Long[] contactIds,
@@ -348,6 +353,7 @@ public class OrderController {
      */
     @ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping(value = "/")
+    @ApiOperation(value = "Create a new order.")
     public @ResponseBody ResponseEntity<EntityModel<Order>> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Order order) {
@@ -409,6 +415,7 @@ public class OrderController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PutMapping(value = "/{id}", consumes = { "application/json" })
+    @ApiOperation(value = "Update an existing order")
     @Transactional
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
@@ -579,7 +586,7 @@ public class OrderController {
 
     /**
      * Update an existing order with new feedback.
-     * @return updated order.
+     * @return created feedback object.
      */
     @PostMapping(value = "/{id}/feedback", consumes = { "application/json" })
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -639,10 +646,11 @@ public class OrderController {
     }
 
     /**
-     * Update an existing order.
+     * Update an existing order item.
      */
-    @PutMapping(value = "/{id}/order-items/{itemId}", consumes = { "application/json" })
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @PutMapping(value = "/{id}/order-items/{itemId}", consumes = { "application/json" })
+    @ApiOperation(value = "Update an existing order item")
     public @ResponseBody void updateOrderItem(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
@@ -705,6 +713,7 @@ public class OrderController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{orderId}", method = RequestMethod.DELETE)
     @Transactional
+    @ApiOperation(value = "Deletes the specified order.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId) {
         orderRepo.deleteById(orderId);
@@ -716,6 +725,7 @@ public class OrderController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}/order-items/{itemId}", method = RequestMethod.DELETE)
     @Transactional
+    @ApiOperation(value = "Deletes the specified order item.")
     public @ResponseBody void deleteItem(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
@@ -726,7 +736,6 @@ public class OrderController {
 
         orderRepo.deleteItem(orderId, orderItemId);
     }
-
 
     protected List<EntityModel<Order>> addLinks(final String tenantId, final List<Order> list) {
         ArrayList<EntityModel<Order>> entities = new ArrayList<EntityModel<Order>>();

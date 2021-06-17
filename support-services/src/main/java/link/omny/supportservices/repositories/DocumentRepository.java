@@ -20,7 +20,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.supportservices.model.Document;
 
-@RepositoryRestResource(path = "documents")
+@RepositoryRestResource(exported = false)
 public interface DocumentRepository extends CrudRepository<Document, Long> {
 
 }

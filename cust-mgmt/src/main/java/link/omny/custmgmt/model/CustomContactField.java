@@ -18,10 +18,7 @@ package link.omny.custmgmt.model;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import link.omny.supportservices.model.CustomField;
 import lombok.Data;
@@ -31,16 +28,12 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "OL_CONTACT_CUSTOM")
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = { "contact" })
+@EqualsAndHashCode(callSuper = true)
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
 public class CustomContactField extends CustomField {
 
     private static final long serialVersionUID = -7683896817261973079L;
-
-    @ManyToOne(optional = false, targetEntity = Contact.class)
-    @JsonBackReference
-    private Contact contact;
 
     public CustomContactField(String key, Object value) {
         super(key, value);

@@ -17,6 +17,7 @@ package link.omny.custmgmt.repositories;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -27,10 +28,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.ContactExcept;
 
-@RepositoryRestResource(excerptProjection = ContactExcept.class, path = "contacts")
+@RepositoryRestResource(exported = false)
 public interface ContactRepository extends CrudRepository<Contact, Long> {
+
+    @Override
+    @EntityGraph("contactWithAll")
+    Optional<Contact> findById(Long id);
 
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId "
             + "AND (c.stage IS NULL OR c.stage != 'deleted') ORDER BY c.id ASC")
@@ -118,7 +122,6 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
             @Param("tenantId") String tenantId);
 
     @Query("SELECT c FROM Contact c INNER JOIN c.activities a WHERE a.occurred > :sinceDate AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId ORDER BY a.occurred DESC")
-    @EntityGraph("contactWithActivities")
     List<Contact> findActiveForTenant(@Param("sinceDate") Date sinceDate,
             @Param("tenantId") String tenantId);
 

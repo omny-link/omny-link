@@ -113,9 +113,7 @@ public class ContactTest {
         c2.setCustomField(new CustomContactField("favouriteColour", "orange"));
 
         CustomContactField colour1 = c1.getCustomFields().iterator().next();
-        colour1.setContact(c1);
         colour1.hashCode();
-        c2.getCustomFields().iterator().next().setContact(c2);
 
         c1.hashCode();
         assertEquals(c1, c2);

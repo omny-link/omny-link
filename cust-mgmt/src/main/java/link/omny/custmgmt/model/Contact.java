@@ -36,6 +36,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -51,6 +54,8 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -76,6 +81,21 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Entity
+@NamedEntityGraph(name = "contactWithAll",
+    attributeNodes = {
+            @NamedAttributeNode("activities"),
+            @NamedAttributeNode(value = "account", subgraph = "account-subgraph"),
+            @NamedAttributeNode("customFields"),
+            @NamedAttributeNode("notes"),
+            @NamedAttributeNode("documents")
+    },
+    subgraphs = {
+            @NamedSubgraph(
+                    name = "account-subgraph",
+                    attributeNodes = { @NamedAttributeNode("customFields") }
+            )
+    }
+)
 @Table(name = "OL_CONTACT")
 @Data
 @Accessors(chain = true)
@@ -98,7 +118,6 @@ public class Contact implements Serializable {
     @JsonView({ ContactViews.Detailed.class })
     private Long id;
 
-    // @NotNull
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
     @Column(name = "first_name")
@@ -170,7 +189,7 @@ public class Contact implements Serializable {
     @Pattern(regexp = "\\+?[0-9, \\-()]{0,16}")
     @Size(max = 16)
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "phone2")
     private String phone2;
 
@@ -353,15 +372,17 @@ public class Contact implements Serializable {
      * rigidly enforced as exceptions such as data migration do exist.
      */
     @Temporal(TemporalType.TIMESTAMP)
-    // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "first_contact", updatable = false)
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
+    @CreatedDate
+    // Since this is SQL 92 it should be portable
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "first_contact", updatable = false)
     private Date firstContact;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
+    @LastModifiedDate
     @Column(name = "last_updated")
     private Date lastUpdated;
 
@@ -372,11 +393,11 @@ public class Contact implements Serializable {
     @Column(name = "tenant_id", nullable = false)
     private String tenantId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "contact", targetEntity = CustomContactField.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, /*mappedBy = "contact", */targetEntity = CustomContactField.class)
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     @JsonManagedReference
-    @JsonView({ ContactViews.Detailed.class })
+//    @JsonView({ ContactViews.Detailed.class })
     private Set<CustomContactField> customFields;
 
     public Set<CustomContactField> getCustomFields() {
@@ -403,7 +424,6 @@ public class Contact implements Serializable {
     }
 
     public Contact addCustomField(CustomContactField customField) {
-        customField.setContact(this);
         return setCustomField(customField);
     }
 
@@ -417,7 +437,6 @@ public class Contact implements Serializable {
             }
         }
         if (!found) {
-            newField.setContact(this);
             getCustomFields().add(newField);
         }
         return this;
@@ -439,27 +458,20 @@ public class Contact implements Serializable {
                 : getAccount().getId();
     }
 
-    @JsonProperty
-    @JsonView({ ContactViews.Summary.class })
-    public String getSelfRef() {
-        return id == null ? null
-                : String.format("/%1$s/contacts/%2$d", tenantId, id);
-    }
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "contact_id")
+    @JsonView({ ContactViews.Detailed.class })
+    private Set<Note> notes;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "contact_id")
     @JsonView({ ContactViews.Detailed.class })
-    private List<Note> notes;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "contact_id")
-    @JsonView({ ContactViews.Detailed.class })
-    private List<Activity> activities;
+    private Set<Activity> activities;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "contact_id")
     @JsonView({ ContactViews.Detailed.class })
-    private List<Document> documents;
+    private Set<Document> documents;
 
     @Transient
     private Date now;
@@ -476,12 +488,12 @@ public class Contact implements Serializable {
         setTenantId(tenantId);
     }
 
-    public List<Activity> getActivities() {
-        if (activities == null) {
-            activities = new ArrayList<Activity>();
-        }
-        return activities;
-    }
+//    public List<Activity> getActivities() {
+//        if (activities == null) {
+//            activities = new ArrayList<Activity>();
+//        }
+//        return activities;
+//    }
 
     public String getFirstName() {
         return firstName == null ? DEFAULT_FIRST_NAME : firstName;
@@ -506,7 +518,7 @@ public class Contact implements Serializable {
      * failures in 122 sample from GS import).
      */
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     public void setFullName(String name) {
         String fName;
         try {
@@ -535,14 +547,16 @@ public class Contact implements Serializable {
         }
     }
 
+    @JsonProperty
+    @JsonView({ ContactViews.Summary.class })
     public String getFullName() {
         if (firstName == null && lastName == null) {
             return String.format("Unknown %1$s", uuid);
         } else {
             String fn = firstName == null ? "" : firstName;
             String ln = lastName == null ? "" : lastName;
-            LOGGER.debug("  have firstName: " + fn);
-            LOGGER.debug("  have lastName: " + ln);
+            LOGGER.debug("  have firstName: {}", fn);
+            LOGGER.debug("  have lastName: {}", ln);
             return String.format("%1$s %2$s", fn, ln).trim();
         }
     }
@@ -560,16 +574,23 @@ public class Contact implements Serializable {
                 getLastName().charAt(0));
     }
 
-    public List<Note> getNotes() {
+    public Set<Activity> getActivities() {
+        if (activities == null) {
+            activities = new HashSet<Activity>();
+        }
+        return activities;
+    }
+
+    public Set<Note> getNotes() {
         if (notes == null) {
-            notes = new ArrayList<Note>();
+            notes = new HashSet<Note>();
         }
         return notes;
     }
 
-    public List<Document> getDocuments() {
+    public Set<Document> getDocuments() {
         if (documents == null) {
-            documents = new ArrayList<Document>();
+            documents = new HashSet<Document>();
         }
         return documents;
     }

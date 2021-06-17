@@ -87,21 +87,24 @@ describe("Contact management", function() {
   
   it("fetches updated contacts and checks the newly added one is correct", function(done) {
     $rh.getJSON('/'+tenantId+'/contacts/',  function( data ) {
-      contacts = data;
       data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
-      
+      contacts = data;
+
       expect(contacts.length).toEqual(contactsBefore.length+1);
-      //console.log('latest contact: '+JSON.stringify(contacts[0]));
       expect($rh.uri(contacts[0])).toEqual($rh.uri(contact));
       expect(contacts[0].firstName).toEqual(contact.firstName);
       expect(contacts[0].lastName).toEqual(contact.lastName);
+      expect(contacts[0].fullName).toEqual(contact.firstName+ ' ' + contact.lastName);
       expect(contacts[0].email).toEqual(contact.email);
+
+      expect(contacts[0].links).toBeDefined();
+      expect(contacts[0].links[0].href).toMatch(/.*\/contacts\/[0-9]*/);
+      expect(contacts[0].links.length).toEqual(1);
 
       done();
     });
   });
 
-  // TODO add test for POST form as used by the client
   it("adds a note to the contact", function(done) {
     $rh.ajax({
       url: $rh.tenantUri(contact)+'/notes/',
@@ -117,7 +120,6 @@ describe("Contact management", function() {
     });
   });
 
-  // TODO add test for POST form as used by the client
   it("adds a document link to the contact", function(done) {
     $rh.ajax({
       url: $rh.tenantUri(contact)+'/documents/',
@@ -163,8 +165,8 @@ describe("Contact management", function() {
 
   it("updates the new contact", function(done) {
     contact.phone1 = '+44 7777 123456';
-    contact.phone2 = '+44 20 7123 4567';
-    contact.customFields.dateOfBirth = '31/12/1969';
+    contact.phone2 = '020 7123 4567';
+    contact.customFields.dateOfBirth = '31/10/1969';
     $rh.ajax({
       url: $rh.tenantUri(contact),
       type: 'PUT',
@@ -219,16 +221,23 @@ describe("Contact management", function() {
   });
 
   it("fetches updated contacts and checks the newly added one holds correct account information", function(done) {
-    $rh.getJSON('/'+tenantId+'/contacts/?projection=complete',  function( data ) {
+    $rh.getJSON('/'+tenantId+'/contacts/',  function( data ) {
       contacts = data;
       data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
       
       expect(contacts.length).toEqual(contactsBefore.length+1);
       expect($rh.localId(contacts[0])).toEqual($rh.localId(contact));
+      expect(contacts[0].links).toBeDefined();
+      expect(contacts[0].links.length).toEqual(2);
+
       expect(contacts[0].firstName).toEqual(contact.firstName);
       expect(contacts[0].lastName).toEqual(contact.lastName);
       expect(contacts[0].email).toEqual(contact.email);
+      expect(contacts[0].account).toBeDefined();
       expect(contacts[0].account.name).toEqual(account.name);
+
+      expect(contacts[0].links[0].href).toMatch(/.*\/contacts\/[0-9]*/);
+      expect(contacts[0].links[1].href).toMatch(/.*\/accounts\/[0-9]*/);
 
       done();
     });
@@ -236,12 +245,8 @@ describe("Contact management", function() {
 
   it("fetches complete contact inc. child entities and check all fields are correct", function(done) {
 	  var uri = $rh.tenantUri(contact);
-//	  var uri = $rh.uri(contact);
-    console.log('tenantUri: '+uri);
     expect(uri).toBeDefined();
     $rh.getJSON(uri, function( data ) {
-      console.log('  contact: '+JSON.stringify(data));
-      
       expect($rh.uri(data)).toEqual($rh.uri(contact));
       expect(data.firstName).toEqual(contact.firstName);
       expect(data.lastName).toEqual(contact.lastName);
@@ -253,15 +258,17 @@ describe("Contact management", function() {
       expect(data.customFields.dateOfBirth).toEqual(contact.customFields.dateOfBirth);
       
       expect(data.account.name).toEqual(account.name);
-      expect(data.account.firstContact).toBeDefined();
+      expect(data.account.id).toBeDefined();
 
       expect(data.activities.length).toEqual(3);
-      expect(data.activities[0].type).toEqual(activity.type);
-      expect(data.activities[0].content).toEqual(activity.content);
+      data.activities.sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
+
+      expect(data.activities[0].type).toEqual('LINK_ACCOUNT_TO_CONTACT');
+      expect(data.activities[0].content).toMatch(/Linked account [0-9]* to contact [0-9]*/);
       expect(data.activities[1].type).toEqual('TRANSITION_TO_STAGE');
       expect(data.activities[1].content).toEqual('From null to tested');
-      expect(data.activities[2].type).toEqual('LINK_ACCOUNT_TO_CONTACT');
-      expect(data.activities[2].content).toMatch(/Linked account [0-9]* to contact [0-9]*/);
+      expect(data.activities[2].type).toEqual(activity.type);
+      expect(data.activities[2].content).toEqual(activity.content);
 
       expect(data.notes.length).toEqual(1);
       expect(data.notes[0].author).toEqual(note.author);
@@ -285,20 +292,28 @@ describe("Contact management", function() {
       contentType: 'application/json',
       success: completeHandler = function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
-        done();
+        $rh.ajax({
+          url: $rh.tenantUri(account),
+          type: 'DELETE',
+          contentType: 'application/json',
+          success: completeHandler = function(data, textStatus, jqXHR) {
+            expect(jqXHR.status).toEqual(204);
+            done();
+          }
+        });
       }
     });
   });
   
   it("checks the data is the same as the baseline", function(done) {
-    $rh.getJSON('/'+tenantId+'/contacts/?projection=complete',  function( data ) {
+    $rh.getJSON('/'+tenantId+'/contacts/',  function( data ) {
       contacts = data;
       data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
       
       expect(contacts.length).toEqual(contactsBefore.length);
     });
     
-    $rh.getJSON('/'+tenantId+'/accounts/?projection=complete',  function(data, textStatus, jqXHR) {
+    $rh.getJSON('/'+tenantId+'/accounts/',  function(data, textStatus, jqXHR) {
       accounts = data;
       expect(jqXHR.status).toEqual(200);
 

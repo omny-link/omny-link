@@ -26,7 +26,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.catalog.model.Order;
 
-@RepositoryRestResource(path = "orders")
+@RepositoryRestResource(exported = false)
 public interface OrderRepository extends CrudRepository<Order, Long> {
 
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")

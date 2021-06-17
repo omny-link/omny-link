@@ -26,7 +26,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.catalog.model.StockItem;
 
-@RepositoryRestResource(path = "stock-items")
+@RepositoryRestResource(exported = false)
 public interface StockItemRepository extends CrudRepository<StockItem, Long> {
 
     StockItem findByName(@Param("name") String name);

@@ -38,8 +38,6 @@ import link.omny.custmgmt.Application;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomContactField;
-import link.omny.custmgmt.repositories.CustomContactFieldRepository;
-import link.omny.supportservices.model.CustomField;
 
 /**
  * @author Tim Stephenson
@@ -50,9 +48,6 @@ import link.omny.supportservices.model.CustomField;
 public class ContactAndAccountControllerTest {
 
     private static final String TENANT_ID = "test";
-
-    @Autowired
-    private CustomContactFieldRepository customContactRepo;
 
     @Autowired
     private ContactController contactController;
@@ -154,17 +149,6 @@ public class ContactAndAccountControllerTest {
 
         Contact contact2 = contactController.findById(TENANT_ID, contactId);
         assertNotNull(contact2.getFirstContact());
-        // TODO this should be null but is not
-        // assertNull(contact2.getLastUpdated());
-
-        List<CustomContactField> customFields = customContactRepo
-                .findByContactId(contactId);
-        for (CustomField field : customFields) {
-            if ("eyeColor".equals(field.getName())) {
-                assertEquals(contact.getCustomFieldValue("eyeColor"),
-                        field.getValue());
-            }
-        }
 
         // UPDATE CONTACT
         contact.setFirstName(contact.getFirstName() + "Updated");

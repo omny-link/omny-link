@@ -52,6 +52,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import link.omny.catalog.internal.CatalogCsvImporter;
 import link.omny.catalog.model.CustomStockItemField;
 import link.omny.catalog.model.MediaResource;
@@ -73,6 +75,7 @@ import link.omny.supportservices.model.Note;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/stock-items")
+@Api(tags = "Stock item API")
 public class StockItemController {
 
     private static final Logger LOGGER = LoggerFactory
@@ -137,6 +140,7 @@ public class StockItemController {
      * @return stock items for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieve stock items for the specified tenant")
     public @ResponseBody List<EntityModel<StockItem>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
