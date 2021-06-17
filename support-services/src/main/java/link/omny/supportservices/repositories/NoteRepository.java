@@ -20,7 +20,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.supportservices.model.Note;
 
-@RepositoryRestResource(path = "notes")
+@RepositoryRestResource(exported = false)
 public interface NoteRepository extends CrudRepository<Note, Long> {
 
 //    List<Note> findByContactId(@Param("contactId") Long contactId);

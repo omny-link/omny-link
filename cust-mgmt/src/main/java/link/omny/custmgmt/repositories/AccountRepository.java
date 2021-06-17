@@ -17,8 +17,10 @@ package link.omny.custmgmt.repositories;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -27,8 +29,12 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.custmgmt.model.Account;
 
-@RepositoryRestResource(path = "accounts")
+@RepositoryRestResource(exported = false)
 public interface AccountRepository extends CrudRepository<Account, Long> {
+
+    @Override
+    @EntityGraph(value = "accountWithAll")
+    Optional<Account> findById(Long id);
 
     @Query("SELECT a FROM Account a INNER JOIN a.customFields c WHERE (a.stage IS NULL OR a.stage != 'deleted') AND a.tenantId = :tenantId AND c.name='orgCode' AND c.value = :code ORDER BY a.lastUpdated DESC")
     Account findByCodeForTenant(@Param("code") String code, @Param("tenantId") String tenantId);

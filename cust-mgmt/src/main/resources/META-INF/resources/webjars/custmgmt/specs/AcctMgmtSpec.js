@@ -92,8 +92,7 @@ describe("Account management", function() {
       data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
       
       expect(accounts.length).toEqual(accountsBefore.length+1);
-      // returns /accounts/xxx rather than http://host/tenant/accounts/xxx
-      expect($rh.uri(account).endsWith($rh.uri(accounts[0])));
+      expect($rh.tenantUri(account).endsWith($rh.tenantUri(accounts[0])));
       expect(accounts[0].name).toEqual(account.name);
       expect(accounts[0].email).toEqual(account.email);
 
@@ -162,7 +161,7 @@ describe("Account management", function() {
   
   it("updates the new account", function(done) {
     account.phone1 = '+44 7777 123456';
-    account.phone2 = '+44 7777 123456';
+    account.phone2 = '020 7123 4567';
     account.customFields.lastAccountingDate = '31/12/2017';
     $rh.ajax({
       url: $rh.tenantUri(account),
@@ -190,34 +189,33 @@ describe("Account management", function() {
     });
   });
   
-//  it("adds a contact to the new account", function(done) {
-////    contact.accountId = $rh.localId(account);
-//    $rh.ajax({
-//      url: '/'+tenantId+'/contacts/',
-//      type: 'POST',
-//      contentType: 'application/json',
-//      data: JSON.stringify(contact),
-//      success: completeHandler = function(data, textStatus, jqXHR) {
-//        // NOTE this is URI not tenantUri
-//        var location = jqXHR.getResponseHeader('Location');
-//        expect(location).toMatch(/\/contacts\/[0-9]/);
-//        expect(jqXHR.status).toEqual(201);
-//        contact.links = [ { rel: 'self', href: location } ];
-//        done();
-//      }
-//    });
-//  });
+  it("adds a contact to the new account", function(done) {
+    contact.accountId = $rh.localId(account);
+    $rh.ajax({
+      url: '/'+tenantId+'/contacts/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(contact),
+      success: completeHandler = function(data, textStatus, jqXHR) {
+        var location = jqXHR.getResponseHeader('Location');
+        expect(location).toMatch(/\/contacts\/[0-9]/);
+        expect(jqXHR.status).toEqual(201);
+        contact.links = [ { rel: 'self', href: location } ];
+        done();
+      }
+    });
+  });
   
-//  it("fetches contacts for account and checks the newly added one holds correct information", function(done) {
-//    $rh.getJSON('/'+tenantId+'/contacts/findByAccountId?accountId='+$rh.localId(account),  function( data ) {
-//      data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
-//      
-//      expect(data.length).toEqual(1);
-//      expect(data[0].firstName).toEqual(contact.firstName);
-//
-//      done();
-//    });
-//  });
+  it("fetches contacts for account and checks the newly added one holds correct information", function(done) {
+    $rh.getJSON('/'+tenantId+'/contacts/findByAccountId?accountId='+$rh.localId(account),  function( data ) {
+      data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
+      
+      expect(data.length).toEqual(1);
+      expect(data[0].firstName).toEqual(contact.firstName);
+
+      done();
+    });
+  });
   
   it("fetches complete account inc. child entities and check all fields are correct", function(done) {
     $rh.getJSON($rh.tenantUri(account),  function( data ) {
@@ -232,13 +230,14 @@ describe("Account management", function() {
       expect(data.firstContact).toBeDefined();
       expect(data.customFields).toBeDefined();
       expect(data.customFields.lastAccountingDate).toEqual(account.customFields.lastAccountingDate);
-      
-      expect(data.activities.length).toEqual(1);
-      expect(data.activities[0].type).toEqual(activity.type);
-      expect(data.activities[0].content).toEqual(activity.content);
-// Not yet implemented
-//      expect(data.activities[1].type).toEqual('TRANSITION_TO_STAGE');
-//      expect(data.activities[1].content).toEqual('From null to tested');
+
+      expect(data.activities.length).toEqual(2);
+      data.activities.sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
+
+      expect(data.activities[0].type).toEqual('TRANSITION_TO_STAGE');
+      expect(data.activities[0].content).toEqual('From null to tested');
+      expect(data.activities[1].type).toEqual(activity.type);
+      expect(data.activities[1].content).toEqual(activity.content);
       
       expect(data.notes.length).toEqual(1);
       expect(data.notes[0].author).toEqual(note.author);
@@ -255,17 +254,17 @@ describe("Account management", function() {
     });
   });
 
-//  it("deletes the added contact", function(done) {
-//    $rh.ajax({
-//      url: $rh.tenantUri(contact),
-//      type: 'DELETE',
-//      contentType: 'application/json',
-//      success: completeHandler = function(data, textStatus, jqXHR) {
-//        expect(jqXHR.status).toEqual(204);
-//        done();
-//      }
-//    });
-//  });
+  it("deletes the added contact", function(done) {
+    $rh.ajax({
+      url: $rh.tenantUri(contact),
+      type: 'DELETE',
+      contentType: 'application/json',
+      success: completeHandler = function(data, textStatus, jqXHR) {
+        expect(jqXHR.status).toEqual(204);
+        done();
+      }
+    });
+  });
   
   it("deletes the added account", function(done) {
     $rh.ajax({
@@ -279,22 +278,22 @@ describe("Account management", function() {
     });
   });
 
-//  it("checks the data is the same as the baseline", function(done) {
-//    $rh.getJSON('/'+tenantId+'/contacts/',  function( data ) {
-//      contacts = data;
-//      data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
-//      
-//      expect(contacts.length).toEqual(contactsBefore.length);
-//    });
-//    
-//    $rh.getJSON('/'+tenantId+'/accounts/',  function(data, textStatus, jqXHR) {
-//      accounts = data;
-//      expect(jqXHR.status).toEqual(200);
-//
-//      expect(accounts.length).toEqual(accountsBefore.length);
-//      done();
-//    });
-//  });
+  it("checks the data is the same as the baseline", function(done) {
+    $rh.getJSON('/'+tenantId+'/contacts/',  function( data ) {
+      contacts = data;
+      data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
+      
+      expect(contacts.length).toEqual(contactsBefore.length);
+    });
+    
+    $rh.getJSON('/'+tenantId+'/accounts/',  function(data, textStatus, jqXHR) {
+      accounts = data;
+      expect(jqXHR.status).toEqual(200);
+
+      expect(accounts.length).toEqual(accountsBefore.length);
+      done();
+    });
+  });
   
   afterEach(function() {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;

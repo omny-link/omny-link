@@ -17,7 +17,6 @@ package link.omny.custmgmt.model;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +30,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -44,6 +45,8 @@ import javax.validation.constraints.Size;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -64,10 +67,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Entity
+@NamedEntityGraph(name = "accountWithAll",
+    attributeNodes = {
+        @NamedAttributeNode("activities"),
+        @NamedAttributeNode("contact"),
+        @NamedAttributeNode("customFields"),
+        @NamedAttributeNode("notes"),
+        @NamedAttributeNode("documents")
+    }
+)
 @Table(name = "OL_ACCOUNT")
 @Data
+@Accessors(chain = true)
 @EqualsAndHashCode(exclude = { "contact" })
 @AllArgsConstructor
 @NoArgsConstructor
@@ -84,7 +98,7 @@ public class Account implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
-    @JsonView( { AccountViews.Pair.class } )
+    @JsonView( { AccountViews.Pair.class, ContactViews.Summary.class } )
     private Long id;
 
     @NotNull
@@ -151,7 +165,7 @@ public class Account implements Serializable {
 
     @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
     @JsonProperty
-    @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
+    @JsonView( { AccountViews.Summary.class, ContactViews.Summary.class } )
     @Column(name = "phone2")
     private String phone2;
 
@@ -285,15 +299,17 @@ public class Account implements Serializable {
     private String tenantId;
 
     @Temporal(TemporalType.TIMESTAMP)
-    // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "first_contact", updatable = false)
     @JsonProperty
     @JsonView( { AccountViews.Summary.class } )
+    @CreatedDate
+    // Since this is SQL 92 it should be portable
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "first_contact", updatable = false)
     private Date firstContact;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
     @JsonView( { AccountViews.Summary.class } )
+    @LastModifiedDate
     @Column(name = "last_updated")
     private Date lastUpdated;
 
@@ -310,13 +326,13 @@ public class Account implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "account_id")
-    @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
-    private List<Note> notes;
+    @JsonView({ AccountViews.Detailed.class })
+    private Set<Note> notes;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
     @JsonView({ AccountViews.Detailed.class })
-    private List<Activity> activities;
+    private Set<Activity> activities;
 
     @Transient
     private List<String> customHeadings;
@@ -324,7 +340,7 @@ public class Account implements Serializable {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
     @JsonView({ AccountViews.Detailed.class })
-    private List<Document> documents;
+    private Set<Document> documents;
 
     public Set<CustomAccountField> getCustomFields() {
         if (customFields == null) {
@@ -423,16 +439,23 @@ public class Account implements Serializable {
         return sb.toString();
     }
 
-    public List<Note> getNotes() {
+    public Set<Activity> getActivities() {
+        if (activities == null) {
+            activities = new HashSet<Activity>();
+        }
+        return activities;
+    }
+
+    public Set<Note> getNotes() {
         if (notes == null) {
-            notes = new ArrayList<Note>();
+            notes = new HashSet<Note>();
         }
         return notes;
     }
 
-    public List<Document> getDocuments() {
+    public Set<Document> getDocuments() {
         if (documents == null) {
-            documents = new ArrayList<Document>();
+            documents = new HashSet<Document>();
         }
         return documents;
     }

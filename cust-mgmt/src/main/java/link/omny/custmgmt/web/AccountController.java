@@ -40,7 +40,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,16 +54,20 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Activity;
 import link.omny.custmgmt.model.ActivityType;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomAccountField;
+import link.omny.custmgmt.model.views.AccountViews;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
@@ -75,6 +82,7 @@ import link.omny.supportservices.model.Note;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}")
+@Api(tags = "Account API")
 public class AccountController {
 
     private static final Logger LOGGER = LoggerFactory
@@ -93,8 +101,8 @@ public class AccountController {
      * Add activity to the specified account.
      * @return the created activity.
      */
-    @RequestMapping(value = "/accounts/{accountId}/activities", method = RequestMethod.POST)
-    @Transactional
+    @PostMapping(value = "/accounts/{accountId}/activities")
+    @ApiOperation(value = "Add an activity to the specified account.")
     public @ResponseBody ResponseEntity<Activity> addActivity(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Activity activity) {
@@ -102,7 +110,8 @@ public class AccountController {
         account.getActivities().add(activity);
         account.setLastUpdated(new Date());
         accountRepo.save(account);
-        activity = account.getActivities().get(account.getActivities().size()-1);
+        activity = account.getActivities().stream()
+                .reduce((first, second) -> second).orElse(null);
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -112,20 +121,6 @@ public class AccountController {
         headers.setLocation(uri);
 
         return new ResponseEntity<Activity>(activity, headers, HttpStatus.CREATED);
-    }
-
-    /**
-     * Add an activity to the specified account.
-     * @return the created activity.
-     */
-    @RequestMapping(value = "/accounts/{accountId}/activities", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody ResponseEntity<Activity> addActivity(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("accountId") Long accountId,
-            @RequestParam("type") String type,
-            @RequestParam("content") String content) {
-        return addActivity(tenantId, accountId,
-                new Activity(ActivityType.valueOf(type), new Date(), content));
     }
 
     /**
@@ -245,7 +240,9 @@ public class AccountController {
     /**
      * @return Account id-name pairs for a specific tenant.
      */
-    @RequestMapping(value = "/account-pairs/", method = RequestMethod.GET)
+    @GetMapping(value = "/account-pairs/")
+    @JsonView(value = AccountViews.Pair.class)
+    @ApiOperation(value = "Retrieve account id-name pairs for a specific tenant.")
     public @ResponseBody List<Account> listPairForTenant(
             @PathVariable("tenantId") String tenantId) {
         LOGGER.info("List account id-name pairs for tenant {}", tenantId);
@@ -263,7 +260,8 @@ public class AccountController {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "/accounts/", method = RequestMethod.POST)
+    @PostMapping(value = "/accounts/")
+    @ApiOperation(value = "Create a new account.")
     public @ResponseBody ResponseEntity<?> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Account account) {
@@ -310,7 +308,6 @@ public class AccountController {
         } catch (NumberFormatException e) {
             account = accountRepo.findByCodeForTenant(idOrCode, tenantId);
         }
-        account.getActivities(); // force load
 
         return addLinks(tenantId, account);
     }
@@ -361,15 +358,16 @@ public class AccountController {
      * Update an existing account.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/accounts/{id}", method = RequestMethod.PUT, consumes = "application/json")
+    @PutMapping(value = "/accounts/{id}", consumes = "application/json")
+    @ApiOperation(value = "Update an existing account.")
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
             @RequestBody Account updatedAccount) {
         Account account = findById(tenantId, accountId);
 
-        BeanUtils.copyProperties(updatedAccount, account, "id", "notes", "documents");
+        BeanUtils.copyProperties(updatedAccount, account, "id", "activities", "documents", "notes");
         account.setTenantId(tenantId);
-        accountRepo.save(account);
+        account = accountRepo.save(account);
     }
 
     /**
@@ -377,7 +375,7 @@ public class AccountController {
      * @throws IOException
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/accounts/{id}/customFields/", method = RequestMethod.POST, consumes = "application/json")
+    @PostMapping(value = "/accounts/{id}/customFields/", consumes = "application/json")
     public @ResponseBody void updateCustomFields(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
             @RequestBody Object customFields) throws IOException {
@@ -397,7 +395,9 @@ public class AccountController {
                         new CustomAccountField((String)entry.getKey(), entry.getValue().toString()));
             }
         } else {
-            String msg = String.format("Attempt to set custom fields from %1$s is not supported", customFields.getClass().getName());
+            String msg = String.format(
+                    "Attempt to set custom fields from %1$s is not supported",
+                    customFields.getClass().getName());
             LOGGER.error(msg);
             throw new IllegalArgumentException(msg);
         }
@@ -411,7 +411,7 @@ public class AccountController {
      * @param tenantId
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/accounts/{accountId}/alerts/", method = RequestMethod.POST)
+    @PostMapping(value = "/accounts/{accountId}/alerts/")
     public @ResponseBody void setAlerts(@PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestBody String alerts) {
@@ -425,7 +425,7 @@ public class AccountController {
      * Change the sale stage the account is at.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/accounts/{accountId}/stage/{stage}", method = RequestMethod.POST)
+    @PostMapping(value = "/accounts/{accountId}/stage/{stage}")
     public @ResponseBody ResponseEntity<Account> setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
@@ -453,7 +453,7 @@ public class AccountController {
      * @param tenantId
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/accounts/{accountId}/tags/", method = RequestMethod.POST)
+    @PostMapping(value = "/accounts/{accountId}/tags/")
     public @ResponseBody void setTags(@PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestBody String tags) {
@@ -466,7 +466,8 @@ public class AccountController {
     /**
      * Add a document to the specified account.
      */
-    @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.PUT)
+    @PostMapping(value = "/accounts/{accountId}/documents")
+    @ApiOperation(value = "Add a document to the specified account.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Document doc) {
@@ -474,7 +475,8 @@ public class AccountController {
          account.getDocuments().add(doc);
          account.setLastUpdated(new Date());
          accountRepo.save(account);
-         doc = account.getDocuments().get(account.getDocuments().size()-1);
+         doc = account.getDocuments().stream()
+                 .reduce((first, second) -> second).orElse(null);
 
          HttpHeaders headers = new HttpHeaders();
          URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -487,29 +489,11 @@ public class AccountController {
     }
 
     /**
-     * Add a document to the specified account.
-     *      *
-     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
-     * @return
-     *
-     * @return The document created.
-     */
-    @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.POST)
-    public @ResponseBody Document addDocument(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("accountId") Long accountId,
-            @RequestParam("author") String author,
-            @RequestParam("name") String name,
-            @RequestParam("url") String url) {
-
-        return addDocument(tenantId, accountId, new Document(author, name, url)).getBody();
-    }
-
-    /**
      * Add a note to the specified account.
      * @return the created note.
      */
-    @RequestMapping(value = "/accounts/{accountId}/notes", method = RequestMethod.PUT)
+    @PostMapping(value = "/accounts/{accountId}/notes")
+    @ApiOperation(value = "Add a note to the specified account.")
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Note note) {
@@ -517,7 +501,8 @@ public class AccountController {
         account.getNotes().add(note);
         account.setLastUpdated(new Date());
         accountRepo.save(account);
-        note = account.getNotes().get(account.getNotes().size()-1);
+        note = account.getNotes().stream()
+                .reduce((first, second) -> second).orElse(null);
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -527,23 +512,6 @@ public class AccountController {
         headers.setLocation(uri);
 
         return new ResponseEntity<Note>(note, headers, HttpStatus.CREATED);
-    }
-
-    /**
-     * Add a note to the specified account from its parts.
-     *
-     * <p>This is just a convenience method, see {@link #addNote(String, Long, Note)}
-     *
-     * @return The note created.
-     */
-    @RequestMapping(value = "/accounts/{accountId}/notes", method = RequestMethod.POST)
-    public @ResponseBody Note addNote(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("accountId") Long accountId,
-            @RequestParam("author") String author,
-            @RequestParam("favorite") boolean favorite,
-            @RequestParam("content") String content) {
-        return addNote(tenantId, accountId, new Note(author, content, favorite)).getBody();
     }
 
     /**

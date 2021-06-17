@@ -39,19 +39,25 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import link.omny.catalog.CatalogException;
 import link.omny.catalog.CatalogObjectNotFoundException;
 import link.omny.catalog.model.CustomFeedbackField;
@@ -76,8 +82,9 @@ import lombok.Data;
  *
  * @author Tim Stephenson
  */
-@Controller
+@RestController
 @RequestMapping(value = "/{tenantId}/orders")
+@Api(tags = "Order API")
 public class OrderController {
 
     private static final Logger LOGGER = LoggerFactory
@@ -253,7 +260,8 @@ public class OrderController {
     /**
      * @return orders owned by the specified contact.
      */
-    @RequestMapping(value = "/findByContact/{contactId}", method = RequestMethod.GET)
+    @GetMapping(value = "/findByContact/{contactId}")
+    @ApiOperation(value = "Find orders for a contact")
     public @ResponseBody List<EntityModel<Order>> listForContact(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
@@ -265,7 +273,8 @@ public class OrderController {
     /**
      * @return orders owned by the specified contact(s).
      */
-    @RequestMapping(value = "/findByContacts/{contactIds}", method = RequestMethod.GET)
+    @GetMapping(value = "/findByContacts/{contactIds}")
+    @ApiOperation(value = "Find orders for a number of contacts")
     public @ResponseBody List<EntityModel<Order>> listForContacts(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactIds") Long[] contactIds,
@@ -338,7 +347,8 @@ public class OrderController {
      * @return the created order.
      */
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @PostMapping(value = "/")
+    @ApiOperation(value = "Create a new order.")
     public @ResponseBody ResponseEntity<EntityModel<Order>> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Order order) {
@@ -399,7 +409,8 @@ public class OrderController {
      * Update an existing order.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @PutMapping(value = "/{id}", consumes = { "application/json" })
+    @ApiOperation(value = "Update an existing order")
     @Transactional
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
@@ -569,7 +580,7 @@ public class OrderController {
 
     /**
      * Update an existing order with new feedback.
-     * @return
+     * @return created feedback object.
      */
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/{id}/feedback", method = RequestMethod.POST, consumes = { "application/json" })
@@ -629,10 +640,11 @@ public class OrderController {
     }
 
     /**
-     * Update an existing order.
+     * Update an existing order item.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}/order-items/{itemId}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @PutMapping(value = "/{id}/order-items/{itemId}", consumes = { "application/json" })
+    @ApiOperation(value = "Update an existing order item")
     public @ResponseBody void updateOrderItem(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
@@ -692,6 +704,7 @@ public class OrderController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{orderId}", method = RequestMethod.DELETE)
     @Transactional
+    @ApiOperation(value = "Deletes the specified order.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId) {
         orderRepo.deleteById(orderId);
@@ -703,6 +716,7 @@ public class OrderController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}/order-items/{itemId}", method = RequestMethod.DELETE)
     @Transactional
+    @ApiOperation(value = "Deletes the specified order item.")
     public @ResponseBody void deleteItem(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
@@ -713,7 +727,6 @@ public class OrderController {
 
         orderRepo.deleteItem(orderId, orderItemId);
     }
-
 
     protected List<EntityModel<Order>> addLinks(final String tenantId, final List<Order> list) {
         ArrayList<EntityModel<Order>> entities = new ArrayList<EntityModel<Order>>();

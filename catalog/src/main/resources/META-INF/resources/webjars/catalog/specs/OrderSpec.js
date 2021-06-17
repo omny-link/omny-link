@@ -70,7 +70,6 @@ describe("Product catalogue", function() {
       contentType: 'application/json',
       data: JSON.stringify(order),
       success: function(data, textStatus, jqXHR) {
-        // NOTE this is URI not tenantUri
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/\/orders\/[0-9]/);
         expect(jqXHR.status).toEqual(201);

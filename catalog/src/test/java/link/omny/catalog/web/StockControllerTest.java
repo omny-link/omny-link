@@ -18,7 +18,6 @@ package link.omny.catalog.web;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -108,9 +107,7 @@ public class StockControllerTest {
     }
 
     private String getRef(StockItem item) {
-        return methodOn(StockItemController.class)
-                .findEntityById(TENANT_ID, item.getId().toString())
-                .getLink("self").get().getHref();
+        return String.format("/%1$s/stock-items/%2$d", TENANT_ID, item.getId());
     }
 
     protected void update(StockCategory category) {

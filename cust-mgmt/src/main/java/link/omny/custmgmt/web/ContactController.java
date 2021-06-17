@@ -41,8 +41,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -56,6 +58,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import link.omny.custmgmt.internal.CsvImporter;
 import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.model.Account;
@@ -79,6 +83,7 @@ import link.omny.supportservices.model.Note;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/contacts")
+@Api(tags = "Contact API")
 public class ContactController {
 
     static final Logger LOGGER = LoggerFactory
@@ -235,12 +240,13 @@ public class ContactController {
     }
 
     /**
-     * Return just the contacts for a specific tenant.
+     * Return the contacts for a specific tenant.
      *
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
-//    @JsonView(ContactViews.Summary.class)
+    @GetMapping(value = "/", produces = "application/json")
+    @JsonView(ContactViews.Summary.class)
+    @ApiOperation(value = "Retrieves the contacts for a specific tenant.")
     public @ResponseBody List<EntityModel<Contact>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -284,30 +290,6 @@ public class ContactController {
         }
         LOGGER.info("Found {} contacts", list.size());
         return list;
-    }
-
-    /**
-     * Return just the 'mailable' contacts for a specific tenant.
-     *
-     * @return contacts for that tenant.
-     */
-    @RequestMapping(value = "/emailable", method = RequestMethod.GET)
-    @JsonView(ContactViews.Summary.class)
-    public @ResponseBody List<EntityModel<Contact>> listMailableForTenant(
-            @PathVariable("tenantId") String tenantId,
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info("List emailable contacts for tenant {}", tenantId);
-
-        List<Contact> list;
-        if (limit == null) {
-            list = contactRepo.findAllEmailableForTenant(tenantId);
-        } else {
-            Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
-            list = contactRepo.findEmailablePageForTenant(tenantId, pageable);
-        }
-        LOGGER.info("Found {} contacts", list.size());
-        return addLinks(tenantId, list);
     }
 
     /**
@@ -413,12 +395,15 @@ public class ContactController {
      *
      * @return the contact with this id.
      */
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/{id}")
+    @JsonView(ContactViews.Detailed.class)
+    @ApiOperation(value = "Return the specified contact.")
     public @ResponseBody EntityModel<Contact> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long id) {
         LOGGER.debug("Find contact for id {}", id);
-        return addLinks(tenantId, findById(tenantId, id));
+        Contact findById = findById(tenantId, id);
+        return addLinks(tenantId, findById);
     }
 
     /**
@@ -426,15 +411,15 @@ public class ContactController {
      *
      * @return contacts matching that account.
      */
-    @RequestMapping(value = "/findByAccountId", method = RequestMethod.GET)
-    @Transactional
+    @GetMapping(value = "/findByAccountId")
+    @JsonView(ContactViews.Summary.class)
     public @ResponseBody List<EntityModel<Contact>> findByAccountId(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("accountId") String accountId) {
         LOGGER.debug("Find contact for account {}", accountId);
 
-        return addLinks(tenantId,
-                contactRepo.findByAccountId(Long.parseLong(accountId), tenantId));
+        return addLinks(tenantId, contactRepo
+                .findByAccountId(Long.parseLong(accountId), tenantId));
     }
 
     /**
@@ -529,34 +514,32 @@ public class ContactController {
      * @return
      * @throws URISyntaxException
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "/", method = RequestMethod.POST)
-    public @ResponseBody ResponseEntity<EntityModel<Contact>> create(
+    @PostMapping(value = "/")
+    @Transactional
+    @ApiOperation(value = "Create a new contact.")
+    public @ResponseBody ResponseEntity<Void> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Contact contact) {
         contact.setTenantId(tenantId);
 
-        if (contact.getAccountId() != null) {
-            contact.setAccount(accountSvc.findById(tenantId, contact.getAccountId()));
-        }
-        for (CustomContactField field : contact.getCustomFields()) {
-            field.setContact(contact);
-        }
         EntityModel<Contact> entity = addLinks(tenantId, contactRepo.save(contact));
         LOGGER.debug("Created contact {}", entity.getLink("self"));
-
+        if (contact.getAccountId() != null) {
+            setAccount(tenantId, contact.getId(), contact.getAccountId());
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(entity.getLink("self").get().toUri());
 
-        return new ResponseEntity(contact, headers, HttpStatus.CREATED);
+        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
     /**
      * Update an existing contact.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @PutMapping(value = "/{id}", consumes = { "application/json" })
+    @ApiOperation(value = "Update an existing contact.")
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long contactId,
             @RequestBody Contact updatedContact) {
@@ -580,7 +563,7 @@ public class ContactController {
         }
         contact.setTenantId(tenantId);
         contact.setLastUpdated(new Date());
-        contactRepo.save(contact);
+        contact = contactRepo.save(contact);
 
         // For some reason contact never has account deserialised even though it
         // is sent by browser
@@ -593,23 +576,23 @@ public class ContactController {
             accountRepo.save(account);
         }
     }
+
     /**
      * Delete an existing contact.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = { "application/json" })
+    @ApiOperation(value = "Deletes the specified contact.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long contactId) {
-        Contact contact = findById(tenantId, contactId);
-
-        contactRepo.delete(contact);
+        contactRepo.deleteById(contactId);
     }
 
     /**
      * Add a document to the specified contact.
      */
     @RequestMapping(value = "/{contactId}/documents", method = RequestMethod.POST)
-    @Transactional
+    @ApiOperation(value = "Add a document to the specified contact.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId, @RequestBody Document doc) {
@@ -617,7 +600,8 @@ public class ContactController {
          contact.getDocuments().add(doc);
          contact.setLastUpdated(new Date());
          contactRepo.save(contact);
-         doc = contact.getDocuments().get(contact.getDocuments().size()-1);
+         doc = contact.getDocuments().stream()
+                 .reduce((first, second) -> second).orElse(null);
 
          HttpHeaders headers = new HttpHeaders();
          URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -630,30 +614,11 @@ public class ContactController {
     }
 
     /**
-     * Add a document to the specified contact.
-     *      *
-     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
-     * @return
-     *
-     * @return The document created.
-     */
-    @RequestMapping(value = "/{contactId}/documents", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody Document addDocument(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId,
-            @RequestParam("author") String author,
-            @RequestParam("name") String name,
-            @RequestParam("url") String url) {
-
-        return addDocument(tenantId, contactId, new Document(author, name, url)).getBody();
-    }
-
-    /**
      * Add a note to the specified contact.
      * @return the created note.
      */
-    @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.POST)
-    @Transactional
+    @PostMapping(value = "/{contactId}/notes")
+    @ApiOperation(value = "Add a note to the specified contact.")
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId, @RequestBody Note note) {
@@ -661,7 +626,9 @@ public class ContactController {
         contact.getNotes().add(note);
         contact.setLastUpdated(new Date());
         contactRepo.save(contact);
-        note = contact.getNotes().get(contact.getNotes().size()-1);
+        note = contact.getNotes().stream()
+                .reduce((first, second) -> second).orElse(null);
+
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -671,35 +638,6 @@ public class ContactController {
         headers.setLocation(uri);
 
         return new ResponseEntity<Note>(note, headers, HttpStatus.CREATED);
-    }
-
-    /**
-     * Add a note to the specified contact from its parts.
-     *
-     * <p>This is just a convenience method, see {@link #addNote(String, Long, Note)}
-     *
-     * @return The note created.
-     */
-    @RequestMapping(value = "/{contactId}/notes", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody Note addNote(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId,
-            @RequestParam("author") String author,
-            @RequestParam("favorite") boolean favorite,
-            @RequestParam("content") String content) {
-        return addNote(tenantId, contactId, new Note(author, content, favorite)).getBody();
-    }
-
-    /**
-     * Change the sale stage the contact is at.
-     */
-    @RequestMapping(value = "/{contactId}/stage", method = RequestMethod.PUT, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody void setStageDeprecated2(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId,
-            @RequestParam("stage") String stage) {
-        LOGGER.warn("PUT stage is deprecated, please switch to POST");
-        setStage(tenantId, contactId, stage);
     }
 
     /**
@@ -718,17 +656,18 @@ public class ContactController {
             contact.setStage(stage);
             contactRepo.save(contact);
 
-            addActivity(tenantId, contactId, "transition-to-stage",
+            // TODO move to independent entity
+            addActivity(tenantId, contactId, ActivityType.TRANSITION_TO_STAGE.name(),
                     String.format("From %1$s to %2$s", oldStage, stage));
         }
-        // return contact;
     }
 
     /**
-     * Change the sale stage the contact is at.
+     * Set the account this contact belongs to.
      */
-    @RequestMapping(value = "/{contactId}/account", method = RequestMethod.PUT, consumes = "text/uri-list")
+    @PutMapping(value = "/{contactId}/account", consumes = "text/uri-list")
     @Transactional
+    @ApiOperation(value = "Link the contact to an existing account.")
     public @ResponseBody void setAccount(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
@@ -738,6 +677,10 @@ public class ContactController {
         Long acctId = Long.parseLong(accountUri.substring(accountUri
                 .lastIndexOf('/') + 1));
 
+        setAccount(tenantId, contactId, acctId);
+    }
+
+    protected void setAccount(String tenantId, Long contactId, Long acctId) {
         contactRepo.setAccount(contactId, acctId);
 
         addActivity(tenantId, contactId,
@@ -747,11 +690,11 @@ public class ContactController {
     }
 
     /**
-     * Add activity to the specified contact.
+     * Add an activity to the specified contact.
      * @return the created activity.
      */
-    @RequestMapping(value = "/{contactId}/activities", method = RequestMethod.POST)
-    @Transactional
+    @PostMapping(value = "/{contactId}/activities")
+    @ApiOperation(value = "Add an activity to the specified contact.")
     public @ResponseBody ResponseEntity<Activity> addActivity(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId, @RequestBody Activity activity) {
@@ -759,7 +702,9 @@ public class ContactController {
         contact.getActivities().add(activity);
         contact.setLastUpdated(new Date());
         contactRepo.save(contact);
-        activity = contact.getActivities().get(contact.getActivities().size()-1);
+        activity = contact.getActivities().stream()
+                .reduce((first, second) -> second).orElse(null);
+
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -767,8 +712,7 @@ public class ContactController {
                 .buildAndExpand(tenantId, contact.getId(), activity.getId())
                 .toUri();
         headers.setLocation(uri);
-
-        return new ResponseEntity<Activity>(activity, headers, HttpStatus.CREATED);
+        return new ResponseEntity<Activity>(headers, HttpStatus.CREATED);
     }
 
     /**
@@ -782,35 +726,6 @@ public class ContactController {
             @RequestParam("type") String type,
             @RequestParam("content") String content) {
         return addActivity(tenantId, contactId, new Activity(ActivityType.valueOf(type), new Date(), content));
-    }
-
-    /**
-     * Confirm a user's email by returning a code sent to that address.
-     *
-     * <p>
-     * Note that this may be used interactively as well as API so return status
-     * code 200 / 403 together with HTML for human consumption.
-     *
-     * @param tenantId
-     *            The tenant this contact is associated with.
-     * @param contactId
-     *            Id of contact whose address is being confirmed.
-     * @param email
-     *            Address being confirmed
-     * @param code
-     *            Code to compare to the one previously issued.
-     */
-    @RequestMapping(value = "/{contactId}/{email}", method = RequestMethod.POST)
-    public String confirmEmail(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId,
-            @PathVariable("email") String email,
-            @RequestParam("emailConfirmationCode") String emailConfirmationCode,
-            Model model) {
-        Contact contact = findById(tenantId, contactId);
-        contact.confirmEmail(emailConfirmationCode);
-        contactRepo.save(contact);
-        return "emailConfirmation";
     }
 
     /**
@@ -837,8 +752,14 @@ public class ContactController {
     }
 
     protected EntityModel<Contact> addLinks(final String tenantId, final Contact contact) {
-        return EntityModel.of(contact,
+        EntityModel<Contact> model = EntityModel.of(contact,
                 linkTo(methodOn(ContactController.class).findEntityById(tenantId, contact.getId()))
                         .withSelfRel());
+        if (contact.getAccountId() != null) {
+            model.add(linkTo(methodOn(AccountController.class).findEntityById(
+                    tenantId, String.valueOf(contact.getAccountId())))
+                            .withRel("account"));
+        }
+        return model;
     }
 }

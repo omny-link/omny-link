@@ -73,27 +73,89 @@ describe("Contact management", function() {
   });
   
   it("fetches updated contacts and checks the newly added one is correct", function(done) {
-    $.getJSON('/'+tenantId+'/contacts/?projection=complete',  function( data ) {
-      contacts = data;
+    $rh.getJSON('/'+tenantId+'/contacts/',  function( data ) {
       data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
-      
+      contacts = data;
+
       expect(contacts.length).toEqual(contactsBefore.length+1);
-      //console.log('latest contact: '+JSON.stringify(contacts[0]));
-      expect($re.id(contacts[0])).toEqual($re.id(contact));
+      expect($rh.uri(contacts[0])).toEqual($rh.uri(contact));
       expect(contacts[0].firstName).toEqual(contact.firstName);
       expect(contacts[0].lastName).toEqual(contact.lastName);
+      expect(contacts[0].fullName).toEqual(contact.firstName+ ' ' + contact.lastName);
       expect(contacts[0].email).toEqual(contact.email);
+
+      expect(contacts[0].links).toBeDefined();
+      expect(contacts[0].links[0].href).toMatch(/.*\/contacts\/[0-9]*/);
+      expect(contacts[0].links.length).toEqual(1);
 
       done();
     });
   });
 
+  it("adds a note to the contact", function(done) {
+    $rh.ajax({
+      url: $rh.tenantUri(contact)+'/notes/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(note),
+      success: function(data, textStatus, jqXHR) {
+        var location = jqXHR.getResponseHeader('Location');
+        expect(location).toMatch(/.*\/contacts\/[0-9]*\/notes\/[0-9]*/);
+        expect(jqXHR.status).toEqual(201);
+        done();
+      }
+    });
+  });
+
+  it("adds a document link to the contact", function(done) {
+    $rh.ajax({
+      url: $rh.tenantUri(contact)+'/documents/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(doc),
+      success: function(data, textStatus, jqXHR) {
+        var location = jqXHR.getResponseHeader('Location');
+        expect(location).toMatch(/.*\/contacts\/[0-9]*\/documents\/[0-9]*/);
+        expect(jqXHR.status).toEqual(201);
+        done();
+      }
+    });
+  });
+
+  it("adds an activity to the contact", function(done) {
+    $rh.ajax({
+      url: $rh.tenantUri(contact)+'/activities/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(activity),
+      success: function(data, textStatus, jqXHR) {
+        var location = jqXHR.getResponseHeader('Location');
+        expect(location).toMatch(/.*\/contacts\/[0-9]*\/activities\/[0-9]*/);
+        expect(jqXHR.status).toEqual(201);
+        done();
+      }
+    });
+  });
+
+  it("sets the stage of the contact", function(done) {
+    $rh.ajax({
+      url: $rh.tenantUri(contact)+'/stage/tested',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(activity),
+      success: function(data, textStatus, jqXHR) {
+        expect(jqXHR.status).toEqual(204);
+        done();
+      }
+    });
+  });
+
   it("updates the new contact", function(done) {
-    contact.phone1 = '+44 77777 123456';
-    contact.phone2 = '+44 20 7123 4567';
-    contact.customFields.dateOfBirth = '31/12/1969';
-    $.ajax({
-      url: '/'+tenantId+'/contacts/'+$re.id(contact),
+    contact.phone1 = '+44 7777 123456';
+    contact.phone2 = '020 7123 4567';
+    contact.customFields.dateOfBirth = '31/10/1969';
+    $rh.ajax({
+      url: $rh.tenantUri(contact),
       type: 'PUT',
       contentType: 'application/json',
       data: JSON.stringify(contact),
@@ -147,36 +209,33 @@ describe("Contact management", function() {
   });
   
   it("fetches updated contacts and checks the newly added one holds correct account information", function(done) {
-    $.getJSON('/'+tenantId+'/contacts/?projection=complete',  function( data ) {
+    $rh.getJSON('/'+tenantId+'/contacts/',  function( data ) {
       contacts = data;
       data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
       
       expect(contacts.length).toEqual(contactsBefore.length+1);
-      //console.log('latest contact: '+JSON.stringify(contacts[0]));
-      expect($re.id(contacts[0])).toEqual($re.id(contact));
+      expect($rh.localId(contacts[0])).toEqual($rh.localId(contact));
+      expect(contacts[0].links).toBeDefined();
+      expect(contacts[0].links.length).toEqual(2);
+
       expect(contacts[0].firstName).toEqual(contact.firstName);
       expect(contacts[0].lastName).toEqual(contact.lastName);
       expect(contacts[0].email).toEqual(contact.email);
+      expect(contacts[0].account).toBeDefined();
       expect(contacts[0].account.name).toEqual(account.name);
+
+      expect(contacts[0].links[0].href).toMatch(/.*\/contacts\/[0-9]*/);
+      expect(contacts[0].links[1].href).toMatch(/.*\/accounts\/[0-9]*/);
 
       done();
     });
   });
 
-<<<<<<< HEAD:cust-mgmt/src/main/resources/static/tests/spec/CustMgmtSpec.js
-  it("fetches complete contact inc. account and check correct", function(done) {
-    $.getJSON('/contacts/'+$re.id(contact)+'?projection=complete',  function( data ) {
-=======
   it("fetches complete contact inc. child entities and check all fields are correct", function(done) {
-	var uri = $rh.tenantUri(contact);
-    console.log('tenantUri: '+uri);
+    var uri = $rh.tenantUri(contact);
     expect(uri).toBeDefined();
-    $rh.getJSON(uri,  function( data ) {
->>>>>>> 49f3efbb (upgrade to spring boot 2.4.3 to api test passing):cust-mgmt/src/main/resources/META-INF/resources/webjars/custmgmt/3.0.0/specs/CustMgmtSpec.js
-
-      console.log('  contact: '+JSON.stringify(data));
-      
-      expect($re.id(data)).toEqual($re.id(contact));
+    $rh.getJSON(uri, function( data ) {
+      expect($rh.uri(data)).toEqual($rh.uri(contact));
       expect(data.firstName).toEqual(contact.firstName);
       expect(data.lastName).toEqual(contact.lastName);
       expect(data.email).toEqual(contact.email);
@@ -187,18 +246,17 @@ describe("Contact management", function() {
       expect(data.customFields.dateOfBirth).toEqual(contact.customFields.dateOfBirth);
       
       expect(data.account.name).toEqual(account.name);
-      expect(data.account.firstContact).toBeDefined();
-<<<<<<< HEAD:cust-mgmt/src/main/resources/static/tests/spec/CustMgmtSpec.js
-      
-=======
+      expect(data.account.id).toBeDefined();
 
       expect(data.activities.length).toEqual(3);
-      expect(data.activities[0].type).toEqual(activity.type);
-      expect(data.activities[0].content).toEqual(activity.content);
+      data.activities.sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
+
+      expect(data.activities[0].type).toEqual('LINK_ACCOUNT_TO_CONTACT');
+      expect(data.activities[0].content).toMatch(/Linked account [0-9]* to contact [0-9]*/);
       expect(data.activities[1].type).toEqual('TRANSITION_TO_STAGE');
       expect(data.activities[1].content).toEqual('From null to tested');
-      expect(data.activities[2].type).toEqual('LINK_ACCOUNT_TO_CONTACT');
-      expect(data.activities[2].content).toMatch(/Linked account [0-9]* to contact [0-9]*/);
+      expect(data.activities[2].type).toEqual(activity.type);
+      expect(data.activities[2].content).toEqual(activity.content);
 
       expect(data.notes.length).toEqual(1);
       expect(data.notes[0].author).toEqual(note.author);
@@ -211,7 +269,6 @@ describe("Contact management", function() {
       expect(data.documents[0].confidential).toEqual(false); // default value
       expect(data.documents[0].favorite).toEqual(doc.favorite); // defaults to false
 
->>>>>>> 49f3efbb (upgrade to spring boot 2.4.3 to api test passing):cust-mgmt/src/main/resources/META-INF/resources/webjars/custmgmt/3.0.0/specs/CustMgmtSpec.js
       done();
     });
   });
@@ -223,20 +280,28 @@ describe("Contact management", function() {
       contentType: 'application/json',
       success: completeHandler = function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
-        done();
+        $rh.ajax({
+          url: $rh.tenantUri(account),
+          type: 'DELETE',
+          contentType: 'application/json',
+          success: completeHandler = function(data, textStatus, jqXHR) {
+            expect(jqXHR.status).toEqual(204);
+            done();
+          }
+        });
       }
     });
   });
   
   it("checks the data is the same as the baseline", function(done) {
-    $.getJSON('/'+tenantId+'/contacts/?projection=complete',  function( data ) {
+    $rh.getJSON('/'+tenantId+'/contacts/',  function( data ) {
       contacts = data;
       data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
       
       expect(contacts.length).toEqual(contactsBefore.length);
     });
     
-    $.getJSON('/'+tenantId+'/accounts/?projection=complete',  function(data, textStatus, jqXHR) {
+    $rh.getJSON('/'+tenantId+'/accounts/',  function(data, textStatus, jqXHR) {
       accounts = data;
       expect(jqXHR.status).toEqual(200);
 

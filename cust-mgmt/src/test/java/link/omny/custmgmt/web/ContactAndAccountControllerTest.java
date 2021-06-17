@@ -40,9 +40,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import link.omny.custmgmt.Application;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.CustomContactField;
-import link.omny.custmgmt.repositories.CustomContactFieldRepository;
-import link.omny.supportservices.model.CustomField;
 
 /**
  * @author Tim Stephenson
@@ -56,9 +53,6 @@ public class ContactAndAccountControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private CustomContactFieldRepository customContactRepo;
 
     @Autowired
     private ContactController contactController;
@@ -162,15 +156,6 @@ public class ContactAndAccountControllerTest {
         assertNotNull(contact2.getFirstContact());
         // TODO this should be null but is not
         // assertNull(contact2.getLastUpdated());
-
-        List<CustomContactField> customFields = customContactRepo
-                .findByContactId(contactId);
-        for (CustomField field : customFields) {
-            if ("eyeColor".equals(field.getName())) {
-                assertEquals(contact.getCustomFieldValue("eyeColor"),
-                        field.getValue());
-            }
-        }
 
         // UPDATE CONTACT
         contact.setFirstName(contact.getFirstName() + "Updated");

@@ -27,7 +27,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.custmgmt.model.Memo;
 
-@RepositoryRestResource(path = "memos")
+@RepositoryRestResource(exported = false)
 public interface MemoRepository extends CrudRepository<Memo, Long> {
 
     @Override
