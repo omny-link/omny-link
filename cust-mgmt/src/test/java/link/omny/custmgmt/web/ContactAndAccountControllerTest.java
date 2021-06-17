@@ -34,9 +34,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import link.omny.custmgmt.Application;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Contact;
@@ -53,9 +50,6 @@ import link.omny.supportservices.model.CustomField;
 public class ContactAndAccountControllerTest {
 
     private static final String TENANT_ID = "test";
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private CustomContactFieldRepository customContactRepo;

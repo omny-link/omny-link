@@ -57,6 +57,7 @@ import link.omny.custmgmt.model.views.AccountViews;
 import link.omny.custmgmt.model.views.ContactViews;
 import link.omny.supportservices.internal.CsvUtils;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.Activity;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
@@ -304,19 +305,21 @@ public class Account implements Serializable {
     @JsonBackReference
     private List<Contact> contact;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "account", targetEntity = CustomAccountField.class)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "account", targetEntity = CustomAccountField.class)
     @JsonManagedReference
     @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
+    @JsonView( { AccountViews.Detailed.class } )
     private Set<CustomAccountField> customFields;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "account_id")
     @JsonView({ AccountViews.Detailed.class, ContactViews.Detailed.class })
     private List<Note> notes;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL/*, mappedBy = "account", targetEntity = Activity.class*/)
     @JoinColumn(name = "account_id")
+//    @JsonManagedReference
     @JsonView({ AccountViews.Detailed.class })
     private List<Activity> activities;
 
@@ -423,6 +426,13 @@ public class Account implements Serializable {
             sb.append(country).append(".");
         }
         return sb.toString();
+    }
+
+    public List<Activity> getActivities() {
+        if (activities == null) {
+            activities = new ArrayList<Activity>();
+        }
+        return activities;
     }
 
     public List<Note> getNotes() {

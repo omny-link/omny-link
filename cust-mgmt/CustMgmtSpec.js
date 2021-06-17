@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015-2018 Tim Stephenson and contributors
- * 
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
  *  of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -28,7 +28,7 @@ describe("Contact management", function() {
       firstName: 'Fred',
       lastName: 'Flintstone',
       email: 'fred@slaterock.com',
-      customFields: { 
+      customFields: {
         dateOfBirth: '01/01/1970'
       }
   };
@@ -49,7 +49,7 @@ describe("Contact management", function() {
       content: 'Annual review',
       type: 'test'
   }
-  
+
   beforeEach(function() {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
@@ -84,12 +84,12 @@ describe("Contact management", function() {
       }
     });
   });
-  
+
   it("fetches updated contacts and checks the newly added one is correct", function(done) {
     $rh.getJSON('/'+tenantId+'/contacts/',  function( data ) {
       contacts = data;
       data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
-      
+
       expect(contacts.length).toEqual(contactsBefore.length+1);
       //console.log('latest contact: '+JSON.stringify(contacts[0]));
       expect($rh.uri(contacts[0])).toEqual($rh.uri(contact));
@@ -161,7 +161,7 @@ describe("Contact management", function() {
 
   it("updates the new contact", function(done) {
     contact.phone1 = '+44 7777 123456';
-    contact.phone2 = '+44 20 7123 4567';
+    contact.phone2 = '+44 7777 123456';
     contact.customFields.dateOfBirth = '31/12/1969';
     $rh.ajax({
       url: $rh.tenantUri(contact),
@@ -179,35 +179,35 @@ describe("Contact management", function() {
     $rh.getJSON('/'+tenantId+'/contacts/',  function( data ) {
       contacts = data;
       data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
-      
+
       expect(contacts.length).toEqual(contactsBefore.length+1);
       expect($rh.uri(contacts[0])).toEqual($rh.uri(contact));
       expect(contacts[0].phone1).toEqual(contact.phone1);
-      expect(contacts[0].phone2).toEqual(contact.phone2);
+      // phone2 not returned in summary
 
       done();
     });
   });
-  
+
   it("adds an account to the new contact", function(done) {
     $rh.ajax({
       url: '/'+tenantId+'/accounts/',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(account),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/\/accounts\/[0-9]/);
         expect(jqXHR.status).toEqual(201);
         account.links = [ { rel: 'self', href: location } ];
-        
-        var contactAccountLink = $rh.uri(contact)+'/account';
+
+        var contactAccountLink = $rh.uri(contact);
         $rh.ajax({
-          url: contactAccountLink,
+          url: contactAccountLink+'/account',
           type: 'PUT',
           contentType: 'text/uri-list',
           data: location,
-          success: completeHandler = function(data, textStatus, jqXHR) {
+          success: function(data, textStatus, jqXHR) {
             console.log('linked account: '+location+' to '+contactAccountLink);
             done();
           }
@@ -217,13 +217,13 @@ describe("Contact management", function() {
   });
 
   it("fetches updated contacts and checks the newly added one holds correct account information", function(done) {
-    $rh.getJSON('/'+tenantId+'/contacts/?projection=complete',  function( data ) {
+    $rh.getJSON('/'+tenantId+'/contacts/',  function( data ) {
       contacts = data;
       data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
-      
+
       expect(contacts.length).toEqual(contactsBefore.length+1);
       //console.log('latest contact: '+JSON.stringify(contacts[0]));
-//      expect($re.id(contacts[0])).toEqual($re.id(contact));
+      expect($rh.uri(contacts[0])).toEqual($rh.uri(contact));
       expect(contacts[0].firstName).toEqual(contact.firstName);
       expect(contacts[0].lastName).toEqual(contact.lastName);
       expect(contacts[0].email).toEqual(contact.email);
@@ -234,27 +234,26 @@ describe("Contact management", function() {
   });
 
   it("fetches complete contact inc. child entities and check all fields are correct", function(done) {
-	  var uri = $rh.tenantUri(contact);
-//	  var uri = $rh.uri(contact);
+	var uri = $rh.tenantUri(contact);
     console.log('tenantUri: '+uri);
     expect(uri).toBeDefined();
-    $rh.getJSON(uri, function( data ) {
-      console.log('  contact: '+JSON.stringify(data));
-      
-      expect($rh.uri(data)).toEqual($rh.uri(contact));
+    $rh.getJSON(uri,  function( data ) {
+
+      expect($rh.localId(data)).toEqual($rh.localId(contact));
       expect(data.firstName).toEqual(contact.firstName);
       expect(data.lastName).toEqual(contact.lastName);
       expect(data.email).toEqual(contact.email);
       expect(data.phone1).toEqual(contact.phone1);
       expect(data.phone2).toEqual(contact.phone2);
+      expect(data.stage).toEqual('tested');
       expect(data.firstContact).toBeDefined();
       expect(data.customFields).toBeDefined();
       expect(data.customFields.dateOfBirth).toEqual(contact.customFields.dateOfBirth);
-      
+
       expect(data.account.name).toEqual(account.name);
       expect(data.account.firstContact).toBeDefined();
 
-      expect(data.activities.length).toEqual(1);
+      expect(data.activities.length).toEqual(3);
       expect(data.activities[0].type).toEqual(activity.type);
       expect(data.activities[0].content).toEqual(activity.content);
       expect(data.activities[1].type).toEqual('TRANSITION_TO_STAGE');
@@ -282,22 +281,22 @@ describe("Contact management", function() {
       url: $rh.tenantUri(contact),
       type: 'DELETE',
       contentType: 'application/json',
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
         done();
       }
     });
   });
-  
+
   it("checks the data is the same as the baseline", function(done) {
-    $rh.getJSON('/'+tenantId+'/contacts/?projection=complete',  function( data ) {
+    $rh.getJSON('/'+tenantId+'/contacts/',  function( data ) {
       contacts = data;
       data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
-      
+
       expect(contacts.length).toEqual(contactsBefore.length);
     });
-    
-    $rh.getJSON('/'+tenantId+'/accounts/?projection=complete',  function(data, textStatus, jqXHR) {
+
+    $rh.getJSON('/'+tenantId+'/accounts/',  function(data, textStatus, jqXHR) {
       accounts = data;
       expect(jqXHR.status).toEqual(200);
 
@@ -305,7 +304,7 @@ describe("Contact management", function() {
       done();
     });
   });
-  
+
   afterEach(function() {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });

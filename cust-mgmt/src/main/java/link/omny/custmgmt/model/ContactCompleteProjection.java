@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.springframework.data.rest.core.config.Projection;
 
+import link.omny.supportservices.model.Activity;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
 

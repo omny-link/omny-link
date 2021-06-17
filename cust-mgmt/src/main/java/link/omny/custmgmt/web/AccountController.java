@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -40,6 +41,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,19 +53,21 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.model.Account;
-import link.omny.custmgmt.model.Activity;
-import link.omny.custmgmt.model.ActivityType;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomAccountField;
+import link.omny.custmgmt.model.views.AccountViews;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
+import link.omny.supportservices.model.Activity;
+import link.omny.supportservices.model.ActivityType;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
 
@@ -95,10 +99,11 @@ public class AccountController {
      */
     @RequestMapping(value = "/accounts/{accountId}/activities", method = RequestMethod.POST)
     @Transactional
-    public @ResponseBody ResponseEntity<Activity> addActivity(
+    public @ResponseBody ResponseEntity<Void> addActivity(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Activity activity) {
         Account account = findById(tenantId, accountId);
+//        activity.setAccount(account);
         account.getActivities().add(activity);
         account.setLastUpdated(new Date());
         accountRepo.save(account);
@@ -106,12 +111,12 @@ public class AccountController {
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                .path("/{id}/activities/{activityId}")
+                .path("/accounts/{id}/activities/{activityId}")
                 .buildAndExpand(tenantId, account.getId(), activity.getId())
                 .toUri();
         headers.setLocation(uri);
 
-        return new ResponseEntity<Activity>(activity, headers, HttpStatus.CREATED);
+        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
     /**
@@ -119,7 +124,7 @@ public class AccountController {
      * @return the created activity.
      */
     @RequestMapping(value = "/accounts/{accountId}/activities", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody ResponseEntity<Activity> addActivity(
+    public @ResponseBody ResponseEntity<Void> addActivity(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestParam("type") String type,
@@ -179,7 +184,8 @@ public class AccountController {
     /**
      * @return Accounts for a specific tenant.
      */
-    @RequestMapping(value = "/accounts/", method = RequestMethod.GET)
+    @GetMapping(value = "/accounts/")
+    @JsonView(value = AccountViews.Summary.class)
     public @ResponseBody List<EntityModel<Account>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -208,7 +214,7 @@ public class AccountController {
      *
      * @return accounts for that tenant.
      */
-    @RequestMapping(value = "/accounts/", method = RequestMethod.GET, produces = "text/csv")
+    @GetMapping(value = "/accounts/", produces = "text/csv")
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -245,7 +251,8 @@ public class AccountController {
     /**
      * @return Account id-name pairs for a specific tenant.
      */
-    @RequestMapping(value = "/account-pairs/", method = RequestMethod.GET)
+    @GetMapping(value = "/account-pairs/")
+    @JsonView(value = AccountViews.Pair.class)
     public @ResponseBody List<Account> listPairForTenant(
             @PathVariable("tenantId") String tenantId) {
         LOGGER.info("List account id-name pairs for tenant {}", tenantId);
@@ -297,12 +304,14 @@ public class AccountController {
      * @return the account with this id.
      * @throws BusinessEntityNotFoundException
      */
-    @RequestMapping(value = "/accounts/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/accounts/{id}")
+    @JsonView(AccountViews.Detailed.class)
+    @Transactional
     public @ResponseBody EntityModel<Account> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String idOrCode)
             throws BusinessEntityNotFoundException {
-        LOGGER.debug("Find account for id {}", idOrCode);
+        LOGGER.info("Find account for id {}", idOrCode);
 
         Account account;
         try {
@@ -310,7 +319,15 @@ public class AccountController {
         } catch (NumberFormatException e) {
             account = accountRepo.findByCodeForTenant(idOrCode, tenantId);
         }
-        account.getActivities(); // force load
+        List<Activity> activities = account.getActivities(); // force load
+        System.out.println("activities found: "+ activities.size());
+        Set<CustomAccountField> customFields = account.getCustomFields(); // force load
+        System.out.println("  custom fields found: "+ customFields.size());
+        LOGGER.info("... has {} activities", account.getActivities().size());
+//        List<Activity> activities = activityRepo.findByAccountId(account.getId());
+//        LOGGER.error("... has {} activities", account.getActivities().size());
+//        account.setActivities(activities);
+//        LOGGER.error("... has {} activities", account.getActivities().size());
 
         return addLinks(tenantId, account);
     }
@@ -321,7 +338,7 @@ public class AccountController {
      * @return the account with this name.
      * @throws BusinessEntityNotFoundException
      */
-    @RequestMapping(value = "/accounts/findByName/{name}", method = RequestMethod.GET)
+    @GetMapping(value = "/accounts/findByName/{name}")
     public @ResponseBody EntityModel<Account> findByName(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("name") String name)
@@ -343,7 +360,7 @@ public class AccountController {
      * @return the account with this name.
      * @throws BusinessEntityNotFoundException
      */
-    @RequestMapping(value = "/accounts/findByCustomField/{name}/{value}", method = RequestMethod.GET)
+    @GetMapping(value = "/accounts/findByCustomField/{name}/{value}")
     public @ResponseBody List<EntityModel<Account>> findByCustomField(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("name") String name,
@@ -426,7 +443,8 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/accounts/{accountId}/stage/{stage}", method = RequestMethod.POST)
-    public @ResponseBody ResponseEntity<Account> setStage(
+    @Transactional
+    public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @PathVariable("stage") String stage) {
@@ -442,9 +460,6 @@ public class AccountController {
                     new Date(), String.format("From %1$s to %2$s", oldStage, stage));
             addActivity(tenantId, accountId, activity);
         }
-
-        return new ResponseEntity<Account>(account,
-                new HttpHeaders(), HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -466,7 +481,8 @@ public class AccountController {
     /**
      * Add a document to the specified account.
      */
-    @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.PUT)
+    @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.POST)
+    @Transactional
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Document doc) {
@@ -478,7 +494,7 @@ public class AccountController {
 
          HttpHeaders headers = new HttpHeaders();
          URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                 .path("/{id}/documents/{docId}")
+                 .path("/accounts/{id}/documents/{docId}")
                  .buildAndExpand(tenantId, account.getId(), doc.getId())
                  .toUri();
          headers.setLocation(uri);
@@ -494,7 +510,7 @@ public class AccountController {
      *
      * @return The document created.
      */
-    @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.POST)
+    @RequestMapping(value = "/accounts/{accountId}/documents", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
     public @ResponseBody Document addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
@@ -509,7 +525,8 @@ public class AccountController {
      * Add a note to the specified account.
      * @return the created note.
      */
-    @RequestMapping(value = "/accounts/{accountId}/notes", method = RequestMethod.PUT)
+    @RequestMapping(value = "/accounts/{accountId}/notes", method = RequestMethod.POST)
+    @Transactional
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Note note) {
@@ -521,7 +538,7 @@ public class AccountController {
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                .path("/{id}/notes/{noteId}")
+                .path("/accounts/{id}/notes/{noteId}")
                 .buildAndExpand(tenantId, account.getId(), note.getId())
                 .toUri();
         headers.setLocation(uri);
@@ -536,7 +553,7 @@ public class AccountController {
      *
      * @return The note created.
      */
-    @RequestMapping(value = "/accounts/{accountId}/notes", method = RequestMethod.POST)
+    @RequestMapping(value = "/accounts/{accountId}/notes", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
     public @ResponseBody Note addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,

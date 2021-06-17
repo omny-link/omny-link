@@ -26,15 +26,13 @@
     <batik.version>1.9.1</batik.version>
     <jasmine-boot.version>1.0.0.20181021</jasmine-boot.version>
     <java.version>1.8</java.version>
-    <javax-json.version>1.0.4.20170227</javax-json.version>
+    <kp-icons.version>3.1.0</kp-icons.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>${project.version}</omny-link.version>
-    <kp-icons.version>3.1.0</kp-icons.version>
     <plantuml.version>8059</plantuml.version>
     <spring-boot.version>2.4.3</spring-boot.version>
     <springfox.version>2.8.0</springfox.version>
     <xerces.version>2.11.0</xerces.version>
-    <work-mgmt.version>3.0.0.20180830</work-mgmt.version>
   </properties>
 
   <distributionManagement>

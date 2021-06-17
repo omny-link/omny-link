@@ -13,19 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package link.omny.custmgmt.repositories;
+package link.omny.supportservices.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import link.omny.custmgmt.model.Activity;
+import link.omny.supportservices.model.Activity;
 
 @RepositoryRestResource(path = "activities")
 public interface ActivityRepository extends CrudRepository<Activity, Long> {
 
-//    @Query("SELECT a FROM Activity a JOIN a.contact c WHERE c.account.id = :accountId ORDER BY a.lastUpdated ASC")
+//    @Query("SELECT a FROM Activity a WHERE a.account.id = :accountId ORDER BY a.lastUpdated ASC")
 //    List<Activity> findByAccountId(@Param("accountId") Long accountId);
-//
+
 //    @Query("SELECT a FROM Activity a WHERE a.contact.id = :contactId ORDER BY a.lastUpdated ASC")
 //    List<Activity> findByContactId(@Param("contactId") Long contactId);
 

@@ -54,7 +54,6 @@ import link.omny.custmgmt.repositories.MemoSignatoryRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
 import link.omny.supportservices.model.Note;
-import link.omny.supportservices.repositories.NoteRepository;
 import lombok.Data;
 
 /**
@@ -75,9 +74,6 @@ public class MemoController {
 
     @Autowired
     private MemoSignatoryRepository memoSignatoryRepo;
-
-    @Autowired
-    private NoteRepository noteRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -311,7 +307,7 @@ public class MemoController {
             @PathVariable("messageId") Long messageId, @RequestBody Note note) {
         Memo message = findById(tenantId, messageId);
         // note.setMessage(message);
-        noteRepo.save(note);
+//        noteRepo.save(note);
         // necessary to force a save
         message.setLastUpdated(new Date());
         memoRepo.save(message);

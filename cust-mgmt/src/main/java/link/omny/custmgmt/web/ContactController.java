@@ -42,6 +42,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,8 +60,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import link.omny.custmgmt.internal.CsvImporter;
 import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.model.Account;
-import link.omny.custmgmt.model.Activity;
-import link.omny.custmgmt.model.ActivityType;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomContactField;
 import link.omny.custmgmt.model.views.ContactViews;
@@ -68,6 +67,8 @@ import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
+import link.omny.supportservices.model.Activity;
+import link.omny.supportservices.model.ActivityType;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
 
@@ -169,7 +170,7 @@ public class ContactController {
      *
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/contacts.csv", method = RequestMethod.GET, produces = "text/csv")
+    @GetMapping(value = "/contacts.csv", produces = "text/csv")
     public @ResponseBody ResponseEntity<String> listForTenantAsCsvAlt(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -199,7 +200,7 @@ public class ContactController {
      *
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
+    @GetMapping(value = "/", produces = "text/csv")
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -239,8 +240,8 @@ public class ContactController {
      *
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
-//    @JsonView(ContactViews.Summary.class)
+    @GetMapping(value = "/", produces = "application/json")
+    @JsonView(ContactViews.Summary.class)
     public @ResponseBody List<EntityModel<Contact>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -291,7 +292,7 @@ public class ContactController {
      *
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/emailable", method = RequestMethod.GET)
+    @GetMapping(value = "/emailable")
     @JsonView(ContactViews.Summary.class)
     public @ResponseBody List<EntityModel<Contact>> listMailableForTenant(
             @PathVariable("tenantId") String tenantId,
@@ -316,7 +317,7 @@ public class ContactController {
      *
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/searchByAccountNameLastNameFirstName", method = RequestMethod.GET, params = {
+    @GetMapping(value = "/searchByAccountNameLastNameFirstName", params = {
             "accountName", "lastName", "firstName" })
     @JsonView(ContactViews.Summary.class)
     public @ResponseBody List<EntityModel<Contact>> listForAccountNameLastNameFirstName(
@@ -340,7 +341,7 @@ public class ContactController {
      *
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/{lastName}/{firstName}/{accountName}", method = RequestMethod.GET)
+    @GetMapping(value = "/{lastName}/{firstName}/{accountName}")
     public @ResponseBody List<EntityModel<Contact>> getForAccountNameLastNameFirstName(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountName") String accountName,
@@ -357,7 +358,7 @@ public class ContactController {
      * @return contacts for that tenant with the specified email address.
      */
     @Transactional
-    @RequestMapping(value = "/searchByEmail", method = RequestMethod.GET, params = { "email" })
+    @GetMapping(value = "/searchByEmail", params = { "email" })
     @JsonView(ContactViews.Summary.class)
     public @ResponseBody List<EntityModel<Contact>> searchByEmail(
             @PathVariable("tenantId") String tenantId,
@@ -387,7 +388,7 @@ public class ContactController {
      *
      * @return contacts for that tenant with the matching tag.
      */
-    @RequestMapping(value = "/findByTag", method = RequestMethod.GET, params = { "tag" })
+    @GetMapping(value = "/findByTag", params = { "tag" })
     public @ResponseBody List<EntityModel<Contact>> findByTag(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("tag") String tag) {
@@ -413,7 +414,8 @@ public class ContactController {
      *
      * @return the contact with this id.
      */
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/{id}")
+    @JsonView(ContactViews.Detailed.class)
     public @ResponseBody EntityModel<Contact> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long id) {
@@ -426,7 +428,7 @@ public class ContactController {
      *
      * @return contacts matching that account.
      */
-    @RequestMapping(value = "/findByAccountId", method = RequestMethod.GET)
+    @GetMapping(value = "/findByAccountId")
     @Transactional
     public @ResponseBody List<EntityModel<Contact>> findByAccountId(
             @PathVariable("tenantId") String tenantId,
@@ -440,7 +442,7 @@ public class ContactController {
     /**
      * @return contacts matching the specified account type.
      */
-    @RequestMapping(value = "/findByAccountType", method = RequestMethod.GET)
+    @GetMapping(value = "/findByAccountType")
     public @ResponseBody List<EntityModel<Contact>> findByAccountType(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("accountType") String accountType) {
@@ -453,7 +455,7 @@ public class ContactController {
      *
      * @return contacts matching the custom field for that tenant.
      */
-    @RequestMapping(value = "/findByCustomField/{key}/{value}", method = RequestMethod.GET)
+    @GetMapping(value = "/findByCustomField/{key}/{value}")
     public @ResponseBody List<EntityModel<Contact>> findByCustomField(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("key") String key,
@@ -471,7 +473,7 @@ public class ContactController {
      *
      * @return contacts for that tenant with the matching tag.
      */
-    @RequestMapping(value = "/findByUuid", method = RequestMethod.GET, params = { "uuid" })
+    @GetMapping(value = "/findByUuid", params = { "uuid" })
     @Transactional
     public @ResponseBody EntityModel<Contact> findByUuid(
             @PathVariable("tenantId") String tenantId,
@@ -490,7 +492,7 @@ public class ContactController {
      *
      * @return contacts for that tenant with the matching tag.
      */
-    @RequestMapping(value = "/findActive", method = RequestMethod.GET)
+    @GetMapping(value = "/findActive")
     @Transactional
     public @ResponseBody List<EntityModel<Contact>> findActive(
             @PathVariable("tenantId") String tenantId) {
@@ -715,7 +717,7 @@ public class ContactController {
 
         Contact contact = findById(tenantId, contactId);
         String oldStage = contact.getStage();
-        if (!stage.equals(oldStage)) {
+        if (oldStage == null || !stage.equals(oldStage)) {
             contact.setStage(stage);
             contactRepo.save(contact);
 
@@ -725,7 +727,7 @@ public class ContactController {
     }
 
     /**
-     * Change the sale stage the contact is at.
+     * Set the account this contact belongs to.
      */
     @RequestMapping(value = "/{contactId}/account", method = RequestMethod.PUT, consumes = "text/uri-list")
     @Transactional
@@ -747,14 +749,14 @@ public class ContactController {
     }
 
     /**
-     * Add activity to the specified contact.
-     * @return the created activity.
+     * Add an activity to the specified contact.
      */
     @RequestMapping(value = "/{contactId}/activities", method = RequestMethod.POST)
     @Transactional
-    public @ResponseBody ResponseEntity<Activity> addActivity(
+    public @ResponseBody ResponseEntity<Void> addActivity(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId, @RequestBody Activity activity) {
+            @PathVariable("contactId") Long contactId,
+            @RequestBody Activity activity) {
         Contact contact = findById(tenantId, contactId);
         contact.getActivities().add(activity);
         contact.setLastUpdated(new Date());
@@ -768,7 +770,7 @@ public class ContactController {
                 .toUri();
         headers.setLocation(uri);
 
-        return new ResponseEntity<Activity>(activity, headers, HttpStatus.CREATED);
+        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
     /**
@@ -776,7 +778,8 @@ public class ContactController {
      * @return the created activity.
      */
     @RequestMapping(value = "/{contactId}/activities", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody ResponseEntity<Activity> addActivity(
+    @Transactional
+    public @ResponseBody ResponseEntity<Void> addActivity(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
             @RequestParam("type") String type,

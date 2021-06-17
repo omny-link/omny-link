@@ -64,6 +64,8 @@ import link.omny.custmgmt.model.views.ContactViews;
 import link.omny.supportservices.internal.CsvUtils;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.Activity;
+import link.omny.supportservices.model.ActivityType;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
@@ -423,20 +425,8 @@ public class Contact implements Serializable {
 
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
-    @ManyToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, optional = true)
     @NotFound(action = NotFoundAction.IGNORE)
-    // TODO this fixes the inifite recursion but instead we get
-    // [2015-03-04 15:09:15.977] boot - 15472 ERROR [http-nio-8082-exec-7] ---
-    // AbstractRepositoryRestController: Can not handle managed/back reference
-    // 'defaultReference': type: value deserializer of type
-    // org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$UriStringDeserializer
-    // does not support them
-    // java.lang.IllegalArgumentException: Can not handle managed/back reference
-    // 'defaultReference': type: value deserializer of type
-    // org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$UriStringDeserializer
-    // does not support them
-    // at
-    // com.fasterxml.jackson.databind.JsonDeserializer.findBackReference(JsonDeserializer.java:310)
     @JsonManagedReference
     private Account account;
 

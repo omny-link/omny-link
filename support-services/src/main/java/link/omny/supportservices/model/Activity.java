@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package link.omny.custmgmt.model;
+package link.omny.supportservices.model;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -32,6 +32,7 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -62,7 +63,12 @@ public class Activity implements Serializable {
     @JsonProperty
     @Column(name = "content")
     private String content;
-
+//
+//    @JsonProperty
+//    @Column(name = "account_id")
+//    @JsonBackReference
+//    private Account account;
+    
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name="occurred", updatable = false)

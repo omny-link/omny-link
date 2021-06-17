@@ -74,6 +74,7 @@ describe("Product catalogue", function() {
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/\/orders\/[0-9]/);
         expect(jqXHR.status).toEqual(201);
+        console.error('  ORDER links: '+JSON.stringify(data.links));
         order.links = [ { rel: 'self', href: location } ];
         done();
       }
@@ -87,7 +88,8 @@ describe("Product catalogue", function() {
 
       expect(orders.length).toEqual(ordersBefore.length+1);
       console.log('latest order: '+JSON.stringify(orders[0]));
-      expect($rh.localId(orders[0])).toEqual($rh.localId(order));
+//      expect($rh.localId(orders[0])).toEqual($rh.localId(order));
+      expect(orders[0].created).toBeDefined();
       expect(orders[0].name).toEqual(order.name);
       expect(orders[0].date).toEqual(order.date);
       expect(''+orders[0].price).toEqual(order.price);
@@ -127,13 +129,27 @@ describe("Product catalogue", function() {
   });
 
   it("sets the stage of the order", function(done) {
+    order.stage = 'dispatched';
     $rh.ajax({
-      url: $rh.tenantUri(order)+'/stage/dispatched',
+      url: $rh.tenantUri(order)+'/stage/'+order.stage,
       type: 'POST',
       contentType: 'application/json',
       success: function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
-        done();
+        console.log('  check new stage: '+$rh.tenantUri(order));
+        $rh.getJSON($rh.tenantUri(order), function( data ) {
+
+          expect($rh.localId(data)).toEqual($rh.localId(order));
+          expect(data.name).toEqual(order.name);
+          expect(''+data.price).toEqual(order.price);
+          expect(data.order).toEqual(order.order);
+          expect(data.stage).toEqual('dispatched');
+          expect(data.created).toBeDefined();
+          expect(data.customFields).toBeDefined();
+          expect(data.customFields.specialInstructions).toEqual(order.customFields.specialInstructions);
+
+          done();
+        });
       }
     });
   });
@@ -177,6 +193,7 @@ describe("Product catalogue", function() {
       expect($rh.uri(order)).toContain($rh.uri(orders[0]));
       expect(orders[0].owner).toEqual(order.owner);
       expect(orders[0].dueDate).toEqual(order.dueDate);
+      expect(orders[0].stage).toEqual(order.stage);
 
       done();
     });
@@ -192,7 +209,7 @@ describe("Product catalogue", function() {
       expect(''+data.price).toEqual(order.price);
       expect(data.dueDate).toEqual(order.dueDate);
       expect(data.order).toEqual(order.order);
-      expect(data.stage).toEqual('dispatched');
+      expect(data.stage).toEqual(order.stage);
       expect(data.created).toBeDefined();
       expect(data.customFields).toBeDefined();
       expect(data.customFields.specialInstructions).toEqual(order.customFields.specialInstructions);

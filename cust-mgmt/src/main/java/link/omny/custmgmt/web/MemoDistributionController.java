@@ -47,7 +47,6 @@ import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.custmgmt.repositories.MemoDistributionRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.model.Note;
-import link.omny.supportservices.repositories.NoteRepository;
 import lombok.Data;
 
 /**
@@ -68,9 +67,6 @@ public class MemoDistributionController {
 
     @Autowired
     private ContactRepository contactRepo;
-
-    @Autowired
-    private NoteRepository noteRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -210,7 +206,7 @@ public class MemoDistributionController {
             @PathVariable("mailshotId") Long mailshotId, @RequestBody Note note) {
         MemoDistribution mailshot = findById(tenantId, mailshotId);
         // note.setMailshot(mailshot);
-        noteRepo.save(note);
+//        noteRepo.save(note);
         // necessary to force a save
         mailshot.setLastUpdated(new Date());
         mailshotRepo.save(mailshot);

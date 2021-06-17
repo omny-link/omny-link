@@ -24,6 +24,9 @@ import java.util.GregorianCalendar;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import link.omny.supportservices.model.Activity;
+import link.omny.supportservices.model.ActivityType;
+
 public class ContactActivityTest {
 
     private static final long ONE_MINUTE = 60 * 1000;
