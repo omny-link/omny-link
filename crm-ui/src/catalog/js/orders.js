@@ -428,7 +428,8 @@ var ractive = new BaseRactive({
         ractive.set('saveObserver', true);
       }
     });
-    ractive.fetchContacts();
+    if (getSearchParameters()['accountId']!=undefined) ractive.fetchAccountContacts(getSearchParameters()['accountId']);
+    else ractive.fetchContacts();
     ractive.fetchStockItems();
     //ractive.fetchStockCategories();
   },
@@ -443,6 +444,30 @@ var ractive = new BaseRactive({
         ractive.set('saveObserver', false);
         ractive.set('accounts', data);
         ractive.addDataList({ name: 'accounts' }, ractive.get('accounts'));
+        ractive.set('saveObserver', true);
+      }
+    });
+  },
+  fetchAccountContacts: function(acctId) {
+    console.info('fetchAccountContacts...');
+    ractive.set('saveObserver', false);
+    $.ajax({
+      dataType: "json",
+      url: ractive.getServer() + '/' + ractive.get('tenant.id')
+          + '/contacts/findByAccountId?accountId='
+          + acctId,
+      crossDomain: true,
+      success: function(data) {
+        ractive.set('saveObserver', false);
+        var contactData = jQuery.map(data, function(n, i) {
+          return ({
+            "id": ractive.id(n),
+            "name": n.fullName
+          });
+        });
+        ractive.addDataList({ name: 'contacts' }, contactData);
+        ractive.set('contacts', data);
+        console.log('fetched ' + data.length + ' contacts for account');
         ractive.set('saveObserver', true);
       }
     });
@@ -537,8 +562,8 @@ var ractive = new BaseRactive({
       // without time json will not reach endpoint
       if (tmp.date != null) tmp.date += 'T00:00:00';
       tmp.tenantId = ractive.get('tenant.id');
-      tmp.price = parseFloat(tmp.price);
-      tmp.tax = parseFloat(tmp.tax);
+      tmp.price = parseFloat($('#curPrice').autoNumeric('get'));
+      tmp.tax = parseFloat($('#curTax').autoNumeric('get'));
 //      console.log('ready to save order'+JSON.stringify(tmp)+' ...');
       $.ajax({
         url: id === undefined ? ractive.getServer()+'/'+tmp.tenantId+'/orders/' : ractive.tenantUri(tmp),

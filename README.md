@@ -60,6 +60,6 @@ Security
 --------
 
 Roles expected:
- - admin
- - power-user
- - product-owner
+ - admin - full control
+ - power-user - a few limited 'extras' like changing owner of a record
+ - product-owner: to set up and manage product/service catalogue
