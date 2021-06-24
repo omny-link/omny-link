@@ -55,9 +55,6 @@ public class JsEnvironmentController {
     @Value("${crm.application.base-uri:}")
     protected String restBaseUri;
 
-    @Value("${crm.application.tenant-config-url:}")
-    protected String tenantConfigUrl;
-
     public String getRestBaseUri() {
         if (restBaseUri.length() == 0) {
             restBaseUri = "http://localhost:" + serverPort;

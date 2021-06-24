@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name}}-configmap
+  namespace: default
+data:
+  SERVER_SERVLET_CONTEXT_PATH: {{ .Values.rest.contextPath | quote }}
+  KEYCLOAK_REALM: {{ .Values.keycloak.realm | quote }}
+  KEYCLOAK_AUTH-SERVER-URL: {{ .Values.keycloak.authServerUrl | quote }}
+  KEYCLOAK_RESOURCE: {{ .Values.keycloak.resource | quote }}
+  KEYCLOAK_ENABLED: {{ .Values.keycloak.enabled | quote }}
+  {{- if and .Values.database.datasourceDriverClassName .Values.database.datasourceUrl }}
+  SPRING_DATASOURCE_DRIVER-CLASS-NAME: {{ .Values.database.datasourceDriverClassName | quote }}
+  SPRING_DATASOURCE_URL: {{ .Values.database.datasourceUrl | quote }}
+  {{- end }}
+  SPRING_JPA_HIBERNATE_DDL-AUTO: {{ .Values.jpa.hibernate.ddlAuto | quote }}
+  SPRING_JPA_SHOW-SQL: {{ .Values.jpa.showSql | quote }}
+  SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: {{ .Values.jpa.properties.hibernate.formatSql | quote }}
+  CRM_APPLICATION_BASE-URI: {{ .Values.crm.application.baseUri | quote }}
+  CRM_APPLICATION_TAG-LINE: {{ .Values.crm.application.tagLine | quote }}
+  {{- if and .Values.crm.cors.allowedOrigins }}
+  CRM_CORS_ALLOWED-ORIGINS: {{ .Values.crm.cors.allowedOrigins | quote }}
+  {{- end }}
+  {{- if and .Values.crm.cors.allowedMethods }}
+  CRM_CORS_ALLOWED-METHODS: {{ .Values.crm.cors.allowedMethods | quote }}
+  {{- end }}
+  {{- if and .Values.crm.cors.allowedHeaders }}
+  CRM_CORS_ALLOWED-HEADERS: {{ .Values.crm.cors.allowedHeaders | quote }}
+  {{- end }}
+  {{- if and .Values.crm.cors.allowCredentials }}
+  CRM_CORS_ALLOW-CREDENTIALS: {{ .Values.crm.cors.allowCredentials | quote }}
+  {{- end }}
