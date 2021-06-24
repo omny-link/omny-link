@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.swagger.annotations.Api;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import lombok.Data;
@@ -42,6 +43,7 @@ import lombok.Data;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/funnel")
+@Api(tags = "Metrics API")
 public class FunnelController {
 
     private static final Logger LOGGER = LoggerFactory

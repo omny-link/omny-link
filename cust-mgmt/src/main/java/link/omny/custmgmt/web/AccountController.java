@@ -73,6 +73,7 @@ import link.omny.supportservices.model.Activity;
 import link.omny.supportservices.model.ActivityType;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * REST web service for uploading and accessing a file of JSON Accounts (over
@@ -135,7 +136,8 @@ public class AccountController {
      * @throws IOException
      *             If cannot parse the JSON.
      */
-    @RequestMapping(value = "/accounts/upload", method = RequestMethod.POST)
+    @PostMapping(value = "/accounts/upload")
+    @ApiIgnore
     public @ResponseBody Iterable<Account> handleFileUpload(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
@@ -157,8 +159,9 @@ public class AccountController {
         return result;
     }
 
-    @RequestMapping(value = "/accounts/archive", method = RequestMethod.POST, headers = "Accept=application/json")
+    @PostMapping(value = "/accounts/archive")
     @Transactional
+    @ApiIgnore
     public @ResponseBody Integer archiveAccounts(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "before", required = false) String before) {
@@ -176,6 +179,7 @@ public class AccountController {
      */
     @GetMapping(value = "/accounts/")
     @JsonView(value = AccountViews.Summary.class)
+    @ApiOperation(value = "Retrieves the accounts for a specific tenant.")
     public @ResponseBody List<EntityModel<Account>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -205,6 +209,7 @@ public class AccountController {
      * @return accounts for that tenant.
      */
     @GetMapping(value = "/accounts/", produces = "text/csv")
+    @ApiOperation(value = "Retrieves the accounts for a specific tenant.")
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -299,6 +304,7 @@ public class AccountController {
     @GetMapping(value = "/accounts/{id}")
     @JsonView(AccountViews.Detailed.class)
     @Transactional
+    @ApiOperation("Return the specified account.")
     public @ResponseBody EntityModel<Account> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String idOrCode)
@@ -322,6 +328,7 @@ public class AccountController {
      * @throws BusinessEntityNotFoundException
      */
     @GetMapping(value = "/accounts/findByName/{name}")
+    @ApiOperation("Return the specified account.")
     public @ResponseBody EntityModel<Account> findByName(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("name") String name)
@@ -344,6 +351,7 @@ public class AccountController {
      * @throws BusinessEntityNotFoundException
      */
     @GetMapping(value = "/accounts/findByCustomField/{name}/{value}")
+    @ApiIgnore
     public @ResponseBody List<EntityModel<Account>> findByCustomField(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("name") String name,
@@ -379,6 +387,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{id}/customFields/", consumes = "application/json")
+    @ApiIgnore
     public @ResponseBody void updateCustomFields(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
             @RequestBody Object customFields) throws IOException {
@@ -415,6 +424,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{accountId}/alerts/")
+    @ApiIgnore
     public @ResponseBody void setAlerts(@PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestBody String alerts) {
@@ -429,7 +439,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{accountId}/stage/{stage}")
-    @Transactional
+    @ApiOperation("Sets the stage for the specified account.")
     public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
@@ -455,6 +465,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{accountId}/tags/")
+    @ApiIgnore
     public @ResponseBody void setTags(@PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestBody String tags) {
@@ -520,6 +531,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/accounts/{id}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "Delete the specified account.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId) {
 

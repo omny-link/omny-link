@@ -48,6 +48,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.annotations.Api;
 import link.omny.custmgmt.model.Memo;
 import link.omny.custmgmt.repositories.MemoRepository;
 import link.omny.custmgmt.repositories.MemoSignatoryRepository;
@@ -64,6 +65,7 @@ import lombok.Data;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/memos")
+@Api(tags = "Memo API")
 public class MemoController {
 
     private static final Logger LOGGER = LoggerFactory

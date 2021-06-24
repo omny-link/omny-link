@@ -158,7 +158,7 @@ public class ContactAndAccountControllerTest {
         contactController.update(TENANT_ID, contactId, contact);
 
         // CHECK UPDATED CONTACT
-        List<EntityModel<Contact>> contactList = contactController.searchByEmail(TENANT_ID,
+        List<EntityModel<Contact>> contactList = contactController.findByEmail(TENANT_ID,
                 contact.getEmail());
         assertEquals(1, contactList.size());
         assertContactEquals(contact, acct, contactList.get(0).getContent());

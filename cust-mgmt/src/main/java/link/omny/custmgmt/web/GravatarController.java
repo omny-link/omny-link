@@ -32,9 +32,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import link.omny.custmgmt.internal.ContactAvatarService;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.repositories.ContactRepository;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
 @RequestMapping(value = "/{tenantId}/gravatars")
+@ApiIgnore
 public class GravatarController {
 
     private static final Logger LOGGER = LoggerFactory

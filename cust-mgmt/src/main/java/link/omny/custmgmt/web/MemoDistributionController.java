@@ -48,6 +48,7 @@ import link.omny.custmgmt.repositories.MemoDistributionRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.model.Note;
 import lombok.Data;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * REST web service for uploading and accessing a file of JSON Mailshots (over
@@ -57,6 +58,7 @@ import lombok.Data;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/memo-distributions")
+@ApiIgnore
 public class MemoDistributionController {
 
     private static final Logger LOGGER = LoggerFactory
