@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import lombok.Data;
@@ -59,6 +60,7 @@ public class FunnelController {
      * @return Funnel report based on account stage for the specified tenant.
      */
     @RequestMapping(value = "/accounts", method = RequestMethod.GET)
+    @ApiOperation("Metrics about the number of accounts a tenant has.")
     public @ResponseBody FunnelReport reportTenantByAccount(
             @PathVariable("tenantId") String tenantId) {
         LOGGER.info(String.format("List account funnel for tenant %1$s", tenantId));
@@ -79,6 +81,7 @@ public class FunnelController {
      * @return Funnel report based on contact stage for the specified tenant.
      */
     @RequestMapping(value = "/contacts", method = RequestMethod.GET)
+    @ApiOperation("Metrics about the number of contacts a tenant has.")
     public @ResponseBody FunnelReport reportTenantByContact(
             @PathVariable("tenantId") String tenantId) {
         LOGGER.info(String.format("List contact funnel for tenant %1$s", tenantId));

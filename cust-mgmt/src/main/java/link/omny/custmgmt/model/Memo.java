@@ -25,10 +25,12 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -45,10 +47,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Entity
+@NamedEntityGraph(name = "memoWithAll", attributeNodes = {
+        @NamedAttributeNode("signatories")
+})
 @Table(name = "OL_MEMO")
 @Data
+@Accessors(chain = true)
 @AllArgsConstructor
 public class Memo implements Serializable {
 
@@ -81,12 +88,10 @@ public class Memo implements Serializable {
     private String requiredVars;
 
     @JsonProperty
-    @Lob
     @Column(name = "rich_content")
     private String richContent;
 
     @JsonProperty
-    @Lob
     @Column(name = "plain_content")
     private String plainContent;
 
@@ -106,7 +111,7 @@ public class Memo implements Serializable {
     private String status;
 
     @JsonProperty
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "memo")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "memo")
     private List<MemoSignatory> signatories;
 
     @Temporal(TemporalType.TIMESTAMP)
