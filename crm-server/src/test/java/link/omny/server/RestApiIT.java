@@ -28,8 +28,8 @@ public class RestApiIT {
     @Test
     public void testAccountApi() throws IOException {
         StringBuilder sb = createScript(
-                "classpath:META-INF/resources/webjars/jasmine-boot/1.0.0/js/rest-helper.js",
-                "classpath:META-INF/resources/webjars/custmgmt/3.0.0/specs/AcctMgmtSpec.js" );
+                "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
+                "classpath:META-INF/resources/webjars/custmgmt/specs/AcctMgmtSpec.js" );
 
         JsonNode report = runScript(sb);
         assertEquals(15, report.get("suite").get("totalSpecsDefined").asInt());
@@ -39,8 +39,19 @@ public class RestApiIT {
     @Test
     public void testContactApi() throws IOException {
         StringBuilder sb = createScript(
-                "classpath:META-INF/resources/webjars/jasmine-boot/1.0.0/js/rest-helper.js",
-                "classpath:META-INF/resources/webjars/custmgmt/3.0.0/specs/CustMgmtSpec.js" );
+                "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
+                "classpath:META-INF/resources/webjars/custmgmt/specs/CustMgmtSpec.js" );
+
+        JsonNode report = runScript(sb);
+        assertEquals(14, report.get("suite").get("totalSpecsDefined").asInt());
+        assertNoFailedExpectations(report);
+    }
+
+    @Test
+    public void testMemoApi() throws IOException {
+        StringBuilder sb = createScript(
+                "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
+                "classpath:META-INF/resources/webjars/custmgmt/specs/MemoSpec.js" );
 
         JsonNode report = runScript(sb);
         assertEquals(14, report.get("suite").get("totalSpecsDefined").asInt());
@@ -50,8 +61,8 @@ public class RestApiIT {
     @Test
     public void testOrderApi() throws IOException {
         StringBuilder sb = createScript(
-                "classpath:META-INF/resources/webjars/jasmine-boot/1.0.0/js/rest-helper.js",
-                "classpath:META-INF/resources/webjars/catalog/3.0.0/specs/OrderSpec.js" );
+                "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
+                "classpath:META-INF/resources/webjars/catalog/specs/OrderSpec.js" );
 
         JsonNode report = runScript(sb);
         assertEquals(13, report.get("suite").get("totalSpecsDefined").asInt());
@@ -82,8 +93,8 @@ public class RestApiIT {
     }
 
     private void loadPolyfills(StringBuilder sb) {
-        sb.append("load(\"classpath:META-INF/resources/webjars/jasmine-boot/1.0.0/js/timer-polyfill.js\");\n");
-        sb.append("load(\"classpath:META-INF/resources/webjars/jasmine-boot/1.0.0/js/xml-http-request-polyfill.js\");\n");
+        sb.append("load(\"classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/timer-polyfill.js\");\n");
+        sb.append("load(\"classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/xml-http-request-polyfill.js\");\n");
     }
 
     private StringBuilder createScript(String... scripts) {
@@ -92,7 +103,7 @@ public class RestApiIT {
 
         loadPolyfills(sb);
         loadJasmine(sb);
-        sb.append(String.format("load(\"%1$s\");", "classpath:META-INF/resources/webjars/jasmine-boot/1.0.0/js/json-reporter.js"));
+        sb.append(String.format("load(\"%1$s\");", "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/json-reporter.js"));
 
         for (String script : scripts) {
             sb.append(String.format("load(\"%1$s\");", script));
