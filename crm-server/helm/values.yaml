@@ -1,0 +1,124 @@
+# Default values for crm-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: docker.io/knowprocess/crm
+  pullPolicy: Always #IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    #cert-manager.io/issue-temporary-certificate: "true"
+    #acme.cert-manager.io/http01-edit-in-place: "true"
+  hosts:
+    - host: v3.crm.digital
+      paths:
+      - path: /
+        backend:
+          serviceName: crm-server
+          servicePort: 8080
+
+  tls:
+    - secretName: crm-tls
+      hosts:
+        - v3.crm.digital
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+database:
+  username: crm
+  password: password
+  datasourceDriverClassName: org.postgresql.Driver
+  #datasourceUrl: jdbc:postgresql://127.0.0.1:5432/crm
+  datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm
+  #datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm?currentSchema=crm
+
+jpa:
+  hibernate:
+    ddlAuto: "update"
+  properties:
+    hibernate:
+      formatSql: "false"
+  showSql: "false"
+
+crm:
+  application:
+    baseUri: "https://v3.knowprocess.com"
+    tagLine: The automated CRM
+  cors:
+    allowedOrigins: "http://localhost:8000,https://beta.knowprocess.com,https://cloud.knowprocess.com"
+
+rest:
+  javaOpts:
+  contextPath: "/"
+
+keycloak:
+  enabled: true
+  realm: knowprocess
+  authServerUrl: https://auth.knowprocess.com/auth
+  resource: crm
+  publicClient: true
+  principalAttribute: preferred_username

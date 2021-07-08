@@ -38,7 +38,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,6 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -70,6 +70,7 @@ import link.omny.catalog.repositories.FeedbackRepository;
 import link.omny.catalog.repositories.OrderItemRepository;
 import link.omny.catalog.repositories.OrderRepository;
 import link.omny.catalog.repositories.StockItemRepository;
+import link.omny.catalog.views.OrderViews;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
 import link.omny.supportservices.model.Document;
@@ -114,8 +115,10 @@ public class OrderController {
     /**
      * @return a complete order including its items and feedback.
      */
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/{id}")
+    @JsonView(OrderViews.Detailed.class)
     @Transactional
+    @ApiOperation(value = "Return the specified order.")
     public @ResponseBody EntityModel<Order> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId) {
@@ -123,8 +126,10 @@ public class OrderController {
 
         Order order = findById(tenantId, orderId);
         LOGGER.info(
-                "Found order with {} order items and {} inc. feedback",
+                "Found order with {} order items, {} notes, {} docs and {} inc. feedback",
                 order.getOrderItems().size(),
+                order.getNotes().size(),
+                order.getDocuments().size(),
                 order.getFeedback() == null ? "DOES NOT" : "DOES");
 
         order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
@@ -135,8 +140,9 @@ public class OrderController {
     /**
      * @return the specified orders including all items and feedback.
      */
-    @RequestMapping(value = "/findByIdArray/{ids}", method = RequestMethod.GET)
+    @GetMapping(value = "/findByIdArray/{ids}")
     @Transactional
+    @ApiOperation("Retrieve the specified orders.")
     public @ResponseBody List<EntityModel<Order>> readOrders(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("ids") String orderIds) {
@@ -178,7 +184,8 @@ public class OrderController {
     /**
      * @return feedback for the specified order.
      */
-    @RequestMapping(value = "/{id}/feedback", method = RequestMethod.GET)
+    @GetMapping(value = "/{id}/feedback")
+    @ApiOperation("Retrieve feedback for the specified order.")
     public @ResponseBody Feedback readFeedback(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId) {
@@ -201,7 +208,9 @@ public class OrderController {
     /**
      * @return orders for the specified tenant.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(value = "/")
+    @JsonView(value = OrderViews.Summary.class)
+    @ApiOperation(value = "Retrieves the orders for a specific tenant.")
     public @ResponseBody List<EntityModel<Order>> listEntitiesForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -227,7 +236,8 @@ public class OrderController {
     /**
      * @return orders for that tenant.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
+    @GetMapping(value = "/", produces = "text/csv")
+    @JsonView(value = OrderViews.Summary.class)
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -261,7 +271,8 @@ public class OrderController {
      * @return orders owned by the specified contact.
      */
     @GetMapping(value = "/findByContact/{contactId}")
-    @ApiOperation(value = "Find orders for a contact")
+    @JsonView(value = OrderViews.Summary.class)
+    @ApiOperation(value = "Retrieve orders for a contact")
     public @ResponseBody List<EntityModel<Order>> listForContact(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
@@ -274,7 +285,8 @@ public class OrderController {
      * @return orders owned by the specified contact(s).
      */
     @GetMapping(value = "/findByContacts/{contactIds}")
-    @ApiOperation(value = "Find orders for a number of contacts")
+    @JsonView(value = OrderViews.Summary.class)
+    @ApiOperation(value = "Retrieve orders for a number of contacts")
     public @ResponseBody List<EntityModel<Order>> listForContacts(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactIds") Long[] contactIds,
@@ -305,7 +317,9 @@ public class OrderController {
     /**
      * @return orders of the specified type.
      */
-    @RequestMapping(value = "/findByType/{type}", method = RequestMethod.GET)
+    @GetMapping(value = "/findByType/{type}")
+    @JsonView(value = OrderViews.Summary.class)
+    @ApiOperation(value = "Find orders of the specified type.")
     public @ResponseBody List<EntityModel<Order>> findByType(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("type") String type,
@@ -326,7 +340,8 @@ public class OrderController {
     /**
      * @return Funnel report based on stage for the specified tenant.
      */
-    @RequestMapping(value = "/funnel", method = RequestMethod.GET)
+    @GetMapping(value = "/funnel")
+    @ApiOperation("Retrieve orders by stage.")
     public @ResponseBody FunnelReport reportTenantByAccount(
             @PathVariable("tenantId") String tenantId) {
         LOGGER.info("List account funnel for tenant {}", tenantId);
@@ -417,7 +432,8 @@ public class OrderController {
             @RequestBody Order updatedOrder) {
         Order order = findById(tenantId, orderId);
 
-        NullAwareBeanUtils.copyNonNullProperties(updatedOrder, order, "id", "stockItem");
+        NullAwareBeanUtils.copyNonNullProperties(updatedOrder, order,
+                "id", "documents", "notes", "stockItem");
         mergeStockItem(updatedOrder, order);
 
         fixUpOrderItems(tenantId, order);
@@ -467,8 +483,9 @@ public class OrderController {
      * @return
      */
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "/{id}/order-items", method = RequestMethod.POST, consumes = { "application/json" })
+    @PostMapping(value = "/{id}/order-items", consumes = { "application/json" })
     @Transactional
+    @ApiOperation(value = "Add an item to the specified order.")
     public @ResponseBody ResponseEntity<Object> addOrderItem(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId, @RequestBody OrderItem newItem) {
@@ -498,8 +515,9 @@ public class OrderController {
     /**
      * Add a document to the specified order.
      */
-    @RequestMapping(value = "/{orderId}/documents", method = RequestMethod.POST)
+    @PostMapping(value = "/{orderId}/documents")
     @Transactional
+    @ApiOperation(value = "Add a document to the specified order.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId, @RequestBody Document doc) {
@@ -520,28 +538,12 @@ public class OrderController {
     }
 
     /**
-     * Add a document to the specified order.
-     *
-     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
-     * @return The document created.
-     */
-    @RequestMapping(value = "/{orderId}/documents", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody Document addDocument(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("orderId") Long orderId,
-            @RequestParam("author") String author,
-            @RequestParam("name") String name,
-            @RequestParam("url") String url) {
-
-        return addDocument(tenantId, orderId, new Document(author, name, url)).getBody();
-    }
-
-    /**
      * Add a note to the specified order.
      * @return the created note.
      */
-    @RequestMapping(value = "/{orderId}/notes", method = RequestMethod.POST)
+    @PostMapping(value = "/{orderId}/notes")
     @Transactional
+    @ApiOperation(value = "Add a note to the specified order.")
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId, @RequestBody Note note) {
@@ -562,29 +564,13 @@ public class OrderController {
     }
 
     /**
-     * Add a note to the specified order from its parts.
-     *
-     * <p>This is just a convenience method, see {@link #addNote(String, Long, Note)}
-     *
-     * @return The note created.
-     */
-    @RequestMapping(value = "/{orderId}/notes", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody Note addNote(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("orderId") Long orderId,
-            @RequestParam("author") String author,
-            @RequestParam("favorite") boolean favorite,
-            @RequestParam("content") String content) {
-        return addNote(tenantId, orderId, new Note(author, content, favorite)).getBody();
-    }
-
-    /**
      * Update an existing order with new feedback.
      * @return created feedback object.
      */
+    @PostMapping(value = "/{id}/feedback", consumes = { "application/json" })
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "/{id}/feedback", method = RequestMethod.POST, consumes = { "application/json" })
     @Transactional
+    @ApiOperation(value = "Add feedback to the specified order.")
     public @ResponseBody ResponseEntity<Object> addFeedback(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId, @RequestBody Feedback feedback) {
@@ -614,7 +600,8 @@ public class OrderController {
      * Update existing order feedback.
      * @return
      */
-    @RequestMapping(value = "/{id}/feedback/{feedbackId}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @PutMapping(value = "/{id}/feedback/{feedbackId}", consumes = { "application/json" })
+    @ApiOperation("Update feedback for the specified order.")
     public @ResponseBody ResponseEntity<Object> updateFeedback(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
@@ -677,8 +664,9 @@ public class OrderController {
      * @param orderId
      * @param stage
      */
-    @RequestMapping(value = "/{orderId}/stage/{stage}", method = RequestMethod.POST)
+    @PostMapping(value = "/{orderId}/stage/{stage}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @ApiOperation("Set the order's stage.")
     public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId,
@@ -688,10 +676,13 @@ public class OrderController {
         Order order = findById(tenantId, orderId);
 
         String oldStage = order.getStage();
-        if (!oldStage.equals(stage) || orderPlaced) {
+        if (oldStage == null || !oldStage.equals(stage) || orderPlaced) {
             order.setStage(stage);
             order.setDate(new Date());
-            orderRepo.save(order);
+            Order savedOrder = orderRepo.save(order);
+            if (!savedOrder.getStage().equalsIgnoreCase(stage)) {
+                throw new RuntimeException("Unable to save new stage");
+            }
         } else {
             LOGGER.warn("Skipping update of order {} from stage {} to {}",
                     orderId, oldStage, stage);

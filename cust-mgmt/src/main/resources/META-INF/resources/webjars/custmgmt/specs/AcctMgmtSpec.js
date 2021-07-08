@@ -50,9 +50,9 @@ describe("Account management", function() {
       type: 'test'
   }
   
-  beforeEach(function() {
+  beforeAll(function() {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
   });
 
   it("searches to take an initial baseline", function(done) {
@@ -100,6 +100,7 @@ describe("Account management", function() {
     });
   });
 
+  // TODO add test for POST form as used by the client
   it("adds a note to the account", function(done) {
     $rh.ajax({
       url: $rh.tenantUri(account)+'/notes',
@@ -115,6 +116,7 @@ describe("Account management", function() {
     });
   });
 
+  // TODO add test for POST form as used by the client
   it("adds a document link to the account", function(done) {
     $rh.ajax({
       url: $rh.tenantUri(account)+'/documents',
@@ -145,19 +147,18 @@ describe("Account management", function() {
     });
   });
 
-// TODO not yet implemented
-//  it("sets the stage of the account", function(done) {
-//    $rh.ajax({
-//      url: $rh.tenantUri(account)+'/stage/tested',
-//      type: 'POST',
-//      contentType: 'application/json',
-//      data: JSON.stringify(activity),
-//      success: completeHandler = function(data, textStatus, jqXHR) {
-//        expect(jqXHR.status).toEqual(200);
-//        done();
-//      }
-//    });
-//  });
+  it("sets the stage of the account", function(done) {
+    $rh.ajax({
+      url: $rh.tenantUri(account)+'/stage/tested',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(activity),
+      success: completeHandler = function(data, textStatus, jqXHR) {
+        expect(jqXHR.status).toEqual(204);
+        done();
+      }
+    });
+  });
   
   it("updates the new account", function(done) {
     account.phone1 = '+44 7777 123456';
@@ -295,7 +296,7 @@ describe("Account management", function() {
     });
   });
   
-  afterEach(function() {
+  afterAll(function() {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 });

@@ -63,8 +63,6 @@ import io.swagger.annotations.ApiOperation;
 import link.omny.custmgmt.internal.CsvImporter;
 import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.model.Account;
-import link.omny.custmgmt.model.Activity;
-import link.omny.custmgmt.model.ActivityType;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomContactField;
 import link.omny.custmgmt.model.views.ContactViews;
@@ -72,8 +70,11 @@ import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
+import link.omny.supportservices.model.Activity;
+import link.omny.supportservices.model.ActivityType;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * REST web service for uploading and accessing a file of JSON Contacts (over
@@ -116,7 +117,8 @@ public class ContactController {
      * @throws IOException
      *             If cannot parse the JSON.
      */
-    @RequestMapping(value = "/uploadjson", method = RequestMethod.POST)
+    @PostMapping(value = "/uploadjson")
+    @ApiIgnore
     public @ResponseBody List<EntityModel<Contact>> handleFileUpload(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
@@ -148,7 +150,8 @@ public class ContactController {
      * @throws IOException
      *             If cannot parse the JSON.
      */
-    @RequestMapping(value = "/uploadcsv", method = RequestMethod.POST)
+    @PostMapping(value = "/uploadcsv")
+    @ApiIgnore
     public @ResponseBody Iterable<Contact> handleCsvFileUpload(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
@@ -174,7 +177,8 @@ public class ContactController {
      *
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/contacts.csv", method = RequestMethod.GET, produces = "text/csv")
+    @GetMapping(value = "/contacts.csv", produces = "text/csv")
+    @ApiOperation(value = "Retrieves the contacts for a specific tenant.")
     public @ResponseBody ResponseEntity<String> listForTenantAsCsvAlt(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -182,8 +186,9 @@ public class ContactController {
         return listForTenantAsCsv(tenantId, page, limit);
     }
 
-    @RequestMapping(value = "/archive", method = RequestMethod.POST, headers = "Accept=application/json")
+    @PostMapping(value = "/archive")
     @Transactional
+    @ApiIgnore
     public @ResponseBody Integer archiveContacts(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "before", required = false) String before,
@@ -204,7 +209,8 @@ public class ContactController {
      *
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
+    @GetMapping(value = "/", produces = "text/csv")
+    @ApiIgnore
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -252,7 +258,6 @@ public class ContactController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit,
             @RequestParam(value = "returnFull", required = false) boolean returnFull) {
-        // TODO optimise with light value object?
         return addLinks(tenantId, listForTenant(tenantId, page, limit));
     }
 
@@ -298,14 +303,13 @@ public class ContactController {
      *
      * @return contacts for that tenant.
      */
-    @RequestMapping(value = "/searchByAccountNameLastNameFirstName", method = RequestMethod.GET, params = {
-            "accountName", "lastName", "firstName" })
-    @JsonView(ContactViews.Summary.class)
-    public @ResponseBody List<EntityModel<Contact>> listForAccountNameLastNameFirstName(
+    @GetMapping(value = "/{lastName}/{firstName}/{accountName}")
+    @ApiOperation("Return the matching contacts for the specified tenant.")
+    public @ResponseBody List<EntityModel<Contact>> findByAccountNameLastNameFirstName(
             @PathVariable("tenantId") String tenantId,
-            @RequestParam("lastName") String lastName,
-            @RequestParam("firstName") String firstName,
-            @RequestParam("accountName") String accountName) {
+            @PathVariable("accountName") String accountName,
+            @PathVariable("lastName") String lastName,
+            @PathVariable("firstName") String firstName) {
         LOGGER.debug("List contacts for account and name {}, {} {}",
                 accountName, lastName, firstName);
 
@@ -320,28 +324,13 @@ public class ContactController {
      * Return just the matching contacts (probably will be one in almost every
      * case).
      *
-     * @return contacts for that tenant.
-     */
-    @RequestMapping(value = "/{lastName}/{firstName}/{accountName}", method = RequestMethod.GET)
-    public @ResponseBody List<EntityModel<Contact>> getForAccountNameLastNameFirstName(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("accountName") String accountName,
-            @PathVariable("lastName") String lastName,
-            @PathVariable("firstName") String firstName) {
-        return listForAccountNameLastNameFirstName(tenantId, lastName,
-                firstName, accountName);
-    }
-
-    /**
-     * Return just the matching contacts (probably will be one in almost every
-     * case).
-     *
      * @return contacts for that tenant with the specified email address.
      */
     @Transactional
-    @RequestMapping(value = "/searchByEmail", method = RequestMethod.GET, params = { "email" })
+    @GetMapping(value = "/searchByEmail", params = { "email" })
     @JsonView(ContactViews.Summary.class)
-    public @ResponseBody List<EntityModel<Contact>> searchByEmail(
+    @ApiIgnore
+    public @ResponseBody List<EntityModel<Contact>> findByEmail(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("email") String email) {
         LOGGER.debug("List contacts for email {}", email);
@@ -369,7 +358,8 @@ public class ContactController {
      *
      * @return contacts for that tenant with the matching tag.
      */
-    @RequestMapping(value = "/findByTag", method = RequestMethod.GET, params = { "tag" })
+    @GetMapping(value = "/findByTag", params = { "tag" })
+    @ApiIgnore
     public @ResponseBody List<EntityModel<Contact>> findByTag(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("tag") String tag) {
@@ -413,6 +403,7 @@ public class ContactController {
      */
     @GetMapping(value = "/findByAccountId")
     @JsonView(ContactViews.Summary.class)
+    @ApiOperation("Return contacts linked to the specified account.")
     public @ResponseBody List<EntityModel<Contact>> findByAccountId(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("accountId") String accountId) {
@@ -425,7 +416,8 @@ public class ContactController {
     /**
      * @return contacts matching the specified account type.
      */
-    @RequestMapping(value = "/findByAccountType", method = RequestMethod.GET)
+    @GetMapping(value = "/findByAccountType")
+    @ApiIgnore
     public @ResponseBody List<EntityModel<Contact>> findByAccountType(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("accountType") String accountType) {
@@ -438,7 +430,8 @@ public class ContactController {
      *
      * @return contacts matching the custom field for that tenant.
      */
-    @RequestMapping(value = "/findByCustomField/{key}/{value}", method = RequestMethod.GET)
+    @GetMapping(value = "/findByCustomField/{key}/{value}")
+    @ApiIgnore
     public @ResponseBody List<EntityModel<Contact>> findByCustomField(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("key") String key,
@@ -456,8 +449,9 @@ public class ContactController {
      *
      * @return contacts for that tenant with the matching tag.
      */
-    @RequestMapping(value = "/findByUuid", method = RequestMethod.GET, params = { "uuid" })
+    @GetMapping(value = "/findByUuid", params = { "uuid" })
     @Transactional
+    @ApiIgnore
     public @ResponseBody EntityModel<Contact> findByUuid(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("uuid") String uuid) {
@@ -475,8 +469,8 @@ public class ContactController {
      *
      * @return contacts for that tenant with the matching tag.
      */
-    @RequestMapping(value = "/findActive", method = RequestMethod.GET)
-    @Transactional
+    @GetMapping(value = "/findActive")
+    @ApiIgnore
     public @ResponseBody List<EntityModel<Contact>> findActive(
             @PathVariable("tenantId") String tenantId) {
         LOGGER.debug("Find active contacts for tenant {}", tenantId);
@@ -643,7 +637,9 @@ public class ContactController {
     /**
      * Change the sale stage the contact is at.
      */
-    @RequestMapping(value = "/{contactId}/stage/{stage}", method = RequestMethod.POST)
+    @PostMapping(value = "/{contactId}/stage/{stage}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation("Sets the stage for the specified contact.")
     public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
@@ -652,7 +648,7 @@ public class ContactController {
 
         Contact contact = findById(tenantId, contactId);
         String oldStage = contact.getStage();
-        if (!oldStage.equals(stage)) {
+        if (oldStage == null || !stage.equals(oldStage)) {
             contact.setStage(stage);
             contactRepo.save(contact);
 
@@ -666,6 +662,7 @@ public class ContactController {
      * Set the account this contact belongs to.
      */
     @PutMapping(value = "/{contactId}/account", consumes = "text/uri-list")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     @Transactional
     @ApiOperation(value = "Link the contact to an existing account.")
     public @ResponseBody void setAccount(
@@ -691,13 +688,13 @@ public class ContactController {
 
     /**
      * Add an activity to the specified contact.
-     * @return the created activity.
      */
     @PostMapping(value = "/{contactId}/activities")
     @ApiOperation(value = "Add an activity to the specified contact.")
     public @ResponseBody ResponseEntity<Activity> addActivity(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId, @RequestBody Activity activity) {
+            @PathVariable("contactId") Long contactId,
+            @RequestBody Activity activity) {
         Contact contact = findById(tenantId, contactId);
         contact.getActivities().add(activity);
         contact.setLastUpdated(new Date());
@@ -719,13 +716,10 @@ public class ContactController {
      * Add an activity to the specified contact.
      * @return the created activity.
      */
-    @RequestMapping(value = "/{contactId}/activities", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
-    public @ResponseBody ResponseEntity<Activity> addActivity(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId,
-            @RequestParam("type") String type,
-            @RequestParam("content") String content) {
-        return addActivity(tenantId, contactId, new Activity(ActivityType.valueOf(type), new Date(), content));
+    protected Activity addActivity(String tenantId, Long contactId, String type,
+            String content) {
+        return addActivity(tenantId, contactId, new Activity(
+                ActivityType.valueOf(type), new Date(), content)).getBody();
     }
 
     /**

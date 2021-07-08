@@ -69,6 +69,8 @@ import link.omny.custmgmt.model.views.ContactViews;
 import link.omny.supportservices.internal.CsvUtils;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.Activity;
+import link.omny.supportservices.model.ActivityType;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
@@ -121,7 +123,6 @@ public class Contact implements Serializable {
     @Column(name = "first_name")
     private String firstName;
 
-    // @NotNull
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
     @Column(name = "last_name")
@@ -394,8 +395,7 @@ public class Contact implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, /*mappedBy = "contact", */targetEntity = CustomContactField.class)
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
-    @JsonManagedReference
-//    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Detailed.class })
     private Set<CustomContactField> customFields;
 
     public Set<CustomContactField> getCustomFields() {
@@ -405,12 +405,11 @@ public class Contact implements Serializable {
         return customFields;
     }
 
-    public Contact setCustomFields(List<CustomContactField> fields) {
+    public void setCustomFields(List<CustomContactField> fields) {
         for (CustomContactField newField : fields) {
             setCustomField(newField);
         }
         setLastUpdated(new Date());
-        return this;
     }
 
     public String getCustomFieldValue(@NotNull String fieldName) {
@@ -443,20 +442,8 @@ public class Contact implements Serializable {
 
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
-    @ManyToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, optional = true)
     @NotFound(action = NotFoundAction.IGNORE)
-    // TODO this fixes the inifite recursion but instead we get
-    // [2015-03-04 15:09:15.977] boot - 15472 ERROR [http-nio-8082-exec-7] ---
-    // AbstractRepositoryRestController: Can not handle managed/back reference
-    // 'defaultReference': type: value deserializer of type
-    // org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$UriStringDeserializer
-    // does not support them
-    // java.lang.IllegalArgumentException: Can not handle managed/back reference
-    // 'defaultReference': type: value deserializer of type
-    // org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$UriStringDeserializer
-    // does not support them
-    // at
-    // com.fasterxml.jackson.databind.JsonDeserializer.findBackReference(JsonDeserializer.java:310)
     @JsonManagedReference
     private Account account;
 

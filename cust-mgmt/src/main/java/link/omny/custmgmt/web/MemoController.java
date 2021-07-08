@@ -35,27 +35,30 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import link.omny.custmgmt.model.Memo;
 import link.omny.custmgmt.repositories.MemoRepository;
 import link.omny.custmgmt.repositories.MemoSignatoryRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
-import link.omny.supportservices.model.Note;
-import link.omny.supportservices.repositories.NoteRepository;
-import lombok.Data;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * REST web service for uploading and accessing a file of JSON memos (over
@@ -63,8 +66,9 @@ import lombok.Data;
  * 
  * @author Tim Stephenson
  */
-@Controller
+@RestController
 @RequestMapping(value = "/{tenantId}/memos")
+@Api(tags = "Memo API")
 public class MemoController {
 
     private static final Logger LOGGER = LoggerFactory
@@ -75,9 +79,6 @@ public class MemoController {
 
     @Autowired
     private MemoSignatoryRepository memoSignatoryRepo;
-
-    @Autowired
-    private NoteRepository noteRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -94,7 +95,8 @@ public class MemoController {
      * @throws IOException
      *             If cannot parse the JSON.
      */
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    @PostMapping(value = "/upload")
+    @ApiIgnore
     public @ResponseBody Iterable<Memo> handleFileUpload(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
@@ -118,10 +120,10 @@ public class MemoController {
     /**
      * Create a new memo.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "/", method = RequestMethod.POST)
-    public @ResponseBody ResponseEntity<EntityModel<Memo>> create(
+    @PostMapping(value = "/")
+    @ApiOperation(value = "Create a new memo.")
+    public @ResponseBody ResponseEntity<Void> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Memo memo) {
         memo.setTenantId(tenantId);
@@ -132,7 +134,7 @@ public class MemoController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(entity.getLink("self").get().toUri());
 
-        return new ResponseEntity(headers, HttpStatus.CREATED);
+        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
     /**
@@ -140,7 +142,8 @@ public class MemoController {
      * 
      * @return memos for that tenant.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(value = "/",  produces = { "application/json" })
+    @ApiOperation(value = "List a tenant's memos.")
     public @ResponseBody List<EntityModel<Memo>> listForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -152,7 +155,8 @@ public class MemoController {
     /**
      * @return memos for the specified tenant and status.
      */
-    @RequestMapping(value = "/findByStatus/{status}", method = RequestMethod.GET)
+    @GetMapping(value = "/findByStatus/{status}")
+    @ApiOperation(value = "Find memos with the specified status.")
     public @ResponseBody List<EntityModel<Memo>> findByStatusForTenant(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("status") String status,
@@ -187,25 +191,20 @@ public class MemoController {
      * @return memo for that tenant with the matching name or id.
      * @throws BusinessEntityNotFoundException
      */
-    @RequestMapping(value = "/{idOrName}", method = RequestMethod.GET)
-//    @Transactional
-    public @ResponseBody Memo findById(
+    @GetMapping(value = "/{idOrName}")
+    @ApiOperation(value = "Find the specified memo.")
+    public @ResponseBody EntityModel<Memo> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("idOrName") String idOrName) {
         LOGGER.debug("Find memo {}", idOrName);
 
-        Memo memo;
         try {
-            memo = findById(tenantId, Long.parseLong(idOrName));
+            return addLinks(tenantId, findById(tenantId, Long.parseLong(idOrName)));
         } catch (NumberFormatException e) {
-            memo = memoRepo.findByName(idOrName, tenantId);
+            return addLinks(tenantId, memoRepo.findByName(idOrName, tenantId)
+                    .orElseThrow(() -> new BusinessEntityNotFoundException(
+                            Memo.class, idOrName)));
         }
-        if (memo == null) {
-            LOGGER.error("Unable to find memo from {}", idOrName);
-            throw new BusinessEntityNotFoundException(Memo.class, idOrName);
-        }
-        return memo;
-//        return wrap(memo, new MemoResource());
     }
 
     /**
@@ -216,9 +215,11 @@ public class MemoController {
      * @return memo for that tenant with the matching name or id.
      * @throws BusinessEntityNotFoundException
      */
-    @RequestMapping(value = "/{idOrName}/clone", method = RequestMethod.POST)
+    @PostMapping(value = "/{idOrName}/clone")
     @Transactional
-    public @ResponseBody EntityModel<Memo> clone(
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "Clone an existing memo, resetting fields as necessary.")
+    public @ResponseBody ResponseEntity<EntityModel<Memo>> clone(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("idOrName") String idOrName) {
         LOGGER.debug("Clone memo {}", idOrName);
@@ -227,24 +228,27 @@ public class MemoController {
         try {
             memo = findById(tenantId, Long.parseLong(idOrName));
         } catch (NumberFormatException e) {
-            memo = memoRepo.findByName(idOrName, tenantId);
-        }
-        if (memo == null) {
-            LOGGER.error("Unable to find memo from {}", idOrName);
-            throw new BusinessEntityNotFoundException(Memo.class, idOrName);
+            memo = memoRepo.findByName(idOrName, tenantId)
+                    .orElseThrow(() -> new BusinessEntityNotFoundException(
+                            Memo.class, idOrName));
         }
         Memo resource = new Memo();
         BeanUtils.copyProperties(memo, resource, "id");
-        resource.setName(memo.getName() + "Copy");
-        resource.setStatus("Draft");
-        memoRepo.save(resource);
-        return addLinks(tenantId, resource);
+        resource.setName(memo.getName() + "Copy").setStatus("Draft")
+                .setCreated(new Date()).setLastUpdated(null);
+        EntityModel<Memo> entity = addLinks(tenantId, memoRepo.save(resource));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(entity.getLink("self").get().toUri());
+
+        return new ResponseEntity<EntityModel<Memo>>(entity, headers, HttpStatus.CREATED);
     }
 
     /**
-     * @return Export all memos for the specified tenant as CSV.
+     * @return Export all memos for the specified tenant.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET, produces = { "text/csv" })
+    @GetMapping(value = "/", produces = { "text/csv" })
+    @ApiOperation(value = "Export a tenant's memos.")
     public @ResponseBody List<Memo> listAsCsv(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -266,8 +270,9 @@ public class MemoController {
      * Update an existing memo.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @PutMapping(value = "/{id}", consumes = { "application/json" })
     @Transactional
+    @ApiOperation(value = "Update an existing memo.")
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long memoId,
             @RequestBody Memo updatedMemo) {
@@ -283,54 +288,13 @@ public class MemoController {
      * Delete an existing memo.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/{id}")
+    @ApiOperation(value = "Delete the specified memo.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long memoId) {
         memoRepo.deleteById(memoId);
     }
 
-    /**
-     * Add a note to the specified memo.
-     */
-    @RequestMapping(value = "/{messageId}/notes", method = RequestMethod.POST)
-    public @ResponseBody void addNote(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("messageId") Long messageId,
-            @RequestParam("author") String author,
-            @RequestParam("content") String content) {
-        addNote(tenantId, messageId, new Note(author, content));
-    }
-
-    /**
-     * Add a note to the specified message.
-     */
-    // TODO Jackson cannot deserialise document because of message reference
-    // @RequestMapping(value = "/{messageId}/notes", method = RequestMethod.PUT)
-    public @ResponseBody void addNote(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("messageId") Long messageId, @RequestBody Note note) {
-        Memo message = findById(tenantId, messageId);
-        // note.setMessage(message);
-        noteRepo.save(note);
-        // necessary to force a save
-        message.setLastUpdated(new Date());
-        memoRepo.save(message);
-        // Similarly cannot return object until solve Jackson object cycle
-        // return note;
-    }
-
-    @Data
-    public static class ShortMemo {
-        private String selfRef;
-        private String name;
-        private String title;
-        private String status;
-        private String owner;
-        private String requiredVars;
-        private Date created;
-        private Date lastUpdated;
-      }
-    
     protected List<EntityModel<Memo>> addLinks(final String tenantId, final List<Memo> list) {
         ArrayList<EntityModel<Memo>> entities = new ArrayList<EntityModel<Memo>>();
         for (Memo memo : list) {
@@ -341,7 +305,7 @@ public class MemoController {
 
     protected EntityModel<Memo> addLinks(final String tenantId, final Memo memo) {
         return EntityModel.of(memo,
-                linkTo(methodOn(MemoController.class).findById(tenantId, memo.getId()))
+                linkTo(methodOn(MemoController.class).findEntityById(tenantId, memo.getId().toString()))
                         .withSelfRel());
     }
 }

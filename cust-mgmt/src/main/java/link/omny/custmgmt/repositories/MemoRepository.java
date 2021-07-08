@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -32,6 +33,7 @@ public interface MemoRepository extends CrudRepository<Memo, Long> {
 
     @Override
     @Query("SELECT m FROM Memo m WHERE (m.status IS NULL OR m.status != 'deleted') AND m.id = :id")
+    @EntityGraph("memoWithAll")
     Optional<Memo> findById(@Param("id") Long id);
 
     @Query("SELECT m FROM Memo m WHERE m.tenantId = :tenantId AND (status IS NULL OR status != 'deleted') ORDER BY m.lastUpdated DESC")
@@ -50,7 +52,7 @@ public interface MemoRepository extends CrudRepository<Memo, Long> {
             @Param("tenantId") String tenantId, Pageable pageable);
 
     @Query("SELECT m FROM Memo m WHERE m.tenantId = :tenantId AND m.name = :name AND (status IS NULL OR status != 'deleted')")
-    Memo findByName(@Param("name") String name,
+    Optional<Memo> findByName(@Param("name") String name,
             @Param("tenantId") String tenantId);
     
     @Override

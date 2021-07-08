@@ -1,9 +1,0 @@
-{
-    "lastName":"Smithers",
-    "firstName":"Waylon",
-    "email":"smithers@springfieldpower.com",
-    "phone1":"44987654321",
-    "type":"Enquiry",
-    "message":"Hello there, I need a prrocess to track our spent fuel",
-    "tenantId":"omny"
-}

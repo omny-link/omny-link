@@ -381,8 +381,6 @@ var ractive = new BaseRactive({
         ractive.set('saveObserver',false);
         ractive.set('current', data);
         ractive.initControls();
-        // who knows why this is needed, but it is, at least for first time rendering
-        $('.autoNumeric').autoNumeric('update',{});
         ractive.initEditor();
         if (ractive.get('current.status')=='Published') {
           $('#currentForm input,#currentForm select,#currentForm textarea').prop('disabled',true).prop('readonly',true);

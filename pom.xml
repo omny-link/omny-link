@@ -9,7 +9,7 @@
   <packaging>pom</packaging>
   <inceptionYear>2015</inceptionYear>
   <version>3.0.1</version>
-  
+
   <organization>
     <name>Omny Link</name>
     <url>https://github.com/omny-link</url>
@@ -24,12 +24,8 @@
 
   <properties>
     <batik.version>1.9.1</batik.version>
-    <jasmine-boot.version>1.0.0.20181021</jasmine-boot.version>
+    <jasmine-boot.version>1.1.0</jasmine-boot.version>
     <java.version>1.8</java.version>
-    <javax-json.version>1.0.4.20170227</javax-json.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <omny-link.version>${project.version}</omny-link.version>
-    <onedecision.version>1.2.0-RC1</onedecision.version>
     <kp-icons.version>3.1.0</kp-icons.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>${project.version}</omny-link.version>

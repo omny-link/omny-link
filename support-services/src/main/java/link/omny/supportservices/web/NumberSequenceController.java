@@ -33,12 +33,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import link.omny.supportservices.model.NumberSequence;
 import link.omny.supportservices.repositories.NumberSequenceRepository;
 import link.omny.supportservices.views.NumberSequenceViews;
 
 @Controller
 @RequestMapping(value = "/{tenantId}/sequences")
+@Api(tags = "Sequence API")
 public class NumberSequenceController {
 
     @Autowired
@@ -47,6 +50,7 @@ public class NumberSequenceController {
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
     @JsonView(NumberSequenceViews.Summary.class)
     @Transactional(value = TxType.REQUIRED)
+    @ApiOperation(value = "Get the next number in the specified sequence.")
     public @ResponseBody NumberSequence getNext(
             @PathVariable("name") @NotNull String name,
             @PathVariable("tenantId") @NotNull String tenantId) {

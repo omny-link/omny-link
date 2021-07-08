@@ -33,7 +33,7 @@ public class JsEnvironmentController {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(JsEnvironmentController.class);
 
-    protected static final String ENV = "var $env = (function () {\n" +
+    public static final String ENV = "var $env = (function () {\n" +
             "  var me = {\n" +
             "    appName: '%1$s',\n" +
             "    server: '%2$s',\n" +
@@ -54,9 +54,6 @@ public class JsEnvironmentController {
 
     @Value("${crm.application.base-uri:}")
     protected String restBaseUri;
-
-    @Value("${crm.application.tenant-config-url:}")
-    protected String tenantConfigUrl;
 
     public String getRestBaseUri() {
         if (restBaseUri.length() == 0) {

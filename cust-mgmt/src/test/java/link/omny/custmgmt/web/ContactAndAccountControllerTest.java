@@ -34,12 +34,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import link.omny.custmgmt.Application;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.CustomContactField;
 
 /**
  * @author Tim Stephenson
@@ -50,9 +48,6 @@ import link.omny.custmgmt.model.Contact;
 public class ContactAndAccountControllerTest {
 
     private static final String TENANT_ID = "test";
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private ContactController contactController;
@@ -154,8 +149,6 @@ public class ContactAndAccountControllerTest {
 
         Contact contact2 = contactController.findById(TENANT_ID, contactId);
         assertNotNull(contact2.getFirstContact());
-        // TODO this should be null but is not
-        // assertNull(contact2.getLastUpdated());
 
         // UPDATE CONTACT
         contact.setFirstName(contact.getFirstName() + "Updated");
@@ -165,7 +158,7 @@ public class ContactAndAccountControllerTest {
         contactController.update(TENANT_ID, contactId, contact);
 
         // CHECK UPDATED CONTACT
-        List<EntityModel<Contact>> contactList = contactController.searchByEmail(TENANT_ID,
+        List<EntityModel<Contact>> contactList = contactController.findByEmail(TENANT_ID,
                 contact.getEmail());
         assertEquals(1, contactList.size());
         assertContactEquals(contact, acct, contactList.get(0).getContent());
@@ -186,37 +179,17 @@ public class ContactAndAccountControllerTest {
     }
 
     protected Contact getContact() throws IOException {
-        String contactJson = "{\"firstName\":\"Fred\","
-                + "\"lastName\":\"Flintstone\","
-                + "\"email\":\"fred@bedrockslateandgravel.com\","
-                + "\"customFields\":{ \"eyeColor\": \"blue\" }}";
-
-        Contact contact = objectMapper.readValue(contactJson,
-                new TypeReference<Contact>() {
-                });
-        assertNotNull(contact);
-        assertEquals("Fred", contact.getFirstName());
-        assertEquals("Flintstone", contact.getLastName());
-        assertEquals("fred@bedrockslateandgravel.com", contact.getEmail());
-        assertEquals("blue", contact.getCustomFieldValue("eyeColor"));
-
-        return contact;
+        return new Contact()
+                .setFirstName("Fred")
+                .setLastName("Flintstone")
+                .setEmail("fred@bedrockslateandgravel.com")
+                .addCustomField(new CustomContactField("eyeColor", "blue"));
     }
 
     protected Account getAccount() throws IOException {
-        String acctJson = "{\"name\":\"trademark\","
-                + "\"companyNumber\":null,\"aliases\":null,"
-                + "\"businessWebsite\":\"\",\"shortDesc\":null,"
-                + "\"description\":\"test\",\"incorporationYear\":null,"
-                + "\"noOfEmployees\":null,\"tenantId\":\"client1\","
-                + "\"firstContact\":null,\"lastUpdated\":null,"
-                + "\"customFields\":{}}";
-
-        Account acct = objectMapper.readValue(acctJson,
-                new TypeReference<Account>() {
-                });
-        assertNotNull(acct);
-
-        return acct;
+        return new Account()
+                .setName("trademark")
+                .setDescription("test")
+                .setTenantId("client1");
     }
 }

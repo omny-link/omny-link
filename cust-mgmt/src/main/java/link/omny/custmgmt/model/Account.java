@@ -49,7 +49,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -60,6 +59,7 @@ import link.omny.custmgmt.model.views.AccountViews;
 import link.omny.custmgmt.model.views.ContactViews;
 import link.omny.supportservices.internal.CsvUtils;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.Activity;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
@@ -314,17 +314,16 @@ public class Account implements Serializable {
     private Date lastUpdated;
 
     @OneToMany(mappedBy = "account", targetEntity = Contact.class)
-    // TODO See Contact.account for details of limitation
     @JsonBackReference
-    private List<Contact> contact;
+    private Set<Contact> contact;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "account", targetEntity = CustomAccountField.class)
-    @JsonManagedReference
     @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
+    @JsonView( { AccountViews.Detailed.class } )
     private Set<CustomAccountField> customFields;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "account_id")
     @JsonView({ AccountViews.Detailed.class })
     private Set<Note> notes;

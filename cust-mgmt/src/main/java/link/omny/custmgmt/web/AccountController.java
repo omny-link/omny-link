@@ -63,16 +63,17 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.model.Account;
-import link.omny.custmgmt.model.Activity;
-import link.omny.custmgmt.model.ActivityType;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.CustomAccountField;
 import link.omny.custmgmt.model.views.AccountViews;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
+import link.omny.supportservices.model.Activity;
+import link.omny.supportservices.model.ActivityType;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * REST web service for uploading and accessing a file of JSON Accounts (over
@@ -115,7 +116,7 @@ public class AccountController {
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                .path("/{id}/activities/{activityId}")
+                .path("/accounts/{id}/activities/{activityId}")
                 .buildAndExpand(tenantId, account.getId(), activity.getId())
                 .toUri();
         headers.setLocation(uri);
@@ -135,7 +136,8 @@ public class AccountController {
      * @throws IOException
      *             If cannot parse the JSON.
      */
-    @RequestMapping(value = "/accounts/upload", method = RequestMethod.POST)
+    @PostMapping(value = "/accounts/upload")
+    @ApiIgnore
     public @ResponseBody Iterable<Account> handleFileUpload(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
@@ -157,8 +159,9 @@ public class AccountController {
         return result;
     }
 
-    @RequestMapping(value = "/accounts/archive", method = RequestMethod.POST, headers = "Accept=application/json")
+    @PostMapping(value = "/accounts/archive")
     @Transactional
+    @ApiIgnore
     public @ResponseBody Integer archiveAccounts(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "before", required = false) String before) {
@@ -174,7 +177,9 @@ public class AccountController {
     /**
      * @return Accounts for a specific tenant.
      */
-    @RequestMapping(value = "/accounts/", method = RequestMethod.GET)
+    @GetMapping(value = "/accounts/")
+    @JsonView(value = AccountViews.Summary.class)
+    @ApiOperation(value = "Retrieves the accounts for a specific tenant.")
     public @ResponseBody List<EntityModel<Account>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -203,7 +208,8 @@ public class AccountController {
      *
      * @return accounts for that tenant.
      */
-    @RequestMapping(value = "/accounts/", method = RequestMethod.GET, produces = "text/csv")
+    @GetMapping(value = "/accounts/", produces = "text/csv")
+    @ApiOperation(value = "Retrieves the accounts for a specific tenant.")
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -295,12 +301,15 @@ public class AccountController {
      * @return the account with this id.
      * @throws BusinessEntityNotFoundException
      */
-    @RequestMapping(value = "/accounts/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/accounts/{id}")
+    @JsonView(AccountViews.Detailed.class)
+    @Transactional
+    @ApiOperation("Return the specified account.")
     public @ResponseBody EntityModel<Account> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String idOrCode)
             throws BusinessEntityNotFoundException {
-        LOGGER.debug("Find account for id {}", idOrCode);
+        LOGGER.info("Find account for id {}", idOrCode);
 
         Account account;
         try {
@@ -318,7 +327,8 @@ public class AccountController {
      * @return the account with this name.
      * @throws BusinessEntityNotFoundException
      */
-    @RequestMapping(value = "/accounts/findByName/{name}", method = RequestMethod.GET)
+    @GetMapping(value = "/accounts/findByName/{name}")
+    @ApiOperation("Return the specified account.")
     public @ResponseBody EntityModel<Account> findByName(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("name") String name)
@@ -340,7 +350,8 @@ public class AccountController {
      * @return the account with this name.
      * @throws BusinessEntityNotFoundException
      */
-    @RequestMapping(value = "/accounts/findByCustomField/{name}/{value}", method = RequestMethod.GET)
+    @GetMapping(value = "/accounts/findByCustomField/{name}/{value}")
+    @ApiIgnore
     public @ResponseBody List<EntityModel<Account>> findByCustomField(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("name") String name,
@@ -376,6 +387,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{id}/customFields/", consumes = "application/json")
+    @ApiIgnore
     public @ResponseBody void updateCustomFields(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
             @RequestBody Object customFields) throws IOException {
@@ -412,6 +424,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{accountId}/alerts/")
+    @ApiIgnore
     public @ResponseBody void setAlerts(@PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestBody String alerts) {
@@ -426,7 +439,8 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{accountId}/stage/{stage}")
-    public @ResponseBody ResponseEntity<Account> setStage(
+    @ApiOperation("Sets the stage for the specified account.")
+    public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @PathVariable("stage") String stage) {
@@ -442,9 +456,6 @@ public class AccountController {
                     new Date(), String.format("From %1$s to %2$s", oldStage, stage));
             addActivity(tenantId, accountId, activity);
         }
-
-        return new ResponseEntity<Account>(account,
-                new HttpHeaders(), HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -454,6 +465,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{accountId}/tags/")
+    @ApiIgnore
     public @ResponseBody void setTags(@PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestBody String tags) {
@@ -480,7 +492,7 @@ public class AccountController {
 
          HttpHeaders headers = new HttpHeaders();
          URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                 .path("/{id}/documents/{docId}")
+                 .path("/accounts/{id}/documents/{docId}")
                  .buildAndExpand(tenantId, account.getId(), doc.getId())
                  .toUri();
          headers.setLocation(uri);
@@ -506,7 +518,7 @@ public class AccountController {
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                .path("/{id}/notes/{noteId}")
+                .path("/accounts/{id}/notes/{noteId}")
                 .buildAndExpand(tenantId, account.getId(), note.getId())
                 .toUri();
         headers.setLocation(uri);
@@ -519,6 +531,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/accounts/{id}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "Delete the specified account.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId) {
 
