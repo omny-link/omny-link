@@ -123,7 +123,6 @@ public class Contact implements Serializable {
     @Column(name = "first_name")
     private String firstName;
 
-    // @NotNull
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
     @Column(name = "last_name")
@@ -396,8 +395,7 @@ public class Contact implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, /*mappedBy = "contact", */targetEntity = CustomContactField.class)
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
-    @JsonManagedReference
-//    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Detailed.class })
     private Set<CustomContactField> customFields;
 
     public Set<CustomContactField> getCustomFields() {

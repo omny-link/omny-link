@@ -662,6 +662,7 @@ public class ContactController {
      * Set the account this contact belongs to.
      */
     @PutMapping(value = "/{contactId}/account", consumes = "text/uri-list")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     @Transactional
     @ApiOperation(value = "Link the contact to an existing account.")
     public @ResponseBody void setAccount(

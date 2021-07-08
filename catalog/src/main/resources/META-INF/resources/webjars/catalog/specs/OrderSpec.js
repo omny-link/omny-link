@@ -51,7 +51,7 @@ describe("Product catalogue", function() {
 
   beforeEach(function() {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
   });
 
   it("searches to take an initial baseline", function(done) {

@@ -49,10 +49,10 @@ describe("Contact management", function() {
       content: 'Annual review',
       type: 'TEST'
   }
-  
-  beforeEach(function() {
+
+  beforeAll(function() {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
   });
 
   it("searches to take an initial baseline", function(done) {
@@ -199,7 +199,7 @@ describe("Contact management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(account),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/\/accounts\/[0-9]/);
         expect(jqXHR.status).toEqual(201);
@@ -211,7 +211,7 @@ describe("Contact management", function() {
           type: 'PUT',
           contentType: 'text/uri-list',
           data: location,
-          success: completeHandler = function(data, textStatus, jqXHR) {
+          success: function(data, textStatus, jqXHR) {
             console.log('linked account: '+location+' to '+contactAccountLink);
             done();
           }
@@ -322,7 +322,7 @@ describe("Contact management", function() {
     });
   });
   
-  afterEach(function() {
+  afterAll(function() {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 });

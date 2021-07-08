@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
@@ -15,18 +16,30 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.web.server.LocalServerPort;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class RestApiIT {
+import link.omny.server.web.JsEnvironmentController;
+
+@SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+public class RestApiTest {
+
+    @LocalServerPort
+    private String port;
 
     private static ScheduledExecutorService globalScheduledThreadPool = Executors.newScheduledThreadPool(20);
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
     public void testAccountApi() throws IOException {
+        long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
                 "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
                 "classpath:META-INF/resources/webjars/custmgmt/specs/AcctMgmtSpec.js" );
@@ -34,10 +47,14 @@ public class RestApiIT {
         JsonNode report = runScript(sb);
         assertEquals(15, report.get("suite").get("totalSpecsDefined").asInt());
         assertNoFailedExpectations(report);
+        System.out.println(
+                "Account suite took " + (System.currentTimeMillis() - start) + " (ms)");
     }
 
     @Test
+    @Timeout(value = 5, unit = TimeUnit.SECONDS)
     public void testContactApi() throws IOException {
+        long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
                 "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
                 "classpath:META-INF/resources/webjars/custmgmt/specs/CustMgmtSpec.js" );
@@ -45,30 +62,42 @@ public class RestApiIT {
         JsonNode report = runScript(sb);
         assertEquals(14, report.get("suite").get("totalSpecsDefined").asInt());
         assertNoFailedExpectations(report);
+        System.out.println(
+                "Contact suite took " + (System.currentTimeMillis() - start) + " (ms)");
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.SECONDS)
     public void testMemoApi() throws IOException {
+        long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
                 "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
                 "classpath:META-INF/resources/webjars/custmgmt/specs/MemoSpec.js" );
 
         JsonNode report = runScript(sb);
-        assertEquals(14, report.get("suite").get("totalSpecsDefined").asInt());
+        assertEquals(9, report.get("suite").get("totalSpecsDefined").asInt());
         assertNoFailedExpectations(report);
+        System.out.println(
+                " Memo suite took " + (System.currentTimeMillis() - start) + " (ms)");
+
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.SECONDS)
     public void testOrderApi() throws IOException {
+        long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
                 "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
                 "classpath:META-INF/resources/webjars/catalog/specs/OrderSpec.js" );
 
         JsonNode report = runScript(sb);
-        assertEquals(13, report.get("suite").get("totalSpecsDefined").asInt());
+        assertEquals(12, report.get("suite").get("totalSpecsDefined").asInt());
         assertNoFailedExpectations(report);
-    }
+        System.out.println(
+                "Order suite took " + (System.currentTimeMillis() - start) + " (ms)");
 
+    }
+    
     private void assertNoFailedExpectations(JsonNode report) {
         for (Iterator<JsonNode> it = report.get("results").elements() ; it.hasNext() ; ) {
             JsonNode result = (JsonNode) it.next();
@@ -86,6 +115,7 @@ public class RestApiIT {
             String report = (String) bindings.get("report");
             return objectMapper.readTree(report);
         } catch (Throwable e) {
+            System.err.println(String.format("%1$s:%2$s", e.getClass().getName(), e.getMessage()));
             e.printStackTrace();
             fail();
             return null;
@@ -97,21 +127,12 @@ public class RestApiIT {
         sb.append("load(\"classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/xml-http-request-polyfill.js\");\n");
     }
 
-    private StringBuilder createScript(String... scripts) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("var window = this;\n");
+    private void loadAppEnvironment(StringBuilder sb) {
+        sb.append(String.format(JsEnvironmentController.ENV, "test", ("http://localhost:" + port), "Just testing"));
+    }
 
-        loadPolyfills(sb);
-        loadJasmine(sb);
+    private void loadReporter(StringBuilder sb) {
         sb.append(String.format("load(\"%1$s\");", "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/json-reporter.js"));
-
-        for (String script : scripts) {
-            sb.append(String.format("load(\"%1$s\");", script));
-        }
-
-        sb.append("jasmine.getEnv().execute();\n");
-
-        return sb;
     }
 
     private void loadJasmine(final StringBuilder sb) {
@@ -125,6 +146,23 @@ public class RestApiIT {
         sb.append("window.jasmine = jasmineRequire.core(jasmineRequire);\n");
         sb.append("var jasmineInterface = jasmineRequire.interface(jasmine, jasmine.getEnv());\n");
         sb.append("extend(window, jasmineInterface);\n");
+    }
+
+    private StringBuilder createScript(String... scripts) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("var window = this;\n");
+        loadAppEnvironment(sb);
+        loadPolyfills(sb);
+        loadJasmine(sb);
+        loadReporter(sb);
+
+        for (String script : scripts) {
+            sb.append(String.format("load(\"%1$s\");", script));
+        }
+
+        sb.append("jasmine.getEnv().execute();\n");
+
+        return sb;
     }
 
     private ScriptEngine getEngine() {

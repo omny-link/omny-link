@@ -49,7 +49,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -317,10 +316,9 @@ public class Account implements Serializable {
     @OneToMany(mappedBy = "account", targetEntity = Contact.class)
     // TODO See Contact.account for details of limitation
     @JsonBackReference
-    private List<Contact> contact;
+    private Set<Contact> contact;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "account", targetEntity = CustomAccountField.class)
-    @JsonManagedReference
     @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     @JsonView( { AccountViews.Detailed.class } )
