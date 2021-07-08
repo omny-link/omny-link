@@ -33,7 +33,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -46,7 +45,6 @@ import javax.validation.constraints.Size;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -60,6 +58,7 @@ import link.omny.custmgmt.model.views.ContactViews;
 import link.omny.supportservices.internal.CsvUtils;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
 import link.omny.supportservices.model.Activity;
+import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
@@ -82,10 +81,10 @@ import lombok.experimental.Accessors;
 @Table(name = "OL_ACCOUNT")
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(exclude = { "contact" })
+@EqualsAndHashCode(callSuper = true, exclude = { "contact" })
 @AllArgsConstructor
 @NoArgsConstructor
-public class Account implements Serializable {
+public class Account extends Auditable<String> implements Serializable {
 
     private static final long serialVersionUID = -1955316248920138892L;
 
@@ -306,13 +305,6 @@ public class Account implements Serializable {
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "first_contact", updatable = false)
     private Date firstContact;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonProperty
-    @JsonView( { AccountViews.Summary.class } )
-    @LastModifiedDate
-    @Column(name = "last_updated")
-    private Date lastUpdated;
-
     @OneToMany(mappedBy = "account", targetEntity = Contact.class)
     @JsonBackReference
     private Set<Contact> contact;
@@ -465,11 +457,6 @@ public class Account implements Serializable {
 
     public void addDocument(Document doc) {
         getDocuments().add(doc);
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdated = new Date();
     }
 
     public String toCsv() {

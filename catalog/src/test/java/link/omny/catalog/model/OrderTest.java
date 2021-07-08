@@ -114,9 +114,9 @@ public class OrderTest {
                 "A description including\nseveral\nline breaks",
                 "order", now, now, "confirmed",
                 new BigDecimal("100"),new BigDecimal("20"));
-        order.addNote(new Note(1l, "tim@knowprocess.com", now,
+        order.addNote(new Note(1l, "tim@knowprocess.com",
                 "A single-line note", true, false));
-        order.addNote(new Note(2l, "tim@knowprocess.com", now,
+        order.addNote(new Note(2l, "tim@knowprocess.com",
                 "A note\nthat spans multiple lines", true, false));
         assertEquals(2,  order.getNotes().size());
 

@@ -35,7 +35,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -59,6 +58,7 @@ import link.omny.catalog.json.JsonCustomOrderFieldDeserializer;
 import link.omny.catalog.views.OrderViews;
 import link.omny.supportservices.internal.CsvUtils;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
@@ -87,7 +87,6 @@ public class Order extends Auditable<String> implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty
-//    @JsonFormat(shape= JsonFormat.Shape.NUMBER)
     @JsonView(OrderViews.Summary.class)
     private Long id;
 
@@ -328,10 +327,6 @@ public class Order extends Auditable<String> implements Serializable {
         if (type == null) {
             type = "order";
         }
-    }
-
-    @PreUpdate
-    public void preUpdate() {
     }
 
     public String toCsv() {

@@ -1,4 +1,4 @@
-package link.omny.catalog.model;
+package link.omny.supportservices.model;
 
 import java.util.Date;
 

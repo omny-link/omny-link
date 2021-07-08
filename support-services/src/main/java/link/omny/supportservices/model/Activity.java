@@ -23,7 +23,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -31,18 +30,20 @@ import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.CreatedDate;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "OL_ACTIVITY")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-public class Activity implements Serializable {
+public class Activity extends Auditable<String> implements Serializable {
 
     private static final long serialVersionUID = -3132677793751164824L;
 
@@ -63,22 +64,13 @@ public class Activity implements Serializable {
     @JsonProperty
     @Column(name = "content")
     private String content;
-//
-//    @JsonProperty
-//    @Column(name = "account_id")
-//    @JsonBackReference
-//    private Account account;
     
+    @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name="occurred", updatable = false)
     @JsonProperty
     private Date occurred;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonProperty
-    @Column(name = "last_updated")
-    private Date lastUpdated;
 
     public Activity() {
         super();
@@ -111,18 +103,6 @@ public class Activity implements Serializable {
     public Activity(ActivityType type, Date occurred, String content) {
         this(type, occurred);
         setContent(content);
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdated = new Date();
-    }
-
-    @Override
-    public String toString() {
-        return String
-                .format("Activity [id=%s, type=%s, content=%s, occurred=%s, lastUpdated=%s]",
-                        id, type, content, occurred, lastUpdated);
     }
 
 }

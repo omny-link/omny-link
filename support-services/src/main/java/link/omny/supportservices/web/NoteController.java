@@ -91,9 +91,7 @@ public class NoteController {
                 });
         LOGGER.info(String.format("  found %1$d notes", list.size()));
 
-        Note.setBulkImport(true);
         Iterable<Note> result = noteRepo.saveAll(list);
-        Note.setBulkImport(false);
         LOGGER.info("  saved.");
 
         return result;

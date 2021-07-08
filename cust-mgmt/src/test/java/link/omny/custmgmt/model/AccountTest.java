@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -170,17 +169,16 @@ public class AccountTest {
 
     @Test
     public void testToCsv() throws IOException {
-        Date now = new Date();
         Account acct = new Account();
         acct.setId(1l);
         acct.setName("ACME Inc.");
         acct.setDescription("test description containing newline\n"
                 + "and a quotation \"quotation 1\"\n");
-        acct.addNote(new Note(1l, "tim@knowprocess.com", now,
+        acct.addNote(new Note(1l, "tim@knowprocess.com",
                 "A single-line note", true, false));
-        acct.addNote(new Note(2l, "tim@knowprocess.com", now,
+        acct.addNote(new Note(2l, "tim@knowprocess.com",
                 "A note\nthat spans multiple lines", true, false));
-        acct.addNote(new Note(2l, "tim@knowprocess.com", now,
+        acct.addNote(new Note(2l, "tim@knowprocess.com",
                 "\"quotation 1\"\n\"quotation 2\"",
                 true, false));
         assertEquals(3, acct.getNotes().size());

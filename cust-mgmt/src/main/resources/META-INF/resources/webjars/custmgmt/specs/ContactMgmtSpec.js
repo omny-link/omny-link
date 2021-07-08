@@ -96,6 +96,7 @@ describe("Contact management", function() {
       expect(contacts[0].lastName).toEqual(contact.lastName);
       expect(contacts[0].fullName).toEqual(contact.firstName+ ' ' + contact.lastName);
       expect(contacts[0].email).toEqual(contact.email);
+      expect(contacts[0].firstContact).not.toBeNull();
 
       expect(contacts[0].links).toBeDefined();
       expect(contacts[0].links[0].href).toMatch(/.*\/contacts\/[0-9]*/);
@@ -188,6 +189,7 @@ describe("Contact management", function() {
       expect($rh.uri(contacts[0])).toEqual($rh.uri(contact));
       expect(contacts[0].phone1).toEqual(contact.phone1);
       expect(contacts[0].phone2).toEqual(contact.phone2);
+      expect(contacts[0].firstOccurred).not.toBeNull();
 
       done();
     });

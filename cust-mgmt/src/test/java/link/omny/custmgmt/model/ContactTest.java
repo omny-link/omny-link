@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.Disabled;
@@ -253,15 +252,14 @@ public class ContactTest {
 
     @Test
     public void testToCsv() throws IOException {
-        Date now = new Date();
         Contact contact = new Contact();
         contact.setId(1l);
         contact.setAccountId(1l);
         contact.setFirstName("Fred");
         contact.setLastName("Flintstone");
-        contact.addNote(new Note(1l, "tim@knowprocess.com", now,
+        contact.addNote(new Note(1l, "tim@knowprocess.com",
                 "A single-line note", true, false));
-        contact.addNote(new Note(2l, "tim@knowprocess.com", now,
+        contact.addNote(new Note(2l, "tim@knowprocess.com",
                 "A note\nthat spans multiple lines", true, false));
         assertEquals(2,  contact.getNotes().size());
         System.out.println(contact.toCsv());

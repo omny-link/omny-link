@@ -101,7 +101,6 @@ public class ContactAndAccountControllerTest {
         assertContactEquals(contact, acct, contactModel.getContent());
 
         Contact contact2 = contactController.findById(TENANT_ID, contactId);
-        assertNotNull(contact2.getFirstContact());
         Date lastUpdated = contact2.getLastUpdated();
         assertNotNull(lastUpdated); // Set when account linked
 
@@ -148,7 +147,6 @@ public class ContactAndAccountControllerTest {
         assertContactEquals(contact, acct, contactModel.getContent());
 
         Contact contact2 = contactController.findById(TENANT_ID, contactId);
-        assertNotNull(contact2.getFirstContact());
 
         // UPDATE CONTACT
         contact.setFirstName(contact.getFirstName() + "Updated");
@@ -164,7 +162,6 @@ public class ContactAndAccountControllerTest {
         assertContactEquals(contact, acct, contactList.get(0).getContent());
 
         contact2 = contactController.findById(TENANT_ID, contactId);
-        assertNotNull(contact2.getFirstContact());
         assertNotNull(contact2.getLastUpdated());
     }
 
@@ -176,6 +173,7 @@ public class ContactAndAccountControllerTest {
         assertEquals("blue",
                 contactResults.getCustomFieldValue("eyeColor"));
         assertEquals(acct.getName(), contactResults.getAccount().getName());
+        // NOTE audit columns are not populated in this test harness.
     }
 
     protected Contact getContact() throws IOException {

@@ -16,14 +16,12 @@
 package link.omny.supportservices.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -34,14 +32,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "OL_DOCUMENT")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Document implements Serializable {
+public class Document extends Auditable<String> implements Serializable {
 
     private static final long serialVersionUID = 157180600778360331L;
 
@@ -58,10 +58,6 @@ public class Document implements Serializable {
     @Size(max = 50)
     @Column(name = "author")
     private String author;
-
-    @JsonProperty
-    @Column(name = "created")
-    private Date created;
 
     @JsonProperty
     @Size(max = 60)
@@ -89,18 +85,6 @@ public class Document implements Serializable {
         setAuthor(author);
         setName(name);
         setUrl(url);
-    }
-
-    @PrePersist
-    void preInsert() {
-        created = new Date();
-    }
-
-    @Override
-    public String toString() {
-        return String.format(
-                "Document [id=%s, author=%s, created=%s, name=%s, url=%s]", id,
-                author, created, name, url);
     }
 
     public String toCsv() {

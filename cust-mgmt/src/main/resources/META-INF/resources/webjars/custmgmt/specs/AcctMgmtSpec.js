@@ -95,12 +95,12 @@ describe("Account management", function() {
       expect($rh.tenantUri(account).endsWith($rh.tenantUri(accounts[0])));
       expect(accounts[0].name).toEqual(account.name);
       expect(accounts[0].email).toEqual(account.email);
+      expect(accounts[0].firstContact).not.toBeNull();
 
       done();
     });
   });
 
-  // TODO add test for POST form as used by the client
   it("adds a note to the account", function(done) {
     $rh.ajax({
       url: $rh.tenantUri(account)+'/notes',
@@ -116,7 +116,6 @@ describe("Account management", function() {
     });
   });
 
-  // TODO add test for POST form as used by the client
   it("adds a document link to the account", function(done) {
     $rh.ajax({
       url: $rh.tenantUri(account)+'/documents',
@@ -213,6 +212,7 @@ describe("Account management", function() {
       
       expect(data.length).toEqual(1);
       expect(data[0].firstName).toEqual(contact.firstName);
+      expect(data[0].firstContact).not.toBeNull();
 
       done();
     });
@@ -228,7 +228,7 @@ describe("Account management", function() {
       expect(data.email).toEqual(account.email);
       expect(data.phone1).toEqual(account.phone1);
       expect(data.phone2).toEqual(account.phone2);
-      expect(data.firstContact).toBeDefined();
+      expect(data.firstContact).not.toBeNull();
       expect(data.customFields).toBeDefined();
       expect(data.customFields.lastAccountingDate).toEqual(account.customFields.lastAccountingDate);
 
@@ -237,12 +237,15 @@ describe("Account management", function() {
 
       expect(data.activities[0].type).toEqual('TRANSITION_TO_STAGE');
       expect(data.activities[0].content).toEqual('From null to tested');
+      expect(data.activities[0].occurred).not.toBeNull();
       expect(data.activities[1].type).toEqual(activity.type);
       expect(data.activities[1].content).toEqual(activity.content);
+      expect(data.activities[1].occurred).not.toBeNull();
       
       expect(data.notes.length).toEqual(1);
       expect(data.notes[0].author).toEqual(note.author);
-      expect(data.notes[0].name).toEqual(note.name);      
+      expect(data.notes[0].name).toEqual(note.name);
+      expect(data.notes[0].created).not.toBeNull();
       
       expect(data.documents.length).toEqual(1);
       expect(data.documents[0].author).toEqual(doc.author);
@@ -250,6 +253,8 @@ describe("Account management", function() {
       expect(data.documents[0].url).toEqual(doc.url);
       expect(data.documents[0].confidential).toEqual(false); // default value
       expect(data.documents[0].favorite).toEqual(doc.favorite); // defaults to false
+      expect(data.documents[0].created).not.toBeNull();
+
       
       done();
     });

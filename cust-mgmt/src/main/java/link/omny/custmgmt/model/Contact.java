@@ -55,7 +55,6 @@ import org.hibernate.annotations.NotFoundAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -71,6 +70,7 @@ import link.omny.supportservices.internal.NullAwareBeanUtils;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
 import link.omny.supportservices.model.Activity;
 import link.omny.supportservices.model.ActivityType;
+import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
@@ -99,10 +99,10 @@ import lombok.experimental.Accessors;
 @Table(name = "OL_CONTACT")
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(exclude = { "account" })
+@EqualsAndHashCode(callSuper = true, exclude = { "account" })
 @AllArgsConstructor
 @NoArgsConstructor
-public class Contact implements Serializable {
+public class Contact extends Auditable<String> implements Serializable {
 
     private static final String DEFAULT_FIRST_NAME = "Unknown";
 
@@ -378,13 +378,6 @@ public class Contact implements Serializable {
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "first_contact", updatable = false)
     private Date firstContact;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonProperty
-    @JsonView({ ContactViews.Summary.class })
-    @LastModifiedDate
-    @Column(name = "last_updated")
-    private Date lastUpdated;
-
     @NotNull
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
@@ -603,12 +596,6 @@ public class Contact implements Serializable {
 
     @PrePersist
     public void prePersist() {
-        if (LOGGER.isWarnEnabled() && firstContact != null) {
-            LOGGER.warn(String.format(
-                    "Overwriting create date %1$s with 'now'.", firstContact));
-        }
-        firstContact = new Date();
-
         if (uuid == null) {
             uuid = UUID.randomUUID().toString();
         }
@@ -642,8 +629,6 @@ public class Contact implements Serializable {
 
     @PreUpdate
     public void preUpdate() {
-        lastUpdated = new Date();
-
         initEmailHash();
         NullAwareBeanUtils.trimStringProperties(this);
     }
