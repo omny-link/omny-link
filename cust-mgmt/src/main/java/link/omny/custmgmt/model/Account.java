@@ -123,7 +123,8 @@ public class Account extends Auditable<String> implements Serializable {
 
     @JsonProperty
     @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
-    @Column(name = "sic")
+    // sufficient for UK sector industry codes in 2021
+    @Column(name = "sic", length = 110)
     private String sic;
 
     @JsonProperty
@@ -164,7 +165,7 @@ public class Account extends Auditable<String> implements Serializable {
 
     @Pattern(regexp = "\\+?[0-9, \\-()]{0,15}")
     @JsonProperty
-    @JsonView( { AccountViews.Summary.class, ContactViews.Summary.class } )
+    @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
     @Column(name = "phone2")
     private String phone2;
 
@@ -231,6 +232,7 @@ public class Account extends Auditable<String> implements Serializable {
     @Column(name = "incorporation_year")
     private Integer incorporationYear;
 
+    @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
     @Size(max = 20)
     @Column(name = "no_of_employees")
     private String noOfEmployees;
@@ -326,6 +328,7 @@ public class Account extends Auditable<String> implements Serializable {
     private Set<Activity> activities;
 
     @Transient
+    @JsonView({ AccountViews.Detailed.class })
     private List<String> customHeadings;
 
     @OneToMany(cascade = CascadeType.ALL)
