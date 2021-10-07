@@ -4,6 +4,7 @@ metadata:
   name: {{ .Release.Name}}-configmap
   namespace: default
 data:
+  SERVER_PORT: {{ .Values.service.port | quote }}
   SERVER_SERVLET_CONTEXT_PATH: {{ .Values.rest.contextPath | quote }}
   KEYCLOAK_REALM: {{ .Values.keycloak.realm | quote }}
   KEYCLOAK_AUTH-SERVER-URL: {{ .Values.keycloak.authServerUrl | quote }}
@@ -15,6 +16,7 @@ data:
   {{- end }}
   SPRING_JPA_HIBERNATE_DDL-AUTO: {{ .Values.jpa.hibernate.ddlAuto | quote }}
   SPRING_JPA_SHOW-SQL: {{ .Values.jpa.showSql | quote }}
+  SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: {{ .Values.jpa.properties.hibernate.dialect | quote }}
   SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: {{ .Values.jpa.properties.hibernate.formatSql | quote }}
   CRM_APPLICATION_BASE-URI: {{ .Values.crm.application.baseUri | quote }}
   CRM_APPLICATION_TAG-LINE: {{ .Values.crm.application.tagLine | quote }}

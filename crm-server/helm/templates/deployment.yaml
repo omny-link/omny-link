@@ -53,12 +53,12 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /js/env.js
               port: http
             initialDelaySeconds: 45
           readinessProbe:
             httpGet:
-              path: /
+              path: /js/env.js
               port: http
             initialDelaySeconds: 45
           resources:

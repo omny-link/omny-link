@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: docker.io/knowprocess/crm
+  repository: docker.io/knowprocess/omny-link
   pullPolicy: Always #IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
@@ -51,7 +51,7 @@ ingress:
     #cert-manager.io/issue-temporary-certificate: "true"
     #acme.cert-manager.io/http01-edit-in-place: "true"
   hosts:
-    - host: v3.crm.digital
+    - host: crm.knowprocess.com
       paths:
       - path: /
         backend:
@@ -61,7 +61,7 @@ ingress:
   tls:
     - secretName: crm-tls
       hosts:
-        - v3.crm.digital
+        - crm.knowprocess.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -93,7 +93,7 @@ database:
   password: password
   datasourceDriverClassName: org.postgresql.Driver
   #datasourceUrl: jdbc:postgresql://127.0.0.1:5432/crm
-  datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm
+  datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm_alpha
   #datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm?currentSchema=crm
 
 jpa:
@@ -101,12 +101,13 @@ jpa:
     ddlAuto: "update"
   properties:
     hibernate:
+      dialect: "org.hibernate.dialect.PostgreSQLDialect"
       formatSql: "false"
   showSql: "false"
 
 crm:
   application:
-    baseUri: "https://v3.knowprocess.com"
+    baseUri: "https://crm.knowprocess.com"
     tagLine: The automated CRM
   cors:
     allowedOrigins: "http://localhost:8000,https://beta.knowprocess.com,https://cloud.knowprocess.com"
