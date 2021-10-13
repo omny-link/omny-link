@@ -42,6 +42,8 @@ import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -97,6 +99,8 @@ import lombok.experimental.Accessors;
     }
 )
 @Table(name = "OL_CONTACT")
+@SecondaryTable(name = "OL_CONTACT_CUSTOM",
+    pkJoinColumns = @PrimaryKeyJoinColumn(name = "contact_id"))
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true, exclude = { "account" })
