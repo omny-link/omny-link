@@ -32,6 +32,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
@@ -74,10 +75,16 @@ import lombok.experimental.Accessors;
 @NamedEntityGraph(name = "accountWithAll",
     attributeNodes = {
         @NamedAttributeNode("activities"),
-        @NamedAttributeNode("contact"),
+        @NamedAttributeNode(value = "contact", subgraph = "contact-subgraph"),
         @NamedAttributeNode("customFields"),
         @NamedAttributeNode("notes"),
         @NamedAttributeNode("documents")
+    },
+    subgraphs = {
+        @NamedSubgraph(
+                name = "contact-subgraph",
+                attributeNodes = { @NamedAttributeNode("customFields") }
+        )
     }
 )
 @Table(name = "OL_ACCOUNT")
