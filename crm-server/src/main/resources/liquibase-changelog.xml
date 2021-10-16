@@ -1,0 +1,910 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.10.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+  <changeSet author="tstephen" id="1634147850538-29">
+    <createTable tableName="OL_ACCOUNT">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="aliases" type="VARCHAR(255)" />
+      <column name="business_website" type="VARCHAR(255)" />
+      <column name="company_number" type="VARCHAR(255)" />
+      <column name="description" type="VARCHAR(1000)" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP"
+        name="first_contact" type="timestamp">
+        <constraints nullable="false" />
+      </column>
+      <column name="incorporation_year" type="INT" />
+      <column name="last_updated" type="datetime" />
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="no_of_employees" type="VARCHAR(20)" />
+      <column name="short_desc" type="VARCHAR(120)" />
+      <column name="tenant_id" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="facebook" type="VARCHAR(255)" />
+      <column name="linked_in" type="VARCHAR(255)" />
+      <column name="sic" type="VARCHAR(255)" />
+      <column name="twitter" type="VARCHAR(255)" />
+      <column name="account_type" type="VARCHAR(255)" />
+      <column name="address1" type="VARCHAR(255)" />
+      <column name="address2" type="VARCHAR(255)" />
+      <column name="alerts" type="VARCHAR(255)" />
+      <column name="country" type="VARCHAR(255)" />
+      <column name="county_or_city" type="VARCHAR(255)" />
+      <column name="email" type="VARCHAR(255)" />
+      <column name="email_confirmed" type="BOOLEAN" />
+      <column name="email_hash" type="VARCHAR(255)" />
+      <column name="enquiry_type" type="VARCHAR(255)" />
+      <column name="existing_customer" type="BOOLEAN" />
+      <column name="incorportation_year" type="INT" />
+      <column name="owner" type="VARCHAR(255)" />
+      <column name="phone1" type="VARCHAR(255)" />
+      <column name="phone2" type="VARCHAR(255)" />
+      <column name="post_code" type="VARCHAR(255)" />
+      <column name="stage" type="VARCHAR(255)" />
+      <column name="stage_date" type="datetime" />
+      <column name="stage_reason" type="VARCHAR(255)" />
+      <column name="tags" type="VARCHAR(255)" />
+      <column name="town" type="VARCHAR(255)" />
+      <column name="parent_org" type="VARCHAR(255)" />
+      <column defaultValueBoolean="false" name="email_optin" type="BOOLEAN" />
+      <column name="ol_id" type="BIGINT" />
+      <column name="uuid" type="VARCHAR(255)" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-30">
+    <createTable tableName="OL_ACCOUNT_CUSTOM">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="value" type="VARCHAR(1000)" />
+      <column name="account_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-31">
+    <createTable tableName="OL_ACTIVITY">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="content" type="VARCHAR(255)" />
+      <column name="last_updated" type="datetime" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP"
+        name="occurred" type="timestamp" />
+      <column name="type" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="contact_id" type="BIGINT" />
+      <column name="account_id" type="BIGINT" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-34">
+    <createTable tableName="OL_CONTACT">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="account_type" type="VARCHAR(255)" />
+      <column name="address1" type="VARCHAR(255)" />
+      <column name="address2" type="VARCHAR(255)" />
+      <column name="campaign" type="VARCHAR(255)" />
+      <column name="country" type="VARCHAR(255)" />
+      <column name="county_or_city" type="VARCHAR(255)" />
+      <column name="do_not_call" type="BOOLEAN">
+        <constraints nullable="false" />
+      </column>
+      <column name="do_not_email" type="BOOLEAN">
+        <constraints nullable="false" />
+      </column>
+      <column name="email" type="VARCHAR(255)" />
+      <column name="email_confirmed" type="BOOLEAN">
+        <constraints nullable="false" />
+      </column>
+      <column name="enquiry_type" type="VARCHAR(255)" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP"
+        name="first_contact" type="timestamp">
+        <constraints nullable="false" />
+      </column>
+      <column name="first_name" type="VARCHAR(255)" />
+      <column name="keyword" type="VARCHAR(255)" />
+      <column name="last_name" type="VARCHAR(255)" />
+      <column name="last_updated" type="datetime" />
+      <column name="medium" type="VARCHAR(255)" />
+      <column name="owner" type="VARCHAR(255)" />
+      <column name="phone1" type="VARCHAR(255)" />
+      <column name="phone2" type="VARCHAR(255)" />
+      <column name="post_code" type="VARCHAR(255)" />
+      <column name="source" type="VARCHAR(255)" />
+      <column name="stage" type="VARCHAR(255)" />
+      <column name="tags" type="VARCHAR(255)" />
+      <column name="tenant_id" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="title" type="VARCHAR(255)" />
+      <column name="town" type="VARCHAR(255)" />
+      <column name="uuid" type="VARCHAR(255)" />
+      <column name="account_id" type="BIGINT" />
+      <column name="source2" type="VARCHAR(255)" />
+      <column name="facebook" type="VARCHAR(255)" />
+      <column name="linked_in" type="VARCHAR(255)" />
+      <column name="twitter" type="VARCHAR(255)" />
+      <column name="email_hash" type="VARCHAR(255)" />
+      <column name="stage_date" type="datetime" />
+      <column name="stage_reason" type="VARCHAR(255)" />
+      <column name="alerts" type="VARCHAR(255)" />
+      <column name="description" type="VARCHAR(1000)" />
+      <column name="existing_customer" type="BOOLEAN" />
+      <column name="job_title" type="VARCHAR(255)" />
+      <column name="main_contact" type="BOOLEAN" />
+      <column name="phone3" type="VARCHAR(255)" />
+      <column defaultValueBoolean="false" name="email_optin" type="BOOLEAN" />
+      <column name="skype" type="VARCHAR(255)" />
+      <column name="ol_id" type="BIGINT" />
+      <column name="ol_account_id" type="BIGINT" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-35">
+    <createTable tableName="OL_CONTACT_CUSTOM">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="value" type="VARCHAR(1000)" />
+      <column name="contact_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-37">
+    <createTable tableName="OL_DOCUMENT">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="author" type="VARCHAR(255)" />
+      <column name="created" type="datetime" />
+      <column name="url" type="VARCHAR(255)" />
+      <column name="contact_id" type="BIGINT" />
+      <column name="name" type="VARCHAR(255)" />
+      <column name="account_id" type="BIGINT" />
+      <column name="order_id" type="BIGINT" />
+      <column name="stock_item_id" type="BIGINT" />
+      <column name="stock_cat_id" type="BIGINT" />
+      <column name="confidential" type="BOOLEAN" />
+      <column name="favorite" type="BOOLEAN" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-41">
+    <createTable tableName="OL_FEEDBACK">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column defaultValueComputed="CURRENT_TIMESTAMP"
+        name="created" type="timestamp">
+        <constraints nullable="false" />
+      </column>
+      <column name="description" type="VARCHAR(255)" />
+      <column name="type" type="VARCHAR(255)" />
+      <column name="order_id" type="BIGINT" />
+      <column name="last_updated" type="datetime" />
+      <column name="tenant_id" type="VARCHAR(255)" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-42">
+    <createTable tableName="OL_FEEDBACK_CUSTOM">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="value" type="VARCHAR(1000)" />
+      <column name="feedback_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-43">
+    <createTable tableName="OL_MEDIA_RES">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="author" type="VARCHAR(255)" />
+      <column name="created" type="datetime" />
+      <column name="last_updated" type="datetime" />
+      <column name="main" type="BOOLEAN">
+        <constraints nullable="false" />
+      </column>
+      <column name="url" type="VARCHAR(255)" />
+      <column name="stock_cat_id" type="BIGINT" />
+      <column name="stock_item_id" type="BIGINT" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-44">
+    <createTable tableName="OL_MEMO">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column defaultValueComputed="CURRENT_TIMESTAMP"
+        name="created" type="timestamp">
+        <constraints nullable="false" />
+      </column>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false" />
+      </column>
+      <column name="owner" type="VARCHAR(255)" />
+      <column name="plain_content" type="TEXT" />
+      <column name="rich_content" type="LONGTEXT" />
+      <column name="status" type="VARCHAR(255)" />
+      <column name="tenant_id" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="title" type="VARCHAR(255)" />
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="short_content" type="VARCHAR(140)" />
+      <column name="required_vars" type="VARCHAR(255)" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-45">
+    <createTable tableName="OL_MEMO_DIST">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column defaultValueComputed="CURRENT_TIMESTAMP"
+        name="created" type="timestamp">
+        <constraints nullable="false" />
+      </column>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false" />
+      </column>
+      <column name="memo_ref" type="VARCHAR(255)" />
+      <column name="name" type="VARCHAR(255)" />
+      <column name="owner" type="VARCHAR(255)" />
+      <column name="recipients" type="LONGTEXT" />
+      <column name="status" type="VARCHAR(255)" />
+      <column name="tenant_id" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="send_at_date" type="datetime" />
+      <column name="send_attz" type="VARCHAR(255)" />
+      <column name="send_at_time" type="datetime" />
+      <column name="provider_ref" type="VARCHAR(255)" />
+      <column name="send_at_tz" type="VARCHAR(30)" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-46">
+    <createTable tableName="OL_MEMO_SIG">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="email" type="VARCHAR(255)" />
+      <column name="name" type="VARCHAR(255)" />
+      <column name="tabs" type="VARCHAR(1000)" />
+      <column name="memo_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-47">
+    <createTable tableName="OL_METRIC">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column defaultValueComputed="CURRENT_TIMESTAMP"
+        name="occurred" type="timestamp">
+        <constraints nullable="false" />
+      </column>
+      <column name="tenant_id" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="value" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+      <column name="category1" type="VARCHAR(255)" />
+      <column name="category2" type="VARCHAR(255)" />
+      <column name="description" type="VARCHAR(255)" />
+      <column name="cohort_id" type="BIGINT" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-49">
+    <createTable tableName="OL_NOTE">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="author" type="VARCHAR(255)" />
+      <column name="content" type="MEDIUMTEXT" />
+      <column name="created" type="datetime" />
+      <column name="contact_id" type="BIGINT" />
+      <column name="favorite" type="BOOLEAN">
+        <constraints nullable="false" />
+      </column>
+      <column name="owner" type="VARCHAR(50)" />
+      <column name="account_id" type="BIGINT" />
+      <column name="order_id" type="BIGINT" />
+      <column name="stock_item_id" type="BIGINT" />
+      <column name="stock_cat_id" type="BIGINT" />
+      <column name="confidential" type="BOOLEAN" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-50">
+    <createTable tableName="OL_ORDER">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="contact_id" type="BIGINT" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP"
+        name="created" type="timestamp" />
+      <column name="date" type="date" />
+      <column name="description" type="VARCHAR(4000)" />
+      <column name="due_date" type="VARCHAR(50)" />
+      <column name="invoice_ref" type="VARCHAR(30)" />
+      <column name="last_updated" type="datetime" />
+      <column name="name" type="VARCHAR(255)" />
+      <column name="price" type="DECIMAL(19, 2)" />
+      <column name="stage" type="VARCHAR(60)" />
+      <column name="tax" type="DECIMAL(19, 2)" />
+      <column name="tenant_id" type="VARCHAR(255)" />
+      <column name="feedback_id" type="BIGINT" />
+      <column name="stock_item_id" type="BIGINT" />
+      <column defaultValue="order" name="type" type="VARCHAR(60)" />
+      <column name="ref" type="BIGINT" />
+      <column name="owner" type="VARCHAR(50)" />
+      <column name="ol_id" type="BIGINT" />
+      <column name="ol_contact_id" type="BIGINT" />
+      <column name="parent_id" type="BIGINT" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-51">
+    <createTable tableName="OL_ORDER_CUSTOM">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="value" type="VARCHAR(1000)" />
+      <column name="order_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-52">
+    <createTable tableName="OL_ORDER_ITEM">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column defaultValueComputed="CURRENT_TIMESTAMP"
+        name="created" type="timestamp" />
+      <column name="last_updated" type="datetime" />
+      <column name="price" type="DECIMAL(19, 2)" />
+      <column name="status" type="VARCHAR(20)" />
+      <column name="tenant_id" type="VARCHAR(255)" />
+      <column name="type" type="VARCHAR(255)" />
+      <column name="order_id" type="BIGINT" />
+      <column name="stock_item_id" type="BIGINT" />
+      <column name="ol_id" type="BIGINT" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-53">
+    <createTable tableName="OL_ORDER_ITEM_CUSTOM">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="value" type="VARCHAR(255)" />
+      <column name="order_item_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-56">
+    <createTable tableName="OL_STOCK_CAT">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true"
+          unique="true" />
+      </column>
+      <column name="address1" type="VARCHAR(60)" />
+      <column name="address2" type="VARCHAR(60)" />
+      <column name="country" type="VARCHAR(255)" />
+      <column name="county_or_city" type="VARCHAR(60)" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP"
+        name="created" type="timestamp">
+        <constraints nullable="false" />
+      </column>
+      <column name="description" type="VARCHAR(1500)" />
+      <column name="directions_by_air" type="VARCHAR(1000)" />
+      <column name="directions_by_public_transport"
+        type="VARCHAR(1000)" />
+      <column name="directions_by_road" type="VARCHAR(1000)" />
+      <column name="last_updated" type="datetime" />
+      <column name="lat" type="DOUBLE" />
+      <column name="lng" type="DOUBLE" />
+      <column name="map_url" type="VARCHAR(255)" />
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="offer_call_to_action" type="VARCHAR(30)" />
+      <column name="offer_description" type="VARCHAR(80)" />
+      <column name="offer_status" type="VARCHAR(20)" />
+      <column name="offer_title" type="VARCHAR(35)" />
+      <column name="offer_url" type="VARCHAR(255)" />
+      <column name="post_code" type="VARCHAR(10)" />
+      <column name="product_sheet" type="VARCHAR(255)" />
+      <column name="status" type="VARCHAR(20)" />
+      <column name="tenant_id" type="VARCHAR(255)" />
+      <column name="town" type="VARCHAR(60)" />
+      <column name="video_code" type="VARCHAR(255)" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-57">
+    <createTable tableName="OL_STOCK_CAT_CUSTOM">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="value" type="VARCHAR(255)" />
+      <column name="stock_cat_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-58">
+    <createTable tableName="OL_STOCK_ITEM">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column defaultValueComputed="CURRENT_TIMESTAMP"
+        name="created" type="timestamp" />
+      <column name="description" type="VARCHAR(255)" />
+      <column name="last_updated" type="datetime" />
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="offer_cta" type="VARCHAR(30)" />
+      <column name="offer_desc" type="VARCHAR(80)" />
+      <column name="offer_status" type="VARCHAR(20)" />
+      <column name="offer_title" type="VARCHAR(35)" />
+      <column name="offer_url" type="VARCHAR(255)" />
+      <column name="price" type="DECIMAL(19, 2)" />
+      <column name="size" type="VARCHAR(255)" />
+      <column name="status" type="VARCHAR(255)" />
+      <column name="tags" type="VARCHAR(255)" />
+      <column name="tenant_id" type="VARCHAR(255)" />
+      <column name="unit" type="VARCHAR(255)" />
+      <column name="video_code" type="VARCHAR(255)" />
+      <column name="stock_cat_id" type="BIGINT" />
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-59">
+    <createTable tableName="OL_STOCK_ITEM_CUSTOM">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="value" type="VARCHAR(255)" />
+      <column name="stock_item_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-135">
+    <createIndex indexName="FK_ORDER_CUSTOM_ORDER"
+      tableName="OL_ORDER_CUSTOM">
+      <column name="order_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-137">
+    <createIndex indexName="FK_STOCK_CAT_CUSTOM_STOCK_CAT"
+      tableName="OL_STOCK_CAT_CUSTOM">
+      <column name="stock_cat_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-138">
+    <createIndex indexName="FK_ORDER_ITEM_ORDER"
+      tableName="OL_ORDER_ITEM">
+      <column name="order_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-139">
+    <createIndex indexName="FK_FEEDBACK_ORDER"
+      tableName="OL_FEEDBACK">
+      <column name="order_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-140">
+    <createIndex indexName="FK_STOCK_ITEM_CUSTOM_STOCK_ITEM"
+      tableName="OL_STOCK_ITEM_CUSTOM">
+      <column name="stock_item_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-141">
+    <createIndex indexName="FK_ACCOUNT_CUSTOM_ACCOUNT"
+      tableName="OL_ACCOUNT_CUSTOM">
+      <column name="account_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-145">
+    <createIndex indexName="FK_bbvewrv8x9bpemqam69hyc9o2"
+      tableName="OL_NOTE">
+      <column name="contact_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-146">
+    <createIndex indexName="FK_ACTIVITY_CONTACT"
+      tableName="OL_ACTIVITY">
+      <column name="contact_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-147">
+    <createIndex indexName="FK_DOCUMENT_CONTACT"
+      tableName="OL_DOCUMENT">
+      <column name="contact_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-148">
+    <createIndex indexName="FK_CONTACT_CUSTOM_CONTACT"
+      tableName="OL_CONTACT_CUSTOM">
+      <column name="contact_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-154">
+    <createIndex indexName="FK_mlcqje31568quf12gtnih26j1"
+      tableName="OL_METRIC">
+      <column name="cohort_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-156">
+    <createIndex indexName="FK_CONTACT_ACCOUNT"
+      tableName="OL_CONTACT">
+      <column name="account_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-159">
+    <createIndex indexName="FK_NOTE_ACCOUNT"
+      tableName="OL_NOTE">
+      <column name="account_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-161">
+    <createIndex indexName="FK_ORDER_ITEM_CUSTOM_ORDER_ITEM"
+      tableName="OL_ORDER_ITEM_CUSTOM">
+      <column name="order_item_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-162">
+    <createIndex indexName="FK_MEMO_SIG_MEMO"
+      tableName="OL_MEMO_SIG">
+      <column name="memo_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-164">
+    <createIndex indexName="FK_MEDIA_RES_STOCK_ITEM"
+      tableName="OL_MEDIA_RES">
+      <column name="stock_item_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-166">
+    <createIndex indexName="FK_DOCUMENT_STOCK_CAT"
+      tableName="OL_DOCUMENT">
+      <column name="stock_cat_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-168">
+    <createIndex indexName="FK_NOTE_STOCK_CAT"
+      tableName="OL_NOTE">
+      <column name="stock_cat_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-170">
+    <createIndex indexName="FK_DOCUMENT_ACCOUNT"
+      tableName="OL_DOCUMENT">
+      <column name="account_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-172">
+    <createIndex indexName="FK_ORDER_STOCK_ITEM"
+      tableName="OL_ORDER">
+      <column name="stock_item_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-173">
+    <createIndex indexName="FK_DOCUMENT_ORDER"
+      tableName="OL_DOCUMENT">
+      <column name="order_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-174">
+    <createIndex indexName="FK_STOCK_ITEM_STOCK_CAT"
+      tableName="OL_STOCK_ITEM">
+      <column name="stock_cat_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-176">
+    <createIndex indexName="FKloe2ek3ukeqxei78w110o5btf"
+      tableName="OL_NOTE">
+      <column name="stock_item_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-177">
+    <createIndex indexName="FKpoudyf55dt4i9kfjq5bujpe2d"
+      tableName="OL_NOTE">
+      <column name="order_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-178">
+    <createIndex indexName="FK_ORDER_FEEDBACK"
+      tableName="OL_ORDER">
+      <column name="feedback_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-179">
+    <createIndex indexName="FK_FEEDBACK_CUSTOM_FEEDBACK"
+      tableName="OL_FEEDBACK_CUSTOM">
+      <column name="feedback_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-183">
+    <createIndex indexName="FKr334ex5st6wy38kkleqwqjowi"
+      tableName="OL_DOCUMENT">
+      <column name="stock_item_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-184">
+    <createIndex indexName="FK_MEDIA_RES_STOCK_CAT"
+      tableName="OL_MEDIA_RES">
+      <column name="stock_cat_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-185">
+    <createIndex indexName="FK_ACTIVITY_ACCOUNT"
+      tableName="OL_ACTIVITY">
+      <column name="account_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-187B">
+    <createIndex indexName="UK_STOCK_CAT_NAME_TENANT_ID"
+      tableName="OL_STOCK_CAT" unique="true">
+      <column name="name" />
+      <column name="tenant_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-188B">
+    <createIndex indexName="UK_STOCK_ITEM_NAME_TENANT_ID"
+      tableName="OL_STOCK_ITEM" unique="true">
+      <column name="name" />
+      <column name="tenant_id" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-212">
+    <addForeignKeyConstraint
+      baseColumnNames="stock_item_id" baseTableName="OL_ORDER_ITEM"
+      constraintName="FK_ORDER_ITEM_STOCK_ITEM" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_STOCK_ITEM"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-215">
+    <addForeignKeyConstraint
+      baseColumnNames="order_id" baseTableName="OL_ORDER_CUSTOM"
+      constraintName="FK_ORDER_CUSTOM_ORDER" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_ORDER"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-217">
+    <addForeignKeyConstraint
+      baseColumnNames="stock_cat_id" baseTableName="OL_STOCK_CAT_CUSTOM"
+      constraintName="FK_STOCK_CAT_CUSTOM_STOCK_CAT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_STOCK_CAT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-218">
+    <addForeignKeyConstraint
+      baseColumnNames="order_id" baseTableName="OL_ORDER_ITEM"
+      constraintName="FK_ORDER_ITEM_ORDER" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_ORDER"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-219">
+    <addForeignKeyConstraint
+      baseColumnNames="order_id" baseTableName="OL_FEEDBACK"
+      constraintName="FK_FEEDBACK_ORDER" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_ORDER"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-220">
+    <addForeignKeyConstraint
+      baseColumnNames="stock_item_id"
+      baseTableName="OL_STOCK_ITEM_CUSTOM"
+      constraintName="FK_STOCK_ITEM_CUSTOM_STOCK_ITEM" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_STOCK_ITEM"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-221">
+    <addForeignKeyConstraint
+      baseColumnNames="account_id" baseTableName="OL_ACCOUNT_CUSTOM"
+      constraintName="FK_ACCOUNT_CUSTOM_ACCOUNT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_ACCOUNT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-225">
+    <addForeignKeyConstraint
+      baseColumnNames="contact_id" baseTableName="OL_ACTIVITY"
+      constraintName="FK_ACTIVITY_CONTACT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_CONTACT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-227">
+    <addForeignKeyConstraint
+      baseColumnNames="contact_id" baseTableName="OL_DOCUMENT"
+      constraintName="FK_DOCUMENT_CONTACT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_CONTACT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-228">
+    <addForeignKeyConstraint
+      baseColumnNames="contact_id" baseTableName="OL_CONTACT_CUSTOM"
+      constraintName="FK_CONTACT_CUSTOM_CONTACT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_CONTACT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-234">
+    <addForeignKeyConstraint
+      baseColumnNames="account_id" baseTableName="OL_CONTACT"
+      constraintName="FK_CONTACT_ACCOUNT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_ACCOUNT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-236">
+    <addForeignKeyConstraint
+      baseColumnNames="account_id" baseTableName="OL_NOTE"
+      constraintName="FK_NOTE_ACCOUNT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_ACCOUNT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-238">
+    <addForeignKeyConstraint
+      baseColumnNames="order_item_id"
+      baseTableName="OL_ORDER_ITEM_CUSTOM"
+      constraintName="FK_ORDER_ITEM_CUSTOM_ORDER_ITEM" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_ORDER_ITEM"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-239">
+    <addForeignKeyConstraint
+      baseColumnNames="memo_id" baseTableName="OL_MEMO_SIG"
+      constraintName="FK_MEMO_SIG_MEMO" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_MEMO"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-241">
+    <addForeignKeyConstraint
+      baseColumnNames="stock_item_id" baseTableName="OL_MEDIA_RES"
+      constraintName="FK_MEDIA_RES_STOCK_ITEM" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_STOCK_ITEM"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-242">
+    <addForeignKeyConstraint
+      baseColumnNames="contact_id" baseTableName="OL_NOTE"
+      constraintName="FK_NOTE_CONTACT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_CONTACT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-244">
+    <addForeignKeyConstraint
+      baseColumnNames="stock_cat_id" baseTableName="OL_DOCUMENT"
+      constraintName="FK_DOCUMENT_STOCK_CAT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_STOCK_CAT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-246">
+    <addForeignKeyConstraint
+      baseColumnNames="stock_cat_id" baseTableName="OL_NOTE"
+      constraintName="FK_NOTE_STOCK_CAT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_STOCK_CAT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-248">
+    <addForeignKeyConstraint
+      baseColumnNames="account_id" baseTableName="OL_DOCUMENT"
+      constraintName="FK_DOCUMENT_ACCOUNT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_ACCOUNT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-250">
+    <addForeignKeyConstraint
+      baseColumnNames="stock_item_id" baseTableName="OL_ORDER"
+      constraintName="FK_ORDER_STOCK_ITEM" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_STOCK_ITEM"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-251">
+    <addForeignKeyConstraint
+      baseColumnNames="order_id" baseTableName="OL_DOCUMENT"
+      constraintName="FK_DOCUMENT_ORDER" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_ORDER"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-252">
+    <addForeignKeyConstraint
+      baseColumnNames="stock_cat_id" baseTableName="OL_STOCK_ITEM"
+      constraintName="FK_STOCK_ITEM_STOCK_CAT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_STOCK_CAT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-256">
+    <addForeignKeyConstraint
+      baseColumnNames="feedback_id" baseTableName="OL_ORDER"
+      constraintName="FK_ORDER_FEEDBACK" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_FEEDBACK"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-257">
+    <addForeignKeyConstraint
+      baseColumnNames="feedback_id" baseTableName="OL_FEEDBACK_CUSTOM"
+      constraintName="FK_FEEDBACK_CUSTOM_FEEDBACK" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_FEEDBACK"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-261">
+    <addForeignKeyConstraint
+      baseColumnNames="stock_cat_id" baseTableName="OL_MEDIA_RES"
+      constraintName="FK_MEDIA_RES_STOCK_CAT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_STOCK_CAT"
+      validate="true" />
+  </changeSet>
+  <changeSet author="tstephen" id="1634147850538-262">
+    <addForeignKeyConstraint
+      baseColumnNames="account_id" baseTableName="OL_ACTIVITY"
+      constraintName="FK_ACTIVITY_ACCOUNT" deferrable="false"
+      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+      referencedColumnNames="id" referencedTableName="OL_ACCOUNT"
+      validate="true" />
+  </changeSet>
+</databaseChangeLog>
