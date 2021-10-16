@@ -16,7 +16,9 @@
 package link.omny.catalog.model.api;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
+
+import link.omny.catalog.model.StockItem;
 
 public interface ShortStockCategory {
     String getName();
@@ -53,5 +55,5 @@ public interface ShortStockCategory {
 
     Date getLastUpdated();
     
-    List<? extends ShortStockItem> getStockItems();
+    Set<? extends ShortStockItem> getStockItems();
 }

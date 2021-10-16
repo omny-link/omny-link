@@ -165,7 +165,6 @@ public class StockItemController {
             list = stockItemRepo.findPageForTenant(tenantId, pageable);
         }
         LOGGER.info("Found {} stockItems", list.size());
-
         return list;
     }
 
@@ -434,7 +433,8 @@ public class StockItemController {
          stockItem.getDocuments().add(doc);
          stockItem.setLastUpdated(new Date());
          stockItemRepo.save(stockItem);
-         doc = stockItem.getDocuments().get(stockItem.getDocuments().size()-1);
+         doc = stockItem.getDocuments().stream()
+                 .reduce((first, second) -> second).orElse(null);
 
          HttpHeaders headers = new HttpHeaders();
          URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -460,7 +460,8 @@ public class StockItemController {
         stockItem.getNotes().add(note);
         stockItem.setLastUpdated(new Date());
         stockItemRepo.save(stockItem);
-        note = stockItem.getNotes().get(stockItem.getNotes().size()-1);
+        note = stockItem.getNotes().stream()
+                .reduce((first, second) -> second).orElse(null);
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())

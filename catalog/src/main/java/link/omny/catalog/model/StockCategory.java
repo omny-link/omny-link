@@ -31,6 +31,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -44,6 +47,7 @@ import javax.validation.constraints.Size;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -66,6 +70,20 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
+@NamedEntityGraph(name = "stockCategoryWithAll",
+    attributeNodes = {
+        @NamedAttributeNode(value = "stockItems", subgraph = "item-subgraph"),
+        @NamedAttributeNode("customFields"),
+        @NamedAttributeNode("notes"),
+        @NamedAttributeNode("documents")
+    },
+    subgraphs = {
+        @NamedSubgraph(
+                name = "item-subgraph",
+                attributeNodes = { @NamedAttributeNode("customFields") }
+        )
+    }
+)
 @Table(name = "OL_STOCK_CAT")
 @Data
 @ToString(exclude = { "description", "stockItems" })
@@ -264,9 +282,10 @@ public class StockCategory implements ShortStockCategory, Serializable {
     @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
     private Set<CustomStockCategoryField> customFields;
 
-    @JsonView(StockCategoryViews.Detailed.class)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockCategory", targetEntity = StockItem.class)
-    private List<StockItem> stockItems;
+    @JsonBackReference
+    @JsonView(StockCategoryViews.Detailed.class)
+    private Set<StockItem> stockItems;
 
     @Transient
     private List<String> customHeadings;
@@ -331,9 +350,9 @@ public class StockCategory implements ShortStockCategory, Serializable {
         return images;
     }
 
-    public List<StockItem> getStockItems() {
+    public Set<StockItem> getStockItems() {
         if (stockItems == null) {
-            stockItems = new ArrayList<StockItem>();
+            stockItems = new HashSet<StockItem>();
         }
         return stockItems;
     }

@@ -17,7 +17,6 @@ package link.omny.catalog.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -34,6 +33,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -49,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -72,10 +75,24 @@ import lombok.ToString;
 @Data
 @ToString(exclude = { "sizeString", "stockCategory", "notes", "documents" })
 @Entity
+@NamedEntityGraph(name = "stockItemWithAll",
+    attributeNodes = {
+        @NamedAttributeNode(value = "stockCategory", subgraph = "stockCategory-subgraph"),
+        @NamedAttributeNode("customFields"),
+        @NamedAttributeNode("notes"),
+        @NamedAttributeNode("documents")
+    },
+    subgraphs = {
+        @NamedSubgraph(
+                name = "stockCategory-subgraph",
+                attributeNodes = { @NamedAttributeNode("customFields") }
+        )
+    }
+)
 @Table(name = "OL_STOCK_ITEM")
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true, value = { "stockCategory"})
 public class StockItem implements ShortStockItem, Serializable {
 
     private static final long serialVersionUID = 6825862597448133674L;
@@ -199,24 +216,25 @@ public class StockItem implements ShortStockItem, Serializable {
     @ManyToOne(optional = true, targetEntity = StockCategory.class)
     @JoinColumn(name = "stock_cat_id")
     @JsonView({ StockItemViews.Detailed.class })
+    @JsonManagedReference
     private StockCategory stockCategory;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "stock_item_id", nullable = true)
     @JsonView({ StockItemViews.Detailed.class })
-    private List<Note> notes;
+    private Set<Note> notes;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "stock_item_id", nullable = true)
     @JsonView({ StockItemViews.Detailed.class })
-    private List<Document> documents;
+    private Set<Document> documents;
 
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     @Transient
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
     // "stockItem")
-    private List<MediaResource> images;
+    private Set<MediaResource> images;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockItem")
     @JsonDeserialize(using = JsonCustomStockItemFieldDeserializer.class)
@@ -321,19 +339,19 @@ public class StockItem implements ShortStockItem, Serializable {
         }
     }
 
-    public List<MediaResource> getImages() {
+    public Set<MediaResource> getImages() {
         if (images == null || images.size() == 0) {
             if (tags == null) {
                 LOGGER.warn(
                         "Cannot provide default images because stock item {} ({}) of {} has no tags",
                         name, id, tenantId);
-                images = Collections.emptyList();
+                images = Collections.emptySet();
             } else if (getStockCategory() == null) {
                 LOGGER.warn(
                         "Cannot provide default images because stock item {} ({}) of {} has no category",
                         name, id, tenantId);
             } else {
-                images = new ArrayList<MediaResource>(DEFAULT_IMAGE_COUNT);
+                images = new HashSet<MediaResource>(DEFAULT_IMAGE_COUNT);
                 for (int i = 0; i < DEFAULT_IMAGE_COUNT; i++) {
                     images.add(new MediaResource(getTenantId(), String.format(
                             "/images/%1$s/%2$s/%3$d.jpg",

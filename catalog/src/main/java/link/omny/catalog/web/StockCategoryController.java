@@ -25,7 +25,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -150,6 +152,7 @@ public class StockCategoryController {
      */
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
     @ApiOperation(value = "Retrieves the stock items for a specific tenant.")
+    @Transactional
     public @ResponseBody List<EntityModel<StockCategory>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -293,7 +296,7 @@ public class StockCategoryController {
 
     private void filter(final StockCategory stockCategory,
             final List<String> tags) {
-        ArrayList<StockItem> filteredItems = new ArrayList<StockItem>();
+        Set<StockItem> filteredItems = new HashSet<StockItem>();
         for (StockItem item : stockCategory.getStockItems()) {
             for (String tag : tags) {
                 if (tag == null || (item.getTags().contains(tag)

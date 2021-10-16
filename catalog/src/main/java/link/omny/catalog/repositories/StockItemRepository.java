@@ -18,6 +18,7 @@ package link.omny.catalog.repositories;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -32,6 +33,7 @@ public interface StockItemRepository extends CrudRepository<StockItem, Long> {
     StockItem findByName(@Param("name") String name);
 
     @Query("SELECT i FROM StockItem i WHERE i.tenantId = :tenantId AND (i.status IS NULL OR i.status != 'deleted') ORDER BY i.name ASC")
+    @EntityGraph("stockItemWithAll")
     List<StockItem> findAllForTenant(@Param("tenantId") String tenantId);
 
     @Query("SELECT COUNT(i) FROM StockItem i WHERE i.tenantId = :tenantId AND (i.status IS NULL OR i.status != 'deleted')")
