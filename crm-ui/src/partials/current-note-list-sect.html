@@ -27,30 +27,30 @@
     {{#alerts['notes']}}<span class="alert-counter alert-danger"> {{alerts['notes']}}</span>{{/}}
   </h2>
   <div style="display:none">
-	  <table id="notesTable" class="table table-striped"><tbody>
-	    {{#each current.notes:j}}
-	      <tr class="{{#if favorite}}favorite{{else}}unfavorite{{/if}} {{#if confidential}}alert-warning confidential{{else}}nonconfidential{{/if}}">
-	        <td class="field-age">{{formatAgeFromDate(created)}} {{#created}}({{formatDateTime(created)}}){{/}}</td>
-	        <td class="field-author">{{{gravatar(author)}}}</td>
-	        {{#created}}
-	          <td class="field-text" {{# lessThan24hAgo(created)}}notyetcontenteditable{{/}}>{{{formatContent(..content)}}}</td>
-	        {{else}}
-	          <td class="field-text">
-	            <textarea id="note" on-blur="saveNote(.)" placeholder="Type your note here" required style="width:100%;" value={{..content}}></textarea>
-	            <br/>
-	            <a on-click="cancelNote()">Cancel</a>
-	          </td>
-	        {{/}}
-	        <td class="pull-right">
-	          <span class="glyphicon glyphicon-btn {{#favorite}}glyphicon-star{{else}}glyphicon-star-empty{{/}}" on-click="toggleNoteFavorite(j)"></span>
+    <table id="notesTable" class="table table-striped"><tbody>
+      {{#each current.notes:j}}
+        <tr class="{{#if favorite}}favorite{{else}}unfavorite{{/if}} {{#if confidential}}alert-warning confidential{{else}}nonconfidential{{/if}}">
+          <td class="field-age">{{formatAgeFromDate(created)}} {{#created}}({{formatDateTime(created)}}){{/}}</td>
+          <td class="field-author">{{{gravatar(author)}}}</td>
+          {{#created}}
+            <td class="field-text" {{# lessThan24hAgo(created)}}notyetcontenteditable{{/}}>{{{formatContent(..content)}}}</td>
+          {{else}}
+            <td class="field-text">
+              <textarea id="note" on-blur="saveNote(.)" placeholder="Type your note here" required style="width:100%;" value={{..content}}></textarea>
+              <br/>
+              <a on-click="cancelNote()">Cancel</a>
+            </td>
+          {{/}}
+          <td class="pull-right">
+            <span class="glyphicon glyphicon-btn {{#favorite}}glyphicon-star{{else}}glyphicon-star-empty{{/}}" on-click="toggleNoteFavorite(j)"></span>
               <span class="glyphicon glyphicon-btn {{#confidential==true}}kp-icon-lock{{else}}kp-icon-unlock{{/}}" on-click="toggleNoteConfidentiality(j)"></span>
             </td>
-	      </tr>
-	    {{/each}}
-	    {{^current.notes}}
-	      <tr><td colspan="5">None</td></tr>
-	    {{/}}
-	  </tbody></table>
-	</div>
+        </tr>
+      {{/each}}
+      {{^current.notes}}
+        <tr><td colspan="5">None</td></tr>
+      {{/}}
+    </tbody></table>
+  </div>
  </section>
 </form>

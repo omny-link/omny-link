@@ -39,7 +39,7 @@
     <tbody>
       {{#each sort(accounts,sortColumn,sortAsc):i}}
         {{# matchSearch(this) }}
-          <tr {{#if stage!=undefined}}class="{{stage.toSlug()}}"{{/if}} data-href="{{selfRef}}">
+          <tr {{#if stage!=undefined}}class="{{stage.toSlug()}}"{{/if}} data-href="{{id}}">
             <td on-click="edit(this)">{{i+1}}</td>
             {{#tenant.features.merge}}
               <td><input class="checkbox" type="checkbox" on-change="selectMultiple(this)"/></td>

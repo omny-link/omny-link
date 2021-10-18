@@ -80,9 +80,9 @@ var ractive = new BaseRactive({
     formatContactId: function(contactId) {
       console.info('formatContactId');
       if (contactId == undefined) return 'n/a';
-      if (contactId.endsWith(ractive.get('current.selfRef'))) return ractive.get('current.fullName');
+      if (contactId.endsWith(ractive.localId(ractive.get('current')))) return ractive.get('current.fullName');
 
-      var contact = Array.findBy('selfRef',contactId,ractive.get('contacts'));
+      var contact = Array.findBy('id',contactId,ractive.get('contacts'));
       return contact == undefined ? 'n/a' : contact.fullName;
     },
     formatContent: function(content) {
@@ -213,7 +213,7 @@ var ractive = new BaseRactive({
         var search = ractive.get('searchTerm').split(' ');
         for (var idx = 0 ; idx < search.length ; idx++) {
           var searchTerm = search[idx].toLowerCase();
-          var match = ( (obj.selfRef.indexOf(searchTerm)>=0)
+          var match = ( (ractive.localId(obj).indexOf(searchTerm)>=0)
             || (obj.firstName.toLowerCase().indexOf(searchTerm)>=0)
             || (obj.lastName.toLowerCase().indexOf(searchTerm)>=0)
             || (searchTerm.indexOf('@')!=-1 && obj.email.toLowerCase().indexOf(searchTerm)>=0)
@@ -242,8 +242,8 @@ var ractive = new BaseRactive({
     saveObserver: false,
     selectMultiple: [],
     server: $env.server,
-    localId: function(selfRef) {
-      return ractive.localId(selfRef);
+    localId: function(obj) {
+      return ractive.localId(obj);
     },
     sort: function (array, column, asc) {
       if (array == undefined) return;
@@ -406,7 +406,7 @@ var ractive = new BaseRactive({
     return false; // cancel bubbling to prevent edit as well as delete
   },
   deleteOrder : function(obj) {
-    console.log('deleteOrder ' + obj.selfRef + '...');
+    console.log('deleteOrder ' + ractive.localId(obj)+ '...');
     $.ajax({
       url : ractive.getServer() + '/orders/' + ractive.id(obj),
       type : 'DELETE',
@@ -417,9 +417,9 @@ var ractive = new BaseRactive({
     return false; // cancel bubbling to prevent edit as well as delete
   },
   deleteOrderItem : function(order, item) {
-    console.log('deleteOrderItem ' + order.selfRef + ', '+ item.selfRef +'...');
+    console.log('deleteOrderItem ' + ractive.localId(order) + ', '+ ractive.localId(item) +'...');
     $.ajax({
-      url : ractive.getServer() + '/'+ractive.get('tenant.id')+'/orders/' + ractive.localId(order.selfRef)+ '/order-items/' + ractive.localId(item.selfRef),
+      url : ractive.tenantUri(order)+ '/order-items/' + ractive.localId(item),
       type : 'DELETE',
       success : completeHandler = function(data) {
         ractive.fetchOrders(ractive.get('current'));
@@ -894,7 +894,7 @@ var ractive = new BaseRactive({
       if (tmp.date == 'n/a') delete tmp.date;
       var contactName = tmp.contactName;
       if (contactName != undefined) {
-        tmp.contactId = ractive.localId(Array.findBy('fullName', contactName,ractive.get('current.contacts')).selfRef);
+        tmp.contactId = ractive.localId(Array.findBy('fullName', contactName, ractive.localId(ractive.get('current.contacts'))));
         delete tmp.contactName;
       }
       var id = ractive.uri(tmp) == undefined ? undefined : ractive.id(tmp);
@@ -928,7 +928,7 @@ var ractive = new BaseRactive({
     } else if (document.getElementById('currentOrderForm').checkValidity()) {
       var tmp = ractive.get('orders.'+ractive.get('currentOrderIdx')+'.orderItems.'+ractive.get('currentOrderItemIdx'));
       tmp.tenantId = ractive.get('tenant.id');
-      var id = tmp.selfRef;
+      var id = ractive.localId(tmp);
       console.log('ready to save order item' + JSON.stringify(tmp) + ' ...');
       $.ajax({
         // TODO no use case for creating items (yet)
@@ -1016,12 +1016,12 @@ var ractive = new BaseRactive({
     ractive.hideResults();
   },
   selectMultiple: function(contact) {
-    console.info('selectMultiple: '+contact.selfRef);
-    if ($('tr[data-href="'+contact.selfRef+'"] input[type="checkbox"]').prop('checked')) {
-      console.log('  checked: '+$('tr[data-href="'+contact.selfRef+'"] input[type="checkbox"]').prop('checked'));
-      ractive.push('selectMultiple', contact.selfRef);
+    console.info('selectMultiple: '+ractive.localId(contact));
+    if ($('tr[data-href="'+ractive.localId(contact)+'"] input[type="checkbox"]').prop('checked')) {
+      console.log('  checked: '+$('tr[data-href="'+ractive.localId(contact)+'"] input[type="checkbox"]').prop('checked'));
+      ractive.push('selectMultiple', ractive.localId(contact));
     } else {
-      var idx = ractive.get('selectMultiple').indexOf(contact.selfRef);
+      var idx = ractive.get('selectMultiple').indexOf(ractive.localId(contact));
       console.log('  idx: '+idx);
       ractive.splice('selectMultiple', idx, 1);
     }
@@ -1080,7 +1080,7 @@ var ractive = new BaseRactive({
     ractive.set('searchMatched',$('#contactsTable tbody tr').length);
     if ($('#contactsTable tbody tr:visible').length==1) {
       var contactId = $('#contactsTable tbody tr:visible').data('href')
-      var contact = Array.findBy('selfRef',contactId,ractive.get('contacts'))
+      var contact = Array.findBy('id',contactId,ractive.get('contacts'))
       ractive.select( contact );
     }
   },

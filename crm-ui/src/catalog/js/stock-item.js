@@ -151,7 +151,7 @@ var ractive = new BaseRactive({
       if (searchTerm==undefined || searchTerm.length==0) {
         return true;
       } else {
-        return ( (obj.selfRef.indexOf(searchTerm.toLowerCase())>=0)
+        return ( (ractive.localId(obj).indexOf(searchTerm.toLowerCase())>=0)
           || (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.stockCategoryName!=undefined && obj.stockCategoryName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.status!=undefined && obj.status.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
@@ -505,7 +505,7 @@ var ractive = new BaseRactive({
     ractive.set('searchMatched',$('#stockItemsTable tbody tr').length);
     if ($('#stockItemsTable tbody tr:visible').length==1) {
       var stockItemId = $('#stockItemsTable tbody tr:visible').data('href')
-      var stockItem = Array.findBy('selfRef',stockItemId,ractive.get('stockItems'))
+      var stockItem = Array.findBy('id',stockItemId,ractive.get('stockItems'))
       ractive.edit( stockItem );
     }
   },

@@ -272,7 +272,7 @@ var BaseRactive = Ractive.extend({
     var stockItemNames = [];
     stockItemIds = new Set(stockItemIds);
     stockItemIds.forEach(function(value) {
-    var tmp = Array.findBy('selfRef',
+    var tmp = Array.findBy('id',
         '/stock-items/' + value, ractive.get('stockItems'));
       if (tmp != undefined) stockItemNames.push(tmp.name);
     });

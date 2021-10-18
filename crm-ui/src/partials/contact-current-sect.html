@@ -15,7 +15,7 @@
 -->
 <section id="currentSect" style="display:none">
   <form class="inline-form form" id="currentForm">
-    {{^current.selfRef}}
+    {{^localId(current)}}
       <h2 class="form create-form">
         <input class="create-field form-control col-xs-1" id="curTitle" placeholder="Title" value="{{current.title}}"/>
         <input class="create-field form-control col-xs-2" id="curFirstName" placeholder="First Name" required value="{{current.firstName}}"/>
@@ -23,7 +23,7 @@
       </h2>
     {{/}}
 
-    {{#current.selfRef}}
+    {{#localId(current)}}
       <h2 class="edit-form">
         <img class="img-rounded" src="//www.gravatar.com/avatar/{{hash(current.email)}}?d=blank&s=36" style="margin-top:-10px"/>
         <span contenteditable id="curTitle2" on-focus="editField('#curTitle2','current.title')" on-blur="updateField('#curTitle2','current.title')">{{current.title}}</span>
@@ -93,12 +93,12 @@
           <li>
             <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.id}}{{tenant.strings.id}}{{else}}Ref{{/}}:</label>
             <div class="input-group">
-              <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curlocalId" readonly disabled twoway="false" value="{{localId(current.selfRef)}}"/>
+              <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curlocalId" readonly disabled twoway="false" value="{{localId(current)}}"/>
               <span class="input-group-addon">
-                <a href="contacts.html?searchTerm={{localId(current.selfRef)}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+                <a href="contacts.html?searchTerm={{localId(current)}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
               </span>
             </div>
-            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{# tenant.strings.selfRefHint}}{{tenant.strings.selfRefHint}}{{else}}Internal identifier for administrators only{{/}}</p>
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{# tenant.strings.idHint}}{{tenant.strings.idHint}}{{else}}Internal identifier for administrators only{{/}}</p>
           </li>
         {{/if}}
         <li class="form-group">

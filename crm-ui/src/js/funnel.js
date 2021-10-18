@@ -41,7 +41,7 @@ var ractive = new BaseRactive({
     formatAccountId: function(contactId) {
       console.info('formatAccountId');
       if (contactId == undefined) return contactId;
-      var contact = Array.findBy('selfRef','/contacts/'+contactId,ractive.get('contacts'));
+      var contact = Array.findBy('id','/contacts/'+contactId,ractive.get('contacts'));
       return contact == undefined ? 'n/a' : contact.accountName;
     },
     formatAge: function(timeString) {
@@ -57,7 +57,7 @@ var ractive = new BaseRactive({
     formatContactId: function(contactId) {
       console.info('formatContactId');
       if (contactId == undefined) return contactId;
-      var contact = Array.findBy('selfRef','/contacts/'+contactId,ractive.get('contacts'));
+      var contact = Array.findBy('id','/contacts/'+contactId,ractive.get('contacts'));
       return contact == undefined ? 'n/a' : contact.fullName;
     },
     formatContent: function(content) {
@@ -151,7 +151,7 @@ var ractive = new BaseRactive({
         var search = ractive.get('searchTerm').trim().split(' ');
         for (var idx = 0 ; idx < search.length ; idx++) {
           var searchTerm = search[idx].toLowerCase();
-          var match = ( (obj.selfRef!=undefined && obj.selfRef.indexOf(searchTerm)>=0)
+          var match = ( (rative.localId(obj)!=undefined && ractive.localId(obj).indexOf(searchTerm)>=0)
             || (obj.firstName!=undefined && obj.firstName.toLowerCase().indexOf(searchTerm)>=0)
             || (obj.lastName!=undefined && obj.lastName.toLowerCase().indexOf(searchTerm)>=0)
             || (searchTerm.indexOf('@')!=-1 && obj.email.toLowerCase().indexOf(searchTerm)>=0)
