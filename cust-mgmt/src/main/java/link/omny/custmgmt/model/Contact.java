@@ -44,6 +44,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -117,18 +118,21 @@ public class Contact extends Auditable<String> implements Serializable {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "contactIdSeq", sequenceName = "ol_contact_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contactIdSeq")
     @JsonProperty
     @JsonView({ ContactViews.Detailed.class })
     private Long id;
 
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
+    @Size(max = 30)
     @Column(name = "first_name")
     private String firstName;
 
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
+    @Size(max = 50)
     @Column(name = "last_name")
     private String lastName;
 
@@ -152,6 +156,7 @@ public class Contact extends Auditable<String> implements Serializable {
 
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
+    @Size(max = 150)
     @Column(name = "email")
     private String email;
 

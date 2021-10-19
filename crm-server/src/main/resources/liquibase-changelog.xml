@@ -5,14 +5,20 @@
   xmlns:pro="http://www.liquibase.org/xml/ns/pro"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.10.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+  <changeSet author="tstephen" id="createAccountSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_account_id_seq"/>
+  </changeSet>
   <changeSet author="tstephen" id="1634147850538-29">
     <createTable tableName="OL_ACCOUNT">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_account_id_seq')"
+              name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
-      <column name="aliases" type="VARCHAR(255)" />
+      <column name="aliases" type="VARCHAR(150)" />
       <column name="business_website" type="VARCHAR(255)" />
-      <column name="company_number" type="VARCHAR(255)" />
+      <column name="company_number" type="CHAR(8)" />
       <column name="description" type="VARCHAR(1000)" />
       <column defaultValueComputed="CURRENT_TIMESTAMP"
         name="first_contact" type="timestamp">
@@ -20,48 +26,56 @@
       </column>
       <column name="incorporation_year" type="INT" />
       <column name="last_updated" type="datetime" />
-      <column name="name" type="VARCHAR(255)">
+      <column name="name" type="VARCHAR(150)">
         <constraints nullable="false" />
       </column>
       <column name="no_of_employees" type="VARCHAR(20)" />
       <column name="short_desc" type="VARCHAR(120)" />
-      <column name="tenant_id" type="VARCHAR(255)">
+      <column name="tenant_id" type="VARCHAR(85)">
         <constraints nullable="false" />
       </column>
       <column name="facebook" type="VARCHAR(255)" />
       <column name="linked_in" type="VARCHAR(255)" />
-      <column name="sic" type="VARCHAR(255)" />
+      <column name="sic" type="VARCHAR(110)" />
       <column name="twitter" type="VARCHAR(255)" />
-      <column name="account_type" type="VARCHAR(255)" />
+      <column name="account_type" type="VARCHAR(50)" />
       <column name="address1" type="VARCHAR(255)" />
       <column name="address2" type="VARCHAR(255)" />
       <column name="alerts" type="VARCHAR(255)" />
-      <column name="country" type="VARCHAR(255)" />
-      <column name="county_or_city" type="VARCHAR(255)" />
-      <column name="email" type="VARCHAR(255)" />
+      <column name="country" type="VARCHAR(60)" />
+      <column name="county_or_city" type="VARCHAR(60)" />
+      <column name="email" type="VARCHAR(150)" />
       <column name="email_confirmed" type="BOOLEAN" />
-      <column name="email_hash" type="VARCHAR(255)" />
+      <column name="email_hash" type="CHAR(32)" />
       <column name="enquiry_type" type="VARCHAR(255)" />
       <column name="existing_customer" type="BOOLEAN" />
       <column name="incorportation_year" type="INT" />
       <column name="owner" type="VARCHAR(255)" />
-      <column name="phone1" type="VARCHAR(255)" />
-      <column name="phone2" type="VARCHAR(255)" />
-      <column name="post_code" type="VARCHAR(255)" />
-      <column name="stage" type="VARCHAR(255)" />
+      <column name="phone1" type="VARCHAR(16)" />
+      <column name="phone2" type="VARCHAR(16)" />
+      <column name="post_code" type="VARCHAR(10)" />
+      <column name="stage" type="VARCHAR(50)" />
       <column name="stage_date" type="datetime" />
       <column name="stage_reason" type="VARCHAR(255)" />
       <column name="tags" type="VARCHAR(255)" />
-      <column name="town" type="VARCHAR(255)" />
+      <column name="town" type="VARCHAR(60)" />
       <column name="parent_org" type="VARCHAR(255)" />
       <column defaultValueBoolean="false" name="email_optin" type="BOOLEAN" />
       <column name="ol_id" type="BIGINT" />
       <column name="uuid" type="VARCHAR(255)" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="timestamp"/>
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createAccountCustomSequence">
+    <createSequence cycle="false"
+            incrementBy="1"
+            sequenceName="ol_account_custom_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-30">
     <createTable tableName="OL_ACCOUNT_CUSTOM">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_account_custom_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
       <column name="name" type="VARCHAR(255)">
@@ -73,72 +87,83 @@
       </column>
     </createTable>
   </changeSet>
+  <changeSet author="tstephen" id="createActivitySequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_activity_id_seq" />
+  </changeSet>
   <changeSet author="tstephen" id="1634147850538-31">
     <createTable tableName="OL_ACTIVITY">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_activity_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
       <column name="content" type="VARCHAR(255)" />
       <column name="last_updated" type="datetime" />
-      <column defaultValueComputed="CURRENT_TIMESTAMP"
-        name="occurred" type="timestamp" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="occurred" type="timestamp" />
       <column name="type" type="VARCHAR(255)">
         <constraints nullable="false" />
       </column>
       <column name="contact_id" type="BIGINT" />
       <column name="account_id" type="BIGINT" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="timestamp"/>
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createContactSequence">
+    <createSequence cycle="false"
+        incrementBy="1"
+        sequenceName="ol_contact_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-34">
     <createTable tableName="OL_CONTACT">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_contact_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
-      <column name="account_type" type="VARCHAR(255)" />
+      <column name="account_type" type="VARCHAR(50)" />
       <column name="address1" type="VARCHAR(255)" />
       <column name="address2" type="VARCHAR(255)" />
       <column name="campaign" type="VARCHAR(255)" />
-      <column name="country" type="VARCHAR(255)" />
-      <column name="county_or_city" type="VARCHAR(255)" />
+      <column name="country" type="VARCHAR(60)" />
+      <column name="county_or_city" type="VARCHAR(60)" />
       <column name="do_not_call" type="BOOLEAN">
         <constraints nullable="false" />
       </column>
       <column name="do_not_email" type="BOOLEAN">
         <constraints nullable="false" />
       </column>
-      <column name="email" type="VARCHAR(255)" />
+      <column name="email" type="VARCHAR(150)" />
       <column name="email_confirmed" type="BOOLEAN">
         <constraints nullable="false" />
       </column>
       <column name="enquiry_type" type="VARCHAR(255)" />
-      <column defaultValueComputed="CURRENT_TIMESTAMP"
-        name="first_contact" type="timestamp">
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="first_contact" type="timestamp">
         <constraints nullable="false" />
       </column>
-      <column name="first_name" type="VARCHAR(255)" />
+      <column name="first_name" type="VARCHAR(30)" />
       <column name="keyword" type="VARCHAR(255)" />
-      <column name="last_name" type="VARCHAR(255)" />
+      <column name="last_name" type="VARCHAR(50)" />
       <column name="last_updated" type="datetime" />
       <column name="medium" type="VARCHAR(255)" />
       <column name="owner" type="VARCHAR(255)" />
-      <column name="phone1" type="VARCHAR(255)" />
-      <column name="phone2" type="VARCHAR(255)" />
-      <column name="post_code" type="VARCHAR(255)" />
+      <column name="phone1" type="VARCHAR(16)" />
+      <column name="phone2" type="VARCHAR(16)" />
+      <column name="post_code" type="VARCHAR(10)" />
       <column name="source" type="VARCHAR(255)" />
-      <column name="stage" type="VARCHAR(255)" />
+      <column name="stage" type="VARCHAR(30)" />
       <column name="tags" type="VARCHAR(255)" />
-      <column name="tenant_id" type="VARCHAR(255)">
+      <column name="tenant_id" type="VARCHAR(85)">
         <constraints nullable="false" />
       </column>
       <column name="title" type="VARCHAR(255)" />
-      <column name="town" type="VARCHAR(255)" />
+      <column name="town" type="VARCHAR(60)" />
       <column name="uuid" type="VARCHAR(255)" />
       <column name="account_id" type="BIGINT" />
       <column name="source2" type="VARCHAR(255)" />
       <column name="facebook" type="VARCHAR(255)" />
       <column name="linked_in" type="VARCHAR(255)" />
       <column name="twitter" type="VARCHAR(255)" />
-      <column name="email_hash" type="VARCHAR(255)" />
+      <column name="email_hash" type="VARCHAR(32)" />
       <column name="stage_date" type="datetime" />
       <column name="stage_reason" type="VARCHAR(255)" />
       <column name="alerts" type="VARCHAR(255)" />
@@ -146,18 +171,26 @@
       <column name="existing_customer" type="BOOLEAN" />
       <column name="job_title" type="VARCHAR(255)" />
       <column name="main_contact" type="BOOLEAN" />
-      <column name="phone3" type="VARCHAR(255)" />
+      <column name="phone3" type="VARCHAR(16)" />
       <column defaultValueBoolean="false" name="email_optin" type="BOOLEAN" />
       <column name="skype" type="VARCHAR(255)" />
       <column name="ol_id" type="BIGINT" />
       <column name="ol_account_id" type="BIGINT" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="timestamp"/>
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createContactCustomSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_contact_custom_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-35">
     <createTable tableName="OL_CONTACT_CUSTOM">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_contact_custom_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
-      </column>
+ 1     </column>
       <column name="name" type="VARCHAR(255)">
         <constraints nullable="false" />
       </column>
@@ -167,13 +200,18 @@
       </column>
     </createTable>
   </changeSet>
+  <changeSet author="tstephen" id="createDocumentSequence">
+    <createSequence cycle="false"
+        incrementBy="1"
+        sequenceName="ol_document_id_seq" />
+  </changeSet>
   <changeSet author="tstephen" id="1634147850538-37">
     <createTable tableName="OL_DOCUMENT">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_document_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
       <column name="author" type="VARCHAR(255)" />
-      <column name="created" type="datetime" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="datetime" />
       <column name="url" type="VARCHAR(255)" />
       <column name="contact_id" type="BIGINT" />
       <column name="name" type="VARCHAR(255)" />
@@ -183,27 +221,41 @@
       <column name="stock_cat_id" type="BIGINT" />
       <column name="confidential" type="BOOLEAN" />
       <column name="favorite" type="BOOLEAN" />
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated" type="timestamp"/>
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createFeedbackSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_feedback_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-41">
     <createTable tableName="OL_FEEDBACK">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_feedback_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
-      <column defaultValueComputed="CURRENT_TIMESTAMP"
-        name="created" type="timestamp">
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="timestamp">
         <constraints nullable="false" />
       </column>
       <column name="description" type="VARCHAR(255)" />
       <column name="type" type="VARCHAR(255)" />
       <column name="order_id" type="BIGINT" />
       <column name="last_updated" type="datetime" />
-      <column name="tenant_id" type="VARCHAR(255)" />
+      <column name="tenant_id" type="VARCHAR(85)" />
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createFeedbackCustomSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_feedback_custom_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-42">
     <createTable tableName="OL_FEEDBACK_CUSTOM">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_feedback_custom_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
       <column name="name" type="VARCHAR(255)">
@@ -215,13 +267,20 @@
       </column>
     </createTable>
   </changeSet>
+  <changeSet author="tstephen" id="createMediaResourceSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_media_res_id_seq" />
+  </changeSet>
   <changeSet author="tstephen" id="1634147850538-43">
     <createTable tableName="OL_MEDIA_RES">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_media_res_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
       <column name="author" type="VARCHAR(255)" />
-      <column name="created" type="datetime" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="timestamp">
+        <constraints nullable="false" />
+      </column>
       <column name="last_updated" type="datetime" />
       <column name="main" type="BOOLEAN">
         <constraints nullable="false" />
@@ -229,25 +288,29 @@
       <column name="url" type="VARCHAR(255)" />
       <column name="stock_cat_id" type="BIGINT" />
       <column name="stock_item_id" type="BIGINT" />
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createMemoSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_memo_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-44">
     <createTable tableName="OL_MEMO">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_memo_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
-      <column defaultValueComputed="CURRENT_TIMESTAMP"
-        name="created" type="timestamp">
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="timestamp">
         <constraints nullable="false" />
       </column>
-      <column name="last_updated" type="timestamp">
-        <constraints nullable="false" />
-      </column>
+      <column name="last_updated" type="datetime" />
       <column name="owner" type="VARCHAR(255)" />
       <column name="plain_content" type="TEXT" />
       <column name="rich_content" type="LONGTEXT" />
       <column name="status" type="VARCHAR(255)" />
-      <column name="tenant_id" type="VARCHAR(255)">
+      <column name="tenant_id" type="VARCHAR(85)">
         <constraints nullable="false" />
       </column>
       <column name="title" type="VARCHAR(255)" />
@@ -256,15 +319,21 @@
       </column>
       <column name="short_content" type="VARCHAR(140)" />
       <column name="required_vars" type="VARCHAR(255)" />
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createMemoDistributionSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_memo_dist_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-45">
     <createTable tableName="OL_MEMO_DIST">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_memo_dist_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
-      <column defaultValueComputed="CURRENT_TIMESTAMP"
-        name="created" type="timestamp">
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="timestamp">
         <constraints nullable="false" />
       </column>
       <column name="last_updated" type="timestamp">
@@ -275,7 +344,7 @@
       <column name="owner" type="VARCHAR(255)" />
       <column name="recipients" type="LONGTEXT" />
       <column name="status" type="VARCHAR(255)" />
-      <column name="tenant_id" type="VARCHAR(255)">
+      <column name="tenant_id" type="VARCHAR(85)">
         <constraints nullable="false" />
       </column>
       <column name="send_at_date" type="datetime" />
@@ -283,24 +352,42 @@
       <column name="send_at_time" type="datetime" />
       <column name="provider_ref" type="VARCHAR(255)" />
       <column name="send_at_tz" type="VARCHAR(30)" />
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createMemoSignatureSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_memo_sig_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-46">
     <createTable tableName="OL_MEMO_SIG">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_memo_sig_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
-      <column name="email" type="VARCHAR(255)" />
+      <column name="email" type="VARCHAR(150)" />
       <column name="name" type="VARCHAR(255)" />
       <column name="tabs" type="VARCHAR(1000)" />
       <column name="memo_id" type="BIGINT">
         <constraints nullable="false" />
       </column>
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="timestamp">
+        <constraints nullable="false" />
+      </column>
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated" type="datetime" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createMetricSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_metric_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-47">
     <createTable tableName="OL_METRIC">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_metric_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
       <column name="name" type="VARCHAR(255)">
@@ -310,7 +397,7 @@
         name="occurred" type="timestamp">
         <constraints nullable="false" />
       </column>
-      <column name="tenant_id" type="VARCHAR(255)">
+      <column name="tenant_id" type="VARCHAR(85)">
         <constraints nullable="false" />
       </column>
       <column name="value" type="BIGINT">
@@ -322,14 +409,21 @@
       <column name="cohort_id" type="BIGINT" />
     </createTable>
   </changeSet>
+  <changeSet author="tstephen" id="createNoteSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_note_id_seq" />
+  </changeSet>
   <changeSet author="tstephen" id="1634147850538-49">
     <createTable tableName="OL_NOTE">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_note_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
       <column name="author" type="VARCHAR(255)" />
       <column name="content" type="MEDIUMTEXT" />
-      <column name="created" type="datetime" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="datetime">
+        <constraints nullable="false" />
+      </column>
       <column name="contact_id" type="BIGINT" />
       <column name="favorite" type="BOOLEAN">
         <constraints nullable="false" />
@@ -340,16 +434,23 @@
       <column name="stock_item_id" type="BIGINT" />
       <column name="stock_cat_id" type="BIGINT" />
       <column name="confidential" type="BOOLEAN" />
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated" type="datetime" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createOrderSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_order_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-50">
     <createTable tableName="OL_ORDER">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_order_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
       <column name="contact_id" type="BIGINT" />
-      <column defaultValueComputed="CURRENT_TIMESTAMP"
-        name="created" type="timestamp" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="timestamp"/>
       <column name="date" type="date" />
       <column name="description" type="VARCHAR(4000)" />
       <column name="due_date" type="VARCHAR(50)" />
@@ -357,10 +458,9 @@
       <column name="last_updated" type="datetime" />
       <column name="name" type="VARCHAR(255)" />
       <column name="price" type="DECIMAL(19, 2)" />
-      <column name="stage" type="VARCHAR(60)" />
+      <column name="stage" type="VARCHAR(30)" />
       <column name="tax" type="DECIMAL(19, 2)" />
-      <column name="tenant_id" type="VARCHAR(255)" />
-      <column name="feedback_id" type="BIGINT" />
+      <column name="tenant_id" type="VARCHAR(85)" />
       <column name="stock_item_id" type="BIGINT" />
       <column defaultValue="order" name="type" type="VARCHAR(60)" />
       <column name="ref" type="BIGINT" />
@@ -368,11 +468,18 @@
       <column name="ol_id" type="BIGINT" />
       <column name="ol_contact_id" type="BIGINT" />
       <column name="parent_id" type="BIGINT" />
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createOrderCustomSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_order_custom_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-51">
     <createTable tableName="OL_ORDER_CUSTOM">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_order_custom_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
       <column name="name" type="VARCHAR(255)">
@@ -384,26 +491,37 @@
       </column>
     </createTable>
   </changeSet>
+  <changeSet author="tstephen" id="createOrderItemSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_order_item_id_seq" />
+  </changeSet>
   <changeSet author="tstephen" id="1634147850538-52">
     <createTable tableName="OL_ORDER_ITEM">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_order_item_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
-      <column defaultValueComputed="CURRENT_TIMESTAMP"
-        name="created" type="timestamp" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="timestamp"/>
       <column name="last_updated" type="datetime" />
       <column name="price" type="DECIMAL(19, 2)" />
       <column name="status" type="VARCHAR(20)" />
-      <column name="tenant_id" type="VARCHAR(255)" />
+      <column name="tenant_id" type="VARCHAR(85)" />
       <column name="type" type="VARCHAR(255)" />
       <column name="order_id" type="BIGINT" />
       <column name="stock_item_id" type="BIGINT" />
       <column name="ol_id" type="BIGINT" />
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createOrderItemCustomSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_order_item_custom_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-53">
     <createTable tableName="OL_ORDER_ITEM_CUSTOM">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_order_item_custom_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
       <column name="name" type="VARCHAR(255)">
@@ -415,9 +533,14 @@
       </column>
     </createTable>
   </changeSet>
+  <changeSet author="tstephen" id="createStockCategorySequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_stock_cat_id_seq" />
+  </changeSet>
   <changeSet author="tstephen" id="1634147850538-56">
     <createTable tableName="OL_STOCK_CAT">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_stock_cat_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true"
           unique="true" />
       </column>
@@ -425,8 +548,7 @@
       <column name="address2" type="VARCHAR(60)" />
       <column name="country" type="VARCHAR(255)" />
       <column name="county_or_city" type="VARCHAR(60)" />
-      <column defaultValueComputed="CURRENT_TIMESTAMP"
-        name="created" type="timestamp">
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="timestamp">
         <constraints nullable="false" />
       </column>
       <column name="description" type="VARCHAR(1500)" />
@@ -449,14 +571,21 @@
       <column name="post_code" type="VARCHAR(10)" />
       <column name="product_sheet" type="VARCHAR(255)" />
       <column name="status" type="VARCHAR(20)" />
-      <column name="tenant_id" type="VARCHAR(255)" />
+      <column name="tenant_id" type="VARCHAR(85)" />
       <column name="town" type="VARCHAR(60)" />
       <column name="video_code" type="VARCHAR(255)" />
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createStockCategoryCustomSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_stock_cat_custom_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-57">
     <createTable tableName="OL_STOCK_CAT_CUSTOM">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_stock_cat_custom_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
       <column name="name" type="VARCHAR(255)">
@@ -468,16 +597,22 @@
       </column>
     </createTable>
   </changeSet>
+  <changeSet author="tstephen" id="createStockItemSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_stock_item_id_seq" />
+  </changeSet>
   <changeSet author="tstephen" id="1634147850538-58">
     <createTable tableName="OL_STOCK_ITEM">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_stock_item_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
-      <column defaultValueComputed="CURRENT_TIMESTAMP"
-        name="created" type="timestamp" />
+      <column defaultValueComputed="CURRENT_TIMESTAMP" name="created" type="timestamp">
+        <constraints nullable="false" />
+      </column>
       <column name="description" type="VARCHAR(255)" />
       <column name="last_updated" type="datetime" />
-      <column name="name" type="VARCHAR(255)">
+      <column name="name" type="VARCHAR(50)">
         <constraints nullable="false" />
       </column>
       <column name="offer_cta" type="VARCHAR(30)" />
@@ -485,19 +620,26 @@
       <column name="offer_status" type="VARCHAR(20)" />
       <column name="offer_title" type="VARCHAR(35)" />
       <column name="offer_url" type="VARCHAR(255)" />
-      <column name="price" type="DECIMAL(19, 2)" />
+      <column name="price" type="DECIMAL(19,2)" />
       <column name="size" type="VARCHAR(255)" />
       <column name="status" type="VARCHAR(255)" />
       <column name="tags" type="VARCHAR(255)" />
-      <column name="tenant_id" type="VARCHAR(255)" />
+      <column name="tenant_id" type="VARCHAR(85)" />
       <column name="unit" type="VARCHAR(255)" />
       <column name="video_code" type="VARCHAR(255)" />
       <column name="stock_cat_id" type="BIGINT" />
+      <column name="created_by" type="VARCHAR(150)" />
+      <column name="last_updated_by" type="VARCHAR(150)" />
     </createTable>
+  </changeSet>
+  <changeSet author="tstephen" id="createStockItemCustomSequence">
+    <createSequence cycle="false"
+                    incrementBy="1"
+                    sequenceName="ol_stock_item_custom_id_seq" />
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-59">
     <createTable tableName="OL_STOCK_ITEM_CUSTOM">
-      <column autoIncrement="true" name="id" type="BIGINT">
+      <column defaultValueComputed="nextval('ol_stock_item_id_seq')" name="id" type="BIGINT">
         <constraints nullable="false" primaryKey="true" />
       </column>
       <column name="name" type="VARCHAR(255)">
@@ -545,8 +687,8 @@
       <column name="account_id" />
     </createIndex>
   </changeSet>
-  <changeSet author="tstephen" id="1634147850538-145">
-    <createIndex indexName="FK_bbvewrv8x9bpemqam69hyc9o2"
+  <changeSet author="tstephen" id="AddFKNoteContact">
+    <createIndex indexName="FK_NOTE_CONTACT"
       tableName="OL_NOTE">
       <column name="contact_id" />
     </createIndex>
@@ -567,12 +709,6 @@
     <createIndex indexName="FK_CONTACT_CUSTOM_CONTACT"
       tableName="OL_CONTACT_CUSTOM">
       <column name="contact_id" />
-    </createIndex>
-  </changeSet>
-  <changeSet author="tstephen" id="1634147850538-154">
-    <createIndex indexName="FK_mlcqje31568quf12gtnih26j1"
-      tableName="OL_METRIC">
-      <column name="cohort_id" />
     </createIndex>
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-156">
@@ -641,22 +777,16 @@
       <column name="stock_cat_id" />
     </createIndex>
   </changeSet>
-  <changeSet author="tstephen" id="1634147850538-176">
-    <createIndex indexName="FKloe2ek3ukeqxei78w110o5btf"
+  <changeSet author="tstephen" id="AddFKNoteStockItem">
+    <createIndex indexName="FK_NOTE_STOCK_ITEM"
       tableName="OL_NOTE">
       <column name="stock_item_id" />
     </createIndex>
   </changeSet>
-  <changeSet author="tstephen" id="1634147850538-177">
-    <createIndex indexName="FKpoudyf55dt4i9kfjq5bujpe2d"
+  <changeSet author="tstephen" id="AddFKNoteOrder">
+    <createIndex indexName="FK_NOTE_ORDER"
       tableName="OL_NOTE">
       <column name="order_id" />
-    </createIndex>
-  </changeSet>
-  <changeSet author="tstephen" id="1634147850538-178">
-    <createIndex indexName="FK_ORDER_FEEDBACK"
-      tableName="OL_ORDER">
-      <column name="feedback_id" />
     </createIndex>
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-179">
@@ -666,7 +796,7 @@
     </createIndex>
   </changeSet>
   <changeSet author="tstephen" id="1634147850538-183">
-    <createIndex indexName="FKr334ex5st6wy38kkleqwqjowi"
+    <createIndex indexName="FK_DOCUMENT_STOCK_ITEM"
       tableName="OL_DOCUMENT">
       <column name="stock_item_id" />
     </createIndex>
@@ -875,14 +1005,6 @@
       referencedColumnNames="id" referencedTableName="OL_STOCK_CAT"
       validate="true" />
   </changeSet>
-  <changeSet author="tstephen" id="1634147850538-256">
-    <addForeignKeyConstraint
-      baseColumnNames="feedback_id" baseTableName="OL_ORDER"
-      constraintName="FK_ORDER_FEEDBACK" deferrable="false"
-      initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-      referencedColumnNames="id" referencedTableName="OL_FEEDBACK"
-      validate="true" />
-  </changeSet>
   <changeSet author="tstephen" id="1634147850538-257">
     <addForeignKeyConstraint
       baseColumnNames="feedback_id" baseTableName="OL_FEEDBACK_CUSTOM"
@@ -907,4 +1029,5 @@
       referencedColumnNames="id" referencedTableName="OL_ACCOUNT"
       validate="true" />
   </changeSet>
+  <include file="src/main/resources/liquibase/changelog-001-update-sequences.xml"/>
 </databaseChangeLog>

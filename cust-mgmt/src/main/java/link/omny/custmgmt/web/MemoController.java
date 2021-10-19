@@ -20,7 +20,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -234,8 +233,7 @@ public class MemoController {
         }
         Memo resource = new Memo();
         BeanUtils.copyProperties(memo, resource, "id");
-        resource.setName(memo.getName() + "Copy").setStatus("Draft")
-                .setCreated(new Date()).setLastUpdated(null);
+        resource.setName(memo.getName() + "Copy").setStatus("Draft");
         EntityModel<Memo> entity = addLinks(tenantId, memoRepo.save(resource));
 
         HttpHeaders headers = new HttpHeaders();

@@ -34,9 +34,8 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -45,8 +44,10 @@ import org.jsoup.Jsoup;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import link.omny.supportservices.model.Auditable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 @Entity
@@ -55,15 +56,17 @@ import lombok.experimental.Accessors;
 })
 @Table(name = "OL_MEMO")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @AllArgsConstructor
-public class Memo implements Serializable {
+public class Memo extends Auditable<String> implements Serializable {
 
     private static final long serialVersionUID = 5885971394766699832L;
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "memoIdSeq", sequenceName = "ol_memo_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "memoIdSeq")
     @JsonProperty
     private Long id;
 
@@ -113,17 +116,6 @@ public class Memo implements Serializable {
     @JsonProperty
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "memo")
     private List<MemoSignatory> signatories;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "created", updatable = false)
-    @JsonProperty
-    private Date created;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonProperty
-    @Column(name = "last_updated")
-    private Date lastUpdated;
 
     public Memo() {
         created = new Date();

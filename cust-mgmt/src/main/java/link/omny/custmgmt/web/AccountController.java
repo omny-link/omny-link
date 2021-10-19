@@ -38,6 +38,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -478,7 +479,7 @@ public class AccountController {
     /**
      * Add a document to the specified account.
      */
-    @PostMapping(value = "/accounts/{accountId}/documents")
+    @PostMapping(value = "/accounts/{accountId}/documents", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Add a document to the specified account.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
@@ -501,10 +502,30 @@ public class AccountController {
     }
 
     /**
+     * Add a document to the specified account.
+     *
+     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
+     * @return
+     *
+     * @return The document created.
+     */
+    @PostMapping(value = "/accounts/{accountId}/documents",
+            consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+                    "application/x-www-form-urlencoded; charset=UTF-8" })
+    public @ResponseBody Document addDocument(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId,
+            @RequestParam("author") String author,
+            @RequestParam("name") String name,
+            @RequestParam("url") String url) {
+        return addDocument(tenantId, accountId, new Document(author, name, url)).getBody();
+    }
+
+    /**
      * Add a note to the specified account.
      * @return the created note.
      */
-    @PostMapping(value = "/accounts/{accountId}/notes")
+    @PostMapping(value = "/accounts/{accountId}/notes", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Add a note to the specified account.")
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
@@ -524,6 +545,25 @@ public class AccountController {
         headers.setLocation(uri);
 
         return new ResponseEntity<Note>(note, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Add a note to the specified account from its parts.
+     *
+     * <p>This is just a convenience method, see {@link #addNote(String, Long, Note)}
+     *
+     * @return The note created.
+     */
+    @PostMapping(value = "/accounts/{accountId}/notes",
+            consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+                         "application/x-www-form-urlencoded; charset=UTF-8" })
+    public @ResponseBody Note addNote(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId,
+            @RequestParam("author") String author,
+            @RequestParam("favorite") boolean favorite,
+            @RequestParam("content") String content) {
+        return addNote(tenantId, accountId, new Note(author, content, favorite)).getBody();
     }
 
     /**

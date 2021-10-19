@@ -522,6 +522,9 @@ public class ContactController {
         if (contact.getAccountId() != null) {
             setAccount(tenantId, contact.getId(), contact.getAccountId());
         }
+        for (CustomContactField field : contact.getCustomFields()) {
+            LOGGER.error(" have custom field {}", field);
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(entity.getLink("self").get().toUri());
 

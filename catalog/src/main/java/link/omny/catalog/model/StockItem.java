@@ -38,6 +38,7 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -104,7 +105,8 @@ public class StockItem implements ShortStockItem, Serializable {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "stockItemIdSeq", sequenceName = "ol_stock_item_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stockItemIdSeq")
     @JsonProperty
     @JsonView({OrderViews.Summary.class, StockCategoryViews.Detailed.class,
             StockItemViews.Detailed.class})

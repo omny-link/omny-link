@@ -25,7 +25,7 @@ public abstract class Auditable<U> {
 
     @JsonProperty
     @CreatedBy
-    @Column(name = "created_by")
+    @Column(name = "created_by", length = 150)
     protected U createdBy;
 
     @CreatedDate
@@ -35,7 +35,7 @@ public abstract class Auditable<U> {
 
     @JsonProperty
     @LastModifiedBy
-    @Column(name = "last_updated_by")
+    @Column(name = "last_updated_by", length = 150)
     protected U lastUpdatedBy;
 
     @LastModifiedDate
