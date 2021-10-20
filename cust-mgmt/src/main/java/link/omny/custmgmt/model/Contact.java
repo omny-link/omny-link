@@ -99,6 +99,18 @@ import lombok.experimental.Accessors;
             )
     }
 )
+@NamedEntityGraph(name = "contactWithAccount",
+    attributeNodes = {
+            @NamedAttributeNode(value = "account", subgraph = "account-subgraph"),
+            @NamedAttributeNode("customFields"),
+    },
+    subgraphs = {
+            @NamedSubgraph(
+                    name = "account-subgraph",
+                    attributeNodes = { @NamedAttributeNode("customFields") }
+            )
+    }
+)
 @Table(name = "OL_CONTACT")
 @SecondaryTable(name = "OL_CONTACT_CUSTOM",
     pkJoinColumns = @PrimaryKeyJoinColumn(name = "contact_id"))
@@ -394,7 +406,7 @@ public class Contact extends Auditable<String> implements Serializable {
     @Column(name = "tenant_id", nullable = false)
     private String tenantId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, /*mappedBy = "contact", */targetEntity = CustomContactField.class)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact", targetEntity = CustomContactField.class)
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     @JsonView({ ContactViews.Detailed.class })
