@@ -106,8 +106,8 @@
         url: url,
         type: 'POST',
         data: n,
-        success: completeHandler = function(data) {
-          console.log('response: '+ data);
+        success: function(data) {
+          console.log('response: '+ JSON.stringify(data));
           ractive.showMessage('Document link saved successfully');
           ractive.set('saveObserver',false);
           ractive.set('current.documents.0.created',data.created);
@@ -133,8 +133,8 @@
         url: url,
         type: 'POST',
         data: n,
-        success: completeHandler = function(data) {
-          console.log('response: '+ data);
+        success: function(data) {
+          console.log('response: '+ JSON.stringify(data));
           ractive.showMessage('Note saved successfully');
           ractive.set('saveObserver',false);
           // Location header is being sent but not arrive (blocked by CORS?)
@@ -169,7 +169,7 @@
       url: url,
       type: 'POST',
       data: { confidential: n.confidential },
-      success: completeHandler = function(data) {
+      success: function(data) {
         console.log('response: '+ data);
         ractive.showMessage('Note marked as '+(n.confidential ? 'confidential' : 'non-confidential'));
       }
@@ -185,7 +185,7 @@
       url: url,
       type: 'POST',
       data: { favorite: n.favorite },
-      success: completeHandler = function(data) {
+      success: function(data) {
         console.log('response: '+ data);
         ractive.showMessage('Note '+(n.favorite ? 'favorited' : 'un-favorited'));
       }
@@ -208,7 +208,7 @@
         type: 'POST',
         contentType: 'application/upload',
         data: JSON.stringify({ message: $('#ticketForm #what').val(), image:c.toDataURL("image/png") }),
-        success: completeHandler = function(data,textStatus,jqXHR) {
+        success: function(data,textStatus,jqXHR) {
           console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
           ractive.showMessage('Submitted ticket');
         },
