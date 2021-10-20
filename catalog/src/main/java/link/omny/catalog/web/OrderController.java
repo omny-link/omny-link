@@ -126,14 +126,12 @@ public class OrderController {
 
         Order order = findById(tenantId, orderId);
         LOGGER.info(
-                "Found order with {} order items, {} notes, {} docs and {} inc. feedback",
+                "Found order with {} order items, {} notes, {} docs",
                 order.getOrderItems().size(),
                 order.getNotes().size(),
-                order.getDocuments().size(),
-                order.getFeedback() == null ? "DOES NOT" : "DOES");
+                order.getDocuments().size());
 
         order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
-        order.setFeedback(feedbackRepo.findByOrder(tenantId, orderId));
         return addLinks(tenantId, order);
     }
 
@@ -149,13 +147,10 @@ public class OrderController {
         LOGGER.info("Read orders {} for tenant {}", orderIds, tenantId);
         List<Order> orders = orderRepo.findByIds(tenantId, parseOrderIds(orderIds));
         for (Order order : orders) {
-            LOGGER.info(
-                    "Found order with {} order items and {} inc. feedback",
-                    order.getOrderItems().size(),
-                    order.getFeedback() == null ? "DOES NOT" : "DOES");
+            LOGGER.info("Found order with {} order items",
+                    order.getOrderItems().size());
 
             order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
-            order.setFeedback(feedbackRepo.findByOrder(tenantId, order.getId()));
         }
         return addLinks(tenantId, orders);
     }
@@ -524,8 +519,9 @@ public class OrderController {
          Order order = findById(tenantId, orderId);
          order.getDocuments().add(doc);
          order.setLastUpdated(new Date());
-         orderRepo.save(order);
-         doc = order.getDocuments().get(order.getDocuments().size()-1);
+         order = orderRepo.save(order);
+         doc = order.getDocuments().stream()
+                 .reduce((first, second) -> second).orElse(null);
 
          HttpHeaders headers = new HttpHeaders();
          URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -550,8 +546,10 @@ public class OrderController {
         Order order = findById(tenantId, orderId);
         order.getNotes().add(note);
         order.setLastUpdated(new Date());
-        orderRepo.save(order);
-        note = order.getNotes().get(order.getNotes().size()-1);
+        order = orderRepo.save(order);
+        note = order.getNotes().stream()
+                .reduce((first, second) -> second).orElse(null);
+
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -584,9 +582,8 @@ public class OrderController {
 
         Order order = findById(tenantId, orderId);
         feedback.setOrder(order);
-        order.setFeedback(feedback);
         order.setLastUpdated(new Date());
-        orderRepo.save(order);
+        order = orderRepo.save(order);
 
         HashMap<String, String> vars = new HashMap<String, String>();
         vars.put("tenantId", tenantId);

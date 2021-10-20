@@ -417,7 +417,7 @@ public class StockItemController {
         mediaResourceRepo.save(mediaResource);
         // necessary to force a save
         stockItem.setLastUpdated(new Date());
-        stockItemRepo.save(stockItem);
+        stockItem= stockItemRepo.save(stockItem);
     }
 
     /**
@@ -432,7 +432,7 @@ public class StockItemController {
          StockItem stockItem = findById(tenantId, stockItemId);
          stockItem.getDocuments().add(doc);
          stockItem.setLastUpdated(new Date());
-         stockItemRepo.save(stockItem);
+         stockItem = stockItemRepo.save(stockItem);
          doc = stockItem.getDocuments().stream()
                  .reduce((first, second) -> second).orElse(null);
 
@@ -459,7 +459,7 @@ public class StockItemController {
         StockItem stockItem = findById(tenantId, stockItemId);
         stockItem.getNotes().add(note);
         stockItem.setLastUpdated(new Date());
-        stockItemRepo.save(stockItem);
+        stockItem = stockItemRepo.save(stockItem);
         note = stockItem.getNotes().stream()
                 .reduce((first, second) -> second).orElse(null);
 

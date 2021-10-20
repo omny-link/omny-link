@@ -358,7 +358,7 @@ public class StockCategoryController {
          StockCategory stockCategory = findById(tenantId, stockCategoryId);
          stockCategory.getDocuments().add(doc);
          stockCategory.setLastUpdated(new Date());
-         stockCategoryRepo.save(stockCategory);
+         stockCategory = stockCategoryRepo.save(stockCategory);
          doc = stockCategory.getDocuments().get(stockCategory.getDocuments().size()-1);
 
          HttpHeaders headers = new HttpHeaders();
@@ -384,7 +384,7 @@ public class StockCategoryController {
         StockCategory stockCategory = findById(tenantId, stockCategoryId);
         stockCategory.getNotes().add(note);
         stockCategory.setLastUpdated(new Date());
-        stockCategoryRepo.save(stockCategory);
+        stockCategory = stockCategoryRepo.save(stockCategory);
         note = stockCategory.getNotes().get(stockCategory.getNotes().size()-1);
 
         HttpHeaders headers = new HttpHeaders();
@@ -420,7 +420,7 @@ public class StockCategoryController {
         mediaResourceRepo.save(mediaResource);
         // necessary to force a save
         stockCategory.setLastUpdated(new Date());
-        stockCategoryRepo.save(stockCategory);
+        stockCategory = stockCategoryRepo.save(stockCategory);
     }
 
     /**

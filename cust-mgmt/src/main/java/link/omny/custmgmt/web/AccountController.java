@@ -111,7 +111,7 @@ public class AccountController {
         Account account = findById(tenantId, accountId);
         account.getActivities().add(activity);
         account.setLastUpdated(new Date());
-        accountRepo.save(account);
+        account = accountRepo.save(account);
         activity = account.getActivities().stream()
                 .reduce((first, second) -> second).orElse(null);
 
@@ -487,7 +487,7 @@ public class AccountController {
          Account account = findById(tenantId, accountId);
          account.getDocuments().add(doc);
          account.setLastUpdated(new Date());
-         accountRepo.save(account);
+         account = accountRepo.save(account);
          doc = account.getDocuments().stream()
                  .reduce((first, second) -> second).orElse(null);
 
@@ -533,7 +533,7 @@ public class AccountController {
         Account account = findById(tenantId, accountId);
         account.getNotes().add(note);
         account.setLastUpdated(new Date());
-        accountRepo.save(account);
+        account = accountRepo.save(account);
         note = account.getNotes().stream()
                 .reduce((first, second) -> second).orElse(null);
 

@@ -407,7 +407,7 @@ public class ContactController {
     public @ResponseBody List<EntityModel<Contact>> findByAccountId(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("accountId") String accountId) {
-        LOGGER.debug("Find contact for account {}", accountId);
+        LOGGER.info("Find contact for account {}", accountId);
 
         return addLinks(tenantId, contactRepo
                 .findByAccountId(Long.parseLong(accountId), tenantId));
@@ -421,7 +421,7 @@ public class ContactController {
     public @ResponseBody List<EntityModel<Contact>> findByAccountType(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("accountType") String accountType) {
-        LOGGER.debug("Find contact for account {}", accountType);
+        LOGGER.info("Find contact for account {}", accountType);
         return addLinks(tenantId, contactRepo.findByAccountType(accountType, tenantId));
     }
 
@@ -596,7 +596,7 @@ public class ContactController {
          Contact contact = findById(tenantId, contactId);
          contact.getDocuments().add(doc);
          contact.setLastUpdated(new Date());
-         contactRepo.save(contact);
+         contact = contactRepo.save(contact);
          doc = contact.getDocuments().stream()
                  .reduce((first, second) -> second).orElse(null);
 
@@ -622,7 +622,7 @@ public class ContactController {
         Contact contact = findById(tenantId, contactId);
         contact.getNotes().add(note);
         contact.setLastUpdated(new Date());
-        contactRepo.save(contact);
+        contact = contactRepo.save(contact);
         note = contact.getNotes().stream()
                 .reduce((first, second) -> second).orElse(null);
 
@@ -701,7 +701,7 @@ public class ContactController {
         Contact contact = findById(tenantId, contactId);
         contact.getActivities().add(activity);
         contact.setLastUpdated(new Date());
-        contactRepo.save(contact);
+        contact = contactRepo.save(contact);
         activity = contact.getActivities().stream()
                 .reduce((first, second) -> second).orElse(null);
 

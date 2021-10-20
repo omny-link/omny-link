@@ -33,7 +33,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -193,20 +192,15 @@ public class Order extends Auditable<String> implements Serializable {
     @JsonManagedReference
     private List<OrderItem> orderItems;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JsonView( { OrderViews.Detailed.class } )
-    @JsonManagedReference
-    private Feedback feedback;
-
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, targetEntity = Note.class)
     @JoinColumn(name = "order_id")
     @JsonView({ OrderViews.Detailed.class })
-    private List<Note> notes;
+    private Set<Note> notes;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, targetEntity = Document.class)
     @JoinColumn(name = "order_id")
     @JsonView({ OrderViews.Detailed.class })
-    private List<Document> documents;
+    private Set<Document> documents;
 
     @Transient
     private List<String> customHeadings;
@@ -302,16 +296,16 @@ public class Order extends Auditable<String> implements Serializable {
         return this;
     }
 
-    public List<Note> getNotes() {
+    public Set<Note> getNotes() {
         if (notes == null) {
-            notes = new ArrayList<Note>();
+            notes = new HashSet<Note>();
         }
         return notes;
     }
 
-    public List<Document> getDocuments() {
+    public Set<Document> getDocuments() {
         if (documents == null) {
-            documents = new ArrayList<Document>();
+            documents = new HashSet<Document>();
         }
         return documents;
     }
