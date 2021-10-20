@@ -137,7 +137,6 @@
           console.log('response: '+ JSON.stringify(data));
           ractive.showMessage('Note saved successfully');
           ractive.set('saveObserver',false);
-          // Location header is being sent but not arrive (blocked by CORS?)
           ractive.set('current.notes.0.id', data.id);
           ractive.set('current.notes.0.created',data.created);
           ractive.set('saveObserver',true);

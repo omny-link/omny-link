@@ -110,7 +110,9 @@ crm:
     baseUri: "https://crm.knowprocess.com"
     tagLine: The automated CRM
   cors:
-    allowedOrigins: "http://localhost:8000,https://beta.knowprocess.com,https://cloud.knowprocess.com"
+    allowedOrigins: "http://localhost:8000,https://beta.knowprocess.com,https://cloud.knowprocess.com"`
+    allowedHeaders: "Authorization,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Location,Pragma,X-Requested-With"
+    exposedHeaders: "Authorization,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Location,Pragma,X-Requested-With"
 
 rest:
   javaOpts:

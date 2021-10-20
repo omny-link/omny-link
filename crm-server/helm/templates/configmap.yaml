@@ -29,6 +29,9 @@ data:
   {{- if and .Values.crm.cors.allowedHeaders }}
   CRM_CORS_ALLOWED-HEADERS: {{ .Values.crm.cors.allowedHeaders | quote }}
   {{- end }}
+  {{- if and .Values.crm.cors.exposedHeaders }}
+  CRM_CORS_EXPOSED-HEADERS: {{ .Values.crm.cors.exposedHeaders | quote }}
+  {{- end }}
   {{- if and .Values.crm.cors.allowCredentials }}
   CRM_CORS_ALLOW-CREDENTIALS: {{ .Values.crm.cors.allowCredentials | quote }}
   {{- end }}
