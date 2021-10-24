@@ -2,6 +2,7 @@ var del         = require('del');
 var log         = require('fancy-log');
 var gulp        = require('gulp');
 var babel       = require('gulp-babel');
+var bSync       = require('browser-sync').create();
 var jshint      = require('gulp-jshint');
 var cleanCSS    = require('gulp-clean-css');
 var minimist    = require('minimist');
@@ -67,7 +68,7 @@ gulp.task('compile',
 );
 
 gulp.task('server', function(done) {
-  bSync({
+  bSync.init({
     server: {
       baseDir: [buildDir]
     }
