@@ -14,7 +14,7 @@
  * the License.
  ******************************************************************************/
 /* FONTS */
-@import url('https://api.knowprocess.com/webjars/knowprocess-icons/3.1.0/style.css');
+@import url('/knowprocess-icons/3.1.0/style.css');
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400italic,400');
 @import url('https://fonts.googleapis.com/css?family=Signika');
 
