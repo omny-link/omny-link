@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 Tim Stephenson and contributors
- * 
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
  *  of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -764,26 +764,41 @@ var ractive = new BaseRactive({
           }
         });
       },
-      fetchTasks: function(accountId) {
-        console.info('fetchTasks...');
-
-        ractive.set('saveObserver', false);
-        $.ajax({
-          dataType: "json",
-          url: ractive.getBpmServer() + '/' + ractive.get('tenant.id')
-              + '/tasks/findByVar/accountId/' + accountId,
-          crossDomain: true,
-          success: function(data) {
-            console.log('fetched ' + data.length + ' tasks');
-            ractive.set('saveObserver', false);
-            ractive.set('xTasks', data);
-            ractive.set('current.tasks', data);
-            ractive.sortChildren('tasks', 'dueDate', false);
-            ractive.set('saveObserver', true);
-            ractive.set('alerts.tasks', data.length);
-          }
-        });
+  fetchTasks: function(accountId) {
+    console.info('fetchTasks...');
+    if (ractive.get('profile')==undefined) {
+      console.info(' not ready to fetch tasks');
+      return;
+    }
+    ractive.set('saveObserver', false);
+    $.ajax({
+      contentType: 'application/json',
+      dataType: "json",
+      type: 'POST',
+      url: ractive.getBpmServer() + '/flowable-rest/service/query/tasks',
+      crossDomain: true,
+      headers: { Authorization: ractive.getBpmAuth() },
+      xhrFields: {
+        withCredentials: true
       },
+      data: JSON.stringify({
+        "processInstanceVariables": [ {
+          "name": "accountId",
+          "operation": "equals",
+          "value": accountId
+        } ]
+      }),
+      success: function(data) {
+        console.log('fetched ' + data.length + ' tasks');
+        ractive.set('saveObserver', false);
+        ractive.set('xTasks', data);
+        ractive.set('current.tasks', data);
+        if (data.length > 0) ractive.sortChildren('tasks', 'dueDate', false);
+        ractive.set('saveObserver', true);
+        ractive.set('alerts.tasks', data.length);
+      }
+    });
+  },
       /** @deprecated use findAny */
       find: function(contactId) {
         console.log('find: ' + contactId);

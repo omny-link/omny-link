@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011-2018 Tim Stephenson and contributors
- * 
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
  *  of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -246,8 +246,13 @@ var BaseRactive = Ractive.extend({
   getServer: function() {
     return ractive.get('server')==undefined ? '' : ractive.get('server');
   },
+  getBpmAuth: function() {
+    return 'Basic '+btoa(
+        ractive.get('profile.username') + ':'
+        + ractive.get('profile.attributes.token.0'));
+  },
   getBpmServer: function() {
-    return 'https://api.knowprocess.com';
+    return 'https://flowable.knowprocess.com';
   },
   getStockItemNames : function (order) {
     var stockItemIds = [];
@@ -662,11 +667,25 @@ var BaseRactive = Ractive.extend({
     console.info('submitCustomAction');
     if (document.getElementById('customActionForm').checkValidity()) {
       if (ractive.get('instanceToStart.processDefinitionKeyOverride') != undefined) ractive.set('instanceToStart.processDefinitionKey', ractive.get('instanceToStart.processDefinitionKeyOverride'));
+      var data = {
+        processDefinitionKey: ractive.get('instanceToStart.processDefinitionKey'),
+        businessKey: ractive.get('instanceToStart.label')+' to/for '+ractive.get('instanceToStart.businessKey'),
+        name: ractive.get('instanceToStart.processDefinitionKey')+' '+ractive.localId(ractive.get('current')),
+        variables: [ ],
+        /*tenantId: ractive.get('tenant.id'),*/
+        returnVariables: true
+      };
+      var varObj = ractive.get('instanceToStart.processVariables');
+      Object.keys(varObj).forEach(function(key) {
+        data.variables.push({ "name":key,"value":varObj[key] });
+      });
       $.ajax({
-        url: ractive.getBpmServer()+'/'+ractive.get('tenant.id')+'/process-instances/',
+        url: ractive.getBpmServer()+'/flowable-rest/service/runtime/process-instances/',
         type: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify(ractive.get('instanceToStart')),
+        data: JSON.stringify(data),
+        crossDomain: true,
+        headers: { Authorization: ractive.getBpmAuth() },
         success: function(data, textStatus, jqXHR) {
           console.log('response: '+ jqXHR.status+", Location: "+jqXHR.getResponseHeader('Location'));
           if (ractive.get('instanceToStart.label')==ractive.get('instanceToStart.businessKey')) {
@@ -1079,7 +1098,7 @@ function parseDateIEPolyFill(timeString) {
   function RotateLeft(lValue, iShiftBits) {
   return (lValue<<iShiftBits) | (lValue>>>(32-iShiftBits));
   }
- 
+
   function AddUnsigned(lX,lY) {
   var lX4,lY4,lX8,lY8,lResult;
   lX8 = (lX & 0x80000000);
@@ -1100,32 +1119,32 @@ function parseDateIEPolyFill(timeString) {
   return (lResult ^ lX8 ^ lY8);
   }
   }
- 
+
   function F(x,y,z) { return (x & y) | ((~x) & z); }
   function G(x,y,z) { return (x & z) | (y & (~z)); }
   function H(x,y,z) { return (x ^ y ^ z); }
   function I(x,y,z) { return (y ^ (x | (~z))); }
- 
+
   function FF(a,b,c,d,x,s,ac) {
   a = AddUnsigned(a, AddUnsigned(AddUnsigned(F(b, c, d), x), ac));
   return AddUnsigned(RotateLeft(a, s), b);
   };
- 
+
   function GG(a,b,c,d,x,s,ac) {
   a = AddUnsigned(a, AddUnsigned(AddUnsigned(G(b, c, d), x), ac));
   return AddUnsigned(RotateLeft(a, s), b);
   };
- 
+
   function HH(a,b,c,d,x,s,ac) {
   a = AddUnsigned(a, AddUnsigned(AddUnsigned(H(b, c, d), x), ac));
   return AddUnsigned(RotateLeft(a, s), b);
   };
- 
+
   function II(a,b,c,d,x,s,ac) {
   a = AddUnsigned(a, AddUnsigned(AddUnsigned(I(b, c, d), x), ac));
   return AddUnsigned(RotateLeft(a, s), b);
   };
- 
+
   function ConvertToWordArray(string) {
   var lWordCount;
   var lMessageLength = string.length;
@@ -1148,7 +1167,7 @@ function parseDateIEPolyFill(timeString) {
   lWordArray[lNumberOfWords-1] = lMessageLength>>>29;
   return lWordArray;
   };
- 
+
   function WordToHex(lValue) {
   var WordToHexValue='',WordToHexValue_temp='',lByte,lCount;
   for (lCount = 0;lCount<=3;lCount++) {
@@ -1158,14 +1177,14 @@ function parseDateIEPolyFill(timeString) {
   }
   return WordToHexValue;
   };
- 
+
   function Utf8Encode(string) {
   string = string.replace(/\r\n/g,'\n');
   var utftext = '';
- 
+
   for (var n = 0; n < string.length; n++) {
   var c = string.charCodeAt(n);
- 
+
   if (c < 128) {
   utftext += String.fromCharCode(c);
   }
@@ -1179,23 +1198,23 @@ function parseDateIEPolyFill(timeString) {
   utftext += String.fromCharCode((c & 63) | 128);
   }
   }
- 
+
   return utftext;
   };
- 
+
   var x=Array();
   var k,AA,BB,CC,DD,a,b,c,d;
   var S11=7, S12=12, S13=17, S14=22;
   var S21=5, S22=9 , S23=14, S24=20;
   var S31=4, S32=11, S33=16, S34=23;
   var S41=6, S42=10, S43=15, S44=21;
- 
+
   string = Utf8Encode(string);
- 
+
   x = ConvertToWordArray(string);
- 
+
   a = 0x67452301; b = 0xEFCDAB89; c = 0x98BADCFE; d = 0x10325476;
- 
+
   for (k=0;k<x.length;k+=16) {
   AA=a; BB=b; CC=c; DD=d;
   a=FF(a,b,c,d,x[k+0], S11,0xD76AA478);
@@ -1267,8 +1286,8 @@ function parseDateIEPolyFill(timeString) {
   c=AddUnsigned(c,CC);
   d=AddUnsigned(d,DD);
   }
- 
+
   var temp = WordToHex(a)+WordToHex(b)+WordToHex(c)+WordToHex(d);
- 
+
   return temp.toLowerCase();
  }
