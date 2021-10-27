@@ -67,7 +67,7 @@
         {{/if}}
         <td on-click="edit(this)">{{stage}}</td>
         {{#tenant.features.catalog}}
-          <td on-click="edit(this)">{{#if orderItems}}See {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}{{/if}}</td>
+          <td on-click="edit(this)">See {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}</td>
         {{/}}
         {{#tenant.features.stockPricing}}
           <td on-click="edit(this)">{{price}}</td>

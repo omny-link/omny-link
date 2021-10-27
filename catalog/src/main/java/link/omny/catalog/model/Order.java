@@ -32,6 +32,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
@@ -69,6 +72,18 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
+    @NamedEntityGraph(name = "orderWithStock",
+    attributeNodes = {
+            @NamedAttributeNode(value = "stockItem", subgraph = "stock-item-subgraph"),
+            @NamedAttributeNode("customFields"),
+    },
+    subgraphs = {
+            @NamedSubgraph(
+                    name = "item-subgraph",
+                    attributeNodes = { @NamedAttributeNode("customFields") }
+            )
+    }
+)
 @Table(name = "OL_ORDER")
 @Data
 @ToString(exclude = { "documents", "notes", "orderItems" })
