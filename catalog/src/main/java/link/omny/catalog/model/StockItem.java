@@ -37,11 +37,8 @@ import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
-import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -49,7 +46,6 @@ import javax.validation.constraints.Size;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -65,16 +61,19 @@ import link.omny.catalog.views.StockCategoryViews;
 import link.omny.catalog.views.StockItemViews;
 import link.omny.supportservices.internal.CsvUtils;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@ToString(exclude = { "sizeString", "stockCategory", "notes", "documents" })
+@EqualsAndHashCode(callSuper = true, exclude = { "customFields", "sizeString", "stockCategory", "notes", "documents" })
+@ToString(exclude = { "customFields", "sizeString", "stockCategory", "notes", "documents" })
 @Entity
 @NamedEntityGraph(name = "stockItemWithAll",
     attributeNodes = {
@@ -94,7 +93,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true, value = { "stockCategory"})
-public class StockItem implements ShortStockItem, Serializable {
+public class StockItem extends Auditable<String> implements ShortStockItem, Serializable {
 
     private static final long serialVersionUID = 6825862597448133674L;
 
@@ -193,21 +192,6 @@ public class StockItem implements ShortStockItem, Serializable {
     @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
     @Column(name = "offer_url")
     private String offerUrl;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
-    @JsonProperty
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
-    private Date created;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonView({ OrderViews.Summary.class, StockCategoryViews.Detailed.class,
-        StockItemViews.Detailed.class })
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @Column(name = "last_updated")
-    private Date lastUpdated;
 
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class,
@@ -383,114 +367,14 @@ public class StockItem implements ShortStockItem, Serializable {
         }
     }
 
+    @JsonProperty
+    @Transient
+    public String getStockCategoryName() {
+        return stockCategory == null ? null : stockCategory.getName();
+    }
+
     public boolean isPublished() {
         return "Published".equalsIgnoreCase(status);
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdated = new Date();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        StockItem other = (StockItem) obj;
-        if (created == null) {
-            if (other.created != null)
-                return false;
-        } else if (!created.equals(other.created))
-            return false;
-        if (customFields == null) {
-            if (other.customFields != null)
-                return false;
-        } else if (!customFields.equals(other.customFields))
-            return false;
-        if (description == null) {
-            if (other.description != null)
-                return false;
-        } else if (!description.equals(other.description))
-            return false;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        if (images == null) {
-            if (other.images != null)
-                return false;
-        } else if (!images.equals(other.images))
-            return false;
-        if (lastUpdated == null) {
-            if (other.lastUpdated != null)
-                return false;
-        } else if (!lastUpdated.equals(other.lastUpdated))
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (price == null) {
-            if (other.price != null)
-                return false;
-        } else if (!price.equals(other.price))
-            return false;
-        if (size == null) {
-            if (other.size != null)
-                return false;
-        } else if (!size.equals(other.size))
-            return false;
-        if (status == null) {
-            if (other.status != null)
-                return false;
-        } else if (!status.equals(other.status))
-            return false;
-        if (tenantId == null) {
-            if (other.tenantId != null)
-                return false;
-        } else if (!tenantId.equals(other.tenantId))
-            return false;
-        if (tags == null) {
-            if (other.tags != null)
-                return false;
-        } else if (!tags.equals(other.tags))
-            return false;
-        if (unit == null) {
-            if (other.unit != null)
-                return false;
-        } else if (!unit.equals(other.unit))
-            return false;
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((created == null) ? 0 : created.hashCode());
-        result = prime * result
-                + ((customFields == null) ? 0 : customFields.hashCode());
-        result = prime * result
-                + ((description == null) ? 0 : description.hashCode());
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((images == null) ? 0 : images.hashCode());
-        result = prime * result
-                + ((lastUpdated == null) ? 0 : lastUpdated.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((price == null) ? 0 : price.hashCode());
-        result = prime * result + ((size == null) ? 0 : size.hashCode());
-        result = prime * result + ((status == null) ? 0 : status.hashCode());
-        result = prime * result
-                + ((tenantId == null) ? 0 : tenantId.hashCode());
-        result = prime * result + ((tags == null) ? 0 : tags.hashCode());
-        result = prime * result + ((unit == null) ? 0 : unit.hashCode());
-        return result;
     }
 
     public String toCsv() {

@@ -37,6 +37,8 @@ import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -67,6 +69,7 @@ import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -86,7 +89,10 @@ import lombok.ToString;
     }
 )
 @Table(name = "OL_STOCK_CAT")
+@SecondaryTable(name = "OL_STOCK_CAT_CUSTOM",
+    pkJoinColumns = @PrimaryKeyJoinColumn(name = "stock_cat_id"))
 @Data
+@EqualsAndHashCode(exclude = "tags")
 @ToString(exclude = { "description", "stockItems" })
 @AllArgsConstructor
 @NoArgsConstructor
@@ -191,7 +197,7 @@ public class StockCategory implements ShortStockCategory, Serializable {
     private String videoCode;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({StockCategoryViews.Summary.class, StockItemViews.Detailed.class})
     @Size(max = 20)
     private String status;
 
@@ -246,30 +252,30 @@ public class StockCategory implements ShortStockCategory, Serializable {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "stock_cat_id", nullable = true)
     @JsonView({ StockCategoryViews.Detailed.class })
-    private List<Note> notes;
+    private Set<Note> notes;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "stock_cat_id", nullable = true)
     @JsonView({ StockCategoryViews.Detailed.class })
-    private List<Document> documents;
+    private Set<Document> documents;
 
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     @JsonProperty
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView(StockCategoryViews.Summary.class)
     private Date created = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView(StockCategoryViews.Summary.class)
     @Column(name = "last_updated")
     private Date lastUpdated;
 
     @JsonProperty
-    @JsonView(StockCategoryViews.Detailed.class)
+    @JsonView(StockCategoryViews.Summary.class)
     @Column(name = "tenant_id")
     private String tenantId;
 
@@ -308,7 +314,7 @@ public class StockCategory implements ShortStockCategory, Serializable {
         for (CustomStockCategoryField newField : fields) {
             setCustomField(newField);
         }
-        // setLastUpdated(new Date());
+        setLastUpdated(new Date());
     }
 
     public String getCustomFieldValue(@NotNull String fieldName) {

@@ -18,8 +18,6 @@ package link.omny.catalog.model.api;
 import java.util.Date;
 import java.util.Set;
 
-import link.omny.catalog.model.StockItem;
-
 public interface ShortStockCategory {
     String getName();
 
@@ -36,8 +34,6 @@ public interface ShortStockCategory {
     String getPostCode();
 
     String getCountry();
-
-    String getTags();
 
     String getMapUrl();
 

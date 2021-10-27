@@ -43,6 +43,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -150,6 +151,7 @@ public class StockCategoryController {
      *
      * @return stockCategories for that tenant.
      */
+    @JsonView({ StockCategoryViews.Summary.class })
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
     @ApiOperation(value = "Retrieves the stock items for a specific tenant.")
     @Transactional
@@ -253,20 +255,28 @@ public class StockCategoryController {
         return category;
     }
 
-    @RequestMapping(value = "/findByName", method = RequestMethod.GET)
+    @GetMapping(value = "/findByName", params = { "type"})
+    @Transactional(readOnly = true)
+    @JsonView(StockCategoryViews.Detailed.class)
+    @ApiIgnore
+    @Deprecated
+    public @ResponseBody StockCategory findByNameAndType(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam("name") String name,
+            @RequestParam(value = "type") String type)
+            throws IOException {
+        return findByName(tenantId, name, type);
+    }
+
+    @GetMapping(value = "/findByName")
     @Transactional(readOnly = true)
     @JsonView(StockCategoryViews.Detailed.class)
     @ApiOperation("Return stock categories with the specified name and tenant.")
     public @ResponseBody StockCategory findByName(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("name") String name,
-            @RequestParam(value = "tag", required = false) String tag,
-            @RequestParam(value = "type", required = false) String type)
+            @RequestParam(value = "tag", required = false) String tag)
             throws IOException {
-        // backwards compatibility
-        if (type != null && tag == null) {
-            tag = type;
-        }
         LOGGER.info("findByName {}, tag {} for tenant {}", name, tag, tenantId);
 
         StockCategory category = stockCategoryRepo.findByName(name, tenantId);
@@ -359,7 +369,8 @@ public class StockCategoryController {
          stockCategory.getDocuments().add(doc);
          stockCategory.setLastUpdated(new Date());
          stockCategory = stockCategoryRepo.save(stockCategory);
-         doc = stockCategory.getDocuments().get(stockCategory.getDocuments().size()-1);
+         doc = stockCategory.getDocuments().stream()
+                 .reduce((first, second) -> second).orElse(null);
 
          HttpHeaders headers = new HttpHeaders();
          URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -385,7 +396,8 @@ public class StockCategoryController {
         stockCategory.getNotes().add(note);
         stockCategory.setLastUpdated(new Date());
         stockCategory = stockCategoryRepo.save(stockCategory);
-        note = stockCategory.getNotes().get(stockCategory.getNotes().size()-1);
+        note = stockCategory.getNotes().stream()
+                .reduce((first, second) -> second).orElse(null);
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
