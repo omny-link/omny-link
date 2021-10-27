@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -517,17 +518,21 @@ public class ContactController {
             @RequestBody Contact contact) {
         contact.setTenantId(tenantId);
 
-        EntityModel<Contact> entity = addLinks(tenantId, contactRepo.save(contact));
-        LOGGER.debug("Created contact {}", entity.getLink("self"));
+        for (CustomContactField field : contact.getCustomFields()) {
+            LOGGER.debug(" have custom field {}", field);
+            field.setContact(contact);
+        }
+        contact = contactRepo.save(contact);
+
         if (contact.getAccountId() != null) {
             setAccount(tenantId, contact.getId(), contact.getAccountId());
         }
-        for (CustomContactField field : contact.getCustomFields()) {
-            LOGGER.error(" have custom field {}", field);
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(entity.getLink("self").get().toUri());
 
+        EntityModel<Contact> entity = addLinks(tenantId, contact);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(entity.getLink("self").get()
+                .expand(contact.getId()).getHref()));
+        LOGGER.info("Created contact {}", headers.getLocation());
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 

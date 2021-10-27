@@ -30,7 +30,6 @@ import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -133,7 +132,7 @@ public class Contact extends Auditable<String> implements Serializable {
     @SequenceGenerator(name = "contactIdSeq", sequenceName = "ol_contact_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contactIdSeq")
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     private Long id;
 
     @JsonProperty
@@ -152,7 +151,7 @@ public class Contact extends Auditable<String> implements Serializable {
      * Whether this is the primary contact for an account.
      */
     @JsonProperty
-    @JsonView({ ContactViews.Summary.class })
+    @JsonView({ ContactViews.Detailed.class })
     @Column(name = "main_contact")
     private boolean mainContact;
 
@@ -500,17 +499,12 @@ public class Contact extends Auditable<String> implements Serializable {
         setTenantId(tenantId);
     }
 
-//    public List<Activity> getActivities() {
-//        if (activities == null) {
-//            activities = new ArrayList<Activity>();
-//        }
-//        return activities;
-//    }
-
     public String getFirstName() {
         return firstName == null ? DEFAULT_FIRST_NAME : firstName;
     }
 
+    @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     public boolean isFirstNameDefault() {
         return firstName == null;
     }
@@ -519,6 +513,8 @@ public class Contact extends Auditable<String> implements Serializable {
         return lastName == null ? uuid : lastName;
     }
 
+    @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     public boolean isLastNameDefault() {
         return lastName == null;
     }
@@ -821,6 +817,8 @@ public class Contact extends Auditable<String> implements Serializable {
         return firstAct;
     }
 
+    @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     public String getEmailConfirmationCode() {
         if (uuid == null) {
             setUuid(UUID.randomUUID().toString());

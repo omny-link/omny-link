@@ -213,7 +213,7 @@ var ractive = new BaseRactive({
         var search = ractive.get('searchTerm').split(' ');
         for (var idx = 0 ; idx < search.length ; idx++) {
           var searchTerm = search[idx].toLowerCase();
-          var match = ( (ractive.localId(obj).indexOf(searchTerm)>=0)
+          var match = ( (obj.id != undefined && searchTerm.indexOf(obj.id)>=0)
             || (obj.firstName.toLowerCase().indexOf(searchTerm)>=0)
             || (obj.lastName.toLowerCase().indexOf(searchTerm)>=0)
             || (searchTerm.indexOf('@')!=-1 && obj.email.toLowerCase().indexOf(searchTerm)>=0)
@@ -441,32 +441,39 @@ var ractive = new BaseRactive({
   },
   fetch: function () {
     console.info('fetch...');
-    ractive.set('saveObserver', false);
-    $.ajax({
-      dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+ractive.get('entityPath')+'/',
-      crossDomain: true,
-      success: function( data ) {
-        ractive.set('saveObserver', false);
-        if (data['_embedded'] == undefined) {
-          ractive.set('contacts', data);
-        } else {
-          ractive.set('contacts', data['_embedded'].contacts);
+    if (ractive.get('fetchInFlight')==true) {
+      console.warn('skipping fetch as already running');
+      return;
+    } else {
+      ractive.set('saveObserver', false);
+      ractive.set('fetchInFlight', true);
+      $.ajax({
+        dataType: "json",
+        url: ractive.getServer()+'/'+ractive.get('tenant.id')+ractive.get('entityPath')+'/',
+        crossDomain: true,
+        success: function( data ) {
+          ractive.set('saveObserver', false);
+          ractive.set('fetchInFlight', false);
+          if (data['_embedded'] == undefined) {
+            ractive.set('contacts', data);
+          } else {
+            ractive.set('contacts', data['_embedded'].contacts);
+          }
+          if (ractive.hasRole('admin')) $('.admin').show();
+          if (ractive.hasRole('power-user')) $('.power-user').show();
+          if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
+          if (ractive.get('tenant.features.orders')) ractive.fetchStockItems();
+          ractive.set('contacts',data.map(function(obj) {
+              obj.name = obj.fullName;
+              return obj;
+            })
+          );
+          ractive.addDataList({ name: 'contacts' }, ractive.get('contacts'));
+          ractive.showSearchMatched();
+          ractive.set('saveObserver', true);
         }
-        if (ractive.hasRole('admin')) $('.admin').show();
-        if (ractive.hasRole('power-user')) $('.power-user').show();
-        if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
-        if (ractive.get('tenant.features.orders')) ractive.fetchStockItems();
-        ractive.set('contacts',data.map(function(obj) {
-            obj.name = obj.fullName;
-            return obj;
-          })
-        );
-        ractive.addDataList({ name: 'contacts' }, ractive.get('contacts'));
-        ractive.showSearchMatched();
-        ractive.set('saveObserver', true);
-      }
-    });
+      });
+    }
   },
   fetchAccounts: function () {
     console.info('fetchAccounts...');

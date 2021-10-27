@@ -27,11 +27,13 @@ import link.omny.supportservices.model.CustomField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "OL_CONTACT_CUSTOM")
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = { "contact" })
+@ToString(callSuper = true, exclude = "contact")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
 public class CustomContactField extends CustomField {
