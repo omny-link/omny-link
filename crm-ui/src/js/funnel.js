@@ -151,7 +151,7 @@ var ractive = new BaseRactive({
         var search = ractive.get('searchTerm').trim().split(' ');
         for (var idx = 0 ; idx < search.length ; idx++) {
           var searchTerm = search[idx].toLowerCase();
-          var match = ( (rative.localId(obj)!=undefined && ractive.localId(obj).indexOf(searchTerm)>=0)
+          var match = ( (obj.id!=undefined && searchTerm.indexOf(obj.id)>=0)
             || (obj.firstName!=undefined && obj.firstName.toLowerCase().indexOf(searchTerm)>=0)
             || (obj.lastName!=undefined && obj.lastName.toLowerCase().indexOf(searchTerm)>=0)
             || (searchTerm.indexOf('@')!=-1 && obj.email.toLowerCase().indexOf(searchTerm)>=0)
