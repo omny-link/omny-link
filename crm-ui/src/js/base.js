@@ -549,6 +549,7 @@ var BaseRactive = Ractive.extend({
   },
   localId: function(uriOrObj) {
     if (uriOrObj == undefined) return;
+    else if (typeof uriOrObj == 'object' && uriOrObj['id'] !== undefined) return uriOrObj['id'];
     else if (typeof uriOrObj == 'object') return ractive.localId(ractive.uri(uriOrObj));
     else return uriOrObj.substring(uriOrObj.lastIndexOf('/')+1);
   },
