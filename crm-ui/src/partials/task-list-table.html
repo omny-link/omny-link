@@ -29,13 +29,13 @@
   </thead>
   <tbody>
   {{#each sort(xTasks,sortColumn,sortAsc):i}}
-    {{# !matchPage('work.html') || (matchSearch(this) && matchFilter(this,i)) }}
+    {{#if (matchPage('work.html') && matchSearch(this)) || !matchPage('work.html') }}
     <tr class="{{renderPriority(this)}}" data-href="/tasks/{{id}}">
       <td on-click="edit(this)">{{i+1}}</td>
       <td on-click="edit(this)">{{businessKey}}</td>
       <td class="col-truncate" on-click="edit(this)">{{name == null ? taskDefinitionKey.toLabel() : name}}</td>
       <td on-click="edit(this)">{{formatDate(createTime)}}</td>
-      <td on-click="edit(this)">{{formatDate(taskLocalVariables['deferUntil'])}}</td>
+      <td on-click="edit(this)">{{formatDate(variables['deferUntil'])}}</td>
       <td on-click="edit(this)">{{formatDate(dueDate)}}</td>
       <!--td on-click="edit(this)">{{description}}</td-->
       <td on-click="edit(this)">{{assignee==null ? 'No' : 'Yes'}}</td>
@@ -47,7 +47,7 @@
         {{/if}}
       </td>
     </tr>
-    {{/}}
+    {{/if}}
   {{/each}}
   </tbody>
   {{# matchPage('work.html') }}

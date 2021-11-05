@@ -23,30 +23,30 @@
     <div class="form-group">
       <label class="control-label required">Memo Template:</label>
       <input autocomplete="off" class="form-control" id="curMemoDisplay" list="memos" placeholder="Please select a template" required style="width:60%;" type="text" value="{{distribution.memoDisplay}}">
-      <input id="curMemoRef" type="hidden" value="{{instanceToStart.processVariables.memoId}}">
-      <input id="curMemoName" type="hidden" value="{{instanceToStart.processVariables.memoName}}">
+      <input id="curMemoRef" type="hidden" value="{{instanceToStart.variables.memoId}}">
+      <input id="curMemoName" type="hidden" value="{{instanceToStart.variables.memoName}}">
       <p class="help-block">You must select a template to send to your contact.</p>
     </div>
     {{#if orders}}
       <div class="form-group">
         <label class="control-label">Order:</label>
-        <input autocomplete="off" class="form-control" id="curOrderDisplay" list="orders" placeholder="Please select an order" style="width:60%;" type="text" value="{{instanceToStart.processVariables.orderName}}">
-        <input id="curOrderRef" type="hidden" value="{{instanceToStart.processVariables.orderId}}">
-        <input id="curOrderName" type="hidden" value="{{instanceToStart.processVariables.orderName}}">
+        <input autocomplete="off" class="form-control" id="curOrderDisplay" list="orders" placeholder="Please select an order" style="width:60%;" type="text" value="{{instanceToStart.variables.orderName}}">
+        <input id="curOrderRef" type="hidden" value="{{instanceToStart.variables.orderId}}">
+        <input id="curOrderName" type="hidden" value="{{instanceToStart.variables.orderName}}">
         <p class="help-block">You must select which {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}order{{/}} is under discussion for some templates.</p>
       </div>
     {{/if}}
     <div class="form-group">
       <label class="control-label">Contact:</label>
-      <input autocomplete="off" class="form-control" id="curContactDisplay" disabled readonly style="width:60%;" twoway="false" type="text" value="{{formatContactId(instanceToStart.processVariables.contactId)}}">
+      <input autocomplete="off" class="form-control" id="curContactDisplay" disabled readonly style="width:60%;" twoway="false" type="text" value="{{formatContactId(instanceToStart.variables.contactId)}}">
       <p class="help-block">The contact to address.</p>
     </div>
     {{#if tenant.id=='firmgains' || tenant.id=='omny'}}
       <div class="form-group form-inline">
         <label class="control-label">Send at:</label>
         <div>
-          <input id="curSendAtDate" class="form-control" style="width:170px" type="date" value="{{instanceToStart.processVariables.sendAtDate}}">
-          <input id="curSendAtTime" class="form-control" style="width:95px" type="time" value="{{instanceToStart.processVariables.sendAtTime}}">
+          <input id="curSendAtDate" class="form-control" style="width:170px" type="date" value="{{instanceToStart.variables.sendAtDate}}">
+          <input id="curSendAtTime" class="form-control" style="width:95px" type="time" value="{{instanceToStart.variables.sendAtTime}}">
           <input id="curSendAtTZ" class="form-control" pattern="GMT[+-][0-9]{2}:[0-9]{2}" placeholder="GMT-HH:MM" style="width:120px;" type="text" value="{{distribution.sendAtTZ}}">
           <p class="help-block" style="display:inline">You may optionally choose to send this template at a future date and time.</p>
         </div>

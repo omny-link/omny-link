@@ -1389,7 +1389,7 @@ var ractive = new BaseRactive({
       },
       startAccountContactAcction: function(action, contactId) {
         ractive.set('currentContact',Array.findBy('id',contactId,ractive.get('current.contacts')));
-        ractive.set('instanceToStart.processVariables.contactId',contactId);
+        ractive.set('instanceToStart.variables.contactId',contactId);
 //        ractive.startCustomAction(action.ref, action.name, ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{fullName}}')
       },
       toggleEditContact: function(obj) {

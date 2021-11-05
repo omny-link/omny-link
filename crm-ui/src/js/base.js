@@ -222,6 +222,11 @@ var BaseRactive = Ractive.extend({
       console.info(' not ready to fetch tasks');
       return;
     }
+    if (ractive.get('fetchTasks')==true) {
+      console.info('  skip fetch tasks as already in progress');
+      return;
+    }
+    ractive.set('fetchTasks', true);
     ractive.set('saveObserver', false);
     $.ajax({
       contentType: 'application/json',
@@ -234,6 +239,8 @@ var BaseRactive = Ractive.extend({
         withCredentials: true
       },
       data: JSON.stringify({
+        "includeTaskLocalVariables": true,
+        "includeProcessVariables": true,
         "processInstanceVariables": [ {
           "name": varName,
           "operation": "equals",
@@ -241,11 +248,23 @@ var BaseRactive = Ractive.extend({
         } ]
       }),
       success: function(data) {
-        console.log('fetched ' + data.length + ' tasks');
         ractive.set('saveObserver', false);
+        // flowable contains metadata as well, use data only
+        data = data.data;
+        console.log('fetched ' + data.length + ' tasks');
+
+        var data2 = {};
+        data.forEach(function(t,i) {
+          t.variables.forEach(function(v,j) { data2[v['name']]= v['value']; });
+          t.msg=data2['messageName'];
+          t.processVarNames=Object.keys(data2);
+          t.variables=data2;
+	});
+
         ractive.set('xTasks', data);
         ractive.set('current.tasks', data);
         if (data.length > 0) ractive.sortChildren('tasks', 'dueDate', false);
+        ractive.set('fetchTasks', false);
         ractive.set('saveObserver', true);
         ractive.set('alerts.tasks', data.length);
       }
@@ -674,6 +693,7 @@ var BaseRactive = Ractive.extend({
       businessKey: businessKey == undefined ? label : businessKey,
       label: label,
       processVariables: {
+        businessKey: businessKey == undefined ? label : businessKey,
         initiator: ractive.get('profile.username'),
         tenantId: ractive.get('tenant.id'),
       }
@@ -681,10 +701,7 @@ var BaseRactive = Ractive.extend({
 
     if (object != undefined) {
       var singularEntityName = ractive.entityName(object).toCamelCase().singular();
-      instanceToStart.processVariables[singularEntityName+'Id'] = ractive.uri(object);
-      instanceToStart.processVariables[singularEntityName+'LocalId'] = ractive.localId(ractive.uri(object));
-      // backward compatibility on existing procs
-      instanceToStart.processVariables[singularEntityName+'localId'] = ractive.localId(ractive.uri(object));
+      instanceToStart.variables[singularEntityName+'Id'] = ractive.localId(ractive.uri(object));
     }
     console.log(JSON.stringify(instanceToStart));
     // save what we know so far...
@@ -711,7 +728,7 @@ var BaseRactive = Ractive.extend({
         /*tenantId: ractive.get('tenant.id'),*/
         returnVariables: true
       };
-      var varObj = ractive.get('instanceToStart.processVariables');
+      var varObj = ractive.get('instanceToStart.variables');
       Object.keys(varObj).forEach(function(key) {
         data.variables.push({ "name":key,"value":varObj[key] });
       });

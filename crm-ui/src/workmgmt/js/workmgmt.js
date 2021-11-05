@@ -43,8 +43,8 @@ var ractive = new BaseRactive({
       return $('#jsonTemplate').html();
     },
     linkCtrl: function() {
-      $.getJSON(ractive.get('current.processVariables.contactId'), function (data) {
-        ractive.set('current.processVariables.contact',data);
+      $.getJSON(ractive.get('current.variables.contactId'), function (data) {
+        ractive.set('current.variables.contact',data);
         $.each(Object.keys(data), function(i,d) {
           var idx = ractive.findFormProperty(d);
           if (idx != -1) ractive.set('current.formProperties['+idx+'].value',data[d]);
@@ -62,15 +62,15 @@ var ractive = new BaseRactive({
       if (form == 'simpleTodo') form = '/partials/generic-form.html';
       if (form == '/partials/simpleTodoFormExtension.html') form = '/partials/generic-form.html';
       // catch all form
-      if (form == undefined) form = ractive.getServer()+'/partials/generic-form.html';
+      if (form == undefined) form = '/partials/generic-form.html';
       $.get(form, function (partial) {
         if (ractive != undefined) ractive.resetPartial('userForm',partial);
         ractive.initControls();
 
         // TODO Seems this doesn't work, race condition?
-        if (ractive.get('current.processVariables.contactId') != undefined) {
-          $.getJSON(ractive.get('current.processVariables.contactId'), function (data) {
-            ractive.set('current.processVariables.contact',data);
+        if (ractive.get('current.variables.contactId') != undefined) {
+          $.getJSON(ractive.get('current.variables.contactId'), function (data) {
+            ractive.set('current.variables.contact',data);
           });
         }
       });
@@ -104,7 +104,7 @@ var ractive = new BaseRactive({
       }
     },
     formatDate: function(timeString) {
-//      console.log('formatDate: '+timeString);
+      console.log('formatDate: '+timeString);
       if (timeString==undefined) return 'n/a';
       return new Date(timeString).toLocaleDateString(navigator.languages);
     },
@@ -125,7 +125,7 @@ var ractive = new BaseRactive({
       return Object.keys(obj);
     },
     matchFilter: function(obj,i) {
-      console.log("matchFilter: "+i+':'+obj+'('+JSON.stringify(obj.taskLocalVariables)+')');
+      console.log("matchFilter: "+i+':'+obj+'('+JSON.stringify(obj.variables)+')');
       var f = ractive.get('filter');
       if (f.operator==undefined) f.operator='==';
 
@@ -181,7 +181,7 @@ var ractive = new BaseRactive({
       if (searchTerm==undefined || searchTerm.length==0) {
         return true;
       } else {
-        return ( (obj.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+        return ( (obj.businessKey!=undefined && obj.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.id.indexOf(searchTerm)>=0)
           || (obj.processInstanceId.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
@@ -201,6 +201,7 @@ var ractive = new BaseRactive({
     },
     server: $env.server,
     sort: function (array, column, asc) {
+        if (array === undefined) return;
       console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);
       array = array.slice(); // clone, so we don't modify the underlying data
 
@@ -245,7 +246,22 @@ var ractive = new BaseRactive({
     if (until == undefined) until = ractive.get('deferUntil') == undefined ? 'PT24H' : ractive.get('deferUntil');
     console.log('deferTask until: '+until);
     $('#remindBtn').dropdown('toggle');
-    ractive.submitTask('defer='+until);
+    switch (until) {
+    case 'P1D':
+      until = new Date(new Date().getTime() + (1000*60*60*24)).toISOString();
+      break;
+    case 'P7D':
+      until = new Date(new Date().getTime() + (7*1000*60*60*24)).toISOString();
+      break;
+    case 'P14D':
+      until = new Date(new Date().getTime() + (14*1000*60*60*24)).toISOString();
+      break;
+    case 'P30D':
+      until = new Date(new Date().getTime() + (30*1000*60*60*24)).toISOString();
+      break;
+    }
+    ractive.submitTaskVar('deferUntil',until,'local','date');
+    ractive.showResults();
   },
   edit: function(task) {
     console.log('edit '+task+' ...');
@@ -257,13 +273,15 @@ var ractive = new BaseRactive({
   endInstance: function(piid) {
     console.log('endInstance...');
     $.ajax({
-        url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/'+piid,
+        url: ractive.getBpmServer()+'/flowable-rest/service/runtime/process-instances/'+piid,
         type: 'DELETE',
         contentType: 'application/json',
-        success: completeHandler = function(data, textStatus, jqXHR) {
+        crossDomain: true,
+        headers: { Authorization: ractive.getBpmAuth() },
+        success: function(data, textStatus, jqXHR) {
           console.log('data: '+data);
-          if (jqXHR.status == 200) {
-        	  ractive.fetch();
+          if (jqXHR.status == 204) {
+              ractive.fetch();
               ractive.showMessage('Ended workflow successfully');
           }
           ractive.showResults();
@@ -273,11 +291,46 @@ var ractive = new BaseRactive({
   },
   fetch: function () {
     console.log('fetch...');
-    $.getJSON(ractive.getServer()+'/'+ractive.get('tenant.id')+'/tasks/'+ractive.get('profile.username')+'/', function( data ) {
-      ractive.merge('tasks', data);
-      ractive.set('xTasks', ractive.get('tasks'));
-      if (ractive.hasRole('admin')) $('.admin').show();
-      ractive.showSearchMatched();
+    if (ractive.get('fetch')==true) {
+      console.info('  skip fetch as already in progress');
+      return;
+    }
+    ractive.set('fetch', true);
+    $.ajax({
+      url: ractive.getBpmServer()+'/flowable-rest/service/query/tasks',
+      type: 'POST',
+       data: JSON.stringify({
+        includeTaskLocalVariables: true,
+        includeProcessVariables: true,
+        involvedUser: ractive.get('profile.username')
+      }),
+      contentType: 'application/json',
+      crossDomain: true,
+      headers: { Authorization: ractive.getBpmAuth() },
+      success: function(data, textStatus, jqXHR) {
+        ractive.set('saveObserver', false);
+        // flowable contains metadata as well, use data only
+        data = data.data;
+        console.log('fetched ' + data.length + ' tasks');
+
+        data.forEach(function(t,i) {
+          var data2 = {};
+          t.variables.forEach(function(v,j) { data2[v['name']]= v['value']; });
+          t.msg=data2['messageName'];
+          t.processVarNames=Object.keys(data2);
+          t.variables=data2;
+        });
+
+        if (jqXHR.status == 200) {
+          ractive.showMessage('Fetched tasks successfully');
+          ractive.merge('tasks', data);
+          ractive.set('xTasks', ractive.get('tasks'));
+          if (ractive.hasRole('admin')) $('.admin').show();
+          ractive.showSearchMatched();
+        }
+        ractive.set('fetch', true);
+        ractive.set('saveObserver',true);
+      }
     });
   },
   filter: function(filter) {
@@ -300,7 +353,7 @@ var ractive = new BaseRactive({
     return rtn;
   },
   isDeferred: function(task) {
-    if (task.taskLocalVariables.length==0 || task.taskLocalVariables['deferUntil']==undefined || new Date(task.taskLocalVariables['deferUntil']).getTime() <= new Date().getTime()) {
+    if (task.variables.length==0 || task.variables['deferUntil']==undefined || new Date(task.variables['deferUntil']).getTime() <= new Date().getTime()) {
       return false;
     } else {
       return true;
@@ -309,7 +362,7 @@ var ractive = new BaseRactive({
   isDue: function(task) {
     if (task.dueDate!=undefined && new Date(task.dueDate).getTime() <= (new Date().getTime()+24*60*60*1000)) {
       return true;
-    } else if (task.taskLocalVariables!=undefined && task.taskLocalVariables['deferUntil']!=undefined && new Date(task.taskLocalVariables['deferUntil']).getTime() <= (new Date().getTime()+24*60*60*1000)) {
+    } else if (task.variables!=undefined && task.variables['deferUntil']!=undefined && new Date(task.variables['deferUntil']).getTime() <= (new Date().getTime()+24*60*60*1000)) {
       return true;
     } else {
       return false;
@@ -351,7 +404,7 @@ var ractive = new BaseRactive({
   isOverdue: function(task) {
     if (task.dueDate!=undefined && new Date(task.dueDate).getTime() <= new Date().getTime()) {
       return true;
-    } else if (task.taskLocalVariables!=undefined && task.taskLocalVariables['deferUntil']!=undefined && new Date(task.taskLocalVariables['deferUntil']).getTime() <= new Date().getTime()) {
+    } else if (task.variables!=undefined && task.variables['deferUntil']!=undefined && new Date(task.variables['deferUntil']).getTime() <= new Date().getTime()) {
       return true;
     } else {
       return false;
@@ -364,7 +417,7 @@ var ractive = new BaseRactive({
   },
   reviseValidation: function() {
     console.log('reviseValidation');
-    if (ractive.get('current.processVariables.stage')=='Cold') {
+    if (ractive.get('current.variables.stage')=='Cold') {
       $(':required').removeAttr('required');
     }
   },
@@ -381,7 +434,7 @@ var ractive = new BaseRactive({
         type: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(t),
-        success: completeHandler = function(data, textStatus, jqXHR) {
+        success: function(data, textStatus, jqXHR) {
           //console.log('data: '+ data);
 //          var location = jqXHR.getResponseHeader('Location');
 //          if (location != undefined) ractive.set('current._links.self.href',location);
@@ -407,10 +460,10 @@ var ractive = new BaseRactive({
     var id = ractive.get('current').id
 
     if (document.getElementById('currentForm').checkValidity()) {
-      var contact = ractive.get('current.processVariables.contact');
+      var contact = ractive.get('current.variables.contact');
       contact.tenantId = ractive.get('tenant.id');
       $.ajax({
-        url: ractive.get('current.processVariables.contactId'),
+        url: ractive.get('current.variables.contactId'),
         type: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(contact),
@@ -428,8 +481,8 @@ var ractive = new BaseRactive({
   },
   saveNote: function () {
     console.info('saveNote '+JSON.stringify(ractive.get('current.note'))+' ...');
-    var n = { author:ractive.get('profile.username'), contact: ractive.get('current.processVariables.contactId'), content: $('#note').val()}
-    var url = ractive.get('current.processVariables.contactId')+'/notes';
+    var n = { author:ractive.get('profile.username'), contact: ractive.get('current.variables.contactId'), content: $('#note').val()}
+    var url = ractive.get('current.variables.contactId')+'/notes';
     url = url.replace('contacts/',ractive.get('tenant.id')+'/contacts/');
     console.log('  url:'+url);
     if (n.content.trim().length > 0) {
@@ -437,7 +490,7 @@ var ractive = new BaseRactive({
         url: url,
         type: 'POST',
         data: n,
-        success: completeHandler = function(data) {
+        success: function(data) {
           console.log('response: '+ data);
           ractive.showMessage('Note saved successfully');
           $('#note').val(undefined);
@@ -447,31 +500,65 @@ var ractive = new BaseRactive({
   },
   select: function(task) {
     ractive.set('saveObserver',false);
-    $.getJSON(ractive.getServer()+'/task/'+task.id+'/', function( data ) {
-      console.log('found task '+JSON.stringify(data));
-      data.taskLocalVarNames = data['taskLocalVariables'] == undefined ? [] : Object.keys(data.taskLocalVariables);
-      data.processVarNames = Object.keys(data.processVariables);
-      data.msg = data.processVariables[data.processVariables['messageName']];
-      // Ensure freshest data available...
-//      $.each(data.formProperties, function(i,d) {
-//        console.log('have form prop: '+JSON.stringify(d));
-//        if (d.value.startsWith('http://')) { // TODO should restrict to known servers?
-//          console.log('fetching: '+d.value);
-//          $.getJSON(d.value, function(response) {
-//            console.log('... found '+response);
-//            data.processVariables[d.id]=response;
-//          });
-//        }
-//      });
-      // avoid getting 1 Jan 1970
-      if (data.dueDate==undefined) data.dueDate='';
-      else data.dueDate = new Date(data.dueDate).toISOString().substring(0,10);
-      ractive.set('current', data);
+    $.ajax({
+      url: ractive.getBpmServer()+'/flowable-rest/service/runtime/tasks/'+task.id,
+      type: 'GET',
+      contentType: 'application/json',
+      crossDomain: true,
+      headers: { Authorization: ractive.getBpmAuth() },
+      success: function(data, textStatus, jqXHR) {
+        console.log('found task '+JSON.stringify(data));
+        // avoid getting 1 Jan 1970
+        if (data.dueDate==undefined) data.dueDate='';
+        else data.dueDate = new Date(data.dueDate).toISOString().substring(0,10);
+        ractive.set('current', data);
 
-      // Remove previous initiators (one added with each select, possible ractive binding bug)
-      $('.initiator span:not(:first)').remove();
-
-      ractive.initiatorIcon(ractive.get('current.processVariables')["initiator"]);
+        $.ajax({
+          url: ractive.getBpmServer()+'/flowable-rest/service/runtime/tasks/'+task.id+'/variables?scope=global',
+          type: 'GET',
+          contentType: 'application/json',
+          crossDomain: true,
+          headers: { Authorization: ractive.getBpmAuth() },
+          success: function(data, textStatus, jqXHR) {
+            var data2 = {};
+            data.forEach(function(d,i) { data2[d['name']]= d['value']; });
+            ractive.set('current.msg',data2['messageName']);
+            ractive.set('current.processVarNames',Object.keys(data2));
+            ractive.set('current.variables',data2);
+            // Remove previous initiators (one added with each select, possible ractive binding bug)
+            $('.initiator span:not(:first)').remove();
+            ractive.initiatorIcon(ractive.get('current.variables')["initiator"]);
+          }
+        });
+        $.ajax({
+          url: ractive.getBpmServer()+'/flowable-rest/service/runtime/tasks/'+task.id+'/variables?scope=local',
+          type: 'GET',
+          contentType: 'application/json',
+          crossDomain: true,
+          headers: { Authorization: ractive.getBpmAuth() },
+          success: function(data, textStatus, jqXHR) {
+            var data2 = {};
+            data.forEach(function(d,i) { data2[d['name']]= d['value']; });
+            ractive.set('current.msg',data2['messageName']);
+            ractive.set('current.taskVarNames',Object.keys(data2));
+            ractive.set('current.taskVariables',data2);
+            ractive.set('current.variables',{
+              ...ractive.get('current.variables'), ...ractive.get('current.taskVariables')
+	    });
+          }
+        });
+        $.ajax({
+          url: ractive.getBpmServer()+'/flowable-rest/service/runtime/tasks/'+task.id+'/form',
+          type: 'GET',
+          contentType: 'application/json',
+          crossDomain: true,
+          headers: { Authorization: ractive.getBpmAuth() },
+          success: function(data, textStatus, jqXHR) {
+            ractive.set('current.formProperties',data.fields);
+          }
+        });
+        console.log('found task '+JSON.stringify(data));
+      }
     });
     ractive.showTask();
     $('#currentSect').slideDown();
@@ -524,16 +611,18 @@ var ractive = new BaseRactive({
     console.log('submitTask '+JSON.stringify(ractive.get('current'))+' ...');
     ractive.set('saveObserver',false);
 
-    var id = ractive.get('current').id;
     $('#currentSect').hide();
     var t = ractive.get('current');
+    t.action = action;
     t.tenantId = ractive.get('tenant.id');
     $.ajax({
-      url: ractive.getServer()+'/task/'+id+'?'+action,
-      type: 'PUT',
+      url: ractive.getBpmServer()+'/flowable-rest/service/runtime/tasks/'+t.id,
+      type: 'POST',
       contentType: 'application/json',
+      crossDomain: true,
       data: JSON.stringify(t),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      headers: { Authorization: ractive.getBpmAuth() },
+      success: function(data, textStatus, jqXHR) {
         //console.log('data: '+ data);
   //          var location = jqXHR.getResponseHeader('Location');
   //          if (location != undefined) ractive.set('current._links.self.href',location);
@@ -545,8 +634,53 @@ var ractive = new BaseRactive({
       }
     });
   },
+  submitTaskVar: function(name,value,scope,type) {
+    console.log('submitTaskVar '+ractive.get('current.id')+': '+name+'='+value+' '+scope+'...');
+    ractive.set('saveObserver',false);
+
+    var t = ractive.get('current');
+    t.tenantId = ractive.get('tenant.id');
+    if (ractive.get('current.processVarNames').includes(name) || ractive.get('current.taskVarNames').includes(name)) {
+      // UPDATE
+      $.ajax({
+        url: ractive.getBpmServer()+'/flowable-rest/service/runtime/tasks/'+t.id+'/variables/'+name,
+        type: 'PUT',
+        contentType: 'application/json',
+        crossDomain: true,
+        data: JSON.stringify({
+          name:name,
+          value:value,
+          scope:scope===undefined?'global':scope,
+          type:type===undefined?'string':type
+        }),
+        headers: { Authorization: ractive.getBpmAuth() },
+        success: function(data, textStatus, jqXHR) {
+          ractive.set('saveObserver',true);
+          ractive.fetch();
+        }
+      });
+    } else {
+      // CREATE
+      $.ajax({
+        url: ractive.getBpmServer()+'/flowable-rest/service/runtime/tasks/'+t.id+'/variables',
+        type: 'POST',
+        contentType: 'application/json',
+        crossDomain: true,
+        data: JSON.stringify([{
+          name:name,
+          value:value,
+          scope:scope===undefined?'global':scope,
+          type:type===undefined?'string':type
+        }]),
+        headers: { Authorization: ractive.getBpmAuth() },
+        success: function(data, textStatus, jqXHR) {
+          ractive.set('saveObserver',true);
+        }
+      });
+    }
+  },
   submitColdTask: function() {
-    ractive.set('current.processVariables.stage','Cold');
+    ractive.set('current.variables.stage','Cold');
     ractive.submitTask('complete');
   },
   submitCompleteTask: function() {
