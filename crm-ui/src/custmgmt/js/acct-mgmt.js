@@ -764,41 +764,6 @@ var ractive = new BaseRactive({
           }
         });
       },
-  fetchTasks: function(accountId) {
-    console.info('fetchTasks...');
-    if (ractive.get('profile')==undefined) {
-      console.info(' not ready to fetch tasks');
-      return;
-    }
-    ractive.set('saveObserver', false);
-    $.ajax({
-      contentType: 'application/json',
-      dataType: "json",
-      type: 'POST',
-      url: ractive.getBpmServer() + '/flowable-rest/service/query/tasks',
-      crossDomain: true,
-      headers: { Authorization: ractive.getBpmAuth() },
-      xhrFields: {
-        withCredentials: true
-      },
-      data: JSON.stringify({
-        "processInstanceVariables": [ {
-          "name": "accountId",
-          "operation": "equals",
-          "value": accountId
-        } ]
-      }),
-      success: function(data) {
-        console.log('fetched ' + data.length + ' tasks');
-        ractive.set('saveObserver', false);
-        ractive.set('xTasks', data);
-        ractive.set('current.tasks', data);
-        if (data.length > 0) ractive.sortChildren('tasks', 'dueDate', false);
-        ractive.set('saveObserver', true);
-        ractive.set('alerts.tasks', data.length);
-      }
-    });
-  },
       /** @deprecated use findAny */
       find: function(contactId) {
         console.log('find: ' + contactId);
@@ -1305,7 +1270,7 @@ var ractive = new BaseRactive({
 
               ractive.fetchStockItems();
               ractive.fetchAccountContacts();
-              ractive.fetchTasks(ractive.id(ractive.get('current')));
+              ractive.fetchTasks('accountId',ractive.id(ractive.get('current')));
 
               ractive.initControls();
               ractive.initTags();

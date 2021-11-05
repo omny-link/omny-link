@@ -540,25 +540,6 @@ var ractive = new BaseRactive({
       }
     });
   },
-  fetchTasks: function (contactId) {
-    console.info('fetchTasks...');
-
-    ractive.set('saveObserver', false);
-    $.ajax({
-      dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/tasks/findByVar/contactId/'+contactId,
-      crossDomain: true,
-      success: function( data ) {
-        console.log('fetched '+data.length+' tasks');
-        ractive.set('saveObserver', false);
-        ractive.set('xTasks',data);
-        ractive.set('current.tasks',data);
-        ractive.sortChildren('tasks','dueDate',false);
-        ractive.set('saveObserver', true);
-        ractive.set('alerts.tasks',data.length);
-      }
-    });
-  },
   findContact: function(contactId) {
     console.log('findContact: '+contactId);
     var c;
@@ -994,7 +975,7 @@ var ractive = new BaseRactive({
           //ractive.fetchStockItems();
           ractive.fetchOrders(ractive.get('current'));
         }
-        ractive.fetchTasks(ractive.localId(ractive.get('current')));
+        ractive.fetchTasks('contactId',ractive.localId(ractive.get('current')));
 
         ractive.initControls();
         ractive.initTags();
