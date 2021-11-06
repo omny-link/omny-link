@@ -692,7 +692,7 @@ var BaseRactive = Ractive.extend({
       processDefinitionKey: key,
       businessKey: businessKey == undefined ? label : businessKey,
       label: label,
-      processVariables: {
+      variables: {
         businessKey: businessKey == undefined ? label : businessKey,
         initiator: ractive.get('profile.username'),
         tenantId: ractive.get('tenant.id'),
