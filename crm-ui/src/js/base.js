@@ -730,7 +730,9 @@ var BaseRactive = Ractive.extend({
       };
       var varObj = ractive.get('instanceToStart.variables');
       Object.keys(varObj).forEach(function(key) {
-        data.variables.push({ "name":key,"value":varObj[key] });
+        var v = { name:key, value:varObj[key], scope:"global" };
+        if (typeof varObj[key]=='object') v['type'] = 'json';
+        data.variables.push(v);
       });
       $.ajax({
         url: ractive.getBpmServer()+'/flowable-rest/service/runtime/process-instances/',
