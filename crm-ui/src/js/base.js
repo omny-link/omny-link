@@ -375,11 +375,9 @@ var BaseRactive = Ractive.extend({
     console.log('hideUpload...');
     $('#upload').slideUp();
   },
-  // TODO why is this so slow?
+  // deprecated: use localId
   id: function(entity) {
-    //console.log('id: '+entity);
-    var id = ractive.uri(entity);
-    return id.substring(id.lastIndexOf('/')+1);
+    return ractive.localId(entity);
   },
   initAbout: function() {
     $('.powered-by-icon').empty().append('<img src="/images/icon/omny-icon-greyscale.png" alt="Sustainable Resource Planning™">');
@@ -557,7 +555,7 @@ var BaseRactive = Ractive.extend({
   },
   loadTenantConfig: function(tenant) {
     console.info('loadTenantConfig:'+tenant);
-    $.getJSON('https://cloud.knowprocess.com/tenants/'+tenant+'/'+tenant+'.json', function(response) {
+    $.getJSON('/tenants/'+tenant+'/'+tenant+'.json', function(response) {
       // console.log('... response: '+JSON.stringify(response));
       ractive.set('saveObserver', false);
       ractive.set('tenant', response);
@@ -603,13 +601,9 @@ var BaseRactive = Ractive.extend({
   },
   localId: function(uriOrObj) {
     if (uriOrObj == undefined) return;
-    else if (typeof uriOrObj == 'object' && uriOrObj['id'] !== undefined) return uriOrObj['id'];
+    else if (typeof uriOrObj == 'object' && uriOrObj['id'] !== undefined) return ''+uriOrObj['id'];
     else if (typeof uriOrObj == 'object') return ractive.localId(ractive.uri(uriOrObj));
     else return uriOrObj.substring(uriOrObj.lastIndexOf('/')+1);
-  },
-  /** @deprecated use localId */
-  shortId: function(uri) {
-    return ractive.localId(uri);
   },
   showDisconnected: function(msg) {
     console.log('showDisconnected: '+msg);
@@ -749,10 +743,13 @@ var BaseRactive = Ractive.extend({
             ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
           }
           $('#customActionModalSect').modal('hide');
-          if (document.location.href.endsWith('contacts.html')) {
-            ractive.select(ractive.get('current'));// refresh individual record
+          if (document.location.href.endsWith('contacts.html')
+              || document.location.href.endsWith('accounts.html')) {
+            // refresh individual record
+            setTimeout(ractive.select, EASING_DURATION*5, ractive.get('current'));
           } else {
-            ractive.fetch(); // refresh list
+            // refresh list
+            setTimeout(ractive.fetch, EASING_DURATION*5);
           }
           // @deprecated use ractive's own callbacks
           if (ractive.customActionCallbacks!=undefined) ractive.customActionCallbacks.fire(jqXHR.getResponseHeader('Location'));

@@ -20,9 +20,9 @@
     {{#alerts['tasks']}}<span class="alert-counter alert-danger"> {{alerts['tasks']}}</span>{{/}}
     <span class="pull-right">
       {{#if matchPage('contacts.html') }}
-        <span class="clickable glyphicon icon-btn kp-icon-refresh" aria-hidden="true" on-click="fetchTasks('contactId',current.id)" title="Refresh task list"></span>
+        <span class="clickable glyphicon icon-btn kp-icon-refresh" aria-hidden="true" on-click="fetchTasks('contactId',localId(current))" title="Refresh task list"></span>
       {{else}}
-        <span class="clickable glyphicon icon-btn kp-icon-refresh" aria-hidden="true" on-click="fetchTasks('accountId',current.id)" title="Refresh task list"></span>
+        <span class="clickable glyphicon icon-btn kp-icon-refresh" aria-hidden="true" on-click="fetchTasks('accountId',localId(current))" title="Refresh task list"></span>
       {{/if}}
     </span>
   </h3>

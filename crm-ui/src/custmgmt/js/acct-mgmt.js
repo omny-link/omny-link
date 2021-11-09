@@ -1054,6 +1054,7 @@ var ractive = new BaseRactive({
           if (typeof tmp == 'function') return ; // 10 Jul 17 Ractive extension
           delete tmp.account;
           delete tmp.activities;
+          delete tmp.alertsAsList;
           delete tmp.documents;
           delete tmp.notes;
           delete tmp.orders;
@@ -1082,6 +1083,7 @@ var ractive = new BaseRactive({
                 ractive.fetchAccountContacts();
                 break;
               case 204:
+                ractive.fetchAccountContacts();
                 ractive.update('orders');
                 break;
               }
@@ -1339,7 +1341,7 @@ var ractive = new BaseRactive({
       },
       setMainContact: function(contactRef) {
         console.info('setMainContact: ' + contactRef);
-        for (idx in ractive.get('current.contacts')) {
+        for (var idx = 0 ; idx < ractive.get('current.contacts').length ; idx++) {
           ractive.set('currentContact', ractive.get('current.contacts.' + idx));
           if (ractive.localId(ractive.get('current.contacts.' + idx)) != contactRef) {
             ractive.set('current.contacts.' + idx + '.mainContact', false);
@@ -1489,11 +1491,8 @@ ractive.observe('profile', function(newValue, oldValue, keypath) {
 // controls done that way save the oldValue
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
   if (ractive.get('current') != undefined) ractive.showAlertCounters();
-  ignored = [ 'current.notes', 'current.documents' ];
+  ignored = [ 'current.contacts', 'current.notes', 'current.documents' ];
   if (!ractive.get('saveObserver')) console.debug('Skipped save of '+keypath+' because in middle of other operation');
-//    else if (keypath=='current.notes') ractive.saveNote();
-//    else if (keypath=='current.documents') ractive.saveDoc();
-  else if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1 && keypath == 'current.contact' && !keypath.endsWith('mainContact')) ractive.saveContact();
   else if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1 && keypath.startsWith('current.')) ractive.saveAccount();
   else {
      console.warn('Skipped save triggered by change to: ' + keypath);
