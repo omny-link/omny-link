@@ -585,8 +585,9 @@ var ractive = new BaseRactive({
         console.log('delete ' + obj + '...');
         if (Array.findBy('contactId', ractive.localId(obj), ractive.get('orders'))==undefined) {
           $.ajax({
-            url: ractive.getServer() + '/contacts/' + ractive.id(obj),
+            url: ractive.tenantUri(obj),
             type: 'DELETE',
+            contentType: 'application/json',
             success: function(data) {
               ractive.fetchAccountContacts();
             }
