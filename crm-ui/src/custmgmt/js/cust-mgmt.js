@@ -465,6 +465,7 @@ var ractive = new BaseRactive({
           if (ractive.get('tenant.features.orders')) ractive.fetchStockItems();
           ractive.set('contacts',data.map(function(obj) {
               obj.name = obj.fullName;
+              if (obj.account!=undefined) obj.accountName = obj.account.name;
               return obj;
             })
           );
