@@ -31,8 +31,8 @@
     } else {
       ractive.showMessage('Your download will start shortly...');
     }
-    if (ractive.get('resultLocation')==undefined) fetchPreview(fetchPdf);
-    else openResponseWindow(ractive.get('resultLocation'));
+    if (ractive.get('memoHtml')==undefined) fetchPreview(fetchPdf);
+    else ractive.html2Pdf('#previewSect', ractive.get('instanceToStart.variables.memoName'));
   }
   function fetchPreview(callback) {
     var tmp = JSON.parse(JSON.stringify(ractive.get('instanceToStart')));
@@ -61,14 +61,15 @@
   }
   function fetchResult(piid) {
     $.ajax({
-      url: ractive.getBpmServer()+'/flowable-rest/service/runtime/process-instances/'+piid+'/variables/mergeTemplateResponseBody',
+      url: ractive.getBpmServer()+'/flowable-rest/service/runtime/process-instances/'+piid+'/variables/getMemoResponseBody',
       crossDomain: true,
       headers: {
         Authorization: ractive.getBpmAuth()
       },
       success: function( data ) {
-        console.log('  result starts: '+data.substring(0,16));
-        ractive.set('memoHtml', data);
+        html = data.value.richContent;
+        console.log('  result starts: '+html.substring(0,16));
+        ractive.set('memoHtml', html);
         if ('Still working...' == data) setTimeout(fetchResult, DELAY, piid);
       },
       error: function(jqXHR, textStatus, errorThrown) {

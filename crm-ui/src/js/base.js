@@ -375,6 +375,18 @@ var BaseRactive = Ractive.extend({
     console.log('hideUpload...');
     $('#upload').slideUp();
   },
+  html2Pdf: function(selector, fileName) {
+    const { jsPDF } = window.jspdf;
+    var doc = new jsPDF('l', 'mm', [1200, 1210]);
+    var pdfjs = document.querySelector(selector);
+    doc.html(pdfjs, {
+      callback: function(doc) {
+        doc.save(fileName.endsWith('.pdf') ? fileName : fileName+'.pdf');
+      },
+      x: 10,
+      y: 10
+    });
+  },
   // deprecated: use localId
   id: function(entity) {
     return ractive.localId(entity);
