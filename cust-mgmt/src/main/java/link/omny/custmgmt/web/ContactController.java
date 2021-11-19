@@ -41,6 +41,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -313,8 +314,8 @@ public class ContactController {
         LOGGER.debug("List contacts for account and name {}, {} {}",
                 accountName, lastName, firstName);
 
-        List<Contact> list = contactRepo.findByFirstNameLastNameAndAccountName(
-                firstName, lastName, accountName);
+        List<Contact> list = contactRepo.findByFirstNameLastNameAndAccountNameForTenant(
+                tenantId, firstName, lastName, accountName);
         LOGGER.info("Found {} contacts", list.size());
 
         return addLinks(tenantId, list);
@@ -582,7 +583,7 @@ public class ContactController {
      * Delete an existing contact.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = { "application/json" })
+    @DeleteMapping(value = "/{id}")
     @ApiOperation(value = "Deletes the specified contact.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long contactId) {
