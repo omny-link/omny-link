@@ -54,6 +54,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
 import link.omny.catalog.views.OrderViews;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -62,13 +63,13 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(exclude = { "order", "stockItem" })
+@EqualsAndHashCode(callSuper = true, exclude = { "order", "stockItem" })
 @ToString(exclude = { "order", "stockItem" })
 @Entity
 @Table(name = "OL_ORDER_ITEM")
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderItem implements Serializable {
+public class OrderItem extends Auditable<String> implements Serializable {
 
     private static final long serialVersionUID = 8577876040188427429L;
 

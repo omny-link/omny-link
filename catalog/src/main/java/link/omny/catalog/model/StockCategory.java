@@ -64,6 +64,7 @@ import link.omny.catalog.views.StockCategoryViews;
 import link.omny.catalog.views.StockItemViews;
 import link.omny.supportservices.internal.CsvUtils;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
@@ -92,12 +93,12 @@ import lombok.ToString;
 @SecondaryTable(name = "OL_STOCK_CAT_CUSTOM",
     pkJoinColumns = @PrimaryKeyJoinColumn(name = "stock_cat_id"))
 @Data
-@EqualsAndHashCode(exclude = "tags")
+@EqualsAndHashCode(callSuper = true, exclude = "tags")
 @ToString(exclude = { "description", "stockItems" })
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class StockCategory implements ShortStockCategory, Serializable {
+public class StockCategory extends Auditable<String> implements ShortStockCategory, Serializable {
 
     public static final int DEFAULT_IMAGE_COUNT = 8;
 
