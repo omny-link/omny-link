@@ -49,7 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.CreatedDate;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -325,10 +324,6 @@ public class Account extends Auditable<String> implements Serializable {
     // Since this is SQL 92 it should be portable
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "first_contact", updatable = false)
     private Date firstContact;
-
-    @OneToMany(mappedBy = "account", targetEntity = Contact.class)
-    @JsonBackReference
-    private Set<Contact> contact;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "account", targetEntity = CustomAccountField.class)
     @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)

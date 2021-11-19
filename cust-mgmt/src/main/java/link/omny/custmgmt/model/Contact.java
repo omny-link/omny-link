@@ -58,7 +58,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.CreatedDate;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -151,7 +150,7 @@ public class Contact extends Auditable<String> implements Serializable {
      * Whether this is the primary contact for an account.
      */
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "main_contact")
     private boolean mainContact;
 
@@ -177,7 +176,7 @@ public class Contact extends Auditable<String> implements Serializable {
     private boolean emailConfirmed;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @JsonDeserialize(using = CustomBooleanDeserializer.class)
     @Column(name = "email_optin")
     private Boolean emailOptIn;
@@ -302,18 +301,18 @@ public class Contact extends Auditable<String> implements Serializable {
     private boolean doNotEmail;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Size(max = 16)
     @Column(name = "twitter")
     private String twitter;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "facebook")
     private String facebook;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "linked_in")
     private String linkedIn;
 
@@ -457,7 +456,6 @@ public class Contact extends Auditable<String> implements Serializable {
     @JsonView({ ContactViews.Summary.class })
     @ManyToOne(cascade = CascadeType.ALL, optional = true)
     @NotFound(action = NotFoundAction.IGNORE)
-    @JsonManagedReference
     private Account account;
 
     @JsonProperty
