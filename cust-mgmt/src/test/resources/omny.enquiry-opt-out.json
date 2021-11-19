@@ -1,7 +1,4 @@
 {
-  "customFields": {
-    "type":"A Custom Field"
-  },
   "firstName":"Bart",
   "lastName":"Simpson",
   "email":"bart.simpson@example.com",

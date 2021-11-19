@@ -209,6 +209,7 @@ describe("Product catalogue", function() {
       expect(data.order).toEqual(order.order);
       expect(data.stage).toEqual(order.stage);
       expect(data.created).toBeDefined();
+      expect(data.lastUpdated).toBeGreaterThan(data.created);
       expect(data.customFields).toBeDefined();
       expect(data.customFields.specialInstructions).toEqual(order.customFields.specialInstructions);
 
@@ -225,6 +226,7 @@ describe("Product catalogue", function() {
 
       expect(data.feedback.type).toEqual(feedback.type);
       expect(data.feedback.description).toEqual(feedback.description);
+      expect(data.created).toBeDefined();
       expect(data.feedback.customFields).toBeDefined();
       expect(data.feedback.customFields.refusalReason).toEqual(feedback.customFields.refusalReason);
 

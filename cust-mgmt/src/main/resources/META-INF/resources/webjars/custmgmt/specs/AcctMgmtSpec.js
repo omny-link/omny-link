@@ -74,7 +74,7 @@ describe("Account management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(account),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         // NOTE this is URI not tenantUri
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/\/accounts\/[0-9]/);
@@ -107,7 +107,7 @@ describe("Account management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(note),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/.*\/accounts\/[0-9]*\/notes\/[0-9]*/);
         expect(jqXHR.status).toEqual(201);
@@ -122,7 +122,7 @@ describe("Account management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(doc),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/.*\/accounts\/[0-9]*\/documents\/[0-9]*/);
         expect(jqXHR.status).toEqual(201);
@@ -137,7 +137,7 @@ describe("Account management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(activity),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/.*\/accounts\/[0-9]*\/activities\/[0-9]*/);
         expect(jqXHR.status).toEqual(201);
@@ -152,7 +152,7 @@ describe("Account management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(activity),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
         done();
       }
@@ -168,7 +168,7 @@ describe("Account management", function() {
       type: 'PUT',
       contentType: 'application/json',
       data: JSON.stringify(account),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
         done();
       }
@@ -196,7 +196,7 @@ describe("Account management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(contact),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/\/contacts\/[0-9]/);
         expect(jqXHR.status).toEqual(201);
@@ -265,7 +265,7 @@ describe("Account management", function() {
       url: $rh.tenantUri(contact),
       type: 'DELETE',
       contentType: 'application/json',
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
         done();
       }
@@ -277,7 +277,7 @@ describe("Account management", function() {
       url: $rh.tenantUri(account),
       type: 'DELETE',
       contentType: 'application/json',
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
         done();
       }

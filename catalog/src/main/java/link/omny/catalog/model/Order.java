@@ -36,6 +36,7 @@ import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -47,7 +48,6 @@ import javax.validation.constraints.Size;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -72,17 +72,38 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-    @NamedEntityGraph(name = "orderWithStock",
+@NamedEntityGraph(name = "orderWithAll",
     attributeNodes = {
-            @NamedAttributeNode(value = "stockItem", subgraph = "stock-item-subgraph"),
-            @NamedAttributeNode("customFields"),
+        @NamedAttributeNode("customFields"),
+        @NamedAttributeNode(value = "feedback", subgraph = "feedback-subgraph"),
+        @NamedAttributeNode(value = "orderItems", subgraph = "item-subgraph"),
+        @NamedAttributeNode("notes"),
+        @NamedAttributeNode("documents")
     },
     subgraphs = {
-            @NamedSubgraph(
-                    name = "item-subgraph",
-                    attributeNodes = { @NamedAttributeNode("customFields") }
-            )
+        @NamedSubgraph(
+                name = "feedback-subgraph",
+                attributeNodes = { @NamedAttributeNode("customFields") }
+        ),
+        @NamedSubgraph(
+                name = "item-subgraph",
+                attributeNodes = { @NamedAttributeNode("customFields") }
+        )
+
     }
+)
+@NamedEntityGraph(name = "orderWithItems",
+    attributeNodes = {
+        @NamedAttributeNode(value = "orderItems", subgraph = "order-item-subgraph"),
+        @NamedAttributeNode("customFields")
+    },
+    subgraphs = {
+        @NamedSubgraph(
+                name = "item-subgraph",
+                attributeNodes = {
+                        @NamedAttributeNode("customFields")
+                })
+        }
 )
 @Table(name = "OL_ORDER")
 @Data
@@ -158,12 +179,17 @@ public class Order extends Auditable<String> implements Serializable {
     // Although this annotation does not change the name, without it Jackson
     // gets confused and attempts to cast id:Long to String. Why this property
     // affects a completely different one is a mystery I have not investigated
-    @JsonProperty("stockItem")
+//    @JsonProperty("stockItem")
+//    @JsonView(OrderViews.Summary.class)
+//    @RestResource(rel = "stockItem")
+//    @ManyToOne()
+//    @JoinColumn(name = "stock_item_id")
+//    private StockItem stockItem;
+
+    @JsonProperty
     @JsonView(OrderViews.Summary.class)
-    @RestResource(rel = "stockItem")
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "stock_item_id")
-    private StockItem stockItem;
+    @Column(name = "stock_item_id")
+    private Long stockItemId;
 
     @JsonProperty
     @Size(max = 30)
@@ -206,6 +232,11 @@ public class Order extends Auditable<String> implements Serializable {
     @JsonView(OrderViews.Detailed.class)
     @JsonManagedReference
     private List<OrderItem> orderItems;
+
+    @OneToOne
+    @JsonView( { OrderViews.Detailed.class } )
+    @JsonManagedReference
+    private Feedback feedback;
 
     @OneToMany(cascade = CascadeType.ALL, targetEntity = Note.class)
     @JoinColumn(name = "order_id")
@@ -357,7 +388,8 @@ public class Order extends Auditable<String> implements Serializable {
                         invoiceRef == null ? "" : invoiceRef,
                         owner == null ? "" : owner,
                         contactId == null ? "" : contactId,
-                        stockItem == null ? "" : stockItem.getId(),
+//                        stockItem == null ? "" : stockItem.getId(),
+                        stockItemId  == null ? "" : stockItemId,
                         tenantId, created, lastUpdated,
                         getConsolidatedNotes(),
                         getConsolidatedDocuments()));

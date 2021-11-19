@@ -126,10 +126,11 @@ public class OrderController {
 
         Order order = findById(tenantId, orderId);
         LOGGER.info(
-                "Found order with {} order items, {} notes, {} docs",
+                "Found order with {} order items, {} notes, {} docs and {} feedback",
                 order.getOrderItems().size(),
                 order.getNotes().size(),
-                order.getDocuments().size());
+                order.getDocuments().size(),
+                order.getFeedback() == null ? "WITHOUT" : "WITH");
 
         order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
         return addLinks(tenantId, order);
@@ -368,14 +369,14 @@ public class OrderController {
         for (CustomOrderField field : order.getCustomFields()) {
             field.setOrder(order);
         }
-        if (order.getStockItem() != null && order.getStockItem().getId() != null) {
-            LOGGER.debug("Looking up order's stock item for {}...",
-                    order.getStockItem().getId());
-            order.setStockItem(
-                    stockItemSvc.findById(tenantId, order.getStockItem().getId()));
-            LOGGER.debug("... found {} ({})", order.getStockItem().getName(),
-                    order.getStockItem().getId());
-        }
+//        if (order.getStockItemId() != null) {
+//            LOGGER.debug("Looking up order's stock item for {}...",
+//                    order.getStockItemId());
+//            order.setStockItem(
+//                    stockItemSvc.findById(tenantId, order.getStockItemId()));
+//            LOGGER.debug("... found {} ({})", order.getStockItem().getName(),
+//                    order.getStockItem().getId());
+//        }
         if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
             for (OrderItem item : order.getOrderItems()) {
                 if (item.getStockItem() != null && item.getStockItem().getId() != null) {
@@ -436,13 +437,13 @@ public class OrderController {
     }
 
     private void mergeStockItem(Order updatedOrder, Order order) {
-        if (updatedOrder.getStockItem() == null) {
-            order.setStockItem(null);
-        } else if (!updatedOrder.getStockItem().equals(order.getStockItem())) {
-            order.setStockItem(
-                    stockItemSvc.findById(order.getTenantId(),
-                            updatedOrder.getStockItem().getId()));
-        }
+//        if (updatedOrder.getStockItem() == null) {
+//            order.setStockItem(null);
+//        } else if (!updatedOrder.getStockItem().equals(order.getStockItem())) {
+//            order.setStockItem(
+//                    stockItemSvc.findById(order.getTenantId(),
+//                            updatedOrder.getStockItem().getId()));
+//        }
     }
 
     private void fixUpOrderItems(String tenantId, Order order) {
@@ -582,7 +583,8 @@ public class OrderController {
 
         Order order = findById(tenantId, orderId);
         feedback.setOrder(order);
-        order.setLastUpdated(new Date());
+        order.setFeedback(feedback);
+//        order.setLastUpdated(new Date());
         order = orderRepo.save(order);
 
         HashMap<String, String> vars = new HashMap<String, String>();
@@ -590,7 +592,7 @@ public class OrderController {
         vars.put("id", orderId.toString());
         vars.put("feedbackId", feedback.getId().toString());
 
-        return getCreatedResponseEntity("/{id}/feedback/{feedbackId}",vars);
+        return getCreatedResponseEntity("/{id}/feedback/{feedbackId}", vars);
     }
 
     /**

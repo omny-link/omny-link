@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.10.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+  <changeSet author="tstephen" id="setValAccountSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_account_id_seq', (select max(id) from ol_account));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValAccountCustomSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_account_custom_id_seq', (select max(id) from ol_account_custom));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValActivitySequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_activity_id_seq', (select max(id) from ol_activity));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValContactSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_contact_id_seq', (select max(id) from ol_contact));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValContactCustomSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_contact_custom_id_seq', (select max(id) from ol_contact_custom));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValDocumentSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_document_id_seq', (select max(id) from ol_document));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValFeedbackSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_feedback_id_seq', (select max(id) from ol_feedback));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValFeedbackCustomSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_feedback_custom_id_seq', (select max(id) from ol_feedback_custom));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValMediaResourceSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_media_res_id_seq', (select max(id) from ol_media_res));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValMemoSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_memo_id_seq', (select max(id) from ol_memo));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValMemoDistributionSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_memo_dist_id_seq', (select max(id) from ol_memo_dist));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValMetricSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_metric_id_seq', (select max(id) from ol_metric));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValNoteSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_note_id_seq', (select max(id) from ol_note));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValOrderSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_order_id_seq', (select max(id) from ol_order));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValOrderCustomSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_order_custom_id_seq', (select max(id) from ol_order_custom));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValOrderItemSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_order_item_id_seq', (select max(id) from ol_order_item));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValOrderItemCustomSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_order_item_custom_id_seq', (select max(id) from ol_order_item_custom));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValStockCategorySequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_stock_cat_id_seq', (select max(id) from ol_stock_cat));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValStockCategoryCustomSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_stock_cat_custom_id_seq', (select max(id) from ol_stock_cat_custom));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValStockItemSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_stock_item_id_seq', (select max(id) from ol_stock_item));
+    </sql>
+  </changeSet>
+  <changeSet author="tstephen" id="setValStockItemCustomSequence">
+    <sql dbms="postgresql">
+      SELECT setval('ol_stock_item_custom_id_seq', (select max(id) from ol_stock_item_custom));
+    </sql>
+  </changeSet>
+</databaseChangeLog>

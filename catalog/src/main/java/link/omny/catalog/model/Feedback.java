@@ -29,11 +29,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -41,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -50,6 +46,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import link.omny.catalog.json.JsonCustomFeedbackFieldDeserializer;
 import link.omny.catalog.views.OrderViews;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -58,13 +55,13 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(exclude = { "order" })
+@EqualsAndHashCode(callSuper = true, exclude = { "order" })
 @ToString(exclude = { "order" })
 @Entity
 @Table(name = "OL_FEEDBACK")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Feedback implements Serializable {
+public class Feedback extends Auditable<String> implements Serializable {
 
     private static final long serialVersionUID = 8577876040188427429L;
 
@@ -88,22 +85,6 @@ public class Feedback implements Serializable {
     @JsonProperty
     @JsonView(OrderViews.Detailed.class)
     private String type;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
-    @JsonProperty
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @JsonView(OrderViews.Detailed.class)
-    private Date created;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="last_updated")
-    @JsonProperty
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    // See OrderItem.lastUpdated for explanation
-    //@JsonView(OrderViews.Detailed.class)
-    private Date lastUpdated;
 
     @Column(name="tenant_id")
     @JsonProperty
@@ -170,10 +151,4 @@ public class Feedback implements Serializable {
             lastUpdated = new Date();
         }
     }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdated = new Date();
-    }
-
 }

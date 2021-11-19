@@ -16,6 +16,7 @@
 package link.omny.catalog.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -29,72 +30,75 @@ import link.omny.catalog.model.Order;
 
 @RepositoryRestResource(exported = false)
 public interface OrderRepository extends CrudRepository<Order, Long> {
+    @Override
+    @EntityGraph("orderWithAll")
+    Optional<Order> findById(Long id);
 
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Order> findAllForTenant(@Param("tenantId") String tenantId);
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.tenantId = :tenantId AND (o.stage IS NULL OR o.stage != 'deleted')")
     long countForTenant(@Param("tenantId") String tenantId);
 
     @Query("SELECT o.stage, COUNT(o) FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId GROUP BY o.stage")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Object[]> findAllForTenantGroupByStage(
             @Param("tenantId") String tenantId);
 
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Order> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
     @Query("SELECT o FROM Order o WHERE o.stage IN :stage AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Order> findByStageForTenant(@Param("tenantId") String tenantId,
             @Param("stage") String stage);
 
     @Query("SELECT o FROM Order o WHERE o.stage IN :stage AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Order> findPageByStageForTenant(@Param("tenantId") String tenantId,
             @Param("stage") String stage, Pageable pageable);
 
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.type IN :type AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Order> findByTypeForTenant(@Param("tenantId") String tenantId,
             @Param("type") String type);
 
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.type IN :type AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Order> findPageByTypeForTenant(@Param("tenantId") String tenantId,
             @Param("type") String type, Pageable pageable);
 
     @Query("SELECT o FROM Order o WHERE o.parent.id = :parentId AND (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Order> findByParentOrderForTenant(@Param("tenantId") String tenantId,
             @Param("parentId") Long parentId);
 
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId = :contactId ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Order> findAllForContact(@Param("tenantId") String tenantId,
             @Param("contactId") Long contactId);
 
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId = :contactId ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Order> findPageForContact(@Param("tenantId") String tenantId,
             @Param("contactId") Long contactId,
             Pageable pageable);
 
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Order> findAllForContacts(@Param("tenantId") String tenantId,
             @Param("contactIds") Long[] contactIds);
 
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.id IN :orderIds ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Order> findByIds(@Param("tenantId") String tenantId,
             @Param("orderIds") Long[] orderIds);
 
     @Query("SELECT o FROM Order o WHERE o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithStock")
+    @EntityGraph("orderWithItems")
     List<Order> findPageForContacts(@Param("tenantId") String tenantId,
             @Param("contactIds") Long[] contactIds, Pageable pageable);
 

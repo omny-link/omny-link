@@ -15,13 +15,19 @@
  ******************************************************************************/
 package link.omny.custmgmt.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import link.omny.supportservices.model.CustomField;
 import lombok.Data;
@@ -39,6 +45,13 @@ import lombok.ToString;
 public class CustomContactField extends CustomField {
 
     private static final long serialVersionUID = -7683896817261973079L;
+
+    @Id
+    @Column(name = "id")
+    @SequenceGenerator(name = "contactCustomIdSeq", sequenceName = "ol_contact_custom_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contactCustomIdSeq")
+    @JsonProperty
+    private Long id;
 
     @ManyToOne(optional = false, targetEntity = Contact.class)
     @JsonBackReference

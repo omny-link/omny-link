@@ -15,13 +15,20 @@
  ******************************************************************************/
 package link.omny.catalog.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.springframework.data.rest.core.annotation.RestResource;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import link.omny.supportservices.model.CustomField;
 import lombok.Getter;
@@ -39,6 +46,13 @@ import lombok.ToString;
 public class CustomOrderField extends CustomField {
 
     private static final long serialVersionUID = -4795761632689941890L;
+
+    @Id
+    @Column(name = "id")
+    @SequenceGenerator(name = "orderCustomIdSeq", sequenceName = "ol_order_custom_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orderCustomIdSeq")
+    @JsonProperty
+    private Long id;
 
     @ManyToOne(optional = false, targetEntity = Order.class)
     @RestResource(rel = "customOrder")

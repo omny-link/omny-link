@@ -1030,4 +1030,5 @@
       validate="true" />
   </changeSet>
   <include file="src/main/resources/liquibase/changelog-001-update-sequences.xml"/>
+  <include file="src/main/resources/liquibase/changelog-002-bidirectional-order-feedback.xml"/>
 </databaseChangeLog>
