@@ -176,16 +176,6 @@ public class Order extends Auditable<String> implements Serializable {
     @JsonView(OrderViews.Summary.class)
     private BigDecimal tax;
 
-    // Although this annotation does not change the name, without it Jackson
-    // gets confused and attempts to cast id:Long to String. Why this property
-    // affects a completely different one is a mystery I have not investigated
-//    @JsonProperty("stockItem")
-//    @JsonView(OrderViews.Summary.class)
-//    @RestResource(rel = "stockItem")
-//    @ManyToOne()
-//    @JoinColumn(name = "stock_item_id")
-//    private StockItem stockItem;
-
     @JsonProperty
     @JsonView(OrderViews.Summary.class)
     @Column(name = "stock_item_id")

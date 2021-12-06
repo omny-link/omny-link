@@ -69,7 +69,6 @@ import link.omny.catalog.model.OrderItem;
 import link.omny.catalog.repositories.FeedbackRepository;
 import link.omny.catalog.repositories.OrderItemRepository;
 import link.omny.catalog.repositories.OrderRepository;
-import link.omny.catalog.repositories.StockItemRepository;
 import link.omny.catalog.views.OrderViews;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
@@ -105,12 +104,6 @@ public class OrderController {
 
     @Autowired
     private NumberSequenceController seqSvc;
-
-    @Autowired
-    private StockItemRepository stockItemRepo;
-
-    @Autowired
-    private StockItemController stockItemSvc;
 
     /**
      * @return a complete order including its items and feedback.
@@ -369,22 +362,6 @@ public class OrderController {
         for (CustomOrderField field : order.getCustomFields()) {
             field.setOrder(order);
         }
-//        if (order.getStockItemId() != null) {
-//            LOGGER.debug("Looking up order's stock item for {}...",
-//                    order.getStockItemId());
-//            order.setStockItem(
-//                    stockItemSvc.findById(tenantId, order.getStockItemId()));
-//            LOGGER.debug("... found {} ({})", order.getStockItem().getName(),
-//                    order.getStockItem().getId());
-//        }
-        if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
-            for (OrderItem item : order.getOrderItems()) {
-                if (item.getStockItem() != null && item.getStockItem().getId() != null) {
-                    item.setStockItem(
-                            stockItemSvc.findById(tenantId, item.getStockItem().getId()));
-                }
-            }
-        }
         if (order.getParent() != null && order.getParent().getId() != null) {
             order.setParent(findById(tenantId, order.getParent().getId()));
         }
@@ -453,21 +430,6 @@ public class OrderController {
         for (OrderItem item : order.getOrderItems()) {
             item.setTenantId(tenantId);
             item.setOrder(order);
-            if (item.getStockItem() != null && item.getStockItem().getId() != null) {
-                LOGGER.debug("Looking up stock item for {}...",
-                        item.getStockItem().getId());
-                item.setStockItem(
-                        stockItemSvc.findById(tenantId, item.getStockItem().getId()));
-                LOGGER.debug("... found {} ({})", item.getStockItem().getName(),
-                        item.getStockItem().getId());
-            } else if (item.getCustomFieldValue("stockItemId") != null) { // HACK!
-                LOGGER.debug("Looking up stock item for custom field {}...",
-                        item.getCustomFieldValue("stockItemId"));
-                item.setStockItem(stockItemSvc.findById(
-                        tenantId, Long.parseLong((String) item.getCustomFieldValue("stockItemId"))));
-                LOGGER.debug("... found {} ({})", item.getStockItem().getName(),
-                        item.getStockItem().getId());
-            }
             for (CustomOrderItemField field : item.getCustomFields()) {
                 field.setOrderItem(item);
             }
@@ -489,10 +451,6 @@ public class OrderController {
 
         for (CustomOrderItemField coif : newItem.getCustomFields()) {
             coif.setOrderItem(newItem);
-        }
-        if (newItem.getStockItem() != null && newItem.getStockItem().getId() != null) {
-            newItem.setStockItem(
-                    stockItemSvc.findById(tenantId, newItem.getStockItem().getId()));
         }
 
         order.addOrderItem(newItem);
@@ -584,7 +542,6 @@ public class OrderController {
         Order order = findById(tenantId, orderId);
         feedback.setOrder(order);
         order.setFeedback(feedback);
-//        order.setLastUpdated(new Date());
         order = orderRepo.save(order);
 
         HashMap<String, String> vars = new HashMap<String, String>();
@@ -642,18 +599,8 @@ public class OrderController {
 
         NullAwareBeanUtils.copyNonNullProperties(updatedOrderItem, item, "id", "stockItem");
         item.setTenantId(tenantId);
-        mergeStockItem(updatedOrderItem, item);
 
         orderItemRepo.save(item);
-    }
-
-    private void mergeStockItem(OrderItem updatedOrderItem, OrderItem item) {
-        if (updatedOrderItem.getStockItem() == null) {
-            item.setStockItem(null);
-        } else if (!updatedOrderItem.getStockItem().equals(item.getStockItem())) {
-            item.setStockItem(
-                    stockItemRepo.findByName(updatedOrderItem.getStockItem().getName()));
-        }
     }
 
     /**

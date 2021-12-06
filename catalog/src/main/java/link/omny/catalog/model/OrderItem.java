@@ -29,7 +29,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
@@ -63,8 +62,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = { "order", "stockItem" })
-@ToString(exclude = { "order", "stockItem" })
+@EqualsAndHashCode(callSuper = true)
+@ToString(exclude = { "order" })
 @Entity
 @Table(name = "OL_ORDER_ITEM")
 @AllArgsConstructor
@@ -132,11 +131,9 @@ public class OrderItem extends Auditable<String> implements Serializable {
     private Order order;
 
     @JsonProperty
-    @JsonView(OrderViews.Detailed.class)
-    @ManyToOne(fetch = FetchType.EAGER)
-    @RestResource(rel = "stockItem")
-    @JoinColumn(name = "stock_item_id")
-    private StockItem stockItem;
+    @JsonView(OrderViews.Summary.class)
+    @Column(name = "stock_item_id")
+    private Long stockItemId;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "orderItem", orphanRemoval = true)
     @JsonDeserialize(using = JsonCustomOrderItemFieldDeserializer.class)
