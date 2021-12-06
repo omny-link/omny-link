@@ -465,6 +465,7 @@ var ractive = new BaseRactive({
           if (ractive.get('tenant.features.orders')) ractive.fetchStockItems();
           ractive.set('contacts',data.map(function(obj) {
               obj.name = obj.fullName;
+              if (obj.account!=undefined) obj.accountName = obj.account.name;
               return obj;
             })
           );
@@ -537,25 +538,6 @@ var ractive = new BaseRactive({
         }
         ractive.sortChildren('instances','occurred',false);
         ractive.set('saveObserver', true);
-      }
-    });
-  },
-  fetchTasks: function (contactId) {
-    console.info('fetchTasks...');
-
-    ractive.set('saveObserver', false);
-    $.ajax({
-      dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/tasks/findByVar/contactId/'+contactId,
-      crossDomain: true,
-      success: function( data ) {
-        console.log('fetched '+data.length+' tasks');
-        ractive.set('saveObserver', false);
-        ractive.set('xTasks',data);
-        ractive.set('current.tasks',data);
-        ractive.sortChildren('tasks','dueDate',false);
-        ractive.set('saveObserver', true);
-        ractive.set('alerts.tasks',data.length);
       }
     });
   },
@@ -994,7 +976,7 @@ var ractive = new BaseRactive({
           //ractive.fetchStockItems();
           ractive.fetchOrders(ractive.get('current'));
         }
-        ractive.fetchTasks(ractive.localId(ractive.get('current')));
+        ractive.fetchTasks('contactId',ractive.localId(ractive.get('current')));
 
         ractive.initControls();
         ractive.initTags();

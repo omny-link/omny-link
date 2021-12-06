@@ -16,7 +16,7 @@
 <ul class="form edit-form">
   <li class="form-group">
     <label class="col-md-3 col-sm-3 col-xs-4">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}:</label>
-    <input class="form-control" id="purchaseOrderContact" readonly disabled value="{{formatContactId(instanceToStart.processVariables.contactLocalId)}}">
+    <input class="form-control" id="purchaseOrderContact" readonly disabled value="{{formatContactId(instanceToStart.variables.contactLocalId)}}">
     <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Person this {{tenant.strings.order.toLowerCase()}} is for</p>
   </li>
   <li class="form-group">

@@ -15,13 +15,7 @@
 -->
 <section id="currentSect" style="display:none">
   <form id="currentForm" class="form">
-    {{^localId(current)}}
-      <h2 class="form create-form">
-        <input class="create-field form-control col-xs-2" id="curName" placeholder="Name" required value="{{current.name}}"/>
-      </h2>
-    {{/}}
-
-    {{#localId(current)}}
+    {{#if localId(current)}}
       <h2 class="edit-form">
          {{#current.customFields.orgCode}}
            <span contenteditable id="curOrgCode" on-focus="editField('#curOrgCode','current.customFields.orgCode')" on-blur="updateField('#curOrgCode','current.customFields.orgCode')">{{current.customFields.orgCode}}</span><span> - </span>
@@ -82,7 +76,11 @@
           </span>
         {{/if}}
       </h2>
-    {{/}}
+    {{else}}
+      <h2 class="form create-form">
+        <input class="create-field form-control col-xs-2" id="curName" placeholder="Name" required value="{{current.name}}"/>
+      </h2>
+    {{/if}}
 
     <div class="currentBody col-md-6 col-sm-12 col-xs-12">
       <ul class="form inline-form edit-form">

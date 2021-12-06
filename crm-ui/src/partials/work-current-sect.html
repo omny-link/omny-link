@@ -31,22 +31,22 @@
         </li>
         <li class="form-group">
           <label class="">Remind:</label>
-          <input class="form-control" id="curDeferDate" readonly disabled twoway="false" value="{{formatDate(current.taskLocalVariables['deferUntil'])}}">
+          <input class="form-control" id="curDeferDate" readonly disabled twoway="false" value="{{formatDate(current.variables['deferUntil'])}}">
         </li>
         <li class="form-group">
           <label class="">Due:</label>
-          <input class="form-control" id="curDueDate" on-change="save()" placeholder="yyyy-mm-dd" {{#current.processVariables.initiator!=profile.email}}readonly disabled{{/}} type="date" value="{{current.dueDate}}">
+          <input class="form-control" id="curDueDate" on-change="save()" placeholder="yyyy-mm-dd" {{#current.variables.initiator!=profile.email}}readonly disabled{{/}} type="date" value="{{current.dueDate}}">
         </li>
         <li class="form-group initiator">
           <label class="">Started By:</label>
-          {{#if current.processVariables['initiator']==undefined || current.processVariables['initiator']=='anonymousUser'}}
+          {{#if current.variables['initiator']==undefined || current.variables['initiator']=='anonymousUser'}}
             <span class="initiator-img" style="margin-top:-2px" title="{{#tenant.strings.botName}}{{tenant.strings.botName}}{{else}}System Bot{{/}}"></span>
-          {{elseif current.processVariables['initiator'].indexOf('@')==-1}}
-            <span style="margin-top:-2px" title="{{current.processVariables['initiator']}}">
+          {{elseif current.variables['initiator'].indexOf('@')==-1}}
+            <span style="margin-top:-2px" title="{{current.variables['initiator']}}">
               <img class="img-rounded" src="{{#if tenant.strings.botIcon}}{{tenant.strings.botIcon}}{{else}}/images/icon/knowprocess-icon-48x48.png{{/if}}" width="34">
             </span>
           {{else}}
-            <span class="initiator-img" style="margin-top:-2px" title="{{current.processVariables['initiator']}}"></span>
+            <span class="initiator-img" style="margin-top:-2px" title="{{current.variables['initiator']}}"></span>
           {{/if}}
         </li>
       </ul>
@@ -56,7 +56,7 @@
     {{>userForm { current: current } }}
   </form>
 
-  <button class="btn" on-click="submitTask()" type="button">Return To List</button>
+  <button class="btn" on-click="showResults()" type="button">Return To List</button>
   <div class="btn-group">
     <button class="btn btn-warning dropdown-toggle" id="remindBtn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Remind Me ... <span class="caret"></span></button>
     <ul class="dropdown-menu btn-warning has-warning" aria-labelledby="remindBtn">
