@@ -19,10 +19,14 @@
     <span>Tasks</span>
     {{#alerts['tasks']}}<span class="alert-counter alert-danger"> {{alerts['tasks']}}</span>{{/}}
     <span class="pull-right">
-      <span class="clickable glyphicon icon-btn kp-icon-refresh" aria-hidden="true" onclick="ractive.fetchTasks({{current.id}})" title="Refresh task list"></span>
+      {{#if matchPage('contacts.html') }}
+        <span class="clickable glyphicon icon-btn kp-icon-refresh" aria-hidden="true" on-click="fetchTasks('contactId',localId(current))" title="Refresh task list"></span>
+      {{else}}
+        <span class="clickable glyphicon icon-btn kp-icon-refresh" aria-hidden="true" on-click="fetchTasks('accountId',localId(current))" title="Refresh task list"></span>
+      {{/if}}
     </span>
   </h3>
   <div class="currentBody col-md-12 col-sm-12 col-xs-12" style="display:none">
     {{>taskListTable}}
-	</div>
+  </div>
 </section>

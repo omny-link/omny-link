@@ -19,14 +19,14 @@
       <label class="col-md-3 col-sm-3 col-xs-4 control-label required">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
       <input class="col-md-9 col-sm-9 col-xs-8 form-control" list="stockItems" id="orderStockItem"
           placeholder="Please select a {{#tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/}}"
-          required type="text" value="{{instanceToStart.processVariables.orderItem.stockItem.name}}">
+          required type="text" value="{{instanceToStart.variables.orderItem.stockItem.name}}">
       <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Please select the {{#tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/}} to add to the {{#tenant.strings.order}}{{tenant.strings.order.toLowerCase()}}{{else}}Order{{/}}</p>
     </li>
   {{/}}
   {{#tenant.strings.orderItemPriceHint}}
     <li class="form-group">
       <label class="col-md-3 col-sm-3 col-xs-4 required">Price:</label>
-      <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="orderStockItem" required type="number" value="{{instanceToStart.processVariables.orderItem.price}}">
+      <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="orderStockItem" required type="number" value="{{instanceToStart.variables.orderItem.price}}">
       <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">{{#tenant.strings.orderItemPriceHint}}{{tenant.strings.orderItemPriceHint}}{{else}}Price for the {{tenant.strings.orderItem}}{{/}}:</p>
     </li>
   {{/}}
@@ -35,21 +35,19 @@
       <label class="col-md-3 col-sm-3 col-xs-4">{{label == undefined ? name.toLabel() : label}}:</label>
       {{#if type=='account'}}
         <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="accounts"
-            value="{{instanceToStart.processVariables.orderItem.customFields[name]}}">
+            value="{{instanceToStart.variables.orderItem.customFields[name]}}">
       {{elseif type=='contact'}}
         <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="contacts"
-            value="{{instanceToStart.processVariables.orderItem.customFields[name]}}">
+            value="{{instanceToStart.variables.orderItem.customFields[name]}}">
       {{elseif type=='list'}}
         <input class="form-control" id="cur{{name.toLeadingCaps()}}" list="{{name}}{{#if !name.endsWith('s')}}s{{/if}}"
-            value="{{instanceToStart.processVariables.orderItem.customFields[name]}}">
+            value="{{instanceToStart.variables.orderItem.customFields[name]}}">
       {{else}}
         <input class="form-control" id="cur{{name.toLeadingCaps()}}" {{#type=='number'}}step="any"{{/}} {{#type}}type="{{type}}"{{/}}
-            value="{{instanceToStart.processVariables.orderItem.customFields[name]}}">
+            value="{{instanceToStart.variables.orderItem.customFields[name]}}">
       {{/if}}
       <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">{{hint}}</p>
     </li>
   {{/each}}
 </ul>
-<script type="text/javascript">
-  $(document).ready(function() { $.getScript(ractive.getServer()+'/catalog/vsn/js/add-order-item.js'); });
-</script>
+<script type="text/javascript" src="/vsn/js/add-order-item.js"></script>

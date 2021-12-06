@@ -216,6 +216,60 @@ var BaseRactive = Ractive.extend({
       }
     });
   },
+  fetchTasks: function(varName, varVal) {
+    console.info('fetchTasks...');
+    if (ractive.get('profile')==undefined) {
+      console.info(' not ready to fetch tasks');
+      return;
+    }
+    if (ractive.get('fetchTasks')==true) {
+      console.info('  skip fetch tasks as already in progress');
+      return;
+    }
+    ractive.set('fetchTasks', true);
+    ractive.set('saveObserver', false);
+    $.ajax({
+      contentType: 'application/json',
+      dataType: "json",
+      type: 'POST',
+      url: ractive.getBpmServer() + '/flowable-rest/service/query/tasks',
+      crossDomain: true,
+      headers: { Authorization: ractive.getBpmAuth() },
+      xhrFields: {
+        withCredentials: true
+      },
+      data: JSON.stringify({
+        "includeTaskLocalVariables": true,
+        "includeProcessVariables": true,
+        "processInstanceVariables": [ {
+          "name": varName,
+          "operation": "equals",
+          "value": varVal
+        } ]
+      }),
+      success: function(data) {
+        ractive.set('saveObserver', false);
+        // flowable contains metadata as well, use data only
+        data = data.data;
+        console.log('fetched ' + data.length + ' tasks');
+
+        var data2 = {};
+        data.forEach(function(t,i) {
+          t.variables.forEach(function(v,j) { data2[v['name']]= v['value']; });
+          t.msg=data2['messageName'];
+          t.processVarNames=Object.keys(data2);
+          t.variables=data2;
+	});
+
+        ractive.set('xTasks', data);
+        ractive.set('current.tasks', data);
+        if (data.length > 0) ractive.sortChildren('tasks', 'dueDate', false);
+        ractive.set('fetchTasks', false);
+        ractive.set('saveObserver', true);
+        ractive.set('alerts.tasks', data.length);
+      }
+    });
+  },
   getCookie: function(name) {
     //console.log('getCookie: '+name)
     var value = "; " + document.cookie;
@@ -321,11 +375,21 @@ var BaseRactive = Ractive.extend({
     console.log('hideUpload...');
     $('#upload').slideUp();
   },
-  // TODO why is this so slow?
+  html2Pdf: function(selector, fileName) {
+    const { jsPDF } = window.jspdf;
+    var doc = new jsPDF('l', 'mm', [1200, 1210]);
+    var pdfjs = document.querySelector(selector);
+    doc.html(pdfjs, {
+      callback: function(doc) {
+        doc.save(fileName.endsWith('.pdf') ? fileName : fileName+'.pdf');
+      },
+      x: 10,
+      y: 10
+    });
+  },
+  // deprecated: use localId
   id: function(entity) {
-    //console.log('id: '+entity);
-    var id = ractive.uri(entity);
-    return id.substring(id.lastIndexOf('/')+1);
+    return ractive.localId(entity);
   },
   initAbout: function() {
     $('.powered-by-icon').empty().append('<img src="/images/icon/omny-icon-greyscale.png" alt="Sustainable Resource Planning™">');
@@ -503,7 +567,7 @@ var BaseRactive = Ractive.extend({
   },
   loadTenantConfig: function(tenant) {
     console.info('loadTenantConfig:'+tenant);
-    $.getJSON('https://cloud.knowprocess.com/tenants/'+tenant+'/'+tenant+'.json', function(response) {
+    $.getJSON('/tenants/'+tenant+'/'+tenant+'.json', function(response) {
       // console.log('... response: '+JSON.stringify(response));
       ractive.set('saveObserver', false);
       ractive.set('tenant', response);
@@ -549,13 +613,9 @@ var BaseRactive = Ractive.extend({
   },
   localId: function(uriOrObj) {
     if (uriOrObj == undefined) return;
-    else if (typeof uriOrObj == 'object' && uriOrObj['id'] !== undefined) return uriOrObj['id'];
+    else if (typeof uriOrObj == 'object' && uriOrObj['id'] !== undefined) return ''+uriOrObj['id'];
     else if (typeof uriOrObj == 'object') return ractive.localId(ractive.uri(uriOrObj));
     else return uriOrObj.substring(uriOrObj.lastIndexOf('/')+1);
-  },
-  /** @deprecated use localId */
-  shortId: function(uri) {
-    return ractive.localId(uri);
   },
   showDisconnected: function(msg) {
     console.log('showDisconnected: '+msg);
@@ -638,7 +698,8 @@ var BaseRactive = Ractive.extend({
       processDefinitionKey: key,
       businessKey: businessKey == undefined ? label : businessKey,
       label: label,
-      processVariables: {
+      variables: {
+        businessKey: businessKey == undefined ? label : businessKey,
         initiator: ractive.get('profile.username'),
         tenantId: ractive.get('tenant.id'),
       }
@@ -646,10 +707,7 @@ var BaseRactive = Ractive.extend({
 
     if (object != undefined) {
       var singularEntityName = ractive.entityName(object).toCamelCase().singular();
-      instanceToStart.processVariables[singularEntityName+'Id'] = ractive.uri(object);
-      instanceToStart.processVariables[singularEntityName+'LocalId'] = ractive.localId(ractive.uri(object));
-      // backward compatibility on existing procs
-      instanceToStart.processVariables[singularEntityName+'localId'] = ractive.localId(ractive.uri(object));
+      instanceToStart.variables[singularEntityName+'Id'] = ractive.localId(ractive.uri(object));
     }
     console.log(JSON.stringify(instanceToStart));
     // save what we know so far...
@@ -676,9 +734,11 @@ var BaseRactive = Ractive.extend({
         /*tenantId: ractive.get('tenant.id'),*/
         returnVariables: true
       };
-      var varObj = ractive.get('instanceToStart.processVariables');
+      var varObj = ractive.get('instanceToStart.variables');
       Object.keys(varObj).forEach(function(key) {
-        data.variables.push({ "name":key,"value":varObj[key] });
+        var v = { name:key, value:varObj[key], scope:"global" };
+        if (typeof varObj[key]=='object') v['type'] = 'json';
+        data.variables.push(v);
       });
       $.ajax({
         url: ractive.getBpmServer()+'/flowable-rest/service/runtime/process-instances/',
@@ -695,10 +755,13 @@ var BaseRactive = Ractive.extend({
             ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
           }
           $('#customActionModalSect').modal('hide');
-          if (document.location.href.endsWith('contacts.html')) {
-            ractive.select(ractive.get('current'));// refresh individual record
+          if (document.location.href.endsWith('contacts.html')
+              || document.location.href.endsWith('accounts.html')) {
+            // refresh individual record
+            setTimeout(ractive.select, EASING_DURATION*5, ractive.get('current'));
           } else {
-            ractive.fetch(); // refresh list
+            // refresh list
+            setTimeout(ractive.fetch, EASING_DURATION*5);
           }
           // @deprecated use ractive's own callbacks
           if (ractive.customActionCallbacks!=undefined) ractive.customActionCallbacks.fire(jqXHR.getResponseHeader('Location'));

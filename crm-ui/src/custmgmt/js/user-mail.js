@@ -20,11 +20,11 @@
   if (CKEDITOR.instances['curMailBody']==undefined) {
     CKEDITOR.replace( 'curMailBody' );
     CKEDITOR.instances['curMailBody'].on('blur', function() {
-      ractive.set('instanceToStart.processVariables.mailBody',
+      ractive.set('instanceToStart.variables.mailBody',
           CKEDITOR.instances['curMailBody'].getData().replace(/"/g, '&quot;').replace(/'/g, '&apos;').replace(/[\n\t]/g,''));
     });
   }
-  CKEDITOR.instances['curMailBody'].setData(ractive.get('instanceToStart.processVariables.mailBody'));
+  CKEDITOR.instances['curMailBody'].setData(ractive.get('instanceToStart.variables.mailBody'));
 
   return me;
 }($, ractive));

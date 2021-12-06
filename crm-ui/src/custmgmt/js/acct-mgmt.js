@@ -585,8 +585,9 @@ var ractive = new BaseRactive({
         console.log('delete ' + obj + '...');
         if (Array.findBy('contactId', ractive.localId(obj), ractive.get('orders'))==undefined) {
           $.ajax({
-            url: ractive.getServer() + '/contacts/' + ractive.id(obj),
+            url: ractive.tenantUri(obj),
             type: 'DELETE',
+            contentType: 'application/json',
             success: function(data) {
               ractive.fetchAccountContacts();
             }
@@ -764,41 +765,6 @@ var ractive = new BaseRactive({
           }
         });
       },
-  fetchTasks: function(accountId) {
-    console.info('fetchTasks...');
-    if (ractive.get('profile')==undefined) {
-      console.info(' not ready to fetch tasks');
-      return;
-    }
-    ractive.set('saveObserver', false);
-    $.ajax({
-      contentType: 'application/json',
-      dataType: "json",
-      type: 'POST',
-      url: ractive.getBpmServer() + '/flowable-rest/service/query/tasks',
-      crossDomain: true,
-      headers: { Authorization: ractive.getBpmAuth() },
-      xhrFields: {
-        withCredentials: true
-      },
-      data: JSON.stringify({
-        "processInstanceVariables": [ {
-          "name": "accountId",
-          "operation": "equals",
-          "value": accountId
-        } ]
-      }),
-      success: function(data) {
-        console.log('fetched ' + data.length + ' tasks');
-        ractive.set('saveObserver', false);
-        ractive.set('xTasks', data);
-        ractive.set('current.tasks', data);
-        if (data.length > 0) ractive.sortChildren('tasks', 'dueDate', false);
-        ractive.set('saveObserver', true);
-        ractive.set('alerts.tasks', data.length);
-      }
-    });
-  },
       /** @deprecated use findAny */
       find: function(contactId) {
         console.log('find: ' + contactId);
@@ -1089,6 +1055,7 @@ var ractive = new BaseRactive({
           if (typeof tmp == 'function') return ; // 10 Jul 17 Ractive extension
           delete tmp.account;
           delete tmp.activities;
+          delete tmp.alertsAsList;
           delete tmp.documents;
           delete tmp.notes;
           delete tmp.orders;
@@ -1117,6 +1084,7 @@ var ractive = new BaseRactive({
                 ractive.fetchAccountContacts();
                 break;
               case 204:
+                ractive.fetchAccountContacts();
                 ractive.update('orders');
                 break;
               }
@@ -1305,7 +1273,7 @@ var ractive = new BaseRactive({
 
               ractive.fetchStockItems();
               ractive.fetchAccountContacts();
-              ractive.fetchTasks(ractive.id(ractive.get('current')));
+              ractive.fetchTasks('accountId',ractive.id(ractive.get('current')));
 
               ractive.initControls();
               ractive.initTags();
@@ -1374,7 +1342,7 @@ var ractive = new BaseRactive({
       },
       setMainContact: function(contactRef) {
         console.info('setMainContact: ' + contactRef);
-        for (idx in ractive.get('current.contacts')) {
+        for (var idx = 0 ; idx < ractive.get('current.contacts').length ; idx++) {
           ractive.set('currentContact', ractive.get('current.contacts.' + idx));
           if (ractive.localId(ractive.get('current.contacts.' + idx)) != contactRef) {
             ractive.set('current.contacts.' + idx + '.mainContact', false);
@@ -1424,7 +1392,7 @@ var ractive = new BaseRactive({
       },
       startAccountContactAcction: function(action, contactId) {
         ractive.set('currentContact',Array.findBy('id',contactId,ractive.get('current.contacts')));
-        ractive.set('instanceToStart.processVariables.contactId',contactId);
+        ractive.set('instanceToStart.variables.contactId',contactId);
 //        ractive.startCustomAction(action.ref, action.name, ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{fullName}}')
       },
       toggleEditContact: function(obj) {
@@ -1524,11 +1492,8 @@ ractive.observe('profile', function(newValue, oldValue, keypath) {
 // controls done that way save the oldValue
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
   if (ractive.get('current') != undefined) ractive.showAlertCounters();
-  ignored = [ 'current.notes', 'current.documents' ];
+  ignored = [ 'current.contacts', 'current.notes', 'current.documents' ];
   if (!ractive.get('saveObserver')) console.debug('Skipped save of '+keypath+' because in middle of other operation');
-//    else if (keypath=='current.notes') ractive.saveNote();
-//    else if (keypath=='current.documents') ractive.saveDoc();
-  else if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1 && keypath == 'current.contact' && !keypath.endsWith('mainContact')) ractive.saveContact();
   else if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1 && keypath.startsWith('current.')) ractive.saveAccount();
   else {
      console.warn('Skipped save triggered by change to: ' + keypath);

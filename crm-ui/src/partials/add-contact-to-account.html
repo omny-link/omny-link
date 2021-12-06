@@ -16,53 +16,53 @@
 <ul class="form edit-form">
   <li class="form-group">
     <label class="col-md-3 col-sm-3 col-xs-4 required">First Name:</label>
-    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalFirstName" required value="{{instanceToStart.processVariables.contact.firstName}}">
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalFirstName" required value="{{instanceToStart.variables.contact.firstName}}">
     <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block"></p>
   </li>
   <li class="form-group">
     <label class="col-md-3 col-sm-3 col-xs-4 required">Last Name:</label>
-    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalLastName" required value="{{instanceToStart.processVariables.contact.lastName}}">
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalLastName" required value="{{instanceToStart.variables.contact.lastName}}">
     <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block"></p>
   </li>
   <li class="form-group">
     <label class="col-md-3 col-sm-3 col-xs-4">Job Title:</label>
-    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalJobTitle" value="{{instanceToStart.processVariables.contact.jobTitle}}">
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalJobTitle" value="{{instanceToStart.variables.contact.jobTitle}}">
     <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block"></p>
   </li>
   <li class="form-group">
     <label class="col-md-3 col-sm-3 col-xs-4 required">Email:</label>
-    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalEmail" required type="email" value="{{instanceToStart.processVariables.contact.email}}">
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalEmail" required type="email" value="{{instanceToStart.variables.contact.email}}">
     <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block"></p>
   </li>
   <li class="form-group">
     <label class="col-md-3 col-sm-3 col-xs-4">Phone:</label>
-    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalPhone1" type="tel" value="{{instanceToStart.processVariables.contact.phone1}}">
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalPhone1" type="tel" value="{{instanceToStart.variables.contact.phone1}}">
     <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block"></p>
   </li>
   <li class="form-group">
     <label class="col-md-3 col-sm-3 col-xs-4">Twitter:</label>
-    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalTwitter" value="{{instanceToStart.processVariables.contact.twitter}}">
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalTwitter" value="{{instanceToStart.variables.contact.twitter}}">
     <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Remember to include the leading @</p>
   </li>
   <li class="form-group">
     <label class="col-md-3 col-sm-3 col-xs-4">LinkedIn</label>
-    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalLinkedIn" type="url" value="{{instanceToStart.processVariables.contact.linkedIn}}">
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalLinkedIn" type="url" value="{{instanceToStart.variables.contact.linkedIn}}">
     <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Remember to include http:// or https://</p>
   </li>
   <li class="form-group">
     <label class="col-md-3 col-sm-3 col-xs-4">Facebook:</label>
-    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalFacebook" type="url" value="{{instanceToStart.processVariables.contact.facebook}}">
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalFacebook" type="url" value="{{instanceToStart.variables.contact.facebook}}">
     <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">Remember to include http:// or https://</p>
   </li>
   <li class="form-group">
     <label class="col-md-3 col-sm-3 col-xs-4 required">Owner:</label>
-    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalOwner" list="owners" required value="{{instanceToStart.processVariables.contact.owner}}">
+    <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="modalOwner" list="owners" required value="{{instanceToStart.variables.contact.owner}}">
     <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block"></p>
   </li>
   {{#each tenant.contactFields:k}}
     <li class="form-group">
       <label class="col-md-3 col-sm-3 col-xs-4">{{label == undefined ? name.toLabel() : label}}:</label>
-      <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="cur{{name.toLeadingCaps()}}" type="{{type}}" value="{{instanceToStart.processVariables.contact.customFields[name]}}">
+      <input class="col-md-9 col-sm-9 col-xs-8 form-control" id="cur{{name.toLeadingCaps()}}" type="{{type}}" value="{{instanceToStart.variables.contact.customFields[name]}}">
       <p class="col-md-offset-3 col-sm-offset-3 col-xs-offset-4 help-block">{{hint}}</p>
     </li>
   {{/each}}
@@ -72,10 +72,10 @@
     if (ractive.customActionCallbacks==undefined) ractive.customActionCallbacks = $.Callbacks();
     ractive.customActionCallbacks.add(function() { ractive.select(ractive.get('current')) });
 
-    ractive.observe('instanceToStart.processVariables.contact.firstName', function(newValue, oldValue, keypath) {
+    ractive.observe('instanceToStart.variables.contact.firstName', function(newValue, oldValue, keypath) {
       console.log('contact first name changing from '+oldValue+' to '+newValue);
       if (newValue!=undefined && newValue!='' && newValue.length >0) {
-        ractive.set('instanceToStart.processVariables.contact.owner', ractive.get('profile.username'));
+        ractive.set('instanceToStart.variables.contact.owner', ractive.get('profile.username'));
       }
     });
   });

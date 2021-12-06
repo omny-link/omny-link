@@ -16,27 +16,27 @@
   <ul class="form edit-form">
     <li class="form-group">
       <label class="col-md-2 col-sm-2">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}:</label>
-      <input autocomplete="off" class="form-control" id="curOrderContact" disabled readonly twoway="false" value="{{formatContactId(instanceToStart.processVariables.order.contactId)}}">
+      <input autocomplete="off" class="form-control" id="curOrderContact" disabled readonly twoway="false" value="{{formatContactId(instanceToStart.variables.order.contactId)}}">
       <p class="col-md-offset-2 col-sm-offset-2 help-block">{{#tenant.strings.contactHint}}{{tenant.strings.contactHint}}{{else}}Contact to deliver to{{/}}</p>
     </li>
     <li class="form-group">
       <label class="col-md-2 col-sm-2">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}:</label>
-      <input class="form-control" list="stockItems" id="curOrderStockItem" value="{{instanceToStart.processVariables.order.stockItem.name}}">
+      <input class="form-control" list="stockItems" id="curOrderStockItem" value="{{instanceToStart.variables.order.stockItem.name}}">
       <p class="col-md-offset-2 col-sm-offset-2 help-block">{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Product name or service description{{/}}</p>
     </li>
     <li class="form-group">
       <label class="col-md-2 col-sm-2">{{#tenant.strings.dueDate}}{{tenant.strings.dueDate}}{{else}}Due Date{{/}}:</label>
-      <input class="form-control" id="curOrderDueDate" type="date" value="{{instanceToStart.processVariables.order.dueDate}}">
+      <input class="form-control" id="curOrderDueDate" type="date" value="{{instanceToStart.variables.order.dueDate}}">
       <p class="col-md-offset-2 col-sm-offset-2 help-block">{{#tenant.strings.dueDateHint}}{{tenant.strings.dueDateHint}}{{else}}When order is due / expected to be fulfilled{{/}}</p>
     </li>
     <li class="form-group">
       <label class="col-md-2 col-sm-2">{{#tenant.strings.orderStage}}{{tenant.strings.orderStage}}{{else}}Stage{{/}}:</label>
-      <input class="form-control" list="orderStages" id="curOrderStage" value="{{instanceToStart.processVariables.order.stage}}">
+      <input class="form-control" list="orderStages" id="curOrderStage" value="{{instanceToStart.variables.order.stage}}">
       <p class="col-md-offset-2 col-sm-offset-2 help-block">{{#tenant.strings.orderStageHint}}{{tenant.strings.orderStageHint}}{{else}}How far this order has progressed{{/}}</p>
     </li>
     <li class="form-group">
       <label class="col-md-2 col-sm-2">{{#tenant.strings.price}}{{tenant.strings.price}}{{else}}Price{{/}}:</label>
-      <input class="form-control" id="curOrderPrice" placeholder="{{#tenant.strings.pricePlaceholder}}{{tenant.strings.pricePlaceholder}}{{else}}Price for order, if known{{/}}" step="any" type="number" value="{{instanceToStart.processVariables.order.price}}">
+      <input class="form-control" id="curOrderPrice" placeholder="{{#tenant.strings.pricePlaceholder}}{{tenant.strings.pricePlaceholder}}{{else}}Price for order, if known{{/}}" step="any" type="number" value="{{instanceToStart.variables.order.price}}">
       <p class="col-md-offset-2 col-sm-offset-2 help-block">{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Total price for the order, leave blank if to be calculated from order items{{/}}</p>
     </li>
   </ul>
@@ -48,11 +48,11 @@
     });
   });
   $('#customActionModalSect').on('show.bs.modal', function (event) {
-    ractive.set('instanceToStart.processVariables.order.contactId', ractive.id(ractive.get('current')));
+    ractive.set('instanceToStart.variables.order.contactId', ractive.id(ractive.get('current')));
   });
   $('#submitCustomActionForm').on('click', function (event) {
-    ractive.set('instanceToStart.processVariables.order.stockItem',
-        { "id": ractive.id(Array.findBy('name', ractive.get('instanceToStart.processVariables.order.stockItem.name'), ractive.get('stockItems'))) }
+    ractive.set('instanceToStart.variables.order.stockItem',
+        { "id": ractive.id(Array.findBy('name', ractive.get('instanceToStart.variables.order.stockItem.name'), ractive.get('stockItems'))) }
     );
   });
 </script>
