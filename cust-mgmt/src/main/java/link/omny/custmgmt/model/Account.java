@@ -357,7 +357,7 @@ public class Account extends Auditable<String> implements Serializable {
         return customFields;
     }
 
-    public void setCustomFields(List<CustomAccountField> fields) {
+    public void setCustomFields(Set<CustomAccountField> fields) {
         for (CustomAccountField newField : fields) {
             setCustomField(newField);
         }

@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -56,6 +57,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -376,10 +378,10 @@ public class AccountController {
             @PathVariable("id") Long accountId,
             @RequestBody Account updatedAccount) {
         Account account = findById(tenantId, accountId);
-
         BeanUtils.copyProperties(updatedAccount, account, "id", "activities", "documents", "notes");
         account.setTenantId(tenantId);
         account = accountRepo.save(account);
+        updateCustomFields(tenantId, accountId, updatedAccount.getCustomFields());
     }
 
     /**
@@ -391,16 +393,31 @@ public class AccountController {
     @ApiIgnore
     public @ResponseBody void updateCustomFields(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
-            @RequestBody Object customFields) throws IOException {
+            @RequestBody Object customFields) {
         Account account = findById(tenantId, accountId);
 
         if (customFields instanceof String) {
-            JsonNode jsonNode = objectMapper.readTree((String) customFields);
+            JsonNode jsonNode;
+            try {
+                jsonNode = objectMapper.readTree((String) customFields);
+            } catch (JsonProcessingException e) {
+                LOGGER.error("updateCustomFields({}, {}, {}), root cause: {}",
+                        tenantId, accountId, customFields, e);
+                throw new IllegalArgumentException("Unable to read account", e);
+            }
             for (Iterator<String> it = jsonNode.fieldNames() ; it.hasNext() ;) {
                 String key = it.next();
                 account.addCustomField(
                         new CustomAccountField(key, jsonNode.get(key).asText()));
             }
+        } else if (customFields instanceof Set<?>) {
+            @SuppressWarnings("unchecked")
+            Set<CustomAccountField> set = (Set<CustomAccountField>) customFields;
+            set.forEach((field) -> {
+                LOGGER.warn("About to try to store {}={}",
+                        field.getName(), field.getValue());
+                account.addCustomField(field);
+            });
         } else if (customFields instanceof HashMap) {
             for (Map.Entry<?,?> entry : ((HashMap<?,?>) customFields).entrySet()) {
                 LOGGER.warn("About to try to store {}={}", entry.getKey(), entry.getValue());

@@ -162,7 +162,7 @@ describe("Account management", function() {
   it("updates the new account", function(done) {
     account.phone1 = '+44 7777 123456';
     account.phone2 = '020 7123 4567';
-    account.customFields.lastAccountingDate = '31/12/2017';
+    account.customFields.parking = 'All private cars to be parked in bays and not obstructing Bronto-crane access';
     $rh.ajax({
       url: $rh.tenantUri(account),
       type: 'PUT',
@@ -184,6 +184,18 @@ describe("Account management", function() {
       expect($rh.uri(account)).toContain($rh.uri(accounts[0]));
       expect(accounts[0].phone1).toEqual(account.phone1);
       // phone2 not returned in summary
+
+      done();
+    });
+  });
+
+  it("fetches just the updated account and checks it is correct", function (done) {
+    $rh.getJSON($rh.tenantUri(account), function (data) {
+      expect($rh.uri(account)).toContain($rh.uri(data));
+      expect(data.phone1).toEqual(account.phone1);
+      expect(data.phone2).toEqual(account.phone2);
+      expect(data.customFields.parking).toEqual(
+          account.customFields.parking);
 
       done();
     });
