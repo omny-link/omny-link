@@ -43,23 +43,4 @@ public class StockCategoryTest {
                 .getId());
     }
 
-    @Test
-    public void testSortTypes() {
-        StockCategory category = new StockCategory("Springfield")
-                .addStockItem(new StockItem("Springfield 1", "Power Plant", "Published"))
-                .addStockItem(new StockItem("Office 1", "Office", "Published"));
-
-        assertEquals("Office,Power Plant", category.getTags());
-    }
-
-    @Test
-    public void testOverrideTypes() {
-        StockCategory category = new StockCategory("Springfield").addStockItem(
-                new StockItem("Springfield 1", "Power Plant")).addStockItem(
-                new StockItem("Office 1", "Office"));
-
-        category.setTags("Office");
-        assertEquals("Office", category.getTags());
-    }
-
 }

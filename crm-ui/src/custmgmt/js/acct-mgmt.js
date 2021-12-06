@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 Tim Stephenson and contributors
- * 
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
  *  of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -82,16 +82,28 @@ var ractive = new BaseRactive({
         findDocName: function(docId) {
           console.info('findDocName: ' + docId);
         },
+        formatAlertCount: function(alerts) {
+          console.log('formatAlertCount');
+          if (typeof alerts == 'string') alerts = JSON.parse(alerts);
+          var val = 0;
+          return alerts == undefined ? 0 : Object.keys(alerts).reduce(function (prev, cur) {
+            return prev + parseInt(alerts[cur]);
+          }, val);
+        },
         formatAge: function(timeString) {
           console.info('formatAge: ' + timeString);
           if (timeString == "-1" || isNaN(timeString)) return 'n/a';
           else return i18n.getDurationString(timeString) + ' ago';
         },
+        formatAgeFromDate: function(timeString) {
+          if (timeString==undefined) return;
+          return i18n.getAgeString(ractive.parseDate(timeString))
+        },
         formatContactId: function(contactId) {
           console.info('formatContactId');
           if (contactId == undefined) return 'n/a';
 
-          var contact = Array.findBy('selfRef',contactId,ractive.get('current.contacts'));
+          var contact = Array.findBy('id',contactId,ractive.get('current.contacts'));
           return contact == undefined ? 'n/a' : contact.fullName;
         },
         formatContent: function(content) {
@@ -240,8 +252,8 @@ var ractive = new BaseRactive({
           }
           return false;
         },
-        localId: function(selfRef) {
-          return ractive.localId(selfRef);
+        localId: function(objOrUri) {
+          return ractive.localId(objOrUri);
         },
         matchPage: function(pageName) {
           console.info('matchPage: ' + pageName);
@@ -263,7 +275,7 @@ var ractive = new BaseRactive({
             var search = ractive.get('searchTerm').split(' ');
             for (var idx = 0 ; idx < search.length ; idx++) {
               var searchTerm = search[idx].toLowerCase();
-              var match = ( (obj.selfRef != undefined && obj.selfRef.indexOf(searchTerm)>=0)
+              var match = ( (obj.id != undefined && searchTerm.indexOf(obj.id)>=0)
                 || (obj.name != undefined && obj.name.toLowerCase().indexOf(searchTerm) >= 0)
                 || (obj.orgCode != undefined && obj.orgCode.toLowerCase().indexOf(searchTerm) >= 0)
                 || (obj.email != undefined && obj.email.toLowerCase().indexOf(searchTerm) >= 0)
@@ -375,9 +387,9 @@ var ractive = new BaseRactive({
           { "name": "supportBar", "url": "/partials/support-bar.html" }
         ],
         workPartials: [
-          { "name": "currentTaskListSect", "url": "https://api.knowprocess.com/partials/task-list-sect.html" },
-          { "name": "instanceListSect", "url": "https://api.knowprocess.com/partials/instance-list-sect.html" },
-          { "name": "taskListTable", "url": "https://api.knowprocess.com/partials/task-list-table.html" }
+          { "name": "currentTaskListSect", "url": "/partials/task-list-sect.html" },
+          { "name": "instanceListSect", "url": "/partials/instance-list-sect.html" },
+          { "name": "taskListTable", "url": "/partials/task-list-table.html" }
         ],
         uniq: function(fieldName, arr) {
           return Array.uniq(fieldName, arr);
@@ -421,7 +433,6 @@ var ractive = new BaseRactive({
           account: ractive.uri(ractive.get('current')),
           mainContact: ractive.get('current.contacts').length==0 ? true: false,
           owner: ractive.get('profile.username'),
-          selfRef: '',
           tenant: ractive.get('tenant.id')
         }
         ractive.get('current.contacts').splice(0, 0, obj);
@@ -441,7 +452,6 @@ var ractive = new BaseRactive({
         ractive.set('saveObserver', false);
 
         var obj = {
-          selfRef: '',
           account: ractive.uri(ractive.get('current')),
           tenantId: ractive.get('tenant.id'),
           orderItems: [],
@@ -457,13 +467,13 @@ var ractive = new BaseRactive({
         console.info('addOrderItem: '+orderId);
         var tmp = ractive.get('itemPrototype')== undefined ? {} : ractive.get('itemPrototype');
         tmp.orderId = ractive.localId(orderId);
-        ractive.set('currentOrderIdx',ractive.get('orders').indexOf(Array.findBy('selfRef',orderId,ractive.get('orders'))));
+        ractive.set('currentOrderIdx',ractive.get('orders').indexOf(Array.findBy('id',orderId,ractive.get('orders'))));
         ractive.push('orders.'+ractive.get('currentOrderIdx')+'.orderItems', tmp);
         ractive.set('currentOrderItemIdx',ractive.get('orders.'+ractive.get('currentOrderIdx')+'.orderItems').length-1);
         ractive.saveOrderItem();
       },
       addOrderItems: function(orderId, form) {
-        var order = Array.findBy('selfRef',orderId,ractive.get('orders'));
+        var order = Array.findBy('id',orderId,ractive.get('orders'));
         ractive.set('currentOrderIdx', ractive.get('orders').indexOf(order));
         var label = 'Add order items';
         if (ractive.get('tenant.strings.addOrderItems')!=undefined) label = ractive.get('tenant.strings.addOrderItems');
@@ -564,7 +574,7 @@ var ractive = new BaseRactive({
         $.ajax({
           url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/accounts/' + ractive.id(obj),
           type: 'DELETE',
-          success: completeHandler = function(data) {
+          success: function(data) {
             ractive.fetch();
             ractive.showResults();
           }
@@ -573,11 +583,11 @@ var ractive = new BaseRactive({
       },
       deleteContact: function(obj) {
         console.log('delete ' + obj + '...');
-        if (Array.findBy('contactId', ractive.localId(obj.selfRef), ractive.get('orders'))==undefined) {
+        if (Array.findBy('contactId', ractive.localId(obj), ractive.get('orders'))==undefined) {
           $.ajax({
             url: ractive.getServer() + '/contacts/' + ractive.id(obj),
             type: 'DELETE',
-            success: completeHandler = function(data) {
+            success: function(data) {
               ractive.fetchAccountContacts();
             }
           });
@@ -587,22 +597,22 @@ var ractive = new BaseRactive({
         return false; // cancel bubbling to prevent edit as well as delete
       },
       deleteOrder: function(obj) {
-        console.log('deleteOrder ' + obj.selfRef + '...');
+        console.log('deleteOrder ' + ractive.localId(obj) + '...');
         $.ajax({
-          url: ractive.getServer() + '/orders/' + ractive.id(obj),
+          url: ractive.getServer() + '/orders/' + ractive.localId(obj),
           type: 'DELETE',
-          success: completeHandler = function(data) {
+          success: function(data) {
             ractive.fetchOrders(ractive.get('current'));
           }
         });
         return false; // cancel bubbling to prevent edit as well as delete
       },
       deleteOrderItem: function(item) {
-        console.log('deleteOrderItem ' + item.orderId + ', '+ item.selfRef +'...');
+        console.log('deleteOrderItem ' + item.orderId + ', '+ ractive.localId(item) +'...');
         $.ajax({
-          url: ractive.getServer() + '/'+ractive.get('tenant.id')+'/orders/'+item.orderId+'/order-items/'+ractive.localId(item.selfRef),
+          url: ractive.getServer() + '/'+ractive.get('tenant.id')+'/orders/'+item.orderId+'/order-items/'+ractive.localId(item),
           type: 'DELETE',
-          success: completeHandler = function(data) {
+          success: function(data) {
             ractive.fetchOrders(ractive.get('current'));
           }
         });
@@ -610,31 +620,37 @@ var ractive = new BaseRactive({
       },
       fetch: function() {
         console.info('fetch...');
-        ractive.set('saveObserver', false);
         ractive.fetchPrimaryEntityList();
       },
       fetchPrimaryEntityList: function() {
         console.info('fetchPrimaryEntityList...');
-        ractive.set('saveObserver', false);
-        var entityName = ractive.get('entityPath').substring(1);
-        $.ajax({
-          dataType: "json",
-          url: ractive.getServer() + '/' + ractive.get('tenant.id')
-              + ractive.get('entityPath') + '/',
-          crossDomain: true,
-          success: function(data) {
-            if (data['_embedded'] == undefined) {
-              ractive.set(entityName, data);
-            } else {
-              ractive.set(entityName, data['_embedded'][entityName]);
+        if (ractive.get('fetchPrimaryEntityList')==true) {
+          console.warn('skipping fetch as already running');
+          return;
+        } else {
+          ractive.set('saveObserver', false);
+          ractive.set('fetchPrimaryEntityList', true);
+          var entityName = ractive.get('entityPath').substring(1);
+          $.ajax({
+            dataType: "json",
+            url: ractive.getServer() + '/' + ractive.get('tenant.id')
+                + ractive.get('entityPath') + '/',
+            crossDomain: true,
+            success: function(data) {
+              if (data['_embedded'] == undefined) {
+                ractive.set(entityName, data);
+              } else {
+                ractive.set(entityName, data['_embedded'][entityName]);
+              }
+              if (ractive.hasRole('admin')) $('.admin').show();
+              if (ractive.hasRole('power-user')) $('.power-user').show();
+              if (ractive.fetchCallbacks != null) ractive.fetchCallbacks.fire();
+              ractive.showSearchMatched();
+              ractive.set('saveObserver', true);
+              ractive.set('fetchPrimaryEntityList', false);
             }
-            if (ractive.hasRole('admin')) $('.admin').show();
-            if (ractive.hasRole('power-user')) $('.power-user').show();
-            if (ractive.fetchCallbacks != null) ractive.fetchCallbacks.fire();
-            ractive.showSearchMatched();
-            ractive.set('saveObserver', true);
-          }
-        });
+          });
+        }
       },
       fetchAccountContacts: function() {
         console.info('fetchAccountContacts...');
@@ -674,7 +690,7 @@ var ractive = new BaseRactive({
           crossDomain: true,
           success: function(data) {
             ractive.set('saveObserver', false);
-            var orderIdx = ractive.get('orders').indexOf(Array.findBy('selfRef','/orders/'+orderId,ractive.get('orders')));
+            var orderIdx = ractive.get('orders').indexOf(Array.findBy('id','/orders/'+orderId,ractive.get('orders')));
             ractive.set('orders.'+orderIdx+'.feedback',data);
             ractive.set('saveObserver', true);
           },
@@ -695,7 +711,7 @@ var ractive = new BaseRactive({
         for (idx in account.contacts) {
           if (typeof account.contacts[idx] != 'function') {
             if (contactIds.length>0) contactIds += ',';
-            contactIds += ractive.localId(account.contacts[idx].selfRef);
+            contactIds += ractive.localId(account.contacts[idx]);
           }
         }
         if (contactIds.length == 0) return; // no contacts means no orders
@@ -748,26 +764,41 @@ var ractive = new BaseRactive({
           }
         });
       },
-      fetchTasks: function(accountId) {
-        console.info('fetchTasks...');
-
-        ractive.set('saveObserver', false);
-        $.ajax({
-          dataType: "json",
-          url: ractive.getBpmServer() + '/' + ractive.get('tenant.id')
-              + '/tasks/findByVar/accountId/' + accountId,
-          crossDomain: true,
-          success: function(data) {
-            console.log('fetched ' + data.length + ' tasks');
-            ractive.set('saveObserver', false);
-            ractive.set('xTasks', data);
-            ractive.set('current.tasks', data);
-            ractive.sortChildren('tasks', 'dueDate', false);
-            ractive.set('saveObserver', true);
-            ractive.set('alerts.tasks', data.length);
-          }
-        });
+  fetchTasks: function(accountId) {
+    console.info('fetchTasks...');
+    if (ractive.get('profile')==undefined) {
+      console.info(' not ready to fetch tasks');
+      return;
+    }
+    ractive.set('saveObserver', false);
+    $.ajax({
+      contentType: 'application/json',
+      dataType: "json",
+      type: 'POST',
+      url: ractive.getBpmServer() + '/flowable-rest/service/query/tasks',
+      crossDomain: true,
+      headers: { Authorization: ractive.getBpmAuth() },
+      xhrFields: {
+        withCredentials: true
       },
+      data: JSON.stringify({
+        "processInstanceVariables": [ {
+          "name": "accountId",
+          "operation": "equals",
+          "value": accountId
+        } ]
+      }),
+      success: function(data) {
+        console.log('fetched ' + data.length + ' tasks');
+        ractive.set('saveObserver', false);
+        ractive.set('xTasks', data);
+        ractive.set('current.tasks', data);
+        if (data.length > 0) ractive.sortChildren('tasks', 'dueDate', false);
+        ractive.set('saveObserver', true);
+        ractive.set('alerts.tasks', data.length);
+      }
+    });
+  },
       /** @deprecated use findAny */
       find: function(contactId) {
         console.log('find: ' + contactId);
@@ -1016,14 +1047,14 @@ var ractive = new BaseRactive({
             type: id === undefined ? 'POST': 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(tmp),
-            success: completeHandler = function(data, textStatus, jqXHR) {
+            success:  function(data, textStatus, jqXHR) {
               // console.log('data: '+ data);
               var entityName = ractive.get('entityPath').substring(1);
               var location = jqXHR.getResponseHeader('Location');
               ractive.set('saveObserver', false);
               if (location != undefined) {
                 ractive.set('current._links.self.href', location);
-                ractive.set('current.selfRef', location);
+                ractive.set('current.id', ractive.localId(location));
               }
               switch (jqXHR.status) {
               case 201:
@@ -1075,7 +1106,7 @@ var ractive = new BaseRactive({
             type: id === undefined ? 'POST': 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(tmp),
-            success: completeHandler = function(data, textStatus, jqXHR) {
+            success:  function(data, textStatus, jqXHR) {
               // console.log('data: '+ data);
               var location = jqXHR.getResponseHeader('Location');
               ractive.set('saveObserver', false);
@@ -1124,7 +1155,7 @@ var ractive = new BaseRactive({
             type: id == undefined ? 'POST': 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(ractive.get('current.account')),
-            success: completeHandler = function(data, textStatus, jqXHR) {
+            success:  function(data, textStatus, jqXHR) {
               var location = jqXHR.getResponseHeader('Location');
               if (location != undefined)
                 ractive.set('current.account.id', location.substring(location
@@ -1163,7 +1194,7 @@ var ractive = new BaseRactive({
           type: 'PUT',
           contentType: 'text/uri-list',
           data: location,
-          success: completeHandler = function(data, textStatus, jqXHR) {
+          success:  function(data, textStatus, jqXHR) {
             ractive.set('saveObserver', false);
             console.log('linked account: ' + location + ' to '
                 + contactAccountLink);
@@ -1186,7 +1217,7 @@ var ractive = new BaseRactive({
           if (tmp.date == 'n/a') delete tmp.date;
           var contactName = tmp.contactName;
           if (contactName != undefined) {
-            tmp.contactId = ractive.localId(Array.findBy('fullName', contactName,ractive.get('current.contacts')).selfRef);
+            tmp.contactId = ractive.localId(Array.findBy('fullName', contactName,ractive.get('current.contacts')));
             delete tmp.contactName;
           }
           var id = ractive.uri(tmp) == undefined ? undefined: ractive.id(tmp);
@@ -1199,7 +1230,7 @@ var ractive = new BaseRactive({
             type: id === undefined ? 'POST': 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(tmp),
-            success: completeHandler = function(data, textStatus, jqXHR) {
+            success:  function(data, textStatus, jqXHR) {
               // console.log('data: '+ data);
               ractive.showMessage('Order saved');
               ractive.fetchOrders(ractive.get('current'));
@@ -1220,7 +1251,7 @@ var ractive = new BaseRactive({
         } else if (document.getElementById('currentOrderForm').checkValidity()) {
           var tmp = ractive.get('orders.'+ractive.get('currentOrderIdx')+'.orderItems.'+ractive.get('currentOrderItemIdx'));
           tmp.tenantId = ractive.get('tenant.id');
-          var id = tmp.selfRef;
+          var id = ractive.localId(tmp);
           console.log('ready to save order item' + JSON.stringify(tmp) + ' ...');
           $.ajax({
             // TODO no use case for creating items (yet)
@@ -1230,7 +1261,7 @@ var ractive = new BaseRactive({
             type: id === undefined ? 'POST': 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(tmp),
-            success: completeHandler = function(data, textStatus, jqXHR) {
+            success:  function(data, textStatus, jqXHR) {
               // console.log('data: '+ data);
               ractive.fetchOrders(ractive.get('current'));
               ractive.showMessage('Order item saved');
@@ -1245,7 +1276,7 @@ var ractive = new BaseRactive({
         }
       },
       select: function(account) {
-        console.log('select: ' + account.selfRef);
+        console.log('select: ' + ractive.localId(account));
         ractive.set('saveObserver', false);
         // default owner to current user
         if (account.owner == undefined || account.owner == '')
@@ -1296,16 +1327,14 @@ var ractive = new BaseRactive({
         ractive.hideResults();
       },
       selectMultiple: function(account) {
-        console.info('selectMultiple: ' + contact.selfRef);
-        if ($('tr[data-href="' + contact.selfRef + '"] input[type="checkbox"]')
+        console.info('selectMultiple: ' + ractive.localId(contact));
+        if ($('tr[data-href="' + ractive.localId(contact) + '"] input[type="checkbox"]')
             .prop('checked')) {
-          console.log('  checked: '
-              + $(
-                  'tr[data-href="' + contact.selfRef
+          console.log('  checked: ' + $('tr[data-href="' + ractive.localId(contact)
                       + '"] input[type="checkbox"]').prop('checked'));
-          ractive.push('selectMultiple', contact.selfRef);
+          ractive.push('selectMultiple', ractive.localId(contact));
         } else {
-          var idx = ractive.get('selectMultiple').indexOf(contact.selfRef);
+          var idx = ractive.get('selectMultiple').indexOf(ractive.localId(contact));
           console.log('  idx: ' + idx);
           ractive.splice('selectMultiple', idx, 1);
         }
@@ -1336,7 +1365,7 @@ var ractive = new BaseRactive({
           type: type,
           data: d,
           dataType: 'text',
-          success: completeHandler = function(data) {
+          success:  function(data) {
             console.log('Message received:' + data);
             if (msg['callback'] != undefined)
               msg.callback(data);
@@ -1347,7 +1376,7 @@ var ractive = new BaseRactive({
         console.info('setMainContact: ' + contactRef);
         for (idx in ractive.get('current.contacts')) {
           ractive.set('currentContact', ractive.get('current.contacts.' + idx));
-          if (ractive.get('current.contacts.' + idx + '.selfRef') != contactRef) {
+          if (ractive.localId(ractive.get('current.contacts.' + idx)) != contactRef) {
             ractive.set('current.contacts.' + idx + '.mainContact', false);
             ractive.saveContact();
           } else {
@@ -1389,26 +1418,26 @@ var ractive = new BaseRactive({
         ractive.set('searchMatched',$('#accountsTable tbody tr').length);
         if ($('#accountsTable tbody tr:visible').length==1) {
           var accountId = $('#accountsTable tbody tr:visible').data('href')
-          var account = Array.findBy('selfRef',accountId,ractive.get('accounts'))
+          var account = Array.findBy('id',accountId,ractive.get('accounts'))
           ractive.select( account );
         }
       },
       startAccountContactAcction: function(action, contactId) {
-        ractive.set('currentContact',Array.findBy('selfRef',contactId,ractive.get('current.contacts')));
+        ractive.set('currentContact',Array.findBy('id',contactId,ractive.get('current.contacts')));
         ractive.set('instanceToStart.processVariables.contactId',contactId);
 //        ractive.startCustomAction(action.ref, action.name, ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{fullName}}')
       },
       toggleEditContact: function(obj) {
         console.info('toggleEditContact');
         ractive.set('currentContact', obj);
-        var editing = $('[data-contact-id="' + obj.selfRef + '"]').siblings()
+        var editing = $('[data-contact-id="' + ractive.localId(obj) + '"]').siblings()
             .children('a.glyphicon-pencil').hasClass('editing');
         // disable _all_ contacts
         $('[data-contact-id]').siblings().children('a.glyphicon-pencil')
             .removeClass('editing');
         $('[data-contact-id]').removeClass('editing');
-        $('[data-contact-id="' + obj.selfRef + '"] span').removeClass('hidden');
-        $('[data-contact-id="' + obj.selfRef + '"] input').addClass('hidden');
+        $('[data-contact-id="' + ractive.localId(obj) + '"] span').removeClass('hidden');
+        $('[data-contact-id="' + ractive.localId(obj) + '"] input').addClass('hidden');
 
         if (editing) { // Change editable to display, inc. discard unsaved
           ractive.fetchAccountContacts();
@@ -1417,10 +1446,10 @@ var ractive = new BaseRactive({
           // save now to avoid race condition leading to multiple records later
           ractive.saveContact();
         } else { // Change clicked contact to editable
-          $('[data-contact-id="' + obj.selfRef + '"]').siblings()
+          $('[data-contact-id="' + ractive.localId(obj) + '"]').siblings()
             .children('a.glyphicon-pencil').addClass('editing');
-          $('[data-contact-id="' + obj.selfRef + '"] span').addClass('hidden');
-          $('[data-contact-id="' + obj.selfRef + '"] input')
+          $('[data-contact-id="' + ractive.localId(obj) + '"] span').addClass('hidden');
+          $('[data-contact-id="' + ractive.localId(obj) + '"] input')
             .removeClass('hidden')
             .addClass('editing')
             .on('blur', function(ev) {

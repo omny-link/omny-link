@@ -147,7 +147,7 @@ var ractive = new BaseRactive({
         return true;
       } else {
         return ( (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-          || (obj.selfRef.indexOf(searchTerm)>=0)
+          || (ractive.localId(obj).indexOf(searchTerm)>=0)
           || (obj.status!=undefined && obj.status.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
           || (searchTerm.startsWith('created>') && new Date(obj.firstStockCategory)>new Date(ractive.get('searchTerm').substring(8)))
@@ -498,7 +498,7 @@ var ractive = new BaseRactive({
     ractive.set('searchMatched',$('#stockCategoriesTable tbody tr').length);
     if ($('#stockCategoriesTable tbody tr:visible').length==1) {
       var stockCategoryId = $('#stockCategoriesTable tbody tr:visible').data('href')
-      var stockCategory = Array.findBy('selfRef',stockCategoryId,ractive.get('stockCategories'))
+      var stockCategory = Array.findBy('id',stockCategoryId,ractive.get('stockCategories'))
       ractive.edit( stockCategory );
     }
   },

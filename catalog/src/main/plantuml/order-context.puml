@@ -1,0 +1,13 @@
+@startuml
+!include stylesheet.puml.txt
+
+class Order << C, ff6c06 >>
+class OrderItem << C, ff6c06 >>
+class StockCategory << C, ff6c06 >>
+class StockItem << C, ff6c06 >>
+
+Order *-right- "*" OrderItem : contains
+Order "*" -- "0..1" StockItem
+OrderItem "*" -- "0..1" StockItem
+StockItem "*" -right- "0..1" StockCategory
+@enduml

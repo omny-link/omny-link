@@ -7,10 +7,11 @@ class Contact << C, ff6c06 >>
 class Document << C, ff6c06 >>
 class Note << C, ff6c06 >>
 
-Contact "1" -right-> "0..1" Account : " "
-Contact "1" -- "0..1" Activity
-Contact "1" -- "*" Note
-Contact "1" -- "*" Document
+Contact -up-> "0..1" Account : " "
+
+Contact "0..1" -- "*" Activity
+Contact "0..1" -- "*" Note
+Contact "0..1" -- "*" Document
 
 
 @enduml

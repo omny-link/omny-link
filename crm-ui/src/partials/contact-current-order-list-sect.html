@@ -68,7 +68,7 @@
               </td>
               {{#entityPath=='/accounts'}}
                 <td data-order-id="{{localId}}" data-key="contactName">
-                  <span>{{#contactId}}{{Array.findBy('selfRef','/contacts/'+contactId,current.contacts).fullName}}{{else}}{{contactId}}{{/}}</span>
+                  <span>{{#contactId}}{{Array.findBy('id','/contacts/'+contactId,current.contacts).fullName}}{{else}}{{contactId}}{{/}}</span>
                 </td>
               {{/}}
               {{#tenant.features.orderName}}<td>{{name}}</td>{{/}}
@@ -140,7 +140,7 @@
                      title="Show {{#tenant.strings.orderItems}}{{tenant.strings.orderItems}}{{else}}Order Items{{/}}"></a>
                 {{elseif tenant.features.orderItems}}
                   <a class="glyphicon glyphicon-btn {{#tenant.strings.orderItemIcon}}{{tenant.strings.orderItemIcon}}{{else}}glyphicon-th-list{{/}}" aria-hidden="true"
-                     on-click="addOrderItems(selfRef, true)"
+                     on-click="addOrderItems(id, true)"
                      title="{{#tenant.strings.addOrderItems}}{{tenant.strings.addOrderItems}}{{else}}Create Order Items{{/}}"></a>
                 {{/if}}
                 {{#if tenant.features.feedback}}<a class="glyphicon glyphicon-btn glyphicon-comment" aria-hidden="true" on-click="toggleOrderSubEntity(this,'feedback')" title="Show Feedback"></a>{{/if}}
@@ -168,13 +168,13 @@
                       <tbody>
                         {{#..orderItems:j}}
                           <tr>
-                            <td data-order-item-id="{{..selfRef}}" data-key="stockItem">
+                            <td data-order-item-id="{{localId(.)}}" data-key="stockItem">
                               <span title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">
-                                {{#customFields['stockItemId']}}{{Array.findBy('selfRef','/stock-items/'+customFields['stockItemId'],stockItems).name}}{{else}}n/a{{/}}
+                                {{#customFields['stockItemId']}}{{Array.findBy('id','/stock-items/'+customFields['stockItemId'],stockItems).name}}{{else}}n/a{{/}}
                               </span>
                             </td>
                             {{#tenant.orderItemFields}}
-                              <td class="{{type}}" data-order-item-id="{{orderItems[j].selfRef}}" data-key="orderItems.{{j}}.customFields.{{key}}">
+                              <td class="{{type}}" data-order-item-id="{{localId(orderItems[j])}}" data-key="orderItems.{{j}}.customFields.{{key}}">
                                 {{#if type=='date'}}
                                   <span title="{{hint}}">{{formatDate(customFields[key])}}</span>
                                 {{else}}

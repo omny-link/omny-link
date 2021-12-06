@@ -32,9 +32,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -44,7 +48,6 @@ import javax.validation.constraints.Size;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -69,6 +72,39 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
+@NamedEntityGraph(name = "orderWithAll",
+    attributeNodes = {
+        @NamedAttributeNode("customFields"),
+        @NamedAttributeNode(value = "feedback", subgraph = "feedback-subgraph"),
+        @NamedAttributeNode(value = "orderItems", subgraph = "item-subgraph"),
+        @NamedAttributeNode("notes"),
+        @NamedAttributeNode("documents")
+    },
+    subgraphs = {
+        @NamedSubgraph(
+                name = "feedback-subgraph",
+                attributeNodes = { @NamedAttributeNode("customFields") }
+        ),
+        @NamedSubgraph(
+                name = "item-subgraph",
+                attributeNodes = { @NamedAttributeNode("customFields") }
+        )
+
+    }
+)
+@NamedEntityGraph(name = "orderWithItems",
+    attributeNodes = {
+        @NamedAttributeNode(value = "orderItems", subgraph = "order-item-subgraph"),
+        @NamedAttributeNode("customFields")
+    },
+    subgraphs = {
+        @NamedSubgraph(
+                name = "item-subgraph",
+                attributeNodes = {
+                        @NamedAttributeNode("customFields")
+                })
+        }
+)
 @Table(name = "OL_ORDER")
 @Data
 @ToString(exclude = { "documents", "notes", "orderItems" })
@@ -85,7 +121,8 @@ public class Order extends Auditable<String> implements Serializable {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "orderIdSeq", sequenceName = "ol_order_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orderIdSeq")
     @JsonProperty
     @JsonView(OrderViews.Summary.class)
     private Long id;
@@ -139,15 +176,10 @@ public class Order extends Auditable<String> implements Serializable {
     @JsonView(OrderViews.Summary.class)
     private BigDecimal tax;
 
-    // Although this annotation does not change the name, without it Jackson
-    // gets confused and attempts to cast id:Long to String. Why this property
-    // affects a completely different one is a mystery I have not investigated
-    @JsonProperty("stockItem")
+    @JsonProperty
     @JsonView(OrderViews.Summary.class)
-    @RestResource(rel = "stockItem")
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "stock_item_id")
-    private StockItem stockItem;
+    @Column(name = "stock_item_id")
+    private Long stockItemId;
 
     @JsonProperty
     @Size(max = 30)
@@ -191,20 +223,20 @@ public class Order extends Auditable<String> implements Serializable {
     @JsonManagedReference
     private List<OrderItem> orderItems;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne
     @JsonView( { OrderViews.Detailed.class } )
     @JsonManagedReference
     private Feedback feedback;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, targetEntity = Note.class)
     @JoinColumn(name = "order_id")
     @JsonView({ OrderViews.Detailed.class })
-    private List<Note> notes;
+    private Set<Note> notes;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, targetEntity = Document.class)
     @JoinColumn(name = "order_id")
     @JsonView({ OrderViews.Detailed.class })
-    private List<Document> documents;
+    private Set<Document> documents;
 
     @Transient
     private List<String> customHeadings;
@@ -300,16 +332,16 @@ public class Order extends Auditable<String> implements Serializable {
         return this;
     }
 
-    public List<Note> getNotes() {
+    public Set<Note> getNotes() {
         if (notes == null) {
-            notes = new ArrayList<Note>();
+            notes = new HashSet<Note>();
         }
         return notes;
     }
 
-    public List<Document> getDocuments() {
+    public Set<Document> getDocuments() {
         if (documents == null) {
-            documents = new ArrayList<Document>();
+            documents = new HashSet<Document>();
         }
         return documents;
     }
@@ -346,7 +378,8 @@ public class Order extends Auditable<String> implements Serializable {
                         invoiceRef == null ? "" : invoiceRef,
                         owner == null ? "" : owner,
                         contactId == null ? "" : contactId,
-                        stockItem == null ? "" : stockItem.getId(),
+//                        stockItem == null ? "" : stockItem.getId(),
+                        stockItemId  == null ? "" : stockItemId,
                         tenantId, created, lastUpdated,
                         getConsolidatedNotes(),
                         getConsolidatedDocuments()));

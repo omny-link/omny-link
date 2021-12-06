@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "crm.cors.allowed-headers",
+    "type": "java.lang.String",
+    "description": "Comma-separated list of allowed response headers"
+  },
+  {
+    "name": "crm.cors.allowed-origins",
+    "type": "java.lang.String",
+    "description": "Comma-separated list of permitted values of request header Origin"
+  },
+  {
+    "name": "crm.cors.allow-credentials",
+    "type": "java.lang.String",
+    "description": "If true, credentials will be included in CORS requests"
+  },
+  {
+    "name": "crm.cors.exposed-headers",
+    "type": "java.lang.String",
+    "description": "Comma-separated list of exposed response headers (note different to 'allowed' response headers)"
+  }
+]}

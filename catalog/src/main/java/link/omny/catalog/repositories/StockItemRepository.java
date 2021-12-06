@@ -16,8 +16,10 @@
 package link.omny.catalog.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -29,9 +31,14 @@ import link.omny.catalog.model.StockItem;
 @RepositoryRestResource(exported = false)
 public interface StockItemRepository extends CrudRepository<StockItem, Long> {
 
+    @Override
+    @EntityGraph(value = "stockItemWithAll")
+    Optional<StockItem> findById(Long id);
+
     StockItem findByName(@Param("name") String name);
 
     @Query("SELECT i FROM StockItem i WHERE i.tenantId = :tenantId AND (i.status IS NULL OR i.status != 'deleted') ORDER BY i.name ASC")
+    @EntityGraph("stockItemWithAll")
     List<StockItem> findAllForTenant(@Param("tenantId") String tenantId);
 
     @Query("SELECT COUNT(i) FROM StockItem i WHERE i.tenantId = :tenantId AND (i.status IS NULL OR i.status != 'deleted')")
@@ -57,11 +64,11 @@ public interface StockItemRepository extends CrudRepository<StockItem, Long> {
     @Query(value = "SELECT DISTINCT(cf.name) FROM OL_STOCK_ITEM o INNER JOIN OL_STOCK_ITEM_CUSTOM cf on o.id = cf.stock_item_id WHERE o.tenant_id = :tenantId ", nativeQuery = true)
     List<String> findCustomFieldNames(@Param("tenantId") String tenantId);
 
-    @Query(value = "UPDATE OL_STOCK_ITEM i SET i.stock_cat_id = :categoryId WHERE i.id = :itemId", nativeQuery = true)
+    @Query(value = "UPDATE OL_STOCK_ITEM i SET stock_cat_id = :categoryId WHERE id = :itemId", nativeQuery = true)
     @Modifying(clearAutomatically = true)
     public void setStockCategory(@Param("itemId") Long itemId, @Param("categoryId") Long categoryId);
 
-    @Query(value = "DELETE OL_STOCK_ITEM i WHERE i.stock_cat_id = :stockCategoryId", nativeQuery = true)
+    @Query(value = "DELETE OL_STOCK_ITEM i WHERE stock_cat_id = :stockCategoryId", nativeQuery = true)
     @Modifying(clearAutomatically = true)
     public void deleteByStockCategory(@Param("stockCategoryId") Long stockCategoryId);
 }

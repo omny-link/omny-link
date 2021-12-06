@@ -2,6 +2,7 @@ var del         = require('del');
 var log         = require('fancy-log');
 var gulp        = require('gulp');
 var babel       = require('gulp-babel');
+var bSync       = require('browser-sync').create();
 var jshint      = require('gulp-jshint');
 var cleanCSS    = require('gulp-clean-css');
 var minimist    = require('minimist');
@@ -26,7 +27,7 @@ gulp.task('clean', function(done) {
 gulp.task('assets', function() {
   gulp.src([ 'src/d3-funnel/**/js/*.js' ])
       .pipe(gulp.dest(buildDir+'/d3-funnel/'));
-  return gulp.src([ 'src/**/*.gif', 'src/**/*.jpg', 'src/**/*.json', 'src/**/*.ico', 'src/**/*.png', 'src/**/*.svg' ])
+  return gulp.src([ 'src/.htaccess', 'src/**/*.gif', 'src/**/*.jpg', 'src/**/*.json', 'src/**/*.ico', 'src/**/*.png', 'src/**/*.svg', 'knowprocess-icons/src/main/resources/META-INF/resources/webjars/**/*' ])
       .pipe(gulp.dest(buildDir+'/'));
 });
 
@@ -67,7 +68,7 @@ gulp.task('compile',
 );
 
 gulp.task('server', function(done) {
-  bSync({
+  bSync.init({
     server: {
       baseDir: [buildDir]
     }
@@ -115,16 +116,18 @@ gulp.task('default',
 );
 
 gulp.task('_deploy', function() {
-  log.warn('Deploying to '+env);
+  log.warn('Deploying from '+buildDir+' to '+env);
   if (config.server != undefined) {
-    return gulp.src(buildDir+'/**')
+    return gulp.src([ buildDir+'/**', buildDir+'/.htaccess'])
     .pipe(rsync({
       root: buildDir+'/',
       hostname: config.server.host,
       destination: config.server.dir,
       archive: false,
       silent: false,
-      compress: true
+      compress: true,
+      exclude: ['*.jar', '*.tgz', '*.zip'],
+      include: ['.htaccess']
     }))
     .on('error', function(err) {
       console.log(err);

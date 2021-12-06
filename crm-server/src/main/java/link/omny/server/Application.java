@@ -64,6 +64,9 @@ public class Application {
     @Value("${crm.cors.allowed-headers:*}")
     String corsHeaders;
 
+    @Value("${crm.cors.exposed-headers:*}")
+    String corsExposedHeaders;
+
     @Value("${crm.cors.allow-credentials:false}")
     boolean corsAllowCredentials;
 
@@ -105,11 +108,13 @@ public class Application {
                 LOGGER.info("  allowed origins: {}", corsOrigins);
                 LOGGER.info("  allowed methods: {}", corsMethods);
                 LOGGER.info("  allowed headers: {}", corsHeaders);
+                LOGGER.info("  exposed headers: {}", corsExposedHeaders);
                 LOGGER.info("  allow credentials: {}", corsAllowCredentials);
                 CorsRegistration reg = registry.addMapping("/**");
                 reg.allowedOrigins(corsOrigins.split(","));
                 reg.allowedMethods(corsMethods.split(","));
                 reg.allowedHeaders(corsHeaders.split(","));
+                reg.exposedHeaders(corsExposedHeaders.split(","));
                 reg.allowCredentials(corsAllowCredentials);
             }
 

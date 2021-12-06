@@ -74,7 +74,7 @@ describe("Account management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(account),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         // NOTE this is URI not tenantUri
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/\/accounts\/[0-9]/);
@@ -107,7 +107,7 @@ describe("Account management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(note),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/.*\/accounts\/[0-9]*\/notes\/[0-9]*/);
         expect(jqXHR.status).toEqual(201);
@@ -122,7 +122,7 @@ describe("Account management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(doc),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/.*\/accounts\/[0-9]*\/documents\/[0-9]*/);
         expect(jqXHR.status).toEqual(201);
@@ -137,7 +137,7 @@ describe("Account management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(activity),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/.*\/accounts\/[0-9]*\/activities\/[0-9]*/);
         expect(jqXHR.status).toEqual(201);
@@ -152,7 +152,7 @@ describe("Account management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(activity),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
         done();
       }
@@ -162,13 +162,13 @@ describe("Account management", function() {
   it("updates the new account", function(done) {
     account.phone1 = '+44 7777 123456';
     account.phone2 = '020 7123 4567';
-    account.customFields.lastAccountingDate = '31/12/2017';
+    account.customFields.parking = 'All private cars to be parked in bays and not obstructing Bronto-crane access';
     $rh.ajax({
       url: $rh.tenantUri(account),
       type: 'PUT',
       contentType: 'application/json',
       data: JSON.stringify(account),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
         done();
       }
@@ -188,6 +188,18 @@ describe("Account management", function() {
       done();
     });
   });
+
+  it("fetches just the updated account and checks it is correct", function (done) {
+    $rh.getJSON($rh.tenantUri(account), function (data) {
+      expect($rh.uri(account)).toContain($rh.uri(data));
+      expect(data.phone1).toEqual(account.phone1);
+      expect(data.phone2).toEqual(account.phone2);
+      expect(data.customFields.parking).toEqual(
+          account.customFields.parking);
+
+      done();
+    });
+  });
   
   it("adds a contact to the new account", function(done) {
     contact.accountId = $rh.localId(account);
@@ -196,7 +208,7 @@ describe("Account management", function() {
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(contact),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         var location = jqXHR.getResponseHeader('Location');
         expect(location).toMatch(/\/contacts\/[0-9]/);
         expect(jqXHR.status).toEqual(201);
@@ -265,7 +277,7 @@ describe("Account management", function() {
       url: $rh.tenantUri(contact),
       type: 'DELETE',
       contentType: 'application/json',
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
         done();
       }
@@ -277,7 +289,7 @@ describe("Account management", function() {
       url: $rh.tenantUri(account),
       type: 'DELETE',
       contentType: 'application/json',
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
         done();
       }

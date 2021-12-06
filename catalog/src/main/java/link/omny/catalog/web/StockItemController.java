@@ -165,7 +165,6 @@ public class StockItemController {
             list = stockItemRepo.findPageForTenant(tenantId, pageable);
         }
         LOGGER.info("Found {} stockItems", list.size());
-
         return list;
     }
 
@@ -250,11 +249,9 @@ public class StockItemController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id)
             throws BusinessEntityNotFoundException {
-        LOGGER.debug(String.format("Find stock item for id %1$s", id));
+        LOGGER.info("Find stock item for id {}", id);
 
         StockItem item = findById(tenantId, Long.parseLong(id));
-        // Ensure everything loaded, while still in transaction
-        item.getStockCategory();
         LOGGER.info("Found item from category {} with {} custom fields",
                 (item.getStockCategory() == null ? "n/a" : item.getStockCategory().getName()),
                 item.getCustomFields().size());
@@ -330,18 +327,16 @@ public class StockItemController {
 
         NullAwareBeanUtils.copyNonNullProperties(updatedStockItem, stockItem,
                 "id", "tagsAsList", "stockCategory");
-        // This is not a mechanism to update the category but only to link
-        // item to a different category if necessary
-        if (updatedStockItem.getStockCategory() == null) {
-            stockItem.setStockCategory(null);
-        } else if (updatedStockItem.getStockCategory().getId() != null
+        // Seems stock cat is always null under Spring Boot 2
+        if (stockItem.getStockCategory() != null
+                && updatedStockItem.getStockCategory().getId() != null
                 && !updatedStockItem.getStockCategory().getId().equals(stockItem.getStockCategory().getId())) {
             // During creation stock cat name may be set whilst id is not
             stockItem.setStockCategory(stockCategoryRepo.findByName(updatedStockItem.getStockCategory().getName(), tenantId));
         }
 
         stockItem.setTenantId(tenantId);
-        stockItemRepo.save(stockItem);
+        stockItem = stockItemRepo.save(stockItem);
     }
 
     /**
@@ -418,7 +413,7 @@ public class StockItemController {
         mediaResourceRepo.save(mediaResource);
         // necessary to force a save
         stockItem.setLastUpdated(new Date());
-        stockItemRepo.save(stockItem);
+        stockItem= stockItemRepo.save(stockItem);
     }
 
     /**
@@ -433,8 +428,9 @@ public class StockItemController {
          StockItem stockItem = findById(tenantId, stockItemId);
          stockItem.getDocuments().add(doc);
          stockItem.setLastUpdated(new Date());
-         stockItemRepo.save(stockItem);
-         doc = stockItem.getDocuments().get(stockItem.getDocuments().size()-1);
+         stockItem = stockItemRepo.save(stockItem);
+         doc = stockItem.getDocuments().stream()
+                 .reduce((first, second) -> second).orElse(null);
 
          HttpHeaders headers = new HttpHeaders();
          URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -459,8 +455,9 @@ public class StockItemController {
         StockItem stockItem = findById(tenantId, stockItemId);
         stockItem.getNotes().add(note);
         stockItem.setLastUpdated(new Date());
-        stockItemRepo.save(stockItem);
-        note = stockItem.getNotes().get(stockItem.getNotes().size()-1);
+        stockItem = stockItemRepo.save(stockItem);
+        note = stockItem.getNotes().stream()
+                .reduce((first, second) -> second).orElse(null);
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -473,20 +470,24 @@ public class StockItemController {
     }
 
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{categoryId}/stockCategory",
-            method = RequestMethod.PUT, consumes = { "text/uri" })
+    @RequestMapping(value = "/{itemId}/stockCategory",
+            method = RequestMethod.PUT, consumes = { "text/uri-list" })
     @Transactional
     @ApiOperation("Sets the category for the specified stock item.")
     public @ResponseBody void setStockCategory(
             @PathVariable("tenantId") String tenantId,
-            @RequestBody String itemUri,
-            @PathVariable("categoryId") Long categoryId) {
-        LOGGER.info("Linking item {} to category {}", categoryId, itemUri);
+            @RequestBody String categoryUri,
+            @PathVariable("itemId") Long itemId) {
+        LOGGER.info("Linking item {} to category {}", itemId, categoryUri);
 
-        Long itemId = Long
-                .parseLong(itemUri.substring(itemUri.lastIndexOf('/') + 1));
-
-        stockItemRepo.setStockCategory(itemId, categoryId);
+        try {
+            Long categoryId = Long.parseLong(
+                    categoryUri.substring(categoryUri.lastIndexOf('/') + 1));
+            stockItemRepo.setStockCategory(itemId, categoryId);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                    String.format("%1$s is not a valid stock category", categoryUri));
+        }
     }
 
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -534,9 +535,14 @@ public class StockItemController {
     }
 
     protected EntityModel<StockItem> addLinks(final String tenantId, final StockItem stockItem) {
-        return EntityModel.of(stockItem,
-                linkTo(methodOn(StockItemController.class)
-                        .findEntityById(tenantId, stockItem.getId().toString()))
-                                .withSelfRel());
+        EntityModel<StockItem> model = EntityModel.of(stockItem,
+                linkTo(methodOn(StockItemController.class).findEntityById(tenantId, stockItem.getId().toString()))
+                        .withSelfRel());
+        if (stockItem.getStockCategory() != null) {
+            model.add(linkTo(methodOn(StockCategoryController.class).findEntityById(
+                    tenantId, String.valueOf(stockItem.getStockCategory().getId())))
+                            .withRel("stock-category"));
+        }
+        return model;
     }
 }

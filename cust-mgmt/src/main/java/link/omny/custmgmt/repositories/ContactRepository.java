@@ -38,6 +38,7 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
 
     @Query("SELECT c FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId "
             + "AND (c.stage IS NULL OR c.stage != 'deleted') ORDER BY c.id ASC")
+    @EntityGraph("contactWithAccount")
     List<Contact> findAllForTenant(@Param("tenantId") String tenantId);
 
     @Query("SELECT COUNT(c) FROM Contact c LEFT JOIN c.account a WHERE c.tenantId = :tenantId AND (c.stage IS NULL OR c.stage != 'deleted')")
@@ -65,31 +66,12 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
     List<Contact> findEmailablePageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
-    List<Contact> findByLastName(@Param("lastName") String lastName);
-
-    // This applies AND semantics
-    List<Contact> findByFirstNameOrLastName(
-            @Param("firstName") String firstName,
-            @Param("lastName") String lastName);
-
-    // This appears to match everything :-(
-    List<Contact> findByFirstNameOrLastNameOrAccountName(
-            @Param("firstName") String firstName,
-            @Param("lastName") String lastName,
-            @Param("account.name") String accountName);
-
-    @Query("SELECT c FROM Contact c "
-            + "WHERE c.firstName = :firstName AND c.lastName = :lastName ")
-    // TODO ought to restrict this to single tenant
-    List<Contact> findByFirstNameAndLastName(
-            @Param("firstName") String firstName,
-            @Param("lastName") String lastName);
-
     @Query("SELECT c FROM Contact c "
             + "WHERE c.firstName = :firstName AND c.lastName = :lastName "
-            + "AND c.account.name = :accountName")
-    // TODO ought to restrict this to single tenant
-    List<Contact> findByFirstNameLastNameAndAccountName(
+            + "AND c.account.name = :accountName "
+            + "AND c.tenantId = :tenantId")
+    List<Contact> findByFirstNameLastNameAndAccountNameForTenant(
+            @Param("tenantId") String tenantId,
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
             @Param("accountName") String accountName);

@@ -21,8 +21,12 @@ describe("Product catalogue", function() {
   });
 
   var originalTimeout;
+  var stockItemsBefore;
   var ordersBefore = [];
   var orders = [];
+  var stockItem = {
+      name: 'Widget A'
+  };
   var order = {
       name: 'Order 123',
       date: '2017-01-31',
@@ -48,7 +52,14 @@ describe("Product catalogue", function() {
         refusalReason: '1 palette damaged'
       }
   }
-
+  var complexOrder = {
+      name: 'Order 456',
+      date: '2017-02-01',
+      stage: 'Draft',
+      orderItems: [
+        { price: 100, status: 'Draft' }
+      ]
+  };
   beforeEach(function() {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
@@ -60,7 +71,32 @@ describe("Product catalogue", function() {
       expect(jqXHR.status).toEqual(200);
       done();
     });
+  });
 
+  it("takes a baseline of available stock items", function(done) {
+    $rh.getJSON('/'+tenantId+'/stock-items/',  function(data, textStatus, jqXHR) {
+      stockItemsBefore = data;
+      expect(jqXHR.status).toEqual(200);
+      done();
+    });
+  });
+
+  it("creates a new stock item", function(done) {
+    $rh.ajax({
+      url: '/'+tenantId+'/stock-items/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(stockItem),
+      success: function(data, textStatus, jqXHR) {
+        var location = jqXHR.getResponseHeader('Location');
+        expect(location).toMatch(/\/stock-items\/[0-9]/);
+        expect(jqXHR.status).toEqual(201);
+        stockItem.links = [ { rel: 'self', href: location } ];
+        order.stockItem = stockItem;
+        complexOrder.orderItems[0].stockItem = stockItem;
+        done();
+      }
+    });
   });
 
   it("creates a new order", function(done) {
@@ -86,7 +122,7 @@ describe("Product catalogue", function() {
 
       expect(orders.length).toEqual(ordersBefore.length+1);
       console.log('latest order: '+JSON.stringify(orders[0]));
-//      expect($rh.localId(orders[0])).toEqual($rh.localId(order));
+      expect($rh.localId(orders[0])).toEqual($rh.localId(order));
       expect(orders[0].created).toBeDefined();
       expect(orders[0].name).toEqual(order.name);
       expect(orders[0].date).toEqual(order.date);
@@ -209,6 +245,7 @@ describe("Product catalogue", function() {
       expect(data.order).toEqual(order.order);
       expect(data.stage).toEqual(order.stage);
       expect(data.created).toBeDefined();
+      expect(data.lastUpdated).toBeGreaterThan(data.created);
       expect(data.customFields).toBeDefined();
       expect(data.customFields.specialInstructions).toEqual(order.customFields.specialInstructions);
 
@@ -225,8 +262,75 @@ describe("Product catalogue", function() {
 
       expect(data.feedback.type).toEqual(feedback.type);
       expect(data.feedback.description).toEqual(feedback.description);
+      expect(data.created).toBeDefined();
       expect(data.feedback.customFields).toBeDefined();
       expect(data.feedback.customFields.refusalReason).toEqual(feedback.customFields.refusalReason);
+
+      done();
+    });
+  });
+
+  it("creates a new complex order (including order items)", function(done) {
+    $rh.ajax({
+      url: '/'+tenantId+'/orders/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(complexOrder),
+      success: function(data, textStatus, jqXHR) {
+        var location = jqXHR.getResponseHeader('Location');
+        expect(location).toMatch(/\/orders\/[0-9]/);
+        expect(jqXHR.status).toEqual(201);
+        complexOrder.links = [ { rel: 'self', href: location } ];
+        done();
+      }
+    });
+  });
+
+  it("fetches the complex order inc. order items and check all fields are correct", function(done) {
+    console.log('tenantUri: '+$rh.tenantUri(complexOrder));
+    $rh.getJSON($rh.tenantUri(complexOrder), function( data ) {
+
+      expect($rh.localId(data)).toEqual($rh.localId(complexOrder));
+      expect(data.name).toEqual(complexOrder.name);
+      complexOrder = data;
+
+      done();
+    });
+  });
+
+  it("updates the new complex order", function(done) {
+    complexOrder.dueDate = '2017-02-16';
+    complexOrder.owner = 'sales@slaterock.com';
+    $rh.ajax({
+      url: $rh.tenantUri(complexOrder),
+      type: 'PUT',
+      contentType: 'application/json',
+      data: JSON.stringify(complexOrder),
+      success: function(data, textStatus, jqXHR) {
+        expect(jqXHR.status).toEqual(204);
+        done();
+      }
+    });
+  });
+
+    it("fetches the complex order inc. order items and check all fields are correct", function(done) {
+    console.log('tenantUri: '+$rh.tenantUri(complexOrder));
+    $rh.getJSON($rh.tenantUri(complexOrder), function( data ) {
+
+      expect($rh.localId(data)).toEqual($rh.localId(complexOrder));
+      expect(data.name).toEqual(complexOrder.name);
+      expect(data.date).toEqual(complexOrder.date);
+      expect(data.dueDate).toEqual(complexOrder.dueDate);
+      expect(data.complexOrder).toEqual(complexOrder.complexOrder);
+      expect(data.stage).toEqual(complexOrder.stage);
+      expect(data.created).toBeDefined();
+      expect(data.lastUpdated).toBeGreaterThan(data.created);
+
+      expect(data.orderItems.length).toEqual(1);
+      expect(data.orderItems.price).toEqual(complexOrder.orderItems.price);
+      expect(data.orderItems.status).toEqual(complexOrder.orderItems.status);
+      expect(data.orderItems.dueDate).toEqual(complexOrder.orderItems.dueDate);
+      expect(data.orderItems.owner).toEqual(complexOrder.orderItems.owner);
 
       done();
     });
@@ -244,12 +348,46 @@ describe("Product catalogue", function() {
     });
   });
 
-  it("checks the data is the same as the baseline", function(done) {
+  it("deletes the added complex order", function(done) {
+    $rh.ajax({
+      url: $rh.tenantUri(complexOrder),
+      type: 'DELETE',
+      contentType: 'application/json',
+      success: function(data, textStatus, jqXHR) {
+        expect(jqXHR.status).toEqual(204);
+        done();
+      }
+    });
+  });
+
+  it("deletes the added stock item", function(done) {
+    $rh.ajax({
+      url: $rh.tenantUri(stockItem),
+      type: 'DELETE',
+      contentType: 'application/json',
+      success: function(data, textStatus, jqXHR) {
+        expect(jqXHR.status).toEqual(204);
+        done();
+      }
+    });
+  });
+
+  it("checks the order data is the same as the baseline", function(done) {
     $rh.getJSON('/'+tenantId+'/orders/',  function( data ) {
       orders = data;
       data.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
 
       expect(orders.length).toEqual(ordersBefore.length);
+      done();
+    });
+  });
+
+  it("checks the stock item data is the same as the baseline", function(done) {
+    $rh.getJSON('/'+tenantId+'/stock-items/',  function( data ) {
+      stockItems = data;
+      data.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
+
+      expect(stockItems.length).toEqual(stockItemsBefore.length);
       done();
     });
   });

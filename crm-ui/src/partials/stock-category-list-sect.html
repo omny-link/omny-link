@@ -37,7 +37,7 @@
     <tbody>
     {{#each sort(stockCategories,sortColumn,sortAsc):i}}
       {{# matchSearch(this) && matchFilter(this) }}
-          <tr data-href="{{selfRef}}">
+          <tr data-href="{{id}}">
             <td on-click="edit(this)">{{i+1}}</td>
             <td on-click="edit(this)">{{name}}</td>
             <td on-click="edit(this)">{{this.status}}</td>

@@ -93,12 +93,12 @@ database:
   password: password
   datasourceDriverClassName: org.postgresql.Driver
   #datasourceUrl: jdbc:postgresql://127.0.0.1:5432/crm
-  datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm_alpha
+  datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm
   #datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm?currentSchema=crm
 
 jpa:
   hibernate:
-    ddlAuto: "update"
+    ddlAuto: "none"
   properties:
     hibernate:
       dialect: "org.hibernate.dialect.PostgreSQLDialect"
@@ -110,7 +110,9 @@ crm:
     baseUri: "https://crm.knowprocess.com"
     tagLine: The automated CRM
   cors:
-    allowedOrigins: "http://localhost:8000,https://beta.knowprocess.com,https://cloud.knowprocess.com"
+    allowedOrigins: "http://localhost:8000,https://beta.knowprocess.com,https://cloud.knowprocess.com"`
+    allowedHeaders: "Authorization,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Location,Pragma,X-Requested-With"
+    exposedHeaders: "Authorization,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Location,Pragma,X-Requested-With"
 
 rest:
   javaOpts:

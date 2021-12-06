@@ -22,12 +22,12 @@
      <span class="alert-counter {{#alerts.documents}}alert-danger{{else}}alert-hidden{{/}}"> {{alerts.documents}}</span>
    </h2>
    <div style="display:none">
-  	 <table id="docsTable" class="table table-striped">
-  	   <tbody>
-  	     {{#each current.documents:k}}
-  	       <tr>
-  	         <td class="field-age">{{formatAgeFromDate(created)}} ({{formatDate(created)}})</td>
-  	         <td class="field-author">{{{gravatar(author)}}}</td>
+     <table id="docsTable" class="table table-striped">
+       <tbody>
+         {{#each current.documents:k}}
+           <tr>
+             <td class="field-age">{{formatAgeFromDate(created)}} {{#created}}({{formatDateTime(created)}}){{/created}}</td>
+             <td class="field-author">{{{gravatar(author)}}}</td>
              {{#created}}
                <td class="field-text">{{name}}</td>
                <td class="field-url"><a href="{{url}}" target="_newtab"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a></td>
@@ -40,13 +40,13 @@
                  <a on-click="cancelDoc()">Cancel</a>
                </td>
              {{/}}
-  	       </tr>
-  	     {{/each}}
-  	     {{^ current.documents }}
-  	       <tr><td>None</td></tr>
-  	     {{/}}
-  	    </tbody>
-  	  </table>
-  	</div>
+           </tr>
+         {{/each}}
+         {{^ current.documents }}
+           <tr><td>None</td></tr>
+         {{/}}
+        </tbody>
+      </table>
+    </div>
   </section>
 </form>

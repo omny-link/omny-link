@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -38,6 +39,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,6 +57,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -110,7 +113,7 @@ public class AccountController {
         Account account = findById(tenantId, accountId);
         account.getActivities().add(activity);
         account.setLastUpdated(new Date());
-        accountRepo.save(account);
+        account = accountRepo.save(account);
         activity = account.getActivities().stream()
                 .reduce((first, second) -> second).orElse(null);
 
@@ -375,10 +378,10 @@ public class AccountController {
             @PathVariable("id") Long accountId,
             @RequestBody Account updatedAccount) {
         Account account = findById(tenantId, accountId);
-
         BeanUtils.copyProperties(updatedAccount, account, "id", "activities", "documents", "notes");
         account.setTenantId(tenantId);
         account = accountRepo.save(account);
+        updateCustomFields(tenantId, accountId, updatedAccount.getCustomFields());
     }
 
     /**
@@ -390,16 +393,31 @@ public class AccountController {
     @ApiIgnore
     public @ResponseBody void updateCustomFields(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
-            @RequestBody Object customFields) throws IOException {
+            @RequestBody Object customFields) {
         Account account = findById(tenantId, accountId);
 
         if (customFields instanceof String) {
-            JsonNode jsonNode = objectMapper.readTree((String) customFields);
+            JsonNode jsonNode;
+            try {
+                jsonNode = objectMapper.readTree((String) customFields);
+            } catch (JsonProcessingException e) {
+                LOGGER.error("updateCustomFields({}, {}, {}), root cause: {}",
+                        tenantId, accountId, customFields, e);
+                throw new IllegalArgumentException("Unable to read account", e);
+            }
             for (Iterator<String> it = jsonNode.fieldNames() ; it.hasNext() ;) {
                 String key = it.next();
                 account.addCustomField(
                         new CustomAccountField(key, jsonNode.get(key).asText()));
             }
+        } else if (customFields instanceof Set<?>) {
+            @SuppressWarnings("unchecked")
+            Set<CustomAccountField> set = (Set<CustomAccountField>) customFields;
+            set.forEach((field) -> {
+                LOGGER.warn("About to try to store {}={}",
+                        field.getName(), field.getValue());
+                account.addCustomField(field);
+            });
         } else if (customFields instanceof HashMap) {
             for (Map.Entry<?,?> entry : ((HashMap<?,?>) customFields).entrySet()) {
                 LOGGER.warn("About to try to store {}={}", entry.getKey(), entry.getValue());
@@ -478,7 +496,7 @@ public class AccountController {
     /**
      * Add a document to the specified account.
      */
-    @PostMapping(value = "/accounts/{accountId}/documents")
+    @PostMapping(value = "/accounts/{accountId}/documents", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Add a document to the specified account.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
@@ -486,7 +504,7 @@ public class AccountController {
          Account account = findById(tenantId, accountId);
          account.getDocuments().add(doc);
          account.setLastUpdated(new Date());
-         accountRepo.save(account);
+         account = accountRepo.save(account);
          doc = account.getDocuments().stream()
                  .reduce((first, second) -> second).orElse(null);
 
@@ -501,10 +519,30 @@ public class AccountController {
     }
 
     /**
+     * Add a document to the specified account.
+     *
+     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
+     * @return
+     *
+     * @return The document created.
+     */
+    @PostMapping(value = "/accounts/{accountId}/documents",
+            consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+                    "application/x-www-form-urlencoded; charset=UTF-8" })
+    public @ResponseBody Document addDocument(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId,
+            @RequestParam("author") String author,
+            @RequestParam("name") String name,
+            @RequestParam("url") String url) {
+        return addDocument(tenantId, accountId, new Document(author, name, url)).getBody();
+    }
+
+    /**
      * Add a note to the specified account.
      * @return the created note.
      */
-    @PostMapping(value = "/accounts/{accountId}/notes")
+    @PostMapping(value = "/accounts/{accountId}/notes", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Add a note to the specified account.")
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
@@ -512,7 +550,7 @@ public class AccountController {
         Account account = findById(tenantId, accountId);
         account.getNotes().add(note);
         account.setLastUpdated(new Date());
-        accountRepo.save(account);
+        account = accountRepo.save(account);
         note = account.getNotes().stream()
                 .reduce((first, second) -> second).orElse(null);
 
@@ -524,6 +562,25 @@ public class AccountController {
         headers.setLocation(uri);
 
         return new ResponseEntity<Note>(note, headers, HttpStatus.CREATED);
+    }
+
+    /**
+     * Add a note to the specified account from its parts.
+     *
+     * <p>This is just a convenience method, see {@link #addNote(String, Long, Note)}
+     *
+     * @return The note created.
+     */
+    @PostMapping(value = "/accounts/{accountId}/notes",
+            consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+                         "application/x-www-form-urlencoded; charset=UTF-8" })
+    public @ResponseBody Note addNote(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("accountId") Long accountId,
+            @RequestParam("author") String author,
+            @RequestParam("favorite") boolean favorite,
+            @RequestParam("content") String content) {
+        return addNote(tenantId, accountId, new Note(author, content, favorite)).getBody();
     }
 
     /**

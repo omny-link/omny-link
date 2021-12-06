@@ -100,7 +100,7 @@ var ractive = new BaseRactive({
         var search = ractive.get('searchTerm').split(' ');
         for (var idx = 0 ; idx < search.length ; idx++) {
           var searchTerm = search[idx].toLowerCase();
-          var match = ( (obj.selfRef!=undefined && obj.selfRef.indexOf(searchTerm)>=0)
+          var match = ( (ractive.localId(obj)!=undefined && ractive.localId(obj).indexOf(searchTerm)>=0)
               || (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
               || (obj.title.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
               || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
@@ -413,7 +413,7 @@ var ractive = new BaseRactive({
     ractive.set('searchMatched',$('#memosTable tbody tr').length);
     if ($('#memosTable tbody tr:visible').length==1) {
       var memoId = $('#memosTable tbody tr:visible').data('href')
-      var memo = Array.findBy('selfRef',memoId,ractive.get('memos'))
+      var memo = Array.findBy('id',memoId,ractive.get('memos'))
       ractive.edit( 0, memo );
     }
   },

@@ -33,6 +33,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -46,7 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.CreatedDate;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -69,19 +71,25 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Entity
+@NamedEntityGraph(name = "accountOnly",
+    attributeNodes = {
+        @NamedAttributeNode("customFields"),
+    }
+)
 @NamedEntityGraph(name = "accountWithAll",
     attributeNodes = {
         @NamedAttributeNode("activities"),
-        @NamedAttributeNode("contact"),
         @NamedAttributeNode("customFields"),
         @NamedAttributeNode("notes"),
         @NamedAttributeNode("documents")
     }
 )
 @Table(name = "OL_ACCOUNT")
+@SecondaryTable(name = "OL_ACCOUNT_CUSTOM",
+    pkJoinColumns = @PrimaryKeyJoinColumn(name = "account_id"))
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true, exclude = { "contact" })
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account extends Auditable<String> implements Serializable {
@@ -95,7 +103,8 @@ public class Account extends Auditable<String> implements Serializable {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "accountIdSeq", sequenceName = "ol_account_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "accountIdSeq")
     @JsonProperty
     @JsonView( { AccountViews.Pair.class, ContactViews.Summary.class } )
     private Long id;
@@ -103,6 +112,7 @@ public class Account extends Auditable<String> implements Serializable {
     @NotNull
     @JsonProperty
     @JsonView( { AccountViews.Pair.class, ContactViews.Summary.class } )
+    @Size(max = 150)
     @Column(name = "name")
     private String name;
 
@@ -118,16 +128,19 @@ public class Account extends Auditable<String> implements Serializable {
     @Pattern(regexp = "[0-9OSN]?[0-9CI]?[0-9]{5,6}")
     @JsonProperty
     @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
+    @Size(max = 8)
     @Column(name = "company_number")
     private String companyNumber;
 
     @JsonProperty
     @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
-    @Column(name = "sic")
+    // sufficient for UK sector industry codes in 2021
+    @Column(name = "sic", length = 110)
     private String sic;
 
     @JsonProperty
     @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
+    @Size(max = 150)
     @Column(name = "aliases")
     private String aliases;
 
@@ -180,21 +193,25 @@ public class Account extends Auditable<String> implements Serializable {
 
     @JsonProperty
     @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
+    @Size(max = 60)
     @Column(name = "town")
     private String town;
 
     @JsonProperty
     @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
+    @Size(max = 60)
     @Column(name = "county_or_city")
     private String countyOrCity;
 
     @JsonProperty
     @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
+    @Size(max = 60)
     @Column(name = "post_code")
     private String postCode;
 
     @JsonProperty
     @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
+    @Size(max = 60)
     @Column(name = "country")
     private String country;
 
@@ -243,6 +260,7 @@ public class Account extends Auditable<String> implements Serializable {
 
     @JsonProperty
     @JsonView( { AccountViews.Summary.class } )
+    @Size(max = 30)
     @Column(name = "stage")
     private String stage;
 
@@ -258,6 +276,7 @@ public class Account extends Auditable<String> implements Serializable {
 
     @JsonProperty
     @JsonView( { AccountViews.Summary.class } )
+    @Size(max = 50)
     @Column(name = "enquiry_type")
     private String enquiryType;
 
@@ -306,10 +325,6 @@ public class Account extends Auditable<String> implements Serializable {
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "first_contact", updatable = false)
     private Date firstContact;
 
-    @OneToMany(mappedBy = "account", targetEntity = Contact.class)
-    @JsonBackReference
-    private Set<Contact> contact;
-
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "account", targetEntity = CustomAccountField.class)
     @JsonDeserialize(using = JsonCustomAccountFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
@@ -342,7 +357,7 @@ public class Account extends Auditable<String> implements Serializable {
         return customFields;
     }
 
-    public void setCustomFields(List<CustomAccountField> fields) {
+    public void setCustomFields(Set<CustomAccountField> fields) {
         for (CustomAccountField newField : fields) {
             setCustomField(newField);
         }

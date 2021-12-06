@@ -5,6 +5,7 @@
 *.class
 *.log*
 application.properties
+liquibase.properties
 /log4j.properties
 target/
 

@@ -41,6 +41,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -313,8 +314,8 @@ public class ContactController {
         LOGGER.debug("List contacts for account and name {}, {} {}",
                 accountName, lastName, firstName);
 
-        List<Contact> list = contactRepo.findByFirstNameLastNameAndAccountName(
-                firstName, lastName, accountName);
+        List<Contact> list = contactRepo.findByFirstNameLastNameAndAccountNameForTenant(
+                tenantId, firstName, lastName, accountName);
         LOGGER.info("Found {} contacts", list.size());
 
         return addLinks(tenantId, list);
@@ -407,7 +408,7 @@ public class ContactController {
     public @ResponseBody List<EntityModel<Contact>> findByAccountId(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("accountId") String accountId) {
-        LOGGER.debug("Find contact for account {}", accountId);
+        LOGGER.info("Find contact for account {}", accountId);
 
         return addLinks(tenantId, contactRepo
                 .findByAccountId(Long.parseLong(accountId), tenantId));
@@ -421,7 +422,7 @@ public class ContactController {
     public @ResponseBody List<EntityModel<Contact>> findByAccountType(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("accountType") String accountType) {
-        LOGGER.debug("Find contact for account {}", accountType);
+        LOGGER.info("Find contact for account {}", accountType);
         return addLinks(tenantId, contactRepo.findByAccountType(accountType, tenantId));
     }
 
@@ -517,14 +518,21 @@ public class ContactController {
             @RequestBody Contact contact) {
         contact.setTenantId(tenantId);
 
-        EntityModel<Contact> entity = addLinks(tenantId, contactRepo.save(contact));
-        LOGGER.debug("Created contact {}", entity.getLink("self"));
+        for (CustomContactField field : contact.getCustomFields()) {
+            LOGGER.debug(" have custom field {}", field);
+            field.setContact(contact);
+        }
+        contact = contactRepo.save(contact);
+
         if (contact.getAccountId() != null) {
             setAccount(tenantId, contact.getId(), contact.getAccountId());
         }
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(entity.getLink("self").get().toUri());
 
+        EntityModel<Contact> entity = addLinks(tenantId, contact);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(entity.getLink("self").get()
+                .expand(contact.getId()).getHref()));
+        LOGGER.info("Created contact {}", headers.getLocation());
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
@@ -575,7 +583,7 @@ public class ContactController {
      * Delete an existing contact.
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, consumes = { "application/json" })
+    @DeleteMapping(value = "/{id}")
     @ApiOperation(value = "Deletes the specified contact.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long contactId) {
@@ -593,7 +601,7 @@ public class ContactController {
          Contact contact = findById(tenantId, contactId);
          contact.getDocuments().add(doc);
          contact.setLastUpdated(new Date());
-         contactRepo.save(contact);
+         contact = contactRepo.save(contact);
          doc = contact.getDocuments().stream()
                  .reduce((first, second) -> second).orElse(null);
 
@@ -619,7 +627,7 @@ public class ContactController {
         Contact contact = findById(tenantId, contactId);
         contact.getNotes().add(note);
         contact.setLastUpdated(new Date());
-        contactRepo.save(contact);
+        contact = contactRepo.save(contact);
         note = contact.getNotes().stream()
                 .reduce((first, second) -> second).orElse(null);
 
@@ -698,7 +706,7 @@ public class ContactController {
         Contact contact = findById(tenantId, contactId);
         contact.getActivities().add(activity);
         contact.setLastUpdated(new Date());
-        contactRepo.save(contact);
+        contact = contactRepo.save(contact);
         activity = contact.getActivities().stream()
                 .reduce((first, second) -> second).orElse(null);
 

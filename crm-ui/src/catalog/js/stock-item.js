@@ -151,7 +151,7 @@ var ractive = new BaseRactive({
       if (searchTerm==undefined || searchTerm.length==0) {
         return true;
       } else {
-        return ( (obj.selfRef.indexOf(searchTerm.toLowerCase())>=0)
+        return ( (ractive.localId(obj).indexOf(searchTerm.toLowerCase())>=0)
           || (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.stockCategoryName!=undefined && obj.stockCategoryName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
           || (obj.status!=undefined && obj.status.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
@@ -244,7 +244,7 @@ var ractive = new BaseRactive({
     $.ajax({
         url: url,
         type: 'DELETE',
-        success: completeHandler = function(data) {
+        success: function(data) {
           ractive.fetch();
           ractive.showResults();
 //        },
@@ -261,7 +261,7 @@ var ractive = new BaseRactive({
     $.ajax({
         url: url,
         type: 'DELETE',
-        success: completeHandler = function(data) {
+        success: function(data) {
           ractive.fetchImages();
         },
         error: errorHandler = function(jqXHR, textStatus, errorThrown) {
@@ -376,13 +376,6 @@ var ractive = new BaseRactive({
     if (document.getElementById('currentForm')==undefined) {
       console.debug('still loading, safe to ignore');
     } else if (document.getElementById('currentForm').checkValidity()) {
-      // ensure stock cat id up to date, don't use observer as fires after save
-      if (ractive.get('current.stockCategory.name')!=undefined) {
-        var stockCat = Array.findBy('name',ractive.get('current.stockCategory.name'),ractive.get('stockCategories'));
-        if (stockCat != undefined) {
-          ractive.set('current.stockCategory.id',ractive.id(stockCat));
-        }
-      }
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       delete tmp.images;
       delete tmp.tagsAsList;
@@ -393,7 +386,7 @@ var ractive = new BaseRactive({
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
-        success: completeHandler = function(data, textStatus, jqXHR) {
+        success: function(data, textStatus, jqXHR) {
           //console.log('data: '+ data);
           var location = jqXHR.getResponseHeader('Location');
           ractive.set('saveObserver',false);
@@ -402,6 +395,10 @@ var ractive = new BaseRactive({
           case 201:
             var currentIdx = ractive.get('stockItems').push(ractive.get('current'))-1;
             ractive.set('currentIdx',currentIdx);
+            // category may still be unsaved
+            if (ractive.get('current.stockCategory.name')!=undefined) {
+              ractive.saveStockCategory(ractive.get('current'));
+            }
             break;
           case 204:
             ractive.splice('stockItems',ractive.get('currentIdx'),1,ractive.get('current'));
@@ -430,7 +427,7 @@ var ractive = new BaseRactive({
         url: url,
         type: 'POST',
         data: n,
-        success: completeHandler = function(data) {
+        success: function(data) {
           console.log('data: '+ data);
           ractive.showMessage('Image link saved successfully');
           if (tenant.features.stockItemImages) ractive.fetchImages();
@@ -446,37 +443,64 @@ var ractive = new BaseRactive({
       type: 'PUT',
       contentType: 'application/json',
       data: JSON.stringify(obj),
-      success: completeHandler = function(data) {
+      success: function(data) {
         console.log('data: '+ data);
         ractive.showMessage('Image link saved successfully');
         ractive.fetchImages();
       }
     });
   },
+  saveStockCategory: function (obj) {
+    console.log('saveStockCategory of '+ractive.localId(obj)+' as '+obj.stockCategory.id+' ...');
+    if (document.getElementById('currentForm').checkValidity()) {
+      // ensure stock cat id up to date, don't use observer as fires after save
+      if (ractive.get('current.stockCategory.name')!=undefined) {
+        var stockCat = Array.findBy('name',ractive.get('current.stockCategory.name'),ractive.get('stockCategories'));
+        if (stockCat != undefined) {
+          ractive.set('current.stockCategory.id',ractive.id(stockCat));
+        }
+      }
+    $.ajax({
+      url: ractive.tenantUri(obj)+'/stockCategory',
+      type: 'PUT',
+      contentType: 'text/uri-list',
+      data: ractive.getServer()+'/'+ractive.get('tenant.id')+'/stock-categories/'+ractive.get('current.stockCategory.id'),
+      success: function(data) {
+        console.log('data: '+ data);
+        ractive.showMessage('Stock category link saved successfully');
+      }
+    });
+    }
+  },
   select: function(stockItem) {
     console.log('select: '+JSON.stringify(stockItem));
     ractive.set('saveObserver',false);
-    if (stockItem.stockCategory == undefined || stockItem.stockCategory == '') stockItem.stockCategory = new Object();
     // default owner to current user
     if (stockItem.owner == undefined || stockItem.owner == '') stockItem.owner = ractive.get('profile.username');
-	  // adapt between Spring Hateos and Spring Data Rest
-	  if (stockItem._links == undefined && stockItem.links != undefined) {
-	    stockItem._links = stockItem.links;
-	    $.each(stockItem.links, function(i,d) {
+    // adapt between Spring Hateos and Spring Data Rest
+    if (stockItem._links == undefined && stockItem.links != undefined) {
+      stockItem._links = stockItem.links;
+      $.each(stockItem.links, function(i,d) {
         if (d.rel == 'self') stockItem._links.self = { href:d.href };
       });
-	  }
-	  if (stockItem._links != undefined) {
-	    var url = ractive.tenantUri(stockItem);
-	    if (url == undefined) {
-	      ractive.showError('No stockItem selected, please check link');
-	      return;
-	    }
-	    console.log('loading detail for '+url);
-	    $.getJSON(url, function( data ) {
+    }
+    if (stockItem._links != undefined) {
+      var url = ractive.tenantUri(stockItem);
+      if (url == undefined) {
+        ractive.showError('No stockItem selected, please check link');
+        return;
+      }
+      console.log('loading detail for '+url);
+      $.getJSON(url, function( data ) {
         console.log('found stockItem '+data);
         ractive.set('saveObserver',false);
         if (data['id'] == undefined) data.id = ractive.id(data);
+        if (data['stockCategory'] == undefined && data['stockCategoryName'] != undefined) {
+          var catUri = data['_links']['stock-category']['href']
+          data.stockCategory = Array.findBy(
+              'id',catUri.substring(catUri.lastIndexOf('/')+1),
+              ractive.get('stockCategories'));
+        }
         ractive.set('current', data);
         if ('tenant.features.stockItemImages') ractive.fetchImages();
         ractive.initControls();
@@ -489,8 +513,8 @@ var ractive = new BaseRactive({
       ractive.set('current', stockItem);
       ractive.set('saveObserver',true);
     }
-	  ractive.toggleResults();
-	  $('#currentSect').slideDown();
+    ractive.toggleResults();
+    $('#currentSect').slideDown();
   },
   showActivityIndicator: function(msg, addClass) {
     document.body.style.cursor='progress';
@@ -505,7 +529,7 @@ var ractive = new BaseRactive({
     ractive.set('searchMatched',$('#stockItemsTable tbody tr').length);
     if ($('#stockItemsTable tbody tr:visible').length==1) {
       var stockItemId = $('#stockItemsTable tbody tr:visible').data('href')
-      var stockItem = Array.findBy('selfRef',stockItemId,ractive.get('stockItems'))
+      var stockItem = Array.findBy('id',stockItemId,ractive.get('stockItems'))
       ractive.edit( stockItem );
     }
   },
@@ -538,7 +562,9 @@ ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
 // controls done that way save the oldValue
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
   ignored=['current.documents','current.doc','current.images','current.image','current.notes','current.note'];
-  if (ractive.get('saveObserver') && ignored.indexOf(keypath)==-1) {
+  if (ractive.get('saveObserver') && keypath=='current.stockCategory') {
+    ractive.saveStockCategory(ractive.get('current'));
+  } else if (ractive.get('saveObserver') && ignored.indexOf(keypath)==-1) {
     console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
     ractive.save();
   } else {

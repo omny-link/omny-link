@@ -32,18 +32,13 @@
         <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon glyphicon-btn "></th>
         <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon glyphicon-btn "></th>
         <th on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon glyphicon-btn "></th>
-        <th on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon icon-btn "></th>
-        <th on-click="sort:status">Status<span class="sortable {{ sorted('status') }} glyphicon icon-btn "></th>
-        <th on-click="sort:owner">Owned by<span class="sortable {{ sorted('owner') }} glyphicon icon-btn "></th>
-        <th on-click="sort:created">Created<span class="sortable {{ sorted('created') }} glyphicon icon-btn "></th>
-        <th on-click="sort:lastUpdated">Last Updated<span class="sortable {{ sorted('lastUpdated') }} glyphicon icon-btn "></th>
         <th class="col-actions">Actions</th>
       </tr>
     </thead>
     <tbody>
     {{#each sort(memos,sortColumn,sortAsc):i}}
       {{# matchSearch(this) && matchFilter(this) }}
-        <tr data-href="{{selfRef}}">
+        <tr data-href="{{id}}">
           <td on-click="edit(i,this)">{{i+1}}</td>
           <td on-click="edit(i,this)">{{name}}</td>
           <td on-click="edit(i,this)">{{status}}</td>

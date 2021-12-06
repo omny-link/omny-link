@@ -24,21 +24,11 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import link.omny.supportservices.model.Note;
 
 public class OrderTest {
-
-    private static ObjectMapper objectMapper;
-
-    @BeforeAll
-    public static void setUp() {
-        objectMapper = new ObjectMapper();
-    }
 
     @Test
     public void testCustomFieldEquals() {
@@ -98,14 +88,6 @@ public class OrderTest {
 ////        }
 //
 //    }
-
-    @Test
-    public void testPayload() throws IOException {
-        String json = "{\"feedback\":{\"customFields\":{\"coachComments\":\"Coach says went well\"}},\"orderLocalId\":\"2516\",\"ip\":\"80.234.225.146\",\"admin_email\":\"info@a-life.co.uk\",\"tenantId\":\"acme\"}";
-        Order order = objectMapper.readValue(json .getBytes(), Order.class);
-        assertEquals(1, order.getFeedback().getCustomFields().size());
-        assertEquals("Coach says went well", order.getFeedback().getCustomFieldValue("coachComments"));
-    }
 
     @Test
     public void testToCsv() throws IOException {

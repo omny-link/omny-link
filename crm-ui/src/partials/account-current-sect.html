@@ -15,13 +15,13 @@
 -->
 <section id="currentSect" style="display:none">
   <form id="currentForm" class="form">
-    {{^current.selfRef}}
+    {{^localId(current)}}
       <h2 class="form create-form">
         <input class="create-field form-control col-xs-2" id="curName" placeholder="Name" required value="{{current.name}}"/>
       </h2>
     {{/}}
 
-    {{#current.selfRef}}
+    {{#localId(current)}}
       <h2 class="edit-form">
          {{#current.customFields.orgCode}}
            <span contenteditable id="curOrgCode" on-focus="editField('#curOrgCode','current.customFields.orgCode')" on-blur="updateField('#curOrgCode','current.customFields.orgCode')">{{current.customFields.orgCode}}</span><span> - </span>
@@ -89,8 +89,8 @@
         {{#if tenant.features.references || matchRole('admin') || matchRole('super-admin')}}
           <li>
             <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.id}}{{tenant.strings.id}}{{else}}Ref{{/}}:</label>
-            <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curlocalId" readonly disabled twoway="false" value="{{localId(current.selfRef)}}"/>
-            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{# tenant.strings.selfRefHint}}{{tenant.strings.selfRefHint}}{{else}}Internal identifier for administrators only{{/}}</p>
+            <input class="col-md-8 col-sm-8 col-xs-8 form-control" id="curlocalId" readonly disabled twoway="false" value="{{localId(current)}}"/>
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{# tenant.strings.idHint}}{{tenant.strings.idHint}}{{else}}Internal identifier for administrators only{{/}}</p>
           </li>
         {{/if}}
         {{# tenant.features.parentOrg}}
@@ -337,26 +337,26 @@
               {{#sort(current.contacts,sortContactColumn,sortContactAsc):i}}
                 <tr>
                   <td class="hidden">
-                    <span>{{..selfRef}}</span>
+                    <span>{{..id}}</span>
                   </td>
-                  <td><input class="radio" name="mainContact" twoway="false" type="radio" checked="{{mainContact}}" on-change="setMainContact(..selfRef)"/></td>
-                  <td class="col-md-2 col-sm-2" data-contact-id="{{..selfRef}}" data-key="fullName">
+                  <td><input class="radio" name="mainContact" twoway="false" type="radio" checked="{{mainContact}}" on-change="setMainContact(..id)"/></td>
+                  <td class="col-md-2 col-sm-2" data-contact-id="{{..id}}" data-key="fullName">
                     <span>{{fullName}}</span>
                     <input class="hidden form-control" name="fullName" value="{{..fullName}}">
                   </td>
-                  <td class="col-md-2 col-sm-2" data-contact-id="{{..selfRef}}" data-key="jobTitle">
+                  <td class="col-md-2 col-sm-2" data-contact-id="{{..id}}" data-key="jobTitle">
                     <span>{{jobTitle}}</span>
                     <input class="hidden form-control" name="jobTitle" value="{{..jobTitle}}">
                   </td>
-                  <td class="col-md-2 col-sm-2" data-contact-id="{{..selfRef}}" data-key="email">
+                  <td class="col-md-2 col-sm-2" data-contact-id="{{..id}}" data-key="email">
                     <span>{{email}}</span>
                     <input class="hidden form-control" name="email" value="{{..email}}">
                   </td>
-                  <td class="col-md-2 col-sm-2" data-contact-id="{{..selfRef}}" data-key="emailOptIn">
+                  <td class="col-md-2 col-sm-2" data-contact-id="{{..id}}" data-key="emailOptIn">
                     <span>{{{emailOptIn == true ? '&#10004;' : '&#10007;'}}}</span>
                     <input class="hidden form-control" name="emailOptIn" type="checkbox" checked="{{..emailOptIn}}">
                   </td>
-                  <td class="col-md-1 col-sm-1" data-contact-id="{{..selfRef}}" data-key="phone1">
+                  <td class="col-md-1 col-sm-1" data-contact-id="{{..id}}" data-key="phone1">
                     <span>{{phone1}}</span>
                     <input class="hidden form-control" name="phone1" value="{{..phone1}}">
                   </td>
@@ -388,7 +388,7 @@
                         <ul class="dropdown dropdown-menu" id="customActionMenu" role="menu">
                           {{#each tenant.contactActions }}
                             {{#name}}
-                              <li on-click="startCustomAction(ref, name, Array.findBy('selfRef',selfRef,current.contacts), url, fullName)" title="{{name}}">{{name}}</li>
+                              <li on-click="startCustomAction(ref, name, Array.findBy('id',id,current.contacts), url, fullName)" title="{{name}}">{{name}}</li>
                             {{else}}
                               <li class="divider"></li>
                             {{/}}
@@ -396,7 +396,7 @@
                         </ul>
                       </span>
                     {{/if}}
-                    {{#matchRole('admin')  && selfRef}}
+                    {{#matchRole('admin')  && id}}
                       <a class="glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="deleteContact(.)" title="Delete this record"></a>
                     {{/}}
                   </td>

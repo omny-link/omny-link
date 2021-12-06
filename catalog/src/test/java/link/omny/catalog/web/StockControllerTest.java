@@ -15,6 +15,7 @@
  ******************************************************************************/
 package link.omny.catalog.web;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,6 +25,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +45,6 @@ import link.omny.catalog.model.CustomStockItemField;
 import link.omny.catalog.model.StockCategory;
 import link.omny.catalog.model.StockItem;
 import link.omny.catalog.model.api.ShortStockCategory;
-import link.omny.catalog.model.api.ShortStockItem;
 
 /**
  * @author Tim Stephenson
@@ -86,16 +87,16 @@ public class StockControllerTest {
         StockCategory borehamwoodCat = createCategory();
 
         StockItem officeItem = createOfficeItem(borehamwoodCat);
-        addItemToCategory(borehamwoodCat, getRef(officeItem));
+        addItemToCategory(officeItem, getRef(borehamwoodCat));
 
         StockItem warehouseItem = createWarehouseItem(borehamwoodCat);
-        addItemToCategory(borehamwoodCat, getRef(warehouseItem));
+        addItemToCategory(warehouseItem, getRef(borehamwoodCat));
 
         StockItem businessUnitItem = createBusinessUnitItem(borehamwoodCat);
-        addItemToCategory(borehamwoodCat, getRef(businessUnitItem));
+        addItemToCategory(businessUnitItem, getRef(borehamwoodCat));
 
         StockItem unpublishedItem = createUnpublishedItem(borehamwoodCat);
-        addItemToCategory(borehamwoodCat, getRef(unpublishedItem));
+        addItemToCategory(unpublishedItem, getRef(borehamwoodCat));
 
         StockCategory category2 = categoryController.findById(TENANT_ID, categoryId);
         assertNotNull(category2.getCreated());
@@ -106,8 +107,8 @@ public class StockControllerTest {
         update((StockCategory) category3);
     }
 
-    private String getRef(StockItem item) {
-        return String.format("/%1$s/stock-items/%2$d", TENANT_ID, item.getId());
+    private String getRef(StockCategory cat) {
+        return String.format("/%1$s/stock-categories/%2$d", TENANT_ID, cat.getId());
     }
 
     protected void update(StockCategory category) {
@@ -160,7 +161,7 @@ public class StockControllerTest {
     protected ShortStockCategory findByName(StockCategory category,
             StockItem officeItem, StockItem warehouseItem) throws IOException {
         StockCategory categoryFound = categoryController.findByName(
-                TENANT_ID, CATEGORY_BOREHAMWOOD, null, null);
+                TENANT_ID, CATEGORY_BOREHAMWOOD, null);
 
         checkCategory(category, categoryFound);
 
@@ -172,7 +173,7 @@ public class StockControllerTest {
 
         // Find just Office tags
         categoryFound = categoryController.findByName(TENANT_ID,
-                CATEGORY_BOREHAMWOOD, "Office", null);
+                CATEGORY_BOREHAMWOOD, "Office");
         assertEquals(2, categoryFound.getStockItems().size());
 
         return categoryFound;
@@ -182,7 +183,6 @@ public class StockControllerTest {
             ShortStockCategory categoryFound) {
         assertEquals(category.getName(), categoryFound.getName());
         assertEquals("Published", categoryFound.getStatus());
-        assertEquals("Business unit,Office,Warehouse", categoryFound.getTags());
         assertNotNull(category.getImages());
         assertEquals(StockCategory.DEFAULT_IMAGE_COUNT, category.getImages()
                 .size());
@@ -190,23 +190,28 @@ public class StockControllerTest {
 
     protected void checkOfficeItem(StockCategory category, StockItem officeItem,
             ShortStockCategory categoryFound) {
-        assertEquals(officeItem.getName(), categoryFound.getStockItems().iterator().next()
-                .getName());
+        @SuppressWarnings("unchecked")
+        Optional<StockItem> item = (Optional<StockItem>) categoryFound.getStockItems()
+                        .stream()
+                        .filter(x -> x.getName().equals(officeItem.getName()))
+                        .findFirst();
+        assertThat(item.isPresent());
         assertEquals("Published", officeItem.getStatus());
 
         assertNotNull(category.getImages());
-        ShortStockItem foundItem = categoryFound.getStockItems().iterator().next();
-        assertEquals(StockItem.DEFAULT_IMAGE_COUNT, ((StockItem) foundItem).getImages().size());
-        Long itemId = ((StockItem) foundItem).getId();
-        // check custom fields (needs extra fetch as not all included in search)
-        StockItem stockItem = itemController.findEntityById(category.getTenantId(), itemId.toString()).getContent();
+        assertEquals(StockItem.DEFAULT_IMAGE_COUNT, item.get().getImages().size());
+        assertEquals(officeItem.getCustomFields().size(),
+                item.get().getCustomFields().size());
+
+        // check again via findEntityById
+        StockItem stockItem = itemController.findEntityById(category.getTenantId(), item.get().getId().toString()).getContent();
         assertNotNull(stockItem.getId());
-        assertEquals(officeItem.getCustomFields().size(), stockItem
-                .getCustomFields().size());
+        assertEquals(officeItem.getCustomFields().size(),
+                stockItem.getCustomFields().size());
     }
 
-    protected void addItemToCategory(StockCategory category, String itemUri) {
-        itemController.setStockCategory(TENANT_ID, itemUri, categoryId);
+    protected void addItemToCategory(StockItem item, String categoryUri) {
+        itemController.setStockCategory(TENANT_ID, categoryUri, item.getId());
     }
 
     protected StockCategory createCategory() throws IOException {

@@ -328,7 +328,7 @@ var ractive = new BaseRactive({
     if (id == undefined) return '';
     var name = '';
     $.each(ractive.get('memos'), function(i,d) {
-      if (d.selfRef.endsWith('/'+id)) name = d.name;
+      if (ractive.localId(d)==id) name = d.name;
     });
     return name;
   },

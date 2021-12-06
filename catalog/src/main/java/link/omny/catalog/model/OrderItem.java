@@ -29,10 +29,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -53,6 +53,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
 import link.omny.catalog.views.OrderViews;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -61,13 +62,13 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(exclude = { "order", "stockItem" })
-@ToString(exclude = { "order", "stockItem" })
+@EqualsAndHashCode(callSuper = true)
+@ToString(exclude = { "order" })
 @Entity
 @Table(name = "OL_ORDER_ITEM")
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderItem implements Serializable {
+public class OrderItem extends Auditable<String> implements Serializable {
 
     private static final long serialVersionUID = 8577876040188427429L;
 
@@ -78,7 +79,8 @@ public class OrderItem implements Serializable {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "orderItemIdSeq", sequenceName = "ol_order_item_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orderItemIdSeq")
     @JsonProperty
     @JsonView(OrderViews.Detailed.class)
     private Long id;
@@ -129,11 +131,9 @@ public class OrderItem implements Serializable {
     private Order order;
 
     @JsonProperty
-    @JsonView(OrderViews.Detailed.class)
-    @ManyToOne(fetch = FetchType.EAGER)
-    @RestResource(rel = "stockItem")
-    @JoinColumn(name = "stock_item_id")
-    private StockItem stockItem;
+    @JsonView(OrderViews.Summary.class)
+    @Column(name = "stock_item_id")
+    private Long stockItemId;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "orderItem", orphanRemoval = true)
     @JsonDeserialize(using = JsonCustomOrderItemFieldDeserializer.class)

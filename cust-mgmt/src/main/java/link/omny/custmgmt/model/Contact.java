@@ -30,7 +30,6 @@ import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -42,6 +41,9 @@ import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -56,7 +58,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.CreatedDate;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -96,7 +97,21 @@ import lombok.experimental.Accessors;
             )
     }
 )
+@NamedEntityGraph(name = "contactWithAccount",
+    attributeNodes = {
+            @NamedAttributeNode(value = "account", subgraph = "account-subgraph"),
+            @NamedAttributeNode("customFields"),
+    },
+    subgraphs = {
+            @NamedSubgraph(
+                    name = "account-subgraph",
+                    attributeNodes = { @NamedAttributeNode("customFields") }
+            )
+    }
+)
 @Table(name = "OL_CONTACT")
+@SecondaryTable(name = "OL_CONTACT_CUSTOM",
+    pkJoinColumns = @PrimaryKeyJoinColumn(name = "contact_id"))
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true, exclude = { "account" })
@@ -113,18 +128,21 @@ public class Contact extends Auditable<String> implements Serializable {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "contactIdSeq", sequenceName = "ol_contact_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contactIdSeq")
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     private Long id;
 
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
+    @Size(max = 30)
     @Column(name = "first_name")
     private String firstName;
 
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
+    @Size(max = 50)
     @Column(name = "last_name")
     private String lastName;
 
@@ -148,6 +166,7 @@ public class Contact extends Auditable<String> implements Serializable {
 
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
+    @Size(max = 150)
     @Column(name = "email")
     private String email;
 
@@ -157,7 +176,7 @@ public class Contact extends Auditable<String> implements Serializable {
     private boolean emailConfirmed;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @JsonDeserialize(using = CustomBooleanDeserializer.class)
     @Column(name = "email_optin")
     private Boolean emailOptIn;
@@ -282,18 +301,18 @@ public class Contact extends Auditable<String> implements Serializable {
     private boolean doNotEmail;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Size(max = 16)
     @Column(name = "twitter")
     private String twitter;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "facebook")
     private String facebook;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     @Column(name = "linked_in")
     private String linkedIn;
 
@@ -385,7 +404,7 @@ public class Contact extends Auditable<String> implements Serializable {
     @Column(name = "tenant_id", nullable = false)
     private String tenantId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, /*mappedBy = "contact", */targetEntity = CustomContactField.class)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact", targetEntity = CustomContactField.class)
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     @JsonView({ ContactViews.Detailed.class })
@@ -437,7 +456,6 @@ public class Contact extends Auditable<String> implements Serializable {
     @JsonView({ ContactViews.Summary.class })
     @ManyToOne(cascade = CascadeType.ALL, optional = true)
     @NotFound(action = NotFoundAction.IGNORE)
-    @JsonManagedReference
     private Account account;
 
     @JsonProperty
@@ -479,17 +497,12 @@ public class Contact extends Auditable<String> implements Serializable {
         setTenantId(tenantId);
     }
 
-//    public List<Activity> getActivities() {
-//        if (activities == null) {
-//            activities = new ArrayList<Activity>();
-//        }
-//        return activities;
-//    }
-
     public String getFirstName() {
         return firstName == null ? DEFAULT_FIRST_NAME : firstName;
     }
 
+    @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     public boolean isFirstNameDefault() {
         return firstName == null;
     }
@@ -498,6 +511,8 @@ public class Contact extends Auditable<String> implements Serializable {
         return lastName == null ? uuid : lastName;
     }
 
+    @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     public boolean isLastNameDefault() {
         return lastName == null;
     }
@@ -800,6 +815,8 @@ public class Contact extends Auditable<String> implements Serializable {
         return firstAct;
     }
 
+    @JsonProperty
+    @JsonView({ ContactViews.Detailed.class })
     public String getEmailConfirmationCode() {
         if (uuid == null) {
             setUuid(UUID.randomUUID().toString());

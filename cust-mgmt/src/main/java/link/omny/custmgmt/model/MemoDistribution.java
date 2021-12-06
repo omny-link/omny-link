@@ -37,6 +37,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -46,8 +47,10 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import link.omny.supportservices.model.Auditable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Relates a Memo Template to its recipients.
@@ -57,8 +60,9 @@ import lombok.Data;
 @Entity
 @Table(name = "OL_MEMO_DIST")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-public class MemoDistribution implements Serializable {
+public class MemoDistribution extends Auditable<String> implements Serializable {
 
     private static final long serialVersionUID = 1237181996013717501L;
 
@@ -68,7 +72,8 @@ public class MemoDistribution implements Serializable {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "memoDistIdSeq", sequenceName = "ol_memo_dist_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "memoDistIdSeq")
     @JsonProperty
     private Long id;
 

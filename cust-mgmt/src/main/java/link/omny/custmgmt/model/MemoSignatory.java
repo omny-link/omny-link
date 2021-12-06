@@ -26,30 +26,36 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import link.omny.supportservices.model.Auditable;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "OL_MEMO_SIG")
 @Data
+@EqualsAndHashCode(callSuper = true, exclude = { "memo" })
 @NoArgsConstructor
-public class MemoSignatory implements Serializable {
+public class MemoSignatory extends Auditable<String> implements Serializable {
 
     private static final long serialVersionUID = -6720919821444374916L;
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "memoSigIdSeq", sequenceName = "ol_memo_sig_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "memoSigIdSeq")
     @JsonProperty
     private Long id;
 
     @JsonProperty
+    @Size(max = 150)
     @Column(name = "email")
     private String email;
 
