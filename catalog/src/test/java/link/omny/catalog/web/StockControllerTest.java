@@ -100,6 +100,16 @@ public class StockControllerTest {
 
         StockCategory category2 = categoryController.findById(TENANT_ID, categoryId);
         assertNotNull(category2.getCreated());
+        // category tags are transiently composed from tags of items
+        assertEquals("Business unit,Office,Warehouse", category2.getTags());
+        borehamwoodCat.setTags(category2.getTags());
+        assertEquals(borehamwoodCat.toString(), category2.toString());
+        // use startsWith to exclude created and lastUpdated
+        assertTrue(category2.toCsv().startsWith("1,Borehamwood,"
+                + "A very fine property,,,,,WD6 1RN,,,,,"
+                + "http://www.google.com/maps/place/WD6 1RN,,,,,Published,,"
+                + "Published,Summer Special,It's great!,Apply Now,"
+                + "http://omny.link/offers,omny"));
 
         ShortStockCategory category3 = findByName(borehamwoodCat, officeItem,
                 warehouseItem);
@@ -129,6 +139,8 @@ public class StockControllerTest {
                 category.getTenantId(), itemId.toString()).getContent();
         assertEquals(stockItem.getCustomFields().size(), stockItem2
                 .getCustomFields().size());
+        assertEquals(stockItem.getCustomFieldValue("tenancyEndDate"),
+                stockItem2.getCustomFieldValue("tenancyEndDate"));
     }
 
     protected void findAll(StockCategory category, StockItem officeItem,
@@ -161,7 +173,7 @@ public class StockControllerTest {
     protected ShortStockCategory findByName(StockCategory category,
             StockItem officeItem, StockItem warehouseItem) throws IOException {
         StockCategory categoryFound = categoryController.findByName(
-                TENANT_ID, CATEGORY_BOREHAMWOOD, null);
+                TENANT_ID, CATEGORY_BOREHAMWOOD, null).getBody();
 
         checkCategory(category, categoryFound);
 
@@ -173,7 +185,7 @@ public class StockControllerTest {
 
         // Find just Office tags
         categoryFound = categoryController.findByName(TENANT_ID,
-                CATEGORY_BOREHAMWOOD, "Office");
+                CATEGORY_BOREHAMWOOD, "Office").getBody();
         assertEquals(2, categoryFound.getStockItems().size());
 
         return categoryFound;
@@ -222,23 +234,30 @@ public class StockControllerTest {
         ResponseEntity<?> categoryResp = categoryController.create(TENANT_ID,
                 category);
 
-        // assert stored fields
-        assertEquals(HttpStatus.CREATED, categoryResp.getStatusCode());
-
         // check REST headers
+        assertEquals(HttpStatus.CREATED, categoryResp.getStatusCode());
         List<String> locationHdrs = categoryResp.getHeaders().get("Location");
         assertEquals(1, locationHdrs.size());
         assertNotNull(locationHdrs.iterator().next());
         categoryId = Long.parseLong(locationHdrs.iterator().next().substring(
                 locationHdrs.iterator().next().lastIndexOf('/') + 1));
 
+        categoryResp = categoryController.findEntityById(TENANT_ID,
+                String.valueOf(category.getId()));
+        StockCategory category2 = (StockCategory) categoryResp.getBody();
+
+        // assert stored fields
+        assertEquals(1, category2.getCustomFields().size());
+        assertEquals("version1", category2.getCustomFieldValue("tsAndCs"));
+
         // assert derived fields
-        assertEquals("", category.getVideoCode());
-        assertNotNull(category.getImages());
-        assertEquals(StockCategory.DEFAULT_IMAGE_COUNT, category.getImages()
+        assertEquals("", category2.getVideoCode());
+        assertNotNull(category2.getImages());
+        assertEquals("http://www.google.com/maps/place/WD6 1RN", category2.getMapUrl());
+        assertEquals(StockCategory.DEFAULT_IMAGE_COUNT, category2.getImages()
                 .size());
 
-        return category;
+        return category2;
     }
 
     protected StockItem createOfficeItem(StockCategory category)
@@ -322,14 +341,14 @@ public class StockControllerTest {
     protected StockCategory getCategoryBorehamwood() throws IOException {
         String categoryJson = "{\"name\":\"Borehamwood\","
                 + "\"description\":\"A very fine property\","
-                + "\"postCode\":\"WD6 1RN\"," 
+                + "\"postCode\":\"WD6 1RN\","
                 + "\"status\":\"Published\","
-                + "\"tags\":\"Office\","
                 + "\"offerStatus\":\"Published\","
                 + "\"offerTitle\":\"Summer Special\","
                 + "\"offerCallToAction\":\"Apply Now\","
                 + "\"offerDescription\":\"It's great!\","
-                + "\"offerUrl\":\"http://omny.link/offers\"}";
+                + "\"offerUrl\":\"http://omny.link/offers\","
+                + "\"customFields\":{ \"tsAndCs\": \"version1\" }}";
 
         StockCategory category = objectMapper.readValue(categoryJson,
                 new TypeReference<StockCategory>() {

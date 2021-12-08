@@ -292,6 +292,14 @@ describe("Product catalogue", function() {
 
       expect($rh.localId(data)).toEqual($rh.localId(complexOrder));
       expect(data.name).toEqual(complexOrder.name);
+      expect(data.orderItems.length).toEqual(1);
+
+      expect(data.orderItems.length).toEqual(1);
+      expect(data.orderItems[0].price).toEqual(complexOrder.orderItems[0].price);
+      expect(data.orderItems[0].status).toEqual(complexOrder.orderItems[0].status);
+      expect(data.orderItems[0].dueDate).toEqual(complexOrder.orderItems[0].dueDate);
+      expect(data.orderItems[0].owner).toEqual(complexOrder.orderItems[0].owner);
+
       complexOrder = data;
 
       done();
@@ -327,10 +335,10 @@ describe("Product catalogue", function() {
       expect(data.lastUpdated).toBeGreaterThan(data.created);
 
       expect(data.orderItems.length).toEqual(1);
-      expect(data.orderItems.price).toEqual(complexOrder.orderItems.price);
-      expect(data.orderItems.status).toEqual(complexOrder.orderItems.status);
-      expect(data.orderItems.dueDate).toEqual(complexOrder.orderItems.dueDate);
-      expect(data.orderItems.owner).toEqual(complexOrder.orderItems.owner);
+      expect(data.orderItems[0].price).toEqual(complexOrder.orderItems[0].price);
+      expect(data.orderItems[0].status).toEqual(complexOrder.orderItems[0].status);
+      expect(data.orderItems[0].dueDate).toEqual(complexOrder.orderItems[0].dueDate);
+      expect(data.orderItems[0].owner).toEqual(complexOrder.orderItems[0].owner);
 
       done();
     });

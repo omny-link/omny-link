@@ -244,7 +244,7 @@ public class StockCategoryController {
     @Transactional
     @JsonView(StockCategoryViews.Detailed.class)
     @ApiOperation("Return the specified stock category.")
-    public @ResponseBody StockCategory findEntityById(
+    public @ResponseBody ResponseEntity<StockCategory> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id)
             throws BusinessEntityNotFoundException {
@@ -252,7 +252,7 @@ public class StockCategoryController {
 
         StockCategory category = findById(tenantId, Long.parseLong(id));
         addLinks(tenantId, category);
-        return category;
+        return new ResponseEntity<StockCategory>(category, HttpStatus.OK);
     }
 
     @GetMapping(value = "/findByName", params = { "type"})
@@ -265,14 +265,14 @@ public class StockCategoryController {
             @RequestParam("name") String name,
             @RequestParam(value = "type") String type)
             throws IOException {
-        return findByName(tenantId, name, type);
+        return findByName(tenantId, name, type).getBody();
     }
 
     @GetMapping(value = "/findByName")
     @Transactional(readOnly = true)
     @JsonView(StockCategoryViews.Detailed.class)
     @ApiOperation("Return stock categories with the specified name and tenant.")
-    public @ResponseBody StockCategory findByName(
+    public @ResponseBody ResponseEntity<StockCategory> findByName(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("name") String name,
             @RequestParam(value = "tag", required = false) String tag)
@@ -285,9 +285,8 @@ public class StockCategoryController {
                     "No Stock Category with name %1$s", name));
         }
 
-        filter(category, expandTags(tag));
-
-        return category;
+        return new ResponseEntity<StockCategory>(
+                filter(category, expandTags(tag)), HttpStatus.OK);
     }
 
     private List<String> expandTags(String tag) {
@@ -304,7 +303,7 @@ public class StockCategoryController {
         return tags;
     }
 
-    private void filter(final StockCategory stockCategory,
+    private StockCategory filter(final StockCategory stockCategory,
             final List<String> tags) {
         Set<StockItem> filteredItems = new HashSet<StockItem>();
         for (StockItem item : stockCategory.getStockItems()) {
@@ -320,6 +319,7 @@ public class StockCategoryController {
             }
         }
         stockCategory.setStockItems(filteredItems);
+        return stockCategory;
     }
 
     /**
@@ -343,7 +343,7 @@ public class StockCategoryController {
             item.setStockCategory(stockCategory);
         }
 
-        stockCategoryRepo.save(stockCategory);
+        stockCategory = stockCategoryRepo.save(stockCategory);
 
         UriComponentsBuilder builder = MvcUriComponentsBuilder
                 .fromController(getClass());

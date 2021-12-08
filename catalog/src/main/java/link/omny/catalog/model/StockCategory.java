@@ -35,14 +35,10 @@ import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -51,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -260,21 +255,6 @@ public class StockCategory extends Auditable<String> implements ShortStockCatego
     @JsonView({ StockCategoryViews.Detailed.class })
     private Set<Document> documents;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
-    @JsonProperty
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @JsonView(StockCategoryViews.Summary.class)
-    private Date created = new Date();
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonProperty
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @JsonView(StockCategoryViews.Summary.class)
-    @Column(name = "last_updated")
-    private Date lastUpdated;
-
     @JsonProperty
     @JsonView(StockCategoryViews.Summary.class)
     @Column(name = "tenant_id")
@@ -431,19 +411,6 @@ public class StockCategory extends Auditable<String> implements ShortStockCatego
         }
         setLat(point.getLat());
         setLng(point.getLng());
-    }
-
-    @PrePersist
-    public void preInsert() {
-        if (LOGGER.isWarnEnabled() && created != null) {
-            LOGGER.warn("Overwriting creation date {} with 'now'.", created);
-        }
-        created = new Date();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdated = new Date();
     }
 
     public String toCsv() {
