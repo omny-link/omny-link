@@ -16,19 +16,34 @@
 package link.omny.catalog.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import link.omny.catalog.CatalogTestApplication;
 import link.omny.supportservices.model.Note;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = CatalogTestApplication.class)
 public class OrderTest {
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Test
     public void testCustomFieldEquals() {
@@ -66,28 +81,28 @@ public class OrderTest {
         assertEquals(field1.getId(), order.getCustomFields().iterator().next().getId());
     }
 
-    // TODO is it sample file needs updating or broken compatibility at 3.0?
-//    @Test
-//    public void testDeserializeOrderWithItems() throws JsonParseException, JsonMappingException, IOException {
-//        InputStream is = null;
-////        try {
-//            is = getClass().getResourceAsStream(
-//                    "/testDeserializeOrderWithItems.json");
-//            assertNotNull("No test data file: testDeserializeOrderWithItems.json on classpath");
-//            Order order = objectMapper.readValue(is, Order.class);
-//            assertNotNull(order);
-//            assertNotNull(order.getOrderItems());
-//            assertEquals(2, order.getOrderItems().size());
-//            OrderItem item1 = order.getOrderItems().iterator().next();
-//            assertNotNull(item1.getStockItem());
-//            assertNotNull(item1.getStockItem().getId());
-//            assertNotNull(item1.getCustomFields());
-////        } catch (Exception e) {
-////            e.printStackTrace();
-////            fail();
-////        }
-//
-//    }
+    @Test
+    public void testDeserializeOrderWithItems() throws IOException {
+        try (InputStream is = getClass().getResourceAsStream(
+                "/testDeserializeOrderWithItems.json")){
+            Order order = objectMapper.readValue(is, Order.class);
+            assertNotNull(order);
+            assertNotNull(order.getOrderItems());
+            assertEquals(2, order.getOrderItems().size());
+
+            OrderItem item1 = order.getOrderItems().iterator().next();
+            assertNotNull(item1.getStockItemId());
+            assertEquals(5, item1.getCustomFields().size());
+
+            Feedback feedback = order.getFeedback();
+            assertEquals("Teacher", feedback.getType());
+            assertEquals(2, feedback.getCustomFields().size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+
+    }
 
     @Test
     public void testToCsv() throws IOException {

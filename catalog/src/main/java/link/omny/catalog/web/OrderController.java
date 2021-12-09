@@ -407,20 +407,9 @@ public class OrderController {
 
         NullAwareBeanUtils.copyNonNullProperties(updatedOrder, order,
                 "id", "documents", "notes", "stockItem");
-        mergeStockItem(updatedOrder, order);
 
         fixUpOrderItems(tenantId, order);
         orderRepo.save(order);
-    }
-
-    private void mergeStockItem(Order updatedOrder, Order order) {
-//        if (updatedOrder.getStockItem() == null) {
-//            order.setStockItem(null);
-//        } else if (!updatedOrder.getStockItem().equals(order.getStockItem())) {
-//            order.setStockItem(
-//                    stockItemSvc.findById(order.getTenantId(),
-//                            updatedOrder.getStockItem().getId()));
-//        }
     }
 
     private void fixUpOrderItems(String tenantId, Order order) {
@@ -459,9 +448,10 @@ public class OrderController {
         HashMap<String, String> vars = new HashMap<String, String>();
         vars.put("tenantId", tenantId);
         vars.put("id", order.getId().toString());
-        List<OrderItem> items = order.getOrderItems();
-        items.sort((o1,o2) -> o1.getId().compareTo(o2.getId()));
-        vars.put("itemId", items.get(0).getId().toString());
+        OrderItem item = order.getOrderItems().stream()
+                .reduce((first, second) -> second).orElseThrow(
+                        () -> new IllegalArgumentException("Unable to add order item"));
+        vars.put("itemId", item.getId().toString());
 
         return getCreatedResponseEntity("/{id}/order-items/{itemId}", vars);
     }

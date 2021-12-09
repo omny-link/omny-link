@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -34,8 +33,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -44,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -98,28 +94,6 @@ public class OrderItem extends Auditable<String> implements Serializable {
     @JsonView(OrderViews.Detailed.class)
     private BigDecimal price;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
-    @JsonProperty
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @JsonView(OrderViews.Detailed.class)
-    private Date created;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonProperty
-    // If json view included as below, get exception:
-    //DefaultHandlerExceptionResolver: Failed to write HTTP message: org.springframework.http.converter.HttpMessageNotWritableException: Could not write content: java.sql.Timestamp cannot be cast to java.lang.String (through reference chain: java.util.ArrayList[0]->link.omny.catalog.web.OrderResource["orderItems"]->org.hibernate.collection.internal.PersistentBag[0]->link.omny.catalog.model.OrderItem["lastUpdated"]); nested exception is com.fasterxml.jackson.databind.JsonMappingException: java.sql.Timestamp cannot be cast to java.lang.String (through reference chain: java.util.ArrayList[0]->link.omny.catalog.web.OrderResource["orderItems"]->org.hibernate.collection.internal.PersistentBag[0]->link.omny.catalog.model.OrderItem["lastUpdated"])
-    //@JsonView(OrderViews.Detailed.class)
-    // Attempts to resolve with these JsonFormats both fail
-    // Although https://github.com/FasterXML/jackson-databind/issues/1154
-    // appears relevant switching to jackson-databind-2.7.3 made no difference
-    //@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd")
-    //@JsonFormat(shape=JsonFormat.Shape.OBJECT)
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    @Column(name = "last_updated")
-    private Date lastUpdated;
-
     @JsonProperty
     @JsonView(OrderViews.Detailed.class)
     @Column(name = "tenant_id")
@@ -158,7 +132,7 @@ public class OrderItem extends Auditable<String> implements Serializable {
         return customFields;
     }
 
-    public void setCustomFields(List<CustomOrderItemField> fields) {
+    public void setCustomFields(Set<CustomOrderItemField> fields) {
         for (CustomOrderItemField newField : fields) {
             setCustomField(newField);
         }

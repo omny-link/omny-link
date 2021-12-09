@@ -10,10 +10,7 @@
 	},
 	"orderItems": [
 		{
-			"stockItem": {
-				"id": "3",
-				"name": "Healthy Living"
-			},
+			"stockItemId": "3",
 			"customFields": {
 				"stockItemId": "3",
 				"date": "2016-11-19T00:00:00.000Z",
@@ -23,10 +20,7 @@
 			}
 		},
 		{
-			"stockItem": {
-				"id": "3",
-				"name": "Healthy Living"
-			},
+			"stockItemId": "3",
 			"customFields": {
 				"stockItemId": "3",
 				"date": "2016-11-19T00:00:00.000Z",
@@ -37,6 +31,14 @@
 		}
 	],
 	"contactId": 48,
+	"feedback": {
+		"id": "4",
+		"type": "Teacher",
+		"customFields": {
+			"foo1": "bar1",
+			"foo2": "bar2"
+		}
+	},
 	"status": "Draft",
 	"price": null,
 	"invoiceRef": null,

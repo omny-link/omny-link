@@ -17,6 +17,7 @@ package link.omny.catalog.web;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -142,34 +143,33 @@ public class OrderContollerTest {
         assertNotNull(order);
         assertNotNull(order.getId());
         assertEquals(2, order.getOrderItems().size());
-        OrderItem orderItem = order.getOrderItems().get(0);
-        assertEquals(PRICE, orderItem.getPrice());
-        assertEquals("Avocado", orderItem.getCustomFieldValue(CUST_FIELD_COLOUR));
+        assertTrue(order.getOrderItems().stream()
+                .filter(x -> (x.getCustomFieldValue(CUST_FIELD_COLOUR).equals("Avocado")
+                        && x.getPrice().equals(PRICE)))
+                .findFirst().isPresent());
 
         Order order2 = retrieveOrder(order.getId());
         assertNotNull(order2);
 
         // Update price
         assertEquals(2, order2.getOrderItems().size());
-        OrderItem orderItem2 = order2.getOrderItems().get(0);
+        OrderItem orderItem2 = order2.getOrderItems().iterator().next();
         assertEquals(PRICE, orderItem2.getPrice());
-        order.getOrderItems().get(0).setPrice(PRICE_INCREASED);
-        updateOrder(order.getId(), order);
-        Order order2b = retrieveOrder(order.getId());
+        orderItem2.setPrice(PRICE_INCREASED);
+        Order order2b = updateOrder(order2.getId(), order2);
         assertNotNull(order2b);
-        OrderItem orderItem2b = order2b.getOrderItems().get(0);
+        OrderItem orderItem2b = order2b.getOrderItems().iterator().next();
         assertEquals(PRICE_INCREASED.doubleValue(), orderItem2b.getPrice()
                 .doubleValue(), 0.01);
 
         // Update custom field
-        order.getOrderItems().get(0).setCustomField(
+        order2b.getOrderItems().iterator().next().setCustomField(
                         new CustomOrderItemField(CUST_FIELD_COLOUR, "Absinthe"));
-        updateOrder(order.getId(), order);
-        Order order2c = retrieveOrder(order.getId());
+        Order order2c = updateOrder(order2b.getId(), order2b);
         assertNotNull(order2c);
-        OrderItem orderItem2c = order2c.getOrderItems().get(0);
+        OrderItem orderItem2c = order2c.getOrderItems().iterator().next();
         assertEquals(1, orderItem2c.getCustomFields().size());
-        // assertEquals("Absinthe", orderItem2c.getCustomFields());
+//        assertEquals("Absinthe", orderItem2c.getCustomFields().iterator().next().getValue());
 
         order.setInvoiceRef(INVOICE_REF);
         Order order3 = updateOrder(order.getId(), order);

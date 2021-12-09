@@ -49,7 +49,8 @@ describe("Product catalogue", function() {
       description: 'Palette not well packed hence damage',
       type: 'driver',
       customFields: {
-        refusalReason: '1 palette damaged'
+        refusalReason: '1 palette damaged',
+        refusalDate: '2017-02-04'
       }
   }
   var complexOrder = {
@@ -57,7 +58,11 @@ describe("Product catalogue", function() {
       date: '2017-02-01',
       stage: 'Draft',
       orderItems: [
-        { price: 100, status: 'Draft' }
+        { price: 100, status: 'Draft', customFields: {
+            controlledGoods: 'Proof of age, over 18 required',
+            specialInstructions: 'Signature required',
+          }
+        }
       ]
   };
   beforeEach(function() {
@@ -265,6 +270,7 @@ describe("Product catalogue", function() {
       expect(data.created).toBeDefined();
       expect(data.feedback.customFields).toBeDefined();
       expect(data.feedback.customFields.refusalReason).toEqual(feedback.customFields.refusalReason);
+      expect(data.feedback.customFields.refusalDate).toEqual(feedback.customFields.refusalDate);
 
       done();
     });
@@ -292,13 +298,14 @@ describe("Product catalogue", function() {
 
       expect($rh.localId(data)).toEqual($rh.localId(complexOrder));
       expect(data.name).toEqual(complexOrder.name);
-      expect(data.orderItems.length).toEqual(1);
 
       expect(data.orderItems.length).toEqual(1);
       expect(data.orderItems[0].price).toEqual(complexOrder.orderItems[0].price);
       expect(data.orderItems[0].status).toEqual(complexOrder.orderItems[0].status);
       expect(data.orderItems[0].dueDate).toEqual(complexOrder.orderItems[0].dueDate);
       expect(data.orderItems[0].owner).toEqual(complexOrder.orderItems[0].owner);
+      expect(data.orderItems[0].customFields.controlledGoods).toEqual(complexOrder.orderItems[0].customFields.controlledGoods);
+      expect(data.orderItems[0].customFields.signatureRequired).toEqual(complexOrder.orderItems[0].customFields.signatureRequired);
 
       complexOrder = data;
 

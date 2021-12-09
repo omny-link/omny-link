@@ -17,7 +17,6 @@ package link.omny.catalog.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -89,7 +88,6 @@ import lombok.ToString;
                 name = "item-subgraph",
                 attributeNodes = { @NamedAttributeNode("customFields") }
         )
-
     }
 )
 @NamedEntityGraph(name = "orderWithItems",
@@ -221,7 +219,7 @@ public class Order extends Auditable<String> implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "order", targetEntity = OrderItem.class)
     @JsonView(OrderViews.Detailed.class)
     @JsonManagedReference
-    private List<OrderItem> orderItems;
+    private Set<OrderItem> orderItems;
 
     @OneToOne
     @JsonView( { OrderViews.Detailed.class } )
@@ -307,7 +305,7 @@ public class Order extends Auditable<String> implements Serializable {
         }
     }
 
-    public void setOrderItems(List<OrderItem> newItems) {
+    public void setOrderItems(Set<OrderItem> newItems) {
         orderItems = newItems;
         if (newItems == null ) {
             return ;
@@ -318,9 +316,9 @@ public class Order extends Auditable<String> implements Serializable {
         }
     }
 
-    public List<OrderItem> getOrderItems() {
+    public Set<OrderItem> getOrderItems() {
         if (orderItems == null) {
-            orderItems = new ArrayList<OrderItem>();
+            orderItems = new HashSet<OrderItem>();
         }
         return orderItems;
     }
