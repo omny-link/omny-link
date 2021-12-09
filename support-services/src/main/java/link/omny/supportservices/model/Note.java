@@ -85,7 +85,7 @@ public class Note extends Auditable<String> implements Serializable {
 
     public String toCsv() {
         return String.format(
-                "%s,%s,%s,%b,%b,%s]",
+                "%s,%s,%s,%b,%b,%s",
                 id, author, created, favorite, confidential, content);
     }
 
