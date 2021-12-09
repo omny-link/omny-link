@@ -26,11 +26,9 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-import link.omny.custmgmt.model.Contact;
-
 public class CustomBooleanDeserializer extends JsonDeserializer<Boolean> {
     protected static final Logger LOGGER = LoggerFactory
-            .getLogger(Contact.class);
+            .getLogger(CustomBooleanDeserializer.class);
     protected static final Class<?> _valueClass = Boolean.class;
 
     @Override
