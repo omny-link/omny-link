@@ -1,6 +1,80 @@
 Release Notes
 =============
 
+## 3.1.0 - 09 Dec 21
+
+Delivers the containerised backend API including helm chart to ease deployment. UI changes are limited to just those needed. Significant features are:
+
+ - migrate from Spring Boot 1.x to 2.x
+ - add Postgres as the preferred data store
+ - adopt Liquibase for database migration
+ - publish Swagger API docs
+
+Full change list:
+
+ - fix typo in toCsv
+ - fix wrong logger
+ - fix cartesian product on order/order items
+ - configure jacoco with low but passing limits
+ - make stock category returns http entity not just simple object
+ - fix save of order with order items
+ - fix failure to save account custom fields on update
+ - reinstate REST API tests and fix feedback one
+ - tweak fields included in summary API to suit acct client
+ - revised domain model and generate in build
+ - tidy up contact repo
+ - make order item and stock cat fully auditable
+ - add endpoint for evaluating memo template
+ - fix add when single search match
+ - migrate pick memo to flowable
+ - fix link from account to order
+ - fix delete contact on acct page
+ - fix sort on account name
+ - biz key as var (flowable migration)
+ - relink to new (keycloak) profile page
+ - fix save contact and refresh tasks on accounts
+ - ensure complex data sent as json by custom forms
+ - add endpoint for evaluating memo template
+ - port pick-memo to flowable
+ - port work page to flowable
+ - dry up fetchTask
+ - avoid recursion problem with localId on load
+ - remove dup table headers
+ - fix search on funnel
+ - optimise stock and fix for updated spring
+ - optimise order load
+ - optimise contacts load
+ - switch to flowable task api
+ - relocate static assets from boot app
+ - upgrade gulp build system
+ - remove account->contact navigation
+ - helm: disable hibernate update and switch db
+ - fix broken Location headers & remove order->feedback
+ - impl CORS exposed headers
+ - tidy & logging
+ - identity -> sequence; optimise col lengths
+ - migrate selfRef to id due to diff pk handling in updated spring jpa
+ - updated stock items for new spring data
+ - temporarily disable api test
+ - implemented liquibase for database evolution
+ - temporarily disable api test
+ - fix contact custom table name
+ - align acct summary fields with v2
+ - preliminary k8s deployment
+ - add mysql to postgres migration
+ - ready for next release (3.1.0)
+ - standardise on Spring for audit cols
+ - fixup REST API tests inc. random port
+ - bump jasmine-boot to 1.1.0
+ - drop the legacy standalone custmgmt
+ - swagger for catalog
+ - swagger for notes
+ - tests and swagger for memos
+ - clean up swagger api
+ - created helm chart
+ - set up swagger
+
+
 ## 3.0.1 - 03 Jun 21
 
  - restore role-based edit for power-users
