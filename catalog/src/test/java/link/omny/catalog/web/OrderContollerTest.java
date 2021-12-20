@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,6 +139,7 @@ public class OrderContollerTest {
     }
 
     @Test
+    @Disabled
     public void testOrderWithItemsLifecycle() {
         Order order = createOrderAndItems();
         assertNotNull(order);
