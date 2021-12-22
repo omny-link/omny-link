@@ -256,6 +256,8 @@ var BaseRactive = Ractive.extend({
         var data2 = {};
         data.forEach(function(t,i) {
           t.variables.forEach(function(v,j) { data2[v['name']]= v['value']; });
+          t.businessKey=ractive.get('current.name') == undefined ? ractive.get('current.fullName') : ractive.get('current.name');
+          t.name=data2['what'];
           t.msg=data2['messageName'];
           t.processVarNames=Object.keys(data2);
           t.variables=data2;
