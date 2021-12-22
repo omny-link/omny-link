@@ -10,7 +10,7 @@ var replace     = require('gulp-replace');
 var rsync       = require('gulp-rsync');
 var through2    = require('through2');
 var zip         = require('gulp-zip');
-var vsn         = '3.0.0';
+var vsn         = '3.1.0';
 
 var buildDir = 'target/classes';
 var finalName = 'crm-ui-'+vsn+'.jar'
@@ -102,7 +102,7 @@ gulp.task('fix-paths', function() {
 });
 
 gulp.task('package', () =>
-  gulp.src([buildDir+'/*','!'+buildDir+'/*.zip'])
+  gulp.src([buildDir+'/*','!'+buildDir+'/*.jar','!'+buildDir+'/*.zip'])
       .pipe(zip(finalName))
       .pipe(gulp.dest(buildDir))
 );
