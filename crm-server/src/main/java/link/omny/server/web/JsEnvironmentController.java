@@ -15,8 +15,6 @@
  ******************************************************************************/
 package link.omny.server.web;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,8 +61,7 @@ public class JsEnvironmentController {
     }
 
     @RequestMapping(path = "/js/env.js", method = RequestMethod.GET)
-    public final ResponseEntity<String> getEnvironment(HttpServletResponse resp)
-            throws Exception {
+    public final ResponseEntity<String> getEnvironment() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "text/javascript");
         return new ResponseEntity<String>(

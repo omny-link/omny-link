@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import link.omny.server.web.JsEnvironmentController;
 
 @SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-@Disabled
 public class RestApiTest {
 
     @LocalServerPort
@@ -47,7 +46,7 @@ public class RestApiTest {
                 "classpath:META-INF/resources/webjars/custmgmt/specs/AcctMgmtSpec.js" );
 
         JsonNode report = runScript(sb);
-        assertEquals(15, report.get("suite").get("totalSpecsDefined").asInt());
+        assertEquals(16, report.get("suite").get("totalSpecsDefined").asInt());
         assertNoFailedExpectations(report);
         System.out.println(
                 "Account suite took " + (System.currentTimeMillis() - start) + " (ms)");
@@ -86,6 +85,7 @@ public class RestApiTest {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.SECONDS)
+    @Disabled
     public void testOrderApi() throws IOException {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
