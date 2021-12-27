@@ -417,7 +417,7 @@ public class Contact extends Auditable<String> implements Serializable {
         return customFields;
     }
 
-    public void setCustomFields(List<CustomContactField> fields) {
+    public void setCustomFields(Set<CustomContactField> fields) {
         for (CustomContactField newField : fields) {
             setCustomField(newField);
         }

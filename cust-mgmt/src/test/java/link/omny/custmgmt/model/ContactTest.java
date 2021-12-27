@@ -127,7 +127,7 @@ public class ContactTest {
         CustomContactField field2 = new CustomContactField("field1", "foo");
         assertNull(field2.getId());
 
-        contact.setCustomFields(Collections.singletonList(field2));
+        contact.setCustomFields(Collections.singleton(field2));
         assertEquals(1, contact.getCustomFields().size());
         assertEquals(field1.getId(), contact.getCustomFields().iterator().next().getId());
 
