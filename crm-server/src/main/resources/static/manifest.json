@@ -1,0 +1,11 @@
+{
+    "name": "Omny link - The automated CRM",
+    "short_name": "Omny link",
+    "icons": [{
+        "src": "omny-link-google-touch-icon.png",
+        "sizes": "512x512"
+    }],
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
+    "display": "fullscreen"
+}

@@ -126,17 +126,6 @@ public class Application {
                 // Allegedly sets welcome page though does not appear to be working
                 registry.addViewController(clientContext + "/").setViewName("index");
                 registry.addViewController("/").setViewName("index.html");
-
-                registry.addRedirectViewController("/api-docs/",
-                        "/v2/api-docs?group=restful-api");
-                registry.addRedirectViewController(
-                        "/api-docs/swagger-resources/configuration/ui",
-                        "/swagger-resources/configuration/ui");
-                registry.addRedirectViewController(
-                        "/api-docs/swagger-resources/configuration/security",
-                        "/swagger-resources/configuration/security");
-                registry.addRedirectViewController("/api-docs/swagger-resources",
-                        "/swagger-resources");
             }
         };
     }
