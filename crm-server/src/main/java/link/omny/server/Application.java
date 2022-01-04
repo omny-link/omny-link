@@ -18,7 +18,7 @@ package link.omny.server;
 import org.apache.catalina.connector.Connector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -43,42 +43,21 @@ public class Application {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(Application.class);
 
-    @Value("${crm.tomcat.ajp.enabled:false}")
-    boolean tomcatAjpEnabled;
+    @Autowired
+    protected CrmCorsProperies corsProps;
 
-    @Value("${crm.tomcat.ajp.port:8080}")
-    int ajpPort;
-
-    @Value("${crm.tomcat.ajp.secure:false}")
-    boolean ajpSecure;
-
-    @Value("${crm.tomcat.ajp.scheme:http2}")
-    String ajpScheme;
-
-    @Value("${crm.cors.allowed-methods:DELETE,GET,HEAD,POST,PUT}")
-    String corsMethods;
-
-    @Value("${crm.cors.allowed-origins:http://localhost:8000}")
-    String corsOrigins;
-
-    @Value("${crm.cors.allowed-headers:*}")
-    String corsHeaders;
-
-    @Value("${crm.cors.exposed-headers:*}")
-    String corsExposedHeaders;
-
-    @Value("${crm.cors.allow-credentials:false}")
-    boolean corsAllowCredentials;
+    @Autowired
+    protected CrmTomcatProperies tomcatProps;
 
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
-    
+
     @Bean
     public WebServerFactoryCustomizer<TomcatServletWebServerFactory> servletContainer() {
       return server -> {
-        if (server instanceof TomcatServletWebServerFactory && tomcatAjpEnabled) {
+        if (server instanceof TomcatServletWebServerFactory && tomcatProps.isAjpEnabled()) {
             ((TomcatServletWebServerFactory) server).addAdditionalTomcatConnectors(redirectConnector());
         } else {
             LOGGER.info("No AJP connector configured, set crm.tomcat.* to enable");
@@ -88,14 +67,14 @@ public class Application {
 
     private Connector redirectConnector() {
         Connector ajpConnector = new Connector("AJP/1.3");
-        ajpConnector.setPort(ajpPort);
-        ajpConnector.setSecure(ajpSecure);
+        ajpConnector.setPort(tomcatProps.getAjpPort());
+        ajpConnector.setSecure(tomcatProps.isAjpSecure());
         ajpConnector.setAllowTrace(false);
-        ajpConnector.setScheme(ajpScheme);
+        ajpConnector.setScheme(tomcatProps.getAjpScheme());
         LOGGER.info("Enabled AJP connector:");
-        LOGGER.info("  port: {}", ajpPort);
-        LOGGER.info("  secure: {}", ajpSecure);
-        LOGGER.info("  scheme: {}", ajpScheme);
+        LOGGER.info("  port: {}", tomcatProps.getAjpPort());
+        LOGGER.info("  secure: {}", tomcatProps.isAjpSecure());
+        LOGGER.info("  scheme: {}", tomcatProps.getAjpScheme());
         return ajpConnector;
     }
 
@@ -105,17 +84,17 @@ public class Application {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 LOGGER.info("CORS configuration:");
-                LOGGER.info("  allowed origins: {}", corsOrigins);
-                LOGGER.info("  allowed methods: {}", corsMethods);
-                LOGGER.info("  allowed headers: {}", corsHeaders);
-                LOGGER.info("  exposed headers: {}", corsExposedHeaders);
-                LOGGER.info("  allow credentials: {}", corsAllowCredentials);
+                LOGGER.info("  allowed origins: {}", corsProps.getOrigins());
+                LOGGER.info("  allowed methods: {}", corsProps.getMethods());
+                LOGGER.info("  allowed headers: {}", corsProps.getAllowedHeaders());
+                LOGGER.info("  exposed headers: {}", corsProps.getAllowedHeaders());
+                LOGGER.info("  allow credentials: {}", corsProps.isAllowCredentials());
                 CorsRegistration reg = registry.addMapping("/**");
-                reg.allowedOrigins(corsOrigins.split(","));
-                reg.allowedMethods(corsMethods.split(","));
-                reg.allowedHeaders(corsHeaders.split(","));
-                reg.exposedHeaders(corsExposedHeaders.split(","));
-                reg.allowCredentials(corsAllowCredentials);
+                reg.allowedOrigins(corsProps.getOrigins().split(","));
+                reg.allowedMethods(corsProps.getMethods().split(","));
+                reg.allowedHeaders(corsProps.getAllowedHeaders().split(","));
+                reg.exposedHeaders(corsProps.getAllowedHeaders().split(","));
+                reg.allowCredentials(corsProps.isAllowCredentials());
             }
 
             @Override

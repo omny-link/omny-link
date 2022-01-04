@@ -17,6 +17,7 @@ package link.omny.server.web;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
@@ -44,6 +46,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.ApiOperation;
+import link.omny.server.CrmBpmProperies;
 import link.omny.server.ProcessStartException;
 
 @RestController
@@ -51,8 +54,6 @@ public class ProcessGatewayController {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ProcessGatewayController.class);
-
-    private final String processEndpoint = "https://flowable.knowprocess.com/flowable-rest/service/runtime/process-instances/";
 
     private static final String JSON_REQUEST_TEMPLATE = "{\"message\":\"%1$s\","
             + "\"businessKey\":\"%2$s\","
@@ -71,17 +72,24 @@ public class ProcessGatewayController {
     private static final String VAR_REQUEST_TEMPLATE
                 = "{\"name\":\"%1$s\",\"type\":\"%2$s\",\"value\":\"%3$s\"}";
 
+    protected CrmBpmProperies crmProps;
+
+    protected String processEndpoint;
+
     private final RestTemplate restTemplate;
 
     @Autowired
     private ObjectMapper objectMapper;
 
-    public ProcessGatewayController (RestTemplateBuilder restTemplateBuilder) {
+    public ProcessGatewayController (RestTemplateBuilder restTemplateBuilder, CrmBpmProperies crmProps) {
         // set connection and read timeouts
         this.restTemplate = restTemplateBuilder
                 .setConnectTimeout(Duration.ofSeconds(500))
                 .setReadTimeout(Duration.ofSeconds(500))
                 .build();
+        this.crmProps = crmProps;
+        processEndpoint = String.format("%1$s/runtime/process-instances/", crmProps.getProcessGateway());
+        LOGGER.info("Configured to call process endpoint at {}", processEndpoint);
     }
 
     @PostMapping(value = "/msg/{tenantId}/{msgName}.json")
@@ -89,17 +97,23 @@ public class ProcessGatewayController {
     public @ResponseBody ResponseEntity<?> hookProcessToJsonMessage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("msgName") String msgName,
+            @RequestParam(value = "name", required = false, defaultValue = "-") String name,
+            @RequestParam(value = "businessKey", required = false) String bizKey,
             @RequestBody String json, HttpServletRequest req) {
+        bizKey = bizKey == null ? "msgName" + new Date().getTime() : bizKey;
         String body = String.format(JSON_REQUEST_TEMPLATE,
-                msgName, "Biz key", "name", msgName, json, tenantId);
-        return startProcess(req.getHeader("Authorization"), body);
+                msgName, bizKey, name, msgName, json, tenantId);
+        return startProcess(req.getHeader("Authorization"), bizKey, name, body);
     }
 
     @PostMapping(value = "/form/{tenantId}/{procKey}.action")
     @ApiOperation(value = "Webhook endpoint to start a process from a form.")
     public @ResponseBody ResponseEntity<?> hookProcessToForm(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("procKey") String procKey, HttpServletRequest req) {
+            @PathVariable("procKey") String procKey,
+            @RequestParam(value = "name", required = false, defaultValue = "-") String name,
+            @RequestParam(value = "businessKey", required = false) String bizKey,
+            HttpServletRequest req) {
         StringBuilder vars = new StringBuilder();
         for (Iterator<Entry<String, String[]>> it = req.getParameterMap()
                 .entrySet().iterator(); it.hasNext();) {
@@ -112,10 +126,11 @@ public class ProcessGatewayController {
         }
         String body = String.format(FORM_REQUEST_TEMPLATE, procKey, "Biz key",
                 "name", vars.toString());
-        return startProcess(req.getHeader("Authorization"), body);
+        return startProcess(req.getHeader("Authorization"), bizKey, name, body);
     }
 
-    private ResponseEntity<?> startProcess(String authorization, String body) {
+    private ResponseEntity<?> startProcess(String authorization, String bizKey,
+            String name, String body) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
         headers.add("Authorization", authorization);

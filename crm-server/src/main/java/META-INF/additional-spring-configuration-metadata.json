@@ -18,5 +18,10 @@
     "name": "crm.cors.exposed-headers",
     "type": "java.lang.String",
     "description": "Comma-separated list of exposed response headers (note different to 'allowed' response headers)"
+  },
+  {
+    "name": "crm.bpm.process-gateway",
+    "type": "java.lang.String",
+    "description": "The gateway (not fully qualified endpoint) to interact with process instances"
   }
 ]}

@@ -100,7 +100,7 @@ describe("Process automation", function() {
   });
 
   it("submits a new enquiry message", function(done) {
-    var requestUrl = server+"/msg/acme/enquiry.json";
+    var requestUrl = server+"/msg/"+tenantId+"/kp.enquiry.json";
     fetch(requestUrl, {
       "headers": {
           "Accept": "*/*",
