@@ -255,6 +255,7 @@
                   <element>BUNDLE</element>
                   <excludes>
                     <exclude>link.omny.supportservices.model.*</exclude>
+                    <exclude>link.omny.server.web.ProcessGatewayController</exclude>
                     <exclude>*.views.*</exclude>
                     <exclude>*Test</exclude>
                   </excludes>
