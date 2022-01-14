@@ -15,14 +15,11 @@
  ******************************************************************************/
 package link.omny.server;
 
-import org.apache.catalina.connector.Connector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.CorsRegistration;
@@ -46,36 +43,9 @@ public class Application {
     @Autowired
     protected CrmCorsProperies corsProps;
 
-    @Autowired
-    protected CrmTomcatProperies tomcatProps;
-
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
-    }
-
-    @Bean
-    public WebServerFactoryCustomizer<TomcatServletWebServerFactory> servletContainer() {
-      return server -> {
-        if (server instanceof TomcatServletWebServerFactory && tomcatProps.isAjpEnabled()) {
-            ((TomcatServletWebServerFactory) server).addAdditionalTomcatConnectors(redirectConnector());
-        } else {
-            LOGGER.info("No AJP connector configured, set crm.tomcat.* to enable");
-        }
-      };
-    }
-
-    private Connector redirectConnector() {
-        Connector ajpConnector = new Connector("AJP/1.3");
-        ajpConnector.setPort(tomcatProps.getAjpPort());
-        ajpConnector.setSecure(tomcatProps.isAjpSecure());
-        ajpConnector.setAllowTrace(false);
-        ajpConnector.setScheme(tomcatProps.getAjpScheme());
-        LOGGER.info("Enabled AJP connector:");
-        LOGGER.info("  port: {}", tomcatProps.getAjpPort());
-        LOGGER.info("  secure: {}", tomcatProps.isAjpSecure());
-        LOGGER.info("  scheme: {}", tomcatProps.getAjpScheme());
-        return ajpConnector;
     }
 
     @Bean

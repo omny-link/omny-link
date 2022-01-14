@@ -4,8 +4,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @ConfigurationProperties("crm.bpm")
-//@ConfigurationProperties("crm.cors")
-//@ConfigurationProperties("crm.tomcat")
 @Component
 public class CrmBpmProperies {
 

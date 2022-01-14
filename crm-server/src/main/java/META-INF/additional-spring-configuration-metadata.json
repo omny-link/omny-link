@@ -5,7 +5,7 @@
     "description": "Comma-separated list of allowed response headers"
   },
   {
-    "name": "crm.cors.allowed-origins",
+    "name": "crm.cors.origins",
     "type": "java.lang.String",
     "description": "Comma-separated list of permitted values of request header Origin"
   },
