@@ -15,7 +15,12 @@
  ******************************************************************************/
 package link.omny.server.web;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 import java.net.URI;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Iterator;
@@ -30,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,6 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -72,6 +77,8 @@ public class ProcessGatewayController {
     private static final String VAR_REQUEST_TEMPLATE
                 = "{\"name\":\"%1$s\",\"type\":\"%2$s\",\"value\":\"%3$s\"}";
 
+    private static final DateFormat iso = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
+
     protected CrmBpmProperies crmProps;
 
     protected String processEndpoint;
@@ -92,7 +99,9 @@ public class ProcessGatewayController {
         LOGGER.info("Configured to call process endpoint at {}", processEndpoint);
     }
 
-    @PostMapping(value = "/msg/{tenantId}/{msgName}.json")
+    @SuppressWarnings("deprecation")
+    @PostMapping(value = "/msg/{tenantId}/{msgName}.json",
+            consumes = { APPLICATION_JSON_VALUE, APPLICATION_JSON_UTF8_VALUE })
     @ApiOperation(value = "Webhook endpoint to start a process from a JSON message.")
     public @ResponseBody ResponseEntity<?> hookProcessToJsonMessage(
             @PathVariable("tenantId") String tenantId,
@@ -100,7 +109,8 @@ public class ProcessGatewayController {
             @RequestParam(value = "name", required = false, defaultValue = "-") String name,
             @RequestParam(value = "businessKey", required = false) String bizKey,
             @RequestBody String json, HttpServletRequest req) {
-        bizKey = bizKey == null ? "msgName" + new Date().getTime() : bizKey;
+        LOGGER.info("hookProcessToJsonMessage");
+        bizKey = bizKey == null ? msgName + "-" + iso.format(new Date()) : bizKey;
         String body = String.format(JSON_REQUEST_TEMPLATE,
                 msgName, bizKey, name, msgName, json, tenantId);
         return startProcess(req.getHeader("Authorization"), bizKey, name, body);
@@ -114,6 +124,7 @@ public class ProcessGatewayController {
             @RequestParam(value = "name", required = false, defaultValue = "-") String name,
             @RequestParam(value = "businessKey", required = false) String bizKey,
             HttpServletRequest req) {
+        LOGGER.info("hookProcessToForm");
         StringBuilder vars = new StringBuilder();
         for (Iterator<Entry<String, String[]>> it = req.getParameterMap()
                 .entrySet().iterator(); it.hasNext();) {
@@ -124,17 +135,37 @@ public class ProcessGatewayController {
                 vars.append(",");
             }
         }
-        String body = String.format(FORM_REQUEST_TEMPLATE, procKey, "Biz key",
-                "name", vars.toString());
+        String body = String.format(FORM_REQUEST_TEMPLATE, procKey, bizKey,
+                name, vars.toString());
         return startProcess(req.getHeader("Authorization"), bizKey, name, body);
+    }
+
+    // On the face of it this not needed but apparently the forms plugin
+    // matches this set of headers / consumes, so leave for now
+    @PostMapping(value = "/msg/{tenantId}/{msgId}.json",
+            headers = { "Accept=application/json" })
+    @ResponseBody
+    public ResponseEntity<?> legacyHookProcessToJsonMessage(HttpServletRequest request,
+            UriComponentsBuilder uriBuilder,
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("msgId") String msgId,
+            @RequestParam(required = false, value = "businessDescription") String bizDesc,
+            @RequestParam(required = false) String json) {
+        LOGGER.info("legacyHookProcessToJsonMessage: msg: {}, biz key: {},"
+                + "payload: {}, Content-Type: {}, Accept: {}",
+                msgId, bizDesc, json, request.getHeader("Content-Type"),
+                request.getHeader("Accept"));
+        return hookProcessToJsonMessage(tenantId, msgId, "-", bizDesc, json, request);
     }
 
     private ResponseEntity<?> startProcess(String authorization, String bizKey,
             String name, String body) {
+        LOGGER.info("startProcess {}", name);
+
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+        headers.add("Accept", APPLICATION_JSON_VALUE);
         headers.add("Authorization", authorization);
-        headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        headers.add("Content-Type", APPLICATION_JSON_VALUE);
 
         LOGGER.debug("Composed payload: {}", body);
         HttpEntity<String> entity = new HttpEntity<String>(body, headers);
