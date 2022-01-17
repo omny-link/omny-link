@@ -6,7 +6,8 @@ module.exports = {
     css: {
       cssnano: false
     },
-    apiServerUrl: 'http://localhost:8080'
+    apiServerUrl: 'http://localhost:8080',
+    configServerUrl: 'http://localhost:8080'
   },
   stage: {
     js: {
@@ -15,7 +16,14 @@ module.exports = {
     css: {
       cssnano: true
     },
-    apiServerUrl: 'https://api.knowprocess.com'
+    apiServerUrl: 'https://api.example.com',
+    configServerUrl: 'http://localhost:8080',
+    server: {
+      host: 'example.com',
+      usr: 'usr',
+      dir: '/var/www-app',
+      privateKey: '/home/usr/.ssh/id_rsa'
+    }
   },
   prod: {
     js: {
@@ -24,6 +32,13 @@ module.exports = {
     css: {
       cssnano: true
     },
-    apiServerUrl:  'https://api.knowprocess.com'
+    apiServerUrl:  'https://api.example.com',
+    configServerUrl: '',
+    server: {
+      host: 'example.com',
+      usr: 'usr',
+      dir: '/var/www-app',
+      privateKey: '/home/usr/.ssh/id_rsa'
+    }
   }
 };

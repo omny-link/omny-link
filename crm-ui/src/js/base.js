@@ -569,7 +569,7 @@ var BaseRactive = Ractive.extend({
   },
   loadTenantConfig: function(tenant) {
     console.info('loadTenantConfig:'+tenant);
-    $.getJSON('/tenants/'+tenant+'/'+tenant+'.json', function(response) {
+    $.getJSON('__CONFIG_SERVER_URL__/tenants/'+tenant+'/'+tenant+'.json', function(response) {
       // console.log('... response: '+JSON.stringify(response));
       ractive.set('saveObserver', false);
       ractive.set('tenant', response);

@@ -40,6 +40,7 @@ gulp.task('scripts', function() {
     'src/custmgmt/js/**/*.js', '!src/custmgmt/js/**/*.min.js',
     'src/workmgmt/js/**/*.js', '!src/workmgmt/js/**/*.min.js'
   ])
+  .pipe(replace(/__CONFIG_SERVER_URL__/, config.configServerUrl))
   .pipe(replace('/vsn/', '/'+vsn+'/'))
   .pipe(config.js.minify ? babel({ presets: [ ["minify", { "builtIns": false }] ] }) : through2.obj())
   .pipe(gulp.dest(buildDir+'/'+vsn+'/js'));
@@ -108,7 +109,7 @@ gulp.task('package', () =>
 );
 
 gulp.task('install',
-  gulp.series('compile', 'assets', 'fix-paths', 'package')
+  gulp.series('assets', 'fix-paths', 'compile', 'package')
 );
 
 gulp.task('default',
