@@ -21,16 +21,18 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.custmgmt.model.Contact;
 
 @RepositoryRestResource(exported = false)
-public interface ContactRepository extends CrudRepository<Contact, Long> {
+public interface ContactRepository extends JpaRepository<Contact, Long>,
+        JpaSpecificationExecutor<Contact> {
 
     @Override
     @EntityGraph("contactWithAll")
@@ -81,7 +83,8 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
             @Param("tenantId") String tenantId);
 
     @Query("SELECT c FROM Contact c WHERE c.emailHash = :emailHash AND c.tenantId = :tenantId")
-    List<Contact>  findByEmailHash(@Param("emailHash") String emailHash, @Param("tenantId") String tenantId);
+    List<Contact> findByEmailHash(@Param("emailHash") String emailHash,
+            @Param("tenantId") String tenantId);
 
     @Query("SELECT c FROM Contact c WHERE c.tags LIKE :tag AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId")
     List<Contact> findByTag(@Param("tag") String tag,
@@ -116,18 +119,21 @@ public interface ContactRepository extends CrudRepository<Contact, Long> {
             @Param("tenantId") String tenantId);
 
     @Query("SELECT c FROM Contact c INNER JOIN c.customFields cf WHERE cf.name = :key AND cf.value = :value AND (c.stage IS NULL OR c.stage != 'deleted') AND c.tenantId = :tenantId")
-    List<Contact> findByCustomField(@Param("key") String key, @Param("value") String value, @Param("tenantId") String tenantId);
+    List<Contact> findByCustomField(@Param("key") String key,
+            @Param("value") String value, @Param("tenantId") String tenantId);
 
     @Query(value = "SELECT DISTINCT(cf.name) FROM OL_CONTACT c INNER JOIN OL_CONTACT_CUSTOM cf on c.id = cf.contact_id WHERE (c.stage IS NULL OR c.stage != 'deleted') AND c.tenant_id = :tenantId ", nativeQuery = true)
     List<String> findCustomFieldNames(@Param("tenantId") String tenantId);
 
     @Query(value = "UPDATE OL_CONTACT c SET account_id = :accountId WHERE c.id = :contactId", nativeQuery = true)
     @Modifying(clearAutomatically = true)
-    void setAccount(@Param("contactId") Long contactId, @Param("accountId") Long accountId);
+    void setAccount(@Param("contactId") Long contactId,
+            @Param("accountId") Long accountId);
 
     @Query(value = "UPDATE Contact c SET c.stage = :stage WHERE (c.lastUpdated < :before OR c.lastUpdated IS NULL) AND c.stage NOT IN ('deleted','Cold') AND c.tenantId = :tenantId")
     @Modifying(clearAutomatically = true)
-    int updateStage(@Param("stage") String stage, @Param("before") Date before, @Param("tenantId") String tenantId);
+    int updateStage(@Param("stage") String stage, @Param("before") Date before,
+            @Param("tenantId") String tenantId);
 
     @Override
     @Query("UPDATE #{#entityName} x SET x.stage = 'deleted' WHERE x.id = :id")
