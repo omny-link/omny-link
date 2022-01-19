@@ -19,19 +19,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import link.omny.custmgmt.model.Account;
 
 @RepositoryRestResource(exported = false)
-public interface AccountRepository extends CrudRepository<Account, Long> {
-
+public interface AccountRepository extends JpaRepository<Account, Long>,
+        JpaSpecificationExecutor<Account> {
     @Override
     @EntityGraph(value = "accountWithAll")
     Optional<Account> findById(Long id);
@@ -52,14 +52,6 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
 
     @Query("SELECT COUNT(a) FROM Account a WHERE a.tenantId = :tenantId AND (a.stage IS NULL OR a.stage != 'deleted')")
     long countForTenant(@Param("tenantId") String tenantId);
-
-    @Query("SELECT a FROM Account a WHERE (a.stage IS NULL OR a.stage != 'deleted') AND a.tenantId = :tenantId ORDER BY a.lastUpdated DESC")
-    @EntityGraph("accountOnly")
-    List<Account> findAllForTenant(@Param("tenantId") String tenantId);
-
-    @Query("SELECT a FROM Account a WHERE (a.stage IS NULL OR a.stage != 'deleted') AND a.tenantId = :tenantId ORDER BY a.lastUpdated DESC")
-    List<Account> findPageForTenant(@Param("tenantId") String tenantId,
-            Pageable pageable);
 
     @Query("SELECT a.stage, COUNT(a) FROM Account a WHERE (a.stage IS NULL OR a.stage != 'deleted') AND a.tenantId = :tenantId GROUP BY a.stage")
     List<Object[]> findAllForTenantGroupByStage(

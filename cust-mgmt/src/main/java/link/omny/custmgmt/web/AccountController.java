@@ -34,8 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -71,6 +69,7 @@ import link.omny.custmgmt.model.CustomAccountField;
 import link.omny.custmgmt.model.views.AccountViews;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.repositories.CustomAccountRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.model.Activity;
 import link.omny.supportservices.model.ActivityType;
@@ -89,11 +88,14 @@ import springfox.documentation.annotations.ApiIgnore;
 @Api(tags = "Account API")
 public class AccountController {
 
-    private static final Logger LOGGER = LoggerFactory
+    public static final Logger LOGGER = LoggerFactory
             .getLogger(AccountController.class);
 
     @Autowired
-    private AccountRepository accountRepo;
+    public AccountRepository accountRepo;
+
+    @Autowired
+    private CustomAccountRepository accountSvc;
 
     @Autowired
     private ContactRepository contactRepo;
@@ -187,23 +189,7 @@ public class AccountController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        return addLinks(tenantId, listForTenant(tenantId, page, limit));
-    }
-
-    protected List<Account> listForTenant(
-            String tenantId, Integer page, Integer limit) {
-        LOGGER.info("List accounts for tenant {}", tenantId);
-
-        List<Account> list;
-        if (limit == null) {
-            list = accountRepo.findAllForTenant(tenantId);
-        } else {
-            Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
-            list = accountRepo.findPageForTenant(tenantId, pageable);
-        }
-        LOGGER.info("Found {} accounts", list.size());
-
-        return list;
+        return addLinks(tenantId, accountSvc.listForTenant(tenantId, page, limit));
     }
 
     /**
@@ -233,7 +219,7 @@ public class AccountController {
         }
         sb.append("\r\n");
 
-        for (Account account : listForTenant(tenantId, page, limit)) {
+        for (Account account : accountSvc.listForTenant(tenantId, page, limit)) {
             account.setCustomHeadings(customFieldNames);
             sb.append(account.toCsv()).append("\r\n");
         }
@@ -255,11 +241,7 @@ public class AccountController {
     public @ResponseBody List<Account> listPairForTenant(
             @PathVariable("tenantId") String tenantId) {
         LOGGER.info("List account id-name pairs for tenant {}", tenantId);
-
-        List<Account> list = accountRepo.findAllForTenant(tenantId);
-        LOGGER.info("Found {} accounts", list.size());
-
-        return list;
+        return accountSvc.listForTenant(tenantId);
     }
 
     /**

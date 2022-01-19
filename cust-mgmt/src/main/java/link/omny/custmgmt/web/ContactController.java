@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -69,6 +68,7 @@ import link.omny.custmgmt.model.CustomContactField;
 import link.omny.custmgmt.model.views.ContactViews;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
+import link.omny.custmgmt.repositories.CustomContactRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
 import link.omny.supportservices.model.Activity;
@@ -88,11 +88,16 @@ import springfox.documentation.annotations.ApiIgnore;
 @Api(tags = "Contact API")
 public class ContactController {
 
-    static final Logger LOGGER = LoggerFactory
+    private static final String DEFAULT_PAGE_SIZE = "100";
+
+    public static final Logger LOGGER = LoggerFactory
             .getLogger(ContactController.class);
 
     @Autowired
-    private ContactRepository contactRepo;
+    public ContactRepository contactRepo;
+
+    @Autowired
+    private CustomContactRepository contactSvc;
 
     @Autowired
     private AccountRepository accountRepo;
@@ -214,8 +219,8 @@ public class ContactController {
     @ApiIgnore
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "limit", required = false) Integer limit) {
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "limit", required = false, defaultValue = DEFAULT_PAGE_SIZE) Integer limit) {
         StringBuilder sb = new StringBuilder().append("id,accountId,"
                 + "firstName,lastName,title,"
                 + "isMainContact,address1,address2,town,countyOrCity,country,"
@@ -233,7 +238,8 @@ public class ContactController {
         }
         sb.append("\r\n");
 
-        for (Contact contact : listForTenant(tenantId, page, limit)) {
+        for (Contact contact : contactSvc.listForTenant(tenantId,
+                PageRequest.of(page, limit))) {
             contact.setCustomHeadings(customFieldNames);
             sb.append(contact.toCsv()).append("\r\n");
         }
@@ -256,46 +262,11 @@ public class ContactController {
     @ApiOperation(value = "Retrieves the contacts for a specific tenant.")
     public @ResponseBody List<EntityModel<Contact>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "limit", required = false) Integer limit,
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "limit", required = false, defaultValue = DEFAULT_PAGE_SIZE) Integer limit,
             @RequestParam(value = "returnFull", required = false) boolean returnFull) {
-        return addLinks(tenantId, listForTenant(tenantId, page, limit));
-    }
-
-    protected List<Contact> listForTenant(String tenantId,
-            Integer page, Integer limit) {
-        LOGGER.info("List contacts for tenant {}", tenantId);
-
-        List<Contact> list;
-        if (limit == null) {
-            // TODO unfortunately activeUser is null, prob some kind of class
-            // cast error it seems
-            // Use SecurityContextHolder as temporary fallback
-            // Authentication authentication =
-            // SecurityContextHolder.getContext()
-            // .getAuthentication();
-
-            // if (LOGGER.isDebugEnabled()) {
-            // for (GrantedAuthority a : authentication.getAuthorities()) {
-            // System.out.println("  " + a.getAuthority());
-            // System.out.println("  "
-            // + a.getAuthority().equals("ROLE_editor"));
-            // System.out.println("  " + a.getAuthority().equals("editor"));
-            // }
-            // }
-
-            // if (authentication.getAuthorities().contains("ROLE_editor")) {
-            list = contactRepo.findAllForTenant(tenantId);
-            // } else {
-            // list = contactRepo.findAllForTenantOwnedByUser(tenantId,
-            // authentication.getName());
-            // }
-        } else {
-            Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
-            list = contactRepo.findPageForTenant(tenantId, pageable);
-        }
-        LOGGER.info("Found {} contacts", list.size());
-        return list;
+        return addLinks(tenantId, contactSvc.listForTenant(tenantId,
+                PageRequest.of(page, limit)));
     }
 
     /**

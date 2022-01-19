@@ -99,14 +99,8 @@ import lombok.experimental.Accessors;
 )
 @NamedEntityGraph(name = "contactWithAccount",
     attributeNodes = {
-            @NamedAttributeNode(value = "account", subgraph = "account-subgraph"),
+            @NamedAttributeNode(value = "account"),
             @NamedAttributeNode("customFields"),
-    },
-    subgraphs = {
-            @NamedSubgraph(
-                    name = "account-subgraph",
-                    attributeNodes = { @NamedAttributeNode("customFields") }
-            )
     }
 )
 @Table(name = "OL_CONTACT")
@@ -118,6 +112,8 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Contact extends Auditable<String> implements Serializable {
+
+    private static final String DELETED = "deleted";
 
     private static final String DEFAULT_FIRST_NAME = "Unknown";
 
@@ -935,6 +931,10 @@ public class Contact extends Auditable<String> implements Serializable {
                     doc.getCreated(), doc.getAuthor(), doc.getName(), doc.getUrl()));
         }
         return CsvUtils.quoteIfNeeded(sb.toString());
+    }
+
+    public boolean isDeleted() {
+        return DELETED.equalsIgnoreCase(stage);
     }
 
 }

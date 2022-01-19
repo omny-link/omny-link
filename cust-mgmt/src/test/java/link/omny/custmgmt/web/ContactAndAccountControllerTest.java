@@ -64,7 +64,7 @@ public class ContactAndAccountControllerTest {
         contactController.delete(TENANT_ID, contactId);
         // check clean
         List<EntityModel<Contact>> list = contactController.listForTenantAsJson(
-                TENANT_ID, null, null, false);
+                TENANT_ID, 0, 100, false);
         assertEquals(0, list.size());
     }
 
@@ -114,7 +114,7 @@ public class ContactAndAccountControllerTest {
 
         // FETCH ALL CONTACTS
         List<EntityModel<Contact>> contacts = contactController.listForTenantAsJson(
-                TENANT_ID, null, null, false);
+                TENANT_ID, 0, 100, false);
         assertEquals(1, contacts.size());
         // assertContactEquals(contact, acct, contacts);
     }
