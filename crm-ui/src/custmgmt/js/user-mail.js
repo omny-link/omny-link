@@ -17,14 +17,14 @@
   var me = {
   };
 
-  if (CKEDITOR.instances['curMailBody']==undefined) {
+  if ('curMailBody' in CKEDITOR.instances) {
     CKEDITOR.replace( 'curMailBody' );
-    CKEDITOR.instances['curMailBody'].on('blur', function() {
+    CKEDITOR.instances.curMailBody.on('blur', function() {
       ractive.set('instanceToStart.variables.mailBody',
-          CKEDITOR.instances['curMailBody'].getData().replace(/"/g, '&quot;').replace(/'/g, '&apos;').replace(/[\n\t]/g,''));
+          CKEDITOR.instances.curMailBody.getData().replace(/"/g, '&quot;').replace(/'/g, '&apos;').replace(/[\n\t]/g,''));
     });
+    CKEDITOR.instances.curMailBody.setData(ractive.get('instanceToStart.variables.mailBody'));
   }
-  CKEDITOR.instances['curMailBody'].setData(ractive.get('instanceToStart.variables.mailBody'));
 
   return me;
 }($, ractive));

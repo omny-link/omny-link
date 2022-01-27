@@ -13,36 +13,17 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-var EASING_DURATION = 500;
-fadeOutMessages = true;
-var newLineRegEx = /\n/g;
-
 var ractive = new BaseRactive({
   el: 'container',
   lazy: true,
   template: '#template',
   data: {
     accounts: [],
+    entityName: 'tenant',
     tenants: [],
     filter: {field: "stage", operator: "!in", value: "cold,complete"},
     saveObserver:false,
     title: 'Tenant Profile',
-    age: function(timeString) {
-      return i18n.getAgeString(new Date(timeString))
-    },
-    customField: function(obj, name) {
-      if (obj['customFields']==undefined) {
-        return undefined;
-      } else if (!Array.isArray(obj['customFields'])) {
-        return obj.customFields[name];
-      } else {
-        var val;
-        $.each(obj['customFields'], function(i,d) {
-          if (d.name == name) val = d.value;
-        });
-        return val;
-      }
-    },
     featureEnabled: function(feature) {
       console.log('featureEnabled: '+feature);
       if (feature==undefined || feature.length==0) return true;
@@ -82,12 +63,9 @@ var ractive = new BaseRactive({
     gravatar: function(email) {
       return ractive.gravatar(email);
     },
-    hash: function(email) {
-      return ractive.hash(email);
-    },
     helpUrl: '//omny-link.github.io/user-help/#the_title',
     matchRole: function(role) {
-      console.info('matchRole: '+role)
+      console.info('matchRole: '+role);
       if (role==undefined || ractive.hasRole(role)) {
         $('.'+role).show();
         return true;
@@ -178,36 +156,18 @@ var ractive = new BaseRactive({
   fetch: function () {
     console.info('fetch...');
     ractive.set('saveObserver', false);
-    $.ajax({
-      dataType: "json",
-      url: ractive.getServer()+'/tenants/'+ractive.get('tenant.id'),
-      crossDomain: true,
-      success: function( data ) {
-//        if (data['_embedded'] == undefined) {
-          ractive.set('current', data);
-//        } else {
-//          ractive.merge('tenants', data['_embedded'].tenants);
-//        }
-        // If this is status page allow no changes
-        if (document.location.href.indexOf('status.html')!=-1) $('input[type="checkbox"]').attr('disabled','disabled');
-        if (ractive.hasRole('admin')) $('.admin').show();
-        if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
-        ractive.set('searchMatched',$('#tenantsTable tbody tr:visible').length);
-        ractive.set('saveObserver', true);
-      }
-    });
-    $.getJSON(ractive.getServer()+'/admin/tenants/'+ractive.get('tenant.id'), function(data) {
-      ractive.set('currentSummary', data);
-    });
-  },
-  oninit: function() {
-    console.log('oninit');
-
-    this.loadStandardPartials(this.get('stdPartials'));
-  },
-  showActivityIndicator: function(msg, addClass) {
-    document.body.style.cursor='progress';
-    this.showMessage(msg, addClass);
+    //if (ractive.get('tenant.name'));
+    ractive.set('current', ractive.get('tenant'));
+    if (document.location.href.indexOf('status.html')!=-1) $('input[type="checkbox"]').attr('disabled','disabled');
+    if (ractive.hasRole('admin')) $('.admin').show();
+    if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
+    ractive.showSearchMatched();
+    ractive.set('saveObserver', true);
+    if (ractive.FF.TENANT_SUMMARY) {
+      $.getJSON(ractive.getServer()+'/admin/tenants/'+ractive.get('tenant.id'), function(data) {
+        ractive.set('currentSummary', data);
+      });
+    }
   }
 });
 

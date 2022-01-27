@@ -13,11 +13,13 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-var EASING_DURATION = 500;
-fadeOutMessages = true;
-var newLineRegEx = /\n/g;
+var fadeOutMessages = true;
 
-var BaseRactive = Ractive.extend({
+var BaseRactive = Ractive.extend({ // jshint ignore:line
+  EASING_DURATION: 500,
+  FF: {
+    TENANT_SUMMARY: false
+  },
   _autolinker: undefined,
   addDataList: function(d, data) {
     if (d.name == undefined) {
@@ -43,7 +45,7 @@ var BaseRactive = Ractive.extend({
     ractive.sortChildren('activities','occurred',false);
     if (activities.length > 0) {
       var count = 0;
-      for (idx in activities) {
+      for (var idx in activities) {
         if (activities[idx].type == 'email') {
           count++;
           if (idx == 0) ractive.set('current.timeSinceEmail',(new Date().getTime() - activities[idx].occurred));
@@ -144,8 +146,8 @@ var BaseRactive = Ractive.extend({
       url : ractive.getServer() + '/' + ractive.get('tenant.id') + '/memos/',
       crossDomain : true,
       success : function(data) {
-        if (data['_embedded'] != undefined) {
-          data = data['_embedded'].memos;
+        if ('_embedded' in data) {
+          data = data._embedded.memos;
         }
         ractive.set('memos', data);
         console.log('fetched ' + data.length + ' memos');
@@ -169,8 +171,8 @@ var BaseRactive = Ractive.extend({
       url : ractive.getServer() + '/' + ractive.get('tenant.id') + '/stock-categories/',
       crossDomain : true,
       success : function(data) {
-        if (data['_embedded'] != undefined) {
-          data = data['_embedded'].stockCategories;
+        if ('_embedded' in data) {
+          data = data._embedded.stockCategories;
         }
         ractive.set('stockCategories', data);
         console.log('fetched ' + data.length + ' stock categories');
@@ -193,12 +195,12 @@ var BaseRactive = Ractive.extend({
       url : ractive.getServer() + '/' + ractive.get('tenant.id') + '/stock-items/',
       crossDomain : true,
       success : function(data) {
-        if (data['_embedded'] != undefined) {
-          data = data['_embedded'].stockItems;
+        if ('_embedded' in data) {
+          data = data._embedded.stockItems;
         }
         ractive.set('stockItems', data);
         console.log('fetched ' + data.length + ' stock items');
-        var stockItemData = jQuery.map(data, function(n, i) {
+        var stockItemData = jQuery.map(data, function(n) {
           return ({
             "id": ractive.id(n),
             "name": n.name
@@ -254,11 +256,11 @@ var BaseRactive = Ractive.extend({
         console.log('fetched ' + data.length + ' tasks');
 
         var data2 = {};
-        data.forEach(function(t,i) {
-          t.variables.forEach(function(v,j) { data2[v['name']]= v['value']; });
+        data.forEach(function(t) {
+          t.variables.forEach(function(v) { data2[v['name']]= v['value']; }); // jshint ignore:line
           t.businessKey=ractive.get('current.name') == undefined ? ractive.get('current.fullName') : ractive.get('current.name');
-          t.name=data2['what'];
-          t.msg=data2['messageName'];
+          if ('what' in data2) t.name=data2.what;
+          if ('messageName' in data2) t.msg=data2.messageName;
           t.processVarNames=Object.keys(data2);
           t.variables=data2;
 	});
@@ -272,6 +274,13 @@ var BaseRactive = Ractive.extend({
       }
     });
   },
+  filter: function(filter) {
+    console.log('filter: '+JSON.stringify(filter));
+    ractive.set('filter',filter);
+    $('.omny-dropdown.dropdown-menu li').removeClass('selected');
+    $('.omny-dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
+    ractive.search(filter.value);
+  },
   getCookie: function(name) {
     //console.log('getCookie: '+name)
     var value = "; " + document.cookie;
@@ -282,7 +291,7 @@ var BaseRactive = Ractive.extend({
     return ractive.getProfile().attributes[attr];
   },
   getProfile: function() {
-    var profile = localStorage['profile'];
+    var profile = localStorage.getItem('profile');
     if (profile == undefined) {
       alert('Unable to authenticate you at the moment, please try later');
       return;
@@ -304,27 +313,27 @@ var BaseRactive = Ractive.extend({
   },
   getBpmAuth: function() {
     return 'Basic '+btoa(
-        ractive.get('profile.username') + ':'
-        + ractive.get('profile.attributes.token.0'));
+        ractive.get('profile.username') + ':' +
+        ractive.get('profile.attributes.token.0'));
   },
   getBpmServer: function() {
     return 'https://flowable.knowprocess.com';
   },
   getStockItemNames : function (order) {
     var stockItemIds = [];
-    if (order == undefined
-        || (!ractive.get('tenant.features.orderItems') && order['stockItem'] == undefined)
-        || (ractive.get('tenant.features.orderItems') && (order['orderItems'] == undefined || order.orderItems.length == 0)))
+    if (order == undefined ||
+        (!ractive.get('tenant.features.orderItems') && 'stockItem' in order) ||
+        (ractive.get('tenant.features.orderItems') && ('orderItems' in order || order.orderItems.length == 0)))
       return;
     else if (!ractive.get('tenant.features.orderItems')) {
       var id = ractive.id(order.stockItem);
       stockItemIds.push(id.substring(id.lastIndexOf('/') + 1));
     } else {
       for (var idx = 0 ; idx < order.orderItems.length ; idx++) {
-        if (order.orderItems[idx]['stockItem']!=undefined) {
+        if ('stockItem' in order.orderItems[idx]) {
           stockItemIds.push(order.orderItems[idx].stockItem.id);
-        } else if (order.orderItems[idx].customFields['stockItemId']!=undefined) {
-          stockItemIds.push(order.orderItems[idx].customFields['stockItemId']);
+        } else if ('stockItemId' in order.orderItems[idx].customFields) {
+          stockItemIds.push(order.orderItems[idx].customFields.stockItemId);
         } else {
           console.warn('cannot find stock item for order item '+idx);
         }
@@ -341,10 +350,10 @@ var BaseRactive = Ractive.extend({
   },
   gravatar: function(email) {
     if (email == undefined) return '';
-    else return '<img class="img-rounded" src="//www.gravatar.com/avatar/'
-        +ractive.hash(email)+'?s=36&d='
-        +encodeURIComponent(ractive.getBpmServer()+'/'+ractive.get('tenant.id')+'/gravatars/')
-        +ractive.hash(email)+'.png"/>';
+    else return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+
+        ractive.hash(email)+'?s=36&d='+
+        encodeURIComponent(ractive.getBpmServer()+'/'+ractive.get('tenant.id')+'/gravatars/')+
+        ractive.hash(email)+'.png"/>';
   },
   hash: function(email) {
     if (email==undefined) return;
@@ -364,7 +373,7 @@ var BaseRactive = Ractive.extend({
     if (this && this.get('profile')) {
       var hasRole;
       if (ractive.get('profile.groups')!= undefined) {
-        hasRole = ractive.get('profile.groups').filter(function(g) {return g.id==role});
+        hasRole = ractive.get('profile.groups').filter(function(g) { return g.id==role; });
       }
       return hasRole!=undefined && hasRole.length>0;
     }
@@ -372,6 +381,12 @@ var BaseRactive = Ractive.extend({
   },
   hideMessage: function() {
     $('#messages, .messages').hide();
+  },
+  hideResults: function() {
+    var entityName = ractive.get('entityName');
+    $('#'+entityName+'sTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
+    $('#'+entityName+'sTable').slideUp();
+    $('#currentSect').slideDown({ queue: true });
   },
   hideUpload: function () {
     console.log('hideUpload...');
@@ -414,7 +429,7 @@ var BaseRactive = Ractive.extend({
               ractive.addDataList(d,d.values);
             }
           })
-          .fail(function(jqXHR, textStatus, errorThrown) {
+          .fail(function(jqXHR) {
             if (jqXHR.status == 401) console.info('No values for datalist: '+d.name+', need to refresh token or login again');
             else console.error('No values for datalist: '+d.name+', please check configuration');
           });
@@ -424,9 +439,9 @@ var BaseRactive = Ractive.extend({
   },
   initAutoNumeric: function() {
     console.log('initAutoNumeric');
-    document.querySelectorAll('.autoNumeric').forEach(function(d,i) {
-      $('.autoNumeric').autoNumeric('destroy');
-      $('.autoNumeric').autoNumeric('init');
+    document.querySelectorAll('.autoNumeric').forEach(function(d) {
+      $(d).autoNumeric('destroy');
+      $(d).autoNumeric('init');
     });
   },
   initContentEditable: function() {
@@ -442,20 +457,38 @@ var BaseRactive = Ractive.extend({
     ractive.initAutoComplete();
     ractive.initAutoNumeric();
     ractive.initContentEditable();
+    ractive.initHelp();
     ractive.initShortKeys();
+  },
+  initHelp: function() {
+    $( "body" ).keypress(function( event ) {
+      switch (event.which) { // ref http://keycode.info/
+      case 47: // forward slash on my mac
+      case 191: // forward slash (allegedly)
+          $('.search').focus();
+          event.preventDefault();
+          break;
+      case 63: // ?
+         $('#helpModal').modal({});
+         event.preventDefault();
+         break;
+      default:
+        //console.log("No Handler for .keypress() called with: "+event.which);
+      }
+    });
   },
   initInfiniteScroll: function() {
     $(window).scroll(function() { // when within 100px of bottom
       if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
-        if (ractive['fetchMore']!=undefined) ractive.fetchMore();
+        if ('fetchMore' in ractive) ractive.fetchMore();
       }
     });
   },
   initShortKeys: function() {
     $( "body" ).keypress(function( event ) {
-      if (document.activeElement.tagName.toLowerCase() == 'input'
-          || document.activeElement.tagName.toLowerCase() == 'select'
-          || document.activeElement.tagName.toLowerCase() == 'textarea') return;
+      if (document.activeElement.tagName.toLowerCase() == 'input' ||
+          document.activeElement.tagName.toLowerCase() == 'select' ||
+          document.activeElement.tagName.toLowerCase() == 'textarea') return;
       switch (event.which) { // ref http://keycode.info/
       case 13: // enter
         $(event.target).blur().focus();
@@ -483,47 +516,45 @@ var BaseRactive = Ractive.extend({
     if ($('input.tag-ctrl').length>0) {
       $('input.tag-ctrl').tagsinput('destroy');
       $('input.tag-ctrl').tagsinput({ });
-      $('input.tag-ctrl').on('itemAdded', function(event) {
-        ractive.set($(event.target).data('bind'),$(event.target).val());
-        ractive.save();
-      });
-      $('input.tag-ctrl').on('itemRemoved', function(event) {
-        ractive.set($(event.target).data('bind'),$(event.target).val());
-        ractive.save();
-      });
+      if (!readOnly) {
+        $('input.tag-ctrl').on('itemAdded', function(event) {
+          ractive.set($(event.target).data('bind'),$(event.target).val());
+          ractive.save();
+        });
+        $('input.tag-ctrl').on('itemRemoved', function(event) {
+          ractive.set($(event.target).data('bind'),$(event.target).val());
+          ractive.save();
+        });
+      }
     }
     ractive.set('saveObserver', true);
   },
   initialAccountStage: function() {
     console.log('initialAccountStage');
-    var rtn = '';
     $.each(ractive.get('accountStages'), function(i,d) {
-      if (parseInt(d['idx'])==0) rtn = d.name;
+      if ('idx' in d && parseInt(d.idx)==0) return d.name;
     });
-    return rtn;
+    return '';
   },
   initialContactStage: function() {
     console.log('initialContactStage');
-    var rtn = '';
     $.each(ractive.get('contactStages'), function(i,d) {
-      if (parseInt(d['idx'])==0) rtn = d.name;
+      if ('idx' in d && parseInt(d.idx)==0) return d.name;
     });
-    return rtn;
+    return '';
   },
   initialOrderStage: function() {
     console.log('initialOrderStage');
-    var rtn = '';
-    if (ractive.get('orderStages')==undefined) return rtn;
     $.each(ractive.get('orderStages'), function(i,d) {
-      if (parseInt(d['idx'])==0) rtn = d.name;
+      if ('idx' in d && parseInt(d.idx)==0) return d.name;
     });
-    return rtn;
+    return '';
   },
   initiatorIcon: function(initiator) {
     if (initiator==undefined || initiator=='anonymousUser') {
-      $('.initiator-img').empty().append('<img class="img-rounded" src="'
-          +(ractive.get('tenant.strings.botIcon') ? ractive.get('tenant.strings.botIcon') : '/images/icon/knowprocess-icon-48x48.png')
-          +'" width="34"/>');
+      $('.initiator-img').empty().append('<img class="img-rounded" src="' +
+          (ractive.get('tenant.strings.botIcon') ? ractive.get('tenant.strings.botIcon') : '/images/icon/knowprocess-icon-48x48.png')+
+          '" width="34"/>');
     } else {
       $('.initiator-img').empty().append(ractive.gravatar(initiator));
     }
@@ -532,10 +563,10 @@ var BaseRactive = Ractive.extend({
   json2Html: function(obj) {
     var html = '<ul class="field-json">';
     $.each(Object.keys(obj), function(i,d) {
-      if (typeof obj[d] == 'object' && obj[d]['valueType'] != undefined && (obj[d]['string'] == undefined)) { // empty javax.json.JsonObject
+      if (typeof obj[d] == 'object' && 'valueType' in obj[d] && 'string' in obj[d]) { // empty javax.json.JsonObject
         console.info('Supressing empty value '+d);
-      } else if (typeof obj[d] == 'object' && obj[d]['valueType'] != undefined) { // populated javax.json.JsonObject
-        html += '<li><label style="text-align:right;padding-right:10px">'+d.toLabel()+':</label><span class="col-scroll">'+obj[d]['string']+'</span>';
+      } else if (typeof obj[d] == 'object' && 'valueType' in obj[d]) { // populated javax.json.JsonObject
+        html += '<li><label style="text-align:right;padding-right:10px">'+d.toLabel()+':</label><span class="col-scroll">'+obj[d].string+'</span>';
       } else if (typeof obj[d] == 'object') { // child object
         html += '<table class="table table-striped"><tr><th>' + d.toLabel() +'</th><td>'+ ractive.json2Html(obj[d])+'</td></tr></table>';
       } else {
@@ -573,10 +604,10 @@ var BaseRactive = Ractive.extend({
       // console.log('... response: '+JSON.stringify(response));
       ractive.set('saveObserver', false);
       ractive.set('tenant', response);
-      ractive.fetch();
+      if ('fetch' in ractive) ractive.fetch();
       ractive.applyBranding();
       ractive.get('tenant.typeaheadControls').forEach(function(d) {
-        if (d['name'] != undefined && d['values'] != undefined) ractive.set(d.name, d.values);
+        if ('name' in d && 'values' in d) ractive.set(d.name, d.values);
       });
       ractive.set('saveObserver', true);
       if (ractive.tenantCallbacks!=undefined) ractive.tenantCallbacks.fire();
@@ -609,21 +640,19 @@ var BaseRactive = Ractive.extend({
     setTimeout(function() {
       ractive.set('searchTerm',searchTerm);
       ractive.set('searchMatched',$('.resultsSect .table tbody tr:visible').length);
-      if (ractive['showResults'] != undefined) ractive.showResults();
+      if ('showResults' in ractive) ractive.showResults();
       $( "#ajax-loader" ).hide();
-    }, EASING_DURATION);
+    }, ractive.EASING_DURATION);
   },
   localId: function(uriOrObj) {
     if (uriOrObj == undefined) return;
-    else if (typeof uriOrObj == 'object' && uriOrObj['id'] !== undefined) return ''+uriOrObj['id'];
+    else if (typeof uriOrObj == 'object' && 'id' in uriOrObj) return ''+uriOrObj.id;
     else if (typeof uriOrObj == 'object') return ractive.localId(ractive.uri(uriOrObj));
     else return uriOrObj.substring(uriOrObj.lastIndexOf('/')+1);
   },
   showDisconnected: function(msg) {
     console.log('showDisconnected: '+msg);
-    if ($('#connectivityMessages.alert-info').length>0) {
-      ; // Due to ordering of methods, actually reconnected now
-    } else {
+    if ($('#connectivityMessages').length>0) {
       $('#connectivityMessages').remove();
       $('body').append('<div id="connectivityMessages" class="alert-warning">'+msg+'</div>').show();
     }
@@ -652,7 +681,7 @@ var BaseRactive = Ractive.extend({
 //    document.getElementById('messages').scrollIntoView();
     if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
       $('#messages, .messages').fadeOut();
-    }, EASING_DURATION*10);
+    }, ractive.EASING_DURATION*10);
     else $('#messages, .messages').append('<span class="text-danger pull-right glyphicon glyphicon-remove" onclick="ractive.hideMessage()"></span>');
   },
   showReconnected: function() {
@@ -663,7 +692,22 @@ var BaseRactive = Ractive.extend({
       $('body').append('<div id="connectivityMessages" class="alert-info">Reconnected</div>').show();
       setTimeout(function() {
         $('#connectivityMessages').fadeOut();
-      }, EASING_DURATION*10);
+      }, ractive.EASING_DURATION*10);
+    }
+  },
+  showResults: function() {
+    var entityName = ractive.get('entityName');
+    $('#'+entityName+'sTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
+    $('#currentSect').slideUp();
+    $('#'+entityName+'sTable').slideDown({ queue: true });
+  },
+  showSearchMatched: function() {
+    var entityName = ractive.get('entityName');
+    ractive.set('searchMatched',$('#'+entityName+'sTable tbody tr').length);
+    if ($('#'+entityName+'sTable tbody tr:visible').length==1) {
+      var id = $('#'+entityName+'sTable tbody tr:visible').data('href');
+      var q = Array.findBy('id',id,ractive.get(entityName+'s'));
+      ractive.select( q );
     }
   },
   showUpload: function () {
@@ -674,6 +718,15 @@ var BaseRactive = Ractive.extend({
     console.log('showSocial: '+networkName);
     ractive.set('current.network', { name: networkName, keypath: keypath, value: ractive.get(keypath) });
     $('#socialModalSect').modal('show');
+  },
+  showWarning: function(msg) {
+    this.showMessage(msg, 'alert-warning');
+  },
+  sortRecords: function() {
+    var entityName = ractive.get('entityName');
+    ractive.get(entityName+'s').sort(function(a,b) {
+      return new Date(b.lastUpdated)-new Date(a.lastUpdated);
+    });
   },
   submitSocial: function(network) {
     console.log('submitSocial: '+network);
@@ -737,9 +790,11 @@ var BaseRactive = Ractive.extend({
         returnVariables: true
       };
       var varObj = ractive.get('instanceToStart.variables');
+      // for compatibility with v2 extension forms
+      Object.assign(varObj,ractive.get('instanceToStart.processVariables'));
       Object.keys(varObj).forEach(function(key) {
         var v = { name:key, value:varObj[key], scope:"global" };
-        if (typeof varObj[key]=='object') v['type'] = 'json';
+        if (typeof varObj[key]=='object') v.type = 'json';
         data.variables.push(v);
       });
       $.ajax({
@@ -757,13 +812,13 @@ var BaseRactive = Ractive.extend({
             ractive.showMessage('Started workflow "'+ractive.get('instanceToStart.label')+'" for '+ractive.get('instanceToStart.businessKey'));
           }
           $('#customActionModalSect').modal('hide');
-          if (document.location.href.endsWith('contacts.html')
-              || document.location.href.endsWith('accounts.html')) {
+          if (document.location.href.endsWith('contacts.html') ||
+              document.location.href.endsWith('accounts.html')) {
             // refresh individual record
-            setTimeout(ractive.select, EASING_DURATION*5, ractive.get('current'));
+            setTimeout(ractive.select, ractive.EASING_DURATION*5, ractive.get('current'));
           } else {
             // refresh list
-            setTimeout(ractive.fetch, EASING_DURATION*5);
+            setTimeout(ractive.fetch, ractive.EASING_DURATION*5);
           }
           // @deprecated use ractive's own callbacks
           if (ractive.customActionCallbacks!=undefined) ractive.customActionCallbacks.fire(jqXHR.getResponseHeader('Location'));
@@ -808,11 +863,10 @@ var BaseRactive = Ractive.extend({
     // write title on first row
     csv += title + '\n\n';
 
+    var row = '';
     if (headings === undefined || headings == true) {
       // extract label from json fields in array idx 0
-      var row = '';
-
-      for (var idx = 0 ; idx < arr[0].length ; idx++) {
+      for (var idx in arr[0]) {
           row += idx + ',';
       }
 
@@ -823,11 +877,11 @@ var BaseRactive = Ractive.extend({
 
     var propNames = headings.split(',');
     for (var i = 0; i < arr.length; i++) {
-        var row = '';
+        row = '';
 
         for (var j = 0 ; j < propNames.length ; j++) {
           try {
-            var val = eval('arr['+i+'].'+propNames[j]);
+            var val = eval('arr['+i+'].'+propNames[j]); // jshint ignore:line
             row += '"' + (val == undefined ? '' : val) + '",';
           } catch (err) {
             console.error('Fail to extract property '+propNames[j]+'from row '+i);
@@ -867,6 +921,12 @@ var BaseRactive = Ractive.extend({
     link.click();
     document.body.removeChild(link);
   },
+  toggleResults: function() {
+    console.info('toggleResults');
+    var entityName = ractive.get('entityName');
+    $('#'+entityName+'sTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
+    $('#'+entityName+'sTable').slideToggle();
+  },
   toggleSection: function(sect) {
     console.info('toggleSection: '+$(sect).attr('id'));
     $('#'+$(sect).attr('id')+'>div').toggle();
@@ -874,7 +934,7 @@ var BaseRactive = Ractive.extend({
   },
   toggleSidebar: function() {
     console.info('toggleSidebar');
-    $('.toolbar-left').toggle(EASING_DURATION);
+    $('.toolbar-left').toggle(ractive.EASING_DURATION);
   },
   upload: function(formId) {
     console.log('upload, id: '+formId);
@@ -887,7 +947,7 @@ var BaseRactive = Ractive.extend({
         cache: false,
         contentType: false,
         processData: false,
-        success: function(response) {
+        success: function() {
           console.log('successfully uploaded resource');
           ractive.fetch();
           ractive.hideUpload();
@@ -901,15 +961,15 @@ var BaseRactive = Ractive.extend({
     ractive.set('saveObserver', false);
     var uri;
     try {
-      if (entity['links']!=undefined) {
+      if ('links' in entity) {
         $.each(entity.links, function(i,d) {
           if (d.rel == 'self') {
             uri = d.href;
           }
         });
-      } else if (entity['_links']!=undefined) {
+      } else if ('_links' in entity) {
         uri = ractive.stripProjection(entity._links.self.href);
-      } else if (entity['id']!=undefined) {
+      } else if ('id' in entity) {
         uri = ractive.get('entityPath')+'/'+entity.id;
       }
       // work around for sub-dir running
@@ -926,17 +986,31 @@ var BaseRactive = Ractive.extend({
   }
 });
 
+$( document ).bind('keypress', function(e) {
+  switch (e.keyCode) {
+  case 13: // Enter key
+    if ('ractive' in window && 'enter' in ractive) ractive.enter();
+    break;
+  case 63:   // ? key
+    console.log('help requested');
+    $('#helpModal').modal({});
+    break;
+  }
+});
+
 $(document).ready(function() {
   try {
     ractive.keycloak = Keycloak('/keycloak.json');
     ractive.keycloak.init({ onLoad: 'login-required' })
     .then(function(authenticated) {
       console.info(authenticated ? 'authenticated' : 'not authenticated');
-      if (ractive['crm'] != undefined) ractive.crm.options.token = ractive.keycloak.token;
+      if ('cm' in ractive && 'options' in ractive.cm) {
+        ractive.cm.options.token = ractive.keycloak.token;
+      }
       ractive.keycloak.loadUserProfile().then(function(profile) {
-        localStorage['profile'] = JSON.stringify(profile);
+        localStorage.setItem('profile', JSON.stringify(profile));
         ractive.getProfile();
-        ractive.set('tenant.id', profile.attributes['tenantId']);
+        ractive.set('tenant.id', ractive.getAttribute('tenantId'));
         ractive.loadTenantConfig(ractive.get('tenant.id'));
       }).catch(function(e) {
         console.error('Failed to load user profile: '+e);
@@ -961,52 +1035,59 @@ $(document).ready(function() {
   ractive.loadStandardPartials(ractive.get('stdPartials'));
   ractive.loadStandardPartials(ractive.get('workPartials'));
 
-  $( document ).ajaxComplete(function( event, jqXHR, ajaxOptions ) {
-    if (jqXHR.status > 0) ractive.showReconnected();
+  $( document ).ajaxComplete(function(event, jqXHR) {
+    if (jqXHR.status > 0 && jqXHR < 400) ractive.showReconnected();
   });
 
   ractive.observe('tenant', function(newValue, oldValue, keypath) {
-    console.log('tenant changed');
-    if ((oldValue == undefined || oldValue.id == '') && newValue != undefined && newValue.id != '' && ractive['fetch'] != undefined) {
-      ractive.fetch();
+    console.log("'"+keypath+"' changing from '"+oldValue+"' to '"+newValue+"'");
+    if ((oldValue == undefined || oldValue.id == '') && newValue != undefined && newValue.id != '' && 'fetch' in ractive) {
+      //ractive.fetch();
     }
 
     if (newValue!=undefined && newValue.accountFields!=undefined && newValue.accountFields.length>0) {
-      for(var idx = 0 ; idx<newValue.accountFields.length ; idx++) {
+      for(let idx = 0 ; idx<newValue.accountFields.length ; idx++) {
         if (newValue.accountFields[idx].type=='account' && $('datalist#accounts').length==0) {
-          if (ractive['fetchAccounts']!=undefined) ractive.fetchAccounts();
+          if ('fetchAccounts' in ractive) ractive.fetchAccounts();
         } else if (newValue.accountFields[idx].type=='contact' && $('datalist#contacts').length==0) {
-          if (ractive['fetchContacts']!=undefined) ractive.fetchContacts();
+          if ('fetchContacts' in ractive) ractive.fetchContacts();
         }
       }
     }
     if (newValue!=undefined && newValue.contactFields!=undefined && newValue.contactFields.length>0) {
-      for(var idx = 0 ; idx<newValue.contactFields.length ; idx++) {
+      for(let idx = 0 ; idx<newValue.contactFields.length ; idx++) {
         if (newValue.contactFields[idx].type=='account' && $('datalist#accounts').length==0) {
-          if (ractive['fetchAccounts']!=undefined) ractive.fetchAccounts();
+          if ('fetchAccounts' in ractive) ractive.fetchAccounts();
         } else if (newValue.contactFields[idx].type=='contact' && $('datalist#contacts').length==0) {
-          if (ractive['fetchContacts']!=undefined) ractive.fetchContacts();
+          if ('fetchContacts' in ractive) ractive.fetchContacts();
         }
       }
     }
     if (newValue!=undefined && newValue.orderFields!=undefined && newValue.orderFields.length>0) {
-      for(var idx = 0 ; idx<newValue.orderFields.length ; idx++) {
+      for(let idx = 0 ; idx<newValue.orderFields.length ; idx++) {
         if (newValue.orderFields[idx].type=='account' && $('datalist#accounts').length==0) {
-          if (ractive['fetchAccounts']!=undefined) ractive.fetchAccounts();
+          if ('fetchAccounts' in ractive) ractive.fetchAccounts();
         } else if (newValue.orderFields[idx].type=='contact' && $('datalist#contacts').length==0) {
-          if (ractive['fetchContacts']!=undefined) ractive.fetchContacts();
+          if ('fetchContacts' in ractive) ractive.fetchContacts();
         }
       }
     }
     if (newValue!=undefined && newValue.orderItemFields!=undefined && newValue.orderItemFields.length>0) {
-      for(var idx = 0 ; idx<newValue.orderItemFields.length ; idx++) {
+      for(let idx = 0 ; idx<newValue.orderItemFields.length ; idx++) {
         if (newValue.orderItemFields[idx].type=='account' && $('datalist#accounts').length==0) {
-          if (ractive['fetchAccounts']!=undefined) ractive.fetchAccounts();
+          if ('fetchAccounts' in ractive) ractive.fetchAccounts();
         } else if (newValue.orderItemFields[idx].type=='contact' && $('datalist#contacts').length==0) {
-          if (ractive['fetchContacts']!=undefined) ractive.fetchContacts();
+          if ('fetchContacts' in ractive) ractive.fetchContacts();
         }
       }
     }
+  });
+
+  ractive.on( 'filter', function ( event, filter ) {
+    console.info('filter on '+JSON.stringify(filter)+','+filter.idx);
+    let start = new Date().getTime();
+    ractive.filter(filter);
+    console.info('  took '+(new Date().getTime()-start)+'ms');
   });
 
   ractive.on('sort', function ( event, column ) {
@@ -1017,31 +1098,33 @@ $(document).ready(function() {
   });
 
   ractive.observe('title', function(newValue, oldValue, keypath) {
-    console.log('title changing from '+oldValue+' to '+newValue);
+    console.log("'"+keypath+"' changing from '"+oldValue+"' to '"+newValue+"'");
     if (newValue!=undefined && newValue!='') {
       $('title').empty().append(newValue);
     }
   });
 
   ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
-    console.log('searchTerm changed');
-    if (typeof ractive['showResults'] == 'function') {
+    console.log("'"+keypath+"' changed from '"+oldValue+"' to '"+newValue+"'");
+    let start = new Date().getTime();
+    if ('showResults' in ractive) {
       $( "#ajax-loader" ).show();
       ractive.showResults();
     }
-    setTimeout(ractive.showSearchMatched, EASING_DURATION);
+    setTimeout(ractive.showSearchMatched, ractive.EASING_DURATION);
+    console.info('  took '+(new Date().getTime()-start)+'ms');
   });
 
   var params = getSearchParameters();
-  if (params['searchTerm']!=undefined) {
-    ractive.set('searchTerm',decodeURIComponent(params['searchTerm']));
-  } else if (params['q']!=undefined) {
-    ractive.set('searchTerm',decodeURIComponent(params['q']));
+  if ('searchTerm' in params) {
+    ractive.set('searchTerm',decodeURIComponent(params.searchTerm));
+  } else if ('q' in params) {
+    ractive.set('searchTerm',decodeURIComponent(params.q));
   }
-  if (params['s']!=undefined) {
-    ractive.set('sortColumn',decodeURIComponent(params['s']));
+  if ('s' in params) {
+    ractive.set('sortColumn',decodeURIComponent(params.s));
   }
-  if (params['asc']!=undefined && params['asc']=='true') {
+  if ('asc' in params && params.asc=='true') {
     ractive.set('sortAsc',true);
   } else {
     ractive.set('sortAsc',false);
@@ -1056,6 +1139,11 @@ function selectElementContents(el) {
   var sel = window.getSelection();
   sel.removeAllRanges();
   sel.addRange(range);
+}
+
+function getSearchParameter(key) { // jshint ignore:line
+  var params = getSearchParameters();
+  return key in params ? params.key : undefined;
 }
 
 function getSearchParameters() {
@@ -1094,7 +1182,8 @@ Array.findBy = function(k,v,arr) {
     if (arr[idx][k]==v) return arr[idx];
     else if ('selfRef'==k && arr[idx][k] != undefined && arr[idx][k].endsWith(v)) return arr[idx];
   }
-}
+};
+
 /**
  * @return All  array elements whose 'k' field equals 'v'.
  */
@@ -1105,27 +1194,27 @@ Array.findAll = function(k,v,arr) {
     else if ('selfRef'==k && arr[idx][k] != undefined && arr[idx][k].endsWith(v)) return retArr.push(arr[idx]);
   }
   return retArr;
-}
+};
+
 Array.uniq = function(fieldName, arr) {
   // console.info('uniq');
   if (arr == undefined) return undefined;
-  list = '';
+  var list = '';
   for (var idx = 0 ; idx < arr.length ; idx++) {
-    if (index(arr[idx],fieldName) != undefined
-        && list.indexOf(index(arr[idx],fieldName)) == -1) {
-      if (list != '')
-        list += ','
+    if (index(arr[idx],fieldName) != undefined &&
+        list.indexOf(index(arr[idx],fieldName)) == -1) {
+      if (list != '') list += ',';
       list += index(arr[idx],fieldName);
     }
   }
   return list;
-}
+};
 
 function index(obj, keypath, value) {
   if (typeof keypath == 'string')
       return index(obj,keypath.split('.'), value);
   else if (keypath.length==1 && value!==undefined)
-      return obj[keypath[0]] = value;
+      return obj[keypath[0]] = value; // jshint ignore:line
   else if (keypath.length==0)
       return obj;
   else
@@ -1194,22 +1283,22 @@ function parseDateIEPolyFill(timeString) {
   function FF(a,b,c,d,x,s,ac) {
   a = AddUnsigned(a, AddUnsigned(AddUnsigned(F(b, c, d), x), ac));
   return AddUnsigned(RotateLeft(a, s), b);
-  };
+  }
 
   function GG(a,b,c,d,x,s,ac) {
   a = AddUnsigned(a, AddUnsigned(AddUnsigned(G(b, c, d), x), ac));
   return AddUnsigned(RotateLeft(a, s), b);
-  };
+  }
 
   function HH(a,b,c,d,x,s,ac) {
   a = AddUnsigned(a, AddUnsigned(AddUnsigned(H(b, c, d), x), ac));
   return AddUnsigned(RotateLeft(a, s), b);
-  };
+  }
 
   function II(a,b,c,d,x,s,ac) {
   a = AddUnsigned(a, AddUnsigned(AddUnsigned(I(b, c, d), x), ac));
   return AddUnsigned(RotateLeft(a, s), b);
-  };
+  }
 
   function ConvertToWordArray(string) {
   var lWordCount;
@@ -1232,7 +1321,7 @@ function parseDateIEPolyFill(timeString) {
   lWordArray[lNumberOfWords-2] = lMessageLength<<3;
   lWordArray[lNumberOfWords-1] = lMessageLength>>>29;
   return lWordArray;
-  };
+  }
 
   function WordToHex(lValue) {
   var WordToHexValue='',WordToHexValue_temp='',lByte,lCount;
@@ -1242,7 +1331,7 @@ function parseDateIEPolyFill(timeString) {
   WordToHexValue = WordToHexValue + WordToHexValue_temp.substr(WordToHexValue_temp.length-2,2);
   }
   return WordToHexValue;
-  };
+  }
 
   function Utf8Encode(string) {
   string = string.replace(/\r\n/g,'\n');
@@ -1266,7 +1355,7 @@ function parseDateIEPolyFill(timeString) {
   }
 
   return utftext;
-  };
+  }
 
   var x=Array();
   var k,AA,BB,CC,DD,a,b,c,d;
@@ -1357,3 +1446,4 @@ function parseDateIEPolyFill(timeString) {
 
   return temp.toLowerCase();
  }
+

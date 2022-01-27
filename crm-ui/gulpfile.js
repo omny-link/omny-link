@@ -46,9 +46,11 @@ gulp.task('scripts', function() {
   .pipe(gulp.dest(buildDir+'/'+vsn+'/js'));
 });
 
-gulp.task('test', function() {
+gulp.task('lint', function() {
   return gulp.src([
-    'src/js/**/*.js',
+    'src/js/**/*.js', '!src/js/**/*.min.js',
+    'src/catalog/js/**/*.js', '!src/catalog/js/**/*.min.js',
+    'src/custmgmt/js/**/*.js', '!src/custmgmt/js/**/*.min.js',
     '!src/js/vendor/**/*.js'
   ])
   .pipe(jshint())
@@ -65,7 +67,7 @@ gulp.task('styles', function() {
 });
 
 gulp.task('compile',
-  gulp.series(/*'test',*/ 'scripts', 'styles')
+  gulp.series('lint', 'scripts', 'styles')
 );
 
 gulp.task('server', function(done) {

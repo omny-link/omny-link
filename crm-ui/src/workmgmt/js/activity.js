@@ -65,7 +65,7 @@ function UserActivity() {
       type: 'POST',
       data: { json:JSON.stringify(d) },
       dataType: 'text',
-      success: completeHandler = function(data) {
+      success: function(data) {
         console.log('Message received:'+data);
       }
     });
@@ -92,7 +92,7 @@ function UserActivity() {
       type: 'POST',
       data: { json:JSON.stringify(d) },
       dataType: 'text',
-      success: completeHandler = function(data) {
+      success: function(data) {
         console.log('Message received:'+data);
       }
     });

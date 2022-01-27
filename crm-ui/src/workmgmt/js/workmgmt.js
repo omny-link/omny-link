@@ -220,7 +220,7 @@ var ractive = new BaseRactive({
     sorted: function(column) {
       console.info('sorted');
       if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
-      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc'
+      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc';
       else return 'hidden';
     },
     stdPartials: [

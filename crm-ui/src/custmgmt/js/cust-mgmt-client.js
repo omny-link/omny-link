@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-function CustMgmtClient(o) {
+function CustMgmtClient(o) { // jshint ignore:line
   const PAGE_SIZE = 1000;
   var me = {
     options: o
@@ -24,16 +24,16 @@ function CustMgmtClient(o) {
       "Accept": "application/json, text/javascript",
       "X-Requested-With": "XMLHttpRequest",
       "Authorization": "Bearer "+me.options.token
-    }
+    };
   }
 
   me.deleteAccount = function(account) {
     return deleteEntity(account, 'account');
-  }
+  };
 
   me.deleteContact = function(contact) {
     return deleteEntity(contact, 'contact');
-  }
+  };
 
   function deleteEntity(entity, entityPath) {
     return fetch(uriFromEntity(entity, entityPath), {
@@ -46,21 +46,21 @@ function CustMgmtClient(o) {
 
   me.fetchAccount = function(uri) {
     return fetchEntity(uri);
-  }
+  };
 
   me.fetchAccounts = function(tenantId, page, limit) {
     return fetchEntities('account', tenantId, page, limit);
-  }
+  };
 
   me.fetchContact = function(uri) {
     return fetchEntity(uri);
-  }
+  };
 
-  me.fetchContacts = async function(tenantId, page, limit) {
+  me.fetchContacts = async function(tenantId, page, limit) { // jshint ignore:line
     return fetchEntities('contact', tenantId, page, limit);
-  }
+  };
 
-  async function fetchEntities(entityPath, tenantId, page, limit) {
+  async function fetchEntities(entityPath, tenantId, page, limit) { // jshint ignore:line
     let entities = [];
     let keepGoing = true;
     page = page == undefined ? 0 : page;
@@ -70,7 +70,7 @@ function CustMgmtClient(o) {
         "headers": commonHeaders(),
         "method": "GET",
         "mode": "cors"
-      })
+      });
       const data = await response.json();
       Array.prototype.push.apply(entities, data);
       page += 1;
@@ -86,16 +86,16 @@ function CustMgmtClient(o) {
       "headers": commonHeaders(),
       "method": "GET",
       "mode": "cors"
-    })
+    });
   }
 
   me.saveAccount = function(account, tenantId) {
     return saveEntity(account, 'account', tenantId);
-  }
+  };
 
   me.saveContact = function(contact, tenantId) {
     return saveEntity(contact, 'contact', tenantId);
-  }
+  };
 
   function saveEntity(entity, entityPath, tenantId) {
     var headers = commonHeaders();
@@ -111,15 +111,15 @@ function CustMgmtClient(o) {
 
   function uriFromEntity(entity, entityPath) {
     var uri;
-    if (entity['links']!=undefined) {
+    if ('links' in entity) {
       $.each(entity.links, function(i,d) {
         if (d.rel == 'self') {
           uri = d.href;
         }
       });
-    } else if (entity['_links']!=undefined) {
+    } else if ('_links' in entity) {
       uri = entity._links.self.href;
-    } else if (entity['id']!=undefined) {
+    } else if ('id' in entity) {
       uri = entityPath+'/'+entity.id;
     }
 

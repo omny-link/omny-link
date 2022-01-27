@@ -13,7 +13,7 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-function I18nController(baseUrl) {
+function I18nController(baseUrl) { // jshint ignore:line
   var me = this;
   this.BASE_URL = baseUrl == undefined ? '.' : baseUrl;
   /**
@@ -35,12 +35,12 @@ function I18nController(baseUrl) {
   };
   this.getDurationString = function(millis) {
       if (isNaN(millis)) return 'n/a';
-      secs = millis / 1000;
-      mins = secs / 60;
-      hours = mins / 60;
-      days = hours / 24;
-      weeks = days / 7;
-      years = days / 365;
+      let secs = millis / 1000;
+      let mins = secs / 60;
+      let hours = mins / 60;
+      let days = hours / 24;
+      let weeks = days / 7;
+      let years = days / 365;
       if (secs < 1) {
           return 'less than a second';
       } else if (secs < 2) {

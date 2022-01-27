@@ -164,7 +164,7 @@ var ractive = new BaseRactive({
     sorted: function(column) {
       console.info('sorted');
       if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
-      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc'
+      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc';
       else return 'hidden';
     },
     sortInstanceAsc: false,
@@ -214,7 +214,7 @@ var ractive = new BaseRactive({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+key+'/activate',
       type: 'POST',
       contentType: 'application/json',
-      success: completeHandler = function(data,textStatus,jqXHR) {
+      success: function(data,textStatus,jqXHR) {
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
         ractive.fetch();
         ractive.showMessage('Activated workflow "'+key+'"');
@@ -348,7 +348,7 @@ var ractive = new BaseRactive({
           type: 'POST',
           contentType: 'application/json',
           data: JSON.stringify(defn),
-          success: completeHandler = function(data) {
+          success: function(data) {
             console.log('  Success, received: '+data);
             ractive.set('proc', data);
             ractive.set('saveObserver',true);
@@ -366,7 +366,7 @@ var ractive = new BaseRactive({
     $.ajax({
         url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/deployments/'+deploymentId,
         type: 'DELETE',
-        success: completeHandler = function(data) {
+        success: function(data) {
           ractive.fetch();
           ractive.showResults();
         }
@@ -405,7 +405,7 @@ var ractive = new BaseRactive({
     $.ajax({
         url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-instances/'+instance.id,
         type: 'DELETE',
-        success: completeHandler = function(data) {
+        success: function(data) {
           console.log('  Success, received: '+data);
           ractive.get('current.instances').splice(idx,1);
         }
@@ -941,7 +941,7 @@ var ractive = new BaseRactive({
         processDefinitionId: id,
         businessKey: bizKey
       }),
-      success: completeHandler = function(data,textStatus,jqXHR) {
+      success: function(data,textStatus,jqXHR) {
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
         ractive.fetchInstances();
         ractive.showMessage('Started workflow "'+label+'" for '+bizKey);
@@ -954,7 +954,7 @@ var ractive = new BaseRactive({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/process-definitions/'+id+'/suspend',
       type: 'POST',
       contentType: 'application/json',
-      success: completeHandler = function(data,textStatus,jqXHR) {
+      success: function(data,textStatus,jqXHR) {
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
         ractive.fetch();
         ractive.showMessage('Suspended workflow "'+id+'"');

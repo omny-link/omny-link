@@ -13,10 +13,6 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-var EASING_DURATION = 500;
-fadeOutMemos = true;
-var newLineRegEx = /\n/g;
-
 var ractive = new BaseRactive({
   el: 'container',
   lazy: true,
@@ -24,26 +20,16 @@ var ractive = new BaseRactive({
   data: {
     memos: [],
     filter: undefined,
-    //saveObserver:false,
+    entityName: 'memo',
     entityPath: '/memos',
-    age: function(timeString) {
-      return i18n.getAgeString(new Date(timeString))
-    },
-    chars: function(string) {
-      console.info('chars: '+string);
-      var len = string == undefined ? 0 : string.length;
-      console.log('  returning: '+len);
-      return len;
-    },
     customField: function(obj, name) {
-      if (obj['customFields']==undefined) {
+      if (!('customFields' in obj)) {
         return undefined;
-      } else if (!Array.isArray(obj['customFields'])) {
+      } else if (!Array.isArray(obj.customFields)) {
         return obj.customFields[name];
       } else {
-        //console.error('customField 30');
         var val;
-        $.each(obj['customFields'], function(i,d) {
+        $.each(obj.customFields, function(i,d) {
           if (d.name == name) val = d.value;
         });
         return val;
@@ -74,18 +60,13 @@ var ractive = new BaseRactive({
     gravatar: function(email) {
       return ractive.gravatar(email);
     },
-    hash: function(email) {
-      if (email == undefined) return '';
-      console.log('hash '+email+' = '+ractive.hash(email));
-      return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
-    },
     helpUrl: '//omny-link.github.io/user-help/memo/#the_title',
     matchFilter: function(obj) {
       if (ractive.get('filter')==undefined) return true;
       else return ractive.get('filter').value.toLowerCase()==obj[ractive.get('filter').field].toLowerCase();
     },
     matchRole: function(role) {
-      console.info('matchRole: '+role)
+      console.info('matchRole: '+role);
       if (role==undefined || ractive.hasRole(role)) {
         $('.'+role).show();
         return true;
@@ -100,14 +81,14 @@ var ractive = new BaseRactive({
         var search = ractive.get('searchTerm').split(' ');
         for (var idx = 0 ; idx < search.length ; idx++) {
           var searchTerm = search[idx].toLowerCase();
-          var match = ( (ractive.localId(obj)!=undefined && ractive.localId(obj).indexOf(searchTerm)>=0)
-              || (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-              || (obj.title.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-              || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
-              || (searchTerm.startsWith('created>') && new Date(obj.created)>new Date(ractive.get('searchTerm').substring(8)))
-              || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(ractive.get('searchTerm').substring(8)))
-              || (searchTerm.startsWith('created<') && new Date(obj.created)<new Date(ractive.get('searchTerm').substring(8)))
-              || (searchTerm.startsWith('status:') && obj.status!=undefined && obj.status.toLowerCase().indexOf(ractive.get('searchTerm').substring(7))!=-1)
+          var match = ( (ractive.localId(obj)!=undefined && ractive.localId(obj).indexOf(searchTerm)>=0) ||
+              (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0) ||
+              (obj.title.toLowerCase().indexOf(searchTerm.toLowerCase())>=0) ||
+              (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8))) ||
+              (searchTerm.startsWith('created>') && new Date(obj.created)>new Date(ractive.get('searchTerm').substring(8))) ||
+              (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(ractive.get('searchTerm').substring(8))) ||
+              (searchTerm.startsWith('created<') && new Date(obj.created)<new Date(ractive.get('searchTerm').substring(8))) ||
+              (searchTerm.startsWith('status:') && obj.status!=undefined && obj.status.toLowerCase().indexOf(ractive.get('searchTerm').substring(7))!=-1)
           );
           //no match is definitive but matches may fail other terms (AND logic)
           if (!match) return false;
@@ -136,7 +117,7 @@ var ractive = new BaseRactive({
     sorted: function(column) {
       console.info('sorted');
       if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
-      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc'
+      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc';
       else return 'hidden';
     },
     stdPartials: [
@@ -185,7 +166,7 @@ var ractive = new BaseRactive({
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(newMemo),
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         //console.log('data: '+ data);
         var location = jqXHR.getResponseHeader('Location');
         ractive.set('saveObserver',false);
@@ -216,7 +197,7 @@ var ractive = new BaseRactive({
     $.ajax({
       url: ractive.tenantUri(obj),
       type: 'DELETE',
-      success: completeHandler = function(data) {
+      success: function() {
         ractive.fetch();
         $('#currentSect').slideUp();
       }
@@ -231,10 +212,10 @@ var ractive = new BaseRactive({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/memos/',
       crossDomain: true,
       success: function( data ) {
-        if (data['_embedded'] == undefined) {
+        if ('_embedded' in data) {
+          ractive.merge('memos', data._embedded.memos);
+        } else {
           ractive.merge('memos', data);
-        }else{
-          ractive.merge('memos', data['_embedded'].memos);
         }
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
@@ -243,14 +224,6 @@ var ractive = new BaseRactive({
         ractive.set('saveObserver', true);
       }
     });
-  },
-  filter: function(field,value) {
-    console.log('filter: field '+field+' = '+value);
-    if (value==undefined) value = ractive.get('tenant.stagesInActive');
-    if (field==undefined) ractive.set('filter',undefined);
-    else ractive.set('filter',{field: field,value: value});
-    ractive.set('searchMatched',$('#memosTable tbody tr:visible').length);
-    $('input[type="search"]').blur();
   },
   find: function(messageId) {
     console.log('find: '+messageId);
@@ -277,43 +250,23 @@ var ractive = new BaseRactive({
     }
     return requiredVars.join();
   },
-  getId: function(message) {
-    console.log('getId: '+message);
-    var uri;
-    if (message['links']!=undefined) {
-      $.each(message.links, function(i,d) {
-        if (d.rel == 'self') {
-          uri = d.href;
-        }
-      });
-    } else if (message['_links']!=undefined) {
-      uri = message._links.self.href.indexOf('?')==-1 ? message._links.self.href : message._links.self.href.substr(0,message._links.self.href.indexOf('?')-1);
-    }
-    return uri;
-  },
-  hideResults: function() {
-    $('#memosTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
-    $('#memosTable').slideUp();
-  },
   initEditor: function() {
     console.info('initEditor');
-    if (CKEDITOR.instances['curRichContent']==undefined) {
-      CKEDITOR.replace( 'curRichContent' );
-      CKEDITOR.instances['curRichContent'].on('blur', ractive.save);
-    }
-    try {
-      if (ractive.get('current.status')=='Published') {
-        CKEDITOR.instances['curRichContent'].setReadOnly(true);
-      } else {
-        CKEDITOR.instances['curRichContent'].setReadOnly(false);
+    if ('curRichContent' in CKEDITOR.instances) {
+      try {
+        if (ractive.get('current.status')=='Published') {
+          CKEDITOR.instances.curRichContent.setReadOnly(true);
+        } else {
+          CKEDITOR.instances.curRichContent.setReadOnly(false);
+        }
+      } catch (e) {
+        console.warn('setReadOnly raises error first time but is apparently ignorable.');
       }
-    } catch (e) {
-      console.warn('setReadOnly raises error first time but is apparently ignorable.');
+    } else {
+      CKEDITOR.replace( 'curRichContent' );
+      CKEDITOR.instances.curRichContent.on('blur', ractive.save);
     }
-    CKEDITOR.instances['curRichContent'].setData(ractive.get('current.richContent'));
-  },
-  oninit: function() {
-    console.log('oninit');
+      CKEDITOR.instances.curRichContent.setData(ractive.get('current.richContent'));
   },
   save: function () {
     console.log('save message: '+ractive.get('current').name+'...');
@@ -327,19 +280,18 @@ var ractive = new BaseRactive({
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       tmp.tenantId = ractive.get('tenant.id');
       tmp.richContent = CKEDITOR.instances.curRichContent.getData();
-      if (tmp['signatories'] != undefined) {
+      if ('signatories' in tmp) {
         if (tmp.signatories[0] != undefined) delete tmp.signatories[0].signHereTabs;
         if (tmp.signatories[1] != undefined) delete tmp.signatories[1].signHereTabs;
       }
-      var id = ractive.uri(tmp);
       $.ajax({
-        url: id === undefined
-            ? ractive.getServer()+'/'+ractive.get('tenant.id')+'/memos/'
-            : ractive.tenantUri(tmp),
+        url: id === undefined ?
+            ractive.getServer()+'/'+ractive.get('tenant.id')+'/memos/' :
+            ractive.tenantUri(tmp),
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
-        success: completeHandler = function(data, textStatus, jqXHR) {
+        success: function(data, textStatus, jqXHR) {
           //console.log('data: '+ data);
           var location = jqXHR.getResponseHeader('Location');
           ractive.set('saveObserver',false);
@@ -399,48 +351,14 @@ var ractive = new BaseRactive({
     }
     ractive.hideResults();
     $('#currentSect').slideDown({ queue: true });
-  },
-  showActivityIndicator: function(msg, addClass) {
-    document.body.style.cursor='progress';
-    this.showMessage(msg, addClass);
-  },
-  showResults: function() {
-    $('#memosTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
-    $('#currentSect').slideUp();
-    $('#memosTable').slideDown({ queue: true });
-  },
-  showSearchMatched: function() {
-    ractive.set('searchMatched',$('#memosTable tbody tr').length);
-    if ($('#memosTable tbody tr:visible').length==1) {
-      var memoId = $('#memosTable tbody tr:visible').data('href')
-      var memo = Array.findBy('id',memoId,ractive.get('memos'))
-      ractive.edit( 0, memo );
-    }
-  },
-  sortMemos: function() {
-    ractive.get('memos').sort(function(a,b) { return new Date(b.lastUpdated)-new Date(a.lastUpdated); });
-  },
-  toggleResults: function() {
-    console.log('toggleResults');
-    $('#memosTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
-    $('#memosTable').slideToggle();
   }
 });
-
-ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
-  console.log('searchTerm changed');
-  ractive.showResults();
-  setTimeout(function() {
-    ractive.set('searchMatched',$('#memosTable tbody tr').length);
-  }, 500);
-});
-
 
 // Save on model change
 // done this way rather than with on-* attributes because autocomplete
 // controls done that way save the oldValue
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
-  ignored=['current.documents','current.doc','current.notes','current.note'];
+  var ignored=['current.documents','current.doc','current.notes','current.note'];
   if (ractive.get('saveObserver') && ignored.indexOf(keypath)==-1) {
     console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
     ractive.save();
@@ -450,11 +368,11 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
     //console.log('  saveObserver: '+ractive.get('saveObserver'));
   }
 });
-
+/* TODO check nt needed
 function crToSpace(string) {
   return string.replace(/<br>/g,' ');
 }
 
 function stripTags(string) {
   return crToSpace(string.replace(/<br>/g,' ').replace(/<\/?[^>]+(>|$)/g, ""));
-}
+}*/
