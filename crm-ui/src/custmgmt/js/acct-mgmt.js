@@ -22,6 +22,9 @@ var ractive = new BaseRactive({
       el: 'container',
       lazy: true,
       template: '#template',
+      crm: new CustMgmtClient({
+        server: 'http://localhost:7080'
+      }),
       data: {
         accounts: [],
         entityPath: '/contacts',
@@ -621,10 +624,6 @@ var ractive = new BaseRactive({
       },
       fetch: function() {
         console.info('fetch...');
-        ractive.fetchPrimaryEntityList();
-      },
-      fetchPrimaryEntityList: function() {
-        console.info('fetchPrimaryEntityList...');
         if (ractive.get('fetchPrimaryEntityList')==true) {
           console.warn('skipping fetch as already running');
           return;
@@ -632,12 +631,9 @@ var ractive = new BaseRactive({
           ractive.set('saveObserver', false);
           ractive.set('fetchPrimaryEntityList', true);
           var entityName = ractive.get('entityPath').substring(1);
-          $.ajax({
-            dataType: "json",
-            url: ractive.getServer() + '/' + ractive.get('tenant.id')
-                + ractive.get('entityPath') + '/',
-            crossDomain: true,
-            success: function(data) {
+          $( "#ajax-loader" ).show();
+          ractive.cm.fetchAccounts(ractive.get('tenant.id'))
+            .then(function(data) {
               if (data['_embedded'] == undefined) {
                 ractive.set(entityName, data);
               } else {
@@ -649,7 +645,7 @@ var ractive = new BaseRactive({
               ractive.showSearchMatched();
               ractive.set('saveObserver', true);
               ractive.set('fetchPrimaryEntityList', false);
-            }
+              $( "#ajax-loader" ).hide();
           });
         }
       },
@@ -1492,7 +1488,7 @@ ractive.observe('profile', function(newValue, oldValue, keypath) {
 // controls done that way save the oldValue
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
   if (ractive.get('current') != undefined) ractive.showAlertCounters();
-  ignored = [ 'current.contacts', 'current.notes', 'current.documents' ];
+  var ignored = [ 'current.contacts', 'current.notes', 'current.documents' ];
   if (!ractive.get('saveObserver')) console.debug('Skipped save of '+keypath+' because in middle of other operation');
   else if (ractive.get('saveObserver') && ignored.indexOf(keypath) == -1 && keypath.startsWith('current.')) ractive.saveAccount();
   else {

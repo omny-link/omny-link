@@ -19,6 +19,9 @@ var newLineRegEx = /\n/g;
 var DEFAULT_INACTIVE_STAGES = 'cold,complete,on hold,unqualified,waiting list';
 
 var ractive = new BaseRactive({
+  cm: new CustMgmtClient({
+    server: $env.server,
+  }),
   el: 'container',
   lazy: true,
   template: '#template',
@@ -206,6 +209,7 @@ var ractive = new BaseRactive({
       }
     },
     matchSearch: function(obj) {
+      try {
       //console.info('matchSearch: '+searchTerm);
       if (ractive.get('searchTerm')==undefined || ractive.get('searchTerm').length==0) {
         return true;
@@ -238,6 +242,10 @@ var ractive = new BaseRactive({
         }
         return true;
       }
+      } catch (e) {
+        console.error('XXXXXXXXXXXX'+e);
+        return true;   
+      }
     },
     saveObserver: false,
     selectMultiple: [],
@@ -251,7 +259,9 @@ var ractive = new BaseRactive({
       array = array.slice(); // clone, so we don't modify the underlying data
 
       return array.sort( function ( a, b ) {
-        if (b[column]==undefined || b[column]==null || b[column]=='') {
+        if (b[column]==undefined || b[column]==null || b[column]=='') {ve.fetchPrimaryEntityList();
+          // },
+          // fetchPr
           return (a[column]==undefined || a[column]==null || a[column]=='') ? 0 : -1;
         } else if (asc) {
           return (''+a[ column ]).toLowerCase() < (''+b[ column ]).toLowerCase() ? -1 : 1;
@@ -398,7 +408,7 @@ var ractive = new BaseRactive({
         url: ractive.tenantUri(obj),
         contentType : 'application/json',
         type: 'DELETE',
-        success: completeHandler = function(data) {
+        success: function(data) {
           ractive.fetch();
           ractive.showResults();
         }
@@ -447,11 +457,9 @@ var ractive = new BaseRactive({
     } else {
       ractive.set('saveObserver', false);
       ractive.set('fetchInFlight', true);
-      $.ajax({
-        dataType: "json",
-        url: ractive.getServer()+'/'+ractive.get('tenant.id')+ractive.get('entityPath')+'/',
-        crossDomain: true,
-        success: function( data ) {
+      $( "#ajax-loader" ).show();
+      ractive.cm.fetchContacts(ractive.get('tenant.id'))
+        .then(function(data) {
           ractive.set('saveObserver', false);
           ractive.set('fetchInFlight', false);
           if (data['_embedded'] == undefined) {
@@ -472,8 +480,8 @@ var ractive = new BaseRactive({
           ractive.addDataList({ name: 'contacts' }, ractive.get('contacts'));
           ractive.showSearchMatched();
           ractive.set('saveObserver', true);
-        }
-      });
+          $( "#ajax-loader" ).hide();
+        });
     }
   },
   fetchAccounts: function () {
@@ -779,32 +787,29 @@ var ractive = new BaseRactive({
       delete tmp.account;
       delete tmp.accountId;
       tmp.tenantId = ractive.get('tenant.id');
-//      console.log('ready to save contact'+JSON.stringify(tmp)+' ...');
-      $.ajax({
-        url: id === undefined ? ractive.getServer()+'/'+tmp.tenantId+'/contacts/' : ractive.tenantUri(tmp),
-        type: id === undefined ? 'POST' : 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify(tmp),
-        success: completeHandler = function(data, textStatus, jqXHR) {
-          //console.log('data: '+ data);
-          var location = jqXHR.getResponseHeader('Location');
-          ractive.set('saveObserver',false);
+
+      ractive.cm.saveContact(tmp, ractive.get('tenant.id'))
+      .then(response => {
+        switch(response.status) {
+        case 201:
+          var location = response.headers.get('Location');
           if (location != undefined) ractive.set('current._links.self.href',location);
-          switch (jqXHR.status) {
-          case 201:
-            ractive.set('current.fullName',ractive.get('current.firstName')+' '+ractive.get('current.lastName'));
-            var currentIdx = ractive.get('contacts').push(ractive.get('current'))-1;
-            ractive.set('currentIdx',currentIdx);
-            if (ractive.uri(ractive.get('current.account'))==undefined) ractive.saveAccount();
-            break;
-          case 204:
-            ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
-            break;
-          }
-          ractive.showMessage('Contact saved');
-          ractive.addServiceLevelAlerts();
-          ractive.set('saveObserver',true);
+          ractive.set('current.fullName',ractive.get('current.firstName')+' '+ractive.get('current.lastName'));
+          var currentIdx = ractive.get('contacts').push(ractive.get('current'))-1;
+          ractive.set('currentIdx',currentIdx);
+          if (ractive.uri(ractive.get('current.account'))==undefined) ractive.saveAccount();
+          break;
+        case 204:
+          ractive.splice('contacts',ractive.get('currentIdx'),1,ractive.get('current'));
+          break;
         }
+      })
+      .then(function(data) {
+        console.log('success:'+data);
+        ractive.set('saveObserver',false);
+        ractive.showMessage('Contact saved');
+        ractive.addServiceLevelAlerts();
+        ractive.set('saveObserver',true);
       });
     } else {
       console.warn('Cannot save yet as contact is invalid');
@@ -831,7 +836,7 @@ var ractive = new BaseRactive({
         type: id == undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(ractive.get('current.account')),
-        success: completeHandler = function(data, textStatus, jqXHR) {
+        success: function(data, textStatus, jqXHR) {
           var location = jqXHR.getResponseHeader('Location');
           if (location != undefined) ractive.set('current.account.id',location.substring(location.lastIndexOf('/')+1));
           var contactAccountLink = ractive.uri(ractive.get('current'));
@@ -864,7 +869,7 @@ var ractive = new BaseRactive({
       type: 'PUT',
       contentType: 'text/uri-list',
       data: location,
-      success: completeHandler = function(data, textStatus, jqXHR) {
+      success: function(data, textStatus, jqXHR) {
         ractive.set('saveObserver',false);
         console.log('linked account: '+location+' to '+contactAccountLink);
         ractive.select(ractive.get('current'));
@@ -1035,7 +1040,7 @@ var ractive = new BaseRactive({
       type: type,
       data: d,
       dataType: 'text',
-      success: completeHandler = function(data) {
+      success: function(data) {
         console.log('Message received:'+data);
         if (msg['callback']!=undefined) msg.callback(data);
       },
