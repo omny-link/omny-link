@@ -37,7 +37,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -82,21 +81,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Entity
-@NamedEntityGraph(name = "contactWithAll",
-    attributeNodes = {
-            @NamedAttributeNode("activities"),
-            @NamedAttributeNode(value = "account", subgraph = "account-subgraph"),
-            @NamedAttributeNode("customFields"),
-            @NamedAttributeNode("notes"),
-            @NamedAttributeNode("documents")
-    },
-    subgraphs = {
-            @NamedSubgraph(
-                    name = "account-subgraph",
-                    attributeNodes = { @NamedAttributeNode("customFields") }
-            )
-    }
-)
+// Don't be tempted to try to write an entity graph to load contact will all
+// children. There is too much to be performant.
 @NamedEntityGraph(name = "contactWithAccount",
     attributeNodes = {
             @NamedAttributeNode(value = "account"),
@@ -455,7 +441,7 @@ public class Contact extends Auditable<String> implements Serializable {
     private Account account;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     private transient Long accountId;
 
     public Long getAccountId() {

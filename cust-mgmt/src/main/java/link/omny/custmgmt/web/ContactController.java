@@ -346,12 +346,6 @@ public class ContactController {
         return addLinks(tenantId, list);
     }
 
-    protected Contact findById(final String tenantId, final Long id) {
-        return contactRepo.findById(id)
-                .orElseThrow(() -> new BusinessEntityNotFoundException(
-                        Contact.class, id));
-    }
-
     /**
      * Return just the matching contact.
      *
@@ -364,8 +358,7 @@ public class ContactController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long id) {
         LOGGER.debug("Find contact for id {}", id);
-        Contact findById = findById(tenantId, id);
-        return addLinks(tenantId, findById);
+        return addLinks(tenantId, findById(tenantId, id));
     }
 
     /**
@@ -689,6 +682,10 @@ public class ContactController {
                 .toUri();
         headers.setLocation(uri);
         return new ResponseEntity<Activity>(headers, HttpStatus.CREATED);
+    }
+
+    protected Contact findById(String tenantId, Long contactId) {
+        return contactSvc.findById(tenantId, contactId);
     }
 
     /**

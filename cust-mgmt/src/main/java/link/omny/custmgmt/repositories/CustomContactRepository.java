@@ -16,10 +16,12 @@
 package link.omny.custmgmt.repositories;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import link.omny.custmgmt.model.Contact;
+import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
+import link.omny.supportservices.model.Activity;
+import link.omny.supportservices.model.Document;
+import link.omny.supportservices.model.Note;
 
 @Component
 public class CustomContactRepository {
@@ -37,6 +43,24 @@ public class CustomContactRepository {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private ContactRepository contactRepo;
+
+    @Transactional
+    public Contact findById(final String tenantId, final Long contactId) {
+        Contact contact = contactRepo.findById(contactId)
+                .orElseThrow(() -> new BusinessEntityNotFoundException(
+                        Contact.class, contactId));
+        Set<Activity> activities = contact.getActivities();
+        Set<Document> documents = contact.getDocuments();
+        Set<Note> notes = contact.getNotes();
+        LOGGER.debug(String.format(
+                "force load of child entities separately,"
+                        + " activities: %1$d, docs: %2$d, notes: %3$d",
+                activities.size(), documents.size(), notes.size()));
+        return contact;
+    }
 
     public List<Contact> listForTenant(String tenantId, Pageable pageable) {
         long start = System.currentTimeMillis();

@@ -50,7 +50,7 @@ public interface ContactRepository extends JpaRepository<Contact, Long>,
             + " AND (c.stage IS NULL OR c.stage != 'deleted')";
 
     @Override
-    @EntityGraph("contactWithAll")
+    @EntityGraph("contactWithAccount")
     Optional<Contact> findById(Long id);
 
     @Override
