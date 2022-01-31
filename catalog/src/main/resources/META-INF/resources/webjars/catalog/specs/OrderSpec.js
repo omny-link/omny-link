@@ -23,16 +23,28 @@ describe("Product catalogue", function() {
   var originalTimeout;
   var stockItemsBefore;
   var ordersBefore = [];
+  var purchaseOrdersBefore = [];
   var orders = [];
+  var purchaseOrders = [];
   var stockItem = {
       name: 'Widget A'
   };
   var order = {
       name: 'Order 123',
+      type: 'order',
       date: '2017-01-31',
       price: '100',
       customFields: {
         specialInstructions: 'Signature required'
+      }
+  };
+  var po = {
+      name: 'Purchase Order 456',
+      type: 'po',
+      date: '2017-02-28',
+      price: '100',
+      customFields: {
+        approver: 'Mr Slate'
       }
   };
   var note = {
@@ -54,7 +66,7 @@ describe("Product catalogue", function() {
       }
   }
   var complexOrder = {
-      name: 'Order 456',
+      name: 'Order 789',
       date: '2017-02-01',
       stage: 'Draft',
       orderItems: [
@@ -74,7 +86,12 @@ describe("Product catalogue", function() {
     $rh.getJSON('/'+tenantId+'/orders/',  function(data, textStatus, jqXHR) {
       ordersBefore = data;
       expect(jqXHR.status).toEqual(200);
-      done();
+
+      $rh.getJSON('/'+tenantId+'/orders/findByType/po',  function(data, textStatus, jqXHR) {
+        purchaseOrdersBefore = data;
+        expect(jqXHR.status).toEqual(200);
+        done();
+      });
     });
   });
 
@@ -94,6 +111,7 @@ describe("Product catalogue", function() {
       data: JSON.stringify(stockItem),
       success: function(data, textStatus, jqXHR) {
         var location = jqXHR.getResponseHeader('Location');
+
         expect(location).toMatch(/\/stock-items\/[0-9]/);
         expect(jqXHR.status).toEqual(201);
         stockItem.links = [ { rel: 'self', href: location } ];
@@ -130,8 +148,43 @@ describe("Product catalogue", function() {
       expect($rh.localId(orders[0])).toEqual($rh.localId(order));
       expect(orders[0].created).toBeDefined();
       expect(orders[0].name).toEqual(order.name);
+      expect(orders[0].type).toEqual(order.type);
       expect(orders[0].date).toEqual(order.date);
       expect(''+orders[0].price).toEqual(order.price);
+
+      done();
+    });
+  });
+
+  it("creates a new purchase order", function(done) {
+    $rh.ajax({
+      url: '/'+tenantId+'/orders/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(po),
+      success: function(data, textStatus, jqXHR) {
+        var location = jqXHR.getResponseHeader('Location');
+        expect(location).toMatch(/\/orders\/[0-9]/);
+        expect(jqXHR.status).toEqual(201);
+        po.links = [ { rel: 'self', href: location } ];
+        done();
+      }
+    });
+  });
+
+  it("fetches purchase orders by type and checks result", function(done) {
+    $rh.getJSON('/'+tenantId+'/orders/findByType/po',  function( data ) {
+      purchaseOrders = data;
+      data.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
+
+      expect(purchaseOrders.length).toEqual(purchaseOrdersBefore.length+1);
+      console.log('latest po: '+JSON.stringify(purchaseOrders[0]));
+      expect($rh.localId(purchaseOrders[0])).toEqual($rh.localId(po));
+      expect(purchaseOrders[0].created).toBeDefined();
+      expect(purchaseOrders[0].name).toEqual(po.name);
+      expect(purchaseOrders[0].type).toEqual(po.type);
+      expect(purchaseOrders[0].date).toEqual(po.date);
+      expect(''+purchaseOrders[0].price).toEqual(po.price);
 
       done();
     });
@@ -223,8 +276,8 @@ describe("Product catalogue", function() {
     });
   });
 
-  it("fetches updated orders and checks the newly updated one is correct", function(done) {
-    $rh.getJSON('/'+tenantId+'/orders/', function( data ) {
+  it("fetches updated orders by type and checks the newly updated one is correct", function(done) {
+    $rh.getJSON('/'+tenantId+'/orders/findByType/order', function( data ) {
       orders = data;
       data.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
 
@@ -354,6 +407,18 @@ describe("Product catalogue", function() {
   it("deletes the added order", function(done) {
     $rh.ajax({
       url: $rh.tenantUri(order),
+      type: 'DELETE',
+      contentType: 'application/json',
+      success: function(data, textStatus, jqXHR) {
+        expect(jqXHR.status).toEqual(204);
+        done();
+      }
+    });
+  });
+
+  it("deletes the added purchase order", function(done) {
+    $rh.ajax({
+      url: $rh.tenantUri(po),
       type: 'DELETE',
       contentType: 'application/json',
       success: function(data, textStatus, jqXHR) {

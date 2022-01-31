@@ -58,7 +58,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = { "order" })
 @ToString(exclude = { "order" })
 @Entity
 @Table(name = "OL_ORDER_ITEM")

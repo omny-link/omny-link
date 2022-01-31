@@ -103,6 +103,9 @@ import lombok.ToString;
                 })
         }
 )
+@NamedEntityGraph(name = "orderOnly",
+  attributeNodes = { @NamedAttributeNode("customFields") }
+)
 @Table(name = "OL_ORDER")
 @Data
 @ToString(exclude = { "documents", "notes", "orderItems" })
