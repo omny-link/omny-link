@@ -552,6 +552,14 @@ var ractive = new BaseRactive({
         $(selector).css('border-width', '1px').css('ractive.toggleResults();padding',
             '5px 10px 5px 10px');
       },
+  enhanceOrdersWithContact: function(orders) {
+    orders.map(function(obj) {
+      if ('contactId' in obj) {
+        obj.contact = Array.findBy('id',obj.contactId,ractive.get('current.contacts'));
+      }
+      return obj;
+    });
+  },
       deleteAccount: function(obj) {
         console.log('delete ' + obj + '...');
         $.ajax({
@@ -705,6 +713,7 @@ var ractive = new BaseRactive({
             ractive.set('saveObserver', false);
             try {
               console.log('fetched ' + data.length + ' orders');
+              ractive.enhanceOrdersWithContact(data);
               ractive.set('orders', data);
               ractive.update('orders');
             } catch (e) {

@@ -68,7 +68,7 @@
               </td>
               {{#entityPath=='/accounts'}}
                 <td data-order-id="{{localId}}" data-key="contactName">
-                  <span>{{#contactId}}{{Array.findBy('id','/contacts/'+contactId,current.contacts).fullName}}{{else}}{{contactId}}{{/}}</span>
+                  <span>{{#if contactId==undefined}}n/a{{elseif contact.fullName==undefined}}{{contactId}}{{else}}{{contact.fullName}}{{/if}}</span>
                 </td>
               {{/}}
               {{#tenant.features.orderName}}<td>{{name}}</td>{{/}}
@@ -85,24 +85,28 @@
                 <span>{{stage}}</span>
               </td>
               {{#tenant.features.catalog}}
-                {{#if tenant.features.orderItems && orderItems}}
+                {{#if tenant.features.orderItems && orderItems != undefined}}
                   <td data-order-id="{{localId}}" title="List of included {{#tenant.strings.stockItems}}{{tenant.strings.stockItems.toLowerCase()}}{{else}}stock items{{/}}">
                     {{formatStockItemIds(.)}}
                   </td>
-                {{elseif !tenant.features.orderItems && ..stockItem}}
+                {{elseif (!tenant.features.orderItems && ..stockItem != undefined)}}
                   <td data-order-id="{{localId}}" title="{{#tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/}}">
                     {{stockItem.name}}
                   </td>
-                {{else}}
+                {{elseif customFields != undefined && customFields['proposedStockItems'] != undefined}}
                   <td data-order-id="{{localId}}" data-key="customFields.proposedStockItems">
-                    <span title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}">{{customFields['proposedStockItems']}}</span>
+                    <span title="{{#tenant.strings.stockItemProposedHint}}{{tenant.strings.stockItemProposedHint}}{{else}}Proposed or suggested stock items{{/}}">
+                      {{customFields['proposedStockItems']}}
+                    </span>
                   </td>
+                {{else}}
+                  <td> n/a </td>
                 {{/if}}
-                {{#tenant.features.stockPricing}}
-                  <td class="number" data-order-id="{{localId}}" data-key="price">
-                    <span title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{price}}</span>
-                  </td>
-                {{/}}
+              {{/}}
+              {{#tenant.features.stockPricing}}
+                <td class="number" data-order-id="{{localId}}" data-key="price">
+                  <span title="{{#tenant.strings.priceHint}}{{tenant.strings.priceHint}}{{else}}Price{{/}}">{{price}}</span>
+                </td>
               {{/}}
               {{#if tenant.orderFields && tenant.features.orderFieldsOnContact != undefined}}
                 {{#tenant.orderFields}}
@@ -241,3 +245,4 @@
     </form>
   </div>
 </section>
+

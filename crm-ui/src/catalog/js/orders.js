@@ -16,6 +16,9 @@
 const DEFAULT_INACTIVE_STAGES = 'cold,complete,on hold,unqualified,waiting list';
 
 var ractive = new BaseRactive({
+  cm: new CustMgmtClient({
+    server: $env.server
+  }),
   el: 'container',
   lazy: true,
   template: '#template',
@@ -46,21 +49,6 @@ var ractive = new BaseRactive({
     formatAgeFromDate: function(timeString) {
       if (timeString==undefined) return;
       return i18n.getAgeString(ractive.parseDate(timeString));
-    },
-    formatAccountId: function(contactId) {
-      console.info('formatAccountId for contact: '+contactId);
-      if (contactId == undefined) return;
-      var acctId;
-      $.each(Array.findBy('id',contactId,ractive.get('contacts')).links, function(i,d) {
-        if (d.rel == 'account') acctId = d.href.substring(d.href.lastIndexOf('/')+1);
-      });
-      return acctId;
-    },
-    formatContactId: function(contactId) {
-      console.info('formatContactId');
-      if (contactId == undefined) return contactId;
-      var contact = Array.findBy('id',contactId,ractive.get('contacts'));
-      return contact == undefined ? 'n/a' : contact.fullName;
     },
     formatContactAddress: function(contactId, selector) {
       console.info('formatContactAddress');
@@ -375,6 +363,14 @@ var ractive = new BaseRactive({
     ractive.set('currentIdx',ractive.get('orders').indexOf(order));
     ractive.select( order );
   },
+  enhanceWithContact: function() {
+    ractive.get('orders').map(function(obj) {
+      if ('contactId' in obj) {
+        obj.contact = Array.findBy('id',obj.contactId,ractive.get('contacts'));
+      }
+      return obj;
+    });
+  },
   fetch: function() {
     console.info('fetch variant: '+ractive.get('variant'));
     if (ractive.get('fetchInFlight')==true) {
@@ -391,11 +387,12 @@ var ractive = new BaseRactive({
         success: function( data ) {
           ractive.set('fetchInFlight', false);
           if ('_embedded' in data) {
-            ractive.merge('orders', data._embedded.orders);
-          } else {
-            ractive.merge('orders', data);
+            data = data._embedded.orders;
           }
+          ractive.merge('orders', data);
           ractive.initControls();
+          if (ractive.get('contacts').length >0) ractive.enhanceWithContact();
+          else ractive.set('enhanceWithContact', true);
           if (ractive.hasRole('admin')) $('.admin').show();
           if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
           ractive.showSearchMatched();
@@ -449,21 +446,18 @@ var ractive = new BaseRactive({
   fetchContacts: function () {
     console.info('fetchContacts...');
     ractive.set('saveObserver', false);
-    $.ajax({
-      dataType: "json",
-      url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/contacts/',
-      crossDomain: true,
-      success: function( data ) {
+    $( "#ajax-loader" ).show();
+    ractive.cm.fetchContacts(ractive.get('tenant.id'))
+      .then(function(data) {
         ractive.set('saveObserver', false);
-        ractive.set('contacts',data.map(function(obj) {
-            obj.name = obj.fullName;
-            return obj;
-          })
-        );
+        ractive.set('contacts', data.map(function(obj) {
+          obj.name = obj.fullName;
+          return obj;
+        }));
         ractive.addDataList({ name: 'contacts' }, ractive.get('contacts'));
+        if (ractive.get('enhanceWithContact')) ractive.enhanceWithContact();
         ractive.set('saveObserver', true);
-      }
-    });
+      });
   },
   fetchStockCategory: function(stockCategoryName) {
     if (stockCategoryName == undefined) return;
@@ -485,23 +479,6 @@ var ractive = new BaseRactive({
         DEFAULT_INACTIVE_STAGES :
         ractive.get('tenant.serviceLevel.inactiveStages').join();
     return inactiveStages;
-  },
-  oninit: function() {
-    console.info('oninit');
-    this.on( 'filter', function ( event, filter ) {
-      console.info('filter on '+JSON.stringify(event)+','+filter.idx);
-      $('.dropdown.dropdown-menu li').removeClass('selected');
-      $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected');
-      ractive.search(filter.value);
-    });
-    this.on( 'sortOrder', function ( event, column ) {
-      console.info('sortOrder on '+column);
-      $( "#ajax-loader" ).show();
-      // if already sorted by this column reverse order
-      if (this.get('sortOrderColumn')==column) this.set('sortOrderAsc', !this.get('sortOrderAsc'));
-      this.set( 'sortOrderColumn', column );
-      $( "#ajax-loader" ).hide();
-    });
   },
   save: function () {
     console.info('save order: '+ractive.get('current.name')+'...');
@@ -659,24 +636,6 @@ var ractive = new BaseRactive({
     }
     ractive.hideResults();
   },
-  showActivityIndicator: function(msg, addClass) {
-    document.body.style.cursor='progress';
-    this.showMessage(msg, addClass);
-  },
-  showResults: function() {
-    $('#ordersTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
-    $('#currentSect').slideUp();
-    $('#ordersTable').slideDown({ queue: true });
-  },
-  showSearchMatched: function() {
-    ractive.set('searchMatched',$('#ordersTable tbody tr').length);
-    if ($('#ordersTable tbody tr:visible').length==1) {
-      var orderId = $('#ordersTable tbody tr:visible').data('href');
-      var order = Array.findBy('id',orderId,ractive.get('orders'));
-      ractive.edit( order );
-    }
-    $( "#ajax-loader" ).hide();
-  },
   toggleEditOrderItem: function(orderItem, j) {
     console.info('editOrderItem '+('id' in orderItem ? orderItem.id : 'new item?')+'...');
 
@@ -688,11 +647,6 @@ var ractive = new BaseRactive({
     $($('.currentOrderItemSect')[j]).toggle();
 //    ractive.selectOrderItem( orderItem );
 
-  },
-  toggleResults: function() {
-    console.info('toggleResults');
-    $('#ordersTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
-    $('#ordersTable').slideToggle();
   },
   updateContactId: function(newVal, keypath) {
     console.info('updateContactId: '+newVal);
@@ -787,4 +741,5 @@ ractive.observe('current.price', function(newValue, oldValue, keypath) {
     $('.autoNumeric').autoNumeric('update');
   }
 });
+
 
