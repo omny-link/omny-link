@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+## 3.0.2 - 02 Feb 22
+
+ - restore partials and hence link from task to account
+
 ## 3.0.1 - 03 Jun 21
 
  - restore role-based edit for power-users
