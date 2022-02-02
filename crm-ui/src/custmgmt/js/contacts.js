@@ -252,19 +252,7 @@ var ractive = new BaseRactive({
       return ractive.localId(obj);
     },
     sort: function (array, column, asc) {
-      if (array == undefined) return;
-      console.info('sort array of '+(array == undefined ? 0 : array.length)+' items '+(asc ? 'ascending' : 'descending')+' on: '+column);
-      array = array.slice(); // clone, so we don't modify the underlying data
-
-      return array.sort( function ( a, b ) {
-        if (b[column]==undefined || b[column]==null || b[column]=='') {
-          return (a[column]==undefined || a[column]==null || a[column]=='') ? 0 : -1;
-        } else if (asc) {
-          return (''+a[ column ]).toLowerCase() < (''+b[ column ]).toLowerCase() ? -1 : 1;
-        } else {
-          return (''+a[ column ]).toLowerCase() > (''+b[ column ]).toLowerCase() ? -1 : 1;
-        }
-      });
+      return ractive.sortBy(array, column, asc);
     },
     sortAsc: false,
     sortColumn: 'lastUpdated',

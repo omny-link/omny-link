@@ -66,18 +66,7 @@ var ractive = new BaseRactive({
     saveObserver: false,
     server: $env.server,
     sort: function (array, column, asc) {
-      console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);
-      array = array.slice(); // clone, so we don't modify the underlying data
-
-      return array.sort( function ( a, b ) {
-        if (b[column]==undefined || b[column]==null || b[column]=='') {
-          return (a[column]==undefined || a[column]==null || a[column]=='') ? 0 : -1;
-        } else if (asc) {
-          return a[ column ] < b[ column ] ? -1 : 1;
-        } else {
-          return a[ column ] > b[ column ] ? -1 : 1;
-        }
-      });
+      return ractive.sortBy(array, column, asc);
     },
     sortAsc: true,
     sortColumn: 'name',
