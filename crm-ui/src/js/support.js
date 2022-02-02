@@ -103,7 +103,8 @@
       $.ajax({
         url: url,
         type: 'POST',
-        data: n,
+        contentType: 'application/json',
+        data: JSON.stringify(n),
         success: function(data) {
           console.log('response: '+ JSON.stringify(data));
           ractive.showMessage('Document link saved successfully');
