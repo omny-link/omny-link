@@ -28,10 +28,6 @@ var ractive = new BaseRactive({
     entityPath: '/contacts',
     contacts: [],
     title: 'Contact Management',
-    alerts: function(selector) {
-      console.log('alerts for '+selector);
-      return $(selector+' :invalid').length;
-    },
     customField: function(obj, name) {
       if (!('customFields' in obj)) {
         return undefined;
@@ -77,6 +73,14 @@ var ractive = new BaseRactive({
     formatAgeFromDate: function(timeString) {
       if (timeString==undefined) return;
       return i18n.getAgeString(ractive.parseDate(timeString));
+    },
+    formatAlertCount: function(alerts) {
+      console.log('formatAlertCount');
+      if (typeof alerts == 'string') alerts = JSON.parse(alerts);
+      var val = 0;
+      return alerts == undefined ? 0 : Object.keys(alerts).reduce(function (prev, cur) {
+        return prev + parseInt(alerts[cur]);
+      }, val);
     },
     formatContactId: function(contactId) {
       console.info('formatContactId');
@@ -1091,6 +1095,7 @@ $(document).ready(function() {
   ractive.observe('current.*', function(newValue, oldValue, keypath) {
     console.log("'"+keypath+"' changing from '"+oldValue+"' to '"+newValue+"'");
     var ignored = [ 'current.notes', 'current.documents' ];
+    if (ractive.get('current') != undefined) ractive.showAlertCounters();
     if (ractive.get('saveObserver') != true) {
       console.debug('Skipped save of '+keypath+' because in middle of other operation');
   //  } else if (newValue == '' && oldValue == undefined) {

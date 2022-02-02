@@ -731,7 +731,7 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     $('#socialModalSect').modal('hide');
   },
   sortBy: function (array, column, asc) {
-    if (array == undefined) return;
+    if (array === undefined || array.length === 0) return;
     console.info('sort array of '+(array == undefined ? 0 : array.length)+' items '+(asc ? 'ascending' : 'descending')+' on: '+column);
     array = array.slice(); // clone, so we don't modify the underlying data
 
