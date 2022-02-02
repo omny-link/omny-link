@@ -984,6 +984,7 @@ var ractive = new BaseRactive({
       ractive.set('saveObserver',true);
     }
     ractive.hideResults();
+    setTimeout(ractive.showCurrent, ractive.EASING_DURATION);
   },
   selectMultiple: function(contact) {
     console.info('selectMultiple: '+ractive.localId(contact));
@@ -1020,10 +1021,6 @@ var ractive = new BaseRactive({
         if ('callback' in msg) msg.callback(data);
       },
     });
-  },
-  showActivityIndicator: function(msg, addClass) {
-    document.body.style.cursor='progress';
-    this.showMessage(msg, addClass);
   },
   showAlertCounters: function() {
     console.info('showAlertCounters');
@@ -1093,7 +1090,6 @@ $(document).ready(function() {
   // controls done that way save the oldValue
   ractive.observe('current.*', function(newValue, oldValue, keypath) {
     console.log("'"+keypath+"' changing from '"+oldValue+"' to '"+newValue+"'");
-    if (ractive.get('current')!=undefined) ractive.showAlertCounters();
     var ignored = [ 'current.notes', 'current.documents' ];
     if (ractive.get('saveObserver') != true) {
       console.debug('Skipped save of '+keypath+' because in middle of other operation');
@@ -1104,9 +1100,7 @@ $(document).ready(function() {
       if (keypath=='current.account') ractive.saveAccount();
       else ractive.save();
     } else {
-      console.warn('Skipped contact save of '+keypath);
-      //console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
-      //console.log('  saveObserver: '+ractive.get('saveObserver'));
+      console.info('Skipped contact save of '+keypath);
     }
   });
 

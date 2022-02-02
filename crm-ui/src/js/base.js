@@ -650,6 +650,9 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     else if (typeof uriOrObj == 'object') return ractive.localId(ractive.uri(uriOrObj));
     else return uriOrObj.substring(uriOrObj.lastIndexOf('/')+1);
   },
+  showCurrent: function() {
+    $('#currentSect').slideDown({ queue: true });
+  },
   showDisconnected: function(msg) {
     console.log('showDisconnected: '+msg);
     if ($('#connectivityMessages').length>0) {
