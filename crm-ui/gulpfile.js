@@ -1,16 +1,17 @@
-var del         = require('del');
-var log         = require('fancy-log');
-var gulp        = require('gulp');
-var babel       = require('gulp-babel');
-var bSync       = require('browser-sync').create();
-var jshint      = require('gulp-jshint');
-var cleanCSS    = require('gulp-clean-css');
-var minimist    = require('minimist');
-var replace     = require('gulp-replace');
-var rsync       = require('gulp-rsync');
-var through2    = require('through2');
-var zip         = require('gulp-zip');
-var vsn         = '3.1.0';
+const del          = require('del');
+const log          = require('fancy-log');
+const gulp         = require('gulp');
+const babel        = require('gulp-babel');
+const bSync        = require('browser-sync').create();
+const jshint       = require('gulp-jshint');
+const cleanCSS     = require('gulp-clean-css');
+const minimist     = require('minimist');
+const replace      = require('gulp-replace');
+const rsync        = require('gulp-rsync');
+const through2     = require('through2');
+const workboxBuild = require('workbox-build');
+const zip          = require('gulp-zip');
+const vsn          = '3.1.0';
 
 var buildDir = 'target/classes';
 var finalName = 'crm-ui-'+vsn+'.jar'
@@ -101,6 +102,16 @@ gulp.task('fix-paths', function() {
     .pipe(gulp.dest(buildDir));
 });
 
+gulp.task('service-worker', () => {
+  return workboxBuild.generateSW({
+    globDirectory: buildDir,
+    globPatterns: [
+      '**/*.{html,json,js,css}',
+    ],
+    swDest: buildDir+'/sw.js',
+  });
+});
+
 gulp.task('package', () =>
   gulp.src([buildDir+'/*','!'+buildDir+'/*.jar','!'+buildDir+'/*.zip'])
       .pipe(zip(finalName))
@@ -108,7 +119,7 @@ gulp.task('package', () =>
 );
 
 gulp.task('install',
-  gulp.series('compile', 'assets', 'fix-paths', 'package')
+  gulp.series('compile', 'assets', 'fix-paths', 'service-worker', 'package')
 );
 
 gulp.task('default',
