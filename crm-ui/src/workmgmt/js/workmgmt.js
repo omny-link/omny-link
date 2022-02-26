@@ -302,7 +302,9 @@ var ractive = new BaseRactive({
        data: JSON.stringify({
         includeTaskLocalVariables: true,
         includeProcessVariables: true,
-        involvedUser: ractive.get('profile.username')
+        involvedUser: ractive.get('profile.username'),
+        start: 0,
+        size: 500
       }),
       contentType: 'application/json',
       crossDomain: true,
@@ -328,7 +330,7 @@ var ractive = new BaseRactive({
           if (ractive.hasRole('admin')) $('.admin').show();
           ractive.showSearchMatched();
         }
-        ractive.set('fetch', true);
+        ractive.set('fetch', false);
         ractive.set('saveObserver',true);
       }
     });
