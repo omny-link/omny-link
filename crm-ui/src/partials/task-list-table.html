@@ -33,7 +33,11 @@
     <tr class="{{renderPriority(this)}}" data-href="/tasks/{{id}}">
       <td on-click="edit(this)">{{i+1}}</td>
       <td on-click="edit(this)">{{businessKey === undefined ? variables['businessKey'] : businessKey}}</td>
-      <td class="col-truncate" on-click="edit(this)" title="{{variables['what']}}">{{name == null ? taskDefinitionKey.toLabel() : name}}</td>
+      {{#if variables.what}}
+        <td class="col-truncate" on-click="edit(this)" title="{{variables['what']}}">{{variables.what}}</td>
+      {{else}}
+        <td class="col-truncate" on-click="edit(this)" title="{{name == null ? taskDefinitionKey.toLabel() : name}}">{{name == null ? taskDefinitionKey.toLabel() : name}}</td>
+      {{/if}}
       <td on-click="edit(this)">{{formatDate(createTime)}}</td>
       <td on-click="edit(this)">{{formatDate(variables['deferUntil'])}}</td>
       <td on-click="edit(this)">{{formatDate(dueDate)}}</td>

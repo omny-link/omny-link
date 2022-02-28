@@ -285,7 +285,26 @@ var ractive = new BaseRactive({
               ractive.showMessage('Ended workflow successfully');
           }
           ractive.showResults();
-          //ractive.set('saveObserver',true);
+          ractive.set('saveObserver',true);
+        }
+      });
+  },
+  endTask: function(taskId) {
+    console.log('endTask...');
+    $.ajax({
+        url: ractive.getBpmServer()+'/flowable-rest/service/runtime/tasks/'+taskId,
+        type: 'DELETE',
+        contentType: 'application/json',
+        crossDomain: true,
+        headers: { Authorization: ractive.getBpmAuth() },
+        success: function(data, textStatus, jqXHR) {
+          console.log('data: '+data);
+          if (jqXHR.status == 204) {
+              ractive.fetch();
+              ractive.showMessage('Ended task successfully');
+          }
+          ractive.showResults();
+          ractive.set('saveObserver',true);
         }
       });
   },
@@ -546,7 +565,7 @@ var ractive = new BaseRactive({
             ractive.set('current.taskVariables',data2);
             ractive.set('current.variables',{
               ...ractive.get('current.variables'), ...ractive.get('current.taskVariables')
-	    });
+	          });
           }
         });
         $.ajax({
