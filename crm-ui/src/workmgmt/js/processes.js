@@ -672,6 +672,10 @@ var ractive = new BaseRactive({
     svg.addEventListener('touchleave',  ractive.dragEnd);
     svg.addEventListener('touchcancel',  ractive.dragEnd);
   },
+  oninit: function() {
+    console.log('oninit');
+    this.showBanner(this._transitionMessage, 'alert-danger');
+  },
   nextBpmn: function(bpmn) {
     console.info('nextBpmn');
     if (ractive.get('current.bpmn') != undefined) ractive.push('bpmnUndoStack', ractive.get('current.bpmn'));

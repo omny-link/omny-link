@@ -202,8 +202,8 @@ var ractive = new BaseRactive({
   },
   oninit: function() {
     console.log('oninit');
-
     this.loadStandardPartials(this.get('stdPartials'));
+    this.showBanner(this._transitionMessage, 'alert-danger');
   },
   showActivityIndicator: function(msg, addClass) {
     document.body.style.cursor='progress';

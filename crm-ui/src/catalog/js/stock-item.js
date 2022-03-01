@@ -368,6 +368,7 @@ var ractive = new BaseRactive({
   },
   oninit: function() {
     console.log('oninit');
+    this.showBanner(this._transitionMessage, 'alert-danger');
   },
   save: function () {
     console.log('save stockItem: '+ractive.get('current').name+'...');

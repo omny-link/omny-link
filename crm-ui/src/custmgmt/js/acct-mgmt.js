@@ -855,9 +855,10 @@ var ractive = new BaseRactive({
         // alert('Sorry merge of contacts is not yet implemented');
         $('#mergeModal').modal({});
       },
-      oninit: function() {
-        console.log('oninit');
-      },
+  oninit: function() {
+    console.log('oninit');
+    this.showBanner(this._transitionMessage, 'alert-danger');
+  },
       pasteInit: function() {
         ractive.set('pasteData', undefined);
         $("#contactsSect").slideUp(EASING_DURATION * 2, function() {

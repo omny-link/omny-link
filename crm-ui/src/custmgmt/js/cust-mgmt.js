@@ -630,6 +630,7 @@ var ractive = new BaseRactive({
       this.set( 'sortOrderColumn', column );
       $( "#ajax-loader" ).hide();
     });
+    this.showBanner(this._transitionMessage, 'alert-danger');
   },
   pasteInit: function() {
     ractive.set('pasteData',undefined);

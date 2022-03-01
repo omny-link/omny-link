@@ -19,6 +19,8 @@ var newLineRegEx = /\n/g;
 
 var BaseRactive = Ractive.extend({
   _autolinker: undefined,
+  _transitionMessage: 'NOTE: This is not the live system but is available only for reference during transition. '
+      +'Please use <a href="https://cloud.knowprocess.com">https://cloud.knowprocess.com</a> instead',
   addDataList: function(d, data) {
     if (d.name == undefined) {
       console.warn('Data list with selector "'+d.ref+'" has no name, please add one to use as a datalist');
@@ -550,6 +552,20 @@ var BaseRactive = Ractive.extend({
   /** @deprecated use localId */
   shortId: function(uri) {
     return ractive.localId(uri);
+  },
+  showBanner: function(msg, additionalClass) {
+    var banner = document.getElementById('olBanner');
+    if (banner === null) {
+      banner = document.createElement('div');
+      banner.id="olBanner";
+      var bannerContainer = document.createElement('div');
+      bannerContainer.className = 'container';
+      banner.appendChild(bannerContainer);
+      document.querySelector('body').prepend(banner);
+    }
+    banner.className='alert '+additionalClass;
+    banner.style = 'z-index:200;position:relative;';
+    document.querySelector('#olBanner>.container').innerHTML = msg;
   },
   showDisconnected: function(msg) {
     console.log('showDisconnected: '+msg);

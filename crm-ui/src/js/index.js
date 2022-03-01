@@ -66,6 +66,7 @@ var ractive = new BaseRactive({
   },
   oninit: function() {
     console.log('oninit');
+    this.showBanner(this._transitionMessage, 'alert-danger');
   },
   sendMessage: function(msg) {
     console.log('sendMessage: '+msg.name);

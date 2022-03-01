@@ -339,6 +339,10 @@ var ractive = new BaseRactive({
     });
     return inactiveStages;
   },
+  oninit: function() {
+    console.log('oninit');
+    this.showBanner(this._transitionMessage, 'alert-danger');
+  },
   openInNewWindow: function(obj) {
     console.info('openInNewWindow');
     if (getSearchParameters()['o']!=undefined) {

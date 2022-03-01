@@ -6,16 +6,40 @@ module.exports = {
     css: {
       cssnano: false
     },
-    apiServerUrl: 'http://localhost:8080'
+    apiServerUrl: 'http://localhost:8080',
+    configServerUrl: 'https://TODO.knowprocess.com',
   },
-  stage: {
+  previous: {
     js: {
-      minify: false
+      minify: true
     },
     css: {
       cssnano: true
     },
-    apiServerUrl: 'https://api.knowprocess.com'
+    apiServerUrl: 'https://TODO.knowprocess.com',
+    configServerUrl: 'https://TODO.knowprocess.com',
+    server: {
+      host: 'TODO.com',
+      usr: 'TODO',
+      dir: '/var/www-TODO',
+      privateKey: '/home/TODO/.ssh/id_rsa'
+    }
+  },
+  stage: {
+    js: {
+      minify: true
+    },
+    css: {
+      cssnano: true
+    },
+    apiServerUrl: 'https://TODO.knowprocess.com',
+    configServerUrl: 'https://TODO.knowprocess.com',
+    server: {
+      host: 'TODO.com',
+      usr: 'TODO',
+      dir: '/var/www-TODO',
+      privateKey: '/home/TODO/.ssh/id_rsa'
+    }
   },
   prod: {
     js: {
@@ -24,6 +48,13 @@ module.exports = {
     css: {
       cssnano: true
     },
-    apiServerUrl:  'https://api.knowprocess.com'
+    apiServerUrl:  'https://TODO.knowprocess.com',
+    configServerUrl: '',
+    server: {
+      host: 'TODO.com',
+      usr: 'TODO',
+      dir: '/var/www-TODO',
+      privateKey: '/home/TODO/.ssh/id_rsa'
+    }
   }
 };

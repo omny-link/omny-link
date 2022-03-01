@@ -336,6 +336,10 @@ var ractive = new BaseRactive({
     $('#memoDistributionsTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
     $('#memoDistributionsTable').slideUp();
   },
+  oninit: function() {
+    console.log('oninit');
+    this.showBanner(this._transitionMessage, 'alert-danger');
+  },
   save: function () {
     console.log('save distribution: '+ractive.get('current').name+'...');
 

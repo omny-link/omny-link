@@ -541,6 +541,7 @@ var ractive = new BaseRactive({
       this.set( 'sortOrderColumn', column );
       $( "#ajax-loader" ).hide();
     });
+    this.showBanner(this._transitionMessage, 'alert-danger');
   },
   save: function () {
     console.info('save order: '+ractive.get('current.name')+'...');

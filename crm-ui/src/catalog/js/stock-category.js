@@ -352,8 +352,8 @@ var ractive = new BaseRactive({
   },
   oninit: function() {
     console.log('oninit');
-
     this.loadStandardPartials(this.get('stdPartials'));
+    this.showBanner(this._transitionMessage, 'alert-danger');
   },
   save: function () {
     console.log('save stockCategory: '+ractive.get('current').name+'...');

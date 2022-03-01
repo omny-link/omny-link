@@ -314,6 +314,7 @@ var ractive = new BaseRactive({
   },
   oninit: function() {
     console.log('oninit');
+    this.showBanner(this._transitionMessage, 'alert-danger');
   },
   save: function () {
     console.log('save message: '+ractive.get('current').name+'...');

@@ -357,6 +357,10 @@ var ractive = new BaseRactive({
       return false;
     }
   },
+  oninit: function() {
+    console.log('oninit');
+    this.showBanner(this._transitionMessage, 'alert-danger');
+  },
   newMessage: function() {
     console.log('newMessage...');
     ractive.set('message', {tenant: ractive.get('tenant.id'),name: ractive.get('tenant.id')+'.messageName'});
