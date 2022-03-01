@@ -73,7 +73,7 @@
 
     <div class="pull-right">
       <button class="btn btn-success" on-click="submitCompleteTask()" type="button">Mark Complete</button>
-      <button class="btn btn-danger" data-process-instance-id="{{current.processInstanceId}}" onclick="ractive.endInstance('{{current.processInstanceId}}')" type="button">Delete</button>
+      <button class="btn btn-danger" on-click="endInstance(current.processInstanceId)" type="button">Delete</button>
     </div>
   {{else}}
     <div class="pull-right">
