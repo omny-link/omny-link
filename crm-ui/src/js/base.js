@@ -409,7 +409,7 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     return ractive.localId(entity);
   },
   initAbout: function() {
-    $('.powered-by-icon').empty().append('<img src="/images/icon/omny-icon-greyscale.png" alt="Sustainable Resource Planning™">');
+    $('.powered-by-icon').empty().append('<img src="'+ractive.getServer()+'/images/icon/omny-link-icon.svg" alt="'+$env.appName+'">');
   },
   initAutoComplete: function() {
     console.log('initAutoComplete');
@@ -553,7 +553,7 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
   initiatorIcon: function(initiator) {
     if (initiator==undefined || initiator=='anonymousUser') {
       $('.initiator-img').empty().append('<img class="img-rounded" src="' +
-          (ractive.get('tenant.strings.botIcon') ? ractive.get('tenant.strings.botIcon') : '/images/icon/knowprocess-icon-48x48.png')+
+          (ractive.get('tenant.strings.botIcon') ? ractive.get('tenant.strings.botIcon') : ractive.getServer()+'/images/icon/omny-link-icon.svg')+
           '" width="34"/>');
     } else {
       $('.initiator-img').empty().append(ractive.gravatar(initiator));
