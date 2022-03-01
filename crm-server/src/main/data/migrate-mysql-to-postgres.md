@@ -189,3 +189,20 @@ ESCAPED BY '"' LINES TERMINATED BY '\n';
   ```
 
 ## Check source and target count match
+
+## synthesize business key as task variable
+select concat(
+              'INSERT INTO act_ru_variable (id_,rev_,type_,name_,task_id_,text_)',
+              ' values(uuid_generate_v4(),1,\'string\',\'businessKey\',',
+              t.id_,
+              ',\'',
+               name,
+              '\');'
+       ) 
+from ACT_RU_VARIABLE v
+     INNER JOIN ACT_RU_TASK t on v.proc_inst_id_ = t.proc_inst_id_
+     inner join OL_ACCOUNT a on a.id = v.text_ 
+where v.name_ = 'accountlocalId'
+limit 5;
+
+   INNER JOIN ACT_RU_TASK t on v.proc_inst_id_ = t.proc_inst_id_ where v.PROC_INST_ID_ in (SELECT PROC_INST_ID_ FROM ACT_RU_TASK  WHERE tenant_id_ = 'alife' and PROC_DEF_ID_ like 'SimpleTo%') INTO OUTFILE '/var/lib/mysql-files/ACT_RU_VARIABLE.csv' FIELDS ENCLOSED BY '"' TERMINATED BY ','
