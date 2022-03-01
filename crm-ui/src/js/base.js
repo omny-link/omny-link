@@ -650,6 +650,20 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     else if (typeof uriOrObj == 'object') return ractive.localId(ractive.uri(uriOrObj));
     else return uriOrObj.substring(uriOrObj.lastIndexOf('/')+1);
   },
+  showBanner: function(msg, additionalClass) {
+    var banner = document.getElementById('olBanner');
+    if (banner === null) {
+      banner = document.createElement('div');
+      banner.id="olBanner";
+      var bannerContainer = document.createElement('div');
+      bannerContainer.className = 'container';
+      banner.appendChild(bannerContainer);
+      document.querySelector('body').prepend(banner);
+    }
+    banner.className='alert '+additionalClass;
+    banner.style = 'z-index:200;position:relative;';
+    document.querySelector('#olBanner>.container').innerHTML = msg;
+  },
   showCurrent: function() {
     $('#currentSect').slideDown({ queue: true });
   },
