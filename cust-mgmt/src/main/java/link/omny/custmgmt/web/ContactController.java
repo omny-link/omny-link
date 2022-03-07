@@ -526,6 +526,7 @@ public class ContactController {
             } else {
                 contact.getCustomFields().add(field);
             }
+            trgtField.get().setContact(contact);
         }
         contact.setTenantId(tenantId);
         contact.setLastUpdated(new Date());
