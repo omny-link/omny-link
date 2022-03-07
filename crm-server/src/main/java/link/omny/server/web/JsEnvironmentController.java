@@ -1,5 +1,5 @@
 /*******************************************************************************
- *Copyright 2014-2021 Tim Stephenson and contributors
+ * Copyright 2015-2022 Tim Stephenson and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -14,8 +14,6 @@
  * the License.
  ******************************************************************************/
 package link.omny.server.web;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,8 +61,7 @@ public class JsEnvironmentController {
     }
 
     @RequestMapping(path = "/js/env.js", method = RequestMethod.GET)
-    public final ResponseEntity<String> getEnvironment(HttpServletResponse resp)
-            throws Exception {
+    public final ResponseEntity<String> getEnvironment() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "text/javascript");
         return new ResponseEntity<String>(

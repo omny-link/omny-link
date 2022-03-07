@@ -1,5 +1,5 @@
 <!--
-  Copyright 2015-2018 Tim Stephenson and contributors
+  Copyright 2015-2022 Tim Stephenson and contributors
   
    Licensed under the Apache License, Version 2.0 (the "License"); you may not
    use this file except in compliance with the License.  You may obtain a copy
@@ -59,7 +59,7 @@
           <td on-click="edit(this)">{{{gravatar(owner)}}}</td>
           <td class="hidden-xs hidden-sm" on-click="edit(this)">{{formatDate(firstContact)}}</td>
           <td class="hidden-xs" on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
-          <td on-click="edit(this)"><span class="alert-counter {{#alerts.length>0}}alert-danger{{else}}alert-success{{/}}">{{#alerts}}{{alerts.length}}{{else}}0{{/}}</span></td>
+          <td on-click="edit(this)"><span class="alert-counter {{#formatAlertCount(alerts)>0}}alert-danger{{else}}alert-success{{/}}">{{#alerts}}{{formatAlertCount(alerts)}}{{else}}0{{/}}</span></td>
           <td on-click="edit(this)">{{{formatTags(tags)}}}</td>
           <td class="col-xs-2 col-actions">
             <a class="clickable glyphicon icon-btn glyphicon-transfer" aria-hidden="true" on-click="mergeContacts(this)" style="display:none;" title="Merge two records"></a>

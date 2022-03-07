@@ -1,5 +1,5 @@
 <!--
-  Copyright 2015-2018 Tim Stephenson and contributors
+  Copyright 2015-2022 Tim Stephenson and contributors
   
    Licensed under the Apache License, Version 2.0 (the "License"); you may not
    use this file except in compliance with the License.  You may obtain a copy
@@ -22,7 +22,7 @@
       {{#current.ref}}
         <span>{{current.ref}} - </span>
       {{/}}
-      <span>{{#current.contactId}}{{formatContactId(current.contactId)}}{{/}}</span>
+      <span>{{#current.contactId}}{{current.contact.fullName}}{{/}}</span>
       <span class="pull-right">
         <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
         {{#if tenant.features.notesOnOrder ||  tenant.features.documentsOnOrder}}
@@ -80,10 +80,10 @@
           <label class="col-md-4 col-sm-4 col-xs-4 required">{{#tenant.strings.contact}}{{tenant.strings.contact}}{{else}}Contact{{/}}:</label>
           <div class="input-group">
             <input class="form-control" list="contacts" onblur="ractive.updateContactId(this.value)" placeholder="Start typing to filter options"
-                id="curContact" required value="{{#current.contactId}}{{formatContactId(current.contactId)}}{{/}}">
+                id="curContact" required value="{{#current.contactId}}{{current.contact.fullName}}{{/}}">
             <span class="input-group-addon">
               {{#if tenant.features.accountView}}
-                <a href="accounts.html?searchTerm={{formatAccountId(current.contactId)}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
+                <a href="accounts.html?searchTerm={{current.contact.accountId}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
               {{else}}
                 <a href="contacts.html?searchTerm={{current.contactId}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>
               {{/if}}
@@ -234,3 +234,4 @@
     {{>currentDocumentListSect}}
   {{/if}}  
 </section>
+

@@ -1,5 +1,5 @@
  /*******************************************************************************
- * Copyright 2011-2018 Tim Stephenson and contributors
+ * Copyright 2015-2022 Tim Stephenson and contributors
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -17,14 +17,14 @@
   var me = {
   };
 
-  if (CKEDITOR.instances['curMailBody']==undefined) {
+  if ('curMailBody' in CKEDITOR.instances) {
     CKEDITOR.replace( 'curMailBody' );
-    CKEDITOR.instances['curMailBody'].on('blur', function() {
+    CKEDITOR.instances.curMailBody.on('blur', function() {
       ractive.set('instanceToStart.variables.mailBody',
-          CKEDITOR.instances['curMailBody'].getData().replace(/"/g, '&quot;').replace(/'/g, '&apos;').replace(/[\n\t]/g,''));
+          CKEDITOR.instances.curMailBody.getData().replace(/"/g, '&quot;').replace(/'/g, '&apos;').replace(/[\n\t]/g,''));
     });
+    CKEDITOR.instances.curMailBody.setData(ractive.get('instanceToStart.variables.mailBody'));
   }
-  CKEDITOR.instances['curMailBody'].setData(ractive.get('instanceToStart.variables.mailBody'));
 
   return me;
 }($, ractive));

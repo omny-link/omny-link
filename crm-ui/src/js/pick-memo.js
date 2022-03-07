@@ -67,7 +67,7 @@
         Authorization: ractive.getBpmAuth()
       },
       success: function( data ) {
-        html = data.value.richContent;
+        let html = data.value.richContent;
         console.log('  result starts: '+html.substring(0,16));
         ractive.set('memoHtml', html);
         if ('Still working...' == data) setTimeout(fetchResult, DELAY, piid);
@@ -92,19 +92,12 @@
     var tmp = JSON.parse(JSON.stringify(ractive.get('instanceToStart')));
     tmp.processDefinitionKey = 'MergeMemoTemplate';
     validateOrder();
-    if (!document.forms['customActionForm'].checkValidity()) {
+    if (!document.forms['customActionForm'].checkValidity()) { // jshint ignore:line
       ractive.showMessage('Please supply all the required fields');
       showMemoSpec();
       return;
     }
     fetchPreview();
-  }
-
-  function openResponseWindow(location) {
-    console.info('openResponseWindow'+location);
-    setTimeout(function() {
-      window.open(location);
-    }, 2000);
   }
   function initMemosSource() {
     console.info('initMemosSource');
@@ -112,14 +105,14 @@
       console.log('memo: '+ractive.tenantUri(n)+', '+n.name+', i:'+i);
       var t = Array.findBy('ref', n.name, ractive.get('tenant.templates'));
       if (t == undefined || t.role == undefined || ractive.hasRole(t.role)) {
-        if (n['requiredVars']!=undefined) {
+        if ('requiredVars' in n) {
           var requiredVarList = n.requiredVars.split(',');
           for(var idx = 0 ; idx < requiredVarList.length ; idx++) {
             console.log('  do we have '+requiredVarList[idx]);
-            if (requiredVarList[idx].toLowerCase().indexOf('formatter')==-1
-                && requiredVarList[idx].length>0 && ractive.get('instanceToStart.variables.'+requiredVarList[idx]) == undefined
-                && ractive.get('instanceToStart.variables.'+requiredVarList[idx]+'Id') == undefined
-                && (requiredVarList[idx].toLowerCase().indexOf('owner')>=0 && ractive.get('current.owner') == undefined)) {
+            if (requiredVarList[idx].toLowerCase().indexOf('formatter')==-1 &&
+                requiredVarList[idx].length>0 && ractive.get('instanceToStart.variables.'+requiredVarList[idx]) == undefined &&
+                ractive.get('instanceToStart.variables.'+requiredVarList[idx]+'Id') == undefined &&
+                (requiredVarList[idx].toLowerCase().indexOf('owner')>=0 && ractive.get('current.owner') == undefined)) {
               console.log('  ... not all data available');
               return undefined;
             }
@@ -151,12 +144,12 @@
         ractive.set('instanceToStart.variables.orderId',orderId);
         ractive.set('instanceToStart.variables.orderName',orderId);
         var order = Array.findBy('orderId', orderId, ractive.get('orders'));
-        if (ractive.get('currentContact')==undefined && order['contactId']!=undefined) {
-          if (order['contactId']!=undefined) {
-            ractive.set('instanceToStart.variables.contactId','/contacts/'+order['contactId']);
+        if (ractive.get('currentContact')==undefined && 'contactId' in order) {
+          if ('contactId' in order) {
+            ractive.set('instanceToStart.variables.contactId','/contacts/'+order.contactId);
           }
-          if (order['stockItem']!=undefined) {
-            ractive.set('instanceToStart.variables.stockItemId','/stock-items/'+order['stockItem']['id']);
+          if ('stockItem' in order) {
+            ractive.set('instanceToStart.variables.stockItemId','/stock-items/'+order.stockItem.id);
           }
       }
     });
@@ -169,10 +162,10 @@
       crossDomain: true,
       success: function( data ) {
         console.log('Found '+data.length+' memos.');
-        if (data['_embedded'] == undefined) {
-          ractive.set('memos', data);
+        if ('_embedded' in data) {
+          ractive.set('memos', data._embedded.memos);
         } else {
-          ractive.set('memos', data['_embedded'].memos);
+          ractive.set('memos', data);
         }
         ractive.addDataList({ name: "memos" }, initMemosSource());
         $('#curMemoDisplay').blur(function(ev) {
@@ -189,7 +182,7 @@
     console.info('validateOrder');
     if (ractive.get('instanceToStart.variables.memoId')!=undefined) {
       var memo = Array.findBy('selfRef', '/memos/'+ractive.get('instanceToStart.variables.memoId'), ractive.get('memos'));
-      if (memo!=undefined && memo['requiredVars']!=undefined && memo.requiredVars.indexOf('order')!=-1) {
+      if (memo!=undefined && 'requiredVars' in memo && memo.requiredVars.indexOf('order')!=-1) {
         if (ractive.get('instanceToStart.variables.orderId')=='TBD') {
           $('#curOrderDisplay').attr('required','required').prev().addClass('required');
         } else {
@@ -216,11 +209,11 @@
       }
       if (ractive.entityName(ractive.get('current'))=='orders') {
         var order = ractive.get('current');
-        if (order['contactId']==undefined || order['stockItem']==undefined) {
+        if (!('contactId' in order) || !('stockItem' in order)) {
           ractive.showError('You must specify both Contact and '+ractive.get('tenant.strings.stockItem')+' first');
         }
-        ractive.set('instanceToStart.variables.contactId','/contacts/'+order['contactId']);
-        ractive.set('instanceToStart.variables.stockItemId','/stock-items/'+order['stockItem']['id']);
+        ractive.set('instanceToStart.variables.contactId','/contacts/'+order.contactId);
+        ractive.set('instanceToStart.variables.stockItemId','/stock-items/'+order.stockItem.id);
         ractive.set('instanceToStart.variables.orderId',ractive.id(order));
         ractive.set('instanceToStart.variables.orderName',ractive.id(order));
         $('#curOrderDisplay').attr('readonly','readonly').attr('disabled','disabled');

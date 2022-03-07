@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018 Tim Stephenson and contributors
+ * Copyright 2015-2022 Tim Stephenson and contributorss
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -13,43 +13,18 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-var EASING_DURATION = 500;
-fadeOutMessages = true;
-var newLineRegEx = /\n/g;
-
 var ractive = new BaseRactive({
   el: 'container',
   lazy: true,
   template: '#template',
   data: {
     contacts: [],
+    entityName: 'memoDistribution',
     entityPath: '/memo-distributions',
     testMode: false,
     memoDistributions: [],
     memos: [],
     filter: undefined,
-    age: function(timeString) {
-      return i18n.getAgeString(new Date(timeString))
-    },
-    chars: function(string) {
-      console.info('chars: '+string);
-      console.log('  returning: '+string.length);
-      return string.length;
-    },
-    customField: function(obj, name) {
-      if (obj['customFields']==undefined) {
-        return undefined;
-      } else if (!Array.isArray(obj['customFields'])) {
-        return obj.customFields[name];
-      } else {
-        //console.error('customField 30');
-        var val;
-        $.each(obj['customFields'], function(i,d) {
-          if (d.name == name) val = d.value;
-        });
-        return val;
-      }
-    },
     featureEnabled: function(feature) {
       console.log('featureEnabled: '+feature);
       if (feature==undefined || feature.length==0) return true;
@@ -66,7 +41,7 @@ var ractive = new BaseRactive({
         $.each(Object.keys(obj), function(i,d) {
           html += (typeof obj[d] == 'object' ? '' : '<tr><th style="text-align:right">'+d.toLabel()+'</th><td>'+obj[d]+'</td></tr>');
         });
-        html+= '</table>'
+        html += '</table>';
         return html;
       } catch (e) {
         // So it wasn't an object?
@@ -74,18 +49,13 @@ var ractive = new BaseRactive({
         return obj;
       }
     },
-    hash: function(email) {
-      if (email == undefined) return '';
-      console.log('hash '+email+' = '+ractive.hash(email));
-      return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
-    },
     helpUrl: '//omny-link.github.io/user-help/memo-distribution/#the_title',
     matchFilter: function(obj) {
       if (ractive.get('filter')==undefined) return true;
       else return ractive.get('filter').value.toLowerCase()==obj[ractive.get('filter').field].toLowerCase();
     },
     matchRole: function(role) {
-      console.info('matchRole: '+role)
+      console.info('matchRole: '+role);
       if (role==undefined || ractive.hasRole(role)) {
         $('.'+role).show();
         return true;
@@ -96,25 +66,14 @@ var ractive = new BaseRactive({
     saveObserver: false,
     server: $env.server,
     sort: function (array, column, asc) {
-      console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);
-      array = array.slice(); // clone, so we don't modify the underlying data
-
-      return array.sort( function ( a, b ) {
-        if (b[column]==undefined || b[column]==null || b[column]=='') {
-          return (a[column]==undefined || a[column]==null || a[column]=='') ? 0 : -1;
-        } else if (asc) {
-          return a[ column ] < b[ column ] ? -1 : 1;
-        } else {
-          return a[ column ] > b[ column ] ? -1 : 1;
-        }
-      });
+      return ractive.sortBy(array, column, asc);
     },
     sortAsc: true,
     sortColumn: 'name',
     sorted: function(column) {
       console.info('sorted');
       if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
-      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc'
+      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc';
       else return 'hidden';
     },
     stdPartials: [
@@ -160,12 +119,12 @@ var ractive = new BaseRactive({
     ractive.set('current', distribution);
     ractive.save();
   },
-  delete: function (obj) {
+  delete: function(obj) {
     console.log('delete '+obj+'...');
     $.ajax({
       url: ractive.getServer()+ractive.uri(obj),
       type: 'DELETE',
-      success: completeHandler = function(data) {
+      success: function() {
         ractive.fetch();
         $('#currentSect').slideUp();
       }
@@ -183,8 +142,7 @@ var ractive = new BaseRactive({
       crossDomain: true,
       success: function( data ) {
         console.warn('response;'+data);
-        something = window.open("data:text/csv," + encodeURIComponent(data),"_blank");
-        //something.focus();
+        window.open("data:text/csv," + encodeURIComponent(data),"_blank");
       }
     });
   },
@@ -206,10 +164,10 @@ var ractive = new BaseRactive({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/memo-distributions/',
       crossDomain: true,
       success: function( data ) {
-        if (data['_embedded'] == undefined) {
-          ractive.merge('memoDistributions', data);
+        if ('_embedded' in data) {
+          ractive.merge('memoDistributions', data._embedded.memoDistributions);
         } else {
-          ractive.merge('memoDistributions', data['_embedded'].memoDistributions);
+          ractive.merge('memoDistributions', data);
         }
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
@@ -226,17 +184,16 @@ var ractive = new BaseRactive({
       crossDomain: true,
       success: function( data ) {
         console.log('Found '+data.length+' contacts.');
-        //$('#curRecipients').chosen('destroy');
-        if (data['_embedded'] == undefined) {
+        if ('_embedded' in data) {
+          ractive.merge('contacts', data._embedded.contacts);
+        } else {
           ractive.merge('contacts', data);
-        }else{
-          ractive.merge('contacts', data['_embedded'].contacts);
         }
         var tags = [];
         $('#curRecipients').empty();
         $.each(data, function(i,d) {
           $('#curRecipients').append('<option value="'+d.email+'">'+d.email+'</option>');
-          var contactTags = d['tags'];
+          var contactTags = d.tags;
           if (contactTags!=undefined) {
             $.each(contactTags.split(','), function(j,e) {
               e = e.trim();
@@ -250,12 +207,12 @@ var ractive = new BaseRactive({
         });
 
         $('#curRecipients').chosen();
-        $('#curRecipients option').removeAttr('selected')
+        $('#curRecipients option').removeAttr('selected');
 
         // select any recipients already attached to the distribution
         if (ractive.get('current.recipients')!=undefined) {
           $.each(ractive.get('current.recipients').split(','), function(i,d) {
-            $('#curRecipients option[value="'+d.trim()+'"]').attr('selected','selected')
+            $('#curRecipients option[value="'+d.trim()+'"]').attr('selected','selected');
           });
           $('#curRecipients').trigger("chosen:updated");
         }
@@ -270,10 +227,10 @@ var ractive = new BaseRactive({
       crossDomain: true,
       success: function( data ) {
         console.log('Found '+data.length+' memos.');
-        if (data['_embedded'] == undefined) {
+        if ('_embedded' in data) {
+          ractive.merge('memos', data._embedded.memos);
+        } else {
           ractive.merge('memos', data);
-        }else{
-          ractive.merge('memos', data['_embedded'].memos);
         }
         ractive.addDataList({ name: "memos" }, ractive.get('memos'));
        }
@@ -291,14 +248,6 @@ var ractive = new BaseRactive({
       }
     });
   },
-  filter: function(field,value) {
-    console.log('filter: field '+field+' = '+value);
-    if (value==undefined) value = ractive.get('tenant.stagesInActive');
-    if (field==undefined) ractive.set('filter',undefined);
-    else ractive.set('filter',{field: field,value: value});
-    ractive.set('searchMatched',$('#memoDistributionsTable tbody tr:visible').length);
-    $('input[type="search"]').blur();
-  },
   find: function(distributionId) {
     console.log('find: '+distributionId);
     var c;
@@ -309,20 +258,6 @@ var ractive = new BaseRactive({
     });
     return c;
   },
-  getId: function(distribution) {
-    console.log('getId: '+distribution);
-    var uri;
-    if (distribution['links']!=undefined) {
-      $.each(distribution.links, function(i,d) {
-        if (d.rel == 'self') {
-          uri = d.href;
-        }
-      });
-    } else if (distribution['_links']!=undefined) {
-      uri = distribution._links.self.href.indexOf('?')==-1 ? distribution._links.self.href : distribution._links.self.href.substr(0,distribution._links.self.href.indexOf('?')-1);
-    }
-    return uri;
-  },
   getMemoName: function(id) {
     console.log('getMemoName: '+id);
     if (id == undefined) return '';
@@ -331,10 +266,6 @@ var ractive = new BaseRactive({
       if (ractive.localId(d)==id) name = d.name;
     });
     return name;
-  },
-  hideResults: function() {
-    $('#memoDistributionsTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
-    $('#memoDistributionsTable').slideUp();
   },
   save: function () {
     console.log('save distribution: '+ractive.get('current').name+'...');
@@ -356,7 +287,7 @@ var ractive = new BaseRactive({
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
-        success: completeHandler = function(data, textStatus, jqXHR) {
+        success: function(data, textStatus, jqXHR) {
           //console.log('data: '+ data);
           var location = jqXHR.getResponseHeader('Location');
           ractive.set('saveObserver',false);
@@ -402,7 +333,7 @@ var ractive = new BaseRactive({
         console.log('found distribution '+data);
         ractive.set('saveObserver',false);
         ractive.set('current', data);
-        $('#curMemoDisplay').val(ractive.getMemoName(ractive.get('current.memoRef')))
+        $('#curMemoDisplay').val(ractive.getMemoName(ractive.get('current.memoRef')));
         ractive.initControls();
         // who knows why this is needed, but it is, at least for first time rendering
         $('.autoNumeric').autoNumeric('update',{});
@@ -416,7 +347,7 @@ var ractive = new BaseRactive({
 	  ractive.hideResults();
     $('#currentSect').slideDown({ queue: true });
   },
-  startDistribution: function(distribution) {
+  startDistribution: function() {
     console.log('startDistribution');
     if (ractive.get('testMode')==true) {
       ractive.startDistributionInTestMode();
@@ -435,7 +366,7 @@ var ractive = new BaseRactive({
         businessKey: ractive.get('current.name')+' '+new Date().toISOString(),
         processVariables: { distributionId: ractive.id(ractive.get('current')) }
       }),
-      success: completeHandler = function(data,textStatus,jqXHR) {
+      success: function(data,textStatus,jqXHR) {
         console.log('response code: '+ jqXHR.status+', Location: '+jqXHR.getResponseHeader('Location'));
         ractive.showMessage('Started distribution of memos: '+ractive.get('current.name'));
       },
@@ -450,7 +381,7 @@ var ractive = new BaseRactive({
         return (n);
       } else if (n.tags != undefined) {
         var tagArray = n.tags.split(',');
-        return jQuery.map(tagArray, function(m,j) {
+        return jQuery.map(tagArray, function(m) {
           if (distribution.recipients.indexOf(m)!=-1) {
             return (n);
           } else {
@@ -466,7 +397,7 @@ var ractive = new BaseRactive({
     $.each(toContact, function(i,d) {
       ractive.get('current.activities').push({occurred:new Date(),type:'Sent memo to '+d.firstName+' '+d.lastName,content:'Status: <span class="sent bg-success text-success" data-contact="'+i+'">Sent (GREEN)</span> <span class="acknowledged bg-danger text-danger" data-contact="'+i+'">Acknowledged (RED)</span>'});
       setTimeout(function() {
-        $('[data-contact="'+i+'"].acknowledged').removeClass('bg-danger').removeClass('text-danger').addClass('bg-success').addClass('text-success').empty().append('Acknowledged (GREEN)')
+        $('[data-contact="'+i+'"].acknowledged').removeClass('bg-danger').removeClass('text-danger').addClass('bg-success').addClass('text-success').empty().append('Acknowledged (GREEN)');
       },(1*1000*60*Math.random()));
     });
   },
@@ -476,37 +407,14 @@ var ractive = new BaseRactive({
       ractive.set('current.recipientList',$(ctrl).val());
       ractive.set('current.recipients',$(ctrl).val().join());
     }
-  },
-  showActivityIndicator: function(msg, addClass) {
-    document.body.style.cursor='progress';
-    this.showMessage(msg, addClass);
-  },
-  showResults: function() {
-    $('#memoDistributionsTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
-    $('#currentSect').slideUp();
-    $('#memoDistributionsTable').slideDown({ queue: true });
-  },
-  toggleResults: function() {
-    console.log('toggleResults');
-    $('#memoDistributionsTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
-    $('#memoDistributionsTable').slideToggle();
   }
 });
-
-ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
-  console.log('searchTerm changed');
-  ractive.showResults();
-  setTimeout(function() {
-    ractive.set('searchMatched',$('#memoDistributionsTable tbody tr').length);
-  }, 500);
-});
-
 
 // Save on model change
 // done this way rather than with on-* attributes because autocomplete
 // controls done that way save the oldValue
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
-  ignored=['current.documents','current.doc','current.notes','current.note'];
+  var ignored=['current.documents','current.doc','current.notes','current.note'];
   if (ractive.get('saveObserver') && ignored.indexOf(keypath)==-1) {
     console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
     ractive.save();
@@ -533,11 +441,3 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
     ractive.set('saveObserver',false);
   }
 });*/
-
-function crToSpace(string) {
-  return string.replace(/<br>/g,' ');
-}
-
-function stripTags(string) {
-  return crToSpace(string.replace(/<br>/g,' ').replace(/<\/?[^>]+(>|$)/g, ""));
-}

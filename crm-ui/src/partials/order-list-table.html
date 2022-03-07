@@ -1,5 +1,5 @@
 <!--
-  Copyright 2015-2018 Tim Stephenson and contributors
+  Copyright 2015-2022 Tim Stephenson and contributors
   
    Licensed under the Apache License, Version 2.0 (the "License"); you may not
    use this file except in compliance with the License.  You may obtain a copy
@@ -60,7 +60,7 @@
         {{#tenant.features.orderName}}
           <td on-click="edit(this)">{{name}}</td>
         {{/}}
-        <td on-click="edit(this)">{{#contactId}}{{formatContactId(contactId)}}{{else}}n/a{{/}}</td>
+        <td on-click="edit(this)">{{#contactId}}{{contact.fullName}}{{else}}n/a{{/}}</td>
         <td on-click="edit(this)">{{formatDate(date)}}</td>
         {{#if !tenant.features.orderItems}} {{! If have order items we will not know the due date except if it as an approximation on the order}}
           <td on-click="edit(this)">{{formatDate(dueDate)}}</td>
@@ -92,3 +92,4 @@
     {{/}}
   </tfoot>
 </table>
+

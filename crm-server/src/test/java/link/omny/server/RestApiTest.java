@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2015-2022 Tim Stephenson and contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package link.omny.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,7 +43,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import link.omny.server.web.JsEnvironmentController;
 
 @SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-@Disabled
 public class RestApiTest {
 
     @LocalServerPort
@@ -40,6 +54,7 @@ public class RestApiTest {
 
     @Test
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    @Disabled
     public void testAccountApi() throws IOException {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
@@ -47,7 +62,7 @@ public class RestApiTest {
                 "classpath:META-INF/resources/webjars/custmgmt/specs/AcctMgmtSpec.js" );
 
         JsonNode report = runScript(sb);
-        assertEquals(15, report.get("suite").get("totalSpecsDefined").asInt());
+        assertEquals(16, report.get("suite").get("totalSpecsDefined").asInt());
         assertNoFailedExpectations(report);
         System.out.println(
                 "Account suite took " + (System.currentTimeMillis() - start) + " (ms)");
@@ -55,6 +70,7 @@ public class RestApiTest {
 
     @Test
     @Timeout(value = 5, unit = TimeUnit.SECONDS)
+    @Disabled
     public void testContactApi() throws IOException {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
@@ -69,7 +85,7 @@ public class RestApiTest {
     }
 
     @Test
-    @Timeout(value = 3, unit = TimeUnit.SECONDS)
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
     public void testMemoApi() throws IOException {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
@@ -81,11 +97,26 @@ public class RestApiTest {
         assertNoFailedExpectations(report);
         System.out.println(
                 " Memo suite took " + (System.currentTimeMillis() - start) + " (ms)");
-
     }
+
+//    @Test
+//    @Timeout(value = 3, unit = TimeUnit.SECONDS)
+//    public void testAutomationApi() throws IOException {
+//        long start = System.currentTimeMillis();
+//        StringBuilder sb = createScript(
+//                "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
+//                "classpath:META-INF/resources/webjars/process-automation/specs/ProcessAutomationSpec.js" );
+//
+//        JsonNode report = runScript(sb);
+//        assertEquals(6, report.get("suite").get("totalSpecsDefined").asInt());
+//        assertNoFailedExpectations(report);
+//        System.out.println(
+//                " Memo suite took " + (System.currentTimeMillis() - start) + " (ms)");
+//    }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.SECONDS)
+    @Disabled
     public void testOrderApi() throws IOException {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
@@ -103,6 +134,7 @@ public class RestApiTest {
     private void assertNoFailedExpectations(JsonNode report) {
         for (Iterator<JsonNode> it = report.get("results").elements() ; it.hasNext() ; ) {
             JsonNode result = (JsonNode) it.next();
+            System.out.println(result.get("fullName")+" = "+result);
             assertEquals(0, result.get("failedExpectations").size(),
                     "Spec failed: " + result.get("fullName").asText());
         }

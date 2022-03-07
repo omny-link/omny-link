@@ -1,5 +1,5 @@
 /*******************************************************************************
- *Copyright 2015-2018 Tim Stephenson and contributors
+ * Copyright 2015-2022 Tim Stephenson and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -64,7 +64,7 @@ public class ContactAndAccountControllerTest {
         contactController.delete(TENANT_ID, contactId);
         // check clean
         List<EntityModel<Contact>> list = contactController.listForTenantAsJson(
-                TENANT_ID, null, null, false);
+                TENANT_ID, 0, 100, false);
         assertEquals(0, list.size());
     }
 
@@ -114,7 +114,7 @@ public class ContactAndAccountControllerTest {
 
         // FETCH ALL CONTACTS
         List<EntityModel<Contact>> contacts = contactController.listForTenantAsJson(
-                TENANT_ID, null, null, false);
+                TENANT_ID, 0, 100, false);
         assertEquals(1, contacts.size());
         // assertContactEquals(contact, acct, contacts);
     }

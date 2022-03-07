@@ -1,5 +1,5 @@
 /*******************************************************************************
- *Copyright 2015-2018 Tim Stephenson and contributors
+ * Copyright 2015-2022 Tim Stephenson and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -66,6 +67,23 @@ public class AppExceptionHandler {
     public @ResponseBody String handleNotFoundException(
             BusinessEntityNotFoundException e) {
         LOGGER.error("{} with id {} not found", e.getEntity(), e.getId());
+        return e.getMessage();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @ExceptionHandler(HttpClientErrorException.class)
+    public @ResponseBody String handleProcessGatewayException(
+            HttpClientErrorException e) {
+        LOGGER.error("Upstream responded {}: {}", e.getStatusCode(), e.getStatusText());
+        LOGGER.error("Response body: {}", e.getResponseBodyAsString());
+        return e.getMessage();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @ExceptionHandler(ProcessStartException.class)
+    public @ResponseBody String handleProcessStartException(
+            ProcessStartException e) {
+        LOGGER.error("Upstream responded {}: {}", e.getMessage(), e);
         return e.getMessage();
     }
 }

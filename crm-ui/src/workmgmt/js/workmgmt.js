@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright 2011-2018 Tim Stephenson and contributors
- * 
+ * Copyright 2015-2022 Tim Stephenson and contributors
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
  *  of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -220,7 +220,7 @@ var ractive = new BaseRactive({
     sorted: function(column) {
       console.info('sorted');
       if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
-      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc'
+      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc';
       else return 'hidden';
     },
     stdPartials: [
@@ -285,7 +285,26 @@ var ractive = new BaseRactive({
               ractive.showMessage('Ended workflow successfully');
           }
           ractive.showResults();
-          //ractive.set('saveObserver',true);
+          ractive.set('saveObserver',true);
+        }
+      });
+  },
+  endTask: function(taskId) {
+    console.log('endTask...');
+    $.ajax({
+        url: ractive.getBpmServer()+'/flowable-rest/service/runtime/tasks/'+taskId,
+        type: 'DELETE',
+        contentType: 'application/json',
+        crossDomain: true,
+        headers: { Authorization: ractive.getBpmAuth() },
+        success: function(data, textStatus, jqXHR) {
+          console.log('data: '+data);
+          if (jqXHR.status == 204) {
+              ractive.fetch();
+              ractive.showMessage('Ended task successfully');
+          }
+          ractive.showResults();
+          ractive.set('saveObserver',true);
         }
       });
   },
@@ -302,7 +321,9 @@ var ractive = new BaseRactive({
        data: JSON.stringify({
         includeTaskLocalVariables: true,
         includeProcessVariables: true,
-        involvedUser: ractive.get('profile.username')
+        involvedUser: ractive.get('profile.username'),
+        start: 0,
+        size: 500
       }),
       contentType: 'application/json',
       crossDomain: true,
@@ -328,7 +349,7 @@ var ractive = new BaseRactive({
           if (ractive.hasRole('admin')) $('.admin').show();
           ractive.showSearchMatched();
         }
-        ractive.set('fetch', true);
+        ractive.set('fetch', false);
         ractive.set('saveObserver',true);
       }
     });
@@ -544,7 +565,7 @@ var ractive = new BaseRactive({
             ractive.set('current.taskVariables',data2);
             ractive.set('current.variables',{
               ...ractive.get('current.variables'), ...ractive.get('current.taskVariables')
-	    });
+	          });
           }
         });
         $.ajax({
@@ -612,15 +633,23 @@ var ractive = new BaseRactive({
     ractive.set('saveObserver',false);
 
     $('#currentSect').hide();
-    var t = ractive.get('current');
-    t.action = action;
-    t.tenantId = ractive.get('tenant.id');
+    var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
+    var tmp = ractive.get('current');
+    tmp.action = action;
+    tmp.tenantId = ractive.get('tenant.id');
+
+    let flowVars = [];
+    Object.keys(tmp.variables).forEach(function(key) {
+      flowVars.push({ name: key, value: tmp.variables[key] });
+    });
+    tmp.variables = flowVars;
+
     $.ajax({
-      url: ractive.getBpmServer()+'/flowable-rest/service/runtime/tasks/'+t.id,
+      url: ractive.getBpmServer()+'/flowable-rest/service/runtime/tasks/'+tmp.id,
       type: 'POST',
       contentType: 'application/json',
       crossDomain: true,
-      data: JSON.stringify(t),
+      data: JSON.stringify(tmp),
       headers: { Authorization: ractive.getBpmAuth() },
       success: function(data, textStatus, jqXHR) {
         //console.log('data: '+ data);

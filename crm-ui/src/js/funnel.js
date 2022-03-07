@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2018 Tim Stephenson and contributors
+ * Copyright 2015-2022 Tim Stephenson and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -13,13 +13,8 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-var EASING_DURATION = 500;
-
 var EDGE_LUMINANCE = 0.1;
 var CENTER_LUMINANCE = 0.6;
-
-fadeOutMessages = true;
-var newLineRegEx = /\n/g;
 
 var ractive = new BaseRactive({
   el: 'container',
@@ -49,7 +44,7 @@ var ractive = new BaseRactive({
       return timeString == "-1" ? 'n/a' : i18n.getDurationString(timeString)+' ago';
     },
     formatAlertCount: function(alerts) {
-      console.log('formatAlerts');
+      console.log('formatAlertCount');
       if (typeof alerts == 'string') alerts = JSON.parse(alerts);
 
       return alerts == undefined ? 0 : Object.keys(alerts).length;
@@ -108,7 +103,7 @@ var ractive = new BaseRactive({
           click: {
             block: function(d) {
               console.log('<' + d.label.raw + '> selected.');
-              if (getSearchParameters()['o']!=undefined) {
+              if (getSearchParameter('o')!=undefined) {
                 ractive.set('entityPath','/orders');
                 if (ractive.get('orders').length==0) ractive.fetchOrders();
                 if (ractive.get('contacts').length==0) ractive.fetchContacts();
@@ -128,14 +123,9 @@ var ractive = new BaseRactive({
         }
       }
     },
-    hash: function(email) {
-      if (email == undefined) return '';
-      //console.log('hash '+email+' = '+ractive.hash(email));
-      return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
-    },
     helpUrl: '//omny-link.github.io/user-help/funnel/',
     matchRole: function(role) {
-      console.info('matchRole: '+role)
+      console.info('matchRole: '+role);
       if (role==undefined || ractive.hasRole(role)) {
         $('.'+role).show();
         return true;
@@ -151,27 +141,27 @@ var ractive = new BaseRactive({
         var search = ractive.get('searchTerm').trim().split(' ');
         for (var idx = 0 ; idx < search.length ; idx++) {
           var searchTerm = search[idx].toLowerCase();
-          var match = ( (obj.id!=undefined && searchTerm.indexOf(obj.id)>=0)
-            || (obj.firstName!=undefined && obj.firstName.toLowerCase().indexOf(searchTerm)>=0)
-            || (obj.lastName!=undefined && obj.lastName.toLowerCase().indexOf(searchTerm)>=0)
-            || (searchTerm.indexOf('@')!=-1 && obj.email.toLowerCase().indexOf(searchTerm)>=0)
-            || (obj.phone1!=undefined && obj.phone1.indexOf(searchTerm)>=0)
-            || (obj.phone2!=undefined && obj.phone2.indexOf(searchTerm)>=0)
-            || (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm)>=0)
-            || (obj.accountName!=undefined && obj.accountName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-            || (searchTerm.startsWith('type:') && obj.accountType!=undefined && obj.accountType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(5))==0)
-            || (searchTerm.startsWith('enquiry:') && obj.enquiryType!=undefined && obj.enquiryType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(8))==0)
-            || (searchTerm.startsWith('stage:') && obj.stage!=undefined && obj.stage.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(6))==0)
-            || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(searchTerm.substring(8)))
-            || (searchTerm.startsWith('created>') && new Date(obj.firstContact)>new Date(searchTerm.substring(8)))
-            || (searchTerm.startsWith('created>') && new Date(obj.created)>new Date(searchTerm.substring(8)))
-            || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(searchTerm.substring(8)))
-            || (searchTerm.startsWith('created<') && new Date(obj.firstContact)<new Date(searchTerm.substring(8)))
-            || (searchTerm.startsWith('created<') && new Date(obj.created)<new Date(searchTerm.substring(8)))
-            || (searchTerm.startsWith('#') && obj.tags.indexOf(searchTerm.substring(1))!=-1)
-            || (searchTerm.startsWith('owner:') && obj.owner.indexOf(searchTerm.substring(6))!=-1)
-            || (searchTerm.startsWith('active') && (obj.stage==undefined || obj.stage.length==0 || ractive.inactiveStages().indexOf(obj.stage.toLowerCase())==-1))
-            || (searchTerm.startsWith('!active') && ractive.inactiveStages().indexOf(obj.stage.toLowerCase())!=-1)
+          var match = ( (obj.id!=undefined && searchTerm.indexOf(obj.id)>=0) ||
+            (obj.firstName!=undefined && obj.firstName.toLowerCase().indexOf(searchTerm)>=0) ||
+            (obj.lastName!=undefined && obj.lastName.toLowerCase().indexOf(searchTerm)>=0) ||
+            (searchTerm.indexOf('@')!=-1 && obj.email.toLowerCase().indexOf(searchTerm)>=0) ||
+            (obj.phone1!=undefined && obj.phone1.indexOf(searchTerm)>=0) ||
+            (obj.phone2!=undefined && obj.phone2.indexOf(searchTerm)>=0) ||
+            (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm)>=0) ||
+            (obj.accountName!=undefined && obj.accountName.toLowerCase().indexOf(searchTerm.toLowerCase())>=0) ||
+            (searchTerm.startsWith('type:') && obj.accountType!=undefined && obj.accountType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(5))==0) ||
+            (searchTerm.startsWith('enquiry:') && obj.enquiryType!=undefined && obj.enquiryType.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(8))==0) ||
+            (searchTerm.startsWith('stage:') && obj.stage!=undefined && obj.stage.toLowerCase().replace(/ /g,'_').indexOf(searchTerm.toLowerCase().replace(/ /g,'_').substring(6))==0) ||
+            (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(searchTerm.substring(8))) ||
+            (searchTerm.startsWith('created>') && new Date(obj.firstContact)>new Date(searchTerm.substring(8))) ||
+            (searchTerm.startsWith('created>') && new Date(obj.created)>new Date(searchTerm.substring(8))) ||
+            (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(searchTerm.substring(8))) ||
+            (searchTerm.startsWith('created<') && new Date(obj.firstContact)<new Date(searchTerm.substring(8))) ||
+            (searchTerm.startsWith('created<') && new Date(obj.created)<new Date(searchTerm.substring(8))) ||
+            (searchTerm.startsWith('#') && obj.tags.indexOf(searchTerm.substring(1))!=-1) ||
+            (searchTerm.startsWith('owner:') && obj.owner.indexOf(searchTerm.substring(6))!=-1) ||
+            (searchTerm.startsWith('active') && (obj.stage==undefined || obj.stage.length==0 || ractive.inactiveStages().indexOf(obj.stage.toLowerCase())==-1)) ||
+            (searchTerm.startsWith('!active') && ractive.inactiveStages().indexOf(obj.stage.toLowerCase())!=-1)
           );
           // no match is definitive but matches may fail other terms (AND logic)
           if (!match) return false;
@@ -181,25 +171,14 @@ var ractive = new BaseRactive({
     },
     server: $env.server,
     sort: function (array, column, asc) {
-      console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);
-      array = array.slice(); // clone, so we don't modify the underlying data
-
-      return array.sort( function ( a, b ) {
-        if (b[column]==undefined || b[column]==null || b[column]=='') {
-          return (a[column]==undefined || a[column]==null || a[column]=='') ? 0 : -1;
-        } else if (asc) {
-          return a[ column ] < b[ column ] ? -1 : 1;
-        } else {
-          return a[ column ] > b[ column ] ? -1 : 1;
-        }
-      });
+      return ractive.sortBy(array, column, asc);
     },
     sortAsc: false,
     sortColumn: 'lastUpdated',
     sorted: function(column) {
       console.info('sorted');
       if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
-      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc'
+      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc';
       else return 'hidden';
     },
     stdPartials: [
@@ -232,7 +211,7 @@ var ractive = new BaseRactive({
     var activeStages = [];
     var stages = ractive.get('stages');
     $.each(stages, function(i,d) {
-      if (d['idx']>=0) activeStages.push(d.name);
+      if (d.idx>=0) activeStages.push(d.name);
     });
     return activeStages;
   },
@@ -243,14 +222,15 @@ var ractive = new BaseRactive({
     console.info('fetch...');
     ractive.set('saveObserver', false);
     ractive.initControls();
-    if (getSearchParameters()['o']!=undefined) {
-      var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/funnel';
+    var url;
+    if (getSearchParameter('o')!=undefined) {
+      url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/funnel';
       ractive.set('stages', ractive.get('orderStages'));
     } else if (ractive.get('tenant.features.accountView')) {
-      var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/accounts';
+      url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/accounts';
       ractive.set('stages', ractive.get('accountStages'));
     } else {
-      var url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/contacts';
+      url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/contacts';
       ractive.set('stages', ractive.get('contactStages'));
     }
     $.ajax({
@@ -276,10 +256,10 @@ var ractive = new BaseRactive({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/accounts/',
       crossDomain: true,
       success: function( data ) {
-        if (data['_embedded'] == undefined) {
-          ractive.merge('accounts', data);
+        if ('_embedded' in data) {
+          ractive.merge('accounts', data._embedded.accounts);
         } else {
-          ractive.merge('accounts', data['_embedded'].accounts);
+          ractive.merge('accounts', data);
         }
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.hasRole('power-user')) $('.power-user').show();
@@ -297,10 +277,10 @@ var ractive = new BaseRactive({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/contacts/',
       crossDomain: true,
       success: function( data ) {
-        if (data['_embedded'] == undefined) {
-          ractive.merge('contacts', data);
+        if ('_embedded' in data) {
+          ractive.merge('contacts', data._embedded.contacts);
         } else {
-          ractive.merge('contacts', data['_embedded'].contacts);
+          ractive.merge('contacts', data);
         }
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.hasRole('power-user')) $('.power-user').show();
@@ -318,10 +298,10 @@ var ractive = new BaseRactive({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/',
       crossDomain: true,
       success: function( data ) {
-        if (data['_embedded'] == undefined) {
-          ractive.merge('orders', data);
+        if ('_embedded' in data) {
+          ractive.merge('orders', data._embedded.accounts);
         } else {
-          ractive.merge('orders', data['_embedded'].accounts);
+          ractive.merge('orders', data);
         }
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.hasRole('power-user')) $('.power-user').show();
@@ -335,13 +315,13 @@ var ractive = new BaseRactive({
     console.info('inactiveStages');
     var inactiveStages = [];
     $.each(ractive.get('stages'), function(i,d) {
-      if (d['idx']<0) inactiveStages.push(d.name);
+      if (d.idx<0) inactiveStages.push(d.name);
     });
     return inactiveStages;
   },
   openInNewWindow: function(obj) {
     console.info('openInNewWindow');
-    if (getSearchParameters()['o']!=undefined) {
+    if (getSearchParameter('o')!=undefined) {
       window.open('/orders.html?q='+ractive.id(obj)+'&v='+obj.type);
     } else if (ractive.get('tenant.features.accountView')) {
       window.open('/accounts.html?q='+ractive.id(obj));
@@ -374,12 +354,12 @@ var ractive = new BaseRactive({
 });
 
 ractive.observe('owner', function(newValue, oldValue, keypath) {
-  console.log('owner changed from '+oldValue+' to '+newValue);
+  console.log("'"+keypath+"' changing from '"+oldValue+"' to '"+newValue+"'");
   if (newValue!=undefined && newValue!='') ractive.search(ractive.get('searchTerm').replace(/ owner:[!\S]+/g,'')+' owner:'+newValue);
 });
 
 ractive.observe('created', function(newValue, oldValue, keypath) {
-  console.log('created changed from '+oldValue+' to '+newValue);
+  console.log("'"+keypath+"' changing from '"+oldValue+"' to '"+newValue+"'");
   if (newValue!=undefined) {
     var createdExpr;
     switch (newValue) {
@@ -399,7 +379,7 @@ ractive.observe('created', function(newValue, oldValue, keypath) {
   }
 });
 ractive.observe('updated', function(newValue, oldValue, keypath) {
-  console.log('updated changed from '+oldValue+' to '+newValue);
+  console.log("'"+keypath+"' changing from '"+oldValue+"' to '"+newValue+"'");
   if (newValue!=undefined) {
     var updatedExpr;
     switch (newValue) {
@@ -420,7 +400,7 @@ ractive.observe('updated', function(newValue, oldValue, keypath) {
 });
 
 ractive.observe('stages', function(newValue, oldValue, keypath) {
-  console.log('stages loaded');
+  console.log("'"+keypath+"' changing from '"+oldValue+"' to '"+newValue+"'");
   if (newValue!=undefined && ractive.get('funnel')!=undefined) ractive.renderChart();
 });
 

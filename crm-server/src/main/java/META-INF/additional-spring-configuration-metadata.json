@@ -5,7 +5,7 @@
     "description": "Comma-separated list of allowed response headers"
   },
   {
-    "name": "crm.cors.allowed-origins",
+    "name": "crm.cors.origins",
     "type": "java.lang.String",
     "description": "Comma-separated list of permitted values of request header Origin"
   },
@@ -18,5 +18,10 @@
     "name": "crm.cors.exposed-headers",
     "type": "java.lang.String",
     "description": "Comma-separated list of exposed response headers (note different to 'allowed' response headers)"
+  },
+  {
+    "name": "crm.bpm.process-gateway",
+    "type": "java.lang.String",
+    "description": "The gateway (not fully qualified endpoint) to interact with process instances"
   }
 ]}

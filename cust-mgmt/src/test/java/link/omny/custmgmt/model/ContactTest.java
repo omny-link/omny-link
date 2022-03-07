@@ -1,5 +1,5 @@
 /*******************************************************************************
- *Copyright 2015-2018 Tim Stephenson and contributors
+ * Copyright 2015-2022 Tim Stephenson and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -127,7 +127,7 @@ public class ContactTest {
         CustomContactField field2 = new CustomContactField("field1", "foo");
         assertNull(field2.getId());
 
-        contact.setCustomFields(Collections.singletonList(field2));
+        contact.setCustomFields(Collections.singleton(field2));
         assertEquals(1, contact.getCustomFields().size());
         assertEquals(field1.getId(), contact.getCustomFields().iterator().next().getId());
 

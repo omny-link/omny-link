@@ -1,5 +1,5 @@
 <!--
-  Copyright 2015-2018 Tim Stephenson and contributors
+  Copyright 2015-2022 Tim Stephenson and contributors
   
    Licensed under the Apache License, Version 2.0 (the "License"); you may not
    use this file except in compliance with the License.  You may obtain a copy
@@ -63,7 +63,7 @@
         <li>
           <label class="col-md-4 control-label">Send at:</label>
           <input class="form-control" id="curSendAtDate" style="float:left;width:159px" {{#current.status!='Draft'}}disabled readonly{{/}} type="date" value="{{current.sendAtDate}}">
-          <input class="form-control" id="curSendAtTime" style="float:left;;width:95px" {{#current.status!='Draft'}}disabled readonly{{/}} type="time" value="{{current.sendAtTime}}">
+          <input class="form-control" id="curSendAtTime" style="float:left;width:95px" {{#current.status!='Draft'}}disabled readonly{{/}} type="time" value="{{current.sendAtTime}}">
           <input class="form-control" id="curSendAtTZ" pattern="GMT[+-][0-9]{2}:[0-9]{2}" placeholder="GMT-HH:MM" style="float:left;width:107px;" {{#current.status!='Draft'}}disabled readonly{{/}} type="text" value="{{current.sendAtTZ}}">
         </li>
       </ul>

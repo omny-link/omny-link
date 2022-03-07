@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2018 Tim Stephenson and contributors
+ * Copyright 2015-2022 Tim Stephenson and contributors
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -65,7 +65,7 @@ function UserActivity() {
       type: 'POST',
       data: { json:JSON.stringify(d) },
       dataType: 'text',
-      success: completeHandler = function(data) {
+      success: function(data) {
         console.log('Message received:'+data);
       }
     });
@@ -92,7 +92,7 @@ function UserActivity() {
       type: 'POST',
       data: { json:JSON.stringify(d) },
       dataType: 'text',
-      success: completeHandler = function(data) {
+      success: function(data) {
         console.log('Message received:'+data);
       }
     });

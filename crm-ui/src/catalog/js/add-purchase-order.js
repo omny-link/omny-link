@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018 Tim Stephenson and contributors
+ * Copyright 2015-2022 Tim Stephenson and contributorss
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -13,12 +13,9 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-(function ($, $auth, ractive) {
-  var me = {
-  };
-
+(function (ractive) {
   ractive.observe('instanceToStart.variables.order.contactName', function(newValue, oldValue, keypath) {
-    console.log('contact changing from '+oldValue+' to '+newValue);
+    console.log("'"+keypath+"' changing from '"+oldValue+"' to '"+newValue+"'");
     if (newValue!=undefined && newValue!='' && newValue.length >0) {
       var contact = Array.findBy('fullName', newValue, ractive.get('contacts'));
       ractive.set('instanceToStart.variables.order.contactId', ractive.localId(ractive.uri(contact)));
@@ -33,4 +30,4 @@
   ractive.set('instanceToStart.variables.order.date', new Date());
   ractive.set('instanceToStart.variables.order.ref', -1);
 
-}($, $auth, ractive));
+}(ractive));

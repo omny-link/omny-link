@@ -10,7 +10,7 @@ var replace     = require('gulp-replace');
 var rsync       = require('gulp-rsync');
 var through2    = require('through2');
 var zip         = require('gulp-zip');
-var vsn         = '3.0.0';
+var vsn         = '3.1.0';
 
 var buildDir = 'target/classes';
 var finalName = 'crm-ui-'+vsn+'.jar'
@@ -40,14 +40,17 @@ gulp.task('scripts', function() {
     'src/custmgmt/js/**/*.js', '!src/custmgmt/js/**/*.min.js',
     'src/workmgmt/js/**/*.js', '!src/workmgmt/js/**/*.min.js'
   ])
+  .pipe(replace(/__CONFIG_SERVER_URL__/, config.configServerUrl))
   .pipe(replace('/vsn/', '/'+vsn+'/'))
   .pipe(config.js.minify ? babel({ presets: [ ["minify", { "builtIns": false }] ] }) : through2.obj())
   .pipe(gulp.dest(buildDir+'/'+vsn+'/js'));
 });
 
-gulp.task('test', function() {
+gulp.task('lint', function() {
   return gulp.src([
-    'src/js/**/*.js',
+    'src/js/**/*.js', '!src/js/**/*.min.js',
+    'src/catalog/js/**/*.js', '!src/catalog/js/**/*.min.js',
+    'src/custmgmt/js/**/*.js', '!src/custmgmt/js/**/*.min.js',
     '!src/js/vendor/**/*.js'
   ])
   .pipe(jshint())
@@ -64,7 +67,7 @@ gulp.task('styles', function() {
 });
 
 gulp.task('compile',
-  gulp.series(/*'test',*/ 'scripts', 'styles')
+  gulp.series('lint', 'scripts', 'styles')
 );
 
 gulp.task('server', function(done) {
@@ -102,13 +105,13 @@ gulp.task('fix-paths', function() {
 });
 
 gulp.task('package', () =>
-  gulp.src([buildDir+'/*','!'+buildDir+'/*.zip'])
+  gulp.src([buildDir+'/*','!'+buildDir+'/*.jar','!'+buildDir+'/*.zip'])
       .pipe(zip(finalName))
       .pipe(gulp.dest(buildDir))
 );
 
 gulp.task('install',
-  gulp.series('compile', 'assets', 'fix-paths', 'package')
+  gulp.series('assets', 'fix-paths', 'compile', 'package')
 );
 
 gulp.task('default',

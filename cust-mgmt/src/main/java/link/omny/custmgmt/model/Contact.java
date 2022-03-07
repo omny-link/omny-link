@@ -1,5 +1,5 @@
 /*******************************************************************************
- *Copyright 2015-2018 Tim Stephenson and contributors
+ * Copyright 2015-2022 Tim Stephenson and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
@@ -37,7 +37,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -82,31 +81,12 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Entity
-@NamedEntityGraph(name = "contactWithAll",
-    attributeNodes = {
-            @NamedAttributeNode("activities"),
-            @NamedAttributeNode(value = "account", subgraph = "account-subgraph"),
-            @NamedAttributeNode("customFields"),
-            @NamedAttributeNode("notes"),
-            @NamedAttributeNode("documents")
-    },
-    subgraphs = {
-            @NamedSubgraph(
-                    name = "account-subgraph",
-                    attributeNodes = { @NamedAttributeNode("customFields") }
-            )
-    }
-)
+// Don't be tempted to try to write an entity graph to load contact will all
+// children. There is too much to be performant.
 @NamedEntityGraph(name = "contactWithAccount",
     attributeNodes = {
-            @NamedAttributeNode(value = "account", subgraph = "account-subgraph"),
+            @NamedAttributeNode(value = "account"),
             @NamedAttributeNode("customFields"),
-    },
-    subgraphs = {
-            @NamedSubgraph(
-                    name = "account-subgraph",
-                    attributeNodes = { @NamedAttributeNode("customFields") }
-            )
     }
 )
 @Table(name = "OL_CONTACT")
@@ -118,6 +98,8 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Contact extends Auditable<String> implements Serializable {
+
+    private static final String DELETED = "deleted";
 
     private static final String DEFAULT_FIRST_NAME = "Unknown";
 
@@ -417,7 +399,7 @@ public class Contact extends Auditable<String> implements Serializable {
         return customFields;
     }
 
-    public void setCustomFields(List<CustomContactField> fields) {
+    public void setCustomFields(Set<CustomContactField> fields) {
         for (CustomContactField newField : fields) {
             setCustomField(newField);
         }
@@ -459,7 +441,7 @@ public class Contact extends Auditable<String> implements Serializable {
     private Account account;
 
     @JsonProperty
-    @JsonView({ ContactViews.Detailed.class })
+    @JsonView({ ContactViews.Summary.class })
     private transient Long accountId;
 
     public Long getAccountId() {
@@ -935,6 +917,10 @@ public class Contact extends Auditable<String> implements Serializable {
                     doc.getCreated(), doc.getAuthor(), doc.getName(), doc.getUrl()));
         }
         return CsvUtils.quoteIfNeeded(sb.toString());
+    }
+
+    public boolean isDeleted() {
+        return DELETED.equalsIgnoreCase(stage);
     }
 
 }

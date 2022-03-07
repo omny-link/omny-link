@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018 Tim Stephenson and contributors
+ * Copyright 2015-2022 Tim Stephenson and contributorss
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -13,10 +13,6 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-var EASING_DURATION = 500;
-fadeOutMessages = true;
-var newLineRegEx = /\n/g;
-
 var ractive = new BaseRactive({
   el: 'container',
   lazy: true,
@@ -27,19 +23,6 @@ var ractive = new BaseRactive({
     stockCategories: [],
     filter: {field: "stage", operator: "!in", value: "cold,complete"},
     title: 'Stock Management',
-    customField: function(obj, name) {
-      if (obj['customFields']==undefined) {
-        return undefined;
-      } else if (!Array.isArray(obj['customFields'])) {
-        return obj.customFields[name];
-      } else {
-        var val;
-        $.each(obj['customFields'], function(i,d) {
-          if (d.name == name) val = d.value;
-        });
-        return val;
-      }
-    },
     featureEnabled: function(feature) {
       console.log('featureEnabled: '+feature);
       if (feature==undefined || feature.length==0) return true;
@@ -51,7 +34,7 @@ var ractive = new BaseRactive({
     },
     formatAgeFromDate: function(timeString) {
       if (timeString==undefined) return;
-      return i18n.getAgeString(ractive.parseDate(timeString))
+      return i18n.getAgeString(ractive.parseDate(timeString));
     },
     formatContent: function(content) {
       console.info('formatContent:'+content);
@@ -71,7 +54,7 @@ var ractive = new BaseRactive({
       return dts;
     },
     formatFavorite: function(obj) {
-      if (obj['favorite']) return 'glyphicon-star';
+      if ('favorite' in obj) return 'glyphicon-star';
       else return 'glyphicon-star-empty';
     },
     formatJson: function(json) {
@@ -98,12 +81,7 @@ var ractive = new BaseRactive({
       return html;
     },
     gravatar: function(email) {
-      if (email == undefined) return '';
-      return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(email)+'?s=36"/>'
-    },
-    hash: function(email) {
-      if (email == undefined) return '';
-      return ractive.hash(email);
+      return ractive.gravatar(email);
     },
     haveCustomExtension: function(extName) {
       return Array.findBy('name',ractive.get('tenant.id')+extName,ractive.get('tenant.partials'))!=undefined;
@@ -117,14 +95,14 @@ var ractive = new BaseRactive({
       } else {
         try {
           if (filter.operator=='in') {
-            var values = filter.value.toLowerCase().split(',');
+            let values = filter.value.toLowerCase().split(',');
             return values.indexOf(obj[filter.field].toLowerCase())!=-1;
           } else if (filter.operator=='!in') {
-            var values = filter.value.toLowerCase().split(',');
+            let values = filter.value.toLowerCase().split(',');
             return values.indexOf(obj[filter.field].toLowerCase())==-1;
           } else {
             if (filter.operator==undefined) filter.operator='==';
-            return eval("'"+filter.value.toLowerCase()+"'"+filter.operator+"'"+obj[filter.field].toLowerCase()+"'");
+            return eval("'"+filter.value.toLowerCase()+"'"+filter.operator+"'"+obj[filter.field].toLowerCase()+"'");// jshint ignore:line
           }
         } catch (e) {
           //console.debug('Exception during filter, probably means record does not have a value for the filtered field');
@@ -133,7 +111,7 @@ var ractive = new BaseRactive({
       }
     },
     matchRole: function(role) {
-      console.info('matchRole: '+role)
+      console.info('matchRole: '+role);
       if (role==undefined || ractive.hasRole(role)) {
         $('.'+role).show();
         return true;
@@ -146,13 +124,13 @@ var ractive = new BaseRactive({
       if (searchTerm==undefined || searchTerm.length==0) {
         return true;
       } else {
-        return ( (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-          || (ractive.localId(obj).indexOf(searchTerm)>=0)
-          || (obj.status!=undefined && obj.status.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-          || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
-          || (searchTerm.startsWith('created>') && new Date(obj.firstStockCategory)>new Date(ractive.get('searchTerm').substring(8)))
-          || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(ractive.get('searchTerm').substring(8)))
-          || (searchTerm.startsWith('created<') && new Date(obj.firstStockCategory)<new Date(ractive.get('searchTerm').substring(8)))
+        return ( (obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0) ||
+          (ractive.localId(obj).indexOf(searchTerm)>=0) ||
+          (obj.status!=undefined && obj.status.toLowerCase().indexOf(searchTerm.toLowerCase())>=0) ||
+          (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8))) ||
+          (searchTerm.startsWith('created>') && new Date(obj.firstStockCategory)>new Date(ractive.get('searchTerm').substring(8))) ||
+          (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(ractive.get('searchTerm').substring(8))) ||
+          (searchTerm.startsWith('created<') && new Date(obj.firstStockCategory)<new Date(ractive.get('searchTerm').substring(8)))
         );
       }
     },
@@ -176,7 +154,7 @@ var ractive = new BaseRactive({
     sorted: function(column) {
       console.info('sorted');
       if (ractive.get('sortColumn') == column && ractive.get('sortAsc')) return 'sort-asc';
-      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc'
+      else if (ractive.get('sortColumn') == column && !ractive.get('sortAsc')) return 'sort-desc';
       else return 'hidden';
     },
     stdPartials: [
@@ -239,7 +217,7 @@ var ractive = new BaseRactive({
     $.ajax({
         url: url,
         type: 'DELETE',
-        success: completeHandler = function(data) {
+        success: function() {
           ractive.fetch();
           ractive.showResults();
         },
@@ -256,12 +234,12 @@ var ractive = new BaseRactive({
     $.ajax({
         url: url,
         type: 'DELETE',
-        success: completeHandler = function(data) {
+        success: function() {
           ractive.fetchImages();
         },
-        error: errorHandler = function(jqXHR, textStatus, errorThrown) {
+        error: function(jqXHR, textStatus, errorThrown) {
           console.error(textStatus+': '+errorThrown);
-          ractive.showError('Unable to delete '+image.url+' at this time');
+          ractive.showError('Unable to delete '+url+' at this time');
         }
     });
     return false; // cancel bubbling to prevent edit as well as delete
@@ -271,7 +249,15 @@ var ractive = new BaseRactive({
     $('h2.edit-form,h2.edit-field').show();
     $('.create-form,create-field').hide();
     ractive.set('currentIdx',ractive.get('stockCategories').indexOf(stockCategory));
-    ractive.select( stockCategory );
+    var url = ractive.tenantUri(stockCategory);
+    console.log('loading detail for '+url);
+    $.getJSON(url, function(data) {
+      console.log('found stockCategory '+data);
+      ractive.set('saveObserver',false);
+      if (!('id' in data)) data.id = ractive.id(data);
+      ractive.set('current', data);
+      ractive.select(data);
+    });
   },
   editField: function (selector, path) {
     console.log('editField '+path+'...');
@@ -285,10 +271,10 @@ var ractive = new BaseRactive({
       url: ractive.getServer()+'/'+ractive.get('tenant.id')+'/stock-categories/',
       crossDomain: true,
       success: function( data ) {
-        if (data['_embedded'] == undefined) {
-          ractive.merge('stockCategories', data);
+        if ('_embedded' in data) {
+          ractive.merge('stockCategories', data._embedded.stockCategories);
         } else {
-          ractive.merge('stockCategories', data['_embedded'].stockCategories);
+          ractive.merge('stockCategories', data);
         }
         if (ractive.hasRole('admin')) $('.admin').show();
         if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
@@ -311,14 +297,6 @@ var ractive = new BaseRactive({
       ractive.set('saveObserver',true);
     });
   },
-  filter: function(filter) {
-    console.log('filter: '+JSON.stringify(filter));
-    ractive.set('filter',filter);
-    $('.dropdown.dropdown-menu li').removeClass('selected')
-    $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
-    ractive.showSearchMatched();
-    $('input[type="search"]').blur();
-  },
   find: function(stockCategoryId) {
     console.log('find: '+stockCategoryId);
     var c;
@@ -329,8 +307,13 @@ var ractive = new BaseRactive({
     });
     return c;
   },
+  hideResults: function() {
+    $('#stockCategoriesTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
+    $('#stockCategoriesTable').slideUp();
+    $('#currentSect').slideDown({ queue: true });
+  },
   initAccessControl: function() {
-    if (!ractive.hasRole('product_owner')) {
+    if (!ractive.hasRole('product-owner')) {
       $('input,select,textarea').attr('disabled','disabled').attr('readonly','readonly');
     }
   },
@@ -381,15 +364,15 @@ var ractive = new BaseRactive({
         type: id === undefined ? 'POST' : 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(tmp),
-        success: completeHandler = function(data, textStatus, jqXHR) {
+        success: function(data, textStatus, jqXHR) {
           //console.log('data: '+ data);
-          var location = jqXHR.getResponseHeader('Location');
           ractive.set('saveObserver',false);
-          if (location != undefined) ractive.set('current._links.self.href',location);
           switch (jqXHR.status) {
           case 201:
-            var currentIdx = ractive.get('stockCategories').push(ractive.get('current'))-1;
-            ractive.set('currentIdx',currentIdx);
+            var location = jqXHR.getResponseHeader('Location');
+            if (location != undefined) ractive.set('current._links.self.href',location);
+            ractive.set('currentIdx', ractive.get('stockCategories').push(ractive.get('current'))-1);
+            ractive.edit(ractive.get('current'));
             break;
           case 204:
             ractive.splice('stockCategories',ractive.get('currentIdx'),1,ractive.get('current'));
@@ -418,7 +401,7 @@ var ractive = new BaseRactive({
         url: url,
         type: 'POST',
         data: n,
-        success: completeHandler = function(data) {
+        success: function(data) {
           console.log('data: '+ data);
           ractive.showMessage('Image link saved successfully');
           ractive.fetchImages();
@@ -434,7 +417,7 @@ var ractive = new BaseRactive({
       type: 'PUT',
       contentType: 'application/json',
       data: JSON.stringify(obj),
-      success: completeHandler = function(data) {
+      success: function(data) {
         console.log('data: '+ data);
         ractive.showMessage('Image link saved successfully');
         ractive.fetchImages();
@@ -454,18 +437,6 @@ var ractive = new BaseRactive({
         if (d.rel == 'self') stockCategory._links.self = { href:d.href };
       });
 	  }
-	  if (stockCategory._links != undefined) {
-	    var url = ractive.tenantUri(stockCategory);
-	    if (url == undefined) {
-	      ractive.showError('No stockCategory selected, please check link');
-	      return;
-	    }
-	    console.log('loading detail for '+url);
-	    $.getJSON(url, function( data ) {
-        console.log('found stockCategory '+data);
-        ractive.set('saveObserver',false);
-        if (data['id'] == undefined) data.id = ractive.id(data);
-        ractive.set('current', data);
         ractive.initControls();
         ractive.initSelect(); // not (yet?) a standard control
         setTimeout(ractive.updateSelect, 500); // yes really!
@@ -476,18 +447,8 @@ var ractive = new BaseRactive({
 //        if (ractive.get('tenant.features.documentsOnStockCategory')) ractive.fetchDocs();
         ractive.set('saveObserver',true);
         $('.ajax-loader').hide();
-      });
-    } else {
-      console.log('Skipping load as no _links.'+stockCategory.name);
-      ractive.set('current', stockCategory);
-      ractive.set('saveObserver',true);
-    }
-	  ractive.toggleResults();
+	  ractive.hideResults();
 	  $('#currentSect').slideDown();
-  },
-  showActivityIndicator: function(msg, addClass) {
-    document.body.style.cursor='progress';
-    this.showMessage(msg, addClass);
   },
   showResults: function() {
     $('#stockCategoriesTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
@@ -497,8 +458,8 @@ var ractive = new BaseRactive({
   showSearchMatched: function() {
     ractive.set('searchMatched',$('#stockCategoriesTable tbody tr').length);
     if ($('#stockCategoriesTable tbody tr:visible').length==1) {
-      var stockCategoryId = $('#stockCategoriesTable tbody tr:visible').data('href')
-      var stockCategory = Array.findBy('id',stockCategoryId,ractive.get('stockCategories'))
+      var stockCategoryId = $('#stockCategoriesTable tbody tr:visible').data('href');
+      var stockCategory = Array.findBy('id',stockCategoryId,ractive.get('stockCategories'));
       ractive.edit( stockCategory );
     }
   },
@@ -535,14 +496,14 @@ var ractive = new BaseRactive({
     var selects = $('select[multiple][data-key]');
     for (var i = 0 ; i < selects.length ; i++) {
       var d = selects[i];
-      tmp = '';
+      var tmp = '';
       var options = $('#'+d.id + ' option:selected');
       for (var j = 0 ; j < options.length ; j++) {
         tmp += options[j].value;
         if ((j+1) < options.length) tmp += ',';
-      };
+      }
       ractive.set('current.customFields.'+[$(d).data('key')],tmp);
-    };
+    }
   },
   upload: function (formId) {
     console.log('upload:'+formId);
@@ -572,17 +533,11 @@ var ractive = new BaseRactive({
   }
 });
 
-ractive.observe('searchTerm', function(newValue, oldValue, keypath) {
-  console.log('searchTerm changed');
-  ractive.showResults();
-  setTimeout(function() { ractive.showSearchMatched(); }, 500);
-});
-
 // Save on model change
 // done this way rather than with on-* attributes because autocomplete
 // controls done that way save the oldValue
 ractive.observe('current.*', function(newValue, oldValue, keypath) {
-  ignored=['current.documents','current.doc','current.images','current.image','current.notes','current.note'];
+  var ignored=['current.documents','current.doc','current.images','current.image','current.notes','current.note'];
   if (ractive.get('saveObserver') && ignored.indexOf(keypath)==-1) {
     console.log('current prop change: '+newValue +','+oldValue+' '+keypath);
     ractive.save();
@@ -590,15 +545,3 @@ ractive.observe('current.*', function(newValue, oldValue, keypath) {
     console.warn  ('Skipped stockCategory save of '+keypath);
   }
 });
-
-ractive.on( 'filter', function ( event, filter ) {
-  console.info('filter on '+JSON.stringify(event)+','+filter.idx);
-  ractive.filter(filter);
-});
-ractive.on( 'sort', function ( event, column ) {
-  console.info('sort on '+column);
-  // if already sorted by this column reverse order
-  if (this.get('sortColumn')==column) this.set('sortAsc', !this.get('sortAsc'));
-  this.set( 'sortColumn', column );
-});
-

@@ -1,11 +1,13 @@
 */.*
 .project
 .settings/
+.sts4-cache/
 **/*.bak
 *.class
 *.log*
 application.properties
 liquibase.properties
+liquibase.properties.local
 /log4j.properties
 target/
 

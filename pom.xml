@@ -27,6 +27,7 @@
     <jasmine-boot.version>1.1.0</jasmine-boot.version>
     <java.version>1.8</java.version>
     <kp-icons.version>3.1.0</kp-icons.version>
+    <log4j2.version>2.17.0</log4j2.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>${project.version}</omny-link.version>
     <plantuml.version>8059</plantuml.version>
@@ -254,6 +255,7 @@
                   <element>BUNDLE</element>
                   <excludes>
                     <exclude>link.omny.supportservices.model.*</exclude>
+                    <exclude>link.omny.server.web.ProcessGatewayController</exclude>
                     <exclude>*.views.*</exclude>
                     <exclude>*Test</exclude>
                   </excludes>
