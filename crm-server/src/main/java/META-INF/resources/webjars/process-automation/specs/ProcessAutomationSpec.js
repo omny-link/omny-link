@@ -118,6 +118,8 @@ describe("Process automation", function() {
       expect(response.status).toEqual(201);
       expect(response.headers.get('Location')).toMatch(/.*\/runtime\/process-instances\/[-a-f0-9]{36}/);
       procInstUri = response.headers.get('Location');
+      procInstId = procInstUri.substring(procInstUri.lastIndexOf('/')+1);
+      procInstServer = procInstUri.substring(0,procInstUri.indexOf('/runtime'));
       procInstMsg = response.headers.get('Location').match(/[-a-f0-9]{36}/);
       done();
     });
@@ -125,14 +127,15 @@ describe("Process automation", function() {
 
   it("fetches complete contact inc. child entities and check all fields are correct", function(done) {
     setTimeout(function () {
-
-      fetch(procInstUri+'/variables', {
+      // should be complete by now
+      fetch(procInstServer+'/query/historic-variable-instances', {
         "headers": {
           "Accept": "application/json",
           "Authorization": "Basic "+btoa(processCreds)
         },
         "method": "GET",
-        "mode": "cors"
+        "mode": "cors",
+        "body": JSON.stringify({ "processInstanceId": procInstId });
       })
       .then(response => {
         console.log(response);
