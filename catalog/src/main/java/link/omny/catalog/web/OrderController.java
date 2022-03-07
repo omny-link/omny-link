@@ -15,6 +15,7 @@
  ******************************************************************************/
 package link.omny.catalog.web;
 
+import static java.lang.System.currentTimeMillis;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -109,7 +110,7 @@ public class OrderController {
      * @return a complete order including its items and feedback.
      */
     @GetMapping(value = "/{id}")
-    @JsonView(OrderViews.Detailed.class)
+    @JsonView(OrderViews.Enhanced.class)
     @Transactional
     @ApiOperation(value = "Return the specified order.")
     public @ResponseBody EntityModel<Order> findEntityById(
@@ -274,7 +275,7 @@ public class OrderController {
      * @return orders owned by the specified contact(s).
      */
     @GetMapping(value = "/findByContacts/{contactIds}")
-    @JsonView(value = OrderViews.Summary.class)
+    @JsonView(value = OrderViews.Detailed.class)
     @ApiOperation(value = "Retrieve orders for a number of contacts")
     public @ResponseBody List<EntityModel<Order>> listForContacts(
             @PathVariable("tenantId") String tenantId,
@@ -284,6 +285,7 @@ public class OrderController {
         LOGGER.info(
                 "List orders for contacts {} & tenant {}",
                 Arrays.asList(contactIds), tenantId);
+        long start = currentTimeMillis();
 
         List<Order> list;
         if (limit == null) {
@@ -293,7 +295,8 @@ public class OrderController {
             list = orderRepo
                     .findPageForContacts(tenantId, contactIds, pageable);
         }
-        LOGGER.info("Found {} orders", list.size());
+
+        LOGGER.info("Found {} orders in {}ms", list.size(), (currentTimeMillis() - start));
         return addLinks(tenantId, list);
     }
 

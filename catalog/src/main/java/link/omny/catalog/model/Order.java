@@ -219,7 +219,7 @@ public class Order extends Auditable<String> implements Serializable {
     @JsonView(OrderViews.Detailed.class)
     private Set<CustomOrderField> customFields;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "order", targetEntity = OrderItem.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "order", targetEntity = OrderItem.class)
     @JsonView(OrderViews.Detailed.class)
     @JsonManagedReference
     private Set<OrderItem> orderItems;
@@ -231,12 +231,12 @@ public class Order extends Auditable<String> implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, targetEntity = Note.class)
     @JoinColumn(name = "order_id")
-    @JsonView({ OrderViews.Detailed.class })
+    @JsonView({ OrderViews.Enhanced.class })
     private Set<Note> notes;
 
     @OneToMany(cascade = CascadeType.ALL, targetEntity = Document.class)
     @JoinColumn(name = "order_id")
-    @JsonView({ OrderViews.Detailed.class })
+    @JsonView({ OrderViews.Enhanced.class })
     private Set<Document> documents;
 
     @Transient

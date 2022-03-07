@@ -76,29 +76,18 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     List<Order> findByParentOrderForTenant(@Param("tenantId") String tenantId,
             @Param("parentId") Long parentId);
 
-    @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId = :contactId ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderOnly")
-    List<Order> findAllForContact(@Param("tenantId") String tenantId,
-            @Param("contactId") Long contactId);
-
-    @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId = :contactId ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderOnly")
-    List<Order> findPageForContact(@Param("tenantId") String tenantId,
-            @Param("contactId") Long contactId,
-            Pageable pageable);
-
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderOnly")
+    @EntityGraph("orderWithItems")
     List<Order> findAllForContacts(@Param("tenantId") String tenantId,
             @Param("contactIds") Long[] contactIds);
 
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.id IN :orderIds ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderOnly")
+    @EntityGraph("orderWithItems")
     List<Order> findByIds(@Param("tenantId") String tenantId,
             @Param("orderIds") Long[] orderIds);
 
     @Query("SELECT o FROM Order o WHERE o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderOnly")
+    @EntityGraph("orderWithItems")
     List<Order> findPageForContacts(@Param("tenantId") String tenantId,
             @Param("contactIds") Long[] contactIds, Pageable pageable);
 

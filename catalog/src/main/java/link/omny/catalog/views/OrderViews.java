@@ -24,4 +24,8 @@ public class OrderViews {
     public static class Detailed extends Summary {
 
     }
+
+    public static class Enhanced extends Detailed {
+
+    }
 }
