@@ -953,6 +953,10 @@ var ractive = new BaseRactive({
         } else if (document.getElementById('currentForm').checkValidity()) {
           // cannot save contact and account in one (grrhh), this will clone...
           var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
+          delete tmp.activities;
+          delete tmp.contacts;
+          delete tmp.contactIds;
+          delete tmp.orders;
           delete tmp.notes;
           delete tmp.documents;
           delete tmp.tasks;
