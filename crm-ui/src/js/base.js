@@ -457,25 +457,7 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     ractive.initAutoComplete();
     ractive.initAutoNumeric();
     ractive.initContentEditable();
-    ractive.initHelp();
     ractive.initShortKeys();
-  },
-  initHelp: function() {
-    $( "body" ).keypress(function( event ) {
-      switch (event.which) { // ref http://keycode.info/
-      case 47: // forward slash on my mac
-      case 191: // forward slash (allegedly)
-          $('.search').focus();
-          event.preventDefault();
-          break;
-      case 63: // ?
-         $('#helpModal').modal({});
-         event.preventDefault();
-         break;
-      default:
-        //console.log("No Handler for .keypress() called with: "+event.which);
-      }
-    });
   },
   initInfiniteScroll: function() {
     $(window).scroll(function() { // when within 100px of bottom
@@ -1009,18 +991,6 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     }
     ractive.set('saveObserver', saveObserver);
     return uri;
-  }
-});
-
-$( document ).bind('keypress', function(e) {
-  switch (e.keyCode) {
-  case 13: // Enter key
-    if ('ractive' in window && 'enter' in ractive) ractive.enter();
-    break;
-  case 63:   // ? key
-    console.log('help requested');
-    $('#helpModal').modal({});
-    break;
   }
 });
 
