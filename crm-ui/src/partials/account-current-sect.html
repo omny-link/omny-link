@@ -95,7 +95,9 @@
           <li class="form-group">
             <label class="col-md-4 col-sm-4 col-xs-4">{{# tenant.strings.parentOrg}}{{tenant.strings.parentOrg}}{{else}}Parent Group{{/}}:</label>
             <div class="input-group">
-              <input class="col-md-8 col-sm-8 form-control" id="curParentOrg" {{# tenant.strings.parentOrgPattern}}{{tenant.strings.parentOrgPattern}}pattern="{{tenant.strings.parentOrgPattern}}"{{/}} type="text" value="{{current.parentOrg}}">
+              <input class="col-md-8 col-sm-8 form-control" id="curParentOrg"
+                pattern="{{#if tenant.strings.parentOrgPattern}}{{tenant.strings.parentOrgPattern}}{{/if}}"
+                type="text" value="{{current.parentOrg}}">
                 <span class="input-group-addon">
                 {{# current.parentOrg==undefined || current.parentOrg.length==0}}
                   <span>N/A</span>
@@ -104,13 +106,16 @@
                 {{/}}
               </span>
             </div>
-            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
+            <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#if tenant.strings.parentOrgHint}}{{tenant.strings.parentOrgHint}}{{else}}The legal identifier such as that issued by Companies House of the parent entity{{/if}}</p>
           </li>
         {{/}}
         <li class="form-group">
           <label class="col-md-4 col-sm-4 col-xs-4">{{# tenant.strings.companyNumber}}{{tenant.strings.companyNumber}}{{else}}Company Number{{/}}:</label>
           <div class="input-group">
-            <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curCompanyNumber" {{#if tenant.strings.companyNumber == undefined}}pattern="[OCINS0-9]{0,2}[0-9]{4,6}" {{/if}}{{#tenant.features.companyBackground}}placeholder="Start typing to filter options"{{/}} type="text" value="{{current.companyNumber}}">
+            <input autocomplete="off" class="col-md-8 col-sm-8 form-control" id="curCompanyNumber"
+                pattern="{{#if tenant.strings.companyNumberPattern == undefined}}[OCINS0-9]{0,2}[0-9]{4,7}{{else}}{{tenant.strings.companyNumberPattern}}{{/if}}"
+                placeholder="{{#if tenant.features.companyBackground}}Start typing to filter options{{/if}}"
+                type="text" value="{{current.companyNumber}}">
               <span class="input-group-addon">
                 {{#if current.companyNumber==undefined || current.companyNumber.length==0}}
                   <span>N/A</span>
@@ -119,7 +124,7 @@
                 {{/if}}
               </span>
           </div>
-          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">&nbsp;</p>
+          <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">{{#if tenant.strings.companyNumberHint}}{{tenant.strings.companyNumberHint}}{{else}}The legal entity's identifier such as that issued by Companies House{{/if}}</p>
         </li>
         <li class="form-group power-user">
           <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owner{{/}}: </label>
