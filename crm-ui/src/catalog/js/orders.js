@@ -95,7 +95,7 @@ var ractive = new BaseRactive({
       else return 'glyphicon-star-empty';
     },
     formatId: function(entity) {
-      return ractive.id(entity);
+      return ractive.localId(entity);
     },
     formatJson: function(json) {
       //console.info('formatJson: '+json);
@@ -303,8 +303,8 @@ var ractive = new BaseRactive({
     ractive.initTags();
   },
   addOrderItem: function(order) {
-    console.info('addOrderItem: '+ractive.id(order));
-    var orderId = ractive.id(order);
+    console.info('addOrderItem: '+ractive.localId(order));
+    var orderId = ractive.localId(order);
     var tmp = ractive.get('itemPrototype')== undefined ?
         { orderId: orderId, customFields: {} } :
         ractive.get('itemPrototype');
@@ -363,7 +363,13 @@ var ractive = new BaseRactive({
     ractive.set('currentIdx',ractive.get('orders').indexOf(order));
     ractive.select( order );
   },
-  enhanceWithContact: function() {
+  enhanceOrderWithContact: function(order) {
+    if (ractive.get('contacts') !== undefined) {
+      order.contact = Array.findBy('id',order.contactId,ractive.get('contacts'));
+      ractive.update('current.contact');
+    }
+  },
+  enhanceOrdersWithContact: function() {
     ractive.get('orders').map(function(obj) {
       if ('contactId' in obj) {
         obj.contact = Array.findBy('id',obj.contactId,ractive.get('contacts'));
@@ -391,8 +397,6 @@ var ractive = new BaseRactive({
           }
           ractive.merge('orders', data);
           ractive.initControls();
-          if (ractive.get('contacts').length >0) ractive.enhanceWithContact();
-          else ractive.set('enhanceWithContact', true);
           if (ractive.hasRole('admin')) $('.admin').show();
           if (ractive.fetchCallbacks!=null) ractive.fetchCallbacks.fire();
           ractive.showSearchMatched();
@@ -432,7 +436,7 @@ var ractive = new BaseRactive({
         ractive.set('saveObserver', false);
         var contactData = jQuery.map(data, function(n) {
           return ({
-            "id": ractive.id(n),
+            "id": ractive.localId(n),
             "name": n.fullName
           });
         });
@@ -445,19 +449,24 @@ var ractive = new BaseRactive({
   },
   fetchContacts: function () {
     console.info('fetchContacts...');
-    ractive.set('saveObserver', false);
-    $( "#ajax-loader" ).show();
-    ractive.cm.fetchContacts(ractive.get('tenant.id'))
-      .then(function(data) {
-        ractive.set('saveObserver', false);
-        ractive.set('contacts', data.map(function(obj) {
-          obj.name = obj.fullName;
-          return obj;
-        }));
-        ractive.addDataList({ name: 'contacts' }, ractive.get('contacts'));
-        if (ractive.get('enhanceWithContact')) ractive.enhanceWithContact();
-        ractive.set('saveObserver', true);
-      });
+    if (ractive.get('fetchContactsInFlight')==true) {
+      console.warn('skipping fetchContacts as already running');
+      return;
+    } else {
+      ractive.showActivityIndicator();
+      ractive.set('fetchContactsInFlight', true);
+      ractive.cm.fetchContacts(ractive.get('tenant.id'))
+        .then(function(data) {
+          ractive.showActivityIndicator();
+          ractive.set('contacts', data.map(function(obj) {
+            obj.name = obj.fullName;
+            return obj;
+          }));
+          ractive.addDataList({ name: 'contacts' }, ractive.get('contacts'));
+      ractive.set('fetchContactsInFlight', false);
+          ractive.hideActivityIndicator();
+        });
+    }
   },
   fetchStockCategory: function(stockCategoryName) {
     if (stockCategoryName == undefined) return;
@@ -489,7 +498,7 @@ var ractive = new BaseRactive({
     } else if (document.getElementById('currentForm').checkValidity()) {
       var tmp = JSON.parse(JSON.stringify(ractive.get('current')));
       if (tmp.stockItem!=undefined && ractive.localId(tmp.stockItem)!=undefined && tmp.stockItem.id==undefined) {
-        tmp.stockItem.id = ractive.id(tmp.stockItem);
+        tmp.stockItem.id = ractive.localId(tmp.stockItem);
       }
       if (tmp.contact!=undefined) {
         tmp.contactId = ractive.localId(tmp.contact);
@@ -516,7 +525,7 @@ var ractive = new BaseRactive({
           ractive.set('saveObserver',false);
           if (location != undefined) {
             ractive.set('current._links.self.href',location);
-            ractive.set('current.orderId', ractive.id(ractive.get('current')));
+            ractive.set('current.orderId', ractive.localId(ractive.get('current')));
           }
           switch (jqXHR.status) {
           case 201:
@@ -557,7 +566,8 @@ var ractive = new BaseRactive({
       console.debug('still loading, safe to ignore');
     } else if (document.getElementById('currentOrderItemForm').checkValidity()) {
       var tmp = ractive.get('current.orderItems.'+ractive.get('currentOrderItemIdx'));
-      tmp.orderId = ractive.id(ractive.get('current'));
+      if (tmp === undefined) return; // still loading
+      tmp.orderId = ractive.localId(ractive.get('current'));
       tmp.tenantId = ractive.get('tenant.id');
       console.log('ready to save order item' + JSON.stringify(tmp) + ' ...');
       $.ajax({
@@ -600,7 +610,7 @@ var ractive = new BaseRactive({
   },
   select: function(order) {
     console.info('select: '+JSON.stringify(order));
-    ractive.set('saveObserver',false);
+    ractive.showActivityIndicator();
     // default owner to current user
     if (!('owner' in order) || order.owner == '')
       order.owner = ractive.get('profile.username');
@@ -608,9 +618,9 @@ var ractive = new BaseRactive({
       console.log('loading detail for '+ractive.uri(order));
       $.getJSON(ractive.tenantUri(order), function( data ) {
         console.log('found order '+data);
-        ractive.set('saveObserver',false);
-        if (!('id' in data)) data.id = ractive.id(data);
-        if ('contactId' in data) data.contact = Array.findBy('id', data.contactId, ractive.get('contacts'));
+        ractive.showActivityIndicator();
+        if (!('id' in data)) data.id = ractive.localId(data);
+        if ('contactId' in data) ractive.enhanceOrderWithContact(data);
         ractive.set('current', data);
         ractive.initControls();
         ractive.initTags();
@@ -627,7 +637,7 @@ var ractive = new BaseRactive({
         if (obj!=undefined) {
           ractive.updateContactId(ractive.get('current.customFields.'+obj.name), 'current.customFields.'+obj.name+'Id');
         }
-        ractive.set('saveObserver',true);
+        ractive.hideActivityIndicator();
       });
     } else {
       console.log('Skipping load as has no identifier.'+order.name);
@@ -654,7 +664,7 @@ var ractive = new BaseRactive({
     var newContact = Array.findBy('fullName',newVal,ractive.get('contacts'));
     ractive.set('current.contact', newContact);
     if (keypath == undefined) keypath = 'current.contactId';
-    ractive.set(keypath, ractive.id(newContact));
+    ractive.set(keypath, ractive.localId(newContact));
   },
   updateStockItem: function(newVal) {
     console.info('updateStockItem: '+newVal);
@@ -680,6 +690,18 @@ $(document).ready(function() {
     ractive.set('searchTerm','updated>'+ractive.daysAgo(7));
   }
   ractive.set('saveObserver', true);
+});
+
+ractive.observe('contacts', function(newValue) {
+  console.info('updated available contacts, now have: '+newValue.length);
+  if (newValue !== undefined) {
+    ractive.showActivityIndicator();
+    ractive.enhanceOrdersWithContact();
+    if (ractive.get('current')!==undefined) {
+      ractive.enhanceOrderWithContact(ractive.get('current'));
+    }
+    ractive.hideActivityIndicator();
+  }
 });
 
 ractive.observe('current.stockItem.id', function(newValue, oldValue, keypath) {

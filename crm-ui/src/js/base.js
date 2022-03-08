@@ -379,6 +379,10 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     }
     return false;
   },
+  hideActivityIndicator: function() {
+    ractive.set('saveObserver', true);
+    $( "#ajax-loader" ).hide();
+  },
   hideMessage: function() {
     $('#messages, .messages').hide();
   },
@@ -631,6 +635,10 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     else if (typeof uriOrObj == 'object' && 'id' in uriOrObj) return ''+uriOrObj.id;
     else if (typeof uriOrObj == 'object') return ractive.localId(ractive.uri(uriOrObj));
     else return uriOrObj.substring(uriOrObj.lastIndexOf('/')+1);
+  },
+  showActivityIndicator: function() {
+    ractive.set('saveObserver', false);
+    $( "#ajax-loader" ).show();
   },
   showBanner: function(msg, additionalClass) {
     var banner = document.getElementById('olBanner');
