@@ -10,7 +10,7 @@ var replace     = require('gulp-replace');
 var rsync       = require('gulp-rsync');
 var through2    = require('through2');
 var zip         = require('gulp-zip');
-var vsn         = '3.1.0';
+var vsn         = '3.1.4';
 
 var buildDir = 'target/classes';
 var finalName = 'crm-ui-'+vsn+'.jar'

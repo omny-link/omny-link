@@ -1,7 +1,7 @@
 {
-  "name": "srp-digital",
-  "version": "2.5.0",
-  "description": "Sustainable Resource Planning",
+  "name": "crm-ui",
+  "version": "3.1.4",
+  "description": "CRM UI",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

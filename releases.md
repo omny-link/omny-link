@@ -1,6 +1,58 @@
 Release Notes
 =============
 
+## 3.1.4 - 08 Mar 22
+
+ - remove account augmentations preventing save
+ - resolves #15 - short keys code was duplicated
+ - validate company and edubase numbers
+ - revise enquiry process test to expect process to be complete
+ - resolve #17 retrieve order items with orders as in v2
+
+## 3.1.3 - 07 Mar 22
+
+Accumulated fixes and tweaks as we bed down 3.0 UI against the 3.1 API
+
+ - link custom field to its contact (release 3.1.3)
+ - reformat task vars for flowable API
+ - update copyright dates
+ - fix apple touch icon path
+ - add banner functionality
+ - remove transparency from Google touch icon
+ - document task migration
+ - support standalone (process-less) tasks and fix bizKey after migration
+ - update to svg icons
+ - fix task refresh and enlarge # of records fetched
+ - actual migration to k8s
+ - npm audit fix
+ - Bump follow-redirects from 1.14.4 to 1.14.8 in /crm-ui
+ - ignore local liquibase config
+ - fix broken alert count on contacts
+ - fix fail to display on select (first time only)
+ - fix activity age display
+ - pull up sort method
+ - migrate saveDoc to send json
+ - fix missing data formatters for orders
+ - added js linting
+ - implemented paging, though still synchronous
+ - optimise list orders
+ - optimise find contact by id
+ - optimise list contacts and accounts (avoid in-memory processing)
+ - permit config url to be set at build time
+ - add legacy process gateway support and update REST test
+ - exclude spring tool cache in gitignore
+ - cleanup config, no ajp connector needed under container/k8s
+ - centralise jacoco config in root project
+ - parameterise process gateway config
+ - branding/links for api server
+ - update licence for 2022
+ - fix bug in deserialisation of contact
+ - add process gateway
+ - package crm-ui: exclude jar
+ - compensate for diff in flowable task api
+ - patch log4j for CVE-2021-44228
+ - read liquibase files from classpath
+
 ## 3.1.0 - 09 Dec 21
 
 Delivers the containerised backend API including helm chart to ease deployment. UI changes are limited to just those needed. Significant features are:
