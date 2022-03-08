@@ -47,9 +47,9 @@
             {{/}}
             {{#if tenant.orderFields && tenant.features.orderFieldsOnContact != undefined}}
               {{#tenant.orderFields}}
-              <!-- /*tenant.features.orderFieldsOnContact != undefined && tenant.features.orderFieldsOnContact.indexOf(key) != -1*/ -->
-                {{#if tenant.features.orderFieldsOnContact != undefined && tenant.features.orderFieldsOnContact.indexOf(key) != -1 && tenant.features.orderFieldsOnContact.indexOf(key) != -1}}
-                  <th on-click="['sortOrder',key]" title="{{hint}}">{{label == undefined ? key.toLabel() : label}}<span class="sortable {{ sortedOrder('{{key}}') }} glyphicon"></span></th>
+              <!-- /*tenant.features.orderFieldsOnContact != undefined && tenant.features.orderFieldsOnContact.indexOf(name) != -1*/ -->
+                {{#if tenant.features.orderFieldsOnContact != undefined && tenant.features.orderFieldsOnContact.indexOf(name) != -1 && tenant.features.orderFieldsOnContact.indexOf(name) != -1}}
+                  <th on-click="['sortOrder',name]" title="{{hint}}">{{label == undefined ? name.toLabel() : label}}<span class="sortable {{ sortedOrder('{{name}}') }} glyphicon"></span></th>
                 {{/if}}
               {{/}}
             {{/if}}
@@ -110,7 +110,7 @@
               {{/}}
               {{#if tenant.orderFields && tenant.features.orderFieldsOnContact != undefined}}
                 {{#tenant.orderFields}}
-                  {{#if tenant.features.orderItems && orderItems && orderItems[0]!=undefined && index(orderItems[0],'customFields.'+key)!=undefined && tenant.features.orderFieldsOnContact.indexOf(key) != -1}}
+                  {{#if tenant.features.orderItems && orderItems && orderItems[0]!=undefined && index(orderItems[0],'customFields.'+name)!=undefined && tenant.features.orderFieldsOnContact.indexOf(name) != -1}}
                     <td data-order-id="{{localId}}" title="{{hint}}">
                       {{#if ..aggregation=='sum'}}
                         <span>{{formatSumOrderItemField(orders[i],..name)}}</span>
@@ -118,14 +118,14 @@
                         <span>{{formatUniqOrderItemField(orders[i],..name)}}</span>
                       {{/if}}
                       {{#if aggregation}}
-                        {{evalAggregation(aggregation,'customFields.'+key,orderItems)}}
+                        {{evalAggregation(aggregation,'customFields.'+name,orderItems)}}
                       {{else}}
-                        {{customFields[key]}}
+                        {{customFields[name]}}
                       {{/if}}
                     </td>
-                  {{elseif tenant.features.orderFieldsOnContact.indexOf(key) != -1}}
+                  {{elseif tenant.features.orderFieldsOnContact.indexOf(name) != -1}}
                     <td data-order-id="{{localId}}" title="{{hint}}">
-                     <span title="{{hint}}">{{customFields[key]}}</span>
+                     <span title="{{hint}}">{{customFields[name]}}</span>
                     </td>
                   {{/if}}
                 {{/}}
@@ -165,7 +165,7 @@
                         <tr>
                           <th title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">{{#tenant.strings.stockItem}}{{tenant.strings.stockItem}}{{else}}Stock Item{{/}}</th>
                           {{#tenant.orderItemFields}}
-                            <th title="{{hint}}">{{label == undefined ? key.toLabel() : label}}</th>
+                            <th title="{{hint}}">{{label == undefined ? name.toLabel() : label}}</th>
                           {{/}}
                         </tr>
                       </thead>
@@ -174,15 +174,15 @@
                           <tr>
                             <td data-order-item-id="{{localId(.)}}" data-key="stockItem">
                               <span title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">
-                                {{#customFields['stockItemId']}}{{Array.findBy('id','/stock-items/'+customFields['stockItemId'],stockItems).name}}{{else}}n/a{{/}}
+                                {{#customFields['stockItemId']}}{{Array.findBy('id',customFields['stockItemId'],stockItems).name}}{{else}}n/a{{/}}
                               </span>
                             </td>
                             {{#tenant.orderItemFields}}
-                              <td class="{{type}}" data-order-item-id="{{localId(orderItems[j])}}" data-key="orderItems.{{j}}.customFields.{{key}}">
+                              <td class="{{type}}" data-order-item-id="{{localId(orderItems[j])}}" data-key="orderItems.{{j}}.customFields.{{name}}">
                                 {{#if type=='date'}}
-                                  <span title="{{hint}}">{{formatDate(customFields[key])}}</span>
+                                  <span title="{{hint}}">{{formatDate(customFields[name])}}</span>
                                 {{else}}
-                                  <span title="{{hint}}" >{{customFields[key]}}</span>
+                                  <span title="{{hint}}" >{{customFields[name]}}</span>
                                 {{/if}}
                               </td>
                             {{/}}
