@@ -61,6 +61,7 @@
   }
   function fetchResult(piid) {
     ractive.showActivityIndicator();
+    ractive.set('saveObserver', false);
     ractive.set('fetchResult', 0);
     $.ajax({
       url: ractive.getBpmServer()+'/flowable-rest/service/history/historic-variable-instances?processInstanceId='+piid+'&variableName=memoAsHtml',
@@ -81,6 +82,7 @@
         let html = data.data[0].variable.value;
         console.debug('  result starts: '+html.substring(0,50));
         ractive.set('memoHtml', html);
+        ractive.set('saveObserver', true);
         ractive.hideActivityIndicator();
       },
       error: function(jqXHR, textStatus, errorThrown) {

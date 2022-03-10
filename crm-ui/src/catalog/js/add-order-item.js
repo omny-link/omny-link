@@ -20,6 +20,7 @@
       var stockItem = Array.findBy('name', newValue, ractive.get('stockItems'));
       if (stockItem.id == undefined) stockItem.id = ractive.localId(ractive.uri(stockItem));
       ractive.set('instanceToStart.variables.orderItem.stockItem', stockItem);
+      ractive.set('instanceToStart.variables.orderItem.stockItemId', stockItem.id);
     }
     console.log(ractive.get('instanceToStart.variables.orderItem.stockItem'));
   });

@@ -126,7 +126,7 @@
                     id="curStockItem" readonly disabled twoway="false" value="{{formatStockItemIds(current)}}">
               {{else}}
                 <input class="form-control" list="stockItems" onblur="ractive.updateStockItem(this.value)" placeholder="Start typing to filter options"
-                    id="curStockItem" required value="{{#current.stockItem}}{{current.stockItem.name}}{{/}}">
+                    id="curStockItem" required value="{{current.stockItem.name}}">
               {{/if}}
               <span class="input-group-addon">
                 <a href="stock-items.html?q={{current.stockItem.id}}" target="_blank"><span class="glyphicon glyphicon-btn glyphicon-new-window"></span></a>

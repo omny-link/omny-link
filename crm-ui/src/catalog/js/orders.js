@@ -377,6 +377,18 @@ var ractive = new BaseRactive({
       return obj;
     });
   },
+  enhanceOrderWithStockItems: function(order) {
+    if (ractive.get('stockItems') !== undefined && order.orderItems !== undefined) {
+      order.orderItems.map(function(d) {
+        d.stockItem = Array.findBy('id',d.stockItemId,ractive.get('stockItems'));
+      });
+      ractive.update('current.orderItems');
+    }
+    if (ractive.get('stockItems') !== undefined && order.stockItemId !== undefined) {
+      order.stockItem = Array.findBy('id',order.stockItemId,ractive.get('stockItems'));
+      ractive.update('current.stockItem');
+    }
+  },
   fetch: function() {
     console.info('fetch variant: '+ractive.get('variant'));
     if (ractive.get('fetchInFlight')==true) {
@@ -454,16 +466,19 @@ var ractive = new BaseRactive({
       return;
     } else {
       ractive.showActivityIndicator();
+      ractive.set('saveObserver', false);
       ractive.set('fetchContactsInFlight', true);
       ractive.cm.fetchContacts(ractive.get('tenant.id'))
         .then(function(data) {
           ractive.showActivityIndicator();
+          ractive.set('saveObserver', false);
           ractive.set('contacts', data.map(function(obj) {
             obj.name = obj.fullName;
             return obj;
           }));
           ractive.addDataList({ name: 'contacts' }, ractive.get('contacts'));
-      ractive.set('fetchContactsInFlight', false);
+          ractive.set('fetchContactsInFlight', false);
+          ractive.set('saveObserver', true);
           ractive.hideActivityIndicator();
         });
     }
@@ -611,6 +626,7 @@ var ractive = new BaseRactive({
   select: function(order) {
     console.info('select: '+JSON.stringify(order));
     ractive.showActivityIndicator();
+    ractive.set('saveObserver', false);
     // default owner to current user
     if (!('owner' in order) || order.owner == '')
       order.owner = ractive.get('profile.username');
@@ -619,6 +635,7 @@ var ractive = new BaseRactive({
       $.getJSON(ractive.tenantUri(order), function( data ) {
         console.log('found order '+data);
         ractive.showActivityIndicator();
+        ractive.set('saveObserver', false);
         if (!('id' in data)) data.id = ractive.localId(data);
         if ('contactId' in data) ractive.enhanceOrderWithContact(data);
         ractive.set('current', data);
@@ -637,6 +654,9 @@ var ractive = new BaseRactive({
         if (obj!=undefined) {
           ractive.updateContactId(ractive.get('current.customFields.'+obj.name), 'current.customFields.'+obj.name+'Id');
         }
+        ractive.enhanceOrdersWithContact();
+        ractive.enhanceOrderWithStockItems(ractive.get('current'));
+        ractive.set('saveObserver', true);
         ractive.hideActivityIndicator();
       });
     } else {
@@ -718,6 +738,17 @@ ractive.observe('current.stockItem.id', function(newValue, oldValue, keypath) {
         }
       }
     }, 5000);
+  }
+});
+
+ractive.observe('stockItems', function(newValue) {
+  console.info('updated available stockItems, now have: '+newValue.length);
+  if (newValue !== undefined) {
+    ractive.showActivityIndicator();
+    if (ractive.get('current')!==undefined) {
+      ractive.enhanceOrderWithStockItems(ractive.get('current'));
+    }
+    ractive.hideActivityIndicator();
   }
 });
 

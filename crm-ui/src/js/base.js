@@ -380,7 +380,6 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     return false;
   },
   hideActivityIndicator: function() {
-    ractive.set('saveObserver', true);
     $( "#ajax-loader" ).hide();
   },
   hideMessage: function() {
@@ -637,7 +636,6 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     else return uriOrObj.substring(uriOrObj.lastIndexOf('/')+1);
   },
   showActivityIndicator: function() {
-    ractive.set('saveObserver', false);
     $( "#ajax-loader" ).show();
   },
   showBanner: function(msg, additionalClass) {
