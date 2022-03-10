@@ -60,17 +60,28 @@
     });
   }
   function fetchResult(piid) {
+    ractive.showActivityIndicator();
+    ractive.set('fetchResult', 0);
     $.ajax({
-      url: ractive.getBpmServer()+'/flowable-rest/service/runtime/process-instances/'+piid+'/variables/getMemoResponseBody',
+      url: ractive.getBpmServer()+'/flowable-rest/service/history/historic-variable-instances?processInstanceId='+piid+'&variableName=memoAsHtml',
       crossDomain: true,
       headers: {
         Authorization: ractive.getBpmAuth()
       },
-      success: function( data ) {
-        let html = data.value.richContent;
-        console.log('  result starts: '+html.substring(0,16));
+      success: function( data, textStatus, jqXHR ) {
+        if (jqXHR.status == 404 || data.data.length == 0) {
+          var retry = parseInt(ractive.get('fetchResult'));
+          if (retry < 3) {
+            ractive.set('fetchResult', retry++);
+            return setTimeout(fetchResult, DELAY, piid);
+          } else {
+            return ractive.showError("Something's wrong, it's not possible to evaluate that template at the moment.");
+          }
+        }
+        let html = data.data[0].variable.value;
+        console.debug('  result starts: '+html.substring(0,50));
         ractive.set('memoHtml', html);
-        if ('Still working...' == data) setTimeout(fetchResult, DELAY, piid);
+        ractive.hideActivityIndicator();
       },
       error: function(jqXHR, textStatus, errorThrown) {
         console.log('  error: '+errorThrown);
