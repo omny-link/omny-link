@@ -117,7 +117,7 @@
           {{#tenant.features.marketing || tenant.features.stage}}
             <li class="form-group">
               <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.contactStage}}{{tenant.strings.contactStage}}{{else}}Stage{{/}}:</label>
-              <input class="form-control" list="contactStages" placeholder="Start typing to filter options" id="curStage" on-blur="initAutoComplete()" value="{{current.stage}}">
+              <input class="form-control" list="contactStages" maxlength="30" placeholder="Start typing to filter options" id="curStage" on-blur="initAutoComplete()" value="{{current.stage}}">
               <p class="col-md-offset-4 hidden-sm hidden-xs help-block">{{#tenant.strings.contactStageHint}}{{tenant.strings.contactStageHint}}{{else}}How far through the sales pipeline are you with this contact?{{/}}</p>
             </li>
             {{# haveStageReasons() }}

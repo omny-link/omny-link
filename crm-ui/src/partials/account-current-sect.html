@@ -140,7 +140,7 @@
         {{#if tenant.features.stage}}
           <li class="form-group">
             <label class="col-md-4 col-sm-4 col-xs-4">{{#tenant.strings.accountStage}}{{tenant.strings.accountStage}}{{else}}Stage{{/}}:</label>
-            <input class="form-control" list="accountStages" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
+            <input class="form-control" list="accountStages" maxlength="30" placeholder="Start typing to filter options" id="curStage" value="{{current.stage}}">
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block">How far through the sales pipeline are you with this account?</p>
           </li>
         {{/if}}
