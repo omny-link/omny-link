@@ -62,6 +62,7 @@ import link.omny.catalog.repositories.MediaResourceRepository;
 import link.omny.catalog.repositories.StockCategoryRepository;
 import link.omny.catalog.repositories.StockItemRepository;
 import link.omny.catalog.views.MediaResourceViews;
+import link.omny.catalog.views.StockCategoryViews;
 import link.omny.catalog.views.StockItemViews;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
@@ -143,6 +144,7 @@ public class StockItemController {
      */
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
     @ApiOperation(value = "Retrieves the stock items for a specific tenant.")
+    @JsonView(StockItemViews.Summary.class)
     public @ResponseBody List<EntityModel<StockItem>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -173,6 +175,7 @@ public class StockItemController {
      */
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
     @ApiOperation(value = "Retrieves the stock items for a specific tenant.")
+    @JsonView(StockItemViews.Detailed.class)
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,

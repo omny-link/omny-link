@@ -68,7 +68,8 @@ public interface StockItemRepository extends CrudRepository<StockItem, Long> {
     @Modifying(clearAutomatically = true)
     public void setStockCategory(@Param("itemId") Long itemId, @Param("categoryId") Long categoryId);
 
-    @Query(value = "DELETE OL_STOCK_ITEM i WHERE stock_cat_id = :stockCategoryId", nativeQuery = true)
+    @Override
+    @Query("UPDATE #{#entityName} x set x.status = 'deleted' where x.id = :id")
     @Modifying(clearAutomatically = true)
-    public void deleteByStockCategory(@Param("stockCategoryId") Long stockCategoryId);
+    public void deleteById(@Param("id") Long id);
 }

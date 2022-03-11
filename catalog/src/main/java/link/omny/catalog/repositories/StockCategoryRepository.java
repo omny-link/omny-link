@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -62,4 +63,8 @@ public interface StockCategoryRepository extends
     @Query(value = "SELECT DISTINCT(cf.name) FROM OL_STOCK_CAT o INNER JOIN OL_STOCK_CAT_CUSTOM cf on o.id = cf.stock_cat_id WHERE o.tenant_id = :tenantId ", nativeQuery = true)
     List<String> findCustomFieldNames(@Param("tenantId") String tenantId);
 
+    @Override
+    @Query("UPDATE #{#entityName} x set x.status = 'deleted' where x.id = :id")
+    @Modifying(clearAutomatically = true)
+    public void deleteById(@Param("id") Long id);
 }

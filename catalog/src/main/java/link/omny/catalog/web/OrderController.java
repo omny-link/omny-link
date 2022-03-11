@@ -651,11 +651,7 @@ public class OrderController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
             @PathVariable("itemId") Long orderItemId) {
-
-        // cascade does not appear to work on delete
-        orderRepo.deleteItemCustomField(orderItemId);
-
-        orderRepo.deleteItem(orderId, orderItemId);
+        orderRepo.deleteItem(orderItemId);
     }
 
     protected List<EntityModel<Order>> addLinks(final String tenantId, final List<Order> list) {

@@ -99,12 +99,8 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     @Modifying(clearAutomatically = true)
     public void deleteById(@Param("id") Long id);
 
-    @Query("DELETE FROM CustomOrderItemField i WHERE i.orderItem.id = :orderItemId")
+    @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = :id")
     @Modifying(clearAutomatically = true)
-    public void deleteItemCustomField(@Param("orderItemId") Long orderItemId);
-
-    @Query("DELETE FROM OrderItem i WHERE i.order.id = :orderId AND i.id = :orderItemId")
-    @Modifying(clearAutomatically = true)
-    public void deleteItem(@Param("orderId") Long orderId, @Param("orderItemId") Long orderItemId);
+    public void deleteItem(@Param("id") Long orderItemId);
 
 }

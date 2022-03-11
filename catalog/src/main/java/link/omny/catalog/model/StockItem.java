@@ -108,12 +108,12 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stockItemIdSeq")
     @JsonProperty
     @JsonView({OrderViews.Summary.class, StockCategoryViews.Detailed.class,
-            StockItemViews.Detailed.class})
+            StockItemViews.Summary.class})
     private Long id;
 
     @JsonProperty
     @JsonView({ OrderViews.Summary.class, StockCategoryViews.Detailed.class,
-            StockItemViews.Detailed.class })
+            StockItemViews.Summary.class })
     @NotNull
     private String name;
 
@@ -195,7 +195,7 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
 
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class,
-        StockItemViews.Detailed.class })
+        StockItemViews.Summary.class })
     @Column(name = "tenant_id")
     private String tenantId;
 

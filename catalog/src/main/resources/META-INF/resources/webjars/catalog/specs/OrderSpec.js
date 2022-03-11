@@ -27,7 +27,7 @@ describe("Product catalogue", function() {
   var orders = [];
   var purchaseOrders = [];
   var stockItem = {
-      name: 'Widget A'
+      name: 'Widget A '+new Date().getTime()
   };
   var order = {
       name: 'Order 123',
@@ -70,7 +70,10 @@ describe("Product catalogue", function() {
       date: '2017-02-01',
       stage: 'Draft',
       orderItems: [
-        { price: 100, status: 'Draft', customFields: {
+        {
+          price: 100,
+          status: 'Draft',
+          customFields: {
             controlledGoods: 'Proof of age, over 18 required',
             specialInstructions: 'Signature required',
           }
@@ -116,7 +119,10 @@ describe("Product catalogue", function() {
         expect(jqXHR.status).toEqual(201);
         stockItem.links = [ { rel: 'self', href: location } ];
         order.stockItem = stockItem;
+        // stockItem will be ignored like this, but check it does not get rejected
         complexOrder.orderItems[0].stockItem = stockItem;
+        // stock item id should be saved this way
+        complexOrder.orderItems[0].stockItemId = parseInt(location.substring(location.lastIndexOf('/')+1));
         done();
       }
     });
@@ -357,6 +363,8 @@ describe("Product catalogue", function() {
       expect(data.orderItems[0].status).toEqual(complexOrder.orderItems[0].status);
       expect(data.orderItems[0].dueDate).toEqual(complexOrder.orderItems[0].dueDate);
       expect(data.orderItems[0].owner).toEqual(complexOrder.orderItems[0].owner);
+      expect(data.orderItems[0].stockItemId).toBeDefined();
+      expect(data.orderItems[0].stockItemId).toEqual(complexOrder.orderItems[0].stockItemId);
       expect(data.orderItems[0].customFields.controlledGoods).toEqual(complexOrder.orderItems[0].customFields.controlledGoods);
       expect(data.orderItems[0].customFields.signatureRequired).toEqual(complexOrder.orderItems[0].customFields.signatureRequired);
 
@@ -381,7 +389,7 @@ describe("Product catalogue", function() {
     });
   });
 
-    it("fetches the complex order inc. order items and check all fields are correct", function(done) {
+  it("fetches the complex order inc. order items and check all fields are correct", function(done) {
     console.log('tenantUri: '+$rh.tenantUri(complexOrder));
     $rh.getJSON($rh.tenantUri(complexOrder), function( data ) {
 
