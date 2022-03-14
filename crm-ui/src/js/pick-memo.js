@@ -229,6 +229,7 @@
         ractive.set('instanceToStart.variables.stockItemId','/stock-items/'+order.stockItem.id);
         ractive.set('instanceToStart.variables.orderId',ractive.id(order));
         ractive.set('instanceToStart.variables.orderName',ractive.id(order));
+        ractive.set('instanceToStart.variables.tenantId',ractive.get('tenantId'));
         $('#curOrderDisplay').attr('readonly','readonly').attr('disabled','disabled');
       } else {
         initOrdersAutocomplete();
@@ -240,6 +241,13 @@
     $('#pickMemo .nav-tabs li:nth-child(1)').off().on('click',showMemoSpec);
     $('#pickMemo .nav-tabs li:nth-child(2)').off().on('click',showMemoPreview);
     $('#pickMemo .nav-tabs li:nth-child(3)').off().on('click',fetchPdf);
+  });
+
+  ractive.observe('orders', function(newValue, oldValue, keypath) {
+    console.log("pick-memo: '"+keypath+"' changing from '"+oldValue+"' to '"+newValue+"'");
+    if (Array.isArray(newValue) && newValue != oldValue) {
+      initOrdersAutocomplete();
+    }
   });
 
   return me;
