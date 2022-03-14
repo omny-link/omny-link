@@ -1307,11 +1307,6 @@ var ractive = new BaseRactive({
         ractive.set('currentContact',obj);
         ractive.showSocial(networkName, keypath);
       },
-      startAccountContactAcction: function(action, contactId) {
-        ractive.set('currentContact',Array.findBy('id',contactId,ractive.get('current.contacts')));
-        ractive.set('instanceToStart.variables.contactId',contactId);
-//        ractive.startCustomAction(action.ref, action.name, ractive.get('current'){{#url}}, '{{url}}'{{/url}}, '{{fullName}}')
-      },
       toggleEditContact: function(obj) {
         console.info('toggleEditContact');
         ractive.set('currentContact', obj);
