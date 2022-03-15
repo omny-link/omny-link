@@ -811,14 +811,13 @@ var ractive = new BaseRactive({
     } else {
       CKEDITOR.replace( 'curDescription', {
         height: 150,
-        removeButtons: 'PasteFromWord',
         toolbarGroups: [
           { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
           { name: 'paragraph',   groups: [ 'list' ] }
         ]
       });
       CKEDITOR.instances.curDescription.on('blur', function(ev) {
-        ractive.set('current.description', ev.editor.getData());
+        ractive.set('current.description', ev.editor.getData().replace(/ &amp; /g, ' and ').replace(/&amp;/g, ' and ').replace(/&[a-z]*;/, ''));
         ractive.save();
       });
     }

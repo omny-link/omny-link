@@ -287,7 +287,7 @@
     </div>
 
     {{#tenant.features.accountDescription}}
-      <div id="currentAccountDescLabel" class="col-md-12 col-sm-12 col-xs-12">
+      <div id="currentAccountDescContainer" class="col-md-12 col-sm-12 col-xs-12">
         <label class="textarea col-md-2 col-sm-4 col-xs-4">{{#if tenant.strings.accountDescription}}{{tenant.strings.accountDescription}}{{else}}Additional info{{/if}}:</label>
         <div id="currentAccountDesc" class="col-md-offset-2 col-md-10 col-sm-offset-2 col-sm-10 col-xs-offset-2 col-xs-10">
           <textarea class="col-md-10 col-sm-8 form-control" id="curDescription" maxlength="1000" placeholder="{{#if tenant.strings.accountDescriptionHint}}{{tenant.strings.accountDescriptionHint}}{{else}}Additional info{{/if}}" value="{{current.description}}"></textarea>
