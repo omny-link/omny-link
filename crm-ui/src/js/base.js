@@ -713,6 +713,8 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
       var id = $('#'+entityName+'sTable tbody tr:visible').data('href');
       var q = Array.findBy('id',id,ractive.get(entityName+'s'));
       ractive.select( q );
+    } else {
+      ractive.hideActivityIndicator();
     }
   },
   showUpload: function () {
