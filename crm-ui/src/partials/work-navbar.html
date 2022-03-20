@@ -26,13 +26,14 @@
   <ul class="dropdown dropdown-menu" role="menu">
     <li on-click="filter:{idx:1}">Show all</li>
     <li class="divider"></li>
-    <li on-click="filter:{idx:3, field: 'dueDate', func: 'isDueToday'}">Show due today</li>
-    <li on-click="filter:{idx:4, field: 'dueDate', func: 'isDueTodayTomorrow'}">Show due by tomorrow</li>
-    <li on-click="filter:{idx:5, field: 'dueDate', func: 'isDueThisWeek'}">Show due this week</li>
-    <li on-click="filter:{idx:6, field: 'dueDate', func: 'isDueThisMonth'}">Show due this month</li>
+    <li on-click="filter:{idx:3,value:'overdue'}">Show overdue</li>
+    <li on-click="filter:{idx:3,value:'due'}">Show due</li>
+    <li on-click="filter:{idx:4,value:'due<2days'}">Show due tomorrow</li>
+    <li on-click="filter:{idx:5,value:'due<7days'}">Show due this week</li>
+    <li on-click="filter:{idx:6,value:'due<28days'}">Show due this month</li>
     <li class="divider"></li>
-    <li on-click="filter:{idx:8, field: 'taskLocalVariables.deferUntil', func: 'isActive'}">Show active</li>
-    <li on-click="filter:{idx:9, field: 'taskLocalVariables.deferUntil', func: 'isDeferred'}">Show future reminders</li>
+    <li on-click="filter:{idx:8,value:'!deferred'}">Show active</li>
+    <li on-click="filter:{idx:9,value:'deferred'}">Show deferred</li>
   </ul>
 </a>
 {{#if tenant.workActions}}

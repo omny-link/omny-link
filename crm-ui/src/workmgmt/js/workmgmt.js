@@ -85,13 +85,14 @@ var ractive = new BaseRactive({
     age: function(timeString) {
       return i18n.getAgeString(new Date(timeString))
     },
+    entityName: 'task',
     events: [],
+    searchTerm: 'due',
     featureEnabled: function(feature) {
       console.log('featureEnabled: '+feature);
       if (feature==undefined || feature.length==0) return true;
       else return ractive.get('tenant.show.'+feature);
     },
-    filter: {idx:8, field: 'taskLocalVariables.deferUntil', func: 'isActive'},
     formatJson: function(json) {
       console.log('formatJson: '+json);
       try {
@@ -123,19 +124,6 @@ var ractive = new BaseRactive({
     helpUrl: '//omny.link/user-help/work/#the_title',
     keys: function(obj) {
       return Object.keys(obj);
-    },
-    matchFilter: function(obj,i) {
-      console.log("matchFilter: "+i+':'+obj+'('+JSON.stringify(obj.variables)+')');
-      var f = ractive.get('filter');
-      if (f.operator==undefined) f.operator='==';
-
-      if (f.func=='isDueToday') return ractive.isDueToday(obj);
-      else if (f.func=='isDueTodayTomorrow') return ractive.isDueTodayTomorrow(obj);
-      else if (f.func=='isDueThisWeek') return ractive.isDueThisWeek(obj);
-      else if (f.func=='isDueThisMonth') return ractive.isDueThisMonth(obj);
-      else if (f.func=='isActive') return !ractive.isDeferred(obj);
-      else if (f.func=='isDeferred') return ractive.isDeferred(obj);
-      else return eval('obj["'+f.field+'"]'+f.operator+f.value);
     },
     matchPage: function(pageName) {
       console.info('matchPage: '+pageName);
@@ -181,16 +169,27 @@ var ractive = new BaseRactive({
       if (searchTerm==undefined || searchTerm.length==0) {
         return true;
       } else {
-        return ( (obj.businessKey!=undefined && obj.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-          || (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-          || (obj.id.indexOf(searchTerm)>=0)
-          || (obj.processInstanceId.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-          || (obj.taskDefinitionKey.toLabel().toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
-          || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
-          || (searchTerm.startsWith('created>') && new Date(obj.firstContact)>new Date(ractive.get('searchTerm').substring(8)))
-          || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(ractive.get('searchTerm').substring(8)))
-          || (searchTerm.startsWith('created<') && new Date(obj.firstContact)<new Date(ractive.get('searchTerm').substring(8)))
-        );
+        try {
+          return ( (obj.businessKey!=undefined && obj.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+            || (obj.variables.businessKey!=undefined && obj.variables.businessKey.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+            || (obj.name!=undefined && obj.name.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+            || (obj.id.indexOf(searchTerm)>=0)
+            || (obj['processInstanceId']!=undefined && obj.processInstanceId.toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+            || (obj.taskDefinitionKey.toLabel().toLowerCase().indexOf(searchTerm.toLowerCase())>=0)
+            || (searchTerm.match('due<([0-9]*)days')!=null && obj.dueDate != undefined && new Date(obj.dueDate).getTime()-new Date().getTime()<searchTerm.match('due<([0-9]*)days')[1]*24*60*60*1000)
+            || (searchTerm.startsWith('due') && ractive.isDue(obj))
+            || (searchTerm.startsWith('overdue') && ractive.isOverdue(obj))
+            || (searchTerm.startsWith('!deferred') && !ractive.isDeferred(obj))
+            || (searchTerm.startsWith('deferred') && ractive.isDeferred(obj))
+            || (searchTerm.startsWith('updated>') && new Date(obj.lastUpdated)>new Date(ractive.get('searchTerm').substring(8)))
+            || (searchTerm.startsWith('created>') && new Date(obj.firstContact)>new Date(ractive.get('searchTerm').substring(8)))
+            || (searchTerm.startsWith('updated<') && new Date(obj.lastUpdated)<new Date(ractive.get('searchTerm').substring(8)))
+            || (searchTerm.startsWith('created<') && new Date(obj.firstContact)<new Date(ractive.get('searchTerm').substring(8)))
+          );
+        } catch (e) {
+          console.error('  during matchSearch on '+obj.id+', cause: '+e);
+          return false;
+        }
       }
     },
     renderPriority: function(task) {
@@ -354,13 +353,6 @@ var ractive = new BaseRactive({
       }
     });
   },
-  filter: function(filter) {
-    console.log('filter: '+JSON.stringify(filter));
-    ractive.set('filter',filter);
-    $('.dropdown.dropdown-menu li').removeClass('selected')
-    $('.dropdown.dropdown-menu li:nth-child('+filter.idx+')').addClass('selected')
-    ractive.showSearchMatched();
-  },
   findFormProperty: function(name) {
     console.log('findFormProperty: '+name);
     var rtn = -1;
@@ -395,32 +387,6 @@ var ractive = new BaseRactive({
     } else {
       return false;
     }
-  },
-  isDueToday: function(task) {
-    var deadline = new Date();
-    deadline = new Date(deadline.setDate(deadline.getDate()+1)); // add 1 day
-    deadline = new Date(deadline.setHours(18)); // set close of business to 18:00
-    deadline = new Date(deadline.setMinutes(0));
-    return ractive.isDueBefore(task, deadline);
-  },
-  isDueTodayTomorrow: function(task) {
-    var deadline = new Date();
-    deadline = new Date(deadline.setDate(deadline.getDate()+2)); // add 2 days
-    deadline = new Date(deadline.setHours(18)); // set close of business to 18:00
-    deadline = new Date(deadline.setMinutes(0));
-    return ractive.isDueBefore(task, deadline);
-  },
-  isDueThisWeek: function(task) {
-    var deadline = new Date();
-    deadline = new Date(deadline.setDate(deadline.getDate()+(5-deadline.getDay()))); // set to Friday
-    deadline = new Date(deadline.setHours(18)); // set close of business to 18:00
-    deadline = new Date(deadline.setMinutes(0));
-    return ractive.isDueBefore(task, deadline);
-  },
-  isDueThisMonth: function(task) {
-    var now  = new Date();
-    var deadline = new Date(now.getFullYear(), now.getMonth()+1, 0, 18, 0);
-    return ractive.isDueBefore(task, deadline);
   },
   isOverdue: function(task) {
     if (task.dueDate!=undefined && new Date(task.dueDate).getTime() <= new Date().getTime()) {
@@ -608,20 +574,6 @@ var ractive = new BaseRactive({
       },
     });
   },
-  showResults: function() {
-    console.log('showResults');
-    $('#tasksTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
-    $('#currentSect').slideUp();
-    $('#tasksTable').slideDown({ queue: true });
-  },
-  showSearchMatched: function() {
-    ractive.set('searchMatched',$('#tasksTable tbody tr').length);
-    if ($('#tasksTable tbody tr:visible').length==1) {
-      var taskId = $('#tasksTable tbody tr:visible').data('href')
-      var task = Array.findBy('id',ractive.localId(taskId),ractive.get('tasks'))
-      ractive.select( task );
-    }
-  },
   showTask: function() {
     console.log('showResults');
     $('#tasksTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
@@ -728,15 +680,3 @@ var ractive = new BaseRactive({
     $('#tasksTable').slideToggle();
   }
 });
-
-ractive.on( 'filter', function ( event, filter ) {
-  console.info('filter on '+JSON.stringify(event)+','+filter.idx);
-  ractive.filter(filter);
-});
-ractive.on( 'sort', function ( event, column ) {
-  console.info('sort on '+column);
-  // if already sorted by this column reverse order
-  if (this.get('sortColumn')==column) this.set('sortAsc', !this.get('sortAsc'));
-  this.set( 'sortColumn', column );
-});
-
