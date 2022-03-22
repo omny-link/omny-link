@@ -13,18 +13,26 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-(function ($, ractive) {
+(function (ractive) {
   var me = {
   };
 
-  if ('curMailBody' in CKEDITOR.instances) {
-    CKEDITOR.replace( 'curMailBody' );
-    CKEDITOR.instances.curMailBody.on('blur', function() {
-      ractive.set('instanceToStart.variables.mailBody',
-          CKEDITOR.instances.curMailBody.getData().replace(/"/g, '&quot;').replace(/'/g, '&apos;').replace(/[\n\t]/g,''));
-    });
-    CKEDITOR.instances.curMailBody.setData(ractive.get('instanceToStart.variables.mailBody'));
-  }
+    if ('curMailBody' in CKEDITOR.instances) {
+      //
+    } else {
+      CKEDITOR.replace( 'curMailBody', {
+        height: 150,
+        toolbarGroups: [
+          { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+          { name: 'paragraph',   groups: [ 'list' ] }
+        ]
+      });
+      CKEDITOR.instances.curMailBody.on('blur', function() {
+        ractive.set('instanceToStart.variables.mailBody',
+            CKEDITOR.instances.curMailBody.getData().replace(/"/g, '&quot;').replace(/'/g, '&apos;').replace(/[\n\t]/g,''));
+      });
+    }
+    CKEDITOR.instances.curDescription.setData(ractive.get('current.description'));
 
   return me;
-}($, ractive));
+}(ractive));
