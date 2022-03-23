@@ -187,7 +187,7 @@ public class OrderController {
         if (feedback == null) {
             LOGGER.info("No feedback for order {}", orderId);
             throw new CatalogObjectNotFoundException(String.format(
-                    "Unable to find object of type %1$d for order %2$s",
+                    "Unable to find object of type %1$s for order %2$d",
                     Feedback.class, orderId), Feedback.class, orderId);
         } else {
             LOGGER.info("Found feedback for order {}: {}", orderId, feedback);
