@@ -62,7 +62,6 @@ import link.omny.catalog.repositories.MediaResourceRepository;
 import link.omny.catalog.repositories.StockCategoryRepository;
 import link.omny.catalog.repositories.StockItemRepository;
 import link.omny.catalog.views.MediaResourceViews;
-import link.omny.catalog.views.StockCategoryViews;
 import link.omny.catalog.views.StockItemViews;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.internal.NullAwareBeanUtils;

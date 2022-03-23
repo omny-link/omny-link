@@ -41,13 +41,16 @@ public interface StockCategoryRepository extends
     StockCategory findByName(@Param("name") String name,
             @Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM StockCategory c WHERE c.tenantId = :tenantId ORDER BY c.name ASC")
+    @Query("SELECT c FROM StockCategory c WHERE c.tenantId = :tenantId "
+            + "AND (c.status IS NULL OR c.status != 'deleted') ORDER BY c.name ASC")
     List<StockCategory> findAllForTenant(@Param("tenantId") String tenantId);
 
-    @Query("SELECT COUNT(c) FROM StockCategory c WHERE c.tenantId = :tenantId AND (c.status IS NULL OR c.status != 'deleted')")
+    @Query("SELECT COUNT(c) FROM StockCategory c WHERE c.tenantId = :tenantId "
+            + "AND (c.status IS NULL OR c.status != 'deleted')")
     long countForTenant(@Param("tenantId") String tenantId);
 
-    @Query("SELECT c FROM StockCategory c WHERE c.tenantId = :tenantId ORDER BY c.name ASC")
+    @Query("SELECT c FROM StockCategory c WHERE c.tenantId = :tenantId "
+            + "AND (c.status IS NULL OR c.status != 'deleted') ORDER BY c.name ASC")
     List<StockCategory> findPageForTenant(@Param("tenantId") String tenantId,
             Pageable pageable);
 
@@ -55,12 +58,16 @@ public interface StockCategoryRepository extends
     List<StockCategory> findByStatusForTenant(
             @Param("tenantId") String tenantId, @Param("status") String status);
 
-    @Query("SELECT c FROM StockCategory c WHERE c.status IN :status AND c.tenantId = :tenantId AND c.offerStatus = :offerStatus ORDER BY c.name ASC")
+    @Query("SELECT c FROM StockCategory c "
+            + "WHERE c.status IN :status AND c.tenantId = :tenantId "
+            + "AND c.offerStatus = :offerStatus ORDER BY c.name ASC")
     List<StockCategory> findByStatusAndOffersForTenant(
             @Param("tenantId") String tenantId, @Param("status") String status,
             @Param("offerStatus") String offerStatus);
 
-    @Query(value = "SELECT DISTINCT(cf.name) FROM OL_STOCK_CAT o INNER JOIN OL_STOCK_CAT_CUSTOM cf on o.id = cf.stock_cat_id WHERE o.tenant_id = :tenantId ", nativeQuery = true)
+    @Query(value = "SELECT DISTINCT(cf.name) FROM OL_STOCK_CAT o "
+            + "INNER JOIN OL_STOCK_CAT_CUSTOM cf on o.id = cf.stock_cat_id "
+            + "WHERE o.tenant_id = :tenantId ", nativeQuery = true)
     List<String> findCustomFieldNames(@Param("tenantId") String tenantId);
 
     @Override
