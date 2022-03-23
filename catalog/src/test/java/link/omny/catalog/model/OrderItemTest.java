@@ -18,8 +18,6 @@ package link.omny.catalog.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.Collections;
-
 import org.junit.jupiter.api.Test;
 
 public class OrderItemTest {
@@ -44,7 +42,7 @@ public class OrderItemTest {
 
         CustomOrderItemField field2 = new CustomOrderItemField("field1", "bar");
         assertNull(field2.getId());
-        orderItem.setCustomFields(Collections.singleton(field2));
+        orderItem.addCustomField(field2);
 
         orderItem.addCustomField(
                 new CustomOrderItemField("colour", "Blue"));

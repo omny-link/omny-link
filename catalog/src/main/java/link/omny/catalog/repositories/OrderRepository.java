@@ -77,7 +77,7 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
             @Param("parentId") Long parentId);
 
     @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
-    @EntityGraph("orderWithItems")
+    @EntityGraph("orderWithAll")
     List<Order> findAllForContacts(@Param("tenantId") String tenantId,
             @Param("contactIds") Long[] contactIds);
 

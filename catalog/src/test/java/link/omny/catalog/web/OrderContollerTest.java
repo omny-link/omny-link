@@ -165,7 +165,7 @@ public class OrderContollerTest {
                 .doubleValue(), 0.01);
 
         // Update custom field
-        order2b.getOrderItems().iterator().next().setCustomField(
+        order2b.getOrderItems().iterator().next().addCustomField(
                         new CustomOrderItemField(CUST_FIELD_COLOUR, "Absinthe"));
         Order order2c = updateOrder(order2b.getId(), order2b);
         assertNotNull(order2c);

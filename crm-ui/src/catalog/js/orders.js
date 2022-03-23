@@ -521,7 +521,7 @@ var ractive = new BaseRactive({
         ractive.save();
       });
     }
-      CKEDITOR.instances.curDescription.setData(ractive.get('current.description'));
+    CKEDITOR.instances.curDescription.setData(ractive.get('current.description'));
   },
   save: function () {
     console.info('save order: '+ractive.get('current.name')+'...');

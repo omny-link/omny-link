@@ -52,13 +52,13 @@ import link.omny.supportservices.json.JsonCustomFieldSerializer;
 import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
-@Data
-@EqualsAndHashCode(callSuper = true, exclude = { "order" })
+@Getter
+@Setter
 @ToString(exclude = { "order" })
 @Entity
 @Table(name = "OL_ORDER_ITEM")
@@ -125,21 +125,10 @@ public class OrderItem extends Auditable<String> implements Serializable {
         return String.format("/order-items/%1$d", id);
     }
 
-    public Set<CustomOrderItemField> getCustomFields() {
-        if (customFields == null) {
-            customFields = new HashSet<CustomOrderItemField>();
-        }
-        return customFields;
-    }
-
-    public void setCustomFields(Set<CustomOrderItemField> fields) {
-        for (CustomOrderItemField newField : fields) {
-            setCustomField(newField);
-        }
-        setLastUpdated(new Date());
-    }
-
     public Object getCustomFieldValue(@NotNull String fieldName) {
+        if (customFields == null) {
+            return null;
+        }
         for (CustomField field : getCustomFields()) {
             if (fieldName.equals(field.getName())) {
                 return field.getValue();
@@ -148,14 +137,14 @@ public class OrderItem extends Auditable<String> implements Serializable {
         return null;
     }
 
-    public void addCustomField(CustomOrderItemField customField) {
-        customField.setOrderItem(this);
-        setCustomField(customField);
-    }
+    public void addCustomField(CustomOrderItemField newField) {
+        newField.setOrderItem(this);
 
-    public void setCustomField(CustomOrderItemField newField) {
-        boolean found = false; 
-        for (CustomOrderItemField field : getCustomFields()) {
+        boolean found = false;
+        if (customFields == null) {
+            customFields = new HashSet<CustomOrderItemField>();
+        }
+        for (CustomOrderItemField field : customFields) {
             if (field.getName().equals(newField.getName())) {
                 field.setValue(newField.getValue() == null ? null : newField
                         .getValue().toString());
@@ -164,7 +153,7 @@ public class OrderItem extends Auditable<String> implements Serializable {
         }
         if (!found) {
             newField.setOrderItem(this);
-            getCustomFields().add(newField);
+            customFields.add(newField);
         }
     }
 
@@ -177,4 +166,74 @@ public class OrderItem extends Auditable<String> implements Serializable {
         lastUpdated = new Date();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        try {
+        result = prime * result
+                + ((customFields == null) ? 0 : customFields.hashCode());
+        } catch (RuntimeException e) {
+            // This seems to happen only when invoking
+            // OrderController.findByContacts and appears to be ignorable
+            // as custom fields are already in memory
+            LOGGER.error("{} threw {}: {}", id, e.getClass().getName(), e.getMessage());
+        }
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((price == null) ? 0 : price.hashCode());
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        result = prime * result
+                + ((stockItemId == null) ? 0 : stockItemId.hashCode());
+        result = prime * result
+                + ((tenantId == null) ? 0 : tenantId.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        OrderItem other = (OrderItem) obj;
+        if (customFields == null) {
+            if (other.customFields != null)
+                return false;
+        } else if (!customFields.equals(other.customFields))
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (price == null) {
+            if (other.price != null)
+                return false;
+        } else if (!price.equals(other.price))
+            return false;
+        if (status == null) {
+            if (other.status != null)
+                return false;
+        } else if (!status.equals(other.status))
+            return false;
+        if (stockItemId == null) {
+            if (other.stockItemId != null)
+                return false;
+        } else if (!stockItemId.equals(other.stockItemId))
+            return false;
+        if (tenantId == null) {
+            if (other.tenantId != null)
+                return false;
+        } else if (!tenantId.equals(other.tenantId))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
+            return false;
+        return true;
+    }
 }

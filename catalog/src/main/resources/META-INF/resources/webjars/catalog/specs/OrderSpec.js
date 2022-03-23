@@ -26,11 +26,28 @@ describe("Product catalogue", function() {
   var purchaseOrdersBefore = [];
   var orders = [];
   var purchaseOrders = [];
+  var contact = {
+      firstName: 'Barney',
+      lastName: 'Rubble',
+      email: 'barney@slaterock.com',
+      customFields: {
+        dateOfBirth: '02/02/1968'
+      }
+  };
   var stockItem = {
       name: 'Widget A '+new Date().getTime()
   };
   var order = {
       name: 'Order 123',
+      type: 'order',
+      date: '2017-01-31',
+      price: '100',
+      customFields: {
+        specialInstructions: 'Signature required'
+      }
+  };
+  var orderWithContact = {
+      name: 'Order 789',
       type: 'order',
       date: '2017-01-31',
       price: '100',
@@ -335,6 +352,92 @@ describe("Product catalogue", function() {
     });
   });
 
+  it("fetches complete order inc. child entities BY CONTACT and check all fields are correct", function(done) {
+    // first we need a contact ...
+    $rh.ajax({
+      url: '/'+tenantId+'/contacts/',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(contact),
+      success: function(data, textStatus, jqXHR) {
+        // NOTE this is URI not tenantUri
+        var location = jqXHR.getResponseHeader('Location');
+        expect(location).toMatch(/\/contacts\/[0-9]/);
+        expect(jqXHR.status).toEqual(201);
+        contact.links = [ { rel: 'self', href: location } ];
+
+        // .. then an order ...
+        orderWithContact.contactId = location.substring(location.lastIndexOf('/')+1);
+        $rh.ajax({
+          url: '/'+tenantId+'/orders/',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(orderWithContact),
+          success: function(data, textStatus, jqXHR) {
+            var location = jqXHR.getResponseHeader('Location');
+            expect(location).toMatch(/\/orders\/[0-9]/);
+            expect(jqXHR.status).toEqual(201);
+            orderWithContact.links = [ { rel: 'self', href: location } ];
+
+            // ... and feedback ...
+            $rh.ajax({
+              url: $rh.tenantUri(orderWithContact)+'/feedback/',
+              type: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify(feedback),
+              success: function(data, textStatus, jqXHR) {
+                var location = jqXHR.getResponseHeader('Location');
+                expect(location).toMatch(/.*\/orders\/[0-9]*\/feedback\/[0-9]*/);
+                expect(jqXHR.status).toEqual(201);
+
+                // ... and now find order by contact
+                console.log('tenantUri: '+$rh.tenantUri(orderWithContact)+', contactId: '+orderWithContact.contactId);
+                console.log('tenantUri: '+$rh.localId(orderWithContact)+', contactId: '+orderWithContact.contactId);
+                $rh.getJSON('/'+tenantId+'/orders/findByContacts/'+orderWithContact.contactId, function( data ) {
+
+                  expect(data.length).toEqual(1);
+                  data = data[0];
+
+                  expect($rh.localId(data)).toEqual($rh.localId(orderWithContact));
+                  expect(data.name).toEqual(orderWithContact.name);
+                  expect(data.date).toEqual(orderWithContact.date);
+                  expect(''+data.price).toEqual(orderWithContact.price);
+                  expect(data.dueDate).toEqual(orderWithContact.dueDate);
+                  expect(data.order).toEqual(orderWithContact.order);
+                  expect(data.stage).toEqual(orderWithContact.stage);
+                  expect(data.created).toBeDefined();
+                  expect(data.customFields).toBeDefined();
+                  expect(data.customFields.specialInstructions).toEqual(orderWithContact.customFields.specialInstructions);
+
+    //              expect(data.notes.length).toEqual(1);
+    //              expect(data.notes[0].author).toEqual(note.author);
+    //              expect(data.notes[0].name).toEqual(note.name);
+    //
+    //              expect(data.documents.length).toEqual(1);
+    //              expect(data.documents[0].author).toEqual(doc.author);
+    //              expect(data.documents[0].name).toEqual(doc.name);
+    //              expect(data.documents[0].url).toEqual(doc.url);
+    //              expect(data.documents[0].confidential).toEqual(false); // default value
+    //              expect(data.documents[0].favorite).toEqual(doc.favorite); // defaults to false
+
+                  expect(data.feedback.type).toEqual(feedback.type);
+                  expect(data.feedback.description).toEqual(feedback.description);
+                  expect(data.created).toBeDefined();
+                  expect(data.feedback.customFields).toBeDefined();
+                  expect(data.feedback.customFields.refusalReason).toEqual(feedback.customFields.refusalReason);
+                  expect(data.feedback.customFields.refusalDate).toEqual(feedback.customFields.refusalDate);
+
+                  done();
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+
+  });
+
   it("creates a new complex order (including order items)", function(done) {
     $rh.ajax({
       url: '/'+tenantId+'/orders/',
@@ -444,6 +547,26 @@ describe("Product catalogue", function() {
       success: function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
         done();
+      }
+    });
+  });
+
+  it("deletes the added order with its associated contact", function(done) {
+    $rh.ajax({
+      url: $rh.tenantUri(orderWithContact),
+      type: 'DELETE',
+      contentType: 'application/json',
+      success: function(data, textStatus, jqXHR) {
+        expect(jqXHR.status).toEqual(204);
+        $rh.ajax({
+          url: $rh.tenantUri(contact),
+          type: 'DELETE',
+          contentType: 'application/json',
+          success: completeHandler = function(data, textStatus, jqXHR) {
+            expect(jqXHR.status).toEqual(204);
+            done();
+          }
+        });
       }
     });
   });
