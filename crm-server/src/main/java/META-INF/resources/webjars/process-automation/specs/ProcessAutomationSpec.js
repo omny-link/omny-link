@@ -26,13 +26,21 @@ describe("Process automation", function() {
       name: 'Bedrock Slate and Gravel'
   };
   var accountsBefore = [];
-  var activity = {
-      content: 'New enquiry',
-      type: 'TEST'
-  }
   var contactsBefore = [];
   var contacts = [];
-  var enquiry = {
+  var contactOnlyEnquiry = {
+      fullName: 'Barney Rubble',
+      email: 'barney@slaterock.com',
+      message: 'Hi,\nI need to hire an extra bronto-crane.\nDo you have one available?\nBarney',
+      tenantId: tenantId,
+      ip: "10.192.168.100",
+      admin_email: "info@knowprocess.com",
+      source: "jasmine test harness",
+      customFields: {
+        dateOfBirth: '01/01/1970'
+      }
+  };
+  var contactAndAccountEnquiry = {
       fullName: 'Barney Rubble',
       account: {
         name: account.name,
@@ -42,24 +50,17 @@ describe("Process automation", function() {
       tenantId: tenantId,
       ip: "10.192.168.100",
       admin_email: "info@knowprocess.com",
+      source: "jasmine test harness",
       customFields: {
         dateOfBirth: '01/01/1970'
       }
   };
-  var contact = {
-      fullName: 'Barney Rubble',
-      email: 'barney@slaterock.com',
-      tenantId: tenantId,
-      customFields: {
-        dateOfBirth: '01/01/1970',
-        ip: "10.192.168.100"
-      }
-  };
+
   var processCreds = 'rest-admin:g5LkZSpZXzF8V4FIyPVOey5y';
 
   beforeAll(function() {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
   });
 
   it("searches to take an initial baseline", function(done) {
@@ -101,7 +102,7 @@ describe("Process automation", function() {
     });
   });
 
-  it("submits a new enquiry message", function(done) {
+  it("submits a new enquiry message containing contact info only", function(done) {
     var requestUrl = server+"/msg/"+tenantId+"/kp.enquiry.json";
     fetch(requestUrl, {
       "headers": {
@@ -111,84 +112,70 @@ describe("Process automation", function() {
       },
       "method": "POST",
       "mode": "cors",
-      "body": JSON.stringify(enquiry)
+      "body": JSON.stringify(contactOnlyEnquiry)
     })
     .then(response => {
       console.log(response);
       expect(response.status).toEqual(201);
       expect(response.headers.get('Location')).toMatch(/.*\/runtime\/process-instances\/[-a-f0-9]{36}/);
-      procInstUri = response.headers.get('Location');
-      procInstId = procInstUri.substring(procInstUri.lastIndexOf('/')+1);
-      procInstServer = procInstUri.substring(0,procInstUri.indexOf('/runtime'));
-      procInstMsg = response.headers.get('Location').match(/[-a-f0-9]{36}/);
+      const location = response.headers.get('Location');
+      procInstContactOnly = {
+        uri: location,
+        id: location.substring(location.lastIndexOf('/')+1),
+        server: location.substring(0,location.indexOf('/runtime')),
+        msg: location.match(/[-a-f0-9]{36}/)
+      }
       done();
     });
   });
 
-  it("fetches complete contact inc. child entities and check all fields are correct", function(done) {
+  it("fetches created contact and child entities and check all fields are correct", function(done) {
     setTimeout(function () {
       // should be complete by now
-      fetch(procInstServer+'/query/historic-variable-instances', {
+      fetch(procInstContactOnly.server+'/query/historic-variable-instances', {
         "headers": {
           "Accept": "application/json",
-          "Authorization": "Basic "+btoa(processCreds)
+          "Authorization": "Basic "+btoa(processCreds),
+          "Content-Type": "application/json",
         },
-        "method": "GET",
+        "method": "POST",
         "mode": "cors",
-        "body": JSON.stringify({ "processInstanceId": procInstId });
+        "body": JSON.stringify({ "processInstanceId": procInstContactOnly.id })
       })
       .then(response => {
         console.log(response);
         expect(response.status).toEqual(200);
         return response.json();
       })
-      .then(data => {
-        console.log(data);
-
-        const contactIdArr = data.filter(variable => variable.name == 'contactId');
+      .then(resp => {
+        const contactIdArr = resp.data.filter(x => x.variable.name == 'contactId');
         expect(contactIdArr.length).toEqual(1);
-        contactUri = contactIdArr[0].value;
+        contactUri = contactIdArr[0].variable.value;
         console.log('  created contact: '+contactUri);
-        contact.id = parseInt($rh.localId(contactUri));
+        contactOnlyEnquiry.id = parseInt($rh.localId(contactUri));
 
-        const acctIdArr = data.filter(variable => variable.name == 'accountId');
+        const acctIdArr = resp.data.filter(x => x.variable.name == 'accountId');
         expect(acctIdArr.length).toEqual(1);
-        acctUri = acctIdArr[0].value;
-        console.log('  created acct: '+acctUri);
-        account.id = parseInt($rh.localId(acctUri));
+        acctUri = acctIdArr[0].variable.value;
+        expect(acctIdArr[0].variable.value).toBeNull();;
 
-        $rh.getJSON('/'+tenantId+'/contacts/'+contact.id, function( data ) {
-          expect(data.id).toEqual(contact.id);
+        $rh.getJSON('/'+tenantId+'/contacts/'+contactOnlyEnquiry.id, function( data ) {
+          expect(data.id).toEqual(contactOnlyEnquiry.id);
           expect(data.firstName).toEqual('Barney');
           expect(data.lastName).toEqual('Rubble');
-          expect(data.email).toEqual(enquiry.email);
+          expect(data.email).toEqual(contactOnlyEnquiry.email);
+          expect(data.source).toEqual(contactOnlyEnquiry.source);
           expect(data.firstContact).toBeDefined();
           expect(data.customFields).toBeDefined();
-          expect(data.customFields.dateOfBirth).toEqual(enquiry.customFields.dateOfBirth);
+          expect(data.customFields.dateOfBirth).toEqual(contactOnlyEnquiry.customFields.dateOfBirth);
 
-          expect(data.account.name).toEqual(enquiry.accountName);
-          expect(data.account.id).toEqual(account.id);
+          expect(data.notes.length).toEqual(1);
+          expect(data.notes[0].content).toEqual(contactAndAccountEnquiry.message.replace(/\n/g,'<br/>'));
 
-//          expect(data.activities.length).toEqual(3);
-//          data.activities.sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
-
-//          expect(data.activities[0].type).toEqual('LINK_ACCOUNT_TO_CONTACT');
-//          expect(data.activities[0].content).toMatch(/Linked account [0-9]* to contact [0-9]*/);
-//          expect(data.activities[1].type).toEqual('TRANSITION_TO_STAGE');
-//          expect(data.activities[1].content).toEqual('From null to tested');
-//          expect(data.activities[2].type).toEqual(activity.type);
-//          expect(data.activities[2].content).toEqual(activity.content);
-
-//          expect(data.notes.length).toEqual(1);
-//          expect(data.notes[0].author).toEqual(note.author);
-//          expect(data.notes[0].name).toEqual(note.name);
-
-//          expect(data.documents.length).toEqual(1);
-//          expect(data.documents[0].author).toEqual(doc.author);
-//          expect(data.documents[0].name).toEqual(doc.name);
-//          expect(data.documents[0].url).toEqual(doc.url);
-//          expect(data.documents[0].confidential).toEqual(false); // default value
-//          expect(data.documents[0].favorite).toEqual(doc.favorite); // defaults to false
+          expect(data.activities.length).toEqual(1);
+          data.activities.sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
+          expect(data.activities[0].type).toEqual('Enquiry');
+          expect(data.activities[0].content).toEqual('See notes');
 
           done();
         });
@@ -196,15 +183,124 @@ describe("Process automation", function() {
     }, 5500);
   });
 
+  it("submits a new enquiry message containing contact and account info", function(done) {
+    var requestUrl = server+"/msg/"+tenantId+"/kp.enquiry.json";
+    fetch(requestUrl, {
+      "headers": {
+          "Accept": "*/*",
+          "Authorization": "Basic "+btoa(processCreds),
+          "Content-Type": "application/json"
+      },
+      "method": "POST",
+      "mode": "cors",
+      "body": JSON.stringify(contactAndAccountEnquiry)
+    })
+    .then(response => {
+      console.log(response);
+      expect(response.status).toEqual(201);
+      expect(response.headers.get('Location')).toMatch(/.*\/runtime\/process-instances\/[-a-f0-9]{36}/);
+      const location = response.headers.get('Location');
+      procInstContactAndAccount = {
+        uri: location,
+        id: location.substring(location.lastIndexOf('/')+1),
+        server: location.substring(0,location.indexOf('/runtime')),
+        msg: location.match(/[-a-f0-9]{36}/)
+      }
+      done();
+    });
+  });
+
+  it("fetches created contact, account and child entities and check all fields are correct", function(done) {
+    setTimeout(function () {
+      // should be complete by now
+      fetch(procInstContactAndAccount.server+'/query/historic-variable-instances', {
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Basic "+btoa(processCreds),
+          "Content-Type": "application/json",
+        },
+        "method": "POST",
+        "mode": "cors",
+        "body": JSON.stringify({ "processInstanceId": procInstContactAndAccount.id })
+      })
+      .then(response => {
+        console.log(response);
+        expect(response.status).toEqual(200);
+        return response.json();
+      })
+      .then(resp => {
+        const contactIdArr = resp.data.filter(x => x.variable.name == 'contactId');
+        expect(contactIdArr.length).toEqual(1);
+        contactUri = contactIdArr[0].variable.value;
+        console.log('  created contact: '+contactUri);
+        contactAndAccountEnquiry.id = parseInt($rh.localId(contactUri));
+
+        const acctIdArr = resp.data.filter(x => x.variable.name == 'accountId');
+        expect(acctIdArr.length).toEqual(1);
+        acctUri = acctIdArr[0].variable.value;
+        console.log('  created acct: '+acctUri);
+        contactAndAccountEnquiry.account.id = parseInt($rh.localId(acctUri));
+
+        $rh.getJSON('/'+tenantId+'/contacts/'+contactAndAccountEnquiry.id, function( data ) {
+          expect(data.id).toEqual(contactAndAccountEnquiry.id);
+          expect(data.firstName).toEqual('Barney');
+          expect(data.lastName).toEqual('Rubble');
+          expect(data.email).toEqual(contactAndAccountEnquiry.email);
+          expect(data.source).toEqual(contactAndAccountEnquiry.source);
+          expect(data.firstContact).toBeDefined();
+          expect(data.customFields).toBeDefined();
+          expect(data.customFields.dateOfBirth).toEqual(contactAndAccountEnquiry.customFields.dateOfBirth);
+
+          expect(data.account.name).toEqual(contactAndAccountEnquiry.account.name);
+          expect(data.account.id).toEqual(contactAndAccountEnquiry.account.id);
+
+          expect(data.activities.length).toEqual(1);
+          data.activities.sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
+          expect(data.activities[0].type).toEqual('LINK_ACCOUNT_TO_CONTACT');
+          expect(data.activities[0].content).toMatch(/Linked account [0-9]* to contact [0-9]*/);
+
+          // note will be attached to account not contact
+
+          $rh.getJSON('/'+tenantId+'/accounts/'+contactAndAccountEnquiry.account.id, function( data ) {
+            expect(data.id).toEqual(contactAndAccountEnquiry.account.id);
+            expect(data.name).toEqual(contactAndAccountEnquiry.account.name);
+
+            expect(data.notes.length).toEqual(1);
+            expect(data.notes[0].content).toEqual(contactAndAccountEnquiry.message.replace(/\n/g,'<br/>'));
+
+            expect(data.activities.length).toEqual(1);
+            data.activities.sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
+            expect(data.activities[0].type).toEqual('Enquiry');
+            expect(data.activities[0].content).toEqual('See notes');
+
+            done();
+          });
+        });
+      });
+    }, 5500);
+  });
+
+  it("deletes the added contact", function(done) {
+    $rh.ajax({
+      url: '/'+tenantId+'/contacts/'+contactOnlyEnquiry.id,
+      type: 'DELETE',
+      contentType: 'application/json',
+      success: completeHandler = function(data, textStatus, jqXHR) {
+        expect(jqXHR.status).toEqual(204);
+        done();
+      }
+    });
+  });
+
   it("deletes the added contact and account", function(done) {
     $rh.ajax({
-      url: '/'+tenantId+'/contacts/'+contact.id,
+      url: '/'+tenantId+'/contacts/'+contactAndAccountEnquiry.id,
       type: 'DELETE',
       contentType: 'application/json',
       success: completeHandler = function(data, textStatus, jqXHR) {
         expect(jqXHR.status).toEqual(204);
         $rh.ajax({
-          url: '/'+tenantId+'/accounts/'+account.id,
+          url: '/'+tenantId+'/accounts/'+contactAndAccountEnquiry.account.id,
           type: 'DELETE',
           contentType: 'application/json',
           success: completeHandler = function(data, textStatus, jqXHR) {
