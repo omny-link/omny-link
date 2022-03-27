@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,16 +89,23 @@ public class OrderTest {
             assertNotNull(order.getOrderItems());
             assertEquals(2, order.getOrderItems().size());
 
-            OrderItem item1 = order.getOrderItems().iterator().next();
-            assertNotNull(item1.getStockItemId());
+            OrderItem item1 = order.getOrderItems().stream()
+                    .filter(x -> x.getIndex() == 1).findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException());
+            assertEquals(2, item1.getStockItemId());
+            assertEquals(1, (Integer) item1.getIndex().intValue());
             assertEquals(5, item1.getCustomFields().size());
+
+            OrderItem item2 = order.getOrderItems().stream()
+                    .filter(x -> x.getIndex() == 2).findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException());
+            assertEquals(3, item2.getStockItemId());
+            assertEquals(2, item2.getIndex().intValue());
+            assertEquals(5, item2.getCustomFields().size());
 
             Feedback feedback = order.getFeedback();
             assertEquals("Teacher", feedback.getType());
             assertEquals(2, feedback.getCustomFields().size());
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
         }
     }
 

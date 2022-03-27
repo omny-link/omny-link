@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,16 +35,11 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.rest.core.annotation.RestResource;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
 import link.omny.catalog.views.OrderViews;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
@@ -56,6 +50,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 @Getter
 @Setter
@@ -80,6 +77,10 @@ public class OrderItem extends Auditable<String> implements Serializable {
     @JsonProperty
     @JsonView(OrderViews.Detailed.class)
     private Long id;
+
+    @JsonProperty
+    @JsonView(OrderViews.Detailed.class)
+    private Short index;
 
     @JsonProperty
     @JsonView(OrderViews.Detailed.class)

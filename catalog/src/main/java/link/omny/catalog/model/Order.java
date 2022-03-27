@@ -129,7 +129,7 @@ public class Order extends Auditable<String> implements Serializable {
     private Long id;
 
     /**
-     * An publicly visible identifier typically populated with a per-tenant
+     * A publicly visible identifier typically populated with a per-tenant
      * unique and contiguous integer.
      */
     @Column(name = "ref")

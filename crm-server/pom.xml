@@ -128,9 +128,15 @@
         </configuration>
         <dependencies>
           <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.23</version>
+            <artifactId>crm-server</artifactId>
+            <groupId>link.omny</groupId>
+            <version>${project.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+            <version>42.2.18</version>
           </dependency>
           <dependency>
             <groupId>org.liquibase.ext</groupId>

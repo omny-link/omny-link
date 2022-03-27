@@ -88,11 +88,19 @@ describe("Product catalogue", function() {
       stage: 'Draft',
       orderItems: [
         {
+          index: 1,
           price: 100,
           status: 'Draft',
           customFields: {
-            controlledGoods: 'Proof of age, over 18 required',
-            specialInstructions: 'Signature required',
+            controlledGoods: 'Proof of age, over 18 required'
+          }
+        },
+        {
+          index: 2,
+          price: 200,
+          status: 'Draft',
+          customFields: {
+            specialInstructions: 'Signature required'
           }
         }
       ]
@@ -138,8 +146,10 @@ describe("Product catalogue", function() {
         order.stockItem = stockItem;
         // stockItem will be ignored like this, but check it does not get rejected
         complexOrder.orderItems[0].stockItem = stockItem;
+        complexOrder.orderItems[1].stockItem = stockItem;
         // stock item id should be saved this way
         complexOrder.orderItems[0].stockItemId = parseInt(location.substring(location.lastIndexOf('/')+1));
+        complexOrder.orderItems[1].stockItemId = parseInt(location.substring(location.lastIndexOf('/')+1));
         done();
       }
     });
@@ -409,17 +419,6 @@ describe("Product catalogue", function() {
                   expect(data.customFields).toBeDefined();
                   expect(data.customFields.specialInstructions).toEqual(orderWithContact.customFields.specialInstructions);
 
-    //              expect(data.notes.length).toEqual(1);
-    //              expect(data.notes[0].author).toEqual(note.author);
-    //              expect(data.notes[0].name).toEqual(note.name);
-    //
-    //              expect(data.documents.length).toEqual(1);
-    //              expect(data.documents[0].author).toEqual(doc.author);
-    //              expect(data.documents[0].name).toEqual(doc.name);
-    //              expect(data.documents[0].url).toEqual(doc.url);
-    //              expect(data.documents[0].confidential).toEqual(false); // default value
-    //              expect(data.documents[0].favorite).toEqual(doc.favorite); // defaults to false
-
                   expect(data.feedback.type).toEqual(feedback.type);
                   expect(data.feedback.description).toEqual(feedback.description);
                   expect(data.created).toBeDefined();
@@ -461,7 +460,20 @@ describe("Product catalogue", function() {
       expect($rh.localId(data)).toEqual($rh.localId(complexOrder));
       expect(data.name).toEqual(complexOrder.name);
 
-      expect(data.orderItems.length).toEqual(1);
+      expect(data.orderItems.length).toEqual(2);
+      let sortedItems = [];
+      data.orderItems.forEach(function(d,i) {
+        if (d.index != undefined) {
+          sortedItems[d.index-1] = d;
+        } else {
+          console.warn('  cannot sort item: '+d.id);
+          sortedItems = data.orderItems;
+          return;
+        }
+      });
+      console.log('  sortedItems.length: '+sortedItems.length);
+      data.orderItems = sortedItems;
+
       expect(data.orderItems[0].price).toEqual(complexOrder.orderItems[0].price);
       expect(data.orderItems[0].status).toEqual(complexOrder.orderItems[0].status);
       expect(data.orderItems[0].dueDate).toEqual(complexOrder.orderItems[0].dueDate);
@@ -469,7 +481,14 @@ describe("Product catalogue", function() {
       expect(data.orderItems[0].stockItemId).toBeDefined();
       expect(data.orderItems[0].stockItemId).toEqual(complexOrder.orderItems[0].stockItemId);
       expect(data.orderItems[0].customFields.controlledGoods).toEqual(complexOrder.orderItems[0].customFields.controlledGoods);
-      expect(data.orderItems[0].customFields.signatureRequired).toEqual(complexOrder.orderItems[0].customFields.signatureRequired);
+
+      expect(data.orderItems[1].price).toEqual(complexOrder.orderItems[1].price);
+      expect(data.orderItems[1].status).toEqual(complexOrder.orderItems[1].status);
+      expect(data.orderItems[1].dueDate).toEqual(complexOrder.orderItems[1].dueDate);
+      expect(data.orderItems[1].owner).toEqual(complexOrder.orderItems[1].owner);
+      expect(data.orderItems[1].stockItemId).toBeDefined();
+      expect(data.orderItems[1].stockItemId).toEqual(complexOrder.orderItems[1].stockItemId);
+      expect(data.orderItems[1].customFields.signatureRequired).toEqual(complexOrder.orderItems[1].customFields.signatureRequired);
 
       complexOrder = data;
 
@@ -505,11 +524,16 @@ describe("Product catalogue", function() {
       expect(data.created).toBeDefined();
       expect(data.lastUpdated).toBeGreaterThan(data.created);
 
-      expect(data.orderItems.length).toEqual(1);
+      expect(data.orderItems.length).toEqual(2);
       expect(data.orderItems[0].price).toEqual(complexOrder.orderItems[0].price);
       expect(data.orderItems[0].status).toEqual(complexOrder.orderItems[0].status);
       expect(data.orderItems[0].dueDate).toEqual(complexOrder.orderItems[0].dueDate);
       expect(data.orderItems[0].owner).toEqual(complexOrder.orderItems[0].owner);
+
+      expect(data.orderItems[1].price).toEqual(complexOrder.orderItems[1].price);
+      expect(data.orderItems[1].status).toEqual(complexOrder.orderItems[1].status);
+      expect(data.orderItems[1].dueDate).toEqual(complexOrder.orderItems[1].dueDate);
+      expect(data.orderItems[1].owner).toEqual(complexOrder.orderItems[1].owner);
 
       done();
     });

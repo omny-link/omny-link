@@ -10,9 +10,10 @@
 	},
 	"orderItems": [
 		{
-			"stockItemId": "3",
+			"index": 1,
+			"stockItemId": "2",
 			"customFields": {
-				"stockItemId": "3",
+				"stockItemId": "2",
 				"date": "2016-11-19T00:00:00.000Z",
 				"startTime": "09:00",
 				"endTime": "10:00",
@@ -20,6 +21,7 @@
 			}
 		},
 		{
+			"index": 2,
 			"stockItemId": "3",
 			"customFields": {
 				"stockItemId": "3",

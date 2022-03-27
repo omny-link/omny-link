@@ -124,7 +124,7 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
 
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class,
-        StockItemViews.Detailed.class })
+            StockItemViews.Summary.class })
     private String size;
 
     @JsonProperty

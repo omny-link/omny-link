@@ -111,7 +111,6 @@ public class OrderController {
      */
     @GetMapping(value = "/{id}")
     @JsonView(OrderViews.Enhanced.class)
-    @Transactional
     @ApiOperation(value = "Return the specified order.")
     public @ResponseBody EntityModel<Order> findEntityById(
             @PathVariable("tenantId") String tenantId,
@@ -419,7 +418,11 @@ public class OrderController {
         LOGGER.debug("fixUpOrderItems for order {} ({}), {} items found",
                 order.getName(), order.getId(),
                 (order.getOrderItems() == null ? 0 : order.getOrderItems().size()));
+        short index = 1;
         for (OrderItem item : order.getOrderItems()) {
+            if (item.getIndex() == null) {
+                item.setIndex(index++);
+            }
             item.setTenantId(tenantId);
             item.setOrder(order);
             for (CustomOrderItemField field : item.getCustomFields()) {
@@ -592,6 +595,9 @@ public class OrderController {
 
         NullAwareBeanUtils.copyNonNullProperties(updatedOrderItem, item, "id", "stockItem");
         item.setTenantId(tenantId);
+        for (CustomOrderItemField field : item.getCustomFields()) {
+            field.setOrderItem(item);
+        }
 
         orderItemRepo.save(item);
     }

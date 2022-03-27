@@ -1029,6 +1029,7 @@
       referencedColumnNames="id" referencedTableName="OL_ACCOUNT"
       validate="true" />
   </changeSet>
-  <include file="classpath:/liquibase/changelog-001-update-sequences.xml"/>
-  <include file="classpath:/liquibase/changelog-002-bidirectional-order-feedback.xml"/>
+  <include file="liquibase/changelog-001-update-sequences.xml" relativeToChangelogFile="true"/>
+  <include file="liquibase/changelog-002-bidirectional-order-feedback.xml" relativeToChangelogFile="true"/>
+  <include file="liquibase/changelog-003-order-item-index.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
