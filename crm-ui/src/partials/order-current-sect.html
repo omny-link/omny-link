@@ -16,9 +16,9 @@
 <section id="currentSect" style="display:none">
   <form class="inline-form form" id="currentForm">
     <h2 class="">
-      {{#matchRole('super-admin')}}
+      {{#if profile && matchRole('super-admin')}}
         <span>{{current.id}} - </span>
-      {{/}}
+      {{/if}}
       {{#current.ref}}
         <span>{{current.ref}} - </span>
       {{/}}
