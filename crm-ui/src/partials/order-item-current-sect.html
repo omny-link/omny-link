@@ -31,6 +31,11 @@
                 <p class="col-md-offset-4 col-sm-offset-3 hidden-xs help-block"></p>
               </li>
             {{/}}
+            <li class="form-group">
+              <label class="col-md-4 col-sm-3 col-xs-2">{{#tenant.strings.orderItemIndex}}{{tenant.strings.orderItemIndex}}{{else}}Position{{/}}:</label>
+              <input class="form-control" id="curIndex" value="{{current.orderItems[j].index}}">
+              <p class="col-md-offset-4 col-sm-offset-3 hidden-xs help-block">{{#tenant.strings.orderItemIndex}}{{tenant.strings.orderItemIndex}}{{else}}Position of this {{tenant.strings.orderItem}} in the {{tenant.strings.order}}{{/}}:</p>
+            </li>
             {{#each tenant.orderItemFields.slice(0,Math.ceil(tenant.orderItemFields.length/2)):k}}
               <li class="form-group">
                 <label class="col-md-4 col-sm-3 col-xs-2">{{label == undefined ? name.toLabel() : label}}:</label>
