@@ -80,6 +80,11 @@
       <artifactId>support-services</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.knowprocess</groupId>
+      <artifactId>pdf-service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- provides REST self-test used during build but also potentially at runtime -->
     <dependency>
       <groupId>com.knowprocess.jasmine-boot</groupId>

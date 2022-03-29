@@ -395,17 +395,20 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     console.log('hideUpload...');
     $('#upload').slideUp();
   },
-  html2Pdf: function(selector, fileName) {
-    const { jsPDF } = window.jspdf;
-    var doc = new jsPDF('l', 'mm', [1200, 1210]);
-    var pdfjs = document.querySelector(selector);
-    doc.html(pdfjs, {
-      callback: function(doc) {
-        doc.save(fileName.endsWith('.pdf') ? fileName : fileName+'.pdf');
+  html2Pdf: function(html, fileName) {
+    return fetch(ractive.getServer()+'/pdfs/'+fileName+'.pdf', {
+      "headers": {
+        "Accept": "application/pdf",
+        "Content-Type": "text/html",
+        "Authorization": "Bearer "+ractive.keycloak.token,
+        "X-Requested-With": "XMLHttpRequest"
       },
-      x: 10,
-      y: 10
-    });
+      "method": "POST",
+      "body": encodeURIComponent(html),
+      "mode": "cors"
+    })
+    .then(response => response.blob())
+    .then(data => ractive.saveAs(URL.createObjectURL(data), fileName+'.pdf'));
   },
   // deprecated: use localId
   id: function(entity) {
@@ -619,6 +622,15 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     } else {
       return id;
     }
+  },
+  saveAs: function(uri, fileName) {
+    let link = document.createElement("a");
+    link.href = uri;
+    link.style = "visibility:hidden";
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   },
   search: function(searchTerm) {
     $( "#ajax-loader" ).show();
@@ -918,24 +930,7 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
 
     //Initialize file format you want csv or xls
     var uri = 'data:text/csv;charset=utf-8,' + escape(csv);
-
-    // Now the little tricky part.
-    // you can use either>> window.open(uri);
-    // but this will not work in some browsers
-    // or you will not get the correct file extension
-
-    //this trick will generate a temp <a /> tag
-    var link = document.createElement("a");
-    link.href = uri;
-
-    //set the visibility hidden so it will not effect on your web-layout
-    link.style = "visibility:hidden";
-    link.download = fileName + ".csv";
-
-    //this part will append the anchor tag and remove it after automatic click
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    ractive.saveAs(uri, fileName);
   },
   toggleResults: function() {
     console.info('toggleResults');

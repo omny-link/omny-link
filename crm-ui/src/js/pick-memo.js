@@ -32,7 +32,7 @@
       ractive.showMessage('Your download will start shortly...');
     }
     if (ractive.get('memoHtml')==undefined) fetchPreview(fetchPdf);
-    else ractive.html2Pdf('#previewSect', ractive.get('instanceToStart.variables.memoName'));
+    else ractive.html2Pdf(ractive.get('memoHtml'), ractive.get('instanceToStart.variables.memoName'));
   }
   function fetchPreview(callback) {
     var tmp = JSON.parse(JSON.stringify(ractive.get('instanceToStart')));

@@ -28,13 +28,14 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knowprocess.pdf.PdfServiceConfig;
 
 import link.omny.catalog.CatalogConfig;
 import link.omny.custmgmt.CustMgmtConfig;
 import link.omny.supportservices.SupportServicesConfig;
 
 @SpringBootApplication
-@Import({ CustMgmtConfig.class, CatalogConfig.class,
+@Import({ CustMgmtConfig.class, CatalogConfig.class, PdfServiceConfig.class,
         SupportServicesConfig.class })
 public class Application {
     protected static final Logger LOGGER = LoggerFactory

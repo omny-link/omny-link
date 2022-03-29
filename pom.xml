@@ -154,9 +154,10 @@
 
   <modules>
     <module>catalog</module>
+    <module>crm-server</module>
     <module>cust-mgmt</module>
     <module>docs</module>
-    <module>crm-server</module>
+    <module>pdf-service</module>
     <module>support-services</module>
   </modules>
 
