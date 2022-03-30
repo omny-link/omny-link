@@ -35,6 +35,7 @@
     <start-class>link.omny.server.Application</start-class>
     <docker.repo>docker.io</docker.repo>
     <docker.image.prefix>knowprocess</docker.image.prefix>
+    <postgresql.version>[42.3.3,)</postgresql.version>
   </properties>
 
   <dependencies>
