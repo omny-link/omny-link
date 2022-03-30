@@ -504,25 +504,6 @@ var ractive = new BaseRactive({
         ractive.get('tenant.serviceLevel.inactiveStages').join();
     return inactiveStages;
   },
-  initEditor: function() {
-    console.info('initEditor');
-    if ('curDescription' in CKEDITOR.instances) {
-      //
-    } else {
-      CKEDITOR.replace( 'curDescription', {
-        height: 150,
-        toolbarGroups: [
-          { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-          { name: 'paragraph',   groups: [ 'list' ] }
-        ]
-      });
-      CKEDITOR.instances.curDescription.on('blur', function(ev) {
-        ractive.set('current.description', ev.editor.getData().replace(/ &amp; /g, ' and ').replace(/&amp;/g, ' and ').replace(/&[a-z]*;/, ''));
-        ractive.save();
-      });
-    }
-    CKEDITOR.instances.curDescription.setData(ractive.get('current.description'));
-  },
   save: function () {
     console.info('save order: '+ractive.get('current.name')+'...');
     ractive.set('saveObserver',false);

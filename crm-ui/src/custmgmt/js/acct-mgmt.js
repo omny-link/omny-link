@@ -821,25 +821,6 @@ var ractive = new BaseRactive({
         }
         console.log('  emailDomain: ' + emailDomain);
       },
-  initEditor: function() {
-    console.info('initEditor');
-    if ('curDescription' in CKEDITOR.instances) {
-      //
-    } else {
-      CKEDITOR.replace( 'curDescription', {
-        height: 150,
-        toolbarGroups: [
-          { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-          { name: 'paragraph',   groups: [ 'list' ] }
-        ]
-      });
-      CKEDITOR.instances.curDescription.on('blur', function(ev) {
-        ractive.set('current.description', ev.editor.getData().replace(/ &amp; /g, ' and ').replace(/&amp;/g, ' and ').replace(/&[a-z]*;/, ''));
-        ractive.save();
-      });
-    }
-      CKEDITOR.instances.curDescription.setData(ractive.get('current.description'));
-  },
       mergeContacts: function() {
         console.info('mergeContacts');
         ractive.set('contact1', ractive.get('contacts[0]'));
@@ -1258,7 +1239,7 @@ var ractive = new BaseRactive({
 
               ractive.initControls();
               ractive.initTags();
-              ractive.initEditor();
+              if (ractive.get('tenant.features.accountDescription')==true) ractive.initEditor();
               // who knows why this is needed, but it is, at least for
               // first time rendering
               $('.autoNumeric').autoNumeric('update', {});
