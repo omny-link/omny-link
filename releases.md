@@ -1,6 +1,37 @@
 Release Notes
 =============
 
+## 3.1.5 - 30 Mar 22
+
+ - apply #34 expliciti order item sort in additional places
+ - resolve #32 pdf generation
+ - ignore idea files
+ - move jasmin spec into resource folder (sometimes note found in java folder)
+ - ensure order displayed for super-admins
+ - ui to set index from #37
+ - resolve #34 explicit order items
+ - fix 404 error
+ - update copyrights
+ - consistency on stock cat logical delete
+ - test enquiries with and without account
+ - resolves #31 include order feedback when findByContacts
+ - add rich editor to free-form mailer
+ - additional hide activity indicator
+ - resolve #30 search within tasks
+ - rich editor to protect against disallowed &
+ - added ckeditor to account desc
+ - audit fix
+ - update package-lock
+ - remove unused func
+ - resolve #26 refresh order list
+ - apply logical delete to stock item as for other entities
+ - resolve #24 display stock item name on orders
+ - related to #24 set stock item id right on creation
+ - resolves #22 unable to preview memo
+ - limit length of stage field (noted err in srvr log)
+ - resolve #17 now displaying order item data
+ - resolve #19 race condition loading bookings
+
 ## 3.1.4 - 08 Mar 22
 
  - remove account augmentations preventing save
