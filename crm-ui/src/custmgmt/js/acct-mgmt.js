@@ -699,6 +699,23 @@ var ractive = new BaseRactive({
             try {
               console.log('fetched ' + data.length + ' orders');
               ractive.enhanceOrdersWithContact(data);
+
+              // sort order items
+              data.forEach(function(d) {
+                let sortedItems = [];
+                d.orderItems.forEach(function(e) {
+                  console.debug('  {} has index {}', e.id, e.index);
+                  if (e.index != undefined) {
+                    sortedItems[e.index-1] = e;
+                  } else {
+                    console.warn(' cannot sort item {} without index, continuing', e.id);
+                    sortedItems = d.orderItems;
+                    return;
+                  }
+                });
+                d.orderItems = sortedItems;
+              });
+
               ractive.set('orders', data);
               ractive.update('orders');
             } catch (e) {

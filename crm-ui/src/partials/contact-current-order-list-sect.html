@@ -174,7 +174,9 @@
                           <tr>
                             <td data-order-item-id="{{localId(.)}}" data-key="stockItem">
                               <span title="{{#tenant.strings.stockItemHint}}{{tenant.strings.stockItemHint}}{{else}}Stock item{{/}}">
-                                {{#customFields['stockItemId']}}{{Array.findBy('id',customFields['stockItemId'],stockItems).name}}{{else}}n/a{{/}}
+                                {{#if stockItemId}}{{Array.findBy('id',stockItemId,stockItems).name}}{{else}}
+                                  {{#if customFields['stockItemId']}}{{Array.findBy('id',customFields['stockItemId'],stockItems).name}}{{else}}{{customFields['stockItemId']}}{{/if}}
+                                {{/if}}
                               </span>
                             </td>
                             {{#tenant.orderItemFields}}

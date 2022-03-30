@@ -676,6 +676,7 @@ var ractive = new BaseRactive({
         }
         ractive.enhanceOrdersWithContact();
         ractive.enhanceOrderWithStockItems(ractive.get('current'));
+        ractive.sortChildren('orderItems', 'index', true);
         ractive.set('saveObserver', true);
         ractive.hideActivityIndicator();
       });
