@@ -132,7 +132,7 @@ public interface ContactRepository extends JpaRepository<Contact, Long>,
             @Param("tenantId") String tenantId);
 
     @Override
-    @Query("UPDATE #{#entityName} x SET x.stage = 'deleted' WHERE x.id = :id")
+    @Query("UPDATE #{#entityName} x SET x.stage = 'deleted', lastUpdated = CURRENT_TIMESTAMP WHERE x.id = :id")
     @Modifying(clearAutomatically = true)
     void deleteById(@Param("id") Long id);
 

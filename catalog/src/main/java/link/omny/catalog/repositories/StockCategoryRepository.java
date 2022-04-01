@@ -71,7 +71,7 @@ public interface StockCategoryRepository extends
     List<String> findCustomFieldNames(@Param("tenantId") String tenantId);
 
     @Override
-    @Query("UPDATE #{#entityName} x set x.status = 'deleted' where x.id = :id")
+    @Query("UPDATE #{#entityName} x set x.status = 'deleted', lastUpdated = CURRENT_TIMESTAMP where x.id = :id")
     @Modifying(clearAutomatically = true)
     public void deleteById(@Param("id") Long id);
 }

@@ -65,7 +65,7 @@ public interface AccountRepository extends JpaRepository<Account, Long>,
     int updateStage(@Param("stage") String stage, @Param("before") Date before, @Param("tenantId") String tenantId);
 
     @Override
-    @Query("UPDATE #{#entityName} x set x.stage = 'deleted' where x.id = :id")
+    @Query("UPDATE #{#entityName} x set x.stage = 'deleted', lastUpdated = CURRENT_TIMESTAMP where x.id = :id")
     @Modifying(clearAutomatically = true)
     public void deleteById(@Param("id") Long id);
 

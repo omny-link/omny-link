@@ -105,6 +105,15 @@ describe("Product catalogue", function() {
         }
       ]
   };
+  var additionalOrderItem = {
+    index: 3,
+    price: 300,
+    status: 'Draft',
+    customFields: {
+      specialInstructions: 'Christmas wrap'
+    }
+  }
+
   beforeEach(function() {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
@@ -511,6 +520,23 @@ describe("Product catalogue", function() {
     });
   });
 
+  it("adds an item to the complex order", function(done) {
+    $rh.ajax({
+      url: $rh.tenantUri(complexOrder)+'/order-items',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(additionalOrderItem),
+      success: function(data, textStatus, jqXHR) {
+        var location = jqXHR.getResponseHeader('Location');
+        expect(location).toMatch(/\/order-items\/[0-9]/);
+        expect(jqXHR.status).toEqual(201);
+        additionalOrderItem.links = [ { rel: 'self', href: location } ];
+        additionalOrderItem.id = location.substring(location.lastIndexOf('/'));
+        done();
+      }
+    });
+  });
+
   it("fetches the complex order inc. order items and check all fields are correct", function(done) {
     console.log('tenantUri: '+$rh.tenantUri(complexOrder));
     $rh.getJSON($rh.tenantUri(complexOrder), function( data ) {
@@ -524,7 +550,7 @@ describe("Product catalogue", function() {
       expect(data.created).toBeDefined();
       expect(data.lastUpdated).toBeGreaterThan(data.created);
 
-      expect(data.orderItems.length).toEqual(2);
+      expect(data.orderItems.length).toEqual(3);
       expect(data.orderItems[0].price).toEqual(complexOrder.orderItems[0].price);
       expect(data.orderItems[0].status).toEqual(complexOrder.orderItems[0].status);
       expect(data.orderItems[0].dueDate).toEqual(complexOrder.orderItems[0].dueDate);
@@ -535,7 +561,24 @@ describe("Product catalogue", function() {
       expect(data.orderItems[1].dueDate).toEqual(complexOrder.orderItems[1].dueDate);
       expect(data.orderItems[1].owner).toEqual(complexOrder.orderItems[1].owner);
 
+      expect(data.orderItems[2].price).toEqual(additionalOrderItem.price);
+      expect(data.orderItems[2].status).toEqual(additionalOrderItem.status);
+      expect(data.orderItems[2].dueDate).toEqual(additionalOrderItem.dueDate);
+      expect(data.orderItems[2].owner).toEqual(additionalOrderItem.owner);
+
       done();
+    });
+  });
+
+  it("deletes the last item of the complex order", function(done) {
+    $rh.ajax({
+      url: $rh.tenantUri(complexOrder)+'/order-items/'+additionalOrderItem.id,
+      type: 'DELETE',
+      contentType: 'application/json',
+      success: function(data, textStatus, jqXHR) {
+        expect(jqXHR.status).toEqual(204);
+        done();
+      }
     });
   });
 

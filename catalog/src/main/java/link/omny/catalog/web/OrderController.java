@@ -657,7 +657,7 @@ public class OrderController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
             @PathVariable("itemId") Long orderItemId) {
-        orderRepo.deleteItem(orderItemId);
+        orderItemRepo.deleteById(orderItemId);
     }
 
     protected List<EntityModel<Order>> addLinks(final String tenantId, final List<Order> list) {
