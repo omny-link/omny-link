@@ -24,6 +24,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -57,6 +58,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.Api;
@@ -313,10 +315,40 @@ public class MemoController {
      * @throws JsonMappingException
      */
     @PostMapping(value = "/eval/{memoName}",
+            consumes= MediaType.APPLICATION_JSON_VALUE,
+            produces = "text/html")
+    @ApiOperation(value = "Evaluate a memo template.")
+    public @ResponseBody ResponseEntity<String> evalJson(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("memoName") String memoName,
+            @RequestBody String body)
+            throws JsonMappingException, JsonProcessingException, NoSuchMethodException {
+        LOGGER.info("eval memo {} for {} with json payload: {}",
+                memoName, tenantId, body);
+        Memo template = memoRepo.findByName(memoName, tenantId)
+                .orElseThrow(() -> new BusinessEntityNotFoundException(Memo.class, memoName));
+
+        Map<String, Object> parsedParams = new HashMap<String, Object>();
+        JsonNode jsonNode = objectMapper.readTree(body);
+        for (Iterator<Entry<String, JsonNode>> it = jsonNode.fields() ; it.hasNext() ; ) {
+            Entry<String, JsonNode> entry = it.next();
+            parsedParams.put(entry.getKey(), entry.getValue());
+        }
+
+        String result = templateSvc.evaluateTemplate(
+                template.getRichContent(), parsedParams);
+        return new ResponseEntity<String>(result, HttpStatus.OK);
+    }
+
+    /**
+     * Evaluate a memo template using the provided data.
+     * @throws NoSuchMethodException
+     */
+    @PostMapping(value = "/eval/{memoName}",
             consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = "text/html")
     @ApiOperation(value = "Evaluate a memo template.")
-    public @ResponseBody ResponseEntity<String> eval(
+    public @ResponseBody ResponseEntity<String> evalUrlEncoded(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("memoName") String memoName,
             @RequestParam Map<String, String> params,
@@ -334,9 +366,9 @@ public class MemoController {
                 LOGGER.info(" extracted param {}={}", k, v);
                 params.put(k, v);
             } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                throw new IllegalArgumentException(String.format("Cannot decode param %1$s", pair));
+                String msg = String.format("Cannot decode param %1$s", pair);
+                LOGGER.error(msg, e);
+                throw new IllegalArgumentException(msg);
             }
         }
         Map<String, Object> parsedParams = new HashMap<String, Object>();
