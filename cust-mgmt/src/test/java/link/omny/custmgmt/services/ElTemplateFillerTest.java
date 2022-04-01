@@ -30,10 +30,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ElTemplateFillerTest {
 
+    // NOTE: intValue to convert long to int per
+    // https://stackoverflow.com/questions/28839814/unable-to-find-unambiguous-method-class-com-fasterxml-jackson-databind-node-arr
+    // (needed with flowable embedded vsn of EL)
     String template = "Hi ${contact}\\\\n\\\\n"
-            + "Thank you for contacting Omny Link, we'll get back to you shortly.\\\\n\\\\n"
+            + "Thank you for contacting Omny Link at "
+            + "${dateFormatter.toString(now,'dd-MMM-yyyy HH:mm')}, "
+            + "we'll get back to you shortly.\\\\n\\\\n"
             + "Best,\\\\n${owner.findPath('firstName').textValue()}\\\\n"
-            + "tel:${owner.findPath('phoneNumbers').get(0).textValue()}";
+            + "tel:${owner.findPath('phoneNumbers').get( (0).intValue() ).textValue()}";
 
     private static ObjectMapper objectMapper;
 
@@ -43,16 +48,21 @@ public class ElTemplateFillerTest {
     }
 
     @Test
-    public void test() throws Exception {
+    public void testEval() throws Exception {
         ElTemplateFiller svc = new ElTemplateFiller();
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("contact", "Jill");
         params.put("owner", getAccountManager());
         String result = svc.evaluateTemplate(template, params);
-        System.err.println("Result was: "+result);
+        System.out.println("Result was: "+result);
+        // replace ${contact}
         assertTrue(result.contains("Hi Jill"));
+        // replace with formatted date time
+        assertTrue(result.matches(".*at \\d{2}-[a-zA-Z]{3}-\\d{4} \\d{2}:\\d{2}.*"));
+        // replace with owner.firstName
         assertTrue(result.contains("Best,\\nJack"));
+        // replace with owner's first phone number
         assertTrue(result.contains("tel:011-111-1111"));
     }
 

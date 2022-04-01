@@ -17,6 +17,7 @@ package link.omny.custmgmt.services;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -54,6 +55,8 @@ public class ElTemplateFiller {
         }
 
         // 'Built-in' expressions
+        context.getVariableMapper().setVariable("now",
+                factory.createValueExpression(new Date(), Date.class));
         context.getVariableMapper().setVariable("dateFormatter",
                 factory.createValueExpression(new DateFormatter(), DateFormatter.class));
         context.getVariableMapper().setVariable("gbpFormatter",
