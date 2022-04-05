@@ -313,6 +313,7 @@ public class AccountController {
      * @throws BusinessEntityNotFoundException
      */
     @GetMapping(value = "/accounts/findByName/{name}")
+    @JsonView(AccountViews.Detailed.class)
     @ApiOperation("Return the specified account.")
     public @ResponseBody EntityModel<Account> findByName(
             @PathVariable("tenantId") String tenantId,
@@ -336,6 +337,7 @@ public class AccountController {
      * @throws BusinessEntityNotFoundException
      */
     @GetMapping(value = "/accounts/findByCustomField/{name}/{value}")
+    @JsonView(AccountViews.Summary.class)
     @ApiIgnore
     public @ResponseBody List<EntityModel<Account>> findByCustomField(
             @PathVariable("tenantId") String tenantId,
