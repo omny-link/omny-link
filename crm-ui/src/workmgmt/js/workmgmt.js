@@ -320,7 +320,7 @@ var ractive = new BaseRactive({
        data: JSON.stringify({
         includeTaskLocalVariables: true,
         includeProcessVariables: true,
-        involvedUser: ractive.get('profile.username'),
+        candidateOrAssigned: ractive.get('profile.username'),
         start: 0,
         size: 500
       }),
