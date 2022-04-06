@@ -85,7 +85,7 @@ public class RestApiTest {
     }
 
     @Test
-    @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
     public void testMemoApi() throws IOException {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
@@ -100,7 +100,7 @@ public class RestApiTest {
     }
 
 //    @Test
-//    @Timeout(value = 3, unit = TimeUnit.SECONDS)
+//    @Timeout(value = 15, unit = TimeUnit.SECONDS)
 //    public void testAutomationApi() throws IOException {
 //        long start = System.currentTimeMillis();
 //        StringBuilder sb = createScript(

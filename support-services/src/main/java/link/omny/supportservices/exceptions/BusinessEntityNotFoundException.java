@@ -27,8 +27,9 @@ public class BusinessEntityNotFoundException extends RuntimeException {
     private Object id;
 
     /**
-     * @deprecated
+     * @deprecated Use {@link BusinessEntityNotFoundException(Class, String)}
      */
+    @Deprecated
     public BusinessEntityNotFoundException(String entity, String id) {
         super();
         this.entity = entity;

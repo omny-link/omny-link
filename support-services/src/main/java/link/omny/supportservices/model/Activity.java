@@ -82,6 +82,7 @@ public class Activity extends Auditable<String> implements Serializable {
     /**
      * @deprecated {@link #Activity(ActivityType, Date)}
      */
+    @Deprecated
     public Activity(String type, Date occurred) {
         super();
         setType(type);
@@ -97,6 +98,7 @@ public class Activity extends Auditable<String> implements Serializable {
     /**
      * @deprecated {@link #Activity(ActivityType, Date)}
      */
+    @Deprecated
     public Activity(String type, Date occurred, String content) {
         this(type, occurred);
         setContent(content);

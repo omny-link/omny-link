@@ -121,7 +121,11 @@ public class OrderItem extends Auditable<String> implements Serializable {
         setType(type);
     }
 
-    /** @deprecated */
+    /**
+     * @deprecated id now exposed directly or access links when wrapped
+     * as EntityModel
+     */
+    @Deprecated
     public String getSelfRef() {
         return String.format("/order-items/%1$d", id);
     }

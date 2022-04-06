@@ -62,7 +62,7 @@ public class NumberSequenceControllerTest {
         NumberSequence next = svc.getNext(SEQ_NAME, TENANT_ID);
         assertNotNull(next);
         assertEquals(SEQ_NAME, next.getName());
-        assertEquals(new Long(1l), next.getNext());
+        assertEquals(Long.valueOf(1l), next.getNext());
     }
 
     @Test

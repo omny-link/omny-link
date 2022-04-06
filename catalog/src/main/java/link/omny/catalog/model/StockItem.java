@@ -17,6 +17,7 @@ package link.omny.catalog.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -244,7 +245,11 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
         setStatus(status);
     }
 
-    /** @deprecated */
+    /**
+     * @deprecated id now exposed directly or access links when wrapped
+     * as EntityModel
+     */
+    @Deprecated
     public String getSelfRef() {
         return String.format("/stock-items/%1$d", id);
     }
@@ -362,7 +367,7 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
         if (price == null) {
             return "";
         } else {
-            return price.setScale(CURRENCY_SCALE, BigDecimal.ROUND_HALF_DOWN)
+            return price.setScale(CURRENCY_SCALE, RoundingMode.HALF_DOWN)
                     .toPlainString();
         }
     }
