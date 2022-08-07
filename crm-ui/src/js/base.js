@@ -255,15 +255,15 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
         data = data.data;
         console.log('fetched ' + data.length + ' tasks');
 
-        var data2 = {};
         data.forEach(function(t) {
+          var data2 = {};
           t.variables.forEach(function(v) { data2[v['name']]= v['value']; }); // jshint ignore:line
           t.businessKey=ractive.get('current.name') == undefined ? ractive.get('current.fullName') : ractive.get('current.name');
           if ('what' in data2) t.name=data2.what;
           if ('messageName' in data2) t.msg=data2.messageName;
           t.processVarNames=Object.keys(data2);
           t.variables=data2;
-	});
+        });
 
         ractive.set('xTasks', data);
         ractive.set('current.tasks', data);
