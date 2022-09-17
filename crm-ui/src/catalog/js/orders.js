@@ -227,6 +227,11 @@ var ractive = new BaseRactive({
     localId: function(obj) {
       return ractive.localId(obj);
     },
+    orderItemCount: function(order) {
+      var count=1;
+      order.orderItems.reduce( (previousValue, currentValue) => currentValue.status != 'deleted', count++);
+      return count;
+    },
     selectMultiple: [],
     sort: function (array, column, asc) {
       console.info('sort '+(asc ? 'ascending' : 'descending')+' on: '+column);

@@ -76,22 +76,22 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     List<Order> findByParentOrderForTenant(@Param("tenantId") String tenantId,
             @Param("parentId") Long parentId);
 
-    @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
+    @Query("SELECT o FROM Order o LEFT OUTER JOIN o.orderItems oi WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.contactId IN :contactIds AND (oi.status IS NULL OR oi.status != 'deleted') ORDER BY o.lastUpdated DESC")
     @EntityGraph("orderWithAll")
     List<Order> findAllForContacts(@Param("tenantId") String tenantId,
             @Param("contactIds") Long[] contactIds);
 
-    @Query("SELECT o FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.id IN :orderIds ORDER BY o.lastUpdated DESC")
+    @Query("SELECT o FROM Order o LEFT OUTER JOIN o.orderItems oi WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId AND o.id IN :orderIds AND (oi.status IS NULL OR oi.status != 'deleted') ORDER BY o.lastUpdated DESC")
     @EntityGraph("orderWithItems")
     List<Order> findByIds(@Param("tenantId") String tenantId,
             @Param("orderIds") Long[] orderIds);
 
-    @Query("SELECT o FROM Order o WHERE o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
+    @Query("SELECT o FROM Order o LEFT OUTER JOIN o.orderItems oi WHERE o.tenantId = :tenantId AND o.contactId IN :contactIds ORDER BY o.lastUpdated DESC")
     @EntityGraph("orderWithItems")
     List<Order> findPageForContacts(@Param("tenantId") String tenantId,
             @Param("contactIds") Long[] contactIds, Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT(cf.name) FROM OL_ORDER o INNER JOIN OL_ORDER_CUSTOM cf on o.id = cf.order_id WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenant_id = :tenantId ", nativeQuery = true)
+    @Query(value = "SELECT DISTINCT(cf.name) FROM OL_ORDER o INNER JOIN OL_ORDER_CUSTOM cf ON o.id = cf.order_id WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenant_id = :tenantId ", nativeQuery = true)
     List<String> findCustomFieldNames(@Param("tenantId") String tenantId);
 
     @Override
