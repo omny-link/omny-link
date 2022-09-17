@@ -260,7 +260,7 @@ public class Account extends Auditable<String> implements Serializable {
 
     @JsonProperty
     @JsonView( { AccountViews.Summary.class } )
-    @Size(max = 30)
+    @Size(max = 40)
     @Column(name = "stage")
     private String stage;
 
