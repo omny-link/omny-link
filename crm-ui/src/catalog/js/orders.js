@@ -140,12 +140,8 @@ var ractive = new BaseRactive({
       if (order==undefined || order.orderItems == undefined) return;
       console.info('formatStockItemIds for order: '+ractive.uri(order));
 
-      var stockItemIds = [];
-      for (let idx = 0 ; idx < order.orderItems.length ; idx++) {
-        if(order.orderItems.status == 'deleted') continue;
-        stockItemIds.push(order.orderItems[idx].stockItem.id);
-      }
       var stockItemNames = '';
+      let stockItemIds = order.getStockItemIds();
       for (let idx = 0 ; idx < stockItemIds.length ; idx++) {
         var tmp = Array.findBy('id',stockItemIds[idx],ractive.get('stockItems'));
         if (tmp != undefined && stockItemNames.indexOf(tmp.name)==-1) {
@@ -387,6 +383,7 @@ var ractive = new BaseRactive({
   enhanceOrderWithStockItems: function(order) {
     if (ractive.get('stockItems') !== undefined && order.orderItems !== undefined) {
       order.orderItems.map(function(d) {
+        if(order.orderItems.status == 'deleted') return;
         d.stockItem = Array.findBy('id',d.stockItemId,ractive.get('stockItems'));
       });
       ractive.update('current.orderItems');
@@ -395,6 +392,14 @@ var ractive = new BaseRactive({
       order.stockItem = Array.findBy('id',order.stockItemId,ractive.get('stockItems'));
       ractive.update('current.stockItem');
     }
+    order.getStockItemIds = function() {
+      stockItemIds = [];
+      order.orderItems.map(function(d) {
+        if (d.stockItem !== undefined) stockItemIds.push(d.stockItem.id);
+      });
+      if (order.stockItemId !== undefined) stockItemIds.push(order.stockItemId);
+      return stockItemIds;
+    };
   },
   fetch: function() {
     console.info('fetch variant: '+ractive.get('variant'));
