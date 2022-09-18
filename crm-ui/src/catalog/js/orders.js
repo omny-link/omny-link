@@ -137,12 +137,12 @@ var ractive = new BaseRactive({
       return val;
     },
     formatStockItemIds: function(order) {
-      if (order==undefined) return '';
-      if (order.stockItemNames!=undefined) return order.stockItemNames;
+      if (order==undefined || order.orderItems == undefined) return;
       console.info('formatStockItemIds for order: '+ractive.uri(order));
 
       var stockItemIds = [];
       for (let idx = 0 ; idx < order.orderItems.length ; idx++) {
+        if(order.orderItems.status == 'deleted') continue;
         stockItemIds.push(order.orderItems[idx].stockItem.id);
       }
       var stockItemNames = '';
@@ -228,8 +228,10 @@ var ractive = new BaseRactive({
       return ractive.localId(obj);
     },
     orderItemCount: function(order) {
-      var count=1;
-      order.orderItems.reduce( (previousValue, currentValue) => currentValue.status != 'deleted', count++);
+      var count = 0;
+      order.orderItems.reduce( (previousValue, currentValue) => {
+        if(currentValue.status != 'deleted') count++;
+      }, count);
       return count;
     },
     selectMultiple: [],
@@ -632,9 +634,6 @@ var ractive = new BaseRactive({
     console.info('select: '+JSON.stringify(order));
     ractive.showActivityIndicator();
     ractive.set('saveObserver', false);
-    // default owner to current user
-    if (!('owner' in order) || order.owner == '')
-      order.owner = ractive.get('profile.username');
     if (ractive.uri(order) != undefined) {
       console.log('loading detail for '+ractive.uri(order));
       $.getJSON(ractive.tenantUri(order), function( data ) {
@@ -670,6 +669,7 @@ var ractive = new BaseRactive({
       console.log('Skipping load as has no identifier.'+order.name);
       ractive.set('current', order);
       ractive.set('saveObserver',true);
+      ractive.hideActivityIndicator();
     }
     ractive.hideResults();
   },
