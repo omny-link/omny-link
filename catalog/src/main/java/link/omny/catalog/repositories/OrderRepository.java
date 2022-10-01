@@ -42,7 +42,6 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     long countForTenant(@Param("tenantId") String tenantId);
 
     @Query("SELECT o.stage, COUNT(o) FROM Order o WHERE (o.stage IS NULL OR o.stage != 'deleted') AND o.tenantId = :tenantId GROUP BY o.stage")
-    @EntityGraph("orderOnly")
     List<Object[]> findAllForTenantGroupByStage(
             @Param("tenantId") String tenantId);
 
