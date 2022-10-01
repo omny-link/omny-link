@@ -1,6 +1,32 @@
 Release Notes
 =============
 
+## 3.1.6 - 01 Oct 22
+
+ - fix: #43 make company numbe varying and remove left padding
+ - fix: resolve #50 display order funnel
+ - fix: summarise orders by stage
+ - fix: disable open stock item when more than one
+ - fix: resolve #49 display stock item csv when have order items
+ - fix: resolve #47 expand account stage
+ - fix: resolve #48 hide deleted order items
+ - fix: resolve #45 display of tasks on account page
+ - fix: set jshint to use es 6
+ - fix: resolve #45 expand account stage
+ - fix: Bump jsoup from 1.14.2 to 1.15.3 in /cust-mgmt (#46)
+ - fix: Bump itextpdf from 5.5.10 to 5.5.12 in /pdf-service (#44)
+ - fix: remove compilation warnings under java 11
+ - fix: match version of spring-data-jpa foor liquibase to app (flagged by dependabot)
+ - fix: reduce return from findByCustomField to just summary data
+ - fix: resolve #42 correct filtering of tasks
+ - fix: resolves #39 cannot delete order item
+ - fix: add method to eval json as well as url params #28
+ - fix: resolves #41 make 'now' available to template engine
+ - fix: respect feature flag when initiating editor
+ - fix: resolves #20 larger company numbers
+ - fix: Bump spring-beans from 4.1.7.RELEASE to 5.3.18 in /crm-server (affects liquibase plugin only)
+ - fix: address github security advisory GHSA-673j-qm5f-xpv8 and CVE-2022-21724 on postgres driver
+
 ## 3.1.5 - 30 Mar 22
 
  - apply #34 expliciti order item sort in additional places
