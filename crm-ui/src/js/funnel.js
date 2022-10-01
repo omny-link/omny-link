@@ -224,12 +224,15 @@ var ractive = new BaseRactive({
     ractive.initControls();
     var url;
     if (getSearchParameter('o')!=undefined) {
+      console.info('  loading orders funnel');
       url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/orders/funnel';
       ractive.set('stages', ractive.get('orderStages'));
     } else if (ractive.get('tenant.features.accountView')) {
+      console.info('  loading accounts funnel');
       url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/accounts';
       ractive.set('stages', ractive.get('accountStages'));
     } else {
+      console.info('  loading contacts funnel');
       url = ractive.getServer()+'/'+ractive.get('tenant.id')+'/funnel/contacts';
       ractive.set('stages', ractive.get('contactStages'));
     }

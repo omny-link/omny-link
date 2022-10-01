@@ -1161,11 +1161,11 @@ function selectElementContents(el) {
 
 function getSearchParameter(key) { // jshint ignore:line
   var params = getSearchParameters();
-  return key in params ? params.key : undefined;
+  return key in params ? params[key]: undefined;
 }
 
 function getSearchParameters() {
-  var prmstr = window.location.search.substr(1);
+  var prmstr = window.location.search.substring(1);
   return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
 }
 
