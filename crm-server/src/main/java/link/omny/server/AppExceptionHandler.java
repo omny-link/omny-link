@@ -17,8 +17,10 @@ package link.omny.server;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Iterator;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
@@ -50,7 +52,15 @@ public class AppExceptionHandler {
             ConstraintViolationException e) throws IOException {
         LOGGER.error("Constraint violation: " + e.getMessage());
         StringWriter sw = new StringWriter();
-        mapper.writeValue(sw,e.getConstraintViolations());
+        for (Iterator<ConstraintViolation<?>> it = e
+                .getConstraintViolations().iterator(); it.hasNext();) {
+            ConstraintViolation<?> cv = (ConstraintViolation<?>) it
+                    .next();
+            mapper.writeValue(sw, cv.getMessage());
+            if (it.hasNext()) {
+                sw.append(',');
+            }
+        }
         return sw.toString();
     }
 
