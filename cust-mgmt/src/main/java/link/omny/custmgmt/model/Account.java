@@ -96,6 +96,8 @@ public class Account extends Auditable<String> implements Serializable {
 
     private static final long serialVersionUID = -1955316248920138892L;
 
+    private static final int COMPANY_NUMBER_MAX_LENGTH = 8;
+
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(Account.class);
 
@@ -128,7 +130,7 @@ public class Account extends Auditable<String> implements Serializable {
     @Pattern(regexp = "[0-9OSN]?[0-9CI]?[0-9]{5,6}")
     @JsonProperty
     @JsonView( { AccountViews.Detailed.class, ContactViews.Detailed.class } )
-    @Size(max = 8)
+    @Size(max = COMPANY_NUMBER_MAX_LENGTH)
     @Column(name = "company_number")
     private String companyNumber;
 
@@ -415,9 +417,6 @@ public class Account extends Auditable<String> implements Serializable {
     public String getCompanyNumber() {
         if (companyNumber != null && companyNumber.trim().length() == 0) {
             companyNumber = null;
-        }else if (companyNumber != null && companyNumber.length() < 8) {
-            companyNumber = String.format("%08d",
-                    Integer.parseInt(companyNumber));
         }
         return companyNumber;
     }

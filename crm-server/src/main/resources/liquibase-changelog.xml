@@ -1034,4 +1034,5 @@
   <include file="liquibase/changelog-003-order-item-index.xml" relativeToChangelogFile="true"/>
   <include file="liquibase/changelog-004-enlarge-company-number.xml" relativeToChangelogFile="true"/>
   <include file="liquibase/changelog-005-enlarge-account-stage.xml" relativeToChangelogFile="true"/>
+  <include file="liquibase/changelog-006-variable-company-number.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

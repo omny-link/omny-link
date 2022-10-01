@@ -21,6 +21,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -536,7 +537,8 @@ public class AccountController {
         account.setLastUpdated(new Date());
         account = accountRepo.save(account);
         note = account.getNotes().stream()
-                .reduce((first, second) -> second).orElse(null);
+                .sorted(Comparator.comparing(Note::getCreated).reversed())
+                .findFirst().orElse(null);
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())

@@ -102,28 +102,6 @@ public class AccountTest {
     }
 
     @Test
-    public void testUK7DigitCompanyNumber() {
-        Account acct = new Account();
-        acct.setCompanyNumber("1234567");
-
-        Set<ConstraintViolation<Account>> violations = validator
-                .validateProperty(acct, "companyNumber");
-        assertEquals(0, violations.size());
-        assertEquals("01234567", acct.getCompanyNumber());
-    }
-
-    @Test
-    public void testUK6DigitCompanyNumber() {
-        Account acct = new Account();
-        acct.setCompanyNumber("123456");
-
-        Set<ConstraintViolation<Account>> violations = validator
-                .validateProperty(acct, "companyNumber");
-        assertEquals(0, violations.size());
-        assertEquals("00123456", acct.getCompanyNumber());
-    }
-
-    @Test
     public void testScottishCompanyNumber() {
         Account acct = new Account();
         acct.setCompanyNumber("SC345678");
@@ -146,11 +124,13 @@ public class AccountTest {
     @Test
     public void testEdubaseUrn() {
         Account acct = new Account();
-        acct.setCompanyNumber("136630");
+        String urn = "136630";
+        acct.setCompanyNumber(urn);
 
         Set<ConstraintViolation<Account>> violations = validator
                 .validateProperty(acct, "companyNumber");
         assertEquals(0, violations.size());
+        assertEquals(urn, acct.getCompanyNumber());
     }
 
     @Test
