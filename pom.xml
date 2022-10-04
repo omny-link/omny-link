@@ -18,20 +18,20 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.4.3</version>
+    <version>2.5.14</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
   <properties>
     <batik.version>1.9.1</batik.version>
     <jasmine-boot.version>1.1.0</jasmine-boot.version>
-    <java.version>1.8</java.version>
+    <java.version>11</java.version>
     <kp-icons.version>3.1.0</kp-icons.version>
     <log4j2.version>2.17.0</log4j2.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>${project.version}</omny-link.version>
     <plantuml.version>8059</plantuml.version>
-    <spring-boot.version>2.4.3</spring-boot.version>
+    <spring-boot.version>2.5.14</spring-boot.version>
     <swagger.version>3.0.0</swagger.version>
   </properties>
 

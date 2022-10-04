@@ -33,12 +33,13 @@ public class ElTemplateFillerTest {
     // NOTE: intValue to convert long to int per
     // https://stackoverflow.com/questions/28839814/unable-to-find-unambiguous-method-class-com-fasterxml-jackson-databind-node-arr
     // (needed with flowable embedded vsn of EL)
-    String template = "Hi ${contact}\\\\n\\\\n"
+    private static final String CRLF = System.getProperty("line.separator");
+    String template = String.format("Hi ${contact}%1$s"
             + "Thank you for contacting Omny Link at "
             + "${dateFormatter.toString(now,'dd-MMM-yyyy HH:mm')}, "
-            + "we'll get back to you shortly.\\\\n\\\\n"
-            + "Best,\\\\n${owner.findPath('firstName').textValue()}\\\\n"
-            + "tel:${owner.findPath('phoneNumbers').get( (0).intValue() ).textValue()}";
+            + "we'll get back to you shortly.%2$s%3$s"
+            + "Best,${owner.findPath('firstName').textValue()}%4$s"
+            + "tel:${owner.findPath('phoneNumbers').get( (0).intValue() ).textValue()}", CRLF, CRLF, CRLF, CRLF);
 
     private static ObjectMapper objectMapper;
 
@@ -54,14 +55,14 @@ public class ElTemplateFillerTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("contact", "Jill");
         params.put("owner", getAccountManager());
-        String result = svc.evaluateTemplate(template, params);
+        String result = svc.evaluateTemplate(template, params).replaceAll(CRLF, "");
         System.out.println("Result was: "+result);
         // replace ${contact}
         assertTrue(result.contains("Hi Jill"));
         // replace with formatted date time
         assertTrue(result.matches(".*at \\d{2}-[a-zA-Z]{3}-\\d{4} \\d{2}:\\d{2}.*"));
         // replace with owner.firstName
-        assertTrue(result.contains("Best,\\nJack"));
+        assertTrue(result.contains("Best,Jack"));
         // replace with owner's first phone number
         assertTrue(result.contains("tel:011-111-1111"));
     }
