@@ -88,6 +88,11 @@
     </dependency>
     <!-- provides REST self-test used during build but also potentially at runtime -->
     <dependency>
+      <groupId>org.openjdk.nashorn</groupId>
+      <artifactId>nashorn-core</artifactId>
+      <version>15.4</version>
+    </dependency>
+    <dependency>
       <groupId>com.knowprocess.jasmine-boot</groupId>
       <artifactId>jasmine-boot</artifactId>
       <version>${jasmine-boot.version}</version>
@@ -209,4 +214,3 @@
     </plugins>
   </build>
 </project>
-
