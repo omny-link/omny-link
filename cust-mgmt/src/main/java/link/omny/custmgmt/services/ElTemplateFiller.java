@@ -21,10 +21,10 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.el.ELContext;
-import javax.el.ExpressionFactory;
-import javax.el.StandardELContext;
-import javax.el.ValueExpression;
+import jakarta.el.ELContext;
+import jakarta.el.ExpressionFactory;
+import jakarta.el.StandardELContext;
+import jakarta.el.ValueExpression;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

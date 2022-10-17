@@ -570,9 +570,9 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
   json2Html: function(obj) {
     var html = '<ul class="field-json">';
     $.each(Object.keys(obj), function(i,d) {
-      if (typeof obj[d] == 'object' && 'valueType' in obj[d] && 'string' in obj[d]) { // empty javax.json.JsonObject
+      if (typeof obj[d] == 'object' && 'valueType' in obj[d] && 'string' in obj[d]) { // empty jakarta.json.JsonObject
         console.info('Supressing empty value '+d);
-      } else if (typeof obj[d] == 'object' && 'valueType' in obj[d]) { // populated javax.json.JsonObject
+      } else if (typeof obj[d] == 'object' && 'valueType' in obj[d]) { // populated jakarta.json.JsonObject
         html += '<li><label style="text-align:right;padding-right:10px">'+d.toLabel()+':</label><span class="col-scroll">'+obj[d].string+'</span>';
       } else if (typeof obj[d] == 'object') { // child object
         html += '<table class="table table-striped"><tr><th>' + d.toLabel() +'</th><td>'+ ractive.json2Html(obj[d])+'</td></tr></table>';

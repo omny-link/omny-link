@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Iterator;
 
-import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

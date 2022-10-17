@@ -18,10 +18,10 @@ package link.omny.custmgmt.repositories;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +91,7 @@ public class CustomContactRepository {
                 .getEntityGraph("contactWithAccount");
         TypedQuery<?> q2 = entityManager.createQuery(
                 ContactRepository.FIND_ALL_BY_TENANT_AND_IDS, Contact.class);
-        q2.setHint("javax.persistence.fetchgraph", entityGraph);
+        q2.setHint("jakarta.persistence.fetchgraph", entityGraph);
         q2.setParameter("tenantId", tenantId);
         q2.setParameter("ids", ids);
 

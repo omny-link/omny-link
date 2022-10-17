@@ -23,7 +23,7 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.Scanner;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;

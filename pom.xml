@@ -161,10 +161,15 @@
     </dependency>
 
     <dependency>
-	    <groupId>io.springfox</groupId>
-	    <artifactId>springfox-boot-starter</artifactId>
-	    <version>${swagger.version}</version>
-	</dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-boot-starter</artifactId>
+      <version>${swagger.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <groupId>jakarta.xml.bind</groupId>
+    </dependency>
+
   </dependencies>
 
   <modules>
