@@ -8,7 +8,7 @@
   <artifactId>omny-link-root</artifactId>
   <packaging>pom</packaging>
   <inceptionYear>2015</inceptionYear>
-  <version>3.1.6</version>
+  <version>3.2.0</version>
 
   <organization>
     <name>Omny Link</name>
@@ -310,6 +310,10 @@
             <useReleaseProfile>false</useReleaseProfile>
             <arguments>${arguments} -Psonatype-oss-release</arguments>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
         </plugin>
         <!--This plugin's configuration is used to store Eclipse m2e settings only.
           It has no influence on the Maven build itself. -->
