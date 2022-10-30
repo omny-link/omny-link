@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.0.0-M5</version>
+    <version>3.0.0-RC1</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
@@ -31,7 +31,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>${project.version}</omny-link.version>
     <plantuml.version>8059</plantuml.version>
-    <spring-boot.version>3.0.0-M5</spring-boot.version>
+    <spring-boot.version>3.0.0-RC1</spring-boot.version>
     <swagger.version>3.0.0</swagger.version>
   </properties>
 
