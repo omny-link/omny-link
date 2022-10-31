@@ -20,8 +20,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-import com.knowprocess.pdf.PdfServiceConfig;
-
 @SpringBootTest
 @SpringBootApplication
 @Import({ PdfServiceConfig.class })
