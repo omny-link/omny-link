@@ -15,6 +15,7 @@
  ******************************************************************************/
 package link.omny.custmgmt.services;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
@@ -64,6 +65,17 @@ public class ElTemplateFillerTest {
         assertTrue(result.contains("Best,\\nJack"));
         // replace with owner's first phone number
         assertTrue(result.contains("tel:011-111-1111"));
+    }
+
+    @Test
+    public void testEvalWithMissingObject() throws Exception {
+        ElTemplateFiller svc = new ElTemplateFiller();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("contact", "Jill");
+        params.put("owner", (Object) null);
+        String result = svc.evaluateTemplate(template, params);
+        assertEquals("Unable to evaluate template", result);
     }
 
     private JsonNode getAccountManager()

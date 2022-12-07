@@ -1,7 +1,9 @@
-*/.*
+.classpath
 .project
+.rewrite-cache/
 .settings/
 .sts4-cache/
+.vscode/
 **/*.bak
 *.class
 *.log*
