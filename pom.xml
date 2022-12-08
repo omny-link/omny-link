@@ -264,7 +264,6 @@
                 <rule>
                   <element>BUNDLE</element>
                   <excludes>
-                    <exclude>link.omny.supportservices.model.*</exclude>
                     <exclude>link.omny.server.web.ProcessGatewayController</exclude>
                     <exclude>*.views.*</exclude>
                     <exclude>*Test</exclude>
@@ -273,12 +272,12 @@
                     <limit>
                       <counter>INSTRUCTION</counter>
                       <value>COVEREDRATIO</value>
-                      <minimum>10%</minimum>
+                      <minimum>30%</minimum>
                     </limit>
                     <limit>
                       <counter>LINE</counter>
                       <value>COVEREDRATIO</value>
-                      <minimum>26%</minimum>
+                      <minimum>30%</minimum>
                     </limit>
                   </limits>
                 </rule>

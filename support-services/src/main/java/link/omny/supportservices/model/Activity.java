@@ -18,6 +18,12 @@ package link.omny.supportservices.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.CreatedDate;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,13 +34,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.CreatedDate;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import link.omny.supportservices.internal.CsvUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -107,6 +107,16 @@ public class Activity extends Auditable<String> implements Serializable {
     public Activity(ActivityType type, Date occurred, String content) {
         this(type, occurred);
         setContent(content);
+    }
+
+    public String toCsv() {
+        StringBuilder sb = new StringBuilder() ;
+        sb.append(String.format(
+                "%1$d,%2$s,%3$s",
+                getId(),
+                getType(),
+                content == null ? "" : CsvUtils.quoteIfNeeded(content)));
+        return sb.toString();
     }
 
 }
