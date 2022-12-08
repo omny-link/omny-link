@@ -19,16 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import link.omny.supportservices.Application;
 import link.omny.supportservices.model.NumberSequence;
 import link.omny.supportservices.repositories.NumberSequenceRepository;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { Application.class })
 public class NumberSequenceControllerTest {
 
