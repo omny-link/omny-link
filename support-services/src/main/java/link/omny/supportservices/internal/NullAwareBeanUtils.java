@@ -17,6 +17,7 @@ package link.omny.supportservices.internal;
 
 import java.beans.PropertyDescriptor;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -84,8 +85,10 @@ public class NullAwareBeanUtils {
                     && pd.getWriteMethod() != null
                     && pd.getReadMethod() != null
                     && src.getPropertyValue(pd.getName()) != null) {
-                src.setPropertyValue(pd.getName(),
-                        ((String) src.getPropertyValue(pd.getName())).trim());
+                Optional<String> val = Optional.of((String) src.getPropertyValue(pd.getName()));
+                if (val.isPresent()) {
+                    src.setPropertyValue(pd.getName(), val.get().trim());
+                }
             }
         }
     }
