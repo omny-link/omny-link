@@ -713,7 +713,7 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     console.log('showMessage: '+msg);
     if (additionalClass == undefined) additionalClass = 'bg-info text-info';
     if (msg === undefined) msg = 'Working...';
-    $('#messages, .messages').empty().append(msg).removeClass().addClass(additionalClass).show();
+    $('#messages, .messages').empty().append(msg).removeClass().addClass('messages').addClass(additionalClass).show();
 //    document.getElementById('messages').scrollIntoView();
     if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
       $('#messages, .messages').fadeOut();
