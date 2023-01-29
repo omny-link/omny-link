@@ -320,33 +320,25 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     return 'https://flowable.knowprocess.com';
   },
   getStockItemNames : function (order) {
-    var stockItemIds = [];
-    if (order == undefined ||
-        (!ractive.get('tenant.features.orderItems') && 'stockItem' in order) ||
-        (ractive.get('tenant.features.orderItems') && ('orderItems' in order || order.orderItems.length == 0)))
+    if (order == undefined) {
+      console.warn('ignoring attempt to find stockItem.names for undefined order');
       return;
-    else if (!ractive.get('tenant.features.orderItems')) {
+    }
+    var stockItemIds = [];
+    if (!ractive.get('tenant.features.orderItems')) {
+      console.warn('attempt to find stockItem.name from order');
       var id = ractive.id(order.stockItem);
       stockItemIds.push(id.substring(id.lastIndexOf('/') + 1));
-    } else {
-      for (var idx = 0 ; idx < order.orderItems.length ; idx++) {
-        if ('stockItem' in order.orderItems[idx]) {
-          stockItemIds.push(order.orderItems[idx].stockItem.id);
-        } else if ('stockItemId' in order.orderItems[idx].customFields) {
-          stockItemIds.push(order.orderItems[idx].customFields.stockItemId);
-        } else {
-          console.warn('cannot find stock item for order item '+idx);
-        }
-      }
+    } else { // tenant.features.orderItems == true
+      console.warn('attempt to find stockItem.names from order.orderItems');
+      stockItemIds = Array.uniq('stockItemId', order.orderItems).split(',');
     }
-    var stockItemNames = [];
-    stockItemIds = new Set(stockItemIds);
-    stockItemIds.forEach(function(value) {
-    var tmp = Array.findBy('id',
-        '/stock-items/' + value, ractive.get('stockItems'));
-      if (tmp != undefined) stockItemNames.push(tmp.name);
-    });
-    return stockItemNames.join();
+    console.warn('  found '+stockItemIds.length+' stockItemIds: '+stockItemIds);
+    try {
+      return stockItemIds.map(x => Array.findBy('id',x,ractive.get('stockItems')).name ).join();
+    } catch (e) {
+      console.error('  cannot find stockItemNames from '+stockItemIds+', cause: '+e);
+    }
   },
   gravatar: function(email) {
     if (email == undefined) return '';
