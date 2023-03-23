@@ -62,17 +62,6 @@
     <developerConnection>scm:git:git@github.com:omny-link/omny-link.git</developerConnection>
   </scm>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>kp-plugin-repo</id>
-      <url>https://knowprocess.com/maven/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </pluginRepository>
-  </pluginRepositories>
-
   <repositories>
     <repository>
       <id>kp-mvn-repo</id>
@@ -305,6 +294,17 @@
           <name>docs</name>
         </property>
       </activation>
+
+      <pluginRepositories>
+        <pluginRepository>
+          <id>kp-plugin-repo</id>
+          <url>https://knowprocess.com/maven/</url>
+          <layout>default</layout>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+        </pluginRepository>
+      </pluginRepositories>
 
       <build>
         <plugins>
