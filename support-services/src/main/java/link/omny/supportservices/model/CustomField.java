@@ -53,6 +53,7 @@ public class CustomField implements Serializable {
      */
     @JsonProperty
     @Size(max = 1000)
+    @Column(name = "val")
     private String value;
 
     public CustomField(String key, Object value2) {
