@@ -43,6 +43,17 @@
     </license>
   </licenses>
 
+  <repositories>
+    <repository>
+      <id>kp-mvn-repo</id>
+      <url>https://knowprocess.com/maven/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
   <issueManagement>
     <system>Github</system>
     <url>https://github.com/omny-link/omny-link/issues</url>
