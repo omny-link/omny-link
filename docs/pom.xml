@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Copyright 2015-2022 Tim Stephenson and contributors
-  
+
    Licensed under the Apache License, Version 2.0 (the "License"); you may not
    use this file except in compliance with the License.  You may obtain a copy
    of the License at
-  
+
      http://www.apache.org/licenses/LICENSE-2.0
-  
+
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -34,119 +34,131 @@
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
   </properties>
 
-  <build>
-    <resources>
-      <resource>
-        <directory>${project.build.directory}/generated-docs</directory>
-      </resource>
-    </resources>
-    <plugins>
-      <plugin>
-        <groupId>org.asciidoctor</groupId>
-        <artifactId>asciidoctor-maven-plugin</artifactId>
-        <version>1.5.3</version>
-        <executions>
-          <execution>
-            <id>docs-generate</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>process-asciidoc</goal>
-            </goals>
+  <profiles>
+    <profile>
+      <id>docs</id>
+      <activation>
+        <property>
+          <name>docs</name>
+        </property>
+      </activation>
+
+      <build>
+        <resources>
+          <resource>
+            <directory>${project.build.directory}/generated-docs</directory>
+          </resource>
+        </resources>
+        <plugins>
+          <plugin>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctor-maven-plugin</artifactId>
+            <version>1.5.3</version>
+            <executions>
+              <execution>
+                <id>docs-generate</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>process-asciidoc</goal>
+                </goals>
+                <configuration>
+                  <sourceHighlighter>coderay</sourceHighlighter>
+                  <backend>html5</backend>
+                  <attributes>
+                    <sectnums>true</sectnums>
+                    <toc>left</toc>
+                    <linkattrs>true</linkattrs>
+                    <linkcss>true</linkcss>
+                    <revnumber>${psiteroject.version}</revnumber>
+                    <revdate>${maven.build.timestamp}</revdate>
+                    <stylesheet>omny-doc.css</stylesheet>
+                  </attributes>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Plugin to automatically generated UML diagrams -->
+          <plugin>
+            <groupId>com.github.jeluard</groupId>
+            <artifactId>plantuml-maven-plugin</artifactId>
+            <version>${plantuml-maven-plugin.version}</version>
+            <executions>
+              <execution>
+                <phase>process-resources</phase>
+                <goals>
+                <goal>generate</goal>
+                </goals>
+              </execution>
+            </executions>
             <configuration>
-              <sourceHighlighter>coderay</sourceHighlighter>
-              <backend>html5</backend>
-              <attributes>
-                <sectnums>true</sectnums>
-                <toc>left</toc>
-                <linkattrs>true</linkattrs>
-                <linkcss>true</linkcss>
-                <revnumber>${psiteroject.version}</revnumber>
-                <revdate>${maven.build.timestamp}</revdate>
-                <stylesheet>omny-doc.css</stylesheet>
-              </attributes>
+              <sourceFiles>
+                <directory>${basedir}</directory>
+                <includes>
+                  <include>src/main/plantuml/**/*.puml</include>
+                </includes>
+              </sourceFiles>
+              <outputDirectory>${project.build.directory}/generated-docs/images</outputDirectory>
+              <flattenOutput>true</flattenOutput>
+              <!-- Also supports svg amongst other things -->
+              <format>png</format>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Plugin to automatically generated UML diagrams -->
-      <plugin>
-        <groupId>com.github.jeluard</groupId>
-        <artifactId>plantuml-maven-plugin</artifactId>
-        <version>1.2.1</version>
-        <executions>
-          <execution>
-            <phase>process-resources</phase>
-            <goals>
-            <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <sourceFiles>
-            <directory>${basedir}</directory>
-            <includes>
-              <include>src/main/plantuml/**/*.puml</include>
-            </includes>
-          </sourceFiles>
-          <outputDirectory>${project.build.directory}/generated-docs/images</outputDirectory>
-          <flattenOutput>true</flattenOutput>
-          <!-- Also supports svg amongst other things -->
-          <format>png</format>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>net.sourceforge.plantuml</groupId>
-            <artifactId>plantuml</artifactId>
-            <version>${plantuml.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-    </plugins>
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.asciidoctor</groupId>
-                    <artifactId>
-                      asciidoctor-maven-plugin
-                    </artifactId>
-                    <versionRange>
-                      [1.5.3,)
-                    </versionRange>
-                    <goals>
-                      <goal>process-asciidoc</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>com.github.jeluard</groupId>
-                    <artifactId>plantuml-maven-plugin</artifactId>
-                    <versionRange>[1.2,)</versionRange>
-                    <goals>
-                      <goal>generate</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+            <dependencies>
+              <dependency>
+                <groupId>net.sourceforge.plantuml</groupId>
+                <artifactId>plantuml</artifactId>
+                <version>${plantuml.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+        <pluginManagement>
+          <plugins>
+            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+            <plugin>
+              <groupId>org.eclipse.m2e</groupId>
+              <artifactId>lifecycle-mapping</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>
+                          asciidoctor-maven-plugin
+                        </artifactId>
+                        <versionRange>
+                          [1.5.3,)
+                        </versionRange>
+                        <goals>
+                          <goal>process-asciidoc</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore></ignore>
+                      </action>
+                    </pluginExecution>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>com.github.jeluard</groupId>
+                        <artifactId>plantuml-maven-plugin</artifactId>
+                        <versionRange>[1.2,)</versionRange>
+                        <goals>
+                          <goal>generate</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore></ignore>
+                      </action>
+                    </pluginExecution>
+                  </pluginExecutions>
+                </lifecycleMappingMetadata>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

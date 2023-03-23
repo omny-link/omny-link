@@ -31,6 +31,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>${project.version}</omny-link.version>
     <plantuml.version>8059</plantuml.version>
+    <plantuml-maven-plugin.version>1.2.1</plantuml-maven-plugin.version>
     <spring-boot.version>2.4.3</spring-boot.version>
     <swagger.version>3.0.0</swagger.version>
   </properties>
@@ -311,7 +312,7 @@
           <plugin>
             <groupId>com.github.jeluard</groupId>
             <artifactId>plantuml-maven-plugin</artifactId>
-            <version>1.2.1</version>
+            <version>${plantuml-maven-plugin.version}</version>
             <executions>
               <execution>
                 <phase>process-resources</phase>
