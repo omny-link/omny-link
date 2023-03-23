@@ -36,6 +36,14 @@
     <swagger.version>3.0.0</swagger.version>
   </properties>
 
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/omny-link/omny-link</url>
+    </repository>
+  </distributionManagement>
+
   <licenses>
     <license>
       <name>Apache v2.0</name>
