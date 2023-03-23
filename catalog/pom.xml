@@ -48,42 +48,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <!-- Plugin to automatically generated UML diagrams -->
-      <plugin>
-        <groupId>com.github.jeluard</groupId>
-        <artifactId>plantuml-maven-plugin</artifactId>
-        <version>1.2.1</version>
-        <executions>
-          <execution>
-            <phase>process-resources</phase>
-            <goals>
-            <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <sourceFiles>
-            <directory>${basedir}</directory>
-            <includes>
-              <include>src/main/plantuml/**/*.puml</include>
-            </includes>
-          </sourceFiles>
-          <outputDirectory>${project.build.directory}/classes/static/images/domain</outputDirectory>
-          <flattenOutput>true</flattenOutput>
-          <!-- Also supports png amongst other things -->
-          <format>svg</format>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>net.sourceforge.plantuml</groupId>
-            <artifactId>plantuml</artifactId>
-            <version>${plantuml.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>

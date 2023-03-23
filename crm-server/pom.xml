@@ -33,7 +33,7 @@
 
   <properties>
     <start-class>link.omny.server.Application</start-class>
-    <docker.repo>docker.io</docker.repo>
+    <docker.repo>ghcr.io</docker.repo>
     <docker.image.prefix>knowprocess</docker.image.prefix>
     <postgresql.version>[42.3.3,)</postgresql.version>
   </properties>
@@ -166,7 +166,8 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <image>
-            <name>docker.io/knowprocess/omny-link</name>
+            <name>${docker.repo}/${docker.image.prefix}/omny-link:${project.version}</name>
+            <publish>true</publish>
           </image>
           <excludes>
             <exclude>

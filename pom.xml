@@ -31,15 +31,16 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>${project.version}</omny-link.version>
     <plantuml.version>8059</plantuml.version>
+    <plantuml-maven-plugin.version>1.2.1</plantuml-maven-plugin.version>
     <spring-boot.version>2.4.3</spring-boot.version>
     <swagger.version>3.0.0</swagger.version>
   </properties>
 
   <distributionManagement>
     <repository>
-      <id>kp-repo</id>
-      <name>KnowProcess public repository</name>
-      <url>scpexe://knowprocess.com/var/www-knowprocess/maven</url>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/omny-link/omny-link</url>
     </repository>
   </distributionManagement>
 
@@ -49,28 +50,6 @@
       <url>https://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
   </licenses>
-
-  <issueManagement>
-    <system>Github</system>
-    <url>https://github.com/omny-link/omny-link/issues</url>
-  </issueManagement>
-
-  <scm>
-    <url>git@github.com:omny-link/omny-link.git</url>
-    <connection>scm:git:git@github.com:omny-link/omny-link.git</connection>
-    <developerConnection>scm:git:git@github.com:omny-link/omny-link.git</developerConnection>
-  </scm>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>kp-plugin-repo</id>
-      <url>https://knowprocess.com/maven/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </pluginRepository>
-  </pluginRepositories>
 
   <repositories>
     <repository>
@@ -82,6 +61,17 @@
       </releases>
     </repository>
   </repositories>
+
+  <issueManagement>
+    <system>Github</system>
+    <url>https://github.com/omny-link/omny-link/issues</url>
+  </issueManagement>
+
+  <scm>
+    <url>git@github.com:omny-link/omny-link.git</url>
+    <connection>scm:git:git@github.com:omny-link/omny-link.git</connection>
+    <developerConnection>scm:git:git@github.com:omny-link/omny-link.git</developerConnection>
+  </scm>
 
   <dependencies>
     <dependency>
@@ -149,7 +139,7 @@
 	    <groupId>io.springfox</groupId>
 	    <artifactId>springfox-boot-starter</artifactId>
 	    <version>${swagger.version}</version>
-	</dependency>
+	  </dependency>
   </dependencies>
 
   <modules>
@@ -180,38 +170,6 @@
           <showWarnings>true</showWarnings>
           <optimize>true</optimize>
         </configuration>
-      </plugin>
-      <!-- Plugin to automatically generated UML diagrams -->
-      <plugin>
-        <groupId>com.github.jeluard</groupId>
-        <artifactId>plantuml-maven-plugin</artifactId>
-        <version>1.2.1</version>
-        <executions>
-          <execution>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <sourceFiles>
-            <directory>${basedir}</directory>
-            <includes>
-              <include>src/main/plantuml/**/*.puml</include>
-            </includes>
-          </sourceFiles>
-          <outputDirectory>${project.build.directory}/classes/static/images/domain</outputDirectory>
-          <flattenOutput>true</flattenOutput>
-          <format>svg</format>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>net.sourceforge.plantuml</groupId>
-            <artifactId>plantuml</artifactId>
-            <version>${plantuml.version}</version>
-          </dependency>
-        </dependencies>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -327,5 +285,64 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <profile>
+      <id>docs</id>
+      <activation>
+        <property>
+          <name>docs</name>
+        </property>
+      </activation>
+
+      <pluginRepositories>
+        <pluginRepository>
+          <id>kp-plugin-repo</id>
+          <url>https://knowprocess.com/maven/</url>
+          <layout>default</layout>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+        </pluginRepository>
+      </pluginRepositories>
+
+      <build>
+        <plugins>
+          <!-- Plugin to automatically generated UML diagrams -->
+          <plugin>
+            <groupId>com.github.jeluard</groupId>
+            <artifactId>plantuml-maven-plugin</artifactId>
+            <version>${plantuml-maven-plugin.version}</version>
+            <executions>
+              <execution>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <sourceFiles>
+                <directory>${basedir}</directory>
+                <includes>
+                  <include>src/main/plantuml/**/*.puml</include>
+                </includes>
+              </sourceFiles>
+              <outputDirectory>${project.build.directory}/classes/static/images/domain</outputDirectory>
+              <flattenOutput>true</flattenOutput>
+              <format>svg</format>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>net.sourceforge.plantuml</groupId>
+                <artifactId>plantuml</artifactId>
+                <version>${plantuml.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
