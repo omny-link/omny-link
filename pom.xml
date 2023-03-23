@@ -36,14 +36,6 @@
     <swagger.version>3.0.0</swagger.version>
   </properties>
 
-  <distributionManagement>
-    <repository>
-      <id>kp-repo</id>
-      <name>KnowProcess public repository</name>
-      <url>scpexe://knowprocess.com/var/www-knowprocess/maven</url>
-    </repository>
-  </distributionManagement>
-
   <licenses>
     <license>
       <name>Apache v2.0</name>
@@ -61,17 +53,6 @@
     <connection>scm:git:git@github.com:omny-link/omny-link.git</connection>
     <developerConnection>scm:git:git@github.com:omny-link/omny-link.git</developerConnection>
   </scm>
-
-  <repositories>
-    <repository>
-      <id>kp-mvn-repo</id>
-      <url>https://knowprocess.com/maven/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-  </repositories>
 
   <dependencies>
     <dependency>
@@ -139,7 +120,7 @@
 	    <groupId>io.springfox</groupId>
 	    <artifactId>springfox-boot-starter</artifactId>
 	    <version>${swagger.version}</version>
-	</dependency>
+	  </dependency>
   </dependencies>
 
   <modules>
