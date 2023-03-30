@@ -775,11 +775,18 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
   sortChildren: function(childArray, sortBy, asc) {
     console.info('sortChildren');
     if (ractive.get('current.'+childArray)==undefined) return 0;
+    var customFields = 'customFields.';
     ractive.sort('current.'+childArray, function(a,b) {
-      if (a[sortBy] > b[sortBy]) {
+      if (sortBy.indexOf(customFields) == 0) {
+        var customField = sortBy.substring(sortBy.indexOf(customFields)+customFields.length);
+        if (a.customFields[customField] > b.customFields[customField]) {
+          return asc ? 1 : -1;
+        } else if (a.customFields[customField] < b.customFields[customField]) {
+          return asc ? -1 : 1;
+        }
+      } else if (a[sortBy] > b[sortBy]) {
         return asc ? 1 : -1;
-      }
-      if (a[sortBy] < b[sortBy]) {
+      } else if (a[sortBy] < b[sortBy]) {
         return asc ? -1 : 1;
       }
       // a must be equal to b

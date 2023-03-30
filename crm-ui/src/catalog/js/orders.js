@@ -666,7 +666,8 @@ var ractive = new BaseRactive({
         }
         ractive.enhanceOrdersWithContact();
         ractive.enhanceOrderWithStockItems(ractive.get('current'));
-        ractive.sortChildren('orderItems', 'index', true);
+        if (ractive.get('current.orderItems.0.index') != undefined) ractive.sortChildren('orderItems', 'index', true);
+        if (ractive.get('current.orderItems.0.customFields.startTime') != undefined) ractive.sortChildren('orderItems', 'customFields.startTime', true);
         ractive.set('saveObserver', true);
         ractive.hideActivityIndicator();
       });
