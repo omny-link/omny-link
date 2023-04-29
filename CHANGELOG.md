@@ -1,6 +1,27 @@
 Release Notes
 =============
 
+## 3.1.7 - 29 Apr 23
+
+  - fix: rename custom field value to val
+  - chore: resolve #66 xalan upgrade
+  - chore: Bump itextpdf from 5.5.12 to 5.5.13.3 in /pdf-service (#65)
+  - feat: GitHub actions for build and publish (#64)
+  - feat: Prototype GitHub actions (#62)
+  - fix: update disabled test
+  - chore: Bump minimatch from 3.0.4 to 3.0.5 in /crm-ui
+  - chore: Bump qs and browser-sync in /crm-ui
+  - chore: Bump socket.io-parser and socket.io-client in /crm-ui
+  - fix: resolve #57 compute summary stock item
+  - fix: preserve messages class on display
+  - fix: make date controls smaller
+  - chore: Bump engine.io and socket.io in /crm-ui (#52)
+  - chore: Bump decode-uri-component from 0.2.0 to 0.2.2 in /crm-ui (#53)
+  - chore: Bump json5 from 2.2.0 to 2.2.3 in /crm-ui (#58)
+  - doc: example of form endpoint
+  - fix: add template handling for empty var, inc. test #28
+  - chore: Bump yargs-parser and yargs in /crm-ui (#51)
+
 ## 3.1.6 - 01 Oct 22
 
  - fix: #43 make company numbe varying and remove left padding
