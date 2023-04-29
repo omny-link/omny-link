@@ -8,6 +8,7 @@
 *.class
 *.log*
 application.properties
+env.sh
 liquibase.properties
 liquibase.properties.local
 /log4j.properties
