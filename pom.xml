@@ -23,7 +23,7 @@
   </parent>
 
   <properties>
-    <batik.version>1.9.1</batik.version>
+    <batik.version>1.16</batik.version>
     <jasmine-boot.version>1.1.0</jasmine-boot.version>
     <java.version>1.8</java.version>
     <kp-icons.version>3.1.0</kp-icons.version>
