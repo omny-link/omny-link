@@ -853,6 +853,9 @@ form#upload {
 .form textarea {
 	width: 60%;
 }
+.form input[type='date'] {
+	width: 16rem;
+}
 @media (min-width: 992px) {
 	.form .col-md-12 textarea {
 	  width: 80%;

@@ -6,9 +6,9 @@ replicaCount: 1
 
 image:
   repository: docker.io/knowprocess/omny-link
-  pullPolicy: Always #IfNotPresent
+  pullPolicy: IfNotPresent #Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "3.1.7"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -54,6 +54,7 @@ ingress:
     - host: crm.knowprocess.com
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
           serviceName: crm-server
           servicePort: 8080
@@ -93,7 +94,7 @@ database:
   password: password
   datasourceDriverClassName: org.postgresql.Driver
   #datasourceUrl: jdbc:postgresql://127.0.0.1:5432/crm
-  datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm
+  datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm4
   #datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm?currentSchema=crm
 
 jpa:
@@ -108,9 +109,11 @@ jpa:
 crm:
   application:
     baseUri: "https://crm.knowprocess.com"
-    tagLine: The automated CRM
+    tagLine: "The automated CRM"
+  bpm:
+    processGateway: "https://flowable.knowprocess.com"
   cors:
-    allowedOrigins: "http://localhost:8000,https://beta.knowprocess.com,https://cloud.knowprocess.com"`
+    origins: "http://localhost:8000,https://beta.knowprocess.com,https://cloud.knowprocess.com"
     allowedHeaders: "Authorization,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Location,Pragma,X-Requested-With"
     exposedHeaders: "Authorization,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Location,Pragma,X-Requested-With"
 

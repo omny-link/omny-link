@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+  <changeSet author="tstephen" id="renameCustomFieldValues">
+     <renameColumn
+            columnDataType="varchar(1000)"
+            newColumnName="val"
+            oldColumnName="value"
+            schemaName="public"
+            tableName="ol_account_custom"/>
+     <renameColumn
+            columnDataType="varchar(1000)"
+            newColumnName="val"
+            oldColumnName="value"
+            schemaName="public"
+            tableName="ol_contact_custom"/>
+     <renameColumn
+            columnDataType="varchar(1000)"
+            newColumnName="val"
+            oldColumnName="value"
+            schemaName="public"
+            tableName="ol_feedback_custom"/>
+     <renameColumn
+            columnDataType="varchar(1000)"
+            newColumnName="val"
+            oldColumnName="value"
+            schemaName="public"
+            tableName="ol_order_custom"/>
+     <renameColumn
+            columnDataType="varchar(1000)"
+            newColumnName="val"
+            oldColumnName="value"
+            schemaName="public"
+            tableName="ol_order_item_custom"/>
+     <renameColumn
+            columnDataType="varchar(1000)"
+            newColumnName="val"
+            oldColumnName="value"
+            schemaName="public"
+            tableName="ol_stock_cat_custom"/>
+     <renameColumn
+            columnDataType="varchar(1000)"
+            newColumnName="val"
+            oldColumnName="value"
+            schemaName="public"
+            tableName="ol_stock_item_custom"/>
+  </changeSet>
+</databaseChangeLog>

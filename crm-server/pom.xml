@@ -34,6 +34,7 @@
   <properties>
     <start-class>link.omny.server.Application</start-class>
     <docker.repo>docker.io</docker.repo>
+    <docker.publishRegistry.url>hub.docker.com</docker.publishRegistry.url>
     <docker.image.prefix>knowprocess</docker.image.prefix>
     <postgresql.version>[42.3.3,)</postgresql.version>
   </properties>
@@ -169,25 +170,6 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <image>
-            <name>docker.io/knowprocess/omny-link</name>
-          </image>
-          <excludes>
-            <exclude>
-              <groupId>org.projectlombok</groupId>
-              <artifactId>lombok</artifactId>
-            </exclude>
-          </excludes>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>install</phase>
-            <goals>
-              <goal>build-image</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -213,4 +195,49 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <activation>
+        <property>
+          <name>docker.publishRegistry.password</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+              <image>
+                <name>${docker.repo}/${docker.image.prefix}/omny-link:${project.version}</name>
+                <publish>true</publish>
+              </image>
+              <docker>
+                <publishRegistry>
+                  <url>${docker.publishRegistry.url}</url>
+                  <username>${docker.publishRegistry.username}</username>
+                  <password>${docker.publishRegistry.password}</password>
+                </publishRegistry>
+              </docker>
+              <excludes>
+                <exclude>
+                  <groupId>org.projectlombok</groupId>
+                  <artifactId>lombok</artifactId>
+                </exclude>
+              </excludes>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>install</phase>
+                <goals>
+                  <goal>build-image</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

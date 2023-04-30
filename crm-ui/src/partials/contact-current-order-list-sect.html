@@ -87,7 +87,7 @@
               {{#tenant.features.catalog}}
                 {{#if tenant.features.orderItems && orderItems != undefined}}
                   <td data-order-id="{{localId}}" title="List of included {{#tenant.strings.stockItems}}{{tenant.strings.stockItems.toLowerCase()}}{{else}}stock items{{/}}">
-                    {{formatStockItemIds(.)}}
+                    {{..stockItemNames}}
                   </td>
                 {{elseif (!tenant.features.orderItems && ..stockItem != undefined)}}
                   <td data-order-id="{{localId}}" title="{{#tenant.strings.stockItem}}{{tenant.strings.stockItem.toLowerCase()}}{{else}}stock item{{/}}">

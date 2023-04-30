@@ -1035,4 +1035,5 @@
   <include file="liquibase/changelog-004-enlarge-company-number.xml" relativeToChangelogFile="true"/>
   <include file="liquibase/changelog-005-enlarge-account-stage.xml" relativeToChangelogFile="true"/>
   <include file="liquibase/changelog-006-variable-company-number.xml" relativeToChangelogFile="true"/>
+  <include file="liquibase/changelog-007-rename-custom-field-value-columns.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -332,6 +332,7 @@ public class MemoController {
         JsonNode jsonNode = objectMapper.readTree(body);
         for (Iterator<Entry<String, JsonNode>> it = jsonNode.fields() ; it.hasNext() ; ) {
             Entry<String, JsonNode> entry = it.next();
+            LOGGER.info("  found {} = {}", entry.getKey(), entry.getValue());
             parsedParams.put(entry.getKey(), entry.getValue());
         }
 

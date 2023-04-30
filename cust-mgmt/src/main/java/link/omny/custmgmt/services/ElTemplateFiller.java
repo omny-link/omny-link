@@ -63,7 +63,13 @@ public class ElTemplateFiller {
                 factory.createValueExpression(DecimalFormat.getCurrencyInstance(), NumberFormat.class));
 
         ValueExpression expr = factory.createValueExpression(context, template, String.class);
-        String html = escape((String) expr.getValue(context));
+        String html;
+        try {
+            html = escape((String) expr.getValue(context));
+        } catch (Throwable e) {
+            LOGGER.error("Unable to evaluate template", e);
+            html = "Unable to evaluate template";
+        }
         LOGGER.info("evaluateTemplate took {}ms", (System.currentTimeMillis()-start));
         return html;
     }

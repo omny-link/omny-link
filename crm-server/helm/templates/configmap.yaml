@@ -20,8 +20,8 @@ data:
   SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: {{ .Values.jpa.properties.hibernate.formatSql | quote }}
   CRM_APPLICATION_BASE-URI: {{ .Values.crm.application.baseUri | quote }}
   CRM_APPLICATION_TAG-LINE: {{ .Values.crm.application.tagLine | quote }}
-  {{- if and .Values.crm.cors.allowedOrigins }}
-  CRM_CORS_ALLOWED-ORIGINS: {{ .Values.crm.cors.allowedOrigins | quote }}
+  {{- if and .Values.crm.cors.origins }}
+  CRM_CORS_ORIGINS: {{ .Values.crm.cors.origins | quote }}
   {{- end }}
   {{- if and .Values.crm.cors.allowedMethods }}
   CRM_CORS_ALLOWED-METHODS: {{ .Values.crm.cors.allowedMethods | quote }}
@@ -34,4 +34,7 @@ data:
   {{- end }}
   {{- if and .Values.crm.cors.allowCredentials }}
   CRM_CORS_ALLOW-CREDENTIALS: {{ .Values.crm.cors.allowCredentials | quote }}
+  {{- end }}
+  {{- if and .Values.crm.bpm.processGateway }}
+  CRM_BPM_PROCESS-GATEWAY: {{ .Values.crm.bpm.processGateway | quote }}
   {{- end }}

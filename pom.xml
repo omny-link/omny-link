@@ -36,9 +36,9 @@
 
   <distributionManagement>
     <repository>
-      <id>kp-repo</id>
-      <name>KnowProcess public repository</name>
-      <url>scpexe://knowprocess.com/var/www-knowprocess/maven</url>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/omny-link/omny-link</url>
     </repository>
   </distributionManagement>
 
@@ -296,5 +296,64 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <profile>
+      <id>docs</id>
+      <activation>
+        <property>
+          <name>docs</name>
+        </property>
+      </activation>
+
+      <pluginRepositories>
+        <pluginRepository>
+          <id>kp-plugin-repo</id>
+          <url>https://knowprocess.com/maven/</url>
+          <layout>default</layout>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+        </pluginRepository>
+      </pluginRepositories>
+
+      <build>
+        <plugins>
+          <!-- Plugin to automatically generated UML diagrams -->
+          <plugin>
+            <groupId>com.github.jeluard</groupId>
+            <artifactId>plantuml-maven-plugin</artifactId>
+            <version>${plantuml-maven-plugin.version}</version>
+            <executions>
+              <execution>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <sourceFiles>
+                <directory>${basedir}</directory>
+                <includes>
+                  <include>src/main/plantuml/**/*.puml</include>
+                </includes>
+              </sourceFiles>
+              <outputDirectory>${project.build.directory}/classes/static/images/domain</outputDirectory>
+              <flattenOutput>true</flattenOutput>
+              <format>svg</format>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>net.sourceforge.plantuml</groupId>
+                <artifactId>plantuml</artifactId>
+                <version>${plantuml.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

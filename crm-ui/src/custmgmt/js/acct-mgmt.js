@@ -714,6 +714,7 @@ var ractive = new BaseRactive({
                   }
                 });
                 d.orderItems = sortedItems;
+                d.stockItemNames = ractive.getStockItemNames(d);
               });
 
               ractive.set('orders', data);
