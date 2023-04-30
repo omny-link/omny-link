@@ -158,7 +158,7 @@
           <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>5.3.18</version>
+            <version>${spring.version}</version>
           </dependency>
           <dependency>
             <groupId>org.springframework.data</groupId>
