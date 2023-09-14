@@ -17,6 +17,7 @@ package link.omny.custmgmt.web;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -117,6 +118,16 @@ public class ContactAndAccountControllerTest {
                 TENANT_ID, 0, 100, false);
         assertEquals(1, contacts.size());
         // assertContactEquals(contact, acct, contacts);
+
+        // EXPORT CONTACTS AS CSV
+        ResponseEntity<String> entity = contactController.listForTenantAsCsv(TENANT_ID, 0, 10);
+        String csv = entity.getBody();
+        System.out.println(csv);
+
+        // EXPORT ACCOUNTS AS CSV
+        entity = acctController.listForTenantAsCsv(TENANT_ID, 0, 10);
+        csv = entity.getBody();
+        System.out.println(csv);
     }
 
     /**
@@ -167,11 +178,15 @@ public class ContactAndAccountControllerTest {
 
     private void assertContactEquals(Contact contact, Account acct,
             Contact contactResults) {
+        assertEquals(TENANT_ID, contactResults.getTenantId());
         assertEquals(contact.getFullName(), contactResults.getFullName());
         assertEquals(contact.getEmail(), contactResults.getEmail());
+        assertEquals(contact.getStage(), contactResults.getStage());
+        assertNull(contactResults.getStage());
         assertEquals(1, contactResults.getCustomFields().size());
         assertEquals("blue",
                 contactResults.getCustomFieldValue("eyeColor"));
+        assertEquals(TENANT_ID, contactResults.getAccount().getTenantId());
         assertEquals(acct.getName(), contactResults.getAccount().getName());
         // NOTE audit columns are not populated in this test harness.
     }
@@ -181,13 +196,14 @@ public class ContactAndAccountControllerTest {
                 .setFirstName("Fred")
                 .setLastName("Flintstone")
                 .setEmail("fred@bedrockslateandgravel.com")
-                .addCustomField(new CustomContactField("eyeColor", "blue"));
+                .addCustomField(new CustomContactField("eyeColor", "blue"))
+                .setTenantId("client1"); // Should be replaced with TENANT_ID
     }
 
     protected Account getAccount() throws IOException {
         return new Account()
                 .setName("trademark")
                 .setDescription("test")
-                .setTenantId("client1");
+                .setTenantId("client1"); // Should be replaced with TENANT_ID
     }
 }

@@ -481,6 +481,9 @@ public class ContactController {
             @PathVariable("tenantId") String tenantId,
             @RequestBody Contact contact) {
         contact.setTenantId(tenantId);
+        if (contact.getAccount() != null) {
+            contact.getAccount().setTenantId(tenantId);
+        }
 
         for (CustomContactField field : contact.getCustomFields()) {
             LOGGER.debug(" have custom field {}", field);

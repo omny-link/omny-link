@@ -293,7 +293,7 @@ public class Account extends Auditable<String> implements Serializable {
     private String owner;
 
     /**
-     * Comma-separated set of alerts for the contact.
+     * Comma-separated set of alerts for the account.
      */
     @JsonProperty
     @JsonView( { AccountViews.Summary.class } )
@@ -301,7 +301,7 @@ public class Account extends Auditable<String> implements Serializable {
     private String alerts;
 
     /**
-     * Comma-separated set of arbitrary tags for the contact.
+     * Comma-separated set of arbitrary tags for the account.
      */
     @JsonProperty
     @JsonView( { AccountViews.Summary.class } )
@@ -347,7 +347,7 @@ public class Account extends Auditable<String> implements Serializable {
     @JsonView({ AccountViews.Detailed.class })
     private List<String> customHeadings;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "account_id")
     @JsonView({ AccountViews.Detailed.class })
     private Set<Document> documents;
