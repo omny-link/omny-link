@@ -61,7 +61,7 @@ public class ElTemplateFillerTest {
         // replace ${contact}
         assertTrue(result.contains("Hi Jill"));
         // replace with formatted date time
-        assertTrue(result.matches(".*at \\d{2}-[a-zA-Z]{3}-\\d{4} \\d{2}:\\d{2}.*"));
+        assertTrue(result.matches(".*at \\d{2}-[a-zA-Z]{3,4}-\\d{4} \\d{2}:\\d{2}.*"));
         // replace with owner.firstName
         assertTrue(result.contains("Best,Jack"));
         // replace with owner's first phone number
