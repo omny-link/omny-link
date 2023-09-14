@@ -1,6 +1,20 @@
 Release Notes
 =============
 
+## 3.1.8 - 14 Sep 23
+
+  - chore: update landing page copyright and vsn
+  - fix(gh70): csv export lazy init bug
+  - fix: test needs to allow 4 letter abbrev. for month
+  - chore: Bump socket.io-parser from 4.2.2 to 4.2.4 in /crm-ui (#69)
+  - chore: Bump engine.io from 6.4.1 to 6.4.2 in /crm-ui (#67)
+  - chore: bump node dependencies
+  - chore: bump spring-beans version
+  - chore: spring boot update
+  - chore: node updates
+  - chore: switch github actions to java 17
+  - chore: move doc generation to profile
+
 ## 3.1.7 - 29 Apr 23
 
   - fix: rename custom field value to val
