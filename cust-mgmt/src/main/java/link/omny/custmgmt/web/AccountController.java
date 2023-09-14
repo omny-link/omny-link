@@ -257,7 +257,7 @@ public class AccountController {
     public @ResponseBody ResponseEntity<?> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Account account) {
-        account.setTenantId(tenantId);
+        account = account.setTenantId(tenantId);
         for (CustomAccountField field : account.getCustomFields()) {
             field.setAccount(account);
         }

@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import link.omny.custmgmt.model.Contact;
@@ -62,12 +63,33 @@ public class CustomContactRepository {
         return contact;
     }
 
+    protected Specification<Contact> stageIsUnspecified() {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .isNull(root.<String> get("stage"));
+    }
+
+    protected Specification<Contact> isNotDeleted() {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .notEqual(root.<String> get("stage"), "deleted");
+    }
+
+    protected Specification<Contact> isTenant(String tenantId) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder
+                .equal(root.get("tenantId"), tenantId);
+        };
+    }
+
     public List<Contact> listForTenant(String tenantId, Pageable pageable) {
         long start = System.currentTimeMillis();
         LOGGER.info("List contacts for tenant {}", tenantId);
 
-        List<Contact> list = findAllByTenantAndIds(tenantId,
-                findPageByTenant(tenantId, pageable));
+        List<Contact> list = contactRepo.findAll(
+                isTenant(tenantId)
+                        .and((stageIsUnspecified().or(isNotDeleted()))),
+                pageable).getContent();
+
         LOGGER.info("Found {} {} contacts in {}ms", list.size(), tenantId,
                 (System.currentTimeMillis() - start));
         return list;

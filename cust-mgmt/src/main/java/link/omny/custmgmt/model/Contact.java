@@ -30,6 +30,7 @@ import java.util.UUID;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -386,7 +387,7 @@ public class Contact extends Auditable<String> implements Serializable {
     @Column(name = "tenant_id", nullable = false)
     private String tenantId;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contact", targetEntity = CustomContactField.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "contact", targetEntity = CustomContactField.class)
     @JsonDeserialize(using = JsonCustomContactFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
     @JsonView({ ContactViews.Detailed.class })
@@ -449,7 +450,7 @@ public class Contact extends Auditable<String> implements Serializable {
                 : getAccount().getId();
     }
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "contact_id")
     @JsonView({ ContactViews.Detailed.class })
     private Set<Note> notes;
@@ -459,7 +460,7 @@ public class Contact extends Auditable<String> implements Serializable {
     @JsonView({ ContactViews.Detailed.class })
     private Set<Activity> activities;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "contact_id")
     @JsonView({ ContactViews.Detailed.class })
     private Set<Document> documents;
