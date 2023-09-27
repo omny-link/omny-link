@@ -109,7 +109,7 @@ public class ProcessGatewayController {
             @RequestParam(value = "name", required = false, defaultValue = "-") String name,
             @RequestParam(value = "businessKey", required = false) String bizKey,
             @RequestBody String json, HttpServletRequest req) {
-        LOGGER.info("hookProcessToJsonMessage");
+        LOGGER.info("hookProcessToJsonMessage: {} for {}", msgName, tenantId);
         bizKey = bizKey == null ? msgName + "-" + iso.format(new Date()) : bizKey;
         String body = String.format(JSON_REQUEST_TEMPLATE,
                 msgName, bizKey, name, msgName, json, tenantId);
@@ -160,7 +160,8 @@ public class ProcessGatewayController {
 
     private ResponseEntity<?> startProcess(String authorization, String bizKey,
             String name, String body) {
-        LOGGER.info("startProcess {}", name);
+        LOGGER.info("startProcess as {}: {}, {}", authorization, bizKey, name);
+        LOGGER.debug("... msg body {}", body);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Accept", APPLICATION_JSON_VALUE);
@@ -174,7 +175,7 @@ public class ProcessGatewayController {
                     entity, String.class);
             JsonNode responseTree = objectMapper.readTree(response);
             LOGGER.debug("  received response: {}", response);
-            String location = processEndpoint + responseTree.get("id").asText();
+            String location = processEndpoint + responseTree.get("id").asText().trim();
             LOGGER.debug("  received location: {}", location);
             return ResponseEntity.created(URI.create(location)).build();
         } catch (HttpClientErrorException e) {

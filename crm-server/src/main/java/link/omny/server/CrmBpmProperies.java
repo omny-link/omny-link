@@ -100,7 +100,10 @@ public class CrmBpmProperies {
     }
     
     public String getProcessGateway() {
-        return processGateway;
+        if (processGateway == null) {
+            throw new IllegalStateException("No process gateway, requests will fail! Set crm.bpm.process-gateway");
+        }
+        return processGateway.trim();
     }
 
     public void setProcessGateway(String processGateway) {
