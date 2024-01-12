@@ -18,7 +18,7 @@
   "devDependencies": {
     "@babel/core": "^7.15.8",
     "babel-preset-minify": "^0.5.1",
-    "browser-sync": "^2.27.11",
+    "browser-sync": "^3.0.2",
     "del": "^3.0.0",
     "glob-parent": "^6.0.2",
     "glob-stream": "^8.0.0",
