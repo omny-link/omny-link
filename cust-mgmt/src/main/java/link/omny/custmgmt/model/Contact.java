@@ -404,7 +404,6 @@ public class Contact extends Auditable<String> implements Serializable {
         for (CustomContactField newField : fields) {
             setCustomField(newField);
         }
-        setLastUpdated(new Date());
     }
 
     public String getCustomFieldValue(@NotNull String fieldName) {
@@ -584,12 +583,14 @@ public class Contact extends Auditable<String> implements Serializable {
         return documents;
     }
 
-    public void addNote(Note note) {
+    public Contact addNote(Note note) {
         getNotes().add(note);
+        return this;
     }
 
-    public void addDocument(Document doc) {
+    public Contact addDocument(Document doc) {
         getDocuments().add(doc);
+        return this;
     }
 
     @PrePersist
