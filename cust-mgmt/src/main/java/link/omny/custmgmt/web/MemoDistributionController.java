@@ -41,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.MemoDistribution;
 import link.omny.custmgmt.repositories.ContactRepository;
@@ -48,7 +49,6 @@ import link.omny.custmgmt.repositories.MemoDistributionRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.model.Note;
 import lombok.Data;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * REST web service for uploading and accessing a file of JSON Mailshots (over
@@ -58,7 +58,7 @@ import springfox.documentation.annotations.ApiIgnore;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/memo-distributions")
-@ApiIgnore
+@Hidden
 public class MemoDistributionController {
 
     private static final Logger LOGGER = LoggerFactory

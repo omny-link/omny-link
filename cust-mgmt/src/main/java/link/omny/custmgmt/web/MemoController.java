@@ -61,15 +61,14 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.custmgmt.model.Memo;
 import link.omny.custmgmt.repositories.MemoRepository;
 import link.omny.custmgmt.repositories.MemoSignatoryRepository;
 import link.omny.custmgmt.services.ElTemplateFiller;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * REST web service for uploading and accessing a file of JSON memos (over
@@ -79,7 +78,7 @@ import springfox.documentation.annotations.ApiIgnore;
  */
 @RestController
 @RequestMapping(value = "/{tenantId}/memos")
-@Api(tags = "Memo API")
+@Tag(name = "Memo API")
 public class MemoController {
 
     private static final Logger LOGGER = LoggerFactory
@@ -110,7 +109,7 @@ public class MemoController {
      *             If cannot parse the JSON.
      */
     @PostMapping(value = "/upload")
-    @ApiIgnore
+    @Operation(hidden = true)
     public @ResponseBody Iterable<Memo> handleFileUpload(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
@@ -136,7 +135,7 @@ public class MemoController {
      */
     @ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping(value = "/")
-    @ApiOperation(value = "Create a new memo.")
+    @Operation(summary = "Create a new memo.")
     public @ResponseBody ResponseEntity<Void> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Memo memo) {
@@ -157,7 +156,7 @@ public class MemoController {
      * @return memos for that tenant.
      */
     @GetMapping(value = "/",  produces = { "application/json" })
-    @ApiOperation(value = "List a tenant's memos.")
+    @Operation(summary = "List a tenant's memos.")
     public @ResponseBody List<EntityModel<Memo>> listForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -170,7 +169,7 @@ public class MemoController {
      * @return memos for the specified tenant and status.
      */
     @GetMapping(value = "/findByStatus/{status}")
-    @ApiOperation(value = "Find memos with the specified status.")
+    @Operation(summary = "Find memos with the specified status.")
     public @ResponseBody List<EntityModel<Memo>> findByStatusForTenant(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("status") String status,
@@ -206,7 +205,7 @@ public class MemoController {
      * @throws BusinessEntityNotFoundException
      */
     @GetMapping(value = "/{idOrName}")
-    @ApiOperation(value = "Find the specified memo.")
+    @Operation(summary = "Find the specified memo.")
     public @ResponseBody EntityModel<Memo> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("idOrName") String idOrName) {
@@ -232,7 +231,7 @@ public class MemoController {
     @PostMapping(value = "/{idOrName}/clone")
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Clone an existing memo, resetting fields as necessary.")
+    @Operation(summary = "Clone an existing memo, resetting fields as necessary.")
     public @ResponseBody ResponseEntity<EntityModel<Memo>> clone(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("idOrName") String idOrName) {
@@ -261,7 +260,7 @@ public class MemoController {
      * @return Export all memos for the specified tenant.
      */
     @GetMapping(value = "/", produces = { "text/csv" })
-    @ApiOperation(value = "Export a tenant's memos.")
+    @Operation(summary = "Export a tenant's memos.")
     public @ResponseBody List<Memo> listAsCsv(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -285,7 +284,7 @@ public class MemoController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PutMapping(value = "/{id}", consumes = { "application/json" })
     @Transactional
-    @ApiOperation(value = "Update an existing memo.")
+    @Operation(summary = "Update an existing memo.")
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long memoId,
             @RequestBody Memo updatedMemo) {
@@ -302,7 +301,7 @@ public class MemoController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/{id}")
-    @ApiOperation(value = "Delete the specified memo.")
+    @Operation(summary = "Delete the specified memo.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long memoId) {
         memoRepo.deleteById(memoId);
@@ -317,7 +316,7 @@ public class MemoController {
     @PostMapping(value = "/eval/{memoName}",
             consumes= MediaType.APPLICATION_JSON_VALUE,
             produces = "text/html")
-    @ApiOperation(value = "Evaluate a memo template.")
+    @Operation(summary = "Evaluate a memo template.")
     public @ResponseBody ResponseEntity<String> evalJson(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("memoName") String memoName,
@@ -348,7 +347,7 @@ public class MemoController {
     @PostMapping(value = "/eval/{memoName}",
             consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = "text/html")
-    @ApiOperation(value = "Evaluate a memo template.")
+    @Operation(summary = "Evaluate a memo template.")
     public @ResponseBody ResponseEntity<String> evalUrlEncoded(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("memoName") String memoName,

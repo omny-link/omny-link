@@ -50,11 +50,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.server.CrmBpmProperies;
 import link.omny.server.ProcessStartException;
 
 @RestController
+@Tag(name = "Process Gateway API")
 public class ProcessGatewayController {
 
     private static final Logger LOGGER = LoggerFactory
@@ -102,7 +104,7 @@ public class ProcessGatewayController {
     @SuppressWarnings("deprecation")
     @PostMapping(value = "/msg/{tenantId}/{msgName}.json",
             consumes = { APPLICATION_JSON_VALUE, APPLICATION_JSON_UTF8_VALUE })
-    @ApiOperation(value = "Webhook endpoint to start a process from a JSON message.")
+    @Operation(summary = "Webhook endpoint to start a process from a JSON message.")
     public @ResponseBody ResponseEntity<?> hookProcessToJsonMessage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("msgName") String msgName,
@@ -117,7 +119,7 @@ public class ProcessGatewayController {
     }
 
     @PostMapping(value = "/form/{tenantId}/{procKey}.action")
-    @ApiOperation(value = "Webhook endpoint to start a process from a form.")
+    @Operation(summary = "Webhook endpoint to start a process from a form.")
     public @ResponseBody ResponseEntity<?> hookProcessToForm(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("procKey") String procKey,

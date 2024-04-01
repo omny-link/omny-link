@@ -52,8 +52,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.catalog.internal.CatalogCsvImporter;
 import link.omny.catalog.model.CustomStockItemField;
 import link.omny.catalog.model.MediaResource;
@@ -67,7 +67,6 @@ import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * REST web service for accessing stock items.
@@ -76,7 +75,7 @@ import springfox.documentation.annotations.ApiIgnore;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/stock-items")
-@Api(tags = "Stock item API")
+@Tag(name = "Stock item API")
 public class StockItemController {
 
     private static final Logger LOGGER = LoggerFactory
@@ -107,7 +106,7 @@ public class StockItemController {
      *             If cannot parse the JSON.
      */
     @RequestMapping(value = "/uploadcsv", method = RequestMethod.POST)
-    @ApiIgnore
+    @Operation(hidden = true)
     public @ResponseBody Iterable<StockItem> handleCsvFileUpload(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
@@ -142,7 +141,7 @@ public class StockItemController {
      * @return stock items for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
-    @ApiOperation(value = "Retrieves the stock items for a specific tenant.")
+    @Operation(summary = "Retrieves the stock items for a specific tenant.")
     @JsonView(StockItemViews.Summary.class)
     public @ResponseBody List<EntityModel<StockItem>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
@@ -173,7 +172,7 @@ public class StockItemController {
      * @return stock items for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
-    @ApiOperation(value = "Retrieves the stock items for a specific tenant.")
+    @Operation(summary = "Retrieves the stock items for a specific tenant.")
     @JsonView(StockItemViews.Detailed.class)
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
@@ -209,7 +208,7 @@ public class StockItemController {
      * @return stockItems for the specified tenant and status.
      */
     @RequestMapping(value = "/findByStatus/{status}", method = RequestMethod.GET)
-    @ApiOperation("Return stock items with the specified status for the specified tenant.")
+    @Operation(summary = "Return stock items with the specified status for the specified tenant.")
     public @ResponseBody List<EntityModel<StockItem>> findByStatusForTenant(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("status") String status,
@@ -246,7 +245,7 @@ public class StockItemController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @Transactional
     @JsonView(StockItemViews.Detailed.class)
-    @ApiOperation("Return the specified stock item.")
+    @Operation(summary = "Return the specified stock item.")
     public @ResponseBody EntityModel<StockItem> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id)
@@ -267,7 +266,7 @@ public class StockItemController {
      * @return stockItems for that tenant and stock category.
      */
     @RequestMapping(value = "/findByStockCategoryName/{categoryName}", method = RequestMethod.GET)
-    @ApiOperation("Return stock items in the named category for the specified tenant.")
+    @Operation(summary = "Return stock items in the named category for the specified tenant.")
     public @ResponseBody List<EntityModel<StockItem>> findByStockCategoryName(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("categoryName") String categoryName) {
@@ -289,7 +288,7 @@ public class StockItemController {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    @ApiOperation(value = "Create a new stock item.")
+    @Operation(summary = "Create a new stock item.")
     public @ResponseBody ResponseEntity<?> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody StockItem stockItem) {
@@ -321,7 +320,7 @@ public class StockItemController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
     @Transactional
-    @ApiOperation(value = "Update an existing stock item.")
+    @Operation(summary = "Update an existing stock item.")
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long stockItemId,
             @RequestBody StockItem updatedStockItem) {
@@ -346,7 +345,7 @@ public class StockItemController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = { "application/x-www-form-urlencoded" })
-    @ApiOperation(value = "Update a custom field of the specified stock item.")
+    @Operation(summary = "Update a custom field of the specified stock item.")
     public @ResponseBody void updateCustomField(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long stockItemId,
@@ -362,7 +361,7 @@ public class StockItemController {
      * Update a media resource to the specified item.
      */
     @RequestMapping(value = "/{stockItemId}/images/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
-    @ApiOperation(value = "Update an image linked to the specified stock item.")
+    @Operation(summary = "Update an image linked to the specified stock item.")
     public @ResponseBody void updateImage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockItemId") Long stockItemId,
@@ -381,7 +380,7 @@ public class StockItemController {
      */
     @JsonView(MediaResourceViews.Summary.class)
     @RequestMapping(value = "/{stockItemId}/images", method = RequestMethod.GET)
-    @ApiOperation(value = "Retrieves images for the specified stock item.")
+    @Operation(summary = "Retrieves images for the specified stock item.")
     public @ResponseBody List<MediaResource> listImages(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockItemId") Long stockItemId) {
@@ -396,7 +395,7 @@ public class StockItemController {
      * Add a media resource to the specified stockItem.
      */
     @RequestMapping(value = "/{stockItemId}/images", method = RequestMethod.POST)
-    @ApiOperation(value = "Add an image to the specified stock item.")
+    @Operation(summary = "Add an image to the specified stock item.")
     public @ResponseBody void addImage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockItemId") Long stockItemId,
@@ -423,7 +422,7 @@ public class StockItemController {
      */
     @RequestMapping(value = "/{stockItemId}/documents", method = RequestMethod.POST)
     @Transactional
-    @ApiOperation(value = "Add a document to the specified stock item.")
+    @Operation(summary = "Add a document to the specified stock item.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockItemId") Long stockItemId, @RequestBody Document doc) {
@@ -450,7 +449,7 @@ public class StockItemController {
      */
     @RequestMapping(value = "/{stockItemId}/notes", method = RequestMethod.POST)
     @Transactional
-    @ApiOperation(value = "Add a document to the specified stock category.")
+    @Operation(summary = "Add a document to the specified stock category.")
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockItemId") Long stockItemId, @RequestBody Note note) {
@@ -475,7 +474,7 @@ public class StockItemController {
     @RequestMapping(value = "/{itemId}/stockCategory",
             method = RequestMethod.PUT, consumes = { "text/uri-list" })
     @Transactional
-    @ApiOperation("Sets the category for the specified stock item.")
+    @Operation(summary = "Sets the category for the specified stock item.")
     public @ResponseBody void setStockCategory(
             @PathVariable("tenantId") String tenantId,
             @RequestBody String categoryUri,
@@ -496,7 +495,7 @@ public class StockItemController {
     @RequestMapping(value = "/{categoryId}/stockCategory",
             method = RequestMethod.PUT, consumes = { "application/json" })
     @Transactional
-    @ApiIgnore
+    @Operation(hidden = true)
     @Deprecated
     public @ResponseBody void setStockCategoryLegacy(
             @PathVariable("tenantId") String tenantId,
@@ -510,7 +509,7 @@ public class StockItemController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @ApiOperation("Delete the specified stock item.")
+    @Operation(summary = "Delete the specified stock item.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long stockItemId) {
         stockItemRepo.deleteById(stockItemId);
@@ -521,7 +520,7 @@ public class StockItemController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{stockItemId}/images/{id}", method = RequestMethod.DELETE)
-    @ApiOperation("Delete an image of the specified stock item.")
+    @Operation(summary = "Delete an image of the specified stock item.")
     public @ResponseBody void deleteImage(@PathVariable("tenantId") String tenantId,
             @PathVariable("stockItemId") Long stockItemId,
             @PathVariable("id") Long imageId) {

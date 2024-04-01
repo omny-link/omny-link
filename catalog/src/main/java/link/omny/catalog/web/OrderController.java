@@ -57,8 +57,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.catalog.CatalogException;
 import link.omny.catalog.CatalogObjectNotFoundException;
 import link.omny.catalog.model.CustomFeedbackField;
@@ -85,7 +85,7 @@ import lombok.Data;
  */
 @RestController
 @RequestMapping(value = "/{tenantId}/orders")
-@Api(tags = "Order API")
+@Tag(name = "Order API")
 public class OrderController {
 
     private static final Logger LOGGER = LoggerFactory
@@ -111,7 +111,7 @@ public class OrderController {
      */
     @GetMapping(value = "/{id}")
     @JsonView(OrderViews.Enhanced.class)
-    @ApiOperation(value = "Return the specified order.")
+    @Operation(summary = "Return the specified order.")
     public @ResponseBody EntityModel<Order> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId) {
@@ -134,7 +134,7 @@ public class OrderController {
      */
     @GetMapping(value = "/findByIdArray/{ids}")
     @Transactional
-    @ApiOperation("Retrieve the specified orders.")
+    @Operation(summary = "Retrieve the specified orders.")
     public @ResponseBody List<EntityModel<Order>> readOrders(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("ids") String orderIds) {
@@ -174,7 +174,7 @@ public class OrderController {
      * @return feedback for the specified order.
      */
     @GetMapping(value = "/{id}/feedback")
-    @ApiOperation("Retrieve feedback for the specified order.")
+    @Operation(summary = "Retrieve feedback for the specified order.")
     public @ResponseBody Feedback readFeedback(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId) {
@@ -199,7 +199,7 @@ public class OrderController {
      */
     @GetMapping(value = "/")
     @JsonView(value = OrderViews.Summary.class)
-    @ApiOperation(value = "Retrieves the orders for a specific tenant.")
+    @Operation(summary = "Retrieves the orders for a specific tenant.")
     public @ResponseBody List<EntityModel<Order>> listEntitiesForTenant(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -261,7 +261,7 @@ public class OrderController {
      */
     @GetMapping(value = "/findByContact/{contactId}")
     @JsonView(value = OrderViews.Summary.class)
-    @ApiOperation(value = "Retrieve orders for a contact")
+    @Operation(summary = "Retrieve orders for a contact")
     public @ResponseBody List<EntityModel<Order>> listForContact(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactId") Long contactId,
@@ -275,7 +275,7 @@ public class OrderController {
      */
     @GetMapping(value = "/findByContacts/{contactIds}")
     @JsonView(value = OrderViews.Detailed.class)
-    @ApiOperation(value = "Retrieve orders for a number of contacts")
+    @Operation(summary = "Retrieve orders for a number of contacts")
     public @ResponseBody List<EntityModel<Order>> listForContacts(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("contactIds") Long[] contactIds,
@@ -310,7 +310,7 @@ public class OrderController {
      */
     @GetMapping(value = "/findByType/{type}")
     @JsonView(value = OrderViews.Summary.class)
-    @ApiOperation(value = "Find orders of the specified type.")
+    @Operation(summary = "Find orders of the specified type.")
     public @ResponseBody List<EntityModel<Order>> findByType(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("type") String type,
@@ -332,7 +332,7 @@ public class OrderController {
      * @return Funnel report based on stage for the specified tenant.
      */
     @GetMapping(value = "/funnel")
-    @ApiOperation("Retrieve orders by stage.")
+    @Operation(summary = "Retrieve orders by stage.")
     public @ResponseBody FunnelReport reportTenantByAccount(
             @PathVariable("tenantId") String tenantId) {
         LOGGER.info("List account funnel for tenant {}", tenantId);
@@ -354,7 +354,7 @@ public class OrderController {
      */
     @ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping(value = "/")
-    @ApiOperation(value = "Create a new order.")
+    @Operation(summary = "Create a new order.")
     public @ResponseBody ResponseEntity<EntityModel<Order>> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Order order) {
@@ -400,7 +400,7 @@ public class OrderController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PutMapping(value = "/{id}", consumes = { "application/json" })
-    @ApiOperation(value = "Update an existing order")
+    @Operation(summary = "Update an existing order")
     @Transactional
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
@@ -438,7 +438,7 @@ public class OrderController {
     @ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping(value = "/{id}/order-items", consumes = { "application/json" })
     @Transactional
-    @ApiOperation(value = "Add an item to the specified order.")
+    @Operation(summary = "Add an item to the specified order.")
     public @ResponseBody ResponseEntity<Object> addOrderItem(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId, @RequestBody OrderItem newItem) {
@@ -467,7 +467,7 @@ public class OrderController {
      */
     @PostMapping(value = "/{orderId}/documents")
     @Transactional
-    @ApiOperation(value = "Add a document to the specified order.")
+    @Operation(summary = "Add a document to the specified order.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId, @RequestBody Document doc) {
@@ -494,7 +494,7 @@ public class OrderController {
      */
     @PostMapping(value = "/{orderId}/notes")
     @Transactional
-    @ApiOperation(value = "Add a note to the specified order.")
+    @Operation(summary = "Add a note to the specified order.")
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId, @RequestBody Note note) {
@@ -523,7 +523,7 @@ public class OrderController {
     @PostMapping(value = "/{id}/feedback", consumes = { "application/json" })
     @ResponseStatus(value = HttpStatus.CREATED)
     @Transactional
-    @ApiOperation(value = "Add feedback to the specified order.")
+    @Operation(summary = "Add feedback to the specified order.")
     public @ResponseBody ResponseEntity<Object> addFeedback(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId, @RequestBody Feedback feedback) {
@@ -553,7 +553,7 @@ public class OrderController {
      * @return
      */
     @PutMapping(value = "/{id}/feedback/{feedbackId}", consumes = { "application/json" })
-    @ApiOperation("Update feedback for the specified order.")
+    @Operation(summary = "Update feedback for the specified order.")
     public @ResponseBody ResponseEntity<Object> updateFeedback(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
@@ -583,7 +583,7 @@ public class OrderController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PutMapping(value = "/{id}/order-items/{itemId}", consumes = { "application/json" })
-    @ApiOperation(value = "Update an existing order item")
+    @Operation(summary = "Update an existing order item")
     public @ResponseBody void updateOrderItem(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
@@ -611,7 +611,7 @@ public class OrderController {
      */
     @PostMapping(value = "/{orderId}/stage/{stage}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @ApiOperation("Set the order's stage.")
+    @Operation(summary = "Set the order's stage.")
     public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId,
@@ -640,7 +640,7 @@ public class OrderController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{orderId}", method = RequestMethod.DELETE)
     @Transactional
-    @ApiOperation(value = "Deletes the specified order.")
+    @Operation(summary = "Deletes the specified order.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId) {
         orderRepo.deleteById(orderId);
@@ -652,7 +652,7 @@ public class OrderController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}/order-items/{itemId}", method = RequestMethod.DELETE)
     @Transactional
-    @ApiOperation(value = "Deletes the specified order item.")
+    @Operation(summary = "Deletes the specified order item.")
     public @ResponseBody void deleteItem(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
