@@ -128,3 +128,11 @@ keycloak:
   resource: crm
   publicClient: true
   principalAttribute: preferred_username
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+  showActuator:
+    enabled: true

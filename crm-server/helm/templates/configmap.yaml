@@ -18,6 +18,10 @@ data:
   SPRING_JPA_SHOW-SQL: {{ .Values.jpa.showSql | quote }}
   SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: {{ .Values.jpa.properties.hibernate.dialect | quote }}
   SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: {{ .Values.jpa.properties.hibernate.formatSql | quote }}
+  SPRINGDOC_PACKAGES-TO-SCAN: "link.omny.custmgmt.web,link.omny.catalog.web,link.omny.supportservices.web,link.omny.server.web"
+  SPRINGDOC_API-DOCS_ENABLED: {{ .Values.springdoc.api-docs.enabled | quote }}
+  SPRINGDOC_SWAGGER-UI_ENABLED: {{ .Values.springdoc.swagger-ui.enabled | quote }}
+  SPRINGDOC_SHOW-ACTUATOR: {{ .Values.springdoc.showActuator.enabled | quote }}
   CRM_APPLICATION_BASE-URI: {{ .Values.crm.application.baseUri | quote }}
   CRM_APPLICATION_TAG-LINE: {{ .Values.crm.application.tagLine | quote }}
   {{- if and .Values.crm.cors.origins }}
