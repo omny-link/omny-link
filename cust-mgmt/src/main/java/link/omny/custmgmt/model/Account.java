@@ -379,9 +379,10 @@ public class Account extends Auditable<String> implements Serializable {
         return null;
     }
 
-    public void addCustomField(CustomAccountField customField) {
+    public Account addCustomField(CustomAccountField customField) {
         customField.setAccount(this);
         setCustomField(customField);
+        return this;
     }
 
     protected void setCustomField(CustomAccountField newField) {

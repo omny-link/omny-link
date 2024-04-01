@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -353,11 +355,25 @@ public class ContactController {
     @GetMapping(value = "/{id}")
     @JsonView(ContactViews.Detailed.class)
     @Operation(summary = "Return the specified contact.")
-    public @ResponseBody EntityModel<Contact> findEntityById(
+    public @ResponseBody HttpEntity<String> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long id) {
         LOGGER.debug("Find contact for id {}", id);
-        return addLinks(tenantId, findById(tenantId, id));
+        EntityModel<Contact> entity = addLinks(tenantId, findById(tenantId, id));
+        // Work around issue with Jackson serialisation:
+        // If return EntityModel<Account> result is:
+        // Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JS
+        // ON: Cannot override _serializer: had a `link.omny.supportservices.json.JsonCustomFieldSerializer`
+        // , trying to set to `org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$Nest
+        // edEntitySerializer`]
+        try {
+            String json = objectMapper.writeValueAsString(entity);
+            LOGGER.info("... found: {}", json);
+            return new HttpEntity<String>(json);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Unable to serialise account with id {}, cause: {}", id, e);
+            throw new BusinessEntityNotFoundException(Contact.class, id);
+        }
     }
 
     /**

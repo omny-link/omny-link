@@ -36,10 +36,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -274,7 +276,7 @@ public class AccountController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    protected Account findById(final String tenantId, final Long id) {
+    protected Account findById(final String tenantId, @NonNull final Long id) {
         return accountRepo.findById(id)
                 .orElseThrow(() -> new BusinessEntityNotFoundException(
                         Account.class, id));
@@ -290,7 +292,7 @@ public class AccountController {
     @JsonView(AccountViews.Detailed.class)
     @Transactional
     @Operation(summary = "Return the specified account.")
-    public @ResponseBody EntityModel<Account> findEntityById(
+    public @ResponseBody HttpEntity<String> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String idOrCode)
             throws BusinessEntityNotFoundException {
@@ -303,7 +305,21 @@ public class AccountController {
             account = accountRepo.findByCodeForTenant(idOrCode, tenantId);
         }
 
-        return addLinks(tenantId, account);
+        EntityModel<Account> entity = addLinks(tenantId, account);
+        // Work around issue with Jackson serialisation:
+        // If return EntityModel<Account> result is:
+        // Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JS
+        // ON: Cannot override _serializer: had a `link.omny.supportservices.json.JsonCustomFieldSerializer`
+        // , trying to set to `org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$Nest
+        // edEntitySerializer`]
+        try {
+            String json = objectMapper.writeValueAsString(entity);
+            LOGGER.info("... found: {}", json);
+            return new HttpEntity<String>(json);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Unable to serialise account with id {}, cause: {}", idOrCode, e);
+            throw new BusinessEntityNotFoundException(Account.class, idOrCode);
+        }
     }
 
     /**

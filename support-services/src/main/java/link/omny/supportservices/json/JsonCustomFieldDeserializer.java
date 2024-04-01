@@ -32,7 +32,7 @@ import link.omny.supportservices.model.CustomField;
 
 /**
  */
-public abstract class JsonCustomFieldDeserializer<T> extends
+public class JsonCustomFieldDeserializer<T> extends
         JsonDeserializer<Set<? extends CustomField>> {
 
     @Override
@@ -52,5 +52,7 @@ public abstract class JsonCustomFieldDeserializer<T> extends
         return set;
     }
 
-    protected abstract Object newInstance(Entry<String, JsonNode> entry);
+    protected CustomField newInstance(Entry<String, JsonNode> entry) {
+        return new CustomField(entry.getKey(), entry.getValue().asText());
+    }
 }

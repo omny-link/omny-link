@@ -34,12 +34,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import link.omny.custmgmt.Application;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.CustomAccountField;
 import link.omny.custmgmt.model.CustomContactField;
 import link.omny.supportservices.model.Note;
 
@@ -60,9 +64,12 @@ public class ContactAndAccountControllerTest {
     @Autowired
     private AccountController acctController;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private Long contactId;
 
-    private long acctId;
+    private Long acctId;
 
     @AfterEach
     public void tearDown() {
@@ -134,7 +141,7 @@ public class ContactAndAccountControllerTest {
         System.out.println(csv);
     }
 
-    private Long assertAccountCreation(Account acct) {
+    private @NonNull Long assertAccountCreation(Account acct) {
         ResponseEntity<?> acctResp = acctController.create(TENANT_ID, acct);
         assertEquals(HttpStatus.CREATED, acctResp.getStatusCode());
         List<String> locationHdrs = acctResp.getHeaders().get("Location");
@@ -170,7 +177,7 @@ public class ContactAndAccountControllerTest {
     public void testAccountLifecycle() throws IOException {
         Date start = new Date();
         Account acct = getAccount();
-        Long acctId = assertAccountCreation(acct);
+        acctId = assertAccountCreation(acct);
 
         Contact contact = getContact();
         Long contactId = assertContactCreation(contact);
@@ -179,11 +186,14 @@ public class ContactAndAccountControllerTest {
                 + acctId);
 
         Account acct2 = acctController.findById(TENANT_ID, acctId);
+        String json = objectMapper.writeValueAsString(acct2);
+        assertNotNull(json);
+        assertThat("Json must contain the expected custom field", json.contains("\"budget\":"));
         acct2.setAliases("trading as");
         acctController.update(TENANT_ID, acctId, acct2);
 
         // SIMULATE REST UPDATE BEHAVIOUR
-        Account acct3 = acctController.findEntityById(TENANT_ID, acctId.toString()).getContent();
+        Account acct3 = acctController.findById(TENANT_ID, acctId);
         assertNotNull(acct3);
         assertTrue(acct3.getLastUpdated().after(start));
         assertEquals(acct.getName(), acct3.getName());
@@ -271,6 +281,7 @@ public class ContactAndAccountControllerTest {
                 .setName("trademark")
                 .setDescription("test")
                 .addNote(new Note(AUTHOR, "Creating new prospect"))
+                .addCustomField(new CustomAccountField("budget", "5000"))
                 .setTenantId("client1"); // Should be replaced with TENANT_ID
     }
 }
