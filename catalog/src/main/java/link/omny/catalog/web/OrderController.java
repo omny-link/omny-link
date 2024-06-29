@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +55,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -112,7 +114,7 @@ public class OrderController {
     @GetMapping(value = "/{id}")
     @JsonView(OrderViews.Enhanced.class)
     @Operation(summary = "Return the specified order.")
-    public @ResponseBody EntityModel<Order> findEntityById(
+    public @ResponseBody HttpEntity<String> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId) {
         LOGGER.info("Read order {} for tenant {}", orderId, tenantId);
@@ -126,7 +128,26 @@ public class OrderController {
                 order.getFeedback() == null ? "WITHOUT" : "WITH");
 
         order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
-        return addLinks(tenantId, order);
+        return serialise(addLinks(tenantId, order), new HttpHeaders());
+    }
+
+    private HttpEntity<String> serialise(EntityModel<Order> entity, HttpHeaders headers) {
+        // Work around issue with Jackson serialisation:
+        // If return EntityModel<Order> result is:
+        // Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JS
+        // ON: Cannot override _serializer: had a `link.omny.supportservices.json.JsonCustomFieldSerializer`
+        // , trying to set to `org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$Nest
+        // edEntitySerializer`]
+        try {
+            String json = objectMapper.writeValueAsString(entity);
+            LOGGER.info("... found: {}", json);
+            return new HttpEntity<String>(json, headers);
+        } catch (JsonProcessingException e) {
+            @SuppressWarnings("null")
+            Long orderId = entity.getContent().getId();
+            LOGGER.error("Unable to serialise account with id {}, cause: {}", orderId, e);
+            throw new BusinessEntityNotFoundException(Order.class, orderId);
+        }
     }
 
     /**
@@ -355,7 +376,7 @@ public class OrderController {
     @ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping(value = "/")
     @Operation(summary = "Create a new order.")
-    public @ResponseBody ResponseEntity<EntityModel<Order>> create(
+    public @ResponseBody HttpEntity<String> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Order order) {
         order.setTenantId(tenantId);
@@ -380,7 +401,7 @@ public class OrderController {
         }
         EntityModel<Order> entityModel = addLinks(tenantId, orderRepo.save(order));
         HttpHeaders headers = headersWithLocation(entityModel.getLink("self").get().toUri());
-        return new ResponseEntity<EntityModel<Order>>(entityModel, headers, HttpStatus.CREATED);
+        return serialise(entityModel, headers);
     }
 
     protected HttpHeaders headersWithLocation(URI uri) {

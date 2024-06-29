@@ -25,8 +25,8 @@ curl -v -X PUT -H "Accept:application/json" -H "Content-Type:application/json" -
 http://localhost:8082/hs/stock-categories/84
 
 curl -X PUT -v  -H "Accept:application/json" -H "Content-Type:application/json" \
-  -d '{"accountId":"17","orderItems":[{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"09:00-10:00","year":"N"}},{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"10:00-11:00","year":"R"}}],"tenantId":"aclient"}'\
-  -u USR:PWD http://localhost:8082/aclient/orders/73
+  -d '{"accountId":"17","orderItems":[{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"09:00-10:00","year":"N"}},{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"10:00-11:00","year":"R"}}],"tenantId":"acme"}'\
+  -u USR:PWD http://localhost:8082/acme/orders/73
 
 # List all stock items (individual lettings)
 curl -v -H "Accept:application/json" -u USR:PWD https://api.omny.link/acme/stock-items/
@@ -66,24 +66,24 @@ curl -v -H 'Accept:application/json' -u USR:PWD https://api.omny.link/acme/stock
 curl -v -H 'Accept:application/json' -u USR:PWD http://localhost:8082/acme/stock-categories/findByLocation?q=Corsham&offers=true
 
 # List orders for tenant
-curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/orders/
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/orders/
 curl --max-time 10000 -w "@catalog/src/test/resources/curl-format.txt" \
   -H "Accept:application/json" -u USR:PWD \
-  -o /dev/null -s http://localhost:8082/aclient/orders/
+  -o /dev/null -s http://localhost:8082/acme/orders/
 
 # List orders for contact
-curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/orders/findByContacts/16692
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/orders/findByContacts/16692
 
 # List orders for multiple contacts
-curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/orders/findByContacts/40,45,48
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/orders/findByContacts/40,45,48
 
 # Fetch single order
-curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/orders/192
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/orders/192
 
 # Create Order
 curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" \
   -d '{ "orderItems": [{"date":"21/09/2016","time":"09:00-10:00","group":"Y2","type":"Health"},{"date":"21/09/2016","time":"10:00-11:00","group":"Y3","type":"Health"},{"date":"21/09/2016","time":"11:00-12:00","group":"Y4","type":"Health"}]}'\
-  -u USR:PWD http://localhost:8082/aclient/orders/
+  -u USR:PWD http://localhost:8082/acme/orders/
 curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" \
   -d '{  "contactId" : "35", "name" : "CPR", "date" : "2016-10-10", "price" : "£100", "stockItem" : "Training" }' \
   -u USR:PWD http://localhost:8082/rowden/orders/
@@ -94,8 +94,8 @@ curl -u USR:PWD  -v 'http://localhost:8082/rowden/process-instances/' -H 'Conten
 
 # Update order with order items
 curl -X PUT -v  -H "Accept:application/json" -H "Content-Type:application/json" \
-  -d '{"accountId":"17","orderItems":[{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"09:00-10:00","year":"N"}},{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"10:00-11:00","year":"R"}}],"tenantId":"aclient"}'\
-  -u USR:PWD http://localhost:8082/aclient/orders/73
+  -d '{"accountId":"17","orderItems":[{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"09:00-10:00","year":"N"}},{"type":"Fitness KS1","customFields":{"stockItemId":"4","date":"24/11/2016","time":"10:00-11:00","year":"R"}}],"tenantId":"acme"}'\
+  -u USR:PWD http://localhost:8082/acme/orders/73
 
 # Update order WITHOUT order items
 curl -X PUT -v  -H "Accept:application/json" -H "Content-Type:application/json" \
@@ -103,23 +103,23 @@ curl -X PUT -v  -H "Accept:application/json" -H "Content-Type:application/json" 
   -u USR:PWD http://localhost:8082/acme/orders/7090
 
 # Set order stage
-curl -X POST -u USR:PWD -v 'http://localhost:8082/aclient/orders/214/stage' \
+curl -X POST -u USR:PWD -v 'http://localhost:8082/acme/orders/214/stage' \
   -H 'Content-Type: application/json' -H 'Accept: application/json' \
   -d '{"stage":"Feedback received"}'
 
 # Add order item to order
-curl -X POST -u USR:PWD -v 'http://localhost:8082/aclient/orders/214/order-items' \
+curl -X POST -u USR:PWD -v 'http://localhost:8082/acme/orders/214/order-items' \
   -H 'Content-Type: application/json' -H 'Accept: application/json' \
   -d '{"customFields": { "location": "Hall" }}'
 
 # Delete an order item
-curl -v -X DELETE -H 'Accept:application/json'  http://tim%40omny.link:tstephen12@localhost:8082/aclient/orders/121/order-items/188/
+curl -v -X DELETE -H 'Accept:application/json'  http://tim%40omny.link:tstephen12@localhost:8082/acme/orders/121/order-items/188/
 
 # Add feedback to Order
 curl -X POST -v  -H "Accept:application/json" -H "Content-Type:application/json" \
   -d '{ "description":"Healthy session at Acme Primary", "customFields": { "coachComments": "New head (Gina Cook) from next year" }}' \
-  -u USR:PWD http://localhost:8082/aclient/orders/214/feedback
+  -u USR:PWD http://localhost:8082/acme/orders/214/feedback
 
 # GET order feedback
-curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/orders/216/feedback
+curl -v -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/orders/216/feedback
   
