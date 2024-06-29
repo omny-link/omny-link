@@ -130,6 +130,35 @@ public class OrderItem extends Auditable<String> implements Serializable {
         return String.format("/order-items/%1$d", id);
     }
 
+    public Set<CustomOrderItemField> getCustomFields() {
+        if (customFields == null) {
+            customFields = new HashSet<CustomOrderItemField>();
+        }
+        return customFields;
+    }
+
+    public void setCustomFields(Set<CustomOrderItemField> fields) {
+        for (CustomOrderItemField newField : fields) {
+            setCustomField(newField);
+        }
+        setLastUpdated(new Date());
+    }
+
+    public void setCustomField(CustomOrderItemField newField) {
+        boolean found = false;
+        for (CustomOrderItemField field : getCustomFields()) {
+            if (field.getName().equals(newField.getName())) {
+                field.setValue(newField.getValue() == null ? null : newField
+                        .getValue().toString());
+                found = true;
+            }
+        }
+        if (!found) {
+            newField.setOrderItem(this);
+            getCustomFields().add(newField);
+        }
+    }
+
     public Object getCustomFieldValue(@NotNull String fieldName) {
         if (customFields == null) {
             return null;

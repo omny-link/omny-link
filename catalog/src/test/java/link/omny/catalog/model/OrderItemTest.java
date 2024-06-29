@@ -16,11 +16,19 @@
 package link.omny.catalog.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
 public class OrderItemTest {
+
+    @Test
+    public void testGetCustomFields() {
+        OrderItem orderItem = new OrderItem();
+        assertNotNull(orderItem.getCustomFields());
+        assertEquals(0, orderItem.getCustomFields().size());
+    }
 
     @Test
     public void testCustomFieldEquals() {
