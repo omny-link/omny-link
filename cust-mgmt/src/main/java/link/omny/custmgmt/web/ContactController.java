@@ -15,6 +15,7 @@
  ******************************************************************************/
 package link.omny.custmgmt.web;
 
+import static java.util.Collections.emptySet;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -220,8 +221,9 @@ public class ContactController {
     @Operation(hidden = true)
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
-            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "limit", required = false, defaultValue = DEFAULT_PAGE_SIZE) Integer limit) {
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "limit", defaultValue = DEFAULT_PAGE_SIZE) Integer limit) {
+        LOGGER.info("listForTenantAsCsv({},{page},{limit})", tenantId, page, limit);
         StringBuilder sb = new StringBuilder().append("id,accountId,"
                 + "firstName,lastName,title,"
                 + "isMainContact,address1,address2,town,countyOrCity,country,"
@@ -358,8 +360,8 @@ public class ContactController {
     public @ResponseBody HttpEntity<String> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long id) {
-        LOGGER.debug("Find contact for id {}", id);
-        EntityModel<Contact> entity = addLinks(tenantId, findById(tenantId, id));
+        LOGGER.debug("Find contact for id {} with id {}", tenantId, id);
+        EntityModel<Contact> contactEntity = addLinks(tenantId, findById(tenantId, id));
         // Work around issue with Jackson serialisation:
         // If return EntityModel<Account> result is:
         // Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JS
@@ -367,7 +369,15 @@ public class ContactController {
         // , trying to set to `org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$Nest
         // edEntitySerializer`]
         try {
-            String json = objectMapper.writeValueAsString(entity);
+            Account acct = contactEntity.getContent().getAccount();
+            // focus on contact, should not have children of account and if do, fetch separately
+            acct.setActivities(emptySet()).setDocuments(emptySet()).setNotes(emptySet());
+            String acctJson = objectMapper.writeValueAsString(acct);
+            if (acct != null) {
+               contactEntity.getContent().setAccount(null);
+            }
+            String json = objectMapper.writeValueAsString(contactEntity);
+            json = json.replace("\"account\":null", "\"account\":"+acctJson);
             LOGGER.info("... found: {}", json);
             return new HttpEntity<String>(json);
         } catch (JsonProcessingException e) {
@@ -704,6 +714,7 @@ public class ContactController {
     }
 
     protected Contact findById(String tenantId, Long contactId) {
+        LOGGER.info("findById({}, {})", tenantId, contactId);
         return contactSvc.findById(tenantId, contactId);
     }
 
@@ -741,13 +752,19 @@ public class ContactController {
     }
 
     protected EntityModel<Contact> addLinks(final String tenantId, final Contact contact) {
+        LOGGER.info("addLinks({}, {})", tenantId, contact.getId());
         EntityModel<Contact> model = EntityModel.of(contact,
                 linkTo(methodOn(ContactController.class).findEntityById(tenantId, contact.getId()))
                         .withSelfRel());
         if (contact.getAccountId() != null) {
-            model.add(linkTo(methodOn(AccountController.class).findEntityById(
-                    tenantId, String.valueOf(contact.getAccountId())))
-                            .withRel("account"));
+            LOGGER.debug("addLinks({}, {}) for account {}", tenantId, contact.getId(), contact.getAccountId());
+            try {
+                model.add(linkTo(methodOn(AccountController.class).findEntityById(
+                        tenantId, String.valueOf(contact.getAccountId())))
+                                .withRel("account"));
+            } catch (Exception ex) {
+                LOGGER.error("XXXX {}", ex.getMessage(), ex);
+            }
         }
         return model;
     }

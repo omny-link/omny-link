@@ -19,7 +19,8 @@ curl -X PUT -v -H "Content-Type:text/uri-list" -u USR:PWD -d 'http://localhost:8
 
 # Create contact 
 curl -X POST -H 'Content-Type:application/json' -u USR:PWD -d '{"firstName":"Tim","lastName":"Stephenson","email":"tim@acme.com","customFields":{"budget":"5000","appointmentDate":"2015-04-15","partner":"Fred"},"tenantId":"acme"}' http://localhost:8082/acme/contacts/
-curl -X POST -H 'Content-Type:application/json' -u USR:PWD -d '{"firstName":"Fred","lastName":"Flintstone","email":"fred@bedrock-slate.com","customFields":{"budget":"5000","appointmentDate":"2015-04-15"},"tenantId":"acme"}' http://localhost:8082/acme/contacts/
+# Create contact and account in one
+curl -X POST -H 'Content-Type:application/json' -u USR:PWD -d '{"firstName":"Fred","lastName":"Flintstone","email":"fred@bedrock-slate.com","customFields":{"budget":"5000","appointmentDate":"2015-04-15"},"tenantId":"acme", "account": {"name":"Bedrock slate and gravel","email":"tim@bedrock-slate.com","customFields":{"budget":"5000"},"tenantId":"acme"}}' http://localhost:8082/acme/contacts/
  
 # Create activities
 curl -X POST -v -H "Content-Type:application/json" -u USR:PWD -d '{"type":"register","occurred":"2015-01-05T19:00:00"}' http://localhost:8082/acme/contacts/1/activities
@@ -54,14 +55,14 @@ curl -X POST -H 'Accept:application/json' -H 'Content-Type:application/json' -u 
 curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/omny/memo-distributions/
 
 # Get 1 memo distribution
-curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/memo-distributions/1/
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/acme/memo-distributions/1/
 # Get memo expanding any tags to individual recipient addresses
 curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/omny/memo-distributions/1/expandedTags
 
 # GET sales funnel (contacts driven)
-curl -X GET -H 'Content-Type:application/json' -u tstephen:bJzHd253lmLh -v http://localhost:8082/acme/funnel/contacts
+curl -X GET -H 'Content-Type:application/json' --netrc -v http://localhost:8082/acme/funnel/contacts
 # GET sales funnel (accounts driven)
-curl -X GET -H 'Content-Type:application/json' -u tstephen:bJzHd253lmLh -v http://localhost:8082/aclient/funnel/accounts
+curl -X GET -H 'Content-Type:application/json' --netrc -v http://localhost:8082/acme/funnel/accounts
 
 # GET all tenant's contacts (JSON)
 curl -H 'Accept:application/json' -u USR:PWD -v http://localhost:8082/acme/contacts/
@@ -79,7 +80,7 @@ curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:80
 curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:8082/omny/contacts/findByUuid?uuid=bee1b1d6-c533-4372-910c-04fadb4d58ae
 
 # GET contacts belonging to an account
-curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:8082/aclient/contacts/findByAccountId?accountId=13
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:8082/acme/contacts/findByAccountId?accountId=13
 
 # record user activity
 curl -X POST -H 'Content-Type:application/json' -u USR:PWD -v -d '' http://localhost:8082/msg/omny/omny.userActivity.json
@@ -123,5 +124,5 @@ http://localhost:8082/msg/acme/omny.enquiry.json
 curl -X POST -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/contacts/archive
 
 # De-activate accounts
-curl -X POST -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/accounts/archive
+curl -X POST -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/accounts/archive
 

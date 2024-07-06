@@ -16,7 +16,6 @@
 package link.omny.custmgmt.repositories;
 
 import java.util.List;
-import java.util.Set;
 
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
@@ -32,9 +31,6 @@ import org.springframework.stereotype.Component;
 
 import link.omny.custmgmt.model.Contact;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
-import link.omny.supportservices.model.Activity;
-import link.omny.supportservices.model.Document;
-import link.omny.supportservices.model.Note;
 
 @Component
 public class CustomContactRepository {
@@ -53,13 +49,19 @@ public class CustomContactRepository {
         Contact contact = contactRepo.findById(contactId)
                 .orElseThrow(() -> new BusinessEntityNotFoundException(
                         Contact.class, contactId));
-        Set<Activity> activities = contact.getActivities();
-        Set<Document> documents = contact.getDocuments();
-        Set<Note> notes = contact.getNotes();
         LOGGER.debug(String.format(
-                "force load of child entities separately,"
-                        + " activities: %1$d, docs: %2$d, notes: %3$d",
-                activities.size(), documents.size(), notes.size()));
+                "force load child entities, activities: %1$d, docs: %2$d, notes: %3$d",
+                contact.getActivities().size(),
+                contact.getDocuments().size(), contact.getNotes().size()));
+        if (contact.getAccount() != null) {
+                LOGGER.debug(String.format(
+                        "force load acct child entities, "
+                        + "custom fields %1$s, activities: %2$d, docs: %3$d, notes: %4$d",
+                        contact.getAccount().getCustomFields().size(),
+                        contact.getAccount().getActivities().size(),
+                        contact.getAccount().getDocuments().size(),
+                        contact.getAccount().getNotes().size()));
+        }
         return contact;
     }
 

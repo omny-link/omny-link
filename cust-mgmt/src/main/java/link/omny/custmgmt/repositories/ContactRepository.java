@@ -27,6 +27,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import link.omny.custmgmt.model.Contact;
 
@@ -51,11 +53,11 @@ public interface ContactRepository extends JpaRepository<Contact, Long>,
 
     @Override
     @EntityGraph("contactWithAccount")
-    Optional<Contact> findById(Long id);
+    @NonNull Optional<Contact> findById(@NonNull Long id);
 
     @Override
     @EntityGraph("contactWithAccount")
-    List<Contact> findAll(Specification<Contact> spec);
+    @NonNull List<Contact> findAll(@Nullable Specification<Contact> spec);
 
     @Query(FIND_ALL_FOR_TENANT)
     @EntityGraph("contactWithAccount")
