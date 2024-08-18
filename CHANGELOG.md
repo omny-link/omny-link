@@ -1,6 +1,66 @@
 Release Notes
 =============
 
+## 3.1.9 - 18 Aug 24
+
+  - chore(deps): bump ws, engine.io-client and socket.io in /crm-ui (#78)
+
+        Bumps [ws](https://github.com/websockets/ws), [engine.io-client](https://github.com/socketio/engine.io-client) and [socket.io](https://github.com/socketio/socket.io). These dependencies needed to be updated together.
+
+        Updates `ws` from 8.11.0 to 8.17.1
+        - [Release notes](https://github.com/websockets/ws/releases)
+        - [Commits](https://github.com/websockets/ws/compare/8.11.0...8.17.1)
+
+        Updates `engine.io-client` from 6.5.3 to 6.5.4
+        - [Release notes](https://github.com/socketio/engine.io-client/releases)
+        - [Changelog](https://github.com/socketio/engine.io-client/blob/6.5.4/CHANGELOG.md)
+        - [Commits](https://github.com/socketio/engine.io-client/compare/6.5.3...6.5.4)
+
+        Updates `socket.io` from 4.6.1 to 4.7.5
+        - [Release notes](https://github.com/socketio/socket.io/releases)
+        - [Changelog](https://github.com/socketio/socket.io/blob/4.7.5/CHANGELOG.md)
+        - [Commits](https://github.com/socketio/socket.io/compare/4.6.1...4.7.5)
+
+        ---
+        updated-dependencies:
+        - dependency-name: ws
+          dependency-type: indirect
+        - dependency-name: engine.io-client
+          dependency-type: indirect
+        - dependency-name: socket.io
+          dependency-type: indirect
+        ...
+
+        Signed-off-by: dependabot[bot] <support@github.com>
+        Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+  - chore: Bump org.webjars:bootstrap from 3.3.5 to 3.4.1 in /pdf-service (#76)
+        Bumps [org.webjars:bootstrap](https://github.com/webjars/bootstrap) from 3.3.5 to 3.4.1.
+        - [Commits](https://github.com/webjars/bootstrap/compare/bootstrap-3.3.5...bootstrap-3.4.1)
+
+        ---
+        updated-dependencies:
+        - dependency-name: org.webjars:bootstrap
+          dependency-type: direct:production
+        ...
+
+        Signed-off-by: dependabot[bot] <support@github.com>
+        Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+  - fix: account export (#70)
+  - docs: add namespace to helm upgrade
+  - fix: provide resource specs
+  - fix: currently necessary to access db by IP
+  - fix: data config for springdoc
+  - fix: serialisation on contact.account children
+  - fix: serialise responses with order item custom fields
+  - fix: null order item custom fields
+  - chore: test all curl.examples working
+  - fix: json serialisation issue
+  - fix: update helm chart for springdocs
+  - fix: bump spring boot to 3.2.4 and adopt spring openapi tools
+  - fix: enhance contact and account test
+  - fix: update default process gateway in helm chart
+
 ## 3.1.8 - 14 Sep 23
 
   - chore: update landing page copyright and vsn
@@ -636,7 +696,7 @@ and making it unclickable
 - Order contacts by last updated
 - Some extra fields including doNotCall/Email and some specific to customer
 - REST services to upload Contacts and Accounts plus UI to enable this
-- UI polish  
+- UI polish
 - Replace ractive.data. with ractive.get calls (API removed in latest version)
 - Switch datasource connection pool in attempt to avoid disconnection errors
 - Update drop down list data
