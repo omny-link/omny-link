@@ -94,7 +94,8 @@ database:
   password: password
   datasourceDriverClassName: org.postgresql.Driver
   #datasourceUrl: jdbc:postgresql://127.0.0.1:5432/crm
-  datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm4
+  # datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm4
+  datasourceUrl: jdbc:postgresql://10.245.211.55:5432/crm4
   #datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm?currentSchema=crm
 
 jpa:
