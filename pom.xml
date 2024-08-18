@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.0.0</version>
+    <version>3.3.2</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
@@ -31,7 +31,7 @@
     <omny-link.version>${project.version}</omny-link.version>
     <plantuml.version>8059</plantuml.version>
     <spring.version>6.1.5</spring.version>
-    <spring-boot.version>3.2.4</spring-boot.version>
+    <spring-boot.version>3.3.2</spring-boot.version>
   </properties>
 
   <distributionManagement>
