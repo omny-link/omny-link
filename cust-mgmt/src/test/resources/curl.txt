@@ -13,17 +13,20 @@
 #  License for the specific language governing permissions and limitations under
 #  the License.
 #-------------------------------------------------------------------------------
-# Create activities
-curl -X POST -v -H "Content-Type:application/json" -u USR:PWD -d '{"type":"register","occurred":"2015-01-05T19:00:00"}' http://localhost:8082/activities/
-curl -X POST -v -H "Content-Type:application/json" -u USR:PWD -d '{"type":"login","occurred":"2015-01-05T19:05:00"}' http://localhost:8082/activities/
-curl -X POST -v -H "Content-Type:application/json" -u USR:PWD -d '{"type":"email","content":"welcome","occurred":"2015-01-05T19:10:00"}' http://localhost:8082/activities/
 
 # Link contact and activity
 curl -X PUT -v -H "Content-Type:text/uri-list" -u USR:PWD -d 'http://localhost:8082/activities/1' http://localhost:8082/contacts/1
 
 # Create contact 
-curl -X POST -H 'Content-Type:application/json' -u USR:PWD -d '{"firstName":"Tim","lastName":"Stephenson","email":"tim@omny.link","customFields":{"budget":"5000","appointmentDate":"2015-04-15","partner":"Fred"},"tenantId":"acme"}' http://localhost:8082/contacts/
+curl -X POST -H 'Content-Type:application/json' -u USR:PWD -d '{"firstName":"Tim","lastName":"Stephenson","email":"tim@acme.com","customFields":{"budget":"5000","appointmentDate":"2015-04-15","partner":"Fred"},"tenantId":"acme"}' http://localhost:8082/acme/contacts/
+# Create contact and account in one
+curl -X POST -H 'Content-Type:application/json' -u USR:PWD -d '{"firstName":"Fred","lastName":"Flintstone","email":"fred@bedrock-slate.com","customFields":{"budget":"5000","appointmentDate":"2015-04-15"},"tenantId":"acme", "account": {"name":"Bedrock slate and gravel","email":"tim@bedrock-slate.com","customFields":{"budget":"5000"},"tenantId":"acme"}}' http://localhost:8082/acme/contacts/
  
+# Create activities
+curl -X POST -v -H "Content-Type:application/json" -u USR:PWD -d '{"type":"register","occurred":"2015-01-05T19:00:00"}' http://localhost:8082/acme/contacts/1/activities
+curl -X POST -v -H "Content-Type:application/json" -u USR:PWD -d '{"type":"login","occurred":"2015-01-05T19:05:00"}' http://localhost:8082/acme/contacts/1/activities
+curl -X POST -v -H "Content-Type:application/json" -u USR:PWD -d '{"type":"email","content":"welcome","occurred":"2015-01-05T19:10:00"}' http://localhost:8082/acme/contacts/1/activities
+
 # Update contact 
 curl -X PUT -H 'Content-Type:application/json' -u USR:PWD -d '{"id" : 3,"owner" : "tstephen","customFields" : { },"tenantId" : "trakeo","lastUpdated" : "2015-11-02T17:02:53.000+0000","firstName" : "Tim","lastName" : "Stephenson","email" : "tim@thestephensons.me.uk","doNotCall" : false,"doNotEmail" : false,"firstContact" : "2015-11-02T17:02:52.000+0000", "notes" : [ ], "activities" : [ ],"emailConfirmationCode" : "901a7d9a-20e6-424c-8152-bc4fd1142b73","documents" : [ ],"emailConfirmed" : false,"_links" : {"self" : {"href" : "http://localhost:8083/contacts/3"},"contact" : {"href" : "http://localhost:8083/contacts/3{?projection}","templated" : true},"account" : {"href" : "http://localhost:8083/contacts/3/account"},"notes" : {"href" : "http://localhost:8083/contacts/3/notes"},"documents" : {"href" : "http://localhost:8083/contacts/3/documents"},"activity" : {"href" : "http://localhost:8083/contacts/3/activity"}}}' http://localhost:8083/contacts/3
 curl -X PUT -H 'Content-Type:application/json' -u USR:PWD -d '{"id" : 3,"owner" : "tstephen","tenantId" : "trakeo","lastUpdated" : "2015-11-02T17:02:53.000+0000","firstName" : "Tim","lastName" : "Stephenson","email" : "tim@thestephensons.me.uk","doNotCall" : false,"doNotEmail" : false,"firstContact" : "2015-11-02T17:02:52.000+0000", "notes" : [ ], "activities" : [ ],"emailConfirmationCode" : "901a7d9a-20e6-424c-8152-bc4fd1142b73","documents" : [ ],"emailConfirmed" : false,"_links" : {"self" : {"href" : "http://localhost:8083/contacts/3"},"contact" : {"href" : "http://localhost:8083/contacts/3{?projection}","templated" : true},"account" : {"href" : "http://localhost:8083/contacts/3/account"},"notes" : {"href" : "http://localhost:8083/contacts/3/notes"},"documents" : {"href" : "http://localhost:8083/contacts/3/documents"},"activity" : {"href" : "http://localhost:8083/contacts/3/activity"}}}' http://localhost:8083/contacts/3
@@ -52,20 +55,20 @@ curl -X POST -H 'Accept:application/json' -H 'Content-Type:application/json' -u 
 curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/omny/memo-distributions/
 
 # Get 1 memo distribution
-curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/memo-distributions/1/
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/acme/memo-distributions/1/
 # Get memo expanding any tags to individual recipient addresses
 curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/omny/memo-distributions/1/expandedTags
 
 # GET sales funnel (contacts driven)
-curl -X GET -H 'Content-Type:application/json' -u tstephen:bJzHd253lmLh -v http://localhost:8082/acme/funnel/contacts
+curl -X GET -H 'Content-Type:application/json' --netrc -v http://localhost:8082/acme/funnel/contacts
 # GET sales funnel (accounts driven)
-curl -X GET -H 'Content-Type:application/json' -u tstephen:bJzHd253lmLh -v http://localhost:8082/aclient/funnel/accounts
+curl -X GET -H 'Content-Type:application/json' --netrc -v http://localhost:8082/acme/funnel/accounts
 
 # GET all tenant's contacts (JSON)
-curl -H 'Accept:application/json' -u USR:PWD -v http://localhost:8082/corshamprimary/contacts/
+curl -H 'Accept:application/json' -u USR:PWD -v http://localhost:8082/acme/contacts/
 
 # GET all tenant's contacts (CSV)
-curl -H 'Accept:text/csv' -u USR:PWD -v http://localhost:8082/corshamprimary/contacts/contacts.csv
+curl -H 'Accept:text/csv' -u USR:PWD -v http://localhost:8082/acme/contacts/contacts.csv
 
 # GET contact(s) matching email
 curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:8082/omny/contacts/searchByEmail?email=tim@knowprocess.com
@@ -77,7 +80,7 @@ curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:80
 curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:8082/omny/contacts/findByUuid?uuid=bee1b1d6-c533-4372-910c-04fadb4d58ae
 
 # GET contacts belonging to an account
-curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:8082/aclient/contacts/findByAccountId?accountId=13
+curl -X GET -H 'Content-Type:application/json' -u USR:PWD -v http://localhost:8082/acme/contacts/findByAccountId?accountId=13
 
 # record user activity
 curl -X POST -H 'Content-Type:application/json' -u USR:PWD -v -d '' http://localhost:8082/msg/omny/omny.userActivity.json
@@ -91,6 +94,9 @@ curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/
 # get gravatar (hash of tstephen)
 curl -X GET -u USR:PWD -v http://localhost:8082/omny/gravatars/7cb160cf07301abd60974781835c933e.png
 
+# Create account
+curl -X POST -H 'Content-Type:application/json' -u USR:PWD -d '{"name":"Bedrock slate and gravel","email":"tim@bedrock-slate.com","customFields":{"budget":"5000"},"tenantId":"acme"}' http://localhost:8082/acme/accounts/
+
 # GET accounts for tenant
 curl -X GET -H 'Content-Type:application/json' -u USR:PWD http://localhost:8082/acme/accounts/
 curl --max-time 10000 -w "@omny-link-server/src/test/resources/curl-format.txt" \
@@ -98,25 +104,25 @@ curl --max-time 10000 -w "@omny-link-server/src/test/resources/curl-format.txt" 
   -o /dev/null -s http://localhost:8082/acme/accounts/
 
 GET notes for contact
-curl  -H 'Accept: application/json' -v -u USR:PWD http://localhost:8082/contacts/19/notes
+curl  -H 'Accept: application/json' -v -u USR:PWD http://localhost:8082/acme/contacts/1/notes
 
 GET notes for account
-curl  -H 'Accept: application/json' -v -u USR:PWD http://localhost:8082/accounts/17/notes
+curl  -H 'Accept: application/json' -v -u USR:PWD http://localhost:8082/acme/accounts/1/notes
 
 # UPLOAD JSON FILE OF CONTACTS
 curl -u USR:PWD -v \
   -F "filecomment=This is a JSON file" \
   -F "file=@/home/tstephen/git/questionnaire/batch1.json" \
-  http://localhost:8082/corshamprimary/contacts/uploadjson
+  http://localhost:8082/acme/contacts/uploadjson
 
-# record enquiry
+# record enquiry for contact
 curl -X POST -H 'Accept:application/json' -u USR:PWD -v \
--d 'json={ "lastName":"Burns", "firstName":"Charles Montgomery Third", "email":"mrburns@springfieldpower.com", "phone1":"44987654321", "type":"Enquiry", "message":"Hello there", "tenantId":"omny" }' \
+-d 'json={ "lastName":"Burns", "firstName":"Charles Montgomery Third", "email":"mrburns@springfieldpower.com", "phone1":"44987654321", "type":"Enquiry", "message":"Hello there", "tenantId":"acme" }' \
 http://localhost:8082/msg/acme/omny.enquiry.json
 
 # De-activate contacts
 curl -X POST -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/contacts/archive
 
 # De-activate accounts
-curl -X POST -H "Accept:application/json" -u USR:PWD http://localhost:8082/aclient/accounts/archive
+curl -X POST -H "Accept:application/json" -u USR:PWD http://localhost:8082/acme/accounts/archive
 

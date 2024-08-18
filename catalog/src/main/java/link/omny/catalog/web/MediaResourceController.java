@@ -45,8 +45,8 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.catalog.model.MediaResource;
 import link.omny.catalog.repositories.MediaResourceRepository;
 import link.omny.catalog.views.MediaResourceViews;
@@ -60,7 +60,7 @@ import link.omny.supportservices.internal.NullAwareBeanUtils;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/media")
-@Api(tags = "Media API")
+@Tag(name = "Media API")
 public class MediaResourceController {
 
     private static final Logger LOGGER = LoggerFactory
@@ -78,7 +78,7 @@ public class MediaResourceController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @JsonView(MediaResourceViews.Detailed.class)
     @Transactional
-    @ApiOperation(value = "Retrieve the specified media resource.")
+    @Operation(summary = "Retrieve the specified media resource.")
     public @ResponseBody EntityModel<MediaResource> readMediaResource(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long mediaResourceId) {
@@ -99,7 +99,7 @@ public class MediaResourceController {
      */
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    @ApiOperation(value = "Create a new media resource.")
+    @Operation(summary = "Create a new media resource.")
     public @ResponseBody ResponseEntity<?> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody MediaResource mediaResource) {
@@ -126,7 +126,7 @@ public class MediaResourceController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
     @Transactional
-    @ApiOperation(value = "Update the specified media resource.")
+    @Operation(summary = "Update the specified media resource.")
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long mediaResourceId,
             @RequestBody MediaResource updatedMediaResource) {
@@ -142,7 +142,7 @@ public class MediaResourceController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{mediaResourceId}", method = RequestMethod.DELETE)
     @Transactional
-    @ApiOperation(value = "Delete a new media resource.")
+    @Operation(summary = "Delete a new media resource.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("mediaResourceId") Long mediaResourceId) {
         mediaResourceRepo.deleteById(mediaResourceId);

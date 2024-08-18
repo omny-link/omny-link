@@ -32,12 +32,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.model.Note;
 import link.omny.supportservices.repositories.NoteRepository;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * REST web service for uploading and accessing a file of JSON Notes (over and
@@ -47,7 +46,7 @@ import springfox.documentation.annotations.ApiIgnore;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}/notes")
-@Api(tags = "Note API")
+@Tag(name = "Note API")
 public class NoteController {
 
     private static final Logger LOGGER = LoggerFactory
@@ -78,7 +77,7 @@ public class NoteController {
      *             If cannot parse the JSON.
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    @ApiIgnore
+    @Operation(hidden = true)
     public @ResponseBody Iterable<Note> handleFileUpload(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
@@ -101,7 +100,7 @@ public class NoteController {
      * Favorite an existing note.
      */
     @RequestMapping(value = "/{noteId}/favorite", method = RequestMethod.POST)
-    @ApiOperation(value = "Favorite/Unfavorite the specified note.")
+    @Operation(summary = "Favorite/Unfavorite the specified note.")
     public @ResponseBody void favoriteNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("noteId") Long noteId,
@@ -115,7 +114,7 @@ public class NoteController {
      * Mark an existing note as confidential.
      */
     @RequestMapping(value = "/{noteId}/confidential", method = RequestMethod.POST)
-    @ApiOperation(value = "Mark/unmark the specified note as confidential.")
+    @Operation(summary = "Mark/unmark the specified note as confidential.")
     public @ResponseBody void markNoteConfidential(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("noteId") Long noteId,

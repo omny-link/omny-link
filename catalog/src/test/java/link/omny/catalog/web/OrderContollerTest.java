@@ -18,22 +18,22 @@ package link.omny.catalog.web;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import link.omny.catalog.CatalogTestApplication;
 import link.omny.catalog.model.CustomFeedbackField;
@@ -50,8 +50,6 @@ import link.omny.catalog.model.OrderItem;
 @SpringBootTest(classes = CatalogTestApplication.class)
 @WebAppConfiguration
 public class OrderContollerTest {
-    private static final long STOCK_ITEM_ID = 1l;
-
     private static final String CUST_FIELD_COLOUR = "colour";
 
     private static final CustomOrderField CUSTOM_FIELD_2 = new CustomOrderField("field2", "bar");
@@ -77,6 +75,9 @@ public class OrderContollerTest {
 
     @Autowired
     private OrderController svc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     public void testParseSingleOrderId() {
@@ -133,6 +134,7 @@ public class OrderContollerTest {
         // check equivalence of readOrder and readOrders API
         List<EntityModel<Order>> orders = svc.readOrders(TENANT_ID, order.getId().toString());
         Order order4 = orders.get(0).getContent();
+        assertNotNull(order4);
         assertEquals(order.getId(), order4.getId());
         assertEquals(order.getName(), order4.getName());
         assertEquals(order.getType(), order4.getType());
@@ -203,6 +205,11 @@ public class OrderContollerTest {
         assertEquals("deleted", order4.getStage());
     }
 
+    @Test
+    public void testCreateOrderWithItemsIncCustomFieldsInOne() {
+
+    }
+
     private Order createOrder() {
         Order order = getSimpleOrder();
         svc.create(TENANT_ID, order);
@@ -249,7 +256,13 @@ public class OrderContollerTest {
     }
 
     private Order retrieveOrder(Long orderId) {
-        return svc.findEntityById(TENANT_ID, orderId).getContent();
+        String body = svc.findEntityById(TENANT_ID, orderId).getBody();
+        try {
+            return objectMapper.readValue(body, Order.class);
+        } catch (JsonProcessingException e) {
+            fail("unable to deserialise order", e);
+        }
+        return null;
     }
 
     private Feedback retrieveFeedback(Long orderId) {

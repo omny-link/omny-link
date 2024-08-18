@@ -31,6 +31,7 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
 
 public class AccountTest {
@@ -161,6 +162,7 @@ public class AccountTest {
         acct.addNote(new Note(2l, "tim@knowprocess.com",
                 "\"quotation 1\"\n\"quotation 2\"",
                 true, false));
+        acct.addDocument(new Document("tim@knowprocess.com", "http://acme.com/document1/"));
         assertEquals(3, acct.getNotes().size());
         System.out.println(acct.toCsv());
         String csv = acct.toCsv();
@@ -170,5 +172,6 @@ public class AccountTest {
                 + "that spans multiple lines;"));
         assertTrue(csv.contains(
                 "tim@knowprocess.com: \"quotation 1\";\"quotation 2\""));
+        assertTrue(csv.contains("http://acme.com/document1"));
     }
 }

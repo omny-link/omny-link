@@ -36,10 +36,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,8 +63,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Contact;
@@ -76,7 +78,6 @@ import link.omny.supportservices.model.Activity;
 import link.omny.supportservices.model.ActivityType;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * REST web service for uploading and accessing a file of JSON Accounts (over
@@ -86,7 +87,7 @@ import springfox.documentation.annotations.ApiIgnore;
  */
 @Controller
 @RequestMapping(value = "/{tenantId}")
-@Api(tags = "Account API")
+@Tag(name = "Account API")
 public class AccountController {
 
     public static final Logger LOGGER = LoggerFactory
@@ -109,7 +110,7 @@ public class AccountController {
      * @return the created activity.
      */
     @PostMapping(value = "/accounts/{accountId}/activities")
-    @ApiOperation(value = "Add an activity to the specified account.")
+    @Operation(summary = "Add an activity to the specified account.")
     public @ResponseBody ResponseEntity<Activity> addActivity(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Activity activity) {
@@ -143,7 +144,7 @@ public class AccountController {
      *             If cannot parse the JSON.
      */
     @PostMapping(value = "/accounts/upload")
-    @ApiIgnore
+    @Operation(hidden = true)
     public @ResponseBody Iterable<Account> handleFileUpload(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "file", required = true) MultipartFile file)
@@ -167,7 +168,7 @@ public class AccountController {
 
     @PostMapping(value = "/accounts/archive")
     @Transactional
-    @ApiIgnore
+    @Operation(hidden = true)
     public @ResponseBody Integer archiveAccounts(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "before", required = false) String before) {
@@ -185,7 +186,7 @@ public class AccountController {
      */
     @GetMapping(value = "/accounts/")
     @JsonView(value = AccountViews.Summary.class)
-    @ApiOperation(value = "Retrieves the accounts for a specific tenant.")
+    @Operation(summary = "Retrieves the accounts for a specific tenant.")
     public @ResponseBody List<EntityModel<Account>> listForTenantAsJson(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -199,7 +200,7 @@ public class AccountController {
      * @return accounts for that tenant.
      */
     @GetMapping(value = "/accounts/", produces = "text/csv")
-    @ApiOperation(value = "Retrieves the accounts for a specific tenant.")
+    @Operation(summary = "Retrieves the accounts for a specific tenant.")
     public @ResponseBody ResponseEntity<String> listForTenantAsCsv(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
@@ -238,7 +239,7 @@ public class AccountController {
      */
     @GetMapping(value = "/account-pairs/")
     @JsonView(value = AccountViews.Pair.class)
-    @ApiOperation(value = "Retrieve account id-name pairs for a specific tenant.")
+    @Operation(summary = "Retrieve account id-name pairs for a specific tenant.")
     public @ResponseBody List<Account> listPairForTenant(
             @PathVariable("tenantId") String tenantId) {
         LOGGER.info("List account id-name pairs for tenant {}", tenantId);
@@ -253,11 +254,11 @@ public class AccountController {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping(value = "/accounts/")
-    @ApiOperation(value = "Create a new account.")
+    @Operation(summary = "Create a new account.")
     public @ResponseBody ResponseEntity<?> create(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Account account) {
-        account.setTenantId(tenantId);
+        account = account.setTenantId(tenantId);
         for (CustomAccountField field : account.getCustomFields()) {
             field.setAccount(account);
         }
@@ -275,7 +276,7 @@ public class AccountController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    protected Account findById(final String tenantId, final Long id) {
+    protected Account findById(final String tenantId, @NonNull final Long id) {
         return accountRepo.findById(id)
                 .orElseThrow(() -> new BusinessEntityNotFoundException(
                         Account.class, id));
@@ -290,8 +291,8 @@ public class AccountController {
     @GetMapping(value = "/accounts/{id}")
     @JsonView(AccountViews.Detailed.class)
     @Transactional
-    @ApiOperation("Return the specified account.")
-    public @ResponseBody EntityModel<Account> findEntityById(
+    @Operation(summary = "Return the specified account.")
+    public @ResponseBody HttpEntity<String> findEntityById(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String idOrCode)
             throws BusinessEntityNotFoundException {
@@ -304,7 +305,21 @@ public class AccountController {
             account = accountRepo.findByCodeForTenant(idOrCode, tenantId);
         }
 
-        return addLinks(tenantId, account);
+        EntityModel<Account> entity = addLinks(tenantId, account);
+        // Work around issue with Jackson serialisation:
+        // If return EntityModel<Account> result is:
+        // Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JS
+        // ON: Cannot override _serializer: had a `link.omny.supportservices.json.JsonCustomFieldSerializer`
+        // , trying to set to `org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$Nest
+        // edEntitySerializer`]
+        try {
+            String json = objectMapper.writeValueAsString(entity);
+            LOGGER.info("... found: {}", json);
+            return new HttpEntity<String>(json);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Unable to serialise account with id {}, cause: {}", idOrCode, e);
+            throw new BusinessEntityNotFoundException(Account.class, idOrCode);
+        }
     }
 
     /**
@@ -315,7 +330,7 @@ public class AccountController {
      */
     @GetMapping(value = "/accounts/findByName/{name}")
     @JsonView(AccountViews.Detailed.class)
-    @ApiOperation("Return the specified account.")
+    @Operation(summary = "Return the specified account.")
     public @ResponseBody EntityModel<Account> findByName(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("name") String name)
@@ -339,7 +354,7 @@ public class AccountController {
      */
     @GetMapping(value = "/accounts/findByCustomField/{name}/{value}")
     @JsonView(AccountViews.Summary.class)
-    @ApiIgnore
+    @Operation(hidden = true)
     public @ResponseBody List<EntityModel<Account>> findByCustomField(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("name") String name,
@@ -358,7 +373,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PutMapping(value = "/accounts/{id}", consumes = "application/json")
-    @ApiOperation(value = "Update an existing account.")
+    @Operation(summary = "Update an existing account.")
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
             @RequestBody Account updatedAccount) {
@@ -375,7 +390,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{id}/customFields/", consumes = "application/json")
-    @ApiIgnore
+    @Operation(hidden = true)
     public @ResponseBody void updateCustomFields(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
             @RequestBody Object customFields) {
@@ -427,7 +442,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{accountId}/alerts/")
-    @ApiIgnore
+    @Operation(hidden = true)
     public @ResponseBody void setAlerts(@PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestBody String alerts) {
@@ -442,7 +457,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{accountId}/stage/{stage}")
-    @ApiOperation("Sets the stage for the specified account.")
+    @Operation(summary = "Sets the stage for the specified account.")
     public @ResponseBody void setStage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
@@ -468,7 +483,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{accountId}/tags/")
-    @ApiIgnore
+    @Operation(hidden = true)
     public @ResponseBody void setTags(@PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestBody String tags) {
@@ -482,7 +497,7 @@ public class AccountController {
      * Add a document to the specified account.
      */
     @PostMapping(value = "/accounts/{accountId}/documents", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Add a document to the specified account.")
+    @Operation(summary = "Add a document to the specified account.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Document doc) {
@@ -528,7 +543,7 @@ public class AccountController {
      * @return the created note.
      */
     @PostMapping(value = "/accounts/{accountId}/notes", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Add a note to the specified account.")
+    @Operation(summary = "Add a note to the specified account.")
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId, @RequestBody Note note) {
@@ -574,7 +589,7 @@ public class AccountController {
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/accounts/{id}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Delete the specified account.")
+    @Operation(summary = "Delete the specified account.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId) {
 

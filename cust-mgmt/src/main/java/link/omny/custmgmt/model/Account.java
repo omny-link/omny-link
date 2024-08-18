@@ -16,6 +16,8 @@
 package link.omny.custmgmt.model;
 
 import java.io.Serializable;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -33,6 +35,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.SecondaryTable;
 import jakarta.persistence.SequenceGenerator;
@@ -58,6 +62,7 @@ import link.omny.custmgmt.json.JsonCustomAccountFieldDeserializer;
 import link.omny.custmgmt.model.views.AccountViews;
 import link.omny.custmgmt.model.views.ContactViews;
 import link.omny.supportservices.internal.CsvUtils;
+import link.omny.supportservices.internal.NullAwareBeanUtils;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
 import link.omny.supportservices.model.Activity;
 import link.omny.supportservices.model.Auditable;
@@ -293,7 +298,7 @@ public class Account extends Auditable<String> implements Serializable {
     private String owner;
 
     /**
-     * Comma-separated set of alerts for the contact.
+     * Comma-separated set of alerts for the account.
      */
     @JsonProperty
     @JsonView( { AccountViews.Summary.class } )
@@ -301,7 +306,7 @@ public class Account extends Auditable<String> implements Serializable {
     private String alerts;
 
     /**
-     * Comma-separated set of arbitrary tags for the contact.
+     * Comma-separated set of arbitrary tags for the account.
      */
     @JsonProperty
     @JsonView( { AccountViews.Summary.class } )
@@ -347,7 +352,7 @@ public class Account extends Auditable<String> implements Serializable {
     @JsonView({ AccountViews.Detailed.class })
     private List<String> customHeadings;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "account_id")
     @JsonView({ AccountViews.Detailed.class })
     private Set<Document> documents;
@@ -363,7 +368,6 @@ public class Account extends Auditable<String> implements Serializable {
         for (CustomAccountField newField : fields) {
             setCustomField(newField);
         }
-        setLastUpdated(new Date());
     }
 
     public String getCustomFieldValue(@NotNull String fieldName) {
@@ -375,9 +379,10 @@ public class Account extends Auditable<String> implements Serializable {
         return null;
     }
 
-    public void addCustomField(CustomAccountField customField) {
+    public Account addCustomField(CustomAccountField customField) {
         customField.setAccount(this);
         setCustomField(customField);
+        return this;
     }
 
     protected void setCustomField(CustomAccountField newField) {
@@ -467,12 +472,51 @@ public class Account extends Auditable<String> implements Serializable {
         return documents;
     }
 
-    public void addNote(Note note) {
+    public Account addNote(Note note) {
         getNotes().add(note);
+        return this;
     }
 
-    public void addDocument(Document doc) {
+    public Account addDocument(Document doc) {
         getDocuments().add(doc);
+        return this;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        initEmailHash();
+        NullAwareBeanUtils.trimStringProperties(this);
+    }
+
+    private void initEmailHash() {
+        // Can happen in the event of anon contacts
+        if (email == null) {
+            return;
+        }
+        try {
+            byte[] bytes = MessageDigest.getInstance("MD5")
+                    .digest(email.getBytes());
+
+            // convert the byte to hex format method 1
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < bytes.length; i++) {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16)
+                        .substring(1));
+            }
+            emailHash = sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            // JDK required to support MD5
+            // http://docs.oracle.com/javase/8/docs/api/java/security/MessageDigest.html
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        initEmailHash();
+        NullAwareBeanUtils.trimStringProperties(this);
+        // Do this here as nott all database will provide default like postgres.
+        setLastUpdated(new Date());
     }
 
     public String toCsv() {

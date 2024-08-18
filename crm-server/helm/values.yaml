@@ -6,9 +6,9 @@ replicaCount: 1
 
 image:
   repository: docker.io/knowprocess/omny-link
-  pullPolicy: IfNotPresent #Always
+  pullPolicy: Always #IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "3.1.7"
+  tag: "3.1.9-SNAPSHOT"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -64,17 +64,13 @@ ingress:
       hosts:
         - crm.knowprocess.com
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources:
+  # These values suit _my_ needs, adjust to suit yours
+  limits:
+    memory: 1512Mi
+  requests:
+    cpu: 200m
+    memory: 1512Mi
 
 autoscaling:
   enabled: false
@@ -94,7 +90,8 @@ database:
   password: password
   datasourceDriverClassName: org.postgresql.Driver
   #datasourceUrl: jdbc:postgresql://127.0.0.1:5432/crm
-  datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm4
+  # datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm4
+  datasourceUrl: jdbc:postgresql://10.245.211.55:5432/crm4
   #datasourceUrl: jdbc:postgresql://kp-postgres-postgresql:5432/crm?currentSchema=crm
 
 jpa:
@@ -111,7 +108,7 @@ crm:
     baseUri: "https://crm.knowprocess.com"
     tagLine: "The automated CRM"
   bpm:
-    processGateway: "https://flowable.knowprocess.com"
+    processGateway: "https://flowable.knowprocess.com/flowable-rest/service"
   cors:
     origins: "http://localhost:8000,https://beta.knowprocess.com,https://cloud.knowprocess.com"
     allowedHeaders: "Authorization,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Location,Pragma,X-Requested-With"
@@ -128,3 +125,11 @@ keycloak:
   resource: crm
   publicClient: true
   principalAttribute: preferred_username
+
+springdoc:
+  apiDocs:
+    enabled: true
+  swaggerUi:
+    enabled: true
+  showActuator:
+    enabled: true

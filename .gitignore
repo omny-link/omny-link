@@ -3,6 +3,7 @@
 .rewrite-cache/
 .settings/
 .sts4-cache/
+.vim/
 .vscode/
 **/*.bak
 *.class

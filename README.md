@@ -56,6 +56,28 @@ Getting started
   pass: secret
   ```
 
+7. Publish to Docker Hub
+
+   ```
+   mvn clean install -Ddocker.publishRegistry.password=<pwd> -Ddocker.publishRegistry.username=<usr>
+   ```
+
+8. Deploy to K8s using `helm`
+
+  * Install
+
+    ```
+    helm install --dry-run --set database.password=$CRM_DB_PWD --debug --namespace crm --create-namespace crm ./helm
+    helm install --set database.password=$CRM_DB_PWD --namespace crm --create-namespace crm ./helm
+    ```
+
+  * Zero downtime upgrade
+
+    This deploys a new release, start a new pod and, once started successfully, remove the old one => zero downtime
+    ```
+    helm upgrade -f ./helm/values.yaml --set database.password=$CRM_DB_PWD  crm ./helm
+    ```
+
 Security
 --------
 
