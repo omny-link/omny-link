@@ -75,7 +75,7 @@ Getting started
 
     This deploys a new release, start a new pod and, once started successfully, remove the old one => zero downtime
     ```
-    helm upgrade -f <source dir>/crm/crm-server/helm/values.yaml --set database.password=`echo $CRM_DB_PWD`  crm <source dir>/crm/crm-server/helm/
+    helm upgrade -f ./helm/values.yaml --set database.password=$CRM_DB_PWD  crm ./helm
     ```
 
 Security
