@@ -2,7 +2,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name}}-configmap
-  namespace: default
 data:
   SERVER_PORT: {{ .Values.service.port | quote }}
   SERVER_SERVLET_CONTEXT_PATH: {{ .Values.rest.contextPath | quote }}
@@ -19,8 +18,8 @@ data:
   SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: {{ .Values.jpa.properties.hibernate.dialect | quote }}
   SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: {{ .Values.jpa.properties.hibernate.formatSql | quote }}
   SPRINGDOC_PACKAGES-TO-SCAN: "link.omny.custmgmt.web,link.omny.catalog.web,link.omny.supportservices.web,link.omny.server.web"
-  SPRINGDOC_API-DOCS_ENABLED: {{ .Values.springdoc.api-docs.enabled | quote }}
-  SPRINGDOC_SWAGGER-UI_ENABLED: {{ .Values.springdoc.swagger-ui.enabled | quote }}
+  SPRINGDOC_API-DOCS_ENABLED: {{ .Values.springdoc.apiDocs.enabled | quote }}
+  SPRINGDOC_SWAGGER-UI_ENABLED: {{ .Values.springdoc.swaggerUi.enabled | quote }}
   SPRINGDOC_SHOW-ACTUATOR: {{ .Values.springdoc.showActuator.enabled | quote }}
   CRM_APPLICATION_BASE-URI: {{ .Values.crm.application.baseUri | quote }}
   CRM_APPLICATION_TAG-LINE: {{ .Values.crm.application.tagLine | quote }}
