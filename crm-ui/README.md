@@ -14,3 +14,7 @@ Getting started
    cp config.example.js config.js 
    ```
    and edit the paths and user as necessary
+
+4. Deploy
+   ```
+   gulp deploy --env=stage
