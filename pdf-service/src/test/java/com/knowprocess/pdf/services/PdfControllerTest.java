@@ -18,7 +18,9 @@ package com.knowprocess.pdf.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.io.UnsupportedEncodingException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -53,11 +55,13 @@ public class PdfControllerTest {
     }
     
     @Test
-    public void testHtml2Pdf() throws UnsupportedEncodingException {
-        ResponseEntity<byte[]> entity = svc.transformToPdf("test.pdf", htmlIn);
+    public void testHtml2Pdf() throws IOException {
+        String fileName = "test.pdf";
+        ResponseEntity<byte[]> entity = svc.transformToPdf(fileName, htmlIn);
         assertEquals(HttpStatus.OK, entity.getStatusCode());
         byte[] pdf = entity.getBody();
         assertNotNull(pdf);
+        Files.write(new File(fileName).toPath(), pdf);
     }
 
 }
