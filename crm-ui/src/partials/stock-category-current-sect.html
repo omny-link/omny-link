@@ -25,7 +25,7 @@
     {{#current.id}}
       <h2 class="edit-form">
         <span contenteditable id="curName2" on-focus="editField('#curName2','current.name')" on-blur="updateField('#curName2','current.name')">{{current.name}}</span>
-        <span class="pull-right">
+        <span class="float-end">
           {{#tenant.features.notesOnStockCategories}}
             <a class="glyphicon glyphicon-btn glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>
           {{/}}

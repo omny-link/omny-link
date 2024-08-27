@@ -22,7 +22,7 @@
 <section class="resultsSect" id="definitionSect">
   <h2 class="navbar-top">
     {{>navbar}}
-    <a class="clickable glyphicon icon-btn kp-icon-cloud-upload pull-right hidden-xs" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
+    <a class="clickable glyphicon icon-btn kp-icon-cloud-upload float-end hidden-xs" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
   </h2>
   <div id="upload" style="display:none">
     <form action="/{{tenant.id}}/deployments" class="well form" enctype="multipart/form-data" id="uploadForm" method="post">

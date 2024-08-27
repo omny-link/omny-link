@@ -22,7 +22,7 @@
 <section class="resultsSect" id="stockItemsSect">
   <h2 class="navbar-top">
     {{>navbar}}
-    <span class="pull-right">
+    <span class="float-end">
       {{#if tenant.stockItemActions!=undefined && tenant.stockItemActions.length>0 }}
         <span class="clickable dropdown" aria-hidden="true" title="Start Process">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
@@ -105,7 +105,7 @@
         <input class="form-control" name="resourceName" id="resourceName" placeholder="none selected" readonly disabled value="{{resourceName}}">
         <button class="btn btn-primary" on-click="addResource()" type="button">Select Files</button>
       </div>
-      <div class="pull-right">
+      <div class="float-end">
         <button class="btn" on-click="hideUpload()" type="button">Cancel</button>
         <button class="btn" on-click="upload('uploadForm')" type="button">Upload</button>
       </div>

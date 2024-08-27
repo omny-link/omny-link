@@ -17,7 +17,7 @@
   <form class="inline-form form" id="currentForm">
     <h2 class="">
       <span contenteditable id="curName2" on-focus="editField('#curName2','current.name')" on-blur="updateField('#curName2','current.name')" value="{{current.name}}"></span>
-      <span class="pull-right">
+      <span class="float-end">
         <a class="glyphicon glyphicon-btn glyphicon-new-window" aria-hidden="true" href="orders.html?q=stockItemId:{{current.id}}" target="orders" title="View related {{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}orders{{/}}"></a>
         <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
         {{#if tenant.stockItemActions!=undefined && tenant.stockItemActions.length>0 }}

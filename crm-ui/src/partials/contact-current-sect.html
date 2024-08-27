@@ -42,7 +42,7 @@
             <a class="clickable glyphicon glyphicon-btn glyphicon-envelope" href="mailto:{{current.email}}" title="Click to email"></a>
             <span class="hidden-sm hidden-xs">{{current.email}}</span>
           {{/if}}
-          <span class="pull-right">
+          <span class="float-end">
             {{#matchRole('admin')}}
               <a class="clickable glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="@this.delete(current)" style="top: -1px;" title="Delete this record"></a>
             {{/}}

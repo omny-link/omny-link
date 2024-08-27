@@ -71,12 +71,12 @@
       </ul>
     </div>
 
-    <div class="pull-right">
+    <div class="float-end">
       <button class="btn btn-success" on-click="submitCompleteTask()" type="button">Mark Complete</button>
       <button class="btn btn-danger" on-click="endInstance(current.processInstanceId)" type="button">Delete</button>
     </div>
   {{else}}
-    <div class="pull-right">
+    <div class="float-end">
       <button class="btn btn-success" on-click="endTask(current.id)" type="button">Mark Complete</button>
       <button class="btn btn-danger" on-click="endTask(current.id)" type="button">Delete</button>
     </div>

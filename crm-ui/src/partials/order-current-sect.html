@@ -23,7 +23,7 @@
         <span>{{current.ref}} - </span>
       {{/}}
       <span>{{#if current.contact}}{{current.contact.fullName}}{{/if}}</span>
-      <span class="pull-right">
+      <span class="float-end">
         <a class="clickable admin glyphicon glyphicon-btn glyphicon-remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
         {{#if tenant.features.notesOnOrder ||  tenant.features.documentsOnOrder}}
           <a class="clickable glyphicon glyphicon-btn glyphicon-paperclip" href="#notes" title="Jump to Notes"></a>

@@ -18,7 +18,7 @@
     <span contenteditable="{{hasRole('admin')}}" twoway="false"
           on-blur="updateBpmnObject(current.key, 'name', event.node.innerText)"
           value="{{#current.name}}{{current.name}}{{else}}Untitled{{/}}"></span>
-    <span class="pull-right">
+    <span class="float-end">
       {{#if hasRole('admin')}}
         <a class="glyphicon icon-btn kp-icon-bug details-control" on-click="toggleDebug()" title="Toggle developer debug features"></a>
       {{/if}}
@@ -166,12 +166,12 @@
           <span>Diagram: </span>
           <span contenteditable="{{hasRole('admin')}}" value="{{current.diagrams[i].name}}"
                 on-blur="updateBpmnObject(current.diagrams[i].id, 'name', event.node.innerText)"></span>
-          <a class="glyphicon icon-btn kp-icon-image pull-right" href="{{tenantUri(current)}}/{{current.diagrams[i].id}}.png" target="_blank" title="Image of process diagram '{{current.diagrams[i].name}}'"></a>
+          <a class="glyphicon icon-btn kp-icon-image float-end" href="{{tenantUri(current)}}/{{current.diagrams[i].id}}.png" target="_blank" title="Image of process diagram '{{current.diagrams[i].name}}'"></a>
         </h3>
         <div class="bpmnDiagram" style="display:none">{{{current.diagrams[i].image}}}</div>
         {{#if selectedBpmnObject}}
           <div class="bpmnProperties" style="display: {{# $('svg:visible').length > 0 && $('.selected').length < 1}}inline{{else}}none{{/}}">
-            <a class="pull-right clickable glyphicon kp-icon-remove" aria-hidden="true" on-click="hideBpmnProperties()" title="Hide BPMN properties"></a>
+            <a class="float-end clickable glyphicon kp-icon-remove" aria-hidden="true" on-click="hideBpmnProperties()" title="Hide BPMN properties"></a>
             <div class="btn-toolbar bpmnToolbar" role="toolbar" aria-label="...">
               <div class="btn-group" role="group" aria-label="...">
                 <div class="btn-group" role="group" id="callActivityBtn" title="BPMN Containers">
