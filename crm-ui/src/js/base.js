@@ -302,7 +302,7 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     if (username) {
       ractive.set('saveObserver', false);
       ractive.set('profile',profile);
-      $('.profile-img').empty().append('<img class="img-rounded" src="//www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34" title="'+ractive.get('profile.email')+'"/>');
+      $('.profile-img').empty().append('<img class="rounded" src="//www.gravatar.com/avatar/'+ractive.hash(ractive.get('profile.email'))+'?s=34" title="'+ractive.get('profile.email')+'"/>');
       if (ractive.hasRole('super-admin')) $('.super-admin').show();
       ractive.set('saveObserver', true);
       return profile;
@@ -342,7 +342,7 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
   },
   gravatar: function(email) {
     if (email == undefined) return '';
-    else return '<img class="img-rounded" src="//www.gravatar.com/avatar/'+
+    else return '<img class="rounded" src="//www.gravatar.com/avatar/'+
         ractive.hash(email)+'?s=36&d='+
         encodeURIComponent(ractive.getBpmServer()+'/'+ractive.get('tenant.id')+'/gravatars/')+
         ractive.hash(email)+'.png"/>';
@@ -551,7 +551,7 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
   },
   initiatorIcon: function(initiator) {
     if (initiator==undefined || initiator=='anonymousUser') {
-      $('.initiator-img').empty().append('<img class="img-rounded" src="' +
+      $('.initiator-img').empty().append('<img class="rounded" src="' +
           (ractive.get('tenant.strings.botIcon') ? ractive.get('tenant.strings.botIcon') : ractive.getServer()+'/images/icon/omny-link-icon.svg')+
           '" width="34"/>');
     } else {

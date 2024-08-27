@@ -215,7 +215,7 @@ var ractive = new BaseRactive({
             return html;
           var tagArr = tags.split(',');
           $.each(tagArr, function(i, d) {
-            html += '<span class="img-rounded" style="background-color:'+d+'">&nbsp;&nbsp;</span>';
+            html += '<span class="rounded" style="background-color:'+d+'">&nbsp;&nbsp;</span>';
           });
           return html;
         },
