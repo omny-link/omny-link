@@ -23,6 +23,7 @@ data:
   SPRINGDOC_SHOW-ACTUATOR: {{ .Values.springdoc.showActuator.enabled | quote }}
   CRM_APPLICATION_BASE-URI: {{ .Values.crm.application.baseUri | quote }}
   CRM_APPLICATION_TAG-LINE: {{ .Values.crm.application.tagLine | quote }}
+  CRM_DEPS_BOOTSTRAP_VERSION:  {{ .Values.crm.deps.bootstrapVersion | quote }}
   {{- if and .Values.crm.cors.origins }}
   CRM_CORS_ORIGINS: {{ .Values.crm.cors.origins | quote }}
   {{- end }}
