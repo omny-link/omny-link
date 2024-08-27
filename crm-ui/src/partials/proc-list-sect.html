@@ -22,7 +22,7 @@
 <section class="resultsSect" id="definitionSect">
   <h2 class="navbar-top">
     {{>navbar}}
-    <a class="clickable glyphicon icon-btn kp-icon-cloud-upload float-end hidden-xs" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
+    <a class="clickable glyphicon btn btn-outline-dark kp-icon-cloud-upload float-end hidden-xs" aria-hidden="true" on-click="add()" title="Upload new BPMN"></a>
   </h2>
   <div id="upload" style="display:none">
     <form action="/{{tenant.id}}/deployments" class="well form" enctype="multipart/form-data" id="uploadForm" method="post">
@@ -54,13 +54,13 @@
     <thead>
       <tr>
         <th></th>
-        <th class="col-md-2 col-sm-3 col-xs-2" on-click="sort:Key">Key<span class="sortable {{ sorted('key') }} glyphicon icon-btn "></th>
-        <th class="col-md-3 col-sm-5 col-xs-2" on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon icon-btn "></th>
-        <!--th class="col-md-2 col-sm-2 col-xs-3" on-click="sort:description">Description<span class="sortable {{ sorted('description') }} glyphicon icon-btn "></th-->
-        <th class="col-md-2 hidden-sm hidden-xs" on-click="sort:category">Category<span class="sortable {{ sorted('category') }} glyphicon icon-btn "></th>
-        <th class="col-md-1 hidden-sm hidden-xs" on-click="sort:instanceCount"># Instances<span class="sortable {{ sorted('instanceCount') }} glyphicon icon-btn "></th>
-        <th class="col-md-1 hidden-sm hidden-xs" on-click="sort:deploymentId">Deployment Bundle<span class="sortable {{ sorted('deploymentId') }} glyphicon icon-btn "></th>
-        <th on-click="sort:version">Version<span class="sortable {{ sorted('version') }} glyphicon icon-btn "></th>
+        <th class="col-md-2 col-sm-3 col-xs-2" on-click="sort:Key">Key<span class="sortable {{ sorted('key') }} glyphicon btn btn-outline-dark "></th>
+        <th class="col-md-3 col-sm-5 col-xs-2" on-click="sort:name">Name<span class="sortable {{ sorted('name') }} glyphicon btn btn-outline-dark "></th>
+        <!--th class="col-md-2 col-sm-2 col-xs-3" on-click="sort:description">Description<span class="sortable {{ sorted('description') }} glyphicon btn btn-outline-dark "></th-->
+        <th class="col-md-2 hidden-sm hidden-xs" on-click="sort:category">Category<span class="sortable {{ sorted('category') }} glyphicon btn btn-outline-dark "></th>
+        <th class="col-md-1 hidden-sm hidden-xs" on-click="sort:instanceCount"># Instances<span class="sortable {{ sorted('instanceCount') }} glyphicon btn btn-outline-dark "></th>
+        <th class="col-md-1 hidden-sm hidden-xs" on-click="sort:deploymentId">Deployment Bundle<span class="sortable {{ sorted('deploymentId') }} glyphicon btn btn-outline-dark "></th>
+        <th on-click="sort:version">Version<span class="sortable {{ sorted('version') }} glyphicon btn btn-outline-dark "></th>
         <th class="col-md-3 col-sm-3 col-xs-3 col-actions">Actions</th>
       </tr>
     </thead>
@@ -82,19 +82,19 @@
           <td class="col-md-3 col-sm-3 col-xs-3 col-actions">
             {{#deploymentId}}
               {{#suspended}}
-                <a class="glyphicon icon-btn kp-icon-pause" aria-hidden="true" onclick="ractive.activate('{{id}}')" title="Activate"></a>
+                <a class="glyphicon btn btn-outline-dark kp-icon-pause" aria-hidden="true" onclick="ractive.activate('{{id}}')" title="Activate"></a>
               {{else}}
-                <a class="glyphicon icon-btn kp-icon-play" aria-hidden="true" onclick="ractive.startInstance('{{id}}', '{{name}}', '{{username}}')" title="Start instance"></a>
-                <a class="glyphicon icon-btn kp-icon-pause" aria-hidden="true" onclick="ractive.suspend('{{id}}')" title="Suspend"></a>
+                <a class="glyphicon btn btn-outline-dark kp-icon-play" aria-hidden="true" onclick="ractive.startInstance('{{id}}', '{{name}}', '{{username}}')" title="Start instance"></a>
+                <a class="glyphicon btn btn-outline-dark kp-icon-pause" aria-hidden="true" onclick="ractive.suspend('{{id}}')" title="Suspend"></a>
               {{/}}
             {{/}}
             <a href="/{{tenant.id}}/process-definitions/{{id}}.bpmn" target="_newtab">
-              <a class="glyphicon icon-btn kp-icon-cloud-download" aria-hidden="true"></a></a>
+              <a class="glyphicon btn btn-outline-dark kp-icon-cloud-download" aria-hidden="true"></a></a>
             {{#deploymentId}}
-              <a class="clickable glyphicon icon-btn kp-icon-remove" aria-hidden="true" on-click="delete(this.deploymentId)" title="Delete this definition"></a>
+              <a class="clickable glyphicon btn btn-outline-dark kp-icon-remove" aria-hidden="true" on-click="delete(this.deploymentId)" title="Delete this definition"></a>
             {{/}}
             {{^deploymentId}}
-              <a class="clickable glyphicon icon-btn kp-icon-remove" aria-hidden="true" on-click="delete(this.id)" title="Delete this definition"></a>
+              <a class="clickable glyphicon btn btn-outline-dark kp-icon-remove" aria-hidden="true" on-click="delete(this.id)" title="Delete this definition"></a>
             {{/}}
           </td>
         </tr>

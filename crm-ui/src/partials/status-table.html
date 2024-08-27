@@ -47,9 +47,9 @@
             {{/if}}
           {{/}}
           {{#if property == 'templates' && status == 'false'}}
-            <span class="glyphicon glyphicon-btn glyphicon-repeat" on-click="deployTemplate(this)" title="Create a stub of the template"></span>
+            <span class="glyphicon btn btn-outline-dark glyphicon-repeat" on-click="deployTemplate(this)" title="Create a stub of the template"></span>
           {{elseif (property == 'processes') && status != 'remote'}}
-            <span class="glyphicon glyphicon-btn glyphicon-repeat" on-click="deployProcess(this)" title="(Re)Deploy the process"></span>
+            <span class="glyphicon btn btn-outline-dark glyphicon-repeat" on-click="deployProcess(this)" title="(Re)Deploy the process"></span>
           {{/if}}
         </td>
       </tr>

@@ -14,12 +14,12 @@
    the License.
 -->
 <div class="menu-burger navbar-side" on-click="toggleSidebar()">
-  <span class="clickable glyphicon icon-btn glyphicon-menu-hamburger" title="{{title}}"></span>
+  <span class="clickable glyphicon btn btn-outline-dark glyphicon-menu-hamburger" title="{{title}}"></span>
 </div>
 <div class="toolbar {{#profile.toolbarPosition}}toolbar-{{profile.toolbarPosition}}{{/}} {{^profile.toolbarPosition}}toolbar-left{{/}}">
   <ul>
     <li>
-      <span class="clickable glyphicon icon-btn glyphicon-menu-hamburger" on-click="toggleSidebar()" title="{{title}}"></span>
+      <span class="clickable glyphicon btn btn-outline-dark glyphicon-menu-hamburger" on-click="toggleSidebar()" title="{{title}}"></span>
     </li>
     {{#tenant.toolbar:idx}}
       {{#if matchRole(role) && featureEnabled(feature)}}

@@ -450,10 +450,6 @@ input[type="checkbox"].form-control:focus {
   color: #6f6f71;
   background-color: #b7b7b7;
 }
-.glyphicon-btn,
-.icon-btn {
-  border: solid 1px;
-}
 .glyphicon {
   border-radius: 5px;
   color: #0e9acd;

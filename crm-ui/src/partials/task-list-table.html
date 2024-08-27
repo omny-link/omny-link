@@ -45,9 +45,9 @@
       <td on-click="edit(this)" title="{{assignee==null ? '' : assignee}}">{{assignee==null ? 'No' : 'Yes'}}</td>
       <td>
         {{#if matchPage('work.html')}}
-          <a class="clickable glyphicon icon-btn kp-icon-pencil" aria-hidden="true" on-click="edit(this)"></a>
+          <a class="clickable glyphicon btn btn-outline-dark kp-icon-pencil" aria-hidden="true" on-click="edit(this)"></a>
         {{else}}
-          <a class="clickable glyphicon icon-btn kp-icon-new-tab" aria-hidden="true" href="work.html?q={{id}}" target="_blank"></a>
+          <a class="clickable glyphicon btn btn-outline-dark kp-icon-new-tab" aria-hidden="true" href="work.html?q={{id}}" target="_blank"></a>
         {{/if}}
       </td>
     </tr>
