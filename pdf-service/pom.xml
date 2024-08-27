@@ -32,7 +32,7 @@
     <relativePath>..</relativePath>
   </parent>
   <properties>
-    <bootstrap.version>3.4.1</bootstrap.version>
+    <crm.deps.bootstrap.version>3.4.1</crm.deps.bootstrap.version>
   </properties>
 
   <dependencies>
@@ -49,7 +49,7 @@
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>bootstrap</artifactId>
-      <version>${bootstrap.version}</version>
+      <version>${crm.deps.bootstrap.version}</version>
     </dependency>
   </dependencies>
 

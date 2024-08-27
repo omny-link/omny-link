@@ -33,7 +33,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.knowprocess.pdf.PdfTestApplication;
-import com.knowprocess.pdf.web.PdfController;
 
 /**
  * @author Tim Stephenson

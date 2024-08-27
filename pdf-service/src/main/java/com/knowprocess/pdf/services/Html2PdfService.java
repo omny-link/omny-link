@@ -54,7 +54,7 @@ public class Html2PdfService {
     @Value("${kp.services.css:/css/base.css}")
     private final String cssResource;
 
-    @Value("${bootstrap.version}")
+    @Value("${crm.deps.bootstrap.version}")
     private String bootstrapVersion;
 
     private String bootstrapCss;
