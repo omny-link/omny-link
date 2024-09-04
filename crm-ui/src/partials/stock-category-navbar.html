@@ -13,19 +13,19 @@
    License for the specific language governing permissions and limitations under
    the License.
 -->
-<a id="stockCategoriesTableToggle" class="clickable glyphicon btn btn-outline-dark kp-icon-caret-down" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the stockItem table"></a>
+<a id="stockCategoriesTableToggle" class="clickable  btn btn-outline-dark bi bi-caret-down" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the stockItem table"></a>
 <span>{{tenant.strings.stockCategories}}</span>
-<a class="clickable glyphicon btn btn-outline-dark glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new stockItem"></a>
-<a class="clickable glyphicon btn btn-outline-dark glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+<a class="clickable  btn btn-outline-dark bi bi-plus" aria-hidden="true" on-click="add()" title="Add a new stockItem"></a>
+<a class="clickable  btn btn-outline-dark bi bi-arrow-clockwise" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
 <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-<a class="glyphicon btn btn-outline-dark glyphicon-search" aria-hidden="true" title="Search for matching stockCategories"></a>
+<a class=" btn btn-outline-dark bi bi-search" aria-hidden="true" title="Search for matching stockCategories"></a>
 <a class="clickable dropdown" aria-hidden="true" id="filterBtn" title="Show filters">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <a class="clickable glyphicon btn btn-outline-dark glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
-  </a>
-  <ul class="dropdown dropdown-menu" id="filterMenu" role="menu">
-    <li on-click="filter:{idx:1}">Show All</li>
-    <li class="divider"></li>
-    <li onclick="ractive.search('updated>'+new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().substring(0,10))">Recently updated</li>
+  <button class="clickable btn btn-outline-dark" data-bs-toggle="dropdown" type="button">
+    <i class="bi bi-filter"></i>
+  </button>
+  <ul class="dropdown-menu" id="filterMenu" role="menu">
+    <li on-click="filter:{idx:1}"><a class="dropdown-item" href="#">Show All</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li onclick="ractive.search('updated>'+new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().substring(0,10))"><a class="dropdown-item" href="#">Recently updated</a></li>
   </ul>
 </a>

@@ -13,40 +13,48 @@
    License for the specific language governing permissions and limitations under
    the License.
 -->
-<a id="contactsTableToggle" class="clickable glyphicon btn btn-outline-dark kp-icon-caret-down" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the contact table"></a>
+<a id="contactsTableToggle" class="clickable  btn btn-outline-dark bi bi-caret-down" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the contact table"></a>
 <span>
   {{#tenant.strings.accounts}}{{tenant.strings.accounts}}{{else}}Accounts{{/}}
 </span>
-<a class="clickable glyphicon btn btn-outline-dark glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new contact"></a>
-<a class="clickable glyphicon btn btn-outline-dark glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+<a class="clickable  btn btn-outline-dark bi bi-plus" aria-hidden="true" on-click="add()" title="Add a new contact"></a>
+<a class="clickable  btn btn-outline-dark bi bi-arrow-clockwise" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
 <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-<a class="glyphicon btn btn-outline-dark glyphicon-search" aria-hidden="true" title="Search for matching contacts"></a>
-<a class="clickable dropdown filter" aria-hidden="true" id="filterBtn" title="Show filters">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <a class="clickable glyphicon btn btn-outline-dark glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
-  </a>
-  <ul class="dropdown dropdown-menu" id="filterMenu" role="menu">
-    <li on-click="filter:{idx:1,value:''}">Show All</li>
-    <li on-click="filter:{idx:2,value:'active'}">Show Active</li>
-    <li on-click="filter:{idx:3,value:'active owner:{{profile.username}}'}">Show Mine</li>
-    <li on-click="filter:{idx:4,value:'!active owner:{{profile.username}}'}">Show Mine (inactive)</li>
-    <li class="divider"></li>
-    <li on-click="filter:{idx:6,value:'updated>{{daysAgo(7)}}'}">Recently updated</li>
+<a class=" btn btn-outline-dark bi bi-search" aria-hidden="true" title="Search for matching contacts"></a>
+
+<div class="dropdown">
+  <!-- add dropdown-toggle class to show caret -->
+  <button class="clickable btn btn-outline-dark" data-bs-toggle="dropdown" type="button">
+    <i class="bi bi-filter"></i>
+  </button>
+  <ul class="dropdown-menu" id="filterMenu" role="menu">
+    <li on-click="filter:{idx:1,value:''}"><a class="dropdown-item" href="#">Show All</a></li>
+    <li on-click="filter:{idx:2,value:'active'}"><a class="dropdown-item" href="#">Show Active</a></li>
+    <li on-click="filter:{idx:3,value:'active owner:{{profile.username}}'}" href="#"><a class="dropdown-item">Show Mine</a></li>
+    <li on-click="filter:{idx:4,value:'!active owner:{{profile.username}}'}" href="#"><a class="dropdown-item">Show Mine (inactive)</a></li>
+	  <li><hr class="dropdown-divider"></li>
+    <li on-click="filter:{idx:6,value:'updated>{{daysAgo(7)}}'}"><a class="dropdown-item" href="#">Recently updated</a></li>
     {{#if tenant.features.stage}}
-	    <li class="divider"></li>
+	    <li><hr class="dropdown-divider"></li>
 	    {{#accountStages:i}}
-	      <li on-click="filter:{idx:{{8+i}},value:'stage:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
+	      <li on-click="filter:{idx:{{8+i}},value:'stage:{{id.replace(/ /g,'_')}}'}">
+          <a class="dropdown-item" href="#">{{name}}</a>
+        </li>
 	    {{/}}
     {{/if}}
     {{#if tenant.features.enquiryType}}
-      <li class="divider"></li>
+	    <li><hr class="dropdown-divider"></li>
       {{#enquiryTypes:j}}
-        <li on-click="filter:{idx:{{8+(tenant.features.stage?accountStages.length:1)+j}},value:'enquiry:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
+        <li on-click="filter:{idx:{{8+(tenant.features.stage?accountStages.length:1)+j}},value:'enquiry:{{id.replace(/ /g,'_')}}'}">
+          <a class="dropdown-item" href="#">{{name}}</a>
+        </li>
       {{/}}
     {{/if}}
-    <li class="divider"></li>
+	  <li><hr class="dropdown-divider"></li>
     {{#accountTypes:k}}
-      <li on-click="filter:{idx:{{8+(tenant.features.stage?accountStages.length:1)+(tenant.features.enquiryType?enquiryTypes.length:1)+k}},value:'type:{{id.replace(/ /g,'_')}}'}">{{name}}</li>
+      <li on-click="filter:{idx:{{8+(tenant.features.stage?accountStages.length:1)+(tenant.features.enquiryType?enquiryTypes.length:1)+k}},value:'type:{{id.replace(/ /g,'_')}}'}">
+        <a class="dropdown-item" href="#">{{name}}</a>
+      </li>
     {{/accountTypes}}
   </ul>
-</a>
+</div>

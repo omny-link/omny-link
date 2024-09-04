@@ -13,20 +13,20 @@
    License for the specific language governing permissions and limitations under
    the License.
 -->
-<a id="definitionsTableToggle" class="clickable glyphicon btn btn-outline-dark kp-icon-caret-down" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the definition table"></a>
+<a id="definitionsTableToggle" class="clickable  btn btn-outline-dark bi bi-caret-down" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the definition table"></a>
 <span>Definitions</span>
-<a class="clickable glyphicon btn btn-outline-dark kp-icon-plus" aria-hidden="true" on-click="addProcess()" title="Add a new process"></a>
-<a class="clickable glyphicon btn btn-outline-dark kp-icon-refresh" aria-hidden="true" on-click="fetch()"></a>
+<a class="clickable  btn btn-outline-dark kp-icon-plus" aria-hidden="true" on-click="addProcess()" title="Add a new process"></a>
+<a class="clickable  btn btn-outline-dark kp-icon-refresh" aria-hidden="true" on-click="fetch()"></a>
 <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-<a class="glyphicon btn btn-outline-dark kp-icon-search" aria-hidden="true" title="Search for matching process definitions"></a>
+<a class=" btn btn-outline-dark kp-icon-search" aria-hidden="true" title="Search for matching process definitions"></a>
 <a class="clickable dropdown" aria-hidden="true" id="filterBtn" title="Show filters">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <a class="clickable glyphicon btn btn-outline-dark kp-icon-filter2 dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
+    <a class="clickable  btn btn-outline-dark kp-icon-filter2 dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
   </a>
-  <ul class="dropdown dropdown-menu" id="filterMenu" role="menu">
-    <li on-click="search()">Show All</li>
+  <ul class="dropdown-menu" id="filterMenu" role="menu">
+    <li on-click="search()"><a class="dropdown-item" href="#">Show All</a></li>
     <li on-click="search('version:latest')">Latest Only</li>
-    <li class="divider"></li>
+    <li><hr class="dropdown-divider"></li>
     <li on-click="search('category:acctmgmt')">Account Management</li>
     <li on-click="search('category:alerts')">Alerts</li>
     <li on-click="search('category:custmgmt')">Contact</li>
@@ -35,10 +35,10 @@
     <li on-click="search('category:memos')">Templates</li>
     <li on-click="search('category:website')">Website</li>
     <li on-click="search('category:casemgmt')">Work</li>
-    <li class="divider"></li>
+    <li><hr class="dropdown-divider"></li>
     <li on-click="search('!executable')">Documentation</li>
     <li on-click="search('executable')">Executable</li>
-    <li class="divider"></li>
+    <li><hr class="dropdown-divider"></li>
     <li onclick="ractive.search('category:{{tenant.id}}')">{{tenant.id.toLabel()}} extensions</li>
   </ul>
 </a>

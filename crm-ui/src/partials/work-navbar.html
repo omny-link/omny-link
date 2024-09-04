@@ -13,33 +13,33 @@
    License for the specific language governing permissions and limitations under
    the License.
 -->
-<a id="tasksTableToggle" class="clickable glyphicon btn btn-outline-dark kp-icon-caret-down" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the task table"></a>
+<a id="tasksTableToggle" class="clickable  btn btn-outline-dark bi bi-caret-down" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the task table"></a>
 <span>Tasks</span>
-<a class="clickable glyphicon btn btn-outline-dark kp-icon-envelope admin" aria-hidden="true" on-click="newMessage()" title="Send a new message"></a>
-<a class="clickable glyphicon btn btn-outline-dark kp-icon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+<a class="clickable  btn btn-outline-dark kp-icon-envelope admin" aria-hidden="true" on-click="newMessage()" title="Send a new message"></a>
+<a class="clickable  btn btn-outline-dark kp-icon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
 <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-<a class="glyphicon btn btn-outline-dark kp-icon-search" aria-hidden="true" title="Search for matching contacts"></a>
+<a class=" btn btn-outline-dark kp-icon-search" aria-hidden="true" title="Search for matching contacts"></a>
 <a class="clickable dropdown" aria-hidden="true" title="Show filters">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <a class="clickable glyphicon btn btn-outline-dark kp-icon-filter2 dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
+    <a class="clickable  btn btn-outline-dark kp-icon-filter2 dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
   </a>
   <ul class="dropdown dropdown-menu" role="menu">
-    <li on-click="filter:{idx:1}">Show all</li>
-    <li class="divider"></li>
+    <li on-click="filter:{idx:1}"><a class="dropdown-item" href="#">Show All</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li on-click="filter:{idx:3,value:'overdue'}">Show overdue</li>
     <li on-click="filter:{idx:3,value:'due'}">Show due</li>
     <li on-click="filter:{idx:4,value:'due<2days'}">Show due tomorrow</li>
     <li on-click="filter:{idx:5,value:'due<7days'}">Show due this week</li>
     <li on-click="filter:{idx:6,value:'due<28days'}">Show due this month</li>
-    <li class="divider"></li>
-    <li on-click="filter:{idx:8,value:'!deferred'}">Show active</li>
+    <li><hr class="dropdown-divider"></li>
+    <li on-click="filter:{idx:8,value:'!deferred'}"><a class="dropdown-item" href="#">Show Active</a></li>
     <li on-click="filter:{idx:9,value:'deferred'}">Show deferred</li>
   </ul>
 </a>
 {{#if tenant.workActions}}
   <span class="clickable dropdown" aria-hidden="true" title="Start Process">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-      <a class="clickable glyphicon btn btn-outline-dark kp-icon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+      <a class="clickable  btn btn-outline-dark kp-icon-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
     </a>
     
     <ul class="dropdown dropdown-menu" role="menu">
@@ -47,7 +47,7 @@
         {{#name && matchRole(role) && featureEnabled(feature)}}
           <li on-click="startCustomAction(ref, name, profile, url)">{{name}}</li>
         {{elseif name==undefined}}
-          <li class="divider"></li>
+          <li><hr class="dropdown-divider"></li>
         {{/}}
       {{/each}}
     </ul>

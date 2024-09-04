@@ -17,13 +17,13 @@
   <thead>
     <tr>
       <th></th>
-      <th on-click="sort:businessKey">From / Regarding<span class="sortable {{ sorted('businessKey') }} glyphicon"></span></th>
-      <th on-click="sort:name">Task<span class="sortable {{ sorted('name') }} glyphicon"></span></th>
-      <th on-click="sort:createTime">Created<span class="sortable {{ sorted('createTime') }} glyphicon"></span></th>
-      <th on-click="@this.sort(taskLocalVariables['deferUntil'])">Remind<span class="sortable {{ sorted('taskLocalVariables[\"deferUntil\"]') }} glyphicon"></span></th>
-      <th on-click="sort:dueDate">Due<span class="sortable {{ sorted('dueDate') }} glyphicon"></span></th>
+      <th on-click="sort:businessKey">From / Regarding<span class="sortable {{ sorted('businessKey') }} "></span></th>
+      <th on-click="sort:name">Task<span class="sortable {{ sorted('name') }} "></span></th>
+      <th on-click="sort:createTime">Created<span class="sortable {{ sorted('createTime') }} "></span></th>
+      <th on-click="@this.sort(taskLocalVariables['deferUntil'])">Remind<span class="sortable {{ sorted('taskLocalVariables[\"deferUntil\"]') }} "></span></th>
+      <th on-click="sort:dueDate">Due<span class="sortable {{ sorted('dueDate') }} "></span></th>
       <!--th class="col-truncate" style="width: 400px;">Description</th-->
-      <th on-click="sort:assignee">Assigned<span class="sortable {{ sorted('assignee') }} glyphicon"></span></th>
+      <th on-click="sort:assignee">Assigned<span class="sortable {{ sorted('assignee') }} "></span></th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -45,9 +45,9 @@
       <td on-click="edit(this)" title="{{assignee==null ? '' : assignee}}">{{assignee==null ? 'No' : 'Yes'}}</td>
       <td>
         {{#if matchPage('work.html')}}
-          <a class="clickable glyphicon btn btn-outline-dark kp-icon-pencil" aria-hidden="true" on-click="edit(this)"></a>
+          <a class="clickable  btn btn-outline-dark kp-icon-pencil" aria-hidden="true" on-click="edit(this)"></a>
         {{else}}
-          <a class="clickable glyphicon btn btn-outline-dark kp-icon-new-tab" aria-hidden="true" href="work.html?q={{id}}" target="_blank"></a>
+          <a class="clickable  btn btn-outline-dark kp-icon-new-tab" aria-hidden="true" href="work.html?q={{id}}" target="_blank"></a>
         {{/if}}
       </td>
     </tr>

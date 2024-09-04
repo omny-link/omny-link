@@ -21,16 +21,16 @@
           <th><input class="checkbox" type="checkbox"/></th>
         {{/}}
         {{#accounts.0.orgCode}}
-          {{#tenant.features.account}}<th on-click="sort:orgCode">{{#tenant.strings.orgCode}}{{tenant.strings.orgCode}}{{else}}Code{{/}}<span class="sortable {{ sorted('orgCode') }} glyphicon"></th>{{/}}
+          {{#tenant.features.account}}<th on-click="sort:orgCode">{{#tenant.strings.orgCode}}{{tenant.strings.orgCode}}{{else}}Code{{/}}<span class="sortable {{ sorted('orgCode') }} "></th>{{/}}
         {{/}}
-        {{#tenant.features.account}}<th on-click="sort:name">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} glyphicon"></th>{{/}}
+        {{#tenant.features.account}}<th on-click="sort:name">{{#tenant.strings.account}}{{tenant.strings.account}}{{else}}Account{{/}}<span class="sortable {{ sorted('accountName') }} "></th>{{/}}
         {{#tenant.features.marketing || tenant.features.stage}}
-          <th on-click="sort:stage">{{#tenant.strings.accountStage}}{{tenant.strings.accountStage}}{{else}}Stage{{/}}<span class="sortable {{ sorted('stage') }} glyphicon"></th>
+          <th on-click="sort:stage">{{#tenant.strings.accountStage}}{{tenant.strings.accountStage}}{{else}}Stage{{/}}<span class="sortable {{ sorted('stage') }} "></th>
         {{/}}
-        <th on-click="sort:accountType">{{#tenant.strings.accountType}}{{tenant.strings.accountType}}{{else}}Account Type{{/}}<span class="sortable {{ sorted('accountType') }} glyphicon"></th>
-        <th on-click="sort:owner">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owned by{{/}}<span class="sortable {{ sorted('owner') }} glyphicon"></th>
-        <th on-click="sort:firstContact">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}First Contact{{/}}<span class="sortable {{ sorted('firstContact') }} glyphicon"></th>
-        <th class="" on-click="sort:lastUpdated">{{#tenant.strings.lastUpdated}}{{tenant.strings.lastUpdated}}{{else}}Last Updated{{/}}<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
+        <th on-click="sort:accountType">{{#tenant.strings.accountType}}{{tenant.strings.accountType}}{{else}}Account Type{{/}}<span class="sortable {{ sorted('accountType') }} "></th>
+        <th on-click="sort:owner">{{#tenant.strings.owner}}{{tenant.strings.owner}}{{else}}Owned by{{/}}<span class="sortable {{ sorted('owner') }} "></th>
+        <th on-click="sort:firstContact">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}First Contact{{/}}<span class="sortable {{ sorted('firstContact') }} "></th>
+        <th class="" on-click="sort:lastUpdated">{{#tenant.strings.lastUpdated}}{{tenant.strings.lastUpdated}}{{else}}Last Updated{{/}}<span class="sortable {{ sorted('lastUpdated') }} "></span></th>
         <th>{{#tenant.strings.alerts}}{{tenant.strings.alerts}}{{else}}Alerts{{/}}</th>
         <th>{{#tenant.strings.tags}}{{tenant.strings.tags}}{{else}}Tags{{/}}</th>
         <th class="col-actions">Actions</th>
@@ -58,10 +58,10 @@
             <td on-click="edit(this)"><span class="alert-counter {{#formatAlertCount(alerts)>0}}alert-danger{{else}}alert-success{{/}}">{{#alerts}}{{formatAlertCount(alerts)}}{{else}}0{{/}}</span></td>
             <td on-click="edit(this)">{{{formatTags(tags)}}}</td>
             <td class="col-actions">
-              <a class="clickable glyphicon btn btn-outline-dark glyphicon-transfer" aria-hidden="true" on-click="mergeContacts(this)" style="display:none;" title="Merge two records"></a>
-            <a class="clickable admin glyphicon btn btn-outline-dark glyphicon-remove" aria-hidden="true" on-click="deleteAccount(this)" title="Delete this record"></a>
-            <a class="clickable glyphicon btn btn-outline-dark glyphicon-pencil" aria-hidden="true" on-click="edit(this)" title="View or edit this contact"></a>
-            <a class="clickable glyphicon btn btn-outline-dark glyphicon-new-window" aria-hidden="true" on-click="openInNewWindow(this)" style="display:none" title="View or edit this contact"></a>
+              <a class="clickable  btn btn-outline-dark -transfer" aria-hidden="true" on-click="mergeContacts(this)" style="display:none;" title="Merge two records"></a>
+            <a class="clickable admin  btn btn-outline-dark -remove" aria-hidden="true" on-click="deleteAccount(this)" title="Delete this record"></a>
+            <a class="clickable  btn btn-outline-dark -pencil" aria-hidden="true" on-click="edit(this)" title="View or edit this contact"></a>
+            <a class="clickable  btn btn-outline-dark -new-window" aria-hidden="true" on-click="openInNewWindow(this)" style="display:none" title="View or edit this contact"></a>
           </td>
         </tr>
       {{/}}

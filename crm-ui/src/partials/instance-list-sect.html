@@ -36,11 +36,11 @@
     {{/if}}
   {{/}}
   <h3 {{#active=='audit.html'}}style="display:none"{{/}}>
-    <span class="ol-collapse glyphicon btn btn-outline-dark kp-icon-caret-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+    <span class="ol-collapse  btn btn-outline-dark kp-icon-caret-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
     <span>Instances</span>
     <span class="float-end">
-      <span class="clickable glyphicon btn btn-outline-dark kp-icon-refresh" aria-hidden="true" onclick="ractive.fetchInstances()" title="Refresh instance list"></span>
-      <span class="clickable glyphicon btn btn-outline-dark kp-icon-remove" on-click="deleteSelectedInstances()" title="Delete selected instances"></span>
+      <span class="clickable  btn btn-outline-dark kp-icon-refresh" aria-hidden="true" onclick="ractive.fetchInstances()" title="Refresh instance list"></span>
+      <span class="clickable  btn btn-outline-dark kp-icon-remove" on-click="deleteSelectedInstances()" title="Delete selected instances"></span>
     </span>
   </h3>
   <div class="currentBody col-md-12 col-sm-12 col-xs-12" style="display:none">
@@ -50,12 +50,12 @@
 	        {{#if hasRole('admin') && active!='audit.html'}}
 	          <td><input class="checkbox" type="checkbox" onchange="$('#instancesTable>tbody>tr>td>.checkbox').click();"/></td>
 	        {{/if}}
-	        <th class="a-secondary-label control-label" on-click="sortInstances:businessKey">Name{{#active!='audit.html'}}<span class="sortable {{ sortedInstance('businessKey') }} glyphicon">{{/}}</th>
-	        {{#if hasRole('admin') && showDetails}}<th on-click="sortInstances:id">Id{{#active!='audit.html'}}<span class="sortable {{ sorted('id') }} glyphicon">{{/}}</th>{{/if}}
-	        <th class="a-secondary-label control-label" on-click="sortInstances:startTime">Started{{#active!='audit.html'}}<span class="sortable {{ sortedInstance('startTime') }} glyphicon">{{/}}</th>
-	        <th class="a-secondary-label control-label" on-click="sortInstances:endTime">Completed{{#active!='audit.html'}}<span class="sortable {{ sortedInstance('endTime') }} glyphicon">{{/}}</th>
+	        <th class="a-secondary-label control-label" on-click="sortInstances:businessKey">Name{{#active!='audit.html'}}<span class="sortable {{ sortedInstance('businessKey') }} ">{{/}}</th>
+	        {{#if hasRole('admin') && showDetails}}<th on-click="sortInstances:id">Id{{#active!='audit.html'}}<span class="sortable {{ sorted('id') }} ">{{/}}</th>{{/if}}
+	        <th class="a-secondary-label control-label" on-click="sortInstances:startTime">Started{{#active!='audit.html'}}<span class="sortable {{ sortedInstance('startTime') }} ">{{/}}</th>
+	        <th class="a-secondary-label control-label" on-click="sortInstances:endTime">Completed{{#active!='audit.html'}}<span class="sortable {{ sortedInstance('endTime') }} ">{{/}}</th>
 	        {{#if .!=undefined && !..ended}}
-	          <th class="a-secondary-label control-label" on-click="sortInstances:activityId">Current task{{#active!='audit.html'}}<span class="sortable {{ sortedInstance('activityId') }} glyphicon">{{/}}</th>
+	          <th class="a-secondary-label control-label" on-click="sortInstances:activityId">Current task{{#active!='audit.html'}}<span class="sortable {{ sortedInstance('activityId') }} ">{{/}}</th>
 	        {{/if}}
 	        <th class="action-icons">Actions</th>
 	      </tr>
@@ -79,18 +79,18 @@
 	            {{/if}}
 	            <td>
                   {{#active!='audit.html'}}
-	                <span class="clickable glyphicon btn btn-outline-dark kp-icon-eye-blocked" on-click="toggleAuditTrail(this,i)"></span>
+	                <span class="clickable  btn btn-outline-dark kp-icon-eye-blocked" on-click="toggleAuditTrail(this,i)"></span>
                   {{/}}
                   <a aria-hidden="true" href="jobs.html?q={{id}}" target="_blank" title="Show tasks for this process instance">
-                    <span class="clickable glyphicon btn btn-outline-dark kp-icon-check"></span>
+                    <span class="clickable  btn btn-outline-dark kp-icon-check"></span>
                   </a>
                   {{#superInstanceId}}
                     <a aria-hidden="true" href="audit.html?instanceId={{superInstanceId}}" target="_blank" title="Audit parent process">
-                      <span class="clickable glyphicon btn btn-outline-dark kp-icon-new-tab"></span>
+                      <span class="clickable  btn btn-outline-dark kp-icon-new-tab"></span>
                     </a>
                   {{/}}
 	              {{#active!='audit.html'}}
-                    <span class="clickable glyphicon btn btn-outline-dark kp-icon-remove" on-click="deleteInstance(this,i)"></span>
+                    <span class="clickable  btn btn-outline-dark kp-icon-remove" on-click="deleteInstance(this,i)"></span>
                   {{/}}
 	            </td>
 	          </tr>
@@ -131,7 +131,7 @@
                             <td>
                               {{#activityType=='callActivity'}}
                                 <a aria-hidden="true" href="audit.html?instanceId={{calledProcessInstanceId}}" target="_blank" title="Audit called process">
-                                  <span class="clickable glyphicon btn btn-outline-dark kp-icon-new-tab"></span>
+                                  <span class="clickable  btn btn-outline-dark kp-icon-new-tab"></span>
                                 </a>
                               {{/}}
                             </td>

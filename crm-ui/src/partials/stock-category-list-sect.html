@@ -27,10 +27,10 @@
     <thead>
       <tr>
         <th></th>
-        <th on-click="sort:name">{{#tenant.strings.stockCategoryName}}{{tenant.strings.stockCategoryName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }} glyphicon btn btn-outline-dark "></th>
-        <th on-click="sort:status">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}<span class="sortable {{ sorted('status') }} glyphicon btn btn-outline-dark "></th>
-        <th on-click="sort:created">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}Created{{/}}<span class="sortable {{ sorted('created') }} glyphicon"></th>
-        <th class="" on-click="sort:lastUpdated">{{#tenant.strings.latUpdated}}{{tenant.strings.lastUpdated}}{{else}}Last Updated{{/}}<span class="sortable {{ sorted('lastUpdated') }} glyphicon"></span></th>
+        <th on-click="sort:name">{{#tenant.strings.stockCategoryName}}{{tenant.strings.stockCategoryName}}{{else}}Name{{/}}<span class="sortable {{ sorted('name') }}  btn btn-outline-dark "></th>
+        <th on-click="sort:status">{{#tenant.strings.status}}{{tenant.strings.status}}{{else}}Status{{/}}<span class="sortable {{ sorted('status') }}  btn btn-outline-dark "></th>
+        <th on-click="sort:created">{{#tenant.strings.created}}{{tenant.strings.created}}{{else}}Created{{/}}<span class="sortable {{ sorted('created') }} "></th>
+        <th class="" on-click="sort:lastUpdated">{{#tenant.strings.latUpdated}}{{tenant.strings.lastUpdated}}{{else}}Last Updated{{/}}<span class="sortable {{ sorted('lastUpdated') }} "></span></th>
         <th class="col-actions">Actions</th>
       </tr>
     </thead>
@@ -44,9 +44,9 @@
             <td on-click="edit(this)">{{formatDate(created)}}</td>
             <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
             <td class="col-actions">
-              <a class="clickable glyphicon btn btn-outline-dark glyphicon-transfer" aria-hidden="true" on-click="mergeStockCategories(this)" style="display:none;" title="Merge two records"></a>
-              <a class="clickable admin glyphicon btn btn-outline-dark glyphicon-remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
-              <a class="clickable glyphicon btn btn-outline-dark glyphicon-pencil" aria-hidden="true" on-click="edit(this)" title="View or edit this record"></a>
+              <a class="clickable  btn btn-outline-dark -transfer" aria-hidden="true" on-click="mergeStockCategories(this)" style="display:none;" title="Merge two records"></a>
+              <a class="clickable admin  btn btn-outline-dark -remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+              <a class="clickable  btn btn-outline-dark -pencil" aria-hidden="true" on-click="edit(this)" title="View or edit this record"></a>
             </td>
           </tr>
       {{/}}

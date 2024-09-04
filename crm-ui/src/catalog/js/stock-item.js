@@ -59,8 +59,8 @@ var ractive = new BaseRactive({
       return dts;
     },
     formatFavorite: function(obj) {
-      if ('favorite' in obj) return 'glyphicon-star';
-      else return 'glyphicon-star-empty';
+      if ('favorite' in obj) return '-star';
+      else return '-star-empty';
     },
     formatJson: function(json) {
       console.log('formatJson: '+json);

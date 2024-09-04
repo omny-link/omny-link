@@ -139,9 +139,9 @@ var ractive = new BaseRactive({
           if (obj == undefined)
             return '';
           else if (obj.favorite)
-            return 'glyphicon-star';
+            return '-star';
           else
-            return 'glyphicon-star-empty';
+            return '-star-empty';
         },
         formatJson: function(json) {
           console.log('formatJson: ' + json);
@@ -943,7 +943,7 @@ var ractive = new BaseRactive({
           if (d.indexOf('customFields') != -1) {
             console.debug('assume this field is ok:' + d);
           } else if (ractive.get('fields').indexOf(d) == -1) {
-            $('#pastePreview th[data-name="' + d + '"] .glyphicon').show();
+            $('#pastePreview th[data-name="' + d + '"] .').show();
             valid = false;
           }
 
@@ -951,7 +951,7 @@ var ractive = new BaseRactive({
           $.each(ractive.get('pasteData.rows'), function(j, e) {
             console.log(j + ':' + e[i]);
             if (v[d] != undefined && e[i].search(v[d]) == -1) {
-              $('#pastePreview tbody tr[data-row="'+j+'"] td[data-col="'+i+'"] .glyphicon').show();
+              $('#pastePreview tbody tr[data-row="'+j+'"] td[data-col="'+i+'"] .').show();
             }
           });
         });
@@ -1271,10 +1271,10 @@ var ractive = new BaseRactive({
         console.log('  selectMultiple: ' + ractive.get('selectMultiple'));
 
         // Dis/Enable merge buttons
-        $('tr[data-href] .glyphicon-transfer').hide();
+        $('tr[data-href] .-transfer').hide();
         if (ractive.get('selectMultiple').length == 2) {
           $.each(ractive.get('selectMultiple'), function(i, d) {
-            $('tr[data-href="' + d + '"] .glyphicon-transfer').show();
+            $('tr[data-href="' + d + '"] .-transfer').show();
           });
         }
       },
@@ -1330,9 +1330,9 @@ var ractive = new BaseRactive({
         console.info('toggleEditContact');
         ractive.set('currentContact', obj);
         var editing = $('[data-contact-id="' + ractive.localId(obj) + '"]').siblings()
-            .children('a.glyphicon-pencil').hasClass('editing');
+            .children('a.-pencil').hasClass('editing');
         // disable _all_ contacts
-        $('[data-contact-id]').siblings().children('a.glyphicon-pencil')
+        $('[data-contact-id]').siblings().children('a.-pencil')
             .removeClass('editing');
         $('[data-contact-id]').removeClass('editing');
         $('[data-contact-id="' + ractive.localId(obj) + '"] span').removeClass('hidden');
@@ -1346,7 +1346,7 @@ var ractive = new BaseRactive({
           ractive.saveContact();
         } else { // Change clicked contact to editable
           $('[data-contact-id="' + ractive.localId(obj) + '"]').siblings()
-            .children('a.glyphicon-pencil').addClass('editing');
+            .children('a.-pencil').addClass('editing');
           $('[data-contact-id="' + ractive.localId(obj) + '"] span').addClass('hidden');
           $('[data-contact-id="' + ractive.localId(obj) + '"] input')
             .removeClass('hidden')

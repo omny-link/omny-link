@@ -325,10 +325,10 @@ var ractive = new BaseRactive({
         ractive.initEditor();
         if (ractive.get('current.status')=='Published') {
           $('#currentForm input,#currentForm select,#currentForm textarea').prop('disabled',true).prop('readonly',true);
-          $('.glyphicon-remove').hide();
+          $('.-remove').hide();
         } else {
           $('#currentForm input:not("#curRequiredVars"),#currentForm select,#currentForm textarea').prop('disabled',false).prop('readonly',false);
-          if (ractive.hasRole('admin')) $('.glyphicon-remove').show();
+          if (ractive.hasRole('admin')) $('.-remove').show();
         }
         ractive.set('saveObserver',true);
       });

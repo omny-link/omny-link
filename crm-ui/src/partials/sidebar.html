@@ -14,17 +14,19 @@
    the License.
 -->
 <div class="menu-burger navbar-side" on-click="toggleSidebar()">
-  <span class="clickable glyphicon btn btn-outline-dark glyphicon-menu-hamburger" title="{{title}}"></span>
+  <span class="clickable  btn btn-outline-dark -menu-hamburger" title="{{title}}">
+    <i class="bi bi-list"></i>
+  </span>
 </div>
 <div class="toolbar {{#profile.toolbarPosition}}toolbar-{{profile.toolbarPosition}}{{/}} {{^profile.toolbarPosition}}toolbar-left{{/}}">
   <ul>
     <li>
-      <span class="clickable glyphicon btn btn-outline-dark glyphicon-menu-hamburger" on-click="toggleSidebar()" title="{{title}}"></span>
+      <span class="clickable  btn btn-outline-dark -menu-hamburger" on-click="toggleSidebar()" title="{{title}}"></span>
     </li>
     {{#tenant.toolbar:idx}}
       {{#if matchRole(role) && featureEnabled(feature)}}
-	      <li class="page"><a href="{{url}}">
-	        <span class="glyphicon {{icon}} {{classes}} {{#active==url}}active{{/}}" title="{{name}}"></span>
+	      <li class="btn page"><a href="{{url}}">
+	        <span class="{{icon}} {{classes}} {{#active==url}}active{{/}}" title="{{name}}"></span>
 	      </a></li>
 	    {{/if}}
     {{/}}

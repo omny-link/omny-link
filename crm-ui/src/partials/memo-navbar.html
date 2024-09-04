@@ -13,19 +13,19 @@
    License for the specific language governing permissions and limitations under
    the License.
 -->
-<a id="memosTableToggle" class="clickable glyphicon btn btn-outline-dark kp-icon-caret-down" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the memo table"></a>
+<a id="memosTableToggle" class="clickable  btn btn-outline-dark bi bi-caret-down" aria-hidden="true" on-click="toggleResults()" title="Collapse or expand the memo table"></a>
 <span>Templates</span>
-<a class="clickable glyphicon btn btn-outline-dark glyphicon-plus" aria-hidden="true" on-click="add()" title="Add a new memo"></a>
-<a class="clickable glyphicon btn btn-outline-dark glyphicon-refresh" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
+<a class="clickable  btn btn-outline-dark bi bi-plus" aria-hidden="true" on-click="add()" title="Add a new memo"></a>
+<a class="clickable  btn btn-outline-dark bi bi-arrow-clockwise" aria-hidden="true" on-click="fetch()" title="Refresh the list"></a>
 <input type="search" class="form-control search" placeholder="Search" value="{{searchTerm}}">
-<a class="glyphicon btn btn-outline-dark glyphicon-search" aria-hidden="true" title="Search for matching templates"></a>
+<a class=" btn btn-outline-dark bi bi-search" aria-hidden="true" title="Search for matching templates"></a>
 <a class="clickable dropdown" aria-hidden="true" id="filterBtn" title="Show filters">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <a class="clickable glyphicon btn btn-outline-dark glyphicon-filter dropdown" aria-hidden="true" title="Show filters"> <span class="caret"></a>
-  </a>
-  <ul class="dropdown dropdown-menu" id="filterMenu" role="menu">
-    <li on-click="search()">Show All</li>
-    <li class="divider"></li>
+  <button class="clickable btn btn-outline-dark" data-bs-toggle="dropdown" type="button">
+    <i class="bi bi-filter"></i>
+  </button>
+  <ul class="dropdown-menu" id="filterMenu" role="menu">
+    <li on-click="search()"><a class="dropdown-item" href="#">Show All</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li on-click="search('status:draft')">Draft</li>
     <li on-click="search('status:review')">Pending Review</li>
     <li on-click="search('status:published')">Published</li>

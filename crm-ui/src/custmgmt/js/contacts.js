@@ -120,8 +120,8 @@ var ractive = new BaseRactive({
       else return '';
     },
     formatFavorite: function(obj) {
-      if ('favorite' in obj) return 'glyphicon-star';
-      else return 'glyphicon-star-empty';
+      if ('favorite' in obj) return '-star';
+      else return '-star-empty';
     },
     formatJson: function(json) {
       console.log('formatJson: '+json);
@@ -735,7 +735,7 @@ var ractive = new BaseRactive({
       if (d.indexOf('customFields')!=-1) {
         console.debug('assume this field is ok:'+d);
       } else if (ractive.get('fields').indexOf(d)==-1) {
-        $('#pastePreview th[data-name="'+d+'"] .glyphicon').show();
+        $('#pastePreview th[data-name="'+d+'"] .').show();
         valid = false;
       }
 
@@ -744,7 +744,7 @@ var ractive = new BaseRactive({
         console.log(j+':'+e[i]);
         if (v[d]!=undefined && e[i]!=undefined && e[i].search(v[d])==-1) {
           //console.error('gotcha!');
-          $('#pastePreview tbody tr[data-row="'+j+'"] td[data-col="'+i+'"] .glyphicon').show();
+          $('#pastePreview tbody tr[data-row="'+j+'"] td[data-col="'+i+'"] .').show();
         }
       });
     });
@@ -1003,10 +1003,10 @@ var ractive = new BaseRactive({
     console.log('  selectMultiple: '+ractive.get('selectMultiple'));
 
     // Dis/Enable merge buttons
-    $('tr[data-href] .glyphicon-transfer').hide();
+    $('tr[data-href] .-transfer').hide();
     if (ractive.get('selectMultiple').length == 2) {
       $.each(ractive.get('selectMultiple'), function(i,d) {
-        $('tr[data-href="'+d+'"] .glyphicon-transfer').show();
+        $('tr[data-href="'+d+'"] .-transfer').show();
       });
     }
   },

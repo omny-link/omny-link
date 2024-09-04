@@ -20,24 +20,24 @@
           value="{{#current.name}}{{current.name}}{{else}}Untitled{{/}}"></span>
     <span class="float-end">
       {{#if hasRole('admin')}}
-        <a class="glyphicon btn btn-outline-dark kp-icon-bug details-control" on-click="toggleDebug()" title="Toggle developer debug features"></a>
+        <a class=" btn btn-outline-dark kp-icon-bug details-control" on-click="toggleDebug()" title="Toggle developer debug features"></a>
       {{/if}}
-      <a class="glyphicon btn btn-outline-dark kp-icon-eye-blocked details-control" on-click="toggleDetails()" title="Toggle internal details"></a>
+      <a class=" btn btn-outline-dark kp-icon-eye-blocked details-control" on-click="toggleDetails()" title="Toggle internal details"></a>
       {{#current.deploymentId}}
         {{#current.suspended}}
-          <a class="glyphicon btn btn-outline-dark kp-icon-pause" aria-hidden="true" onclick="ractive.activate('{{current.id}}')" title="Activate"></a>
+          <a class=" btn btn-outline-dark kp-icon-pause" aria-hidden="true" onclick="ractive.activate('{{current.id}}')" title="Activate"></a>
         {{else}}
-          <a class="glyphicon btn btn-outline-dark kp-icon-play" aria-hidden="true" onclick="ractive.startInstance('{{current.id}}', '{{current.name}}', '{{username}}')" title="Start instance"></a>
-          <a class="glyphicon btn btn-outline-dark kp-icon-pause" aria-hidden="true" onclick="ractive.suspend('{{current.id}}')" title="Suspend"></a>
+          <a class=" btn btn-outline-dark kp-icon-play" aria-hidden="true" onclick="ractive.startInstance('{{current.id}}', '{{current.name}}', '{{username}}')" title="Start instance"></a>
+          <a class=" btn btn-outline-dark kp-icon-pause" aria-hidden="true" onclick="ractive.suspend('{{current.id}}')" title="Suspend"></a>
         {{/}}
       {{/}}
-      <a class="glyphicon btn btn-outline-dark kp-icon-cloud-download" href="#" on-click="download()" title="Download the BPMN representation of the process"></a>
+      <a class=" btn btn-outline-dark kp-icon-cloud-download" href="#" on-click="download()" title="Download the BPMN representation of the process"></a>
       {{#if current.deploymentId}}
-        <a class="clickable glyphicon btn btn-outline-dark kp-icon-remove" aria-hidden="true" onclick="ractive.delete({{current.deploymentId}})" title="Delete this definition"></a>
+        <a class="clickable  btn btn-outline-dark kp-icon-remove" aria-hidden="true" onclick="ractive.delete({{current.deploymentId}})" title="Delete this definition"></a>
       {{elseif bpmnUndoStack.length==0}}
-        <a class="clickable glyphicon btn btn-outline-dark kp-icon-remove" aria-hidden="true" onclick="ractive.delete('{{current.id}}')" title="Delete this definition"></a>
+        <a class="clickable  btn btn-outline-dark kp-icon-remove" aria-hidden="true" onclick="ractive.delete('{{current.id}}')" title="Delete this definition"></a>
       {{else}}
-        <a class="glyphicon btn btn-outline-dark kp-icon-cloud-upload" on-click="deployModeler()"></a>
+        <a class=" btn btn-outline-dark kp-icon-cloud-upload" on-click="deployModeler()"></a>
       {{/if}}
     </span>
   </h2>
@@ -161,17 +161,17 @@
     {{# current.diagrams:i}}
       <section id="{{current.diagrams[i].id}}Sect">
         <h3>
-          <!--span class="ol-collapse glyphicon btn btn-outline-dark kp-icon-caret-right"></span-->
-          <span class="ol-collapse glyphicon btn btn-outline-dark kp-icon-caret-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+          <!--span class="ol-collapse  btn btn-outline-dark kp-icon-caret-right"></span-->
+          <span class="ol-collapse  btn btn-outline-dark kp-icon-caret-right" onclick="ractive.toggleSection($(this).closest('section'))"></span>
           <span>Diagram: </span>
           <span contenteditable="{{hasRole('admin')}}" value="{{current.diagrams[i].name}}"
                 on-blur="updateBpmnObject(current.diagrams[i].id, 'name', event.node.innerText)"></span>
-          <a class="glyphicon btn btn-outline-dark kp-icon-image float-end" href="{{tenantUri(current)}}/{{current.diagrams[i].id}}.png" target="_blank" title="Image of process diagram '{{current.diagrams[i].name}}'"></a>
+          <a class=" btn btn-outline-dark kp-icon-image float-end" href="{{tenantUri(current)}}/{{current.diagrams[i].id}}.png" target="_blank" title="Image of process diagram '{{current.diagrams[i].name}}'"></a>
         </h3>
         <div class="bpmnDiagram" style="display:none">{{{current.diagrams[i].image}}}</div>
         {{#if selectedBpmnObject}}
           <div class="bpmnProperties" style="display: {{# $('svg:visible').length > 0 && $('.selected').length < 1}}inline{{else}}none{{/}}">
-            <a class="float-end clickable glyphicon kp-icon-remove" aria-hidden="true" on-click="hideBpmnProperties()" title="Hide BPMN properties"></a>
+            <a class="float-end clickable  kp-icon-remove" aria-hidden="true" on-click="hideBpmnProperties()" title="Hide BPMN properties"></a>
             <div class="btn-toolbar bpmnToolbar" role="toolbar" aria-label="...">
               <div class="btn-group" role="group" aria-label="...">
                 <div class="btn-group" role="group" id="callActivityBtn" title="BPMN Containers">
@@ -181,10 +181,10 @@
                   <ul class="dropdown dropdown-menu" id="bpmnLaneMenu" role="menu">
                     <li class="clickable" on-click="addProcessObject('participant')">Add pool below</li>
                     <!--li class="clickable" on-click="addProcessObject('participant', 'collapsed')">Add collapsed pool below</li-->
-                    <li class="divider"></li>
+                    <li><hr class="dropdown-divider"></li>
                     <li class="clickable" on-click="addProcessObject('lane', 'split')">Split lane</li>
                     <li class="clickable" on-click="addProcessObject('lane', 'new-process')">Add lane below</li>
-                    <li class="divider"></li>
+                    <li><hr class="dropdown-divider"></li>
                     <li class="clickable" on-click="addProcessObject('subProcess')">Expanded sub-process</li>
                     <!--li class="clickable" on-click="addProcessObject('subProcess', 'collapsed')">Collapsed sub-process</li-->
                   </ul>
@@ -197,10 +197,10 @@
                   </button>
                   <ul class="dropdown dropdown-menu" id="bpmnEventsMenu" role="menu">
                     <li class="clickable" on-click="addProcessObject('startEvent')">Start event</li>
-                    <li class="divider"></li>
+                    <li><hr class="dropdown-divider"></li>
                     <li class="clickable" on-click="addProcessObject('intermediateEvent')">Intermediate event</li>
                     <li class="clickable" on-click="addProcessObject('boundaryEvent')">Boundary event</li>
-                    <li class="divider"></li>
+                    <li><hr class="dropdown-divider"></li>
                     <li class="clickable" on-click="addProcessObject('endEvent')">End event</li>
                   </ul>
                 </div>
@@ -648,7 +648,7 @@
     {{#if showDetails}}
       <section id="issuesSect">
         <h3>
-          <span class="ol-collapse glyphicon btn btn-outline-dark kp-icon-caret-down" onclick="ractive.toggleSection($(this).closest('section'))"></span>
+          <span class="ol-collapse  btn btn-outline-dark bi bi-caret-down" onclick="ractive.toggleSection($(this).closest('section'))"></span>
           <span>Items to be completed</span>
         </h3>
         <div>

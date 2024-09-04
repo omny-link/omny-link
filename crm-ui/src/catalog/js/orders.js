@@ -91,8 +91,8 @@ var ractive = new BaseRactive({
       return dts;
     },
     formatFavorite: function(obj) {
-      if (obj.favorite) return 'glyphicon-star';
-      else return 'glyphicon-star-empty';
+      if (obj.favorite) return '-star';
+      else return '-star-empty';
     },
     formatId: function(entity) {
       return ractive.localId(entity);
