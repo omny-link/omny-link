@@ -49,8 +49,8 @@
             <td>{{formatDate(lastUpdated)}}</td>
             <td class="col-actions">
               <a class="clickable  btn btn-outline-dark  btn btn-outline-dark -copy" aria-hidden="true" on-click="clone(this)" title="Clone this record"></a>
-              <a class="clickable  btn btn-outline-dark -remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
-              <a class="clickable  btn btn-outline-dark -pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this memo distribution"></a>
+              <a class="clickable  btn btn-outline-dark bi bi-trash" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+              <a class="clickable  btn btn-outline-dark bi bi-pencil" aria-hidden="true" onclick="ractive.edit(this);ractive.toggleResults();" title="View or edit this memo distribution"></a>
             </td>
           </tr>
       {{/}}

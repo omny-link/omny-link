@@ -27,7 +27,7 @@
         {{#current.suspended}}
           <a class=" btn btn-outline-dark kp-icon-pause" aria-hidden="true" onclick="ractive.activate('{{current.id}}')" title="Activate"></a>
         {{else}}
-          <a class=" btn btn-outline-dark kp-icon-play" aria-hidden="true" onclick="ractive.startInstance('{{current.id}}', '{{current.name}}', '{{username}}')" title="Start instance"></a>
+          <a class=" btn btn-outline-dark kp-iconbi bi-play" aria-hidden="true" onclick="ractive.startInstance('{{current.id}}', '{{current.name}}', '{{username}}')" title="Start instance"></a>
           <a class=" btn btn-outline-dark kp-icon-pause" aria-hidden="true" onclick="ractive.suspend('{{current.id}}')" title="Suspend"></a>
         {{/}}
       {{/}}

@@ -40,10 +40,10 @@
               <span class=" -warning-sign alert-warning" title="Warning"></span>
             {{elseif status=='remote'}}
               <a href="{{url}}" target="partial">
-                <span class=" -new-window alert-warning" title="Remote partials are not checked for performance reasons, click to open"></span>
+                <span class=" bi bi-box-arrow-up-right alert-warning" title="Remote partials are not checked for performance reasons, click to open"></span>
               </a>
             {{elseif showStatus}}
-              <span class=" -remove-sign alert-danger" title="Missing or out of date"></span>
+              <span class=" bi bi-trash-sign alert-danger" title="Missing or out of date"></span>
             {{/if}}
           {{/}}
           {{#if property == 'templates' && status == 'false'}}

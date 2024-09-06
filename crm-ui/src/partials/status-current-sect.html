@@ -169,7 +169,7 @@
 	            {{# current.bot.valid==true}}
 	              <span class=" -ok-sign -success" id="curBotValid" title="Deployed and ready"></span>
 	            {{else}}
-	              <span class=" btn btn-outline-dark -remove-sign alert-danger" id="curBotInvalid" title="Missing or out of date"></span>
+	              <span class=" btn btn-outline-dark bi bi-trash-sign alert-danger" id="curBotInvalid" title="Missing or out of date"></span>
 	              {{#if current.bot.apiKey}}
 	                <span class=" btn btn-outline-dark -repeat" id="curBotCreate" on-click="createBot(true)" title="Re-create the bot user"></span>
 	              {{else}}

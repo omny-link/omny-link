@@ -79,8 +79,8 @@
         <td on-click="edit(this)">{{formatDate(lastUpdated)}}</td>
         <td class="col-actions">
           <a class="clickable  btn btn-outline-dark -transfer" aria-hidden="true" on-click="mergeOrders(this)" style="display:none;" title="Merge two records"></a>
-          <a class="clickable admin  btn btn-outline-dark -remove" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
-          <a class="clickable  btn btn-outline-dark -pencil" aria-hidden="true" on-click="edit(this, 'po')" title="View or edit this order"></a>
+          <a class="clickable admin  btn btn-outline-dark bi bi-trash" aria-hidden="true" on-click="delete(this)" title="Delete this record"></a>
+          <a class="clickable  btn btn-outline-dark bi bi-pencil" aria-hidden="true" on-click="edit(this, 'po')" title="View or edit this order"></a>
         </td>
       </tr>
     {{/if}}

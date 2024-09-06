@@ -64,9 +64,9 @@
                   {{/if}}
                 {{/}}
                 <td class="col-actions">
-                  <a class=" btn btn-outline-dark -pencil" aria-hidden="true" on-click="toggleEditOrderItem(current.orderItems[j],j)" title="Edit this record"></a>
+                  <a class=" btn btn-outline-dark bi bi-pencil" aria-hidden="true" on-click="toggleEditOrderItem(current.orderItems[j],j)" title="Edit this record"></a>
                   {{#if matchRole('admin')}}
-                    <a class=" btn btn-outline-dark -remove" aria-hidden="true" on-click="deleteOrderItem(current.orderItems[j],j)" title="Delete this record"></a>
+                    <a class=" btn btn-outline-dark bi bi-trash" aria-hidden="true" on-click="deleteOrderItem(current.orderItems[j],j)" title="Delete this record"></a>
                   {{/if}}
                 </td>
               </tr>

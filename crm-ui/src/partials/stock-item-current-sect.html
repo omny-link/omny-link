@@ -18,12 +18,12 @@
     <h2 class="">
       <span contenteditable id="curName2" on-focus="editField('#curName2','current.name')" on-blur="updateField('#curName2','current.name')" value="{{current.name}}"></span>
       <span class="float-end">
-        <a class=" btn btn-outline-dark -new-window" aria-hidden="true" href="orders.html?q=stockItemId:{{current.id}}" target="orders" title="View related {{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}orders{{/}}"></a>
-        <a class="clickable admin  btn btn-outline-dark -remove" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
+        <a class=" btn btn-outline-dark bi bi-box-arrow-up-right" aria-hidden="true" href="orders.html?q=stockItemId:{{current.id}}" target="orders" title="View related {{#tenant.strings.orders}}{{tenant.strings.orders}}{{else}}orders{{/}}"></a>
+        <a class="clickable admin  btn btn-outline-dark bi bi-trash" aria-hidden="true" on-click="delete(current)" title="Delete this record"></a>
         {{#if tenant.stockItemActions!=undefined && tenant.stockItemActions.length>0 }}
           <span class="clickable dropdown" aria-hidden="true" title="Start Process">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="customActionBtn" role="button" aria-expanded="false">
-              <a class="clickable  btn btn-outline-dark -play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
+              <a class="clickable  btn btn-outline-dark bi bi-play dropdown" aria-hidden="true" title="Start Process"> <span class="caret"></a>
             </a>
             <ul class="dropdown dropdown-menu" id="customActionMenu" role="menu">
               {{#each tenant.stockItemActions }}
@@ -47,7 +47,7 @@
 	          <div class="input-group">
               <input class="form-control" list="stockCategories" placeholder="Start typing to filter options" id="curStockCategory" required value="{{current.stockCategory.name}}">
 	            <span class="input-group-addon">
-                <a href="stock-categories.html?q={{current.stockCategory.id}}" target="_blank"><span class=" btn btn-outline-dark -new-window"></span></a>
+                <a href="stock-categories.html?q={{current.stockCategory.id}}" target="_blank"><span class=" btn btn-outline-dark bi bi-box-arrow-up-right"></span></a>
               </span>
             </div>
             <p class="col-md-offset-4 col-sm-offset-4 hidden-xs help-block"></p>

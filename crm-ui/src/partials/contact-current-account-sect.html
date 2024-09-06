@@ -78,7 +78,7 @@
           <div class="input-group">
             <input class="col-md-8 col-sm-8 form-control" id="curBusinessWebsite" type="url" value="{{current.account.businessWebsite}}"/>
             <span class="input-group-addon">
-              <a href="{{current.account.businessWebsite}}" target="_newtab"><span class=" btn btn-outline-dark -new-window"></span></a>
+              <a href="{{current.account.businessWebsite}}" target="_newtab"><span class=" btn btn-outline-dark bi bi-box-arrow-up-right"></span></a>
             </span>
           </div>
           <p class="col-md-offset-4 hidden-sm hidden-xs help-block">Remember to include http:// (or https://)</p>
@@ -133,16 +133,16 @@
         {{#if tenant.features.socialAccount}}
           <li class="form-group">
             <div class="btn-group col-md-offset-4 col-sm-offset-4" role="group" aria-label="...">
-              <a class=" btn btn-outline-dark kp-icon-twitter{{^current.account.twitter}} disabled{{/}}" {{#current.account.twitter}}href="https://twitter.com/{{current.account.twitter}}"{{else}}disabled {{/}} target="_newtab"></a>
-              <a class=" btn btn-outline-dark -pencil" on-click="showSocial('twitter','current.account.twitter')"></a>
+              <a class=" btn btn-outline-dark bi bi-twitter-x{{^current.account.twitter}} disabled{{/}}" {{#current.account.twitter}}href="https://twitter.com/{{current.account.twitter}}"{{else}}disabled {{/}} target="_newtab"></a>
+              <a class=" btn btn-outline-dark bi bi-pencil" on-click="showSocial('twitter','current.account.twitter')"></a>
             </div>
             <div class="btn-group" role="group" aria-label="...">
-              <a class=" btn btn-outline-dark kp-icon-linkedin{{^current.account.linkedIn}} disabled{{/}}" {{#current.account.linkedIn}}href="{{current.account.linkedIn}}"{{else}}disabled {{/}} target="_newtab"></a>
-              <a class=" btn btn-outline-dark -pencil" on-click="showSocial('linkedIn','current.account.linkedIn')"></a>
+              <a class=" btn btn-outline-dark bi bi-linkedin{{^current.account.linkedIn}} disabled{{/}}" {{#current.account.linkedIn}}href="{{current.account.linkedIn}}"{{else}}disabled {{/}} target="_newtab"></a>
+              <a class=" btn btn-outline-dark bi bi-pencil" on-click="showSocial('linkedIn','current.account.linkedIn')"></a>
             </div>
             <div class="btn-group" role="group" aria-label="...">
-              <a class=" btn btn-outline-dark kp-icon-facebook{{^current.account.facebook}} disabled{{/}}" {{#current.account.facebook}}href="{{current.account.facebook}}"{{/}} target="_newtab"></a>
-              <a class=" btn btn-outline-dark -pencil" on-click="showSocial('facebook','current.account.facebook')"></a>
+              <a class=" btn btn-outline-dark bi bi-facebook{{^current.account.facebook}} disabled{{/}}" {{#current.account.facebook}}href="{{current.account.facebook}}"{{/}} target="_newtab"></a>
+              <a class=" btn btn-outline-dark bi bi-pencil" on-click="showSocial('facebook','current.account.facebook')"></a>
             </div>
           </li>
         {{/if}}

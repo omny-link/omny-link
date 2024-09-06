@@ -36,7 +36,7 @@
             <td class="field-age">{{formatAge(age)}} {{#created}}({{formatDateTime(created)}}){{/}}</td>
             <td class="field-author">{{{gravatar(author)}}}</td>
             <td class="field-url"><img src="{{url}}" alt="Image {{k+1}} of {{current.name}}"/></td>
-            <td>{{#matchRole('stock_manager')}}<a class=" btn btn-outline-dark -remove" aria-hidden="true" on-click="deleteImage(current.images[k])" title="Delete this image"></a>{{/}}</td>
+            <td>{{#matchRole('stock_manager')}}<a class=" btn btn-outline-dark bi bi-trash" aria-hidden="true" on-click="deleteImage(current.images[k])" title="Delete this image"></a>{{/}}</td>
           </tr>
         {{/each}}
         {{^ current.images }}
