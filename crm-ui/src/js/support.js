@@ -156,7 +156,7 @@
   ractive.toggleShowFavoriteNotes = function(btn) {
     console.info('toggleShowFavoriteNotes');
     $('#notesTable tr.unfavorite').slideToggle();
-    $(btn).toggleClass('-star -star-empty');
+    $(btn).toggleClass('bi-star bi-star-fill');
   };
   ractive.toggleNoteConfidentiality = function(idx) {
     console.info('toggleNoteConfidentiality: '+idx);
