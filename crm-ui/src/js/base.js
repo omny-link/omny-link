@@ -710,7 +710,7 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
     if (fadeOutMessages && additionalClass!='bg-danger text-danger') setTimeout(function() {
       $('#messages, .messages').fadeOut();
     }, ractive.EASING_DURATION*10);
-    else $('#messages, .messages').append('<span class="text-danger float-end  -remove" onclick="ractive.hideMessage()"></span>');
+    else $('#messages, .messages').append('<span class="text-danger float-end  bi bi-trash" onclick="ractive.hideMessage()"></span>');
   },
   showReconnected: function() {
     console.log('showReconnected');

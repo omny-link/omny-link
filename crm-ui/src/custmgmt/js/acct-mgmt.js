@@ -1330,9 +1330,9 @@ var ractive = new BaseRactive({
         console.info('toggleEditContact');
         ractive.set('currentContact', obj);
         var editing = $('[data-contact-id="' + ractive.localId(obj) + '"]').siblings()
-            .children('a.-pencil').hasClass('editing');
+            .children('a.bi bi-pencil').hasClass('editing');
         // disable _all_ contacts
-        $('[data-contact-id]').siblings().children('a.-pencil')
+        $('[data-contact-id]').siblings().children('a.bi bi-pencil')
             .removeClass('editing');
         $('[data-contact-id]').removeClass('editing');
         $('[data-contact-id="' + ractive.localId(obj) + '"] span').removeClass('hidden');
@@ -1346,7 +1346,7 @@ var ractive = new BaseRactive({
           ractive.saveContact();
         } else { // Change clicked contact to editable
           $('[data-contact-id="' + ractive.localId(obj) + '"]').siblings()
-            .children('a.-pencil').addClass('editing');
+            .children('a.bi bi-pencil').addClass('editing');
           $('[data-contact-id="' + ractive.localId(obj) + '"] span').addClass('hidden');
           $('[data-contact-id="' + ractive.localId(obj) + '"] input')
             .removeClass('hidden')
