@@ -20,7 +20,7 @@
     <span>Notes</span>
     <span class="clickable  btn btn-outline-dark bi bi-plus" aria-hidden="true" onclick="ractive.addNote('{{current._links.self.href}}')" title="Add a new note"></span>
     <span class="clickable  btn btn-outline-dark -star-empty" aria-hidden="true" onclick="ractive.toggleShowFavoriteNotes(this)" title="Toggle showing all notes or just the favorites"></span>
-    <span class="clickable  btn btn-outline-dark kp-icon-unlock" aria-hidden="true"
+    <span class="clickable btn btn-outline-dark bi bi-unlock" aria-hidden="true"
           onclick="ractive.toggleShowConfidentialNotes(this)"
           title="Since you're not the owner you cannot view confidential notes."
       ></span>
@@ -43,7 +43,7 @@
           {{/}}
           <td class="float-end">
             <span class=" btn btn-outline-dark {{#favorite}}-star{{else}}-star-empty{{/}}" on-click="toggleNoteFavorite(j)"></span>
-              <span class=" btn btn-outline-dark {{#confidential==true}}kp-icon-lock{{else}}kp-icon-unlock{{/}}" on-click="toggleNoteConfidentiality(j)"></span>
+              <span class=" btn btn-outline-dark bi {{#confidential==true}}bi-lock{{else}}bi-unlock{{/}}" on-click="toggleNoteConfidentiality(j)"></span>
             </td>
         </tr>
       {{/each}}

@@ -151,7 +151,7 @@
       return;
     }
     $('#notesTable tr.confidential').slideToggle();
-    $(btn).toggleClass('kp-icon-lock kp-icon-unlock');
+    $(btn).toggleClass('bi-lock bi-unlock');
   };
   ractive.toggleShowFavoriteNotes = function(btn) {
     console.info('toggleShowFavoriteNotes');

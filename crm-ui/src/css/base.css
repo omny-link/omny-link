@@ -180,11 +180,6 @@ section h2 {
     height: 40px;
   }
 }
-@media (min-width: 768px) {
-  section:nth-of-type(1) h2 {
-    height: 45px;
-  }
-}
 section h2 .search {
 /*margin-bottom: 10px;*/
   margin-right: 0;
@@ -196,15 +191,6 @@ section h2 .search {
   section h2 .search {
     min-width: 15em;
   }
-}
-section h2 .bi,
-section h3 .bi {
-  height: 34px;
-  margin: -6px 0px 2px 0px;
-}
-section h3 a.bi {
-	margin-top:-10px;
-	margin-right: 2px;
 }
 section h2 .bi-search,
 section h2 .kp-icon-search {
