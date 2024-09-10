@@ -451,19 +451,19 @@ input[type="checkbox"].form-control:focus {
 .btn-group-social {
 	min-width:95px;
 }
-.btn-group .:nth-child(1) {
+.btn-group .bi:nth-child(1) {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-.btn-group .:nth-child(2) {
+.btn-group .bi:nth-child(2) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   left: -4px;
 }
-..disabled,
-..disabled:active,
-..disabled:hover,
-..disabled:visited {
+.bi.disabled,
+.bi.disabled:active,
+.bi.disabled:hover,
+.bi.disabled:visited {
   color: var(--kp-grey-1);
   background-color: var(--kp-grey-3);
 }
@@ -480,7 +480,7 @@ input[type="checkbox"].form-control:focus {
   vertical-align: middle;
   width: 36px;
 } */
-..dropdown {
+.bi.dropdown {
   width: 44px;
 }
 .bi bi-box-arrow-up-right {
@@ -501,10 +501,10 @@ input[type="checkbox"].form-control:focus {
   background-color: #f2dede;
   border-color: #ebccd1;
 }
-a.,
-a.:visited,
-h2 a.,
-h2 a.:visited {
+a.bi,
+a.bi:visited,
+h2 a.bi,
+h2 a.bi:visited {
   color: var(--kp-grey-2);
   text-decoration: none;
 }
@@ -520,10 +520,10 @@ h2 a.-remove {
 }
 .clickable:focus,
 .clickable:hover,
-a.:focus,
-a.:hover,
-h2 a.:focus,
-h2 a.:hover {
+a.bi:focus,
+a.bi:hover,
+h2 a.bi:focus,
+h2 a.bi:hover {
   color: var(--kp-primary);
   /*color: #646669;*/
 }
@@ -668,7 +668,7 @@ input.search {
     -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
     transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 }
-.editing. {
+.editing.bi {
   border-style: inset;
   background-color: rgba(0,82,132,.5);
 }
@@ -749,7 +749,7 @@ input.search {
 	.toolbar-top ul>li+li {
 	  margin-left: 2px;
 	}
-	.toolbar-top . {
+	.toolbar-top .bi {
 		padding: 10px;
 	}
 
@@ -1071,7 +1071,7 @@ text.textAnnotation {
   position: fixed;
   right:5%;
 }
-#propertySectMin . {
+#propertySectMin .bi {
 	border:none;
 }
 
@@ -1122,7 +1122,6 @@ text.textAnnotation {
   text-transform: none;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
-}
   text-transform: none;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
@@ -1134,7 +1133,53 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="kp-icon-"] {
 */
-.bi bi-linkedin:before, .kp-icon-sitemap:before, .kp-icon-comments-alt:before, .kp-icon-rss:before, .bi bi-twitter-x-sign:before, .kp-icon-cloud:before, .kp-icon-road:before, .bi bi-twitter-x:before, .kp-icon-road-2:before, .bi bi-linkedin-sign:before, .bi bi-linkedin-2:before, .kp-icon-feed:before, .kp-icon-feed-2:before, .kp-icon-inbox:before, .kp-icon-drawer:before, .kp-icon-user:before, .kp-icon-user-2:before, .kp-icon-profile:before, .kp-icon-cog:before, .kp-icon-cogs:before, .kp-icon-cog-2:before, .kp-icon-cog-3:before, .kp-icon-cogs-2:before, .kp-icon-upload:before, .kp-icon-upload-alt:before, .kp-icon-upload-2:before, .kp-icon-cloud-upload:before, .kp-icon-download-alt:before, .kp-icon-download:before, .kp-icon-cloud-download:before, .kp-icon-download-2:before, .kp-icon-cloud-download-2:before, .kp-icon-plus-sign:before, .kp-icon-minus-sign:before, .kp-icon-remove-sign:before, .kp-icon-ok-sign:before, .kp-icon-question-sign:before, .kp-icon-info-sign:before, .kp-icon-exclamation-sign:before, .kp-icon-warning-sign:before, .kp-icon-signout:before, .kp-icon-signin:before, .kp-icon-enter:before, .kp-icon-exit:before, .kp-icon-warning:before, .kp-icon-signup:before, .kp-icon-search:before, .kp-icon-search-2:before, .bi bi-facebook-sign:before, .bi bi-facebook:before, .bi bi-facebook-2:before, .bi bi-facebook-3:before, .kp-icon-happy:before, .kp-icon-happy-2:before, .kp-icon-smiley:before, .kp-icon-smiley-2:before, .kp-icon-tongue:before, .kp-icon-tongue-2:before, .kp-icon-sad:before, .kp-icon-sad-2:before, .kp-icon-wink:before, .kp-icon-wink-2:before, .kp-icon-grin:before, .kp-icon-grin-2:before, .kp-icon-cool:before, .kp-icon-cool-2:before, .kp-icon-angry:before, .kp-icon-angry-2:before, .kp-icon-evil:before, .kp-icon-evil-2:before, .kp-icon-shocked:before, .kp-icon-shocked-2:before, .kp-icon-confused:before, .kp-icon-confused-2:before, .kp-icon-neutral:before, .kp-icon-neutral-2:before, .kp-icon-wondering:before, .kp-icon-wondering-2:before, .kp-icon-spinner:before, .kp-icon-home:before, .kp-icon-home-2:before, .kp-icon-home-3:before, .kp-icon-tag:before, .kp-icon-tags:before, .kp-icon-list:before, .kp-icon-list-ul:before, .kp-icon-menu:before, .kp-icon-th-list:before, .kp-icon-wordpress:before, .kp-icon-wordpress-2:before, .kp-icon-google-plus-sign:before, .kp-icon-google-plus:before, .kp-icon-google:before, .kp-icon-google-plus-2:before, .kp-icon-google-plus-3:before, .kp-icon-google-drive:before, .kp-icon-github-sign:before, .kp-icon-github-alt:before, .kp-icon-github:before, .kp-icon-github-2:before, .kp-icon-github-3:before, .kp-icon-github-4:before, .kp-icon-github-5:before, .kp-icon-github-6:before, .kp-icon-expand:before, .kp-icon-fullscreen:before, .kp-icon-contract:before, .kp-icon-thumbs-up:before, .kp-icon-thumbs-down:before, .kp-icon-bookmark-empty:before, .kp-icon-check-empty:before, .kp-icon-table:before, .kp-icon-star:before, .kp-icon-star-2:before, .kp-icon-star-3:before, .kp-icon-thumbs-up-2:before, .kp-icon-thumbs-up-3:before, .kp-icon-share:before, .bi bi-twitter-x-2:before, .kp-icon-group:before, .kp-icon-bell:before, .kp-icon-off:before, .kp-icon-radio-checked:before, .kp-icon-radio-unchecked:before, .kp-icon-filter:before, .kp-icon-filter-2:before, .kp-icon-check:before, .kp-icon-stats:before, .kp-icon-bar-chart:before, .kp-icon-pie {
+.kp-icon-sitemap:before, .kp-icon-comments-alt:before,
+.kp-icon-rss:before, .kp-icon-cloud:before,
+.kp-icon-road:before, .kp-icon-road-2:before, .kp-icon-feed:before,
+.kp-icon-feed-2:before, .kp-icon-inbox:before, .kp-icon-drawer:before,
+.kp-icon-user:before, .kp-icon-user-2:before, .kp-icon-profile:before,
+.kp-icon-cog:before, .kp-icon-cogs:before, .kp-icon-cog-2:before,
+.kp-icon-cog-3:before, .kp-icon-cogs-2:before, .kp-icon-upload:before,
+.kp-icon-upload-alt:before, .kp-icon-upload-2:before,
+.kp-icon-cloud-upload:before, .kp-icon-download-alt:before,
+.kp-icon-download:before, .kp-icon-cloud-download:before,
+.kp-icon-download-2:before, .kp-icon-cloud-download-2:before,
+.kp-icon-plus-sign:before, .kp-icon-minus-sign:before,
+.kp-icon-remove-sign:before, .kp-icon-ok-sign:before,
+.kp-icon-question-sign:before, .kp-icon-info-sign:before,
+.kp-icon-exclamation-sign:before, .kp-icon-warning-sign:before,
+.kp-icon-signout:before, .kp-icon-signin:before, .kp-icon-enter:before,
+.kp-icon-exit:before, .kp-icon-warning:before, .kp-icon-signup:before,
+.kp-icon-search:before, .kp-icon-search-2:before, .bi-facebook-sign:before,
+.kp-icon-happy:before, .kp-icon-happy-2:before, .kp-icon-smiley:before,
+.kp-icon-smiley-2:before, .kp-icon-tongue:before, .kp-icon-tongue-2:before,
+.kp-icon-sad:before, .kp-icon-sad-2:before, .kp-icon-wink:before,
+.kp-icon-wink-2:before, .kp-icon-grin:before, .kp-icon-grin-2:before,
+.kp-icon-cool:before, .kp-icon-cool-2:before, .kp-icon-angry:before,
+.kp-icon-angry-2:before, .kp-icon-evil:before, .kp-icon-evil-2:before,
+.kp-icon-shocked:before, .kp-icon-shocked-2:before, .kp-icon-confused:before,
+.kp-icon-confused-2:before, .kp-icon-neutral:before,
+.kp-icon-neutral-2:before, .kp-icon-wondering:before,
+.kp-icon-wondering-2:before, .kp-icon-spinner:before, .kp-icon-home:before,
+.kp-icon-home-2:before, .kp-icon-home-3:before, .kp-icon-tag:before,
+.kp-icon-tags:before, .kp-icon-list:before, .kp-icon-list-ul:before,
+.kp-icon-menu:before, .kp-icon-th-list:before, .kp-icon-wordpress:before,
+.kp-icon-wordpress-2:before, .kp-icon-google-plus-sign:before,
+.kp-icon-google-plus:before, .kp-icon-google:before,
+.kp-icon-google-plus-2:before, .kp-icon-google-plus-3:before,
+.kp-icon-google-drive:before, .kp-icon-github-sign:before,
+.kp-icon-github-alt:before, .kp-icon-github:before, .kp-icon-github-2:before,
+.kp-icon-github-3:before, .kp-icon-github-4:before, .kp-icon-github-5:before,
+.kp-icon-github-6:before, .kp-icon-expand:before, .kp-icon-fullscreen:before,
+.kp-icon-contract:before, .kp-icon-thumbs-up:before,
+.kp-icon-thumbs-down:before, .kp-icon-bookmark-empty:before,
+.kp-icon-check-empty:before, .kp-icon-table:before, .kp-icon-star:before,
+.kp-icon-star-2:before, .kp-icon-star-3:before, .kp-icon-thumbs-up-2:before,
+.kp-icon-thumbs-up-3:before, .kp-icon-share:before, .kp-icon-group:before,
+.kp-icon-bell:before, .kp-icon-off:before, .kp-icon-radio-checked:before,
+.kp-icon-radio-unchecked:before, .kp-icon-filter:before,
+.kp-icon-filter-2:before, .kp-icon-check:before, .kp-icon-stats:before,
+.kp-icon-bar-chart:before, .kp-icon-pie {
   font-family: 'knowprocess';
   speak: none;
   font-style: normal;
