@@ -768,7 +768,7 @@ var ractive = new BaseRactive({
   showResults: function() {
     console.log('showResults');
     $('#currentSect').slideUp();
-    $('#definitionsTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
+    $('#definitionsTableToggle').addClass('bi-caret-down').removeClass('bi-caret-right');
     $('#definitionsTable').slideDown();
   },
   showSelection: function(ev) {
@@ -1001,7 +1001,7 @@ var ractive = new BaseRactive({
   },
   toggleResults: function() {
     console.log('toggleResults');
-    $('#definitionsTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
+    $('#definitionsTableToggle').toggleClass('bi-caret-down').toggleClass('bi-caret-right');
     $('#definitionsTable').slideToggle();
   },
   transposeBpmn: function() {

@@ -576,7 +576,7 @@ var ractive = new BaseRactive({
   },
   showTask: function() {
     console.log('showResults');
-    $('#tasksTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
+    $('#tasksTableToggle').addClass('bi-caret-right').removeClass('bi-caret-down');
     $('#tasksTable').slideUp();
     $('#currentSect').slideDown({ queue: true });
   },
@@ -676,7 +676,7 @@ var ractive = new BaseRactive({
   },
   toggleResults: function() {
     console.log('toggleResults');
-    $('#tasksTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
+    $('#tasksTableToggle').toggleClass('bi-caret-down').toggleClass('bi-caret-right');
     $('#tasksTable').slideToggle();
   }
 });

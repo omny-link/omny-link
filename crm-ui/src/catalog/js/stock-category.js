@@ -308,7 +308,7 @@ var ractive = new BaseRactive({
     return c;
   },
   hideResults: function() {
-    $('#stockCategoriesTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
+    $('#stockCategoriesTableToggle').addClass('bi-caret-right').removeClass('bi-caret-down');
     $('#stockCategoriesTable').slideUp();
     $('#currentSect').slideDown({ queue: true });
   },
@@ -451,7 +451,7 @@ var ractive = new BaseRactive({
 	  $('#currentSect').slideDown();
   },
   showResults: function() {
-    $('#stockCategoriesTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
+    $('#stockCategoriesTableToggle').addClass('bi-caret-down').removeClass('bi-caret-right');
     $('#currentSect').slideUp();
     $('#stockCategoriesTable').slideDown({ queue: true });
   },
@@ -465,7 +465,7 @@ var ractive = new BaseRactive({
   },
   toggleResults: function() {
     console.log('toggleResults');
-    $('#stockCategoriesTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
+    $('#stockCategoriesTableToggle').toggleClass('bi-caret-down').toggleClass('bi-caret-right');
     $('#stockCategoriesTable').slideToggle();
   },
   /**

@@ -379,7 +379,7 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
   },
   hideResults: function() {
     var entityName = ractive.get('entityName');
-    $('#'+entityName+'sTableToggle').addClass('kp-icon-caret-right').removeClass('kp-icon-caret-down');
+    $('#'+entityName+'sTableToggle').addClass('bi-caret-right').removeClass('bi-caret-down');
     $('#'+entityName+'sTable').slideUp();
     $('#currentSect').slideDown({ queue: true });
   },
@@ -725,7 +725,7 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
   },
   showResults: function() {
     var entityName = ractive.get('entityName');
-    $('#'+entityName+'sTableToggle').addClass('kp-icon-caret-down').removeClass('kp-icon-caret-right');
+    $('#'+entityName+'sTableToggle').addClass('bi-caret-down').removeClass('bi-caret-right');
     $('#currentSect').slideUp();
     $('#'+entityName+'sTable').slideDown({ queue: true });
   },
@@ -946,13 +946,13 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
   toggleResults: function() {
     console.info('toggleResults');
     var entityName = ractive.get('entityName');
-    $('#'+entityName+'sTableToggle').toggleClass('kp-icon-caret-down').toggleClass('kp-icon-caret-right');
+    $('#'+entityName+'sTableToggle').toggleClass('bi-caret-down').toggleClass('bi-caret-right');
     $('#'+entityName+'sTable').slideToggle();
   },
   toggleSection: function(sect) {
     console.info('toggleSection: '+$(sect).attr('id'));
     $('#'+$(sect).attr('id')+'>div').toggle();
-    $('#'+$(sect).attr('id')+' .ol-collapse').toggleClass('kp-icon-caret-right').toggleClass('kp-icon-caret-down');
+    $('#'+$(sect).attr('id')+' .ol-collapse').toggleClass('bi-caret-right').toggleClass('bi-caret-down');
   },
   toggleSidebar: function() {
     console.info('toggleSidebar');
