@@ -23,14 +23,15 @@
 
 /*
  * COLOURS
- *   orange:    ff6c06;
- *   blue:      0e9acd;
- *   pale blue: 59C4ED
- *   grey 1:    6f6f71
- *   grey 2:    6f6f71
- *   grey 3:    939598;
- *   grey 4:    b7b7b7
  */
+:root {
+  --kp-primary: #ff6c06;   /* orange */
+  --kp-secondary: #0e9acd; /* blue */
+  --kp-accent: #59C4ED;    /* pale blue */
+  --kp-grey-1: #212529;    /* grey 1 */
+  --kp-grey-2: #6f6f71;    /* grey 2 */
+  --kp-grey-3: #b7b7b7;    /* grey 3 */
+}
 
 /* RESPONSIVE OVERRIDES */
 
@@ -44,25 +45,34 @@
 /* START BOOTSTRAP OVERRIDES */
 
 body {
-  color: #6f6f71;
+  color: var(--kp-grey-1);
   font-family: 'Montserrat', Roboto, Ubuntu, 'Helvetica Neue', Verdana, sans-serif;
 }
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Signika', sans-serif;
   font-weight: 500;
 }
+h1, h2, h3 {
+  color: var(--kp-secondary);
+}
 h1 {
-  color: #0e9acd;
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.75rem;
+}
+h3 {
+  font-size: 1.5rem;
 }
 h4 {
-  font-size: 20px;
-  border-bottom: 3px double #939598;
+  font-size: 1.25rem;
+  border-bottom: 3px double var(--kp-grey-2);
 }
 h5,
 legend {
-  border-bottom: 1px solid #939598;
-  color: #6f6f71;
-  font-size:16px;
+  border-bottom: 1px solid var(--kp-grey-2);
+  color: var(--kp-grey-1);
+  font-size: 1rem;
 }
 img.entity-context {
   width: 90%;
@@ -73,7 +83,7 @@ input,select,textarea {
   line-height:1.4em;
 	padding: 0 10px 0 10px;
 }
-input[not(type='checkbox')]
+input[not(type='checkbox')] {
   box-shadow: inset 0px 1px 1px rgba(0,0,0,0.075), 0px 0px 8px rgba(102,175,233,0.6);
 }
 input:active,select:active,textarea:active {
@@ -156,8 +166,8 @@ section h2, h3, h4 {
   padding-bottom: 2px;
 }
 section h2 {
-  border-bottom: solid 1px #ff6c06;
-  color: #0e9acd;
+  border-bottom: solid 1px var(--kp-primary);
+  color: var(--kp-secondary);
   padding-top: 10px;
   padding-left: 20px;
   padding-right: 20px;
@@ -180,7 +190,7 @@ section h2 .search {
   margin-right: 0;
   border-bottom-right-radius: 0px;
   border-top-right-radius: 0px;
-  border-color: #0e9acd;
+  border-color: var(--kp-secondary);
 }
 @media (min-width: 992px) {
   section h2 .search {
@@ -212,7 +222,7 @@ section h2 .kp-icon-search {
 section h2 .entity {
   border-bottom-right-radius: 0px !important;
   border-top-right-radius: 0px !important;
-  border-color: #0e9acd;
+  border-color: var(--kp-secondary);
   padding-right: 0;
   /*margin-bottom: 10px;*/
   margin-right: -1px;
@@ -221,7 +231,7 @@ section h2 .entity {
 }
 section h2 .file {
   border-radius: 0 !important;
-  border-color: #0e9acd;
+  border-color: var(--kp-secondary);
   /*margin-bottom: 10px;*/
   margin-left: 0;
   margin-right: 0;
@@ -241,7 +251,7 @@ section .pasteZone .target {
   border-radius: 5px;
 }
 section h3 {
-  border-bottom: solid 1px #ff6c06;
+  border-bottom: solid 1px var(--kp-primary);
   padding-left: 20px;
 }
 .alert-counter {
@@ -335,8 +345,8 @@ tfoot th {
   }
 }
 .beta {
-  border: solid 1px #ff6c06;
-  color: #ff6c06;
+  border: solid 1px var(--kp-primary);
+  color: var(--kp-primary);
   display:none;
   font-style: italic;
   line-height: 1.1em;
@@ -454,12 +464,12 @@ input[type="checkbox"].form-control:focus {
 ..disabled:active,
 ..disabled:hover,
 ..disabled:visited {
-  color: #6f6f71;
-  background-color: #b7b7b7;
+  color: var(--kp-grey-1);
+  background-color: var(--kp-grey-3);
 }
 /* . {
   border-radius: 5px;
-  color: #0e9acd;
+  color: var(--kp-secondary);
   display: inline-block;
   font-size: 20px;
   height: 36px;
@@ -473,11 +483,11 @@ input[type="checkbox"].form-control:focus {
 ..dropdown {
   width: 44px;
 }
-.-new-window {
+.bi bi-box-arrow-up-right {
   padding: 4px 7px;
 }
 /* Weird edge case */
-#orderSect h3 .-new-window {
+#orderSect h3 .bi bi-box-arrow-up-right {
   padding-top: 5px;
   padding-bottom: 3px;
 }
@@ -495,7 +505,7 @@ a.,
 a.:visited,
 h2 a.,
 h2 a.:visited {
-  color: #939598;
+  color: var(--kp-grey-2);
   text-decoration: none;
 }
 h2 a.-remove {
@@ -514,7 +524,7 @@ a.:focus,
 a.:hover,
 h2 a.:focus,
 h2 a.:hover {
-  color: #ff6c06;
+  color: var(--kp-primary);
   /*color: #646669;*/
 }
 .sort-asc,
@@ -544,6 +554,7 @@ h2 a.:hover {
   font-size: 0.8em;
 }
 .navbar-brand {
+ float: left;
 	padding: 0;
   position: relative;
   top: -18px;
@@ -557,11 +568,11 @@ h2 a.:hover {
   max-width: 160px;
 }
 .navbar-top {
-  background-color:white;
-  z-index:200;
-  position:relative;
+  background-color: white;
+  z-index: 200;
+  position: relative;
 	margin-top: 0;
-  padding-top: 20px;
+  padding: 2rem 0;
 }
 @media print {
 	.container-sticky {
@@ -668,7 +679,7 @@ input.search {
 @media screen {
 	.toolbar {
 	  background-color: #eee;
-	  color: #ff6c06;
+	  color: var(--kp-primary);
 	  position: fixed;
 	}
 	.toolbar-left {
@@ -697,13 +708,13 @@ input.search {
 	.toolbar li span.:active,
 	.toolbar li span..active {
 	  color: #fcf8e3;
-	  background-color: #ff6c06;
+	  background-color: var(--kp-primary);
 	}
 	.toolbar li span:not(.active) {
 	  border: 0px;
 	}
 	.toolbar-left li span:not(.active):not(:active):not(:hover) {
-	  border-bottom: solid 1px #ff6c06;
+	  border-bottom: solid 1px var(--kp-primary);
 	  border-bottom-right-radius: 0;
 	  border-bottom-left-radius: 0;
 	}
@@ -754,7 +765,7 @@ input.search {
 /* SUPPORT BAR */
 @media screen {
 	.support-bar {
-		background-color: #ff6c06;
+		background-color: var(--kp-primary);
 	  border-bottom-left-radius: 1em;
 		border-top-left-radius: 1em;
 	  height: 3.5em;
@@ -763,11 +774,10 @@ input.search {
 	  top: 49%;
 		width: 3.5em;
 	}
-	.support-bar . {
-	  border:none;
-	  color: #59C4ED; /* pale blue */ /* b7b7b7 grey*/
-	  font-size: 2.5em;
-	  padding-top: .1em;
+	.support-bar .btn {
+	  color: var(--kp-accent); /* pale blue */ /* b7b7b7 grey*/
+	  font-size: 2.2rem;
+    margin: 0rem 0.6rem;
 	}
 }
 /* END SUPPORT BAR */
@@ -795,7 +805,7 @@ input.search {
   margin-right: 10px;
 }
 .dropdown.dropdown-menu li.divider {
-  background-color: #ff6c06;
+  background-color: var(--kp-primary);
 	height: 1px;
   margin: 0 10px 10px 10px;
 }
@@ -918,7 +928,7 @@ h4 a.-remove {
   margin:0px;
 }
 .powered-by-text {
-	color:#6f6f71;
+	color:var(--kp-grey-1);
 	font-size:14px;
 	font-style:italic;
 }
@@ -932,15 +942,15 @@ h4 a.-remove {
 	display:inline;
 }
 .profile select.tenant {
-    border-color: #6f6f71;
-    color: #6f6f71;
+    border-color: var(--kp-grey-1);
+    color: var(--kp-grey-1);
     height: 34px;
     border-radius: 5px;
     top: -3px;
     position: relative;
 }
 .profile-img img {
-  border: 1px solid #6f6f71;
+  border: 1px solid var(--kp-grey-1);
   margin-top: 1px;
 }
 .wizard {
@@ -949,7 +959,7 @@ h4 a.-remove {
 }
 .wizard-step li a {
 	border-radius: 40px;
-  border: #59C4ED solid 1px;
+  border: var(--kp-accent) solid 1px;
   padding: 5px 15px;
   margin-right: 50px;
 }
@@ -1017,7 +1027,7 @@ rect.lane:nth-of-type(odd) {
 	fill: #f9f9f9;
 }
 rect.participant {
-  fill: #b7b7b7;
+  fill: var(--kp-grey-3);
 }
 
 text {
@@ -1051,11 +1061,11 @@ text.textAnnotation {
 }
 
 #funnel text {
-	fill: #ff6c06 !important;
+	fill: var(--kp-primary) !important;
 }
 #propertySectMin {
   background-color: #fcf8e3;
-  border: #ff6c06 double 3px;
+  border: var(--kp-primary) double 3px;
   bottom: 0;
   display: none;
   position: fixed;
@@ -1067,7 +1077,7 @@ text.textAnnotation {
 
 #propertySect {
 	background-color: #fcf8e3;
-	border: #ff6c06 double 3px;
+	border: var(--kp-primary) double 3px;
   display:'inline';
   padding: 20px;
   position: fixed;
@@ -1085,7 +1095,7 @@ text.textAnnotation {
 }
 
 .selected {
-  stroke: #ff6c06;
+  stroke: var(--kp-primary);
   stroke-width: 3px;
 }
 
@@ -1124,7 +1134,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="kp-icon-"] {
 */
-.kp-icon-linkedin:before, .kp-icon-sitemap:before, .kp-icon-comments-alt:before, .kp-icon-rss:before, .kp-icon-twitter-sign:before, .kp-icon-cloud:before, .kp-icon-road:before, .kp-icon-twitter:before, .kp-icon-road-2:before, .kp-icon-linkedin-sign:before, .kp-icon-linkedin-2:before, .kp-icon-feed:before, .kp-icon-feed-2:before, .kp-icon-inbox:before, .kp-icon-drawer:before, .kp-icon-user:before, .kp-icon-user-2:before, .kp-icon-profile:before, .kp-icon-cog:before, .kp-icon-cogs:before, .kp-icon-cog-2:before, .kp-icon-cog-3:before, .kp-icon-cogs-2:before, .kp-icon-upload:before, .kp-icon-upload-alt:before, .kp-icon-upload-2:before, .kp-icon-cloud-upload:before, .kp-icon-download-alt:before, .kp-icon-download:before, .kp-icon-cloud-download:before, .kp-icon-download-2:before, .kp-icon-cloud-download-2:before, .kp-icon-plus-sign:before, .kp-icon-minus-sign:before, .kp-icon-remove-sign:before, .kp-icon-ok-sign:before, .kp-icon-question-sign:before, .kp-icon-info-sign:before, .kp-icon-exclamation-sign:before, .kp-icon-warning-sign:before, .kp-icon-signout:before, .kp-icon-signin:before, .kp-icon-enter:before, .kp-icon-exit:before, .kp-icon-warning:before, .kp-icon-signup:before, .kp-icon-search:before, .kp-icon-search-2:before, .kp-icon-facebook-sign:before, .kp-icon-facebook:before, .kp-icon-facebook-2:before, .kp-icon-facebook-3:before, .kp-icon-happy:before, .kp-icon-happy-2:before, .kp-icon-smiley:before, .kp-icon-smiley-2:before, .kp-icon-tongue:before, .kp-icon-tongue-2:before, .kp-icon-sad:before, .kp-icon-sad-2:before, .kp-icon-wink:before, .kp-icon-wink-2:before, .kp-icon-grin:before, .kp-icon-grin-2:before, .kp-icon-cool:before, .kp-icon-cool-2:before, .kp-icon-angry:before, .kp-icon-angry-2:before, .kp-icon-evil:before, .kp-icon-evil-2:before, .kp-icon-shocked:before, .kp-icon-shocked-2:before, .kp-icon-confused:before, .kp-icon-confused-2:before, .kp-icon-neutral:before, .kp-icon-neutral-2:before, .kp-icon-wondering:before, .kp-icon-wondering-2:before, .kp-icon-spinner:before, .kp-icon-home:before, .kp-icon-home-2:before, .kp-icon-home-3:before, .kp-icon-tag:before, .kp-icon-tags:before, .kp-icon-list:before, .kp-icon-list-ul:before, .kp-icon-menu:before, .kp-icon-th-list:before, .kp-icon-wordpress:before, .kp-icon-wordpress-2:before, .kp-icon-google-plus-sign:before, .kp-icon-google-plus:before, .kp-icon-google:before, .kp-icon-google-plus-2:before, .kp-icon-google-plus-3:before, .kp-icon-google-drive:before, .kp-icon-github-sign:before, .kp-icon-github-alt:before, .kp-icon-github:before, .kp-icon-github-2:before, .kp-icon-github-3:before, .kp-icon-github-4:before, .kp-icon-github-5:before, .kp-icon-github-6:before, .kp-icon-expand:before, .kp-icon-fullscreen:before, .kp-icon-contract:before, .kp-icon-thumbs-up:before, .kp-icon-thumbs-down:before, .kp-icon-bookmark-empty:before, .kp-icon-check-empty:before, .kp-icon-table:before, .kp-icon-star:before, .kp-icon-star-2:before, .kp-icon-star-3:before, .kp-icon-thumbs-up-2:before, .kp-icon-thumbs-up-3:before, .kp-icon-share:before, .kp-icon-twitter-2:before, .kp-icon-group:before, .kp-icon-bell:before, .kp-icon-off:before, .kp-icon-radio-checked:before, .kp-icon-radio-unchecked:before, .kp-icon-filter:before, .kp-icon-filter-2:before, .kp-icon-check:before, .kp-icon-stats:before, .kp-icon-bar-chart:before, .kp-icon-pie {
+.bi bi-linkedin:before, .kp-icon-sitemap:before, .kp-icon-comments-alt:before, .kp-icon-rss:before, .bi bi-twitter-x-sign:before, .kp-icon-cloud:before, .kp-icon-road:before, .bi bi-twitter-x:before, .kp-icon-road-2:before, .bi bi-linkedin-sign:before, .bi bi-linkedin-2:before, .kp-icon-feed:before, .kp-icon-feed-2:before, .kp-icon-inbox:before, .kp-icon-drawer:before, .kp-icon-user:before, .kp-icon-user-2:before, .kp-icon-profile:before, .kp-icon-cog:before, .kp-icon-cogs:before, .kp-icon-cog-2:before, .kp-icon-cog-3:before, .kp-icon-cogs-2:before, .kp-icon-upload:before, .kp-icon-upload-alt:before, .kp-icon-upload-2:before, .kp-icon-cloud-upload:before, .kp-icon-download-alt:before, .kp-icon-download:before, .kp-icon-cloud-download:before, .kp-icon-download-2:before, .kp-icon-cloud-download-2:before, .kp-icon-plus-sign:before, .kp-icon-minus-sign:before, .kp-icon-remove-sign:before, .kp-icon-ok-sign:before, .kp-icon-question-sign:before, .kp-icon-info-sign:before, .kp-icon-exclamation-sign:before, .kp-icon-warning-sign:before, .kp-icon-signout:before, .kp-icon-signin:before, .kp-icon-enter:before, .kp-icon-exit:before, .kp-icon-warning:before, .kp-icon-signup:before, .kp-icon-search:before, .kp-icon-search-2:before, .bi bi-facebook-sign:before, .bi bi-facebook:before, .bi bi-facebook-2:before, .bi bi-facebook-3:before, .kp-icon-happy:before, .kp-icon-happy-2:before, .kp-icon-smiley:before, .kp-icon-smiley-2:before, .kp-icon-tongue:before, .kp-icon-tongue-2:before, .kp-icon-sad:before, .kp-icon-sad-2:before, .kp-icon-wink:before, .kp-icon-wink-2:before, .kp-icon-grin:before, .kp-icon-grin-2:before, .kp-icon-cool:before, .kp-icon-cool-2:before, .kp-icon-angry:before, .kp-icon-angry-2:before, .kp-icon-evil:before, .kp-icon-evil-2:before, .kp-icon-shocked:before, .kp-icon-shocked-2:before, .kp-icon-confused:before, .kp-icon-confused-2:before, .kp-icon-neutral:before, .kp-icon-neutral-2:before, .kp-icon-wondering:before, .kp-icon-wondering-2:before, .kp-icon-spinner:before, .kp-icon-home:before, .kp-icon-home-2:before, .kp-icon-home-3:before, .kp-icon-tag:before, .kp-icon-tags:before, .kp-icon-list:before, .kp-icon-list-ul:before, .kp-icon-menu:before, .kp-icon-th-list:before, .kp-icon-wordpress:before, .kp-icon-wordpress-2:before, .kp-icon-google-plus-sign:before, .kp-icon-google-plus:before, .kp-icon-google:before, .kp-icon-google-plus-2:before, .kp-icon-google-plus-3:before, .kp-icon-google-drive:before, .kp-icon-github-sign:before, .kp-icon-github-alt:before, .kp-icon-github:before, .kp-icon-github-2:before, .kp-icon-github-3:before, .kp-icon-github-4:before, .kp-icon-github-5:before, .kp-icon-github-6:before, .kp-icon-expand:before, .kp-icon-fullscreen:before, .kp-icon-contract:before, .kp-icon-thumbs-up:before, .kp-icon-thumbs-down:before, .kp-icon-bookmark-empty:before, .kp-icon-check-empty:before, .kp-icon-table:before, .kp-icon-star:before, .kp-icon-star-2:before, .kp-icon-star-3:before, .kp-icon-thumbs-up-2:before, .kp-icon-thumbs-up-3:before, .kp-icon-share:before, .bi bi-twitter-x-2:before, .kp-icon-group:before, .kp-icon-bell:before, .kp-icon-off:before, .kp-icon-radio-checked:before, .kp-icon-radio-unchecked:before, .kp-icon-filter:before, .kp-icon-filter-2:before, .kp-icon-check:before, .kp-icon-stats:before, .kp-icon-bar-chart:before, .kp-icon-pie {
   font-family: 'knowprocess';
   speak: none;
   font-style: normal;
@@ -1134,7 +1144,7 @@ you can use the generic selector below, but it's slower:
   line-height: 1;
   -webkit-font-smoothing: antialiased;
 }
-.kp-icon-linkedin:before {
+.bi bi-linkedin:before {
   content: "\f0e1";
 }
 .kp-icon-sitemap:before {
@@ -1146,7 +1156,7 @@ you can use the generic selector below, but it's slower:
 .kp-icon-rss:before {
   content: "\f09e";
 }
-.kp-icon-twitter-sign:before {
+.bi bi-twitter-x-sign:before {
   content: "\f081";
 }
 .kp-icon-cloud:before {
@@ -1155,16 +1165,16 @@ you can use the generic selector below, but it's slower:
 .kp-icon-road:before {
   content: "\f018";
 }
-.kp-icon-twitter:before {
+.bi bi-twitter-x:before {
   content: "\e000";
 }
 .kp-icon-road-2:before {
   content: "\e001";
 }
-.kp-icon-linkedin-sign:before {
+.bi bi-linkedin-sign:before {
   content: "\f08c";
 }
-.kp-icon-linkedin-2:before {
+.bi bi-linkedin-2:before {
   content: "\e002";
 }
 .kp-icon-feed:before {
@@ -1278,16 +1288,16 @@ you can use the generic selector below, but it's slower:
 .kp-icon-search-2:before {
   content: "\e012";
 }
-.kp-icon-facebook-sign:before {
+.bi bi-facebook-sign:before {
   content: "\f082";
 }
-.kp-icon-facebook:before {
+.bi bi-facebook:before {
   content: "\f09a";
 }
-.kp-icon-facebook-2:before {
+.bi bi-facebook-2:before {
   content: "\e013";
 }
-.kp-icon-facebook-3:before {
+.bi bi-facebook-3:before {
   content: "\e014";
 }
 .kp-icon-happy:before {
@@ -1488,7 +1498,7 @@ you can use the generic selector below, but it's slower:
 .kp-icon-share:before {
   content: "\e044";
 }
-.kp-icon-twitter-2:before {
+.bi bi-twitter-x-2:before {
   content: "\f099";
 }
 .kp-icon-group:before {
