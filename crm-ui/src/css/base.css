@@ -198,12 +198,7 @@ section h2 .kp-icon-search {
   border-bottom-right-radius: 15px;
   border-top-left-radius: 0;
   border-top-right-radius: 15px;
-  /* font-size: 20px;
-  margin-left: 0px; */
   position: relative;
-  left: -7px;
-  /* margin-top: 1rem; */
-  /* top: 0px; */
 }
 section h2 .entity {
   border-bottom-right-radius: 0px !important;
@@ -605,11 +600,11 @@ h2 a.bi:hover {
 }
 input.criteria,
 input.search {
-	display:inline;
-  line-height: 1.2;
-	position:relative;
-	bottom:6px;
-	width:25%; /* This is a problem for data explorer, consider .inline-form instead */
+	display: inline;
+  height: 2.2rem;
+	position: relative;
+	bottom: -0.3rem;
+	width: 25%; /* This is a problem for data explorer, consider .inline-form instead */
 }
 .search {
 	 border-radius:15px;
