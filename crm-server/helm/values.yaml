@@ -113,6 +113,8 @@ crm:
     origins: "http://localhost:8000,https://beta.knowprocess.com,https://cloud.knowprocess.com"
     allowedHeaders: "Authorization,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Location,Pragma,X-Requested-With"
     exposedHeaders: "Authorization,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Location,Pragma,X-Requested-With"
+  deps:
+    bootstrapVersion: "3.4.1"
 
 rest:
   javaOpts:

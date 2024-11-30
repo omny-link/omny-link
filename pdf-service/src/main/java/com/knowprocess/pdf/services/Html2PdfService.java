@@ -54,6 +54,9 @@ public class Html2PdfService {
     @Value("${kp.services.css:/css/base.css}")
     private final String cssResource;
 
+    @Value("${crm.deps.bootstrap.version}")
+    private String bootstrapVersion;
+
     private String bootstrapCss;
 
     private String css;
@@ -76,12 +79,6 @@ public class Html2PdfService {
 
             HtmlPipelineContext htmlContext = new HtmlPipelineContext(null);
             htmlContext.setTagFactory(Tags.getHtmlTagProcessorFactory());
-            // htmlContext.setImageProvider(new AbstractImageProvider() {
-            // public String getImageRootPath() {
-            // return "images/";
-            // }
-            // });
-
             htmlContext.setLinkProvider(new LinkProvider() {
                 public String getLinkRoot() {
                     return baseUrl;
@@ -91,9 +88,10 @@ public class Html2PdfService {
             CSSResolver cssResolver = XMLWorkerHelper.getInstance()
                     .getDefaultCssResolver(false);
             try {
-                cssResolver.addCss(getBootstrapCss(
-                        "/META-INF/resources/webjars/bootstrap/3.3.5/css/bootstrap.min.css"),
-                        true);
+                String resource = String.format(
+                        "/META-INF/resources/webjars/bootstrap/%1$s/css/bootstrap.min.css",
+                        bootstrapVersion);
+                cssResolver.addCss(getBootstrapCss(resource), true);
                 cssResolver.addCss(getUserDefinedCss(), true);
             } catch (CssResolverException e) {
                 LOGGER.warn("Cannot add CSS to PDF pipeline", e);
