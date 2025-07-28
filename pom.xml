@@ -175,6 +175,7 @@
   <modules>
     <module>catalog</module>
     <module>crm-server</module>
+    <module>crm-ui</module>
     <module>cust-mgmt</module>
     <module>docs</module>
     <module>pdf-service</module>
