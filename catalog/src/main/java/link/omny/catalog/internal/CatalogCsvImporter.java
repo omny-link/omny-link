@@ -45,17 +45,12 @@ public class CatalogCsvImporter {
                 .getPropertyDescriptors(StockItem.class);
         PropertyDescriptor[] acctPropertyDescriptors = BeanUtils
                 .getPropertyDescriptors(StockCategory.class);
-        // This JavaDoc is not (currently) true:
-        // If your source contains a header record, you can simplify your
-        // code and safely reference columns, by using withHeader(String...)
-        // with no arguments:
-        // CSVFormat.EXCEL.withHeader();
 
-        final CSVParser parser = new CSVParser(in,
-                CSVFormat.EXCEL.withHeader(headers));
+        final CSVParser parser = CSVFormat.EXCEL.builder()
+                .setHeader(headers)
+                .get()
+                .parse(in);
         Iterable<CSVRecord> records = parser.getRecords();
-        // Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader(headers)
-        // .parse(in);
 
         for (CSVRecord record : records) {
             // skip header
