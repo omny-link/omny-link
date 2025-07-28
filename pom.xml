@@ -30,8 +30,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>${project.version}</omny-link.version>
     <plantuml.version>8059</plantuml.version>
-    <spring.version>6.1.5</spring.version>
-    <spring-boot.version>3.3.2</spring-boot.version>
+    <spring.version>6.2.9</spring.version>
+    <spring-boot.version>3.5.4</spring-boot.version>
   </properties>
 
   <distributionManagement>
