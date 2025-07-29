@@ -16,7 +16,7 @@
 describe("Account management", function() {
   var tenantId = 'acme';
   var server = (typeof $env === 'undefined' || !$env) ? 'http://localhost:8080' : $env.server;
-  var baseUrl = server + '/' + tenantId;
+  var baseUrl = `${server}/${tenantId}`;
   
   var originalTimeout;
   var accountsBefore = [];
@@ -55,10 +55,10 @@ describe("Account management", function() {
     return match ? match[1] : null;
   }
   function accountUri(account) {
-    return baseUrl + '/accounts/' + (account.id || getIdFromLocation(account.links && account.links[0] && account.links[0].href || ''));
+    return `${baseUrl}/accounts/${account.id || getIdFromLocation((account.links && account.links[0] && account.links[0].href) || '')}`;
   }
   function contactUri(contact) {
-    return baseUrl + '/contacts/' + (contact.id || getIdFromLocation(contact.links && contact.links[0] && contact.links[0].href || ''));
+    return `${baseUrl}/contacts/${contact.id || getIdFromLocation((contact.links && contact.links[0] && contact.links[0].href) || '')}`;
   }
   
   beforeAll(function() {
@@ -68,8 +68,8 @@ describe("Account management", function() {
 
   it("searches to take an initial baseline", function(done) {
     Promise.all([
-      fetch(baseUrl + '/contacts/').then(r => { contactsBefore = r.json ? r.json() : []; return r; }),
-      fetch(baseUrl + '/accounts/').then(r => { accountsBefore = r.json ? r.json() : []; return r; })
+      fetch(`${baseUrl}/contacts/`).then(r => { contactsBefore = r.json ? r.json() : []; return r; }),
+      fetch(`${baseUrl}/accounts/`).then(r => { accountsBefore = r.json ? r.json() : []; return r; })
     ]).then(function(responses) {
       expect(responses[0].status).toEqual(200);
       expect(responses[1].status).toEqual(200);
@@ -78,7 +78,7 @@ describe("Account management", function() {
   });
 
   it("creates a new account", function(done) {
-    fetch(baseUrl + '/accounts/', {
+    fetch(`${baseUrl}/accounts/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(account)
@@ -92,7 +92,7 @@ describe("Account management", function() {
   });
 
   it("fetches updated accounts and checks the newly added one is correct", function(done) {
-    fetch(baseUrl + '/accounts/')
+    fetch(`${baseUrl}/accounts/`)
       .then(r => r.json())
       .then(function(data) {
         accounts = data;
@@ -170,7 +170,7 @@ describe("Account management", function() {
   });
 
   it("fetches updated accounts and checks the newly updated one is correct", function(done) {
-    fetch(baseUrl + '/accounts/')
+    fetch(`${baseUrl}/accounts/`)
       .then(r => r.json())
       .then(function(data) {
         accounts = data;
@@ -194,7 +194,7 @@ describe("Account management", function() {
 
   it("adds a contact to the new account", function(done) {
     contact.accountId = getIdFromLocation(account.links[0].href);
-    fetch(baseUrl + '/contacts/', {
+    fetch(`${baseUrl}/contacts/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(contact)
@@ -208,7 +208,7 @@ describe("Account management", function() {
   });
 
   it("fetches contacts for account and checks the newly added one holds correct information", function(done) {
-    fetch(baseUrl + '/contacts/findByAccountId?accountId=' + getIdFromLocation(account.links[0].href))
+    fetch(`${baseUrl}/contacts/findByAccountId?accountId=${getIdFromLocation(account.links[0].href)}`)
       .then(r => r.json())
       .then(function(data) {
         data.sort(function(a,b) { return new Date(b.firstContact)-new Date(a.firstContact); });
@@ -273,8 +273,8 @@ describe("Account management", function() {
 
   it("checks the data is the same as the baseline", function(done) {
     Promise.all([
-      fetch(baseUrl + '/contacts/').then(r => r.json()),
-      fetch(baseUrl + '/accounts/').then(r => r.json())
+      fetch(`${baseUrl}/contacts/`).then(r => r.json()),
+      fetch(`${baseUrl}/accounts/`).then(r => r.json())
     ]).then(function([contactsData, accountsData]) {
       contacts = contactsData;
       accounts = accountsData;
