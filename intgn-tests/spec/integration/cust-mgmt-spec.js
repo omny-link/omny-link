@@ -4,10 +4,6 @@ describe("Customer Management REST API:", function () {
 
     const BASE_URL = "http://localhost:8082";
     var tenantId = 'acme';
-    // var $rh = new RestEntityHelper({
-    //     server: window['$env'] == undefined ? 'http://localhost:8080' : $env.server,
-    //     tenantId: tenantId
-    // });
 
     var originalTimeout;
     var accountsBefore = [];
@@ -39,7 +35,7 @@ describe("Customer Management REST API:", function () {
         type: 'TEST'
     }
     describe("GET baseline data", function () {
-        it("searches for existing contacts and accounts", function (done) {
+        it("for existing contacts and accounts", function (done) {
             frisby.get(`${BASE_URL}/${tenantId}/contacts/`)
                 .then(function (response) {
                     console.warn(`Baseline contacts: ${response.json.length}`);
