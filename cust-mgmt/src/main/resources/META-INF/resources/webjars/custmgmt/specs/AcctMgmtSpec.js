@@ -15,7 +15,7 @@
  ******************************************************************************/
 describe("Account management", function() {
   var tenantId = 'acme';
-  var server = window['$env'] == undefined ? 'http://localhost:8080' : $env.server;
+  var server = (typeof $env === 'undefined' || !$env) ? 'http://localhost:8080' : $env.server;
   var baseUrl = server + '/' + tenantId;
   
   var originalTimeout;
