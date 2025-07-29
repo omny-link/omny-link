@@ -125,6 +125,43 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>1.12.1</version>
+        <executions>
+          <execution>
+            <id>install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <configuration>
+              <nodeVersion>v22.17.1</nodeVersion>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <workingDirectory>../intgn-tests</workingDirectory>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm test</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>integration-test</phase>
+            <configuration>
+              <workingDirectory>../intgn-tests</workingDirectory>
+              <arguments>test</arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-maven-plugin</artifactId>
         <configuration>
@@ -165,6 +202,30 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>start-crm-server</id>
+            <goals>
+              <goal>start</goal>
+            </goals>
+            <phase>pre-integration-test</phase>
+            <configuration>
+              <fork>true</fork>
+              <projects>crm-module</projects>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-crm-server</id>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+            <phase>post-integration-test</phase>
+            <configuration>
+              <fork>true</fork>
+              <projects>crm-module</projects>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

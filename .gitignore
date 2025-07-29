@@ -43,3 +43,6 @@ omny-link-server/*jrxml.html
 
 .vscode
 .rewrite-cache/
+
+# binaries fetched by maven-frontend-plugin
+**/node/

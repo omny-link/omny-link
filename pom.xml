@@ -177,6 +177,7 @@
     <module>crm-server</module>
     <module>cust-mgmt</module>
     <module>docs</module>
+    <module>intgn-tests</module>
     <module>pdf-service</module>
     <module>support-services</module>
   </modules>
