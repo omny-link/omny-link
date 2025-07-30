@@ -13,26 +13,12 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-const tenantId = 'acme';
-const server = (typeof $env === 'undefined' || !$env) ? 'http://localhost:8082' : $env.server;
-const baseUrl = `${server}/${tenantId}`;
-const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-
-async function createTestContact(baseUrl, contact) {
-  await fetch(`${baseUrl}/contacts/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(contact)
-  }).then(function (response) {
-    if (response.status !== 201) fail(`Failed to create contact: ${response.status}`);
-    const location = response.headers.get('Location');
-    if (!location) fail('No Location header returned');
-    contact.links = [{ rel: 'self', href: location }];
-  }).catch(e => { fail(e); });
-  console.info(`Created contact: ${contact.links[0].href}`);
-}
-
 describe("Contact management", function() {
+  const tenantId = 'acme';
+  const server = (typeof $env === 'undefined' || !$env) ? 'http://localhost:8082' : $env.server;
+  const baseUrl = `${server}/${tenantId}`;
+  const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+
   const contact = {
       firstName: 'Fred',
       lastName: 'Flintstone',
@@ -73,6 +59,20 @@ describe("Contact management", function() {
   function contactUri(contact) {
     return `${baseUrl}/contacts/${contact.id || getIdFromLocation((contact.links && contact.links[0] && contact.links[0].href) || '')}`;
   }
+  async function createTestContact(baseUrl, contact) {
+    await fetch(`${baseUrl}/contacts/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(contact)
+    }).then(function (response) {
+      if (response.status !== 201) fail(`Failed to create contact: ${response.status}`);
+      const location = response.headers.get('Location');
+      if (!location) fail('No Location header returned');
+      contact.links = [{ rel: 'self', href: location }];
+    }).catch(e => { fail(e); });
+    console.info(`Created contact: ${contact.links[0].href}`);
+  }
+
 
   beforeAll(async function() {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;

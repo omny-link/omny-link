@@ -13,24 +13,11 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-const tenantId = 'acme';
-const server = (typeof $env === 'undefined' || !$env) ? 'http://localhost:8082' : $env.server;
-const baseUrl = `${server}/${tenantId}`;
-const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-
-async function fetchJson(url, options = {}) {
-  const res = await fetch(url, options);
-  const data = await res.json().catch(() => undefined);
-  return { data, res };
-}
-
-async function fetchText(url, options = {}) {
-  const res = await fetch(url, options);
-  const data = await res.text();
-  return { data, res };
-}
-
 describe("Product catalogue", function() {
+  const tenantId = 'acme';
+  const server = (typeof $env === 'undefined' || !$env) ? 'http://localhost:8082' : $env.server;
+  const baseUrl = `${server}/${tenantId}`;
+  const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
   const contact = {
     firstName: 'Barney',
     lastName: 'Rubble',
@@ -126,12 +113,20 @@ describe("Product catalogue", function() {
   let stockItemsBefore;
   let stockItems;
 
-  beforeEach(function() {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
-  });
+  async function fetchJson(url, options = {}) {
+    const res = await fetch(url, options);
+    const data = await res.json().catch(() => undefined);
+    return { data, res };
+  }
 
-  afterEach(function() {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+  async function fetchText(url, options = {}) {
+    const res = await fetch(url, options);
+    const data = await res.text();
+    return { data, res };
+  }
+
+  beforeAll(function() {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
   });
 
   function getIdFromLocation(location) {
@@ -483,5 +478,9 @@ describe("Product catalogue", function() {
     stockItems = await res.json();
     stockItems.sort((a, b) => new Date(b.created) - new Date(a.created));
     expect(stockItems.length).toEqual(stockItemsBefore.length);
+  });
+
+  afterAll(function() {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 });

@@ -4,6 +4,6 @@
     "jasmine": "^5.9.0"
   },
   "scripts": {
-    "test": "jasmine --random=false '../**/src/**/AcctMgmtSpec.js'"
+    "test": "jasmine --random=false '../catalog/src/**/specs/**/*Spec.js' '../cust-mgmt/src/**/specs/**/*Spec.js'"
   }
 }

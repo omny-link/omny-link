@@ -13,25 +13,11 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-const tenantId = 'acme';
-const server = (typeof $env === 'undefined' || !$env) ? 'http://localhost:8082' : $env.server;
-const baseUrl = `${server}/${tenantId}`;
-const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-
-async function createTestMemo(baseUrl, memo) {
-  await fetch(`${baseUrl}/memos/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(memo)
-  }).then(function (response) {
-    if (response.status !== 201) fail(`Failed to create memo: ${response.status}`);
-    const location = response.headers.get('Location');
-    if (!location) fail('No Location header returned');
-    memo.links = [{ rel: 'self', href: location }];
-  }).catch(e => { fail(e); });
-  console.info(`Created memo: ${memo.links[0].href}`);
-}
 describe("Memo API", function() {
+  const tenantId = 'acme';
+  const server = (typeof $env === 'undefined' || !$env) ? 'http://localhost:8082' : $env.server;
+  const baseUrl = `${server}/${tenantId}`;
+  const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
   const memo = {
       "owner": "tim@knowprocess.com",
       "status": "Draft",
@@ -52,6 +38,19 @@ describe("Memo API", function() {
   }
   function memoUri(memo) {
     return `${baseUrl}/memos/${memo.id || getIdFromLocation((memo.links && memo.links[0] && memo.links[0].href) || '')}`;
+  }
+  async function createTestMemo(baseUrl, memo) {
+    await fetch(`${baseUrl}/memos/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(memo)
+    }).then(function (response) {
+      if (response.status !== 201) fail(`Failed to create memo: ${response.status}`);
+      const location = response.headers.get('Location');
+      if (!location) fail('No Location header returned');
+      memo.links = [{ rel: 'self', href: location }];
+    }).catch(e => { fail(e); });
+    console.info(`Created memo: ${memo.links[0].href}`);
   }
 
   beforeAll(async function() {
