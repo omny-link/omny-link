@@ -128,8 +128,8 @@ describe("Account management", function () {
   });
 
   // broken as of 29 Jul 25
-  xit("adds an activity to the account", function (done) {
-    fetch(accountUri(account) + '/activities/', {
+  it("adds an activity to the account", function (done) {
+    fetch(accountUri(account) + '/activities', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(activity)
@@ -227,15 +227,14 @@ describe("Account management", function () {
         expect(data.firstContact).not.toBeNull();
         expect(data.customFields).toBeDefined();
         expect(data.customFields.lastAccountingDate).toEqual(account.customFields.lastAccountingDate);
-        // TODO re-enable once add activity fixed
-        // expect(data.activities.length).toEqual(2);
-        // data.activities.sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
-        // expect(data.activities[0].type).toEqual('TRANSITION_TO_STAGE');
-        // expect(data.activities[0].content).toEqual('From null to tested');
-        // expect(data.activities[0].occurred).not.toBeNull();
-        // expect(data.activities[1].type).toEqual(activity.type);
-        // expect(data.activities[1].content).toEqual(activity.content);
-        // expect(data.activities[1].occurred).not.toBeNull();
+        expect(data.activities.length).toEqual(2);
+        data.activities.sort(function(a,b) { return new Date(b.occurred)-new Date(a.occurred); });
+        expect(data.activities[0].type).toEqual('TRANSITION_TO_STAGE');
+        expect(data.activities[0].content).toEqual('From null to tested');
+        expect(data.activities[0].occurred).not.toBeNull();
+        expect(data.activities[1].type).toEqual(activity.type);
+        expect(data.activities[1].content).toEqual(activity.content);
+        expect(data.activities[1].occurred).not.toBeNull();
         expect(data.notes.length).toEqual(1);
         expect(data.notes[0].author).toEqual(note.author);
         expect(data.documents.length).toEqual(1);
@@ -270,10 +269,12 @@ describe("Account management", function () {
         } else { console.info(`successfully removed test account ${accountUri(account)}`) }
       }).catch(function (e) { fail(e); });
     }
+
     const accountsAfter = await fetch(`${baseUrl}/accounts/`).then(r => r.json()).catch(e => { fail(e); });
     const contactsAfter = await fetch(`${baseUrl}/contacts/`).then(r => r.json()).catch(e => { fail(e); });
     expect(contactsAfter.length).toEqual(contactsBefore.length);
     expect(accountsAfter.length).toEqual(accountsBefore.length);
+
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 });
