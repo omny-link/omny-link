@@ -1,0 +1,6 @@
+# EditorConfig helps maintain consistent coding styles
+root = true
+
+[*.{js,ts,json}]
+indent_style = space
+indent_size = 2
