@@ -1,8 +1,9 @@
-name: Maven Build
+name: Build, test, integration-test with Maven
 
 on:
   push:
   pull_request:
+    types: [synchronize, reopened] # omit 'opened' as already run on push
 
 jobs:
   build:
@@ -33,4 +34,4 @@ jobs:
           ${{ runner.os }}-maven-
 
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -B integration-test --file pom.xml
