@@ -92,7 +92,7 @@ public class Html2PdfService {
                     .getDefaultCssResolver(false);
             try {
                 cssResolver.addCss(getBootstrapCss(
-                        "/META-INF/resources/webjars/bootstrap/3.3.5/css/bootstrap.min.css"),
+                        "/META-INF/resources/webjars/bootstrap/3.4.1/css/bootstrap.min.css"),
                         true);
                 cssResolver.addCss(getUserDefinedCss(), true);
             } catch (CssResolverException e) {
