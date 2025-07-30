@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015-2022 Tim Stephenson and contributors
+ * Copyright 2015-2025 Tim Stephenson and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  *  use this file except in compliance with the License.  You may obtain a copy
@@ -13,664 +13,475 @@
  *  License for the specific language governing permissions and limitations under
  *  the License.
  ******************************************************************************/
-describe("Product catalogue", function() {
-  var tenantId = 'acme';
-  var $rh = new RestEntityHelper({
-    server: window['$env'] == undefined ? 'http://localhost:8080' : $env.server,
-    tenantId: tenantId
-  });
+const tenantId = 'acme';
+const server = (typeof $env === 'undefined' || !$env) ? 'http://localhost:8082' : $env.server;
+const baseUrl = `${server}/${tenantId}`;
+const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
-  var originalTimeout;
-  var stockItemsBefore;
-  var ordersBefore = [];
-  var purchaseOrdersBefore = [];
-  var orders = [];
-  var purchaseOrders = [];
-  var contact = {
-      firstName: 'Barney',
-      lastName: 'Rubble',
-      email: 'barney@slaterock.com',
-      customFields: {
-        dateOfBirth: '02/02/1968'
-      }
+async function fetchJson(url, options = {}) {
+  const res = await fetch(url, options);
+  const data = await res.json().catch(() => undefined);
+  return { data, res };
+}
+
+async function fetchText(url, options = {}) {
+  const res = await fetch(url, options);
+  const data = await res.text();
+  return { data, res };
+}
+
+describe("Product catalogue", function() {
+  const contact = {
+    firstName: 'Barney',
+    lastName: 'Rubble',
+    email: 'barney@slaterock.com',
+    customFields: {
+      dateOfBirth: '02/02/1968'
+    }
   };
-  var stockItem = {
-      name: 'Widget A '+new Date().getTime()
+  const stockItem = {
+    name: 'Widget A ' + new Date().getTime()
   };
-  var order = {
-      name: 'Order 123',
-      type: 'order',
-      date: '2017-01-31',
-      price: '100',
-      customFields: {
-        specialInstructions: 'Signature required'
-      }
+  const order = {
+    name: 'Order 123',
+    type: 'order',
+    date: '2017-01-31',
+    price: '100',
+    customFields: {
+      specialInstructions: 'Signature required'
+    }
   };
-  var orderWithContact = {
-      name: 'Order 789',
-      type: 'order',
-      date: '2017-01-31',
-      price: '100',
-      customFields: {
-        specialInstructions: 'Signature required'
-      }
+  const orderWithContact = {
+    name: 'Order 789',
+    type: 'order',
+    date: '2017-01-31',
+    price: '100',
+    customFields: {
+      specialInstructions: 'Signature required'
+    }
   };
-  var po = {
-      name: 'Purchase Order 456',
-      type: 'po',
-      date: '2017-02-28',
-      price: '100',
-      customFields: {
-        approver: 'Mr Slate'
-      }
+  const po = {
+    name: 'Purchase Order 456',
+    type: 'po',
+    date: '2017-02-28',
+    price: '100',
+    customFields: {
+      approver: 'Mr Slate'
+    }
   };
-  var note = {
-      author: 'sales@slaterock.com',
-      content: 'No deliveries before 7am'
-  }
-  var doc = {
-      author: 'info@slaterock.com',
-      name: 'Delivery note for order 123',
-      url: 'http://slaterock.com/delivery-notes/Order123.odt',
-      favorite: true
-  }
-  var feedback = {
-      description: 'Palette not well packed hence damage',
-      type: 'driver',
-      customFields: {
-        refusalReason: '1 palette damaged',
-        refusalDate: '2017-02-04'
-      }
-  }
-  var complexOrder = {
-      name: 'Order 789',
-      date: '2017-02-01',
-      stage: 'Draft',
-      orderItems: [
-        {
-          index: 1,
-          price: 100,
-          status: 'Draft',
-          customFields: {
-            controlledGoods: 'Proof of age, over 18 required'
-          }
-        },
-        {
-          index: 2,
-          price: 200,
-          status: 'Draft',
-          customFields: {
-            specialInstructions: 'Signature required'
-          }
+  const note = {
+    author: 'sales@slaterock.com',
+    content: 'No deliveries before 7am'
+  };
+  const doc = {
+    author: 'info@slaterock.com',
+    name: 'Delivery note for order 123',
+    url: 'http://slaterock.com/delivery-notes/Order123.odt',
+    favorite: true
+  };
+  const feedback = {
+    description: 'Palette not well packed hence damage',
+    type: 'driver',
+    customFields: {
+      refusalReason: '1 palette damaged',
+      refusalDate: '2017-02-04'
+    }
+  };
+  let complexOrder = {
+    name: 'Order 789',
+    date: '2017-02-01',
+    stage: 'Draft',
+    orderItems: [
+      {
+        index: 1,
+        price: 100,
+        status: 'Draft',
+        customFields: {
+          controlledGoods: 'Proof of age, over 18 required'
         }
-      ]
+      },
+      {
+        index: 2,
+        price: 200,
+        status: 'Draft',
+        customFields: {
+          specialInstructions: 'Signature required'
+        }
+      }
+    ]
   };
-  var additionalOrderItem = {
+  const additionalOrderItem = {
     index: 3,
     price: 300,
     status: 'Draft',
     customFields: {
       specialInstructions: 'Christmas wrap'
     }
-  }
+  };
+
+  let ordersBefore = [];
+  let purchaseOrdersBefore = [];
+  let orders = [];
+  let purchaseOrders = [];
+  let stockItemsBefore;
+  let stockItems;
 
   beforeEach(function() {
-    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
-  });
-
-  it("searches to take an initial baseline", function(done) {
-    $rh.getJSON('/'+tenantId+'/orders/',  function(data, textStatus, jqXHR) {
-      ordersBefore = data;
-      expect(jqXHR.status).toEqual(200);
-
-      $rh.getJSON('/'+tenantId+'/orders/findByType/po',  function(data, textStatus, jqXHR) {
-        purchaseOrdersBefore = data;
-        expect(jqXHR.status).toEqual(200);
-        done();
-      });
-    });
-  });
-
-  it("takes a baseline of available stock items", function(done) {
-    $rh.getJSON('/'+tenantId+'/stock-items/',  function(data, textStatus, jqXHR) {
-      stockItemsBefore = data;
-      expect(jqXHR.status).toEqual(200);
-      done();
-    });
-  });
-
-  it("creates a new stock item", function(done) {
-    $rh.ajax({
-      url: '/'+tenantId+'/stock-items/',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(stockItem),
-      success: function(data, textStatus, jqXHR) {
-        var location = jqXHR.getResponseHeader('Location');
-
-        expect(location).toMatch(/\/stock-items\/[0-9]/);
-        expect(jqXHR.status).toEqual(201);
-        stockItem.links = [ { rel: 'self', href: location } ];
-        order.stockItem = stockItem;
-        // stockItem will be ignored like this, but check it does not get rejected
-        complexOrder.orderItems[0].stockItem = stockItem;
-        complexOrder.orderItems[1].stockItem = stockItem;
-        // stock item id should be saved this way
-        complexOrder.orderItems[0].stockItemId = parseInt(location.substring(location.lastIndexOf('/')+1));
-        complexOrder.orderItems[1].stockItemId = parseInt(location.substring(location.lastIndexOf('/')+1));
-        done();
-      }
-    });
-  });
-
-  it("creates a new order", function(done) {
-    $rh.ajax({
-      url: '/'+tenantId+'/orders/',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(order),
-      success: function(data, textStatus, jqXHR) {
-        var location = jqXHR.getResponseHeader('Location');
-        expect(location).toMatch(/\/orders\/[0-9]/);
-        expect(jqXHR.status).toEqual(201);
-        order.links = [ { rel: 'self', href: location } ];
-        done();
-      }
-    });
-  });
-
-  it("fetches updated orders and checks the newly added one is correct", function(done) {
-    $rh.getJSON('/'+tenantId+'/orders/',  function( data ) {
-      orders = data;
-      data.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-
-      expect(orders.length).toEqual(ordersBefore.length+1);
-      console.log('latest order: '+JSON.stringify(orders[0]));
-      expect($rh.localId(orders[0])).toEqual($rh.localId(order));
-      expect(orders[0].created).toBeDefined();
-      expect(orders[0].name).toEqual(order.name);
-      expect(orders[0].type).toEqual(order.type);
-      expect(orders[0].date).toEqual(order.date);
-      expect(''+orders[0].price).toEqual(order.price);
-
-      done();
-    });
-  });
-
-  it("creates a new purchase order", function(done) {
-    $rh.ajax({
-      url: '/'+tenantId+'/orders/',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(po),
-      success: function(data, textStatus, jqXHR) {
-        var location = jqXHR.getResponseHeader('Location');
-        expect(location).toMatch(/\/orders\/[0-9]/);
-        expect(jqXHR.status).toEqual(201);
-        po.links = [ { rel: 'self', href: location } ];
-        done();
-      }
-    });
-  });
-
-  it("fetches purchase orders by type and checks result", function(done) {
-    $rh.getJSON('/'+tenantId+'/orders/findByType/po',  function( data ) {
-      purchaseOrders = data;
-      data.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-
-      expect(purchaseOrders.length).toEqual(purchaseOrdersBefore.length+1);
-      console.log('latest po: '+JSON.stringify(purchaseOrders[0]));
-      expect($rh.localId(purchaseOrders[0])).toEqual($rh.localId(po));
-      expect(purchaseOrders[0].created).toBeDefined();
-      expect(purchaseOrders[0].name).toEqual(po.name);
-      expect(purchaseOrders[0].type).toEqual(po.type);
-      expect(purchaseOrders[0].date).toEqual(po.date);
-      expect(''+purchaseOrders[0].price).toEqual(po.price);
-
-      done();
-    });
-  });
-
-  it("adds a note to the order", function(done) {
-    $rh.ajax({
-      url: $rh.tenantUri(order)+'/notes/',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(note),
-      success: function(data, textStatus, jqXHR) {
-        var location = jqXHR.getResponseHeader('Location');
-        expect(location).toMatch(/.*\/orders\/[0-9]*\/notes\/[0-9]*/);
-        expect(jqXHR.status).toEqual(201);
-        done();
-      }
-    });
-  });
-
-  it("adds a document link to the order", function(done) {
-    $rh.ajax({
-      url: $rh.tenantUri(order)+'/documents/',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(doc),
-      success: function(data, textStatus, jqXHR) {
-        var location = jqXHR.getResponseHeader('Location');
-        expect(location).toMatch(/.*\/orders\/[0-9]*\/documents\/[0-9]*/);
-        expect(jqXHR.status).toEqual(201);
-        done();
-      }
-    });
-  });
-
-  it("sets the stage of the order", function(done) {
-    order.stage = 'dispatched';
-    $rh.ajax({
-      url: $rh.tenantUri(order)+'/stage/'+order.stage,
-      type: 'POST',
-      contentType: 'application/json',
-      success: function(data, textStatus, jqXHR) {
-        expect(jqXHR.status).toEqual(204);
-        console.log('  check new stage: '+$rh.tenantUri(order));
-        $rh.getJSON($rh.tenantUri(order), function( data ) {
-
-          expect($rh.localId(data)).toEqual($rh.localId(order));
-          expect(data.name).toEqual(order.name);
-          expect(''+data.price).toEqual(order.price);
-          expect(data.order).toEqual(order.order);
-          expect(data.stage).toEqual('dispatched');
-          expect(data.created).toBeDefined();
-          expect(data.customFields).toBeDefined();
-          expect(data.customFields.specialInstructions).toEqual(order.customFields.specialInstructions);
-
-          done();
-        });
-      }
-    });
-  });
-
-  it("updates the new order", function(done) {
-    order.dueDate = '2017-02-15';
-    order.owner = 'sales@slaterock.com';
-    $rh.ajax({
-      url: $rh.tenantUri(order),
-      type: 'PUT',
-      contentType: 'application/json',
-      data: JSON.stringify(order),
-      success: function(data, textStatus, jqXHR) {
-        expect(jqXHR.status).toEqual(204);
-        done();
-      }
-    });
-  });
-
-  it("provides feedback for the order", function(done) {
-    $rh.ajax({
-      url: $rh.tenantUri(order)+'/feedback/',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(feedback),
-      success: function(data, textStatus, jqXHR) {
-        var location = jqXHR.getResponseHeader('Location');
-        expect(location).toMatch(/.*\/orders\/[0-9]*\/feedback\/[0-9]*/);
-        expect(jqXHR.status).toEqual(201);
-        done();
-      }
-    });
-  });
-
-  it("fetches updated orders by type and checks the newly updated one is correct", function(done) {
-    $rh.getJSON('/'+tenantId+'/orders/findByType/order', function( data ) {
-      orders = data;
-      data.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-
-      expect(orders.length).toEqual(ordersBefore.length+1);
-      expect($rh.uri(order)).toContain($rh.uri(orders[0]));
-      expect(orders[0].owner).toEqual(order.owner);
-      expect(orders[0].dueDate).toEqual(order.dueDate);
-      expect(orders[0].stage).toEqual(order.stage);
-
-      done();
-    });
-  });
-
-  it("fetches complete order inc. child entities and check all fields are correct", function(done) {
-    console.log('tenantUri: '+$rh.tenantUri(order));
-    $rh.getJSON($rh.tenantUri(order), function( data ) {
-
-      expect($rh.localId(data)).toEqual($rh.localId(order));
-      expect(data.name).toEqual(order.name);
-      expect(data.date).toEqual(order.date);
-      expect(''+data.price).toEqual(order.price);
-      expect(data.dueDate).toEqual(order.dueDate);
-      expect(data.order).toEqual(order.order);
-      expect(data.stage).toEqual(order.stage);
-      expect(data.created).toBeDefined();
-      expect(data.lastUpdated).toBeGreaterThan(data.created);
-      expect(data.customFields).toBeDefined();
-      expect(data.customFields.specialInstructions).toEqual(order.customFields.specialInstructions);
-
-      expect(data.notes.length).toEqual(1);
-      expect(data.notes[0].author).toEqual(note.author);
-      expect(data.notes[0].name).toEqual(note.name);
-
-      expect(data.documents.length).toEqual(1);
-      expect(data.documents[0].author).toEqual(doc.author);
-      expect(data.documents[0].name).toEqual(doc.name);
-      expect(data.documents[0].url).toEqual(doc.url);
-      expect(data.documents[0].confidential).toEqual(false); // default value
-      expect(data.documents[0].favorite).toEqual(doc.favorite); // defaults to false
-
-      expect(data.feedback.type).toEqual(feedback.type);
-      expect(data.feedback.description).toEqual(feedback.description);
-      expect(data.created).toBeDefined();
-      expect(data.feedback.customFields).toBeDefined();
-      expect(data.feedback.customFields.refusalReason).toEqual(feedback.customFields.refusalReason);
-      expect(data.feedback.customFields.refusalDate).toEqual(feedback.customFields.refusalDate);
-
-      done();
-    });
-  });
-
-  it("fetches complete order inc. child entities BY CONTACT and check all fields are correct", function(done) {
-    // first we need a contact ...
-    $rh.ajax({
-      url: '/'+tenantId+'/contacts/',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(contact),
-      success: function(data, textStatus, jqXHR) {
-        // NOTE this is URI not tenantUri
-        var location = jqXHR.getResponseHeader('Location');
-        expect(location).toMatch(/\/contacts\/[0-9]/);
-        expect(jqXHR.status).toEqual(201);
-        contact.links = [ { rel: 'self', href: location } ];
-
-        // .. then an order ...
-        orderWithContact.contactId = location.substring(location.lastIndexOf('/')+1);
-        $rh.ajax({
-          url: '/'+tenantId+'/orders/',
-          type: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify(orderWithContact),
-          success: function(data, textStatus, jqXHR) {
-            var location = jqXHR.getResponseHeader('Location');
-            expect(location).toMatch(/\/orders\/[0-9]/);
-            expect(jqXHR.status).toEqual(201);
-            orderWithContact.links = [ { rel: 'self', href: location } ];
-
-            // ... and feedback ...
-            $rh.ajax({
-              url: $rh.tenantUri(orderWithContact)+'/feedback/',
-              type: 'POST',
-              contentType: 'application/json',
-              data: JSON.stringify(feedback),
-              success: function(data, textStatus, jqXHR) {
-                var location = jqXHR.getResponseHeader('Location');
-                expect(location).toMatch(/.*\/orders\/[0-9]*\/feedback\/[0-9]*/);
-                expect(jqXHR.status).toEqual(201);
-
-                // ... and now find order by contact
-                console.log('tenantUri: '+$rh.tenantUri(orderWithContact)+', contactId: '+orderWithContact.contactId);
-                console.log('tenantUri: '+$rh.localId(orderWithContact)+', contactId: '+orderWithContact.contactId);
-                $rh.getJSON('/'+tenantId+'/orders/findByContacts/'+orderWithContact.contactId, function( data ) {
-
-                  expect(data.length).toEqual(1);
-                  data = data[0];
-
-                  expect($rh.localId(data)).toEqual($rh.localId(orderWithContact));
-                  expect(data.name).toEqual(orderWithContact.name);
-                  expect(data.date).toEqual(orderWithContact.date);
-                  expect(''+data.price).toEqual(orderWithContact.price);
-                  expect(data.dueDate).toEqual(orderWithContact.dueDate);
-                  expect(data.order).toEqual(orderWithContact.order);
-                  expect(data.stage).toEqual(orderWithContact.stage);
-                  expect(data.created).toBeDefined();
-                  expect(data.customFields).toBeDefined();
-                  expect(data.customFields.specialInstructions).toEqual(orderWithContact.customFields.specialInstructions);
-
-                  expect(data.feedback.type).toEqual(feedback.type);
-                  expect(data.feedback.description).toEqual(feedback.description);
-                  expect(data.created).toBeDefined();
-                  expect(data.feedback.customFields).toBeDefined();
-                  expect(data.feedback.customFields.refusalReason).toEqual(feedback.customFields.refusalReason);
-                  expect(data.feedback.customFields.refusalDate).toEqual(feedback.customFields.refusalDate);
-
-                  done();
-                });
-              }
-            });
-          }
-        });
-      }
-    });
-
-  });
-
-  it("creates a new complex order (including order items)", function(done) {
-    $rh.ajax({
-      url: '/'+tenantId+'/orders/',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(complexOrder),
-      success: function(data, textStatus, jqXHR) {
-        var location = jqXHR.getResponseHeader('Location');
-        expect(location).toMatch(/\/orders\/[0-9]/);
-        expect(jqXHR.status).toEqual(201);
-        complexOrder.links = [ { rel: 'self', href: location } ];
-        done();
-      }
-    });
-  });
-
-  it("fetches the complex order inc. order items and check all fields are correct", function(done) {
-    console.log('tenantUri: '+$rh.tenantUri(complexOrder));
-    $rh.getJSON($rh.tenantUri(complexOrder), function( data ) {
-
-      expect($rh.localId(data)).toEqual($rh.localId(complexOrder));
-      expect(data.name).toEqual(complexOrder.name);
-
-      expect(data.orderItems.length).toEqual(2);
-      let sortedItems = [];
-      data.orderItems.forEach(function(d,i) {
-        if (d.index != undefined) {
-          sortedItems[d.index-1] = d;
-        } else {
-          console.warn('  cannot sort item: '+d.id);
-          sortedItems = data.orderItems;
-          return;
-        }
-      });
-      console.log('  sortedItems.length: '+sortedItems.length);
-      data.orderItems = sortedItems;
-
-      expect(data.orderItems[0].price).toEqual(complexOrder.orderItems[0].price);
-      expect(data.orderItems[0].status).toEqual(complexOrder.orderItems[0].status);
-      expect(data.orderItems[0].dueDate).toEqual(complexOrder.orderItems[0].dueDate);
-      expect(data.orderItems[0].owner).toEqual(complexOrder.orderItems[0].owner);
-      expect(data.orderItems[0].stockItemId).toBeDefined();
-      expect(data.orderItems[0].stockItemId).toEqual(complexOrder.orderItems[0].stockItemId);
-      expect(data.orderItems[0].customFields.controlledGoods).toEqual(complexOrder.orderItems[0].customFields.controlledGoods);
-
-      expect(data.orderItems[1].price).toEqual(complexOrder.orderItems[1].price);
-      expect(data.orderItems[1].status).toEqual(complexOrder.orderItems[1].status);
-      expect(data.orderItems[1].dueDate).toEqual(complexOrder.orderItems[1].dueDate);
-      expect(data.orderItems[1].owner).toEqual(complexOrder.orderItems[1].owner);
-      expect(data.orderItems[1].stockItemId).toBeDefined();
-      expect(data.orderItems[1].stockItemId).toEqual(complexOrder.orderItems[1].stockItemId);
-      expect(data.orderItems[1].customFields.signatureRequired).toEqual(complexOrder.orderItems[1].customFields.signatureRequired);
-
-      complexOrder = data;
-
-      done();
-    });
-  });
-
-  it("updates the new complex order", function(done) {
-    complexOrder.dueDate = '2017-02-16';
-    complexOrder.owner = 'sales@slaterock.com';
-    $rh.ajax({
-      url: $rh.tenantUri(complexOrder),
-      type: 'PUT',
-      contentType: 'application/json',
-      data: JSON.stringify(complexOrder),
-      success: function(data, textStatus, jqXHR) {
-        expect(jqXHR.status).toEqual(204);
-        done();
-      }
-    });
-  });
-
-  it("adds an item to the complex order", function(done) {
-    $rh.ajax({
-      url: $rh.tenantUri(complexOrder)+'/order-items',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(additionalOrderItem),
-      success: function(data, textStatus, jqXHR) {
-        var location = jqXHR.getResponseHeader('Location');
-        expect(location).toMatch(/\/order-items\/[0-9]/);
-        expect(jqXHR.status).toEqual(201);
-        additionalOrderItem.links = [ { rel: 'self', href: location } ];
-        additionalOrderItem.id = location.substring(location.lastIndexOf('/'));
-        done();
-      }
-    });
-  });
-
-  it("fetches the complex order inc. order items and check all fields are correct", function(done) {
-    console.log('tenantUri: '+$rh.tenantUri(complexOrder));
-    $rh.getJSON($rh.tenantUri(complexOrder), function( data ) {
-
-      expect($rh.localId(data)).toEqual($rh.localId(complexOrder));
-      expect(data.name).toEqual(complexOrder.name);
-      expect(data.date).toEqual(complexOrder.date);
-      expect(data.dueDate).toEqual(complexOrder.dueDate);
-      expect(data.complexOrder).toEqual(complexOrder.complexOrder);
-      expect(data.stage).toEqual(complexOrder.stage);
-      expect(data.created).toBeDefined();
-      expect(data.lastUpdated).toBeGreaterThan(data.created);
-
-      expect(data.orderItems.length).toEqual(3);
-      expect(data.orderItems[0].price).toEqual(complexOrder.orderItems[0].price);
-      expect(data.orderItems[0].status).toEqual(complexOrder.orderItems[0].status);
-      expect(data.orderItems[0].dueDate).toEqual(complexOrder.orderItems[0].dueDate);
-      expect(data.orderItems[0].owner).toEqual(complexOrder.orderItems[0].owner);
-
-      expect(data.orderItems[1].price).toEqual(complexOrder.orderItems[1].price);
-      expect(data.orderItems[1].status).toEqual(complexOrder.orderItems[1].status);
-      expect(data.orderItems[1].dueDate).toEqual(complexOrder.orderItems[1].dueDate);
-      expect(data.orderItems[1].owner).toEqual(complexOrder.orderItems[1].owner);
-
-      expect(data.orderItems[2].price).toEqual(additionalOrderItem.price);
-      expect(data.orderItems[2].status).toEqual(additionalOrderItem.status);
-      expect(data.orderItems[2].dueDate).toEqual(additionalOrderItem.dueDate);
-      expect(data.orderItems[2].owner).toEqual(additionalOrderItem.owner);
-
-      done();
-    });
-  });
-
-  it("deletes the last item of the complex order", function(done) {
-    $rh.ajax({
-      url: $rh.tenantUri(complexOrder)+'/order-items/'+additionalOrderItem.id,
-      type: 'DELETE',
-      contentType: 'application/json',
-      success: function(data, textStatus, jqXHR) {
-        expect(jqXHR.status).toEqual(204);
-        done();
-      }
-    });
-  });
-
-  it("deletes the added order", function(done) {
-    $rh.ajax({
-      url: $rh.tenantUri(order),
-      type: 'DELETE',
-      contentType: 'application/json',
-      success: function(data, textStatus, jqXHR) {
-        expect(jqXHR.status).toEqual(204);
-        done();
-      }
-    });
-  });
-
-  it("deletes the added purchase order", function(done) {
-    $rh.ajax({
-      url: $rh.tenantUri(po),
-      type: 'DELETE',
-      contentType: 'application/json',
-      success: function(data, textStatus, jqXHR) {
-        expect(jqXHR.status).toEqual(204);
-        done();
-      }
-    });
-  });
-
-  it("deletes the added complex order", function(done) {
-    $rh.ajax({
-      url: $rh.tenantUri(complexOrder),
-      type: 'DELETE',
-      contentType: 'application/json',
-      success: function(data, textStatus, jqXHR) {
-        expect(jqXHR.status).toEqual(204);
-        done();
-      }
-    });
-  });
-
-  it("deletes the added order with its associated contact", function(done) {
-    $rh.ajax({
-      url: $rh.tenantUri(orderWithContact),
-      type: 'DELETE',
-      contentType: 'application/json',
-      success: function(data, textStatus, jqXHR) {
-        expect(jqXHR.status).toEqual(204);
-        $rh.ajax({
-          url: $rh.tenantUri(contact),
-          type: 'DELETE',
-          contentType: 'application/json',
-          success: completeHandler = function(data, textStatus, jqXHR) {
-            expect(jqXHR.status).toEqual(204);
-            done();
-          }
-        });
-      }
-    });
-  });
-
-  it("deletes the added stock item", function(done) {
-    $rh.ajax({
-      url: $rh.tenantUri(stockItem),
-      type: 'DELETE',
-      contentType: 'application/json',
-      success: function(data, textStatus, jqXHR) {
-        expect(jqXHR.status).toEqual(204);
-        done();
-      }
-    });
-  });
-
-  it("checks the order data is the same as the baseline", function(done) {
-    $rh.getJSON('/'+tenantId+'/orders/',  function( data ) {
-      orders = data;
-      data.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-
-      expect(orders.length).toEqual(ordersBefore.length);
-      done();
-    });
-  });
-
-  it("checks the stock item data is the same as the baseline", function(done) {
-    $rh.getJSON('/'+tenantId+'/stock-items/',  function( data ) {
-      stockItems = data;
-      data.sort(function(a,b) { return new Date(b.created)-new Date(a.created); });
-
-      expect(stockItems.length).toEqual(stockItemsBefore.length);
-      done();
-    });
   });
 
   afterEach(function() {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+  });
+
+  function getIdFromLocation(location) {
+    return location.substring(location.lastIndexOf('/') + 1);
+  }
+
+  it("searches to take an initial baseline", async function() {
+    const res1 = await fetch(`${baseUrl}/orders/`);
+    expect(res1.status).toEqual(200);
+    ordersBefore = await res1.json();
+    const res2 = await fetch(`${baseUrl}/orders/findByType/po`);
+    expect(res2.status).toEqual(200);
+    purchaseOrdersBefore = await res2.json();
+  });
+
+  it("takes a baseline of available stock items", async function() {
+    const res = await fetch(`${baseUrl}/stock-items/`);
+    expect(res.status).toEqual(200);
+    stockItemsBefore = await res.json();
+  });
+
+  it("creates a new stock item", async function() {
+    const res = await fetch(`${baseUrl}/stock-items/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(stockItem)
+    });
+    const location = res.headers.get('Location');
+    expect(location).toMatch(/\/stock-items\/[0-9]/);
+    expect(res.status).toEqual(201);
+    stockItem.links = [{ rel: 'self', href: location }];
+    order.stockItem = stockItem;
+    complexOrder.orderItems[0].stockItem = stockItem;
+    complexOrder.orderItems[1].stockItem = stockItem;
+    const stockItemId = parseInt(location.substring(location.lastIndexOf('/') + 1));
+    complexOrder.orderItems[0].stockItemId = stockItemId;
+    complexOrder.orderItems[1].stockItemId = stockItemId;
+  });
+
+  it("creates a new order", async function() {
+    const res = await fetch(`${baseUrl}/orders/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(order)
+    });
+    const location = res.headers.get('Location');
+    expect(location).toMatch(/\/orders\/[0-9]/);
+    expect(res.status).toEqual(201);
+    order.links = [{ rel: 'self', href: location }];
+  });
+
+  it("fetches updated orders and checks the newly added one is correct", async function() {
+    const res = await fetch(`${baseUrl}/orders/`);
+    orders = await res.json();
+    orders.sort((a, b) => new Date(b.created) - new Date(a.created));
+    expect(orders.length).toEqual(ordersBefore.length + 1);
+    expect(orders[0].name).toEqual(order.name);
+    expect(orders[0].type).toEqual(order.type);
+    expect(orders[0].date).toEqual(order.date);
+    expect('' + orders[0].price).toEqual(order.price);
+  });
+
+  it("creates a new purchase order", async function() {
+    const res = await fetch(`${baseUrl}/orders/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(po)
+    });
+    const location = res.headers.get('Location');
+    expect(location).toMatch(/\/orders\/[0-9]/);
+    expect(res.status).toEqual(201);
+    po.links = [{ rel: 'self', href: location }];
+  });
+
+  it("fetches purchase orders by type and checks result", async function() {
+    const res = await fetch(`${baseUrl}/orders/findByType/po`);
+    purchaseOrders = await res.json();
+    purchaseOrders.sort((a, b) => new Date(b.created) - new Date(a.created));
+    expect(purchaseOrders.length).toEqual(purchaseOrdersBefore.length + 1);
+    expect(purchaseOrders[0].name).toEqual(po.name);
+    expect(purchaseOrders[0].type).toEqual(po.type);
+    expect(purchaseOrders[0].date).toEqual(po.date);
+    expect('' + purchaseOrders[0].price).toEqual(po.price);
+  });
+
+  it("adds a note to the order", async function() {
+    const orderId = getIdFromLocation(order.links[0].href);
+    const res = await fetch(`${baseUrl}/orders/${orderId}/notes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(note)
+    });
+    const location = res.headers.get('Location');
+    expect(location).toMatch(/.*\/orders\/[0-9]*\/notes\/[0-9]*/);
+    expect(res.status).toEqual(201);
+  });
+
+  it("adds a document link to the order", async function() {
+    const orderId = getIdFromLocation(order.links[0].href);
+    const res = await fetch(`${baseUrl}/orders/${orderId}/documents`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(doc)
+    });
+    const location = res.headers.get('Location');
+    expect(location).toMatch(/.*\/orders\/[0-9]*\/documents\/[0-9]*/);
+    expect(res.status).toEqual(201);
+  });
+
+  it("sets the stage of the order", async function() {
+    const orderId = getIdFromLocation(order.links[0].href);
+    order.stage = 'dispatched';
+    const res = await fetch(`${baseUrl}/orders/${orderId}/stage/${order.stage}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    expect(res.status).toEqual(204);
+    const res2 = await fetch(`${baseUrl}/orders/${orderId}`);
+    const data = await res2.json();
+    expect(data.name).toEqual(order.name);
+    expect('' + data.price).toEqual(order.price);
+    expect(data.stage).toEqual('dispatched');
+    expect(data.customFields.specialInstructions).toEqual(order.customFields.specialInstructions);
+  });
+
+  it("updates the new order", async function() {
+    const orderId = getIdFromLocation(order.links[0].href);
+    order.dueDate = '2017-02-15';
+    order.owner = 'sales@slaterock.com';
+    const res = await fetch(`${baseUrl}/orders/${orderId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(order)
+    });
+    expect(res.status).toEqual(204);
+  });
+
+  it("provides feedback for the order", async function() {
+    const orderId = getIdFromLocation(order.links[0].href);
+    const res = await fetch(`${baseUrl}/orders/${orderId}/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(feedback)
+    });
+    const location = res.headers.get('Location');
+    expect(location).toMatch(/.*\/orders\/[0-9]*\/feedback\/[0-9]*/);
+    expect(res.status).toEqual(201);
+  });
+
+  it("fetches updated orders by type and checks the newly updated one is correct", async function() {
+    const res = await fetch(`${baseUrl}/orders/findByType/order`);
+    orders = await res.json();
+    orders.sort((a, b) => new Date(b.created) - new Date(a.created));
+    expect(orders.length).toEqual(ordersBefore.length + 1);
+    expect(orders[0].owner).toEqual(order.owner);
+    expect(orders[0].dueDate).toEqual(order.dueDate);
+    expect(orders[0].stage).toEqual(order.stage);
+  });
+
+  it("fetches complete order inc. child entities and check all fields are correct", async function() {
+    const orderId = getIdFromLocation(order.links[0].href);
+    const res = await fetch(`${baseUrl}/orders/${orderId}`);
+    const data = await res.json();
+    expect(data.name).toEqual(order.name);
+    expect(data.date).toEqual(order.date);
+    expect('' + data.price).toEqual(order.price);
+    expect(data.dueDate).toEqual(order.dueDate);
+    expect(data.stage).toEqual(order.stage);
+    expect(data.customFields.specialInstructions).toEqual(order.customFields.specialInstructions);
+    expect(data.notes.length).toBeGreaterThanOrEqual(1);
+    expect(data.documents.length).toBeGreaterThanOrEqual(1);
+    expect(data.feedback.type).toEqual(feedback.type);
+    expect(data.feedback.description).toEqual(feedback.description);
+    expect(data.feedback.customFields.refusalReason).toEqual(feedback.customFields.refusalReason);
+    expect(data.feedback.customFields.refusalDate).toEqual(feedback.customFields.refusalDate);
+  });
+
+  it("fetches complete order inc. child entities BY CONTACT and check all fields are correct", async function() {
+    // create contact
+    const resContact = await fetch(`${baseUrl}/contacts/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(contact)
+    });
+    const contactLocation = resContact.headers.get('Location');
+    expect(contactLocation).toMatch(/\/contacts\/[0-9]/);
+    expect(resContact.status).toEqual(201);
+    contact.links = [{ rel: 'self', href: contactLocation }];
+    // create order with contact
+    orderWithContact.contactId = getIdFromLocation(contactLocation);
+    const resOrder = await fetch(`${baseUrl}/orders/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderWithContact)
+    });
+    const orderLocation = resOrder.headers.get('Location');
+    expect(orderLocation).toMatch(/\/orders\/[0-9]/);
+    expect(resOrder.status).toEqual(201);
+    orderWithContact.links = [{ rel: 'self', href: orderLocation }];
+    // add feedback
+    const resFeedback = await fetch(`${baseUrl}/orders/${getIdFromLocation(orderLocation)}/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(feedback)
+    });
+    const feedbackLocation = resFeedback.headers.get('Location');
+    expect(feedbackLocation).toMatch(/.*\/orders\/[0-9]*\/feedback\/[0-9]*/);
+    expect(resFeedback.status).toEqual(201);
+    // find order by contact
+    const resFind = await fetch(`${baseUrl}/orders/findByContacts/${orderWithContact.contactId}`);
+    let data = await resFind.json();
+    expect(data.length).toEqual(1);
+    data = data[0];
+    expect(data.name).toEqual(orderWithContact.name);
+    expect(data.date).toEqual(orderWithContact.date);
+    expect('' + data.price).toEqual(orderWithContact.price);
+    expect(data.customFields.specialInstructions).toEqual(orderWithContact.customFields.specialInstructions);
+    expect(data.feedback.type).toEqual(feedback.type);
+    expect(data.feedback.description).toEqual(feedback.description);
+    expect(data.feedback.customFields.refusalReason).toEqual(feedback.customFields.refusalReason);
+    expect(data.feedback.customFields.refusalDate).toEqual(feedback.customFields.refusalDate);
+  });
+
+  it("creates a new complex order (including order items)", async function() {
+    const res = await fetch(`${baseUrl}/orders/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(complexOrder)
+    });
+    const location = res.headers.get('Location');
+    expect(location).toMatch(/\/orders\/[0-9]/);
+    expect(res.status).toEqual(201);
+    complexOrder.links = [{ rel: 'self', href: location }];
+  });
+
+  it("fetches the complex order inc. order items and check all fields are correct", async function() {
+    const orderId = getIdFromLocation(complexOrder.links[0].href);
+    const res = await fetch(`${baseUrl}/orders/${orderId}`);
+    const data = await res.json();
+    expect(data.name).toEqual(complexOrder.name);
+    expect(data.orderItems.length).toEqual(2);
+    complexOrder = data;
+  });
+
+  it("updates the new complex order", async function() {
+    const orderId = getIdFromLocation(complexOrder.links[0].href);
+    complexOrder.dueDate = '2017-02-16';
+    complexOrder.owner = 'sales@slaterock.com';
+    const res = await fetch(`${baseUrl}/orders/${orderId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(complexOrder)
+    });
+    expect(res.status).toEqual(204);
+  });
+
+  it("adds an item to the complex order", async function() {
+    const orderId = getIdFromLocation(complexOrder.links[0].href);
+    const res = await fetch(`${baseUrl}/orders/${orderId}/order-items`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(additionalOrderItem)
+    });
+    const location = res.headers.get('Location');
+    expect(location).toMatch(/\/order-items\/[0-9]/);
+    expect(res.status).toEqual(201);
+    additionalOrderItem.links = [{ rel: 'self', href: location }];
+    additionalOrderItem.id = getIdFromLocation(location);
+  });
+
+  it("fetches the complex order inc. order items and check all fields are correct", async function() {
+    const orderId = getIdFromLocation(complexOrder.links[0].href);
+    const res = await fetch(`${baseUrl}/orders/${orderId}`);
+    const data = await res.json();
+    expect(data.name).toEqual(complexOrder.name);
+    expect(data.orderItems.length).toEqual(3);
+  });
+
+  it("deletes the last item of the complex order", async function() {
+    const orderId = getIdFromLocation(complexOrder.links[0].href);
+    const itemId = additionalOrderItem.id;
+    const res = await fetch(`${baseUrl}/orders/${orderId}/order-items/${itemId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    expect(res.status).toEqual(204);
+  });
+
+  it("deletes the added order", async function() {
+    const orderId = getIdFromLocation(order.links[0].href);
+    const res = await fetch(`${baseUrl}/orders/${orderId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    expect(res.status).toEqual(204);
+  });
+
+  it("deletes the added purchase order", async function() {
+    const poId = getIdFromLocation(po.links[0].href);
+    const res = await fetch(`${baseUrl}/orders/${poId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    expect(res.status).toEqual(204);
+  });
+
+  it("deletes the added complex order", async function() {
+    const orderId = getIdFromLocation(complexOrder.links[0].href);
+    const res = await fetch(`${baseUrl}/orders/${orderId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    expect(res.status).toEqual(204);
+  });
+
+  it("deletes the added order with its associated contact", async function() {
+    const orderId = getIdFromLocation(orderWithContact.links[0].href);
+    const resOrder = await fetch(`${baseUrl}/orders/${orderId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    expect(resOrder.status).toEqual(204);
+    const contactId = getIdFromLocation(contact.links[0].href);
+    const resContact = await fetch(`${baseUrl}/contacts/${contactId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    expect(resContact.status).toEqual(204);
+  });
+
+  it("deletes the added stock item", async function() {
+    const stockItemId = getIdFromLocation(stockItem.links[0].href);
+    const res = await fetch(`${baseUrl}/stock-items/${stockItemId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    expect(res.status).toEqual(204);
+  });
+
+  it("checks the order data is the same as the baseline", async function() {
+    const res = await fetch(`${baseUrl}/orders/`);
+    orders = await res.json();
+    orders.sort((a, b) => new Date(b.created) - new Date(a.created));
+    expect(orders.length).toEqual(ordersBefore.length);
+  });
+
+  it("checks the stock item data is the same as the baseline", async function() {
+    const res = await fetch(`${baseUrl}/stock-items/`);
+    stockItems = await res.json();
+    stockItems.sort((a, b) => new Date(b.created) - new Date(a.created));
+    expect(stockItems.length).toEqual(stockItemsBefore.length);
   });
 });
