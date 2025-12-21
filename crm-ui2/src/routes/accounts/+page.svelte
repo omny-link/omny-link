@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import keycloak from '$lib/keycloak';
+  import keycloak, { initKeycloak } from '$lib/keycloak';
 
   let userInfo = null;
   let accounts = [];
@@ -40,6 +40,9 @@
   }
 
   onMount(async () => {
+    // Wait for keycloak to initialize first
+    await initKeycloak();
+    
     if (!keycloak.authenticated) {
       await keycloak.login({ redirectUri: window.location.href });
       // After login, set userInfo and fetch accounts
