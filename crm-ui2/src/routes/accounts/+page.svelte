@@ -5,6 +5,8 @@
   let userInfo = null;
   let tenant = 'acme';
   let accounts = [];
+  let filteredAccounts = [];
+  let searchQuery = '';
   let loading = false;
   let page = 1;
   let allLoaded = false;
@@ -25,6 +27,7 @@
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
           accounts = [...accounts, ...data];
+          filteredAccounts = accounts;
           page = nextPage;
           // Load next page in background
           fetchAccounts(nextPage + 1);
@@ -37,6 +40,19 @@
     } finally {
       loading = false;
     }
+  }
+
+  function filterAccounts() {
+    if (!searchQuery.trim()) {
+      filteredAccounts = accounts;
+      return;
+    }
+    const query = searchQuery.toLowerCase();
+    filteredAccounts = accounts.filter(account => 
+      (account.name && account.name.toLowerCase().includes(query)) ||
+      (account.email && account.email.toLowerCase().includes(query)) ||
+      (account.created && account.created.toLowerCase().includes(query))
+    );
   }
 
   onMount(async () => {
@@ -57,11 +73,28 @@
   });
 </script>
 
-<h1 class="display-5">Accounts
-  <button class="btn btn-outline-primary mb-3" on:click={() => { accounts = []; page = 1; allLoaded = false; fetchAccounts(1); }}>
-    Refresh
-  </button>
-</h1>
+<div class="d-flex align-items-center mb-3">
+  <h2 class="display-5 mb-0 me-3">
+    Accounts
+    {#if !loading}
+      ({filteredAccounts.length})
+    {/if}
+  </h2>
+  <input 
+    type="text" 
+    class="form-control" 
+    style="width: 300px;" 
+    placeholder="Search accounts..." 
+    bind:value={searchQuery}
+    on:blur={filterAccounts}
+    aria-label="Search accounts"
+  />
+  {#if !loading}
+    <button class="btn btn-dark ms-auto" aria-label="Refresh accounts" on:click={() => { accounts = []; filteredAccounts = []; searchQuery = ''; page = 1; allLoaded = false; fetchAccounts(1); }}>
+      <i class="bi bi-arrow-clockwise"></i>
+    </button>
+  {/if}
+</div>
 
 {#if loading}
   <div class="alert alert-info">Loading accounts...</div>
@@ -76,7 +109,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each accounts as account}
+      {#each filteredAccounts as account}
         <tr>
           <td>{account.name}</td>
           <td>{account.email}</td>
