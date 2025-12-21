@@ -1,8 +1,9 @@
 <script>
   import { onMount } from 'svelte';
-  import keycloak, { initKeycloak } from '$lib/keycloak';
+  import keycloak, { initKeycloak, fetchUserAccount } from '$lib/keycloak';
 
   let userInfo = null;
+  let tenant = 'acme';
   let accounts = [];
   let loading = false;
   let page = 1;
@@ -12,10 +13,9 @@
   async function fetchAccounts(nextPage) {
     if (loading || allLoaded) return;
     loading = true;
-    const url = `http://localhost:8082/acme/accounts/?page=${nextPage}`;
-    const headers = {
-      'Access-Control-Allow-Origin':'*'
-    }
+    // const url = `http://localhost:8080/${tenant}/accounts/?page=${nextPage}`;
+    const url = `https://crm.knowprocess.com/${tenant}/accounts/?page=${nextPage}`;
+    const headers = {};
     if (keycloak.authenticated) {
       headers['Authorization'] = `Bearer ${keycloak.token}`;
     }
@@ -45,11 +45,13 @@
     
     if (!keycloak.authenticated) {
       await keycloak.login({ redirectUri: window.location.href });
-      // After login, set userInfo and fetch accounts
+    }
+    
+    // Fetch user account info to get tenant
+    if (keycloak.authenticated) {
       userInfo = keycloak.tokenParsed;
-      fetchAccounts(1);
-    } else {
-      userInfo = keycloak.tokenParsed;
+      const { tenant: userTenant } = await fetchUserAccount();
+      tenant = userTenant;
       fetchAccounts(1);
     }
   });

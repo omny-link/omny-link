@@ -25,10 +25,12 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -53,11 +55,11 @@ ingress:
   hosts:
     - host: crm.knowprocess.com
       paths:
-      - path: /
-        pathType: ImplementationSpecific
-        backend:
-          serviceName: crm-server
-          servicePort: 8080
+        - path: /
+          pathType: ImplementationSpecific
+          backend:
+            serviceName: crm-server
+            servicePort: 8080
 
   tls:
     - secretName: crm-tls
@@ -110,7 +112,7 @@ crm:
   bpm:
     processGateway: "https://flowable.knowprocess.com/flowable-rest/service"
   cors:
-    origins: "http://localhost:8000,https://beta.knowprocess.com,https://cloud.knowprocess.com"
+    origins: "http://localhost:8000,http://localhost:5173,https://beta.knowprocess.com,https://cloud.knowprocess.com"
     allowedHeaders: "Authorization,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Location,Pragma,X-Requested-With"
     exposedHeaders: "Authorization,Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Location,Pragma,X-Requested-With"
 
