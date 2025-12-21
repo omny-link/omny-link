@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   import { applyBootstrapTheme } from '$lib/theme';
   import keycloak, { initKeycloak, keycloakStore } from '$lib/keycloak';
 
@@ -25,6 +26,8 @@
   function logout() {
     keycloak.logout({ redirectUri: window.location.origin });
   }
+
+  $: currentPath = $page.url.pathname;
 </script>
 
  <!-- Sidebar -->
@@ -33,12 +36,12 @@
       <h4 class="text-white mb-4"><i class="bi bi-box"></i> My App</h4>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link active" href="/">
+          <a class="nav-link {currentPath === '/' ? 'active' : ''}" href="/">
             <i class="bi bi-speedometer2 nav-icon"></i> Dashboard
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/accounts">
+          <a class="nav-link {currentPath === '/accounts' ? 'active' : ''}" href="/accounts">
             <i class="bi bi-people nav-icon"></i> Accounts
           </a>
         </li>
@@ -49,17 +52,28 @@
         </li>
         <li class="nav-item">
           {#if authenticated}
-            <span class="me-3">Welcome, {username}</span>
-            <button class="btn btn-outline-light btn-sm" on:click={logout}>Logout</button>
+            <button class="nav-link btn btn-outline-light" on:click={logout}>
+              <i class="bi bi-box-arrow-right nav-icon"></i> Logout
+            </button>
           {:else}
-            <button class="btn btn-light btn-sm" on:click={login}>Login</button>
+            <button class="nav-link btn btn-light" on:click={login}>
+              <i class="bi bi-box-arrow-in-right nav-icon"></i> Login
+            </button>
           {/if}
+        </li>
+        <li class="nav-item" style="position: absolute; bottom: 1rem; width: calc(100% - 1rem);">
+          <a class="nav-link" href="/profile">
+            <i class="bi bi-person nav-icon"></i>
+            {#if authenticated}
+              <span class="me-3">{username}</span>
+            {/if}
+          </a>
         </li>
       </ul>
     </div>
   </nav>
 
-<main class="container mt-4 text-light bg-dark p-4 rounded">
+<main id="content" class="container mt-4 text-light bg-dark p-4 rounded">
   <slot />
 </main>
 
@@ -69,6 +83,9 @@
     }
 
     #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
       min-height: 100vh;
       background-color: #343a40;
       transition: all 0.3s ease;
@@ -101,7 +118,9 @@
       }
 
       #content {
-        margin-left: 0;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 1200px;
       }
     }
 
@@ -111,7 +130,10 @@
       }
 
       #content {
-        margin-left: 250px;
+        margin-left: 295px;
+        margin-right: auto;
+        padding-left: 2rem;
+        padding-right: 2rem;
       }
     }
 

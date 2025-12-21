@@ -68,7 +68,7 @@
   <button class="btn btn-outline-primary mb-3" on:click={() => { accounts = []; page = 1; allLoaded = false; fetchAccounts(1); }}>
     Refresh
   </button>
-  <table class="table table-striped mt-4" style="max-width: 900px;">
+  <table class="table table-striped mt-4">
     <thead>
       <tr>
         <th>Name</th>
