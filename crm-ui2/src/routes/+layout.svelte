@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
+  import '../app.css';
   import { applyBootstrapTheme } from '$lib/theme';
   import keycloak, { initKeycloak, keycloakStore } from '$lib/keycloak';
 
@@ -33,7 +34,8 @@
  <!-- Sidebar -->
   <nav id="sidebar" class="bg-dark">
     <div class="p-3">
-      <h4 class="text-white mb-4"><i class="bi bi-box"></i> My App</h4>
+      <h4 class="text-white mb-4"><img src="https://crm.knowprocess.com/images/icon/omny-link-icon.svg" alt="KnowProcess" style="width: 1.75rem; height: 1.75rem; margin: -0.25rem 0.5rem 0 0 ;" /> KnowProcess</h4>
+
       <ul class="nav flex-column">
         <li class="nav-item">
           <a class="nav-link {currentPath === '/' ? 'active' : ''}" href="/">
@@ -90,7 +92,6 @@
       background-color: #343a40;
       transition: all 0.3s ease;
     }
-
     #sidebar .nav-link {
       color: #ccc;
     }

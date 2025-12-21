@@ -57,17 +57,15 @@
   });
 </script>
 
-<h1 class="display-5">Accounts</h1>
-{#if userInfo}
-  <p class="text-muted">You are logged in as <strong>{userInfo.preferred_username}</strong>.</p>
-{/if}
+<h1 class="display-5">Accounts
+  <button class="btn btn-outline-primary mb-3" on:click={() => { accounts = []; page = 1; allLoaded = false; fetchAccounts(1); }}>
+    Refresh
+  </button>
+</h1>
 
 {#if loading}
   <div class="alert alert-info">Loading accounts...</div>
 {:else}
-  <button class="btn btn-outline-primary mb-3" on:click={() => { accounts = []; page = 1; allLoaded = false; fetchAccounts(1); }}>
-    Refresh
-  </button>
   <table class="table table-striped mt-4">
     <thead>
       <tr>
