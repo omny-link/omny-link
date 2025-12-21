@@ -1,5 +1,5 @@
-Customer Management System
-==========================
+Customer Relationship Management System
+=======================================
 
 A customer relationship management (CRM) system and product catalogue.
 
