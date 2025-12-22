@@ -1,8 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
+  import { get } from 'svelte/store';
   import { goto } from '$app/navigation';
   import keycloak, { initKeycloak, fetchUserAccount } from '$lib/keycloak';
+  import { 
+    fetchAccount,
+    fetchContactsByAccount,
+    fetchOrdersByContacts as fetchOrdersByContactsAPI,
+    deleteAccount as deleteAccountAPI
+  } from '$lib/cust-mgmt';
   import type { Account, Contact, Order, PanelStates, ViewMode } from '$lib/types';
   import CustomFieldsPanel from '$lib/components/CustomFieldsPanel.svelte';
   import NotesPanel from '$lib/components/NotesPanel.svelte';
@@ -91,39 +98,23 @@
 
   async function fetchFullAccount(id: string): Promise<Account | null> {
     loading = true;
-    const url = `https://crm.knowprocess.com/${tenant}/accounts/${id}`;
-    const headers: Record<string, string> = {};
-    if (keycloak.authenticated) {
-      headers['Authorization'] = `Bearer ${keycloak.token}`;
-    }
     try {
-      const res = await fetch(url, { headers, mode: "cors" });
-      if (res.ok) {
-        return await res.json();
-      }
+      return await fetchAccount(tenant, id);
     } catch (error) {
       console.error('Error fetching account:', error);
+      return null;
     } finally {
       loading = false;
     }
-    return null;
   }
 
   async function fetchAccountContacts(id: string): Promise<Contact[]> {
-    const url = `https://crm.knowprocess.com/${tenant}/contacts/findByAccountId?accountId=${id}`;
-    const headers: Record<string, string> = {};
-    if (keycloak.authenticated) {
-      headers['Authorization'] = `Bearer ${keycloak.token}`;
-    }
     try {
-      const res = await fetch(url, { headers, mode: "cors" });
-      if (res.ok) {
-        return await res.json();
-      }
+      return await fetchContactsByAccount(tenant, id);
     } catch (error) {
       console.error('Error fetching contacts:', error);
+      return [];
     }
-    return [];
   }
 
   async function fetchOrdersByContacts(contacts: Contact[]): Promise<Order[]> {
@@ -137,42 +128,23 @@
     
     if (!contactIds) return [];
     
-    const url = `https://crm.knowprocess.com/${tenant}/orders/findByContacts/${contactIds}`;
-    const headers: Record<string, string> = {};
-    if (keycloak.authenticated) {
-      headers['Authorization'] = `Bearer ${keycloak.token}`;
-    }
     try {
-      const res = await fetch(url, { headers, mode: "cors" });
-      if (res.ok) {
-        return await res.json();
-      }
+      return await fetchOrdersByContactsAPI(tenant, contactIds);
     } catch (error) {
       console.error('Error fetching orders:', error);
+      return [];
     }
-    return [];
   }
 
   async function deleteAccount(): Promise<void> {
-    if (!selectedAccount) return;
+    if (!selectedAccount?.id) return;
     
     const confirmed = confirm(`Are you sure you want to delete "${selectedAccount.name}"?`);
     if (!confirmed) return;
 
-    const url = `https://crm.knowprocess.com/${tenant}/accounts/${selectedAccount.id}`;
-    const headers: Record<string, string> = {};
-    if (keycloak.authenticated) {
-      headers['Authorization'] = `Bearer ${keycloak.token}`;
-    }
-
     try {
-      const res = await fetch(url, {
-        method: 'DELETE',
-        headers,
-        mode: 'cors'
-      });
-
-      if (res.ok) {
+      const success = await deleteAccountAPI(tenant, selectedAccount.id);
+      if (success) {
         alert('Account deleted successfully');
         goto('/accounts');
       } else {
@@ -205,7 +177,7 @@
     tenant = userTenant;
     
     // Get account ID from URL
-    accountId = $page.params.id;
+    accountId = get(page).params.id;
     
     // Load account data and contacts
     const [account, contacts] = await Promise.all([
@@ -737,8 +709,6 @@
   isOpen={panelStates.notes}
   onToggle={() => togglePanel('notes')}
   onAdd={() => alert('Add note feature coming soon')}
-  onEdit={(note) => alert('Edit note feature coming soon')}
-  onDelete={(note) => alert('Delete note feature coming soon')}
 />
 
 <DocumentsPanel

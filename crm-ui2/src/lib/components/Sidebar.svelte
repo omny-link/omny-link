@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { get } from 'svelte/store';
   import keycloak from '$lib/keycloak';
   import { getGravatarUrl } from '$lib/gravatar';
 
@@ -20,7 +21,7 @@
     keycloak.logout({ redirectUri: window.location.origin });
   }
 
-  $: currentPath = $page.url.pathname;
+  $: currentPath = get(page).url.pathname;
 </script>
 
 <nav id="sidebar" class="bg-dark {collapsed ? 'collapsed' : ''}">

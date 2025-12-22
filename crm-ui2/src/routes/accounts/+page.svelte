@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import keycloak, { initKeycloak, fetchUserAccount } from '$lib/keycloak';
   import { getGravatarUrl } from '$lib/gravatar';
+  import { fetchAccounts as fetchAccountsAPI } from '$lib/cust-mgmt';
   import type { Account, SortDirection } from '$lib/types';
 
   let userInfo: any = null;
@@ -19,26 +20,15 @@
   async function fetchAccounts(nextPage: number): Promise<void> {
     if (loading || allLoaded) return;
     loading = true;
-    // const url = `http://localhost:8080/${tenant}/accounts/?page=${nextPage}`;
-    const url = `https://crm.knowprocess.com/${tenant}/accounts/?page=${nextPage}`;
-    const headers: Record<string, string> = {};
-    if (keycloak.authenticated) {
-      headers['Authorization'] = `Bearer ${keycloak.token}`;
-    }
     try {
-      const res = await fetch(url, { headers, mode: "cors" });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          accounts = [...accounts, ...data];
-          filteredAccounts = accounts;
-          applySortToFiltered();
-          page = nextPage;
-          // Load next page in background
-          fetchAccounts(nextPage + 1);
-        } else {
-          allLoaded = true;
-        }
+      const data = await fetchAccountsAPI(tenant, nextPage);
+      if (Array.isArray(data) && data.length > 0) {
+        accounts = [...accounts, ...data];
+        filteredAccounts = accounts;
+        applySortToFiltered();
+        page = nextPage;
+        // Load next page in background
+        fetchAccounts(nextPage + 1);
       } else {
         allLoaded = true;
       }

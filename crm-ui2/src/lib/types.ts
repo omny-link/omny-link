@@ -84,7 +84,12 @@ export interface Note {
   id?: string;
   name?: string;
   content?: string;
+  favorite?: boolean;
+  confidential?: boolean;
   created?: string;
+  createdBy?: string;
+  lastUpdated?: string;
+  lastUpdatedBy?: string;
   [key: string]: any;
 }
 
