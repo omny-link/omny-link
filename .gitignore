@@ -9,6 +9,7 @@
 *.class
 *.log*
 application.properties
+crm-server/node/
 env.sh
 liquibase.properties
 liquibase.properties.local

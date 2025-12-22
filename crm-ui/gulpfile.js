@@ -74,7 +74,14 @@ gulp.task('server', function(done) {
   bSync.init({
     server: {
       baseDir: [buildDir]
-    }
+    },
+    host: '0.0.0.0',
+    port: 3000,
+    open: false,
+    ui: {
+      port: 3001
+    },
+    logLevel: 'debug'
   });
   gulp.watch(
     [ 'src/manifest.json', 'src/**/*.html' ],
