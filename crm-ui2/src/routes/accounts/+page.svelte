@@ -32,6 +32,55 @@
     panelStates[panelName] = !panelStates[panelName];
   }
 
+  function scrollToNotes() {
+    // Open the notes panel if closed
+    if (!panelStates.notes) {
+      panelStates.notes = true;
+    }
+    // Wait for panel to open, then scroll
+    setTimeout(() => {
+      const notesPanel = document.getElementById('notes-panel');
+      if (notesPanel) {
+        notesPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }
+
+  async function deleteAccount() {
+    if (!selectedAccount) return;
+    
+    const confirmed = confirm(`Are you sure you want to delete "${selectedAccount.name}"?`);
+    if (!confirmed) return;
+
+    const url = `https://crm.knowprocess.com/${tenant}/accounts/${selectedAccount.id}`;
+    const headers = {};
+    if (keycloak.authenticated) {
+      headers['Authorization'] = `Bearer ${keycloak.token}`;
+    }
+
+    try {
+      const res = await fetch(url, {
+        method: 'DELETE',
+        headers,
+        mode: 'cors'
+      });
+
+      if (res.ok) {
+        alert('Account deleted successfully');
+        // Remove from local array
+        accounts = accounts.filter(a => a.id !== selectedAccount.id);
+        filteredAccounts = filteredAccounts.filter(a => a.id !== selectedAccount.id);
+        // Go back to list
+        backToList();
+      } else {
+        alert('Failed to delete account');
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Error deleting account');
+    }
+  }
+
   // Stale-while-refresh: show what we have, keep loading in background
   async function fetchAccounts(nextPage) {
     if (loading || allLoaded) return;
@@ -89,6 +138,16 @@
       sortDirection = 'asc';
     }
     applySortToFiltered();
+  }
+
+  function toSentenceCase(str) {
+    if (!str) return str;
+    // Convert camelCase to Sentence case
+    // e.g., "firstName" -> "First name", "emailAddress" -> "Email address"
+    return str
+      .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+      .replace(/^./, (match) => match.toUpperCase()) // Capitalize first letter
+      .trim();
   }
 
   function applySortToFiltered() {
@@ -535,21 +594,43 @@
 {/if}
 {:else}
 <!-- Detail View -->
-<div class="mb-3">
-  <button class="btn btn-dark" on:click={backToList}>
-    <i class="bi bi-arrow-left"></i> Back to List
-  </button>
-  <span class="ms-3 h4">{viewMode === 'edit' ? 'Edit' : 'View'} Account</span>
+<div class="mb-3 d-flex justify-content-between align-items-center">
+  <div>
+    <button class="btn btn-dark" on:click={backToList}>
+      <i class="bi bi-arrow-left"></i> Back to List
+    </button>
+    <span class="ms-3 h4">{viewMode === 'edit' ? 'Edit' : 'View'} Account</span>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-danger" on:click={deleteAccount} title="Delete account">
+      <i class="bi bi-trash"></i> Delete
+    </button>
+    <button class="btn btn-dark" on:click={scrollToNotes} title="Jump to notes">
+      <i class="bi bi-journal-text"></i> Notes
+    </button>
+    <div class="dropdown">
+      <button class="btn btn-dark dropdown-toggle" type="button" id="customActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-three-dots-vertical"></i> Actions
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="customActionsDropdown">
+        <li><a class="dropdown-item" href="#" on:click|preventDefault={() => alert('Clone feature coming soon')}>Clone Account</a></li>
+        <li><a class="dropdown-item" href="#" on:click|preventDefault={() => alert('Export feature coming soon')}>Export to PDF</a></li>
+        <li><a class="dropdown-item" href="#" on:click|preventDefault={() => alert('Merge feature coming soon')}>Merge with Another</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#" on:click|preventDefault={() => alert('Archive feature coming soon')}>Archive Account</a></li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <div class="card bg-dark text-light">
-  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('details')}>
-    <h5 class="mb-0">{selectedAccount?.name || 'Account Details'}</h5>
+  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('details')}>
     {#if panelStates.details}
-      <i class="bi bi-chevron-up"></i>
+      <i class="bi bi-chevron-down me-2"></i>
     {:else}
-      <i class="bi bi-chevron-down"></i>
+      <i class="bi bi-chevron-right me-2"></i>
     {/if}
+    <h5 class="mb-0">{selectedAccount?.name || 'Account Details'}</h5>
   </div>
   {#if panelStates.details}
   <div class="card-body">
@@ -557,266 +638,310 @@
       <!-- Column 1 -->
       <div class="col-md-6">
         <!-- ID -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">ID</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.id || ''} readonly />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.id || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">ID</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.id || ''} readonly />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.id || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Parent Org -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Parent Org</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.parentOrg || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.parentOrg || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Parent Org</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.parentOrg || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.parentOrg || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Company Number -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Company Number</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.companyNumber || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.companyNumber || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Company Number</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.companyNumber || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.companyNumber || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Owner -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Owner</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.owner || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.owner || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Owner</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.owner || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.owner || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Existing Customer -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Existing Customer?</label>
-          {#if viewMode === 'edit'}
-            <select class="form-control" value={selectedAccount?.existingCustomer || ''}>
-              <option value="">-</option>
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.existingCustomer || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Existing Customer?</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <select class="form-control" value={selectedAccount?.existingCustomer || ''}>
+                <option value="">-</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.existingCustomer || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Status -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Status</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.stage || selectedAccount?.accountType || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.stage || selectedAccount?.accountType || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Status</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.stage || selectedAccount?.accountType || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.stage || selectedAccount?.accountType || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Type -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Type</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.type || selectedAccount?.businessType || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.type || selectedAccount?.businessType || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Type</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.type || selectedAccount?.businessType || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.type || selectedAccount?.businessType || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Tags -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Tags</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.tags || ''} />
-          {:else}
-            <div class="form-control-plaintext">
-              {#each formatTags(selectedAccount?.tags) as line}
-                {line}<br />
-              {/each}
-            </div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Tags</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.tags || ''} />
+            {:else}
+              <div class="form-control-plaintext">
+                {#each formatTags(selectedAccount?.tags) as line}
+                  {line}<br />
+                {/each}
+              </div>
+            {/if}
+          </div>
         </div>
 
         <!-- No of Employees -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">No of Employees</label>
-          {#if viewMode === 'edit'}
-            <input type="number" class="form-control" value={selectedAccount?.noOfEmployees || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.noOfEmployees || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">No of Employees</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="number" class="form-control" value={selectedAccount?.noOfEmployees || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.noOfEmployees || '-'}</div>
+            {/if}
+          </div>
         </div>
       </div>
 
       <!-- Column 2 -->
       <div class="col-md-6">
         <!-- Website -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Website</label>
-          {#if viewMode === 'edit'}
-            <input type="url" class="form-control" value={selectedAccount?.website || ''} />
-          {:else}
-            <div class="form-control-plaintext">
-              {#if selectedAccount?.website}
-                <a href={selectedAccount.website} target="_blank" rel="noopener noreferrer">{selectedAccount.website}</a>
-              {:else}
-                -
-              {/if}
-            </div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Website</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="url" class="form-control" value={selectedAccount?.website || ''} />
+            {:else}
+              <div class="form-control-plaintext">
+                {#if selectedAccount?.website}
+                  <a href={selectedAccount.website} target="_blank" rel="noopener noreferrer">{selectedAccount.website}</a>
+                {:else}
+                  -
+                {/if}
+              </div>
+            {/if}
+          </div>
         </div>
 
         <!-- Email -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Email</label>
-          {#if viewMode === 'edit'}
-            <input type="email" class="form-control" value={selectedAccount?.email || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.email || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Email</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="email" class="form-control" value={selectedAccount?.email || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.email || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Email Confirmed -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Email Confirmed?</label>
-          {#if viewMode === 'edit'}
-            <select class="form-control" value={selectedAccount?.emailConfirmed || ''}>
-              <option value="">-</option>
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.emailConfirmed || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Email Confirmed?</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <select class="form-control" value={selectedAccount?.emailConfirmed || ''}>
+                <option value="">-</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.emailConfirmed || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Opt-in -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Opt-in?</label>
-          {#if viewMode === 'edit'}
-            <select class="form-control" value={selectedAccount?.doNotCall || selectedAccount?.emailOptIn || ''}>
-              <option value="">-</option>
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.doNotCall || selectedAccount?.emailOptIn || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Opt-in?</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <select class="form-control" value={selectedAccount?.doNotCall || selectedAccount?.emailOptIn || ''}>
+                <option value="">-</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.doNotCall || selectedAccount?.emailOptIn || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Phone -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Phone</label>
-          {#if viewMode === 'edit'}
-            <input type="tel" class="form-control" value={selectedAccount?.phone || selectedAccount?.phoneNumber || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.phone || selectedAccount?.phoneNumber || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Phone</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="tel" class="form-control" value={selectedAccount?.phone || selectedAccount?.phoneNumber || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.phone || selectedAccount?.phoneNumber || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Address Line 1 -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Address Line 1</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.address1 || selectedAccount?.addressLine1 || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.address1 || selectedAccount?.addressLine1 || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Address Line 1</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.address1 || selectedAccount?.addressLine1 || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.address1 || selectedAccount?.addressLine1 || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Address Line 2 -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Address Line 2</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.address2 || selectedAccount?.addressLine2 || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.address2 || selectedAccount?.addressLine2 || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Address Line 2</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.address2 || selectedAccount?.addressLine2 || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.address2 || selectedAccount?.addressLine2 || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Address Town -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Address Town</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.town || selectedAccount?.addressTown || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.town || selectedAccount?.addressTown || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Address Town</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.town || selectedAccount?.addressTown || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.town || selectedAccount?.addressTown || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Address County/City -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Address County / City</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.countyOrCity || selectedAccount?.addressCounty || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.countyOrCity || selectedAccount?.addressCounty || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Address County / City</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.countyOrCity || selectedAccount?.addressCounty || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.countyOrCity || selectedAccount?.addressCounty || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Postcode -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Postcode</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.postCode || selectedAccount?.zipCode || ''} />
-          {:else}
-            <div class="form-control-plaintext">{selectedAccount?.postCode || selectedAccount?.zipCode || '-'}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Postcode</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.postCode || selectedAccount?.zipCode || ''} />
+            {:else}
+              <div class="form-control-plaintext">{selectedAccount?.postCode || selectedAccount?.zipCode || '-'}</div>
+            {/if}
+          </div>
         </div>
 
         <!-- Twitter -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Twitter</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.twitter || ''} />
-          {:else}
-            <div class="form-control-plaintext">
-              {#if selectedAccount?.twitter}
-                <a href="https://twitter.com/{selectedAccount.twitter}" target="_blank" rel="noopener noreferrer">{selectedAccount.twitter}</a>
-              {:else}
-                -
-              {/if}
-            </div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Twitter</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.twitter || ''} />
+            {:else}
+              <div class="form-control-plaintext">
+                {#if selectedAccount?.twitter}
+                  <a href="https://twitter.com/{selectedAccount.twitter}" target="_blank" rel="noopener noreferrer">{selectedAccount.twitter}</a>
+                {:else}
+                  -
+                {/if}
+              </div>
+            {/if}
+          </div>
         </div>
 
         <!-- LinkedIn -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">LinkedIn</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.linkedin || ''} />
-          {:else}
-            <div class="form-control-plaintext">
-              {#if selectedAccount?.linkedin}
-                <a href={selectedAccount.linkedin} target="_blank" rel="noopener noreferrer">{selectedAccount.linkedin}</a>
-              {:else}
-                -
-              {/if}
-            </div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">LinkedIn</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.linkedin || ''} />
+            {:else}
+              <div class="form-control-plaintext">
+                {#if selectedAccount?.linkedin}
+                  <a href={selectedAccount.linkedin} target="_blank" rel="noopener noreferrer">{selectedAccount.linkedin}</a>
+                {:else}
+                  -
+                {/if}
+              </div>
+            {/if}
+          </div>
         </div>
 
         <!-- Facebook -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Facebook</label>
-          {#if viewMode === 'edit'}
-            <input type="text" class="form-control" value={selectedAccount?.facebook || ''} />
-          {:else}
-            <div class="form-control-plaintext">
-              {#if selectedAccount?.facebook}
-                <a href={selectedAccount.facebook} target="_blank" rel="noopener noreferrer">{selectedAccount.facebook}</a>
-              {:else}
-                -
-              {/if}
-            </div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Facebook</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={selectedAccount?.facebook || ''} />
+            {:else}
+              <div class="form-control-plaintext">
+                {#if selectedAccount?.facebook}
+                  <a href={selectedAccount.facebook} target="_blank" rel="noopener noreferrer">{selectedAccount.facebook}</a>
+                {:else}
+                  -
+                {/if}
+              </div>
+            {/if}
+          </div>
         </div>
       </div>
     </div>
@@ -833,13 +958,13 @@
 
 <!-- Additional Info Panel -->
 <div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('additionalInfo')}>
-    <h5 class="mb-0">Additional Information</h5>
+  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('additionalInfo')}>
     {#if panelStates.additionalInfo}
-      <i class="bi bi-chevron-up"></i>
+      <i class="bi bi-chevron-down me-2"></i>
     {:else}
-      <i class="bi bi-chevron-down"></i>
+      <i class="bi bi-chevron-right me-2"></i>
     {/if}
+    <h5 class="mb-0">Additional Information</h5>
   </div>
   {#if panelStates.additionalInfo}
   <div class="card-body">
@@ -854,29 +979,29 @@
 
 <!-- Custom Fields Panel -->
 <div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('customFields')}>
-    <h5 class="mb-0">Custom Fields</h5>
+  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('customFields')}>
     {#if panelStates.customFields}
-      <i class="bi bi-chevron-up"></i>
+      <i class="bi bi-chevron-down me-2"></i>
     {:else}
-      <i class="bi bi-chevron-down"></i>
+      <i class="bi bi-chevron-right me-2"></i>
     {/if}
+    <h5 class="mb-0">Custom Fields</h5>
   </div>
   {#if panelStates.customFields}
   <div class="card-body">
     {#if selectedAccount?.customFields}
-      <div class="row">
-        {#each Object.entries(selectedAccount.customFields) as [key, value]}
-          <div class="col-md-6 mb-3">
-            <label class="form-label text-muted text-uppercase small">{key}</label>
+      {#each Object.entries(selectedAccount.customFields) as [key, value]}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">{toSentenceCase(key)}</label>
+          <div class="col-sm-8">
             {#if viewMode === 'edit'}
               <input type="text" class="form-control" value={value || ''} />
             {:else}
               <div class="form-control-plaintext">{value || '-'}</div>
             {/if}
           </div>
-        {/each}
-      </div>
+        </div>
+      {/each}
     {:else}
       <div class="text-muted">No custom fields defined</div>
     {/if}
@@ -886,62 +1011,74 @@
 
 <!-- Record History Panel -->
 <div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('recordHistory')}>
-    <h5 class="mb-0">Record History</h5>
+  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('recordHistory')}>
     {#if panelStates.recordHistory}
-      <i class="bi bi-chevron-up"></i>
+      <i class="bi bi-chevron-down me-2"></i>
     {:else}
-      <i class="bi bi-chevron-down"></i>
+      <i class="bi bi-chevron-right me-2"></i>
     {/if}
+    <h5 class="mb-0">Record History</h5>
   </div>
   {#if panelStates.recordHistory}
   <div class="card-body">
     <div class="row">
       <div class="col-md-6">
         <!-- Created -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Created</label>
-          <div class="form-control-plaintext">{formatDate(selectedAccount?.created)}</div>
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Created</label>
+          <div class="col-sm-8">
+            <div class="form-control-plaintext">{formatDate(selectedAccount?.created)}</div>
+          </div>
         </div>
 
         <!-- Created By -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Created By</label>
-          <div class="form-control-plaintext">{selectedAccount?.createdBy || '-'}</div>
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Created By</label>
+          <div class="col-sm-8">
+            <div class="form-control-plaintext">{selectedAccount?.createdBy || '-'}</div>
+          </div>
         </div>
 
         <!-- First Contact -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">First Contact</label>
-          {#if viewMode === 'edit'}
-            <input type="date" class="form-control" value={selectedAccount?.firstContact || ''} />
-          {:else}
-            <div class="form-control-plaintext">{formatDate(selectedAccount?.firstContact)}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">First Contact</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="date" class="form-control" value={selectedAccount?.firstContact || ''} />
+            {:else}
+              <div class="form-control-plaintext">{formatDate(selectedAccount?.firstContact)}</div>
+            {/if}
+          </div>
         </div>
       </div>
 
       <div class="col-md-6">
         <!-- Last Updated -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Last Updated</label>
-          <div class="form-control-plaintext">{formatDate(selectedAccount?.lastUpdated || selectedAccount?.updated)}</div>
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Last Updated</label>
+          <div class="col-sm-8">
+            <div class="form-control-plaintext">{formatDate(selectedAccount?.lastUpdated || selectedAccount?.updated)}</div>
+          </div>
         </div>
 
         <!-- Updated By -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Updated By</label>
-          <div class="form-control-plaintext">{selectedAccount?.updatedBy || selectedAccount?.lastUpdatedBy || '-'}</div>
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Updated By</label>
+          <div class="col-sm-8">
+            <div class="form-control-plaintext">{selectedAccount?.updatedBy || selectedAccount?.lastUpdatedBy || '-'}</div>
+          </div>
         </div>
 
         <!-- Last Contact -->
-        <div class="mb-3">
-          <label class="form-label text-muted text-uppercase small">Last Contact</label>
-          {#if viewMode === 'edit'}
-            <input type="date" class="form-control" value={selectedAccount?.lastContact || ''} />
-          {:else}
-            <div class="form-control-plaintext">{formatDate(selectedAccount?.lastContact)}</div>
-          {/if}
+        <div class="mb-3 row">
+          <label class="col-sm-4 col-form-label field-label text-end">Last Contact</label>
+          <div class="col-sm-8">
+            {#if viewMode === 'edit'}
+              <input type="date" class="form-control" value={selectedAccount?.lastContact || ''} />
+            {:else}
+              <div class="form-control-plaintext">{formatDate(selectedAccount?.lastContact)}</div>
+            {/if}
+          </div>
         </div>
       </div>
     </div>
@@ -951,13 +1088,13 @@
 
 <!-- Contacts Panel -->
 <div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('contacts')}>
-    <h5 class="mb-0">Contacts ({accountContacts.length})</h5>
+  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('contacts')}>
     {#if panelStates.contacts}
-      <i class="bi bi-chevron-up"></i>
+      <i class="bi bi-chevron-down me-2"></i>
     {:else}
-      <i class="bi bi-chevron-down"></i>
+      <i class="bi bi-chevron-right me-2"></i>
     {/if}
+    <h5 class="mb-0">Contacts ({accountContacts.length})</h5>
   </div>
   {#if panelStates.contacts}
   <div class="card-body">
@@ -1041,13 +1178,13 @@
 
 <!-- Orders Panel -->
 <div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('orders')}>
-    <h5 class="mb-0">Orders ({accountOrders.length})</h5>
+  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('orders')}>
     {#if panelStates.orders}
-      <i class="bi bi-chevron-up"></i>
+      <i class="bi bi-chevron-down me-2"></i>
     {:else}
-      <i class="bi bi-chevron-down"></i>
+      <i class="bi bi-chevron-right me-2"></i>
     {/if}
+    <h5 class="mb-0">Orders ({accountOrders.length})</h5>
   </div>
   {#if panelStates.orders}
   <div class="card-body">
@@ -1092,13 +1229,13 @@
 
 <!-- Activities Panel -->
 <div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('activities')}>
-    <h5 class="mb-0">Activities {#if selectedAccount?.activities}({selectedAccount.activities.length}){/if}</h5>
+  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('activities')}>
     {#if panelStates.activities}
-      <i class="bi bi-chevron-up"></i>
+      <i class="bi bi-chevron-down me-2"></i>
     {:else}
-      <i class="bi bi-chevron-down"></i>
+      <i class="bi bi-chevron-right me-2"></i>
     {/if}
+    <h5 class="mb-0">Activities {#if selectedAccount?.activities}({selectedAccount.activities.length}){/if}</h5>
   </div>
   {#if panelStates.activities}
   <div class="card-body">
@@ -1141,14 +1278,14 @@
 </div>
 
 <!-- Notes Panel -->
-<div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('notes')}>
-    <h5 class="mb-0">Notes {#if selectedAccount?.notes}({selectedAccount.notes.length}){/if}</h5>
+<div class="card bg-dark text-light mt-3" id="notes-panel">
+  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('notes')}>
     {#if panelStates.notes}
-      <i class="bi bi-chevron-up"></i>
+      <i class="bi bi-chevron-down me-2"></i>
     {:else}
-      <i class="bi bi-chevron-down"></i>
+      <i class="bi bi-chevron-right me-2"></i>
     {/if}
+    <h5 class="mb-0">Notes {#if selectedAccount?.notes}({selectedAccount.notes.length}){/if}</h5>
   </div>
   {#if panelStates.notes}
   <div class="card-body">
@@ -1203,13 +1340,13 @@
 
 <!-- Documents Panel -->
 <div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('documents')}>
-    <h5 class="mb-0">Documents {#if selectedAccount?.documents}({selectedAccount.documents.length}){/if}</h5>
+  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('documents')}>
     {#if panelStates.documents}
-      <i class="bi bi-chevron-up"></i>
+      <i class="bi bi-chevron-down me-2"></i>
     {:else}
-      <i class="bi bi-chevron-down"></i>
+      <i class="bi bi-chevron-right me-2"></i>
     {/if}
+    <h5 class="mb-0">Documents {#if selectedAccount?.documents}({selectedAccount.documents.length}){/if}</h5>
   </div>
   {#if panelStates.documents}
   <div class="card-body">
@@ -1275,5 +1412,10 @@
   
   .sortable:hover {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .field-label {
+    font-size: 0.875rem;
+    color: #6c757d;
   }
 </style>
