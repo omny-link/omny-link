@@ -87,6 +87,12 @@
       <artifactId>pdf-service</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- TODO cannot npm install to run gulp, maybe pack differently? maybe rewrite -->
+    <dependency>
+      <groupId>link.omny</groupId>
+      <artifactId>crm-ui</artifactId>
+      <version>${omny-link.version}</version>
+    </dependency>
     <!-- provides REST self-test used during build but also potentially at runtime -->
     <dependency>
       <groupId>org.openjdk.nashorn</groupId>
