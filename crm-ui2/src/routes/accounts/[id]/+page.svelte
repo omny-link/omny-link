@@ -3,8 +3,13 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import keycloak, { initKeycloak, fetchUserAccount } from '$lib/keycloak';
-  import { getGravatarUrl } from '$lib/gravatar';
   import type { Account, Contact, Order, PanelStates, ViewMode } from '$lib/types';
+  import CustomFieldsPanel from '$lib/components/CustomFieldsPanel.svelte';
+  import NotesPanel from '$lib/components/NotesPanel.svelte';
+  import DocumentsPanel from '$lib/components/DocumentsPanel.svelte';
+  import ContactsPanel from '$lib/components/ContactsPanel.svelte';
+  import OrdersPanel from '$lib/components/OrdersPanel.svelte';
+  import ActivitiesPanel from '$lib/components/ActivitiesPanel.svelte';
 
   let accountId: string;
   let tenant: string = 'acme';
@@ -105,7 +110,7 @@
   }
 
   async function fetchAccountContacts(id: string): Promise<Contact[]> {
-    const url = `https://crm.knowprocess.com/${tenant}/accounts/${id}/contacts`;
+    const url = `https://crm.knowprocess.com/${tenant}/contacts/findByAccountId?accountId=${id}`;
     const headers: Record<string, string> = {};
     if (keycloak.authenticated) {
       headers['Authorization'] = `Bearer ${keycloak.token}`;
@@ -124,28 +129,28 @@
   async function fetchOrdersByContacts(contacts: Contact[]): Promise<Order[]> {
     if (contacts.length === 0) return [];
     
-    const orderPromises = contacts.map(async (contact) => {
-      const contactId = contact.id || contact.selfRef?.split('/').pop();
-      if (!contactId) return [];
-      
-      const url = `https://crm.knowprocess.com/${tenant}/contacts/${contactId}/orders`;
-      const headers: Record<string, string> = {};
-      if (keycloak.authenticated) {
-        headers['Authorization'] = `Bearer ${keycloak.token}`;
+    // Extract contact IDs and join with commas
+    const contactIds = contacts
+      .map(contact => contact.id || contact.selfRef?.split('/').pop())
+      .filter(id => id)
+      .join(',');
+    
+    if (!contactIds) return [];
+    
+    const url = `https://crm.knowprocess.com/${tenant}/orders/findByContacts/${contactIds}`;
+    const headers: Record<string, string> = {};
+    if (keycloak.authenticated) {
+      headers['Authorization'] = `Bearer ${keycloak.token}`;
+    }
+    try {
+      const res = await fetch(url, { headers, mode: "cors" });
+      if (res.ok) {
+        return await res.json();
       }
-      try {
-        const res = await fetch(url, { headers, mode: "cors" });
-        if (res.ok) {
-          return await res.json();
-        }
-      } catch (error) {
-        console.error(`Error fetching orders for contact ${contactId}:`, error);
-      }
-      return [];
-    });
-
-    const ordersArrays = await Promise.all(orderPromises);
-    return ordersArrays.flat();
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+    return [];
   }
 
   async function deleteAccount(): Promise<void> {
@@ -202,7 +207,7 @@
     // Get account ID from URL
     accountId = $page.params.id;
     
-    // Load account data
+    // Load account data and contacts
     const [account, contacts] = await Promise.all([
       fetchFullAccount(accountId),
       fetchAccountContacts(accountId)
@@ -609,37 +614,17 @@
   {/if}
 </div>
 
-<!-- Custom Fields Panel -->
-<div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('customFields')}>
-    {#if panelStates.customFields}
-      <i class="bi bi-chevron-down me-2"></i>
-    {:else}
-      <i class="bi bi-chevron-right me-2"></i>
-    {/if}
-    <h5 class="mb-0">Custom Fields</h5>
-  </div>
-  {#if panelStates.customFields}
-  <div class="card-body">
-    {#if selectedAccount?.customFields}
-      {#each Object.entries(selectedAccount.customFields) as [key, value]}
-        <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">{toSentenceCase(key)}</label>
-          <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={value || ''} />
-            {:else}
-              <div class="form-control-plaintext">{value || '-'}</div>
-            {/if}
-          </div>
-        </div>
-      {/each}
-    {:else}
-      <div class="text-muted">No custom fields defined</div>
-    {/if}
-  </div>
-  {/if}
-</div>
+<CustomFieldsPanel 
+  customFields={selectedAccount?.customFields}
+  {viewMode}
+  isOpen={panelStates.customFields}
+  onToggle={() => togglePanel('customFields')}
+  onChange={(key, value) => {
+    if (selectedAccount) {
+      selectedAccount.customFields = { ...selectedAccount.customFields, [key]: value };
+    }
+  }}
+/>
 
 <!-- Record History Panel -->
 <div class="card bg-dark text-light mt-3">
@@ -718,322 +703,52 @@
   {/if}
 </div>
 
-<!-- Contacts Panel -->
-<div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('contacts')}>
-    {#if panelStates.contacts}
-      <i class="bi bi-chevron-down me-2"></i>
-    {:else}
-      <i class="bi bi-chevron-right me-2"></i>
-    {/if}
-    <h5 class="mb-0">Contacts ({accountContacts.length})</h5>
-  </div>
-  {#if panelStates.contacts}
-  <div class="card-body">
-    {#if accountContacts.length > 0}
-      <table class="table table-dark table-striped">
-        <thead>
-          <tr>
-            <th>Main</th>
-            <th>Name</th>
-            <th>Job Title</th>
-            <th>Email</th>
-            <th>Opt-in</th>
-            <th>Phone</th>
-            <th>Twitter</th>
-            <th>LinkedIn</th>
-            <th>Facebook</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each accountContacts as contact}
-            <tr>
-              <td>
-                <input 
-                  type="radio" 
-                  name="mainContact" 
-                  checked={contact.mainContact || contact.isMainContact}
-                  disabled={viewMode !== 'edit'}
-                />
-              </td>
-              <td>{contact.firstName || ''} {contact.lastName || ''}</td>
-              <td>{contact.jobTitle || contact.title || '-'}</td>
-              <td>{contact.email || '-'}</td>
-              <td>{contact.doNotCall || contact.emailOptIn || '-'}</td>
-              <td>{contact.phone || contact.phoneNumber || '-'}</td>
-              <td>
-                {#if contact.twitter}
-                  <a href="https://twitter.com/{contact.twitter}" target="_blank" rel="noopener noreferrer" aria-label="Twitter profile">
-                    <i class="bi bi-twitter"></i>
-                  </a>
-                {:else}
-                  -
-                {/if}
-              </td>
-              <td>
-                {#if contact.linkedin}
-                  <a href={contact.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
-                    <i class="bi bi-linkedin"></i>
-                  </a>
-                {:else}
-                  -
-                {/if}
-              </td>
-              <td>
-                {#if contact.facebook}
-                  <a href={contact.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook profile">
-                    <i class="bi bi-facebook"></i>
-                  </a>
-                {:else}
-                  -
-                {/if}
-              </td>
-              <td>
-                <button class="btn btn-sm btn-dark" aria-label="View contact">
-                  <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-sm btn-dark" aria-label="Edit contact">
-                  <i class="bi bi-pencil"></i>
-                </button>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    {:else}
-      <div class="text-muted">No contacts found</div>
-    {/if}
-  </div>
-  {/if}
-</div>
+<ContactsPanel
+  contacts={accountContacts}
+  {viewMode}
+  isOpen={panelStates.contacts}
+  onToggle={() => togglePanel('contacts')}
+  onAdd={() => alert('Add contact feature coming soon')}
+  onView={(contact) => alert('View contact feature coming soon')}
+  onSetMain={(contact) => alert('Set main contact feature coming soon')}
+/>
 
-<!-- Orders Panel -->
-<div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('orders')}>
-    {#if panelStates.orders}
-      <i class="bi bi-chevron-down me-2"></i>
-    {:else}
-      <i class="bi bi-chevron-right me-2"></i>
-    {/if}
-    <h5 class="mb-0">Orders ({accountOrders.length})</h5>
-  </div>
-  {#if panelStates.orders}
-  <div class="card-body">
-    {#if accountOrders.length > 0}
-      <table class="table table-dark table-striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Contact Name</th>
-            <th>Order Date</th>
-            <th>Delivery Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each accountOrders as order}
-            <tr>
-              <td>{order.id || order.name || '-'}</td>
-              <td>{order.contactName || order.contact || '-'}</td>
-              <td>{formatDate(order.orderDate || order.date || order.created)}</td>
-              <td>{formatDate(order.deliveryDate || order.dueDate)}</td>
-              <td>{order.status || order.stage || '-'}</td>
-              <td>
-                <button class="btn btn-sm btn-dark" aria-label="View order">
-                  <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-sm btn-dark" aria-label="Edit order">
-                  <i class="bi bi-pencil"></i>
-                </button>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    {:else}
-      <div class="text-muted">No orders found</div>
-    {/if}
-  </div>
-  {/if}
-</div>
+<OrdersPanel
+  orders={accountOrders}
+  {viewMode}
+  isOpen={panelStates.orders}
+  onToggle={() => togglePanel('orders')}
+  onView={(order) => alert('View order feature coming soon')}
+  onEdit={(order) => alert('Edit order feature coming soon')}
+/>
 
-<!-- Activities Panel -->
-<div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('activities')}>
-    {#if panelStates.activities}
-      <i class="bi bi-chevron-down me-2"></i>
-    {:else}
-      <i class="bi bi-chevron-right me-2"></i>
-    {/if}
-    <h5 class="mb-0">Activities {#if selectedAccount?.activities}({selectedAccount.activities.length}){/if}</h5>
-  </div>
-  {#if panelStates.activities}
-  <div class="card-body">
-    {#if selectedAccount?.activities && selectedAccount.activities.length > 0}
-      <table class="table table-dark table-striped">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>User</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each [...selectedAccount.activities].sort((a, b) => {
-            const dateA = new Date(a.created || a.date || 0);
-            const dateB = new Date(b.created || b.date || 0);
-            return dateB.getTime() - dateA.getTime();
-          }) as activity}
-            <tr>
-              <td>{formatDate(activity.created || activity.date)}</td>
-              <td>{activity.type || activity.activityType || '-'}</td>
-              <td style="max-width: 40rem;">{activity.description || activity.content || '-'}</td>
-              <td>{activity.user || activity.createdBy || '-'}</td>
-              <td>
-                <button class="btn btn-sm btn-dark" aria-label="View activity">
-                  <i class="bi bi-eye"></i>
-                </button>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    {:else}
-      <div class="text-muted">No activities found</div>
-    {/if}
-  </div>
-  {/if}
-</div>
+<ActivitiesPanel
+  activities={selectedAccount?.activities}
+  {viewMode}
+  isOpen={panelStates.activities}
+  onToggle={() => togglePanel('activities')}
+  onView={(activity) => alert('View activity feature coming soon')}
+/>
 
-<!-- Notes Panel -->
-<div class="card bg-dark text-light mt-3" id="notes-panel">
-  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('notes')}>
-    {#if panelStates.notes}
-      <i class="bi bi-chevron-down me-2"></i>
-    {:else}
-      <i class="bi bi-chevron-right me-2"></i>
-    {/if}
-    <h5 class="mb-0">Notes {#if selectedAccount?.notes}({selectedAccount.notes.length}){/if}</h5>
-  </div>
-  {#if panelStates.notes}
-  <div class="card-body">
-    {#if selectedAccount?.notes && selectedAccount.notes.length > 0}
-      <table class="table table-dark table-striped">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Author</th>
-            <th>Content</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each [...selectedAccount.notes].sort((a, b) => {
-            const dateA = new Date(a.created || a.date || 0);
-            const dateB = new Date(b.created || b.date || 0);
-            return dateB.getTime() - dateA.getTime();
-          }) as note}
-            <tr>
-              <td>{formatDate(note.created || note.date)}</td>
-              <td>{note.author || note.createdBy || '-'}</td>
-              <td style="max-width: 40rem; white-space: pre-wrap;">{note.content || note.text || note.note || '-'}</td>
-              <td>
-                <button class="btn btn-sm btn-dark" aria-label="Edit note">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-dark" aria-label="Delete note">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-      {#if viewMode === 'edit'}
-        <button class="btn btn-primary btn-sm mt-2">
-          <i class="bi bi-plus"></i> Add Note
-        </button>
-      {/if}
-    {:else}
-      <div class="text-muted">No notes found</div>
-      {#if viewMode === 'edit'}
-        <button class="btn btn-primary btn-sm mt-2">
-          <i class="bi bi-plus"></i> Add Note
-        </button>
-      {/if}
-    {/if}
-  </div>
-  {/if}
-</div>
+<NotesPanel
+  id="notes-panel"
+  notes={selectedAccount?.notes}
+  {viewMode}
+  isOpen={panelStates.notes}
+  onToggle={() => togglePanel('notes')}
+  onAdd={() => alert('Add note feature coming soon')}
+  onEdit={(note) => alert('Edit note feature coming soon')}
+  onDelete={(note) => alert('Delete note feature coming soon')}
+/>
 
-<!-- Documents Panel -->
-<div class="card bg-dark text-light mt-3">
-  <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('documents')}>
-    {#if panelStates.documents}
-      <i class="bi bi-chevron-down me-2"></i>
-    {:else}
-      <i class="bi bi-chevron-right me-2"></i>
-    {/if}
-    <h5 class="mb-0">Documents {#if selectedAccount?.documents}({selectedAccount.documents.length}){/if}</h5>
-  </div>
-  {#if panelStates.documents}
-  <div class="card-body">
-    {#if selectedAccount?.documents && selectedAccount.documents.length > 0}
-      <table class="table table-dark table-striped">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Size</th>
-            <th>Uploaded</th>
-            <th>Uploaded By</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each [...selectedAccount.documents].sort((a, b) => {
-            const dateA = new Date(a.uploaded || a.created || 0);
-            const dateB = new Date(b.uploaded || b.created || 0);
-            return dateB.getTime() - dateA.getTime();
-          }) as doc}
-            <tr>
-              <td>{doc.name || doc.fileName || '-'}</td>
-              <td>{doc.type || doc.mimeType || doc.contentType || '-'}</td>
-              <td>{doc.size || '-'}</td>
-              <td>{formatDate(doc.uploaded || doc.created)}</td>
-              <td>{doc.uploadedBy || doc.createdBy || '-'}</td>
-              <td>
-                <a href={doc.url || doc.link || '#'} class="btn btn-sm btn-dark" target="_blank" rel="noopener noreferrer" aria-label="Download document">
-                  <i class="bi bi-download"></i>
-                </a>
-                <button class="btn btn-sm btn-dark" aria-label="Delete document">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-      {#if viewMode === 'edit'}
-        <button class="btn btn-primary btn-sm mt-2">
-          <i class="bi bi-plus"></i> Upload Document
-        </button>
-      {/if}
-    {:else}
-      <div class="text-muted">No documents found</div>
-      {#if viewMode === 'edit'}
-        <button class="btn btn-primary btn-sm mt-2">
-          <i class="bi bi-plus"></i> Upload Document
-        </button>
-      {/if}
-    {/if}
-  </div>
-  {/if}
-</div>
+<DocumentsPanel
+  documents={selectedAccount?.documents}
+  {viewMode}
+  isOpen={panelStates.documents}
+  onToggle={() => togglePanel('documents')}
+  onUpload={() => alert('Upload document feature coming soon')}
+  onDelete={(doc) => alert('Delete document feature coming soon')}
+/>
 {/if}
 
 <style>
