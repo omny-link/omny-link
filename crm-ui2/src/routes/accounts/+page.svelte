@@ -3,16 +3,7 @@
   import { goto } from '$app/navigation';
   import keycloak, { initKeycloak, fetchUserAccount } from '$lib/keycloak';
   import { getGravatarUrl } from '$lib/gravatar';
-
-  interface Account {
-    id?: string;
-    name: string;
-    email?: string;
-    phone?: string;
-    website?: string;
-    industry?: string;
-    [key: string]: any;
-  }
+  import type { Account, SortDirection } from '$lib/types';
 
   let userInfo: any = null;
   let tenant: string = 'acme';
@@ -23,7 +14,7 @@
   let page: number = 1;
   let allLoaded: boolean = false;
   let sortColumn: string = 'updated';
-  let sortDirection: 'asc' | 'desc' = 'desc';
+  let sortDirection: SortDirection = 'desc';
 
   async function fetchAccounts(nextPage: number): Promise<void> {
     if (loading || allLoaded) return;

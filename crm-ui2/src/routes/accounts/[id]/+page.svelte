@@ -4,43 +4,7 @@
   import { goto } from '$app/navigation';
   import keycloak, { initKeycloak, fetchUserAccount } from '$lib/keycloak';
   import { getGravatarUrl } from '$lib/gravatar';
-
-  interface Account {
-    id?: string;
-    name: string;
-    email?: string;
-    phone?: string;
-    website?: string;
-    industry?: string;
-    selfRef?: string;
-    [key: string]: any;
-  }
-
-  interface Contact {
-    id?: string;
-    firstName: string;
-    lastName: string;
-    email?: string;
-    [key: string]: any;
-  }
-
-  interface Order {
-    id?: string;
-    name: string;
-    [key: string]: any;
-  }
-
-  interface PanelStates {
-    details: boolean;
-    additionalInfo: boolean;
-    customFields: boolean;
-    recordHistory: boolean;
-    contacts: boolean;
-    orders: boolean;
-    activities: boolean;
-    notes: boolean;
-    documents: boolean;
-  }
+  import type { Account, Contact, Order, PanelStates, ViewMode } from '$lib/types';
 
   let accountId: string;
   let tenant: string = 'acme';
@@ -48,7 +12,7 @@
   let accountContacts: Contact[] = [];
   let accountOrders: Order[] = [];
   let loading: boolean = false;
-  let viewMode: 'view' | 'edit' = 'view';
+  let viewMode: ViewMode = 'view';
   let panelStates: PanelStates = {
     details: true,
     additionalInfo: true,
