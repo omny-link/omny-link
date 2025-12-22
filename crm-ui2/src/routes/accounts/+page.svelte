@@ -12,6 +12,25 @@
   let allLoaded = false;
   let sortColumn = 'updated';
   let sortDirection = 'desc';
+  let selectedAccount = null;
+  let viewMode = 'list'; // 'list', 'view', or 'edit'
+  let accountContacts = [];
+  let accountOrders = [];
+  let panelStates = {
+    details: true,
+    additionalInfo: true,
+    customFields: true,
+    recordHistory: true,
+    contacts: true,
+    orders: true,
+    activities: true,
+    notes: false,
+    documents: false
+  };
+
+  function togglePanel(panelName) {
+    panelStates[panelName] = !panelStates[panelName];
+  }
 
   // Stale-while-refresh: show what we have, keep loading in background
   async function fetchAccounts(nextPage) {
@@ -284,6 +303,118 @@
     return `https://www.gravatar.com/avatar/${hash}?d=mp&s=32`;
   }
 
+  async function fetchFullAccount(accountId) {
+    loading = true;
+    const url = `https://crm.knowprocess.com/${tenant}/accounts/${accountId}`;
+    const headers = {};
+    if (keycloak.authenticated) {
+      headers['Authorization'] = `Bearer ${keycloak.token}`;
+    }
+    try {
+      const res = await fetch(url, { headers, mode: "cors" });
+      if (res.ok) {
+        const data = await res.json();
+        return data;
+      } else {
+        console.error('Failed to fetch account details');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching account details:', error);
+      return null;
+    } finally {
+      loading = false;
+    }
+  }
+
+  async function fetchAccountContacts(accountId) {
+    const url = `https://crm.knowprocess.com/${tenant}/contacts/findByAccountId?accountId=${accountId}`;
+    const headers = {};
+    if (keycloak.authenticated) {
+      headers['Authorization'] = `Bearer ${keycloak.token}`;
+    }
+    try {
+      const res = await fetch(url, { headers, mode: "cors" });
+      if (res.ok) {
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
+      } else {
+        console.error('Failed to fetch contacts');
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching contacts:', error);
+      return [];
+    }
+  }
+
+  async function fetchOrdersByContacts(contacts) {
+    if (!contacts || contacts.length === 0) return [];
+    
+    const contactIds = contacts
+      .map(c => c.id || c.selfRef?.split('/').pop())
+      .filter(id => id)
+      .join(',');
+    
+    if (!contactIds) return [];
+
+    const url = `https://crm.knowprocess.com/${tenant}/orders/findByContacts/${contactIds}`;
+    const headers = {};
+    if (keycloak.authenticated) {
+      headers['Authorization'] = `Bearer ${keycloak.token}`;
+    }
+    try {
+      const res = await fetch(url, { headers, mode: "cors" });
+      if (res.ok) {
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
+      } else {
+        console.error('Failed to fetch orders');
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      return [];
+    }
+  }
+
+  async function viewAccount(account) {
+    const accountId = account.id || account.selfRef?.split('/').pop();
+    const [fullAccount, contacts] = await Promise.all([
+      fetchFullAccount(accountId),
+      fetchAccountContacts(accountId)
+    ]);
+    if (fullAccount) {
+      selectedAccount = fullAccount;
+      accountContacts = contacts;
+      // Fetch orders after we have contacts
+      accountOrders = await fetchOrdersByContacts(contacts);
+      viewMode = 'view';
+    }
+  }
+
+  async function editAccount(account) {
+    const accountId = account.id || account.selfRef?.split('/').pop();
+    const [fullAccount, contacts] = await Promise.all([
+      fetchFullAccount(accountId),
+      fetchAccountContacts(accountId)
+    ]);
+    if (fullAccount) {
+      selectedAccount = fullAccount;
+      accountContacts = contacts;
+      // Fetch orders after we have contacts
+      accountOrders = await fetchOrdersByContacts(contacts);
+      viewMode = 'edit';
+    }
+  }
+
+  function backToList() {
+    selectedAccount = null;
+    accountContacts = [];
+    accountOrders = [];
+    viewMode = 'list';
+  }
+
   onMount(async () => {
     // Wait for keycloak to initialize first
     await initKeycloak();
@@ -302,6 +433,7 @@
   });
 </script>
 
+{#if viewMode === 'list'}
 <div class="d-flex align-items-center mb-3">
   <h2 class="display-5 mb-0 me-3">
     Accounts
@@ -389,10 +521,10 @@
             {/each}
           </td>
           <td>
-            <button class="btn btn-dark ms-auto" aria-label="View account">
+            <button class="btn btn-dark ms-auto" aria-label="View account" on:click={() => viewAccount(account)}>
               <i class="bi bi-eye"></i>
             </button>
-            <button class="btn btn-dark ms-auto" aria-label="Edit account">
+            <button class="btn btn-dark ms-auto" aria-label="Edit account" on:click={() => editAccount(account)}>
               <i class="bi bi-pencil"></i>
             </button>
           </td>
@@ -400,6 +532,739 @@
       {/each}
     </tbody>
   </table>
+{/if}
+{:else}
+<!-- Detail View -->
+<div class="mb-3">
+  <button class="btn btn-dark" on:click={backToList}>
+    <i class="bi bi-arrow-left"></i> Back to List
+  </button>
+  <span class="ms-3 h4">{viewMode === 'edit' ? 'Edit' : 'View'} Account</span>
+</div>
+
+<div class="card bg-dark text-light">
+  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('details')}>
+    <h5 class="mb-0">{selectedAccount?.name || 'Account Details'}</h5>
+    {#if panelStates.details}
+      <i class="bi bi-chevron-up"></i>
+    {:else}
+      <i class="bi bi-chevron-down"></i>
+    {/if}
+  </div>
+  {#if panelStates.details}
+  <div class="card-body">
+    <div class="row">
+      <!-- Column 1 -->
+      <div class="col-md-6">
+        <!-- ID -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">ID</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.id || ''} readonly />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.id || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Parent Org -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Parent Org</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.parentOrg || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.parentOrg || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Company Number -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Company Number</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.companyNumber || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.companyNumber || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Owner -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Owner</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.owner || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.owner || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Existing Customer -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Existing Customer?</label>
+          {#if viewMode === 'edit'}
+            <select class="form-control" value={selectedAccount?.existingCustomer || ''}>
+              <option value="">-</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.existingCustomer || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Status -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Status</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.stage || selectedAccount?.accountType || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.stage || selectedAccount?.accountType || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Type -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Type</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.type || selectedAccount?.businessType || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.type || selectedAccount?.businessType || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Tags -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Tags</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.tags || ''} />
+          {:else}
+            <div class="form-control-plaintext">
+              {#each formatTags(selectedAccount?.tags) as line}
+                {line}<br />
+              {/each}
+            </div>
+          {/if}
+        </div>
+
+        <!-- No of Employees -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">No of Employees</label>
+          {#if viewMode === 'edit'}
+            <input type="number" class="form-control" value={selectedAccount?.noOfEmployees || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.noOfEmployees || '-'}</div>
+          {/if}
+        </div>
+      </div>
+
+      <!-- Column 2 -->
+      <div class="col-md-6">
+        <!-- Website -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Website</label>
+          {#if viewMode === 'edit'}
+            <input type="url" class="form-control" value={selectedAccount?.website || ''} />
+          {:else}
+            <div class="form-control-plaintext">
+              {#if selectedAccount?.website}
+                <a href={selectedAccount.website} target="_blank" rel="noopener noreferrer">{selectedAccount.website}</a>
+              {:else}
+                -
+              {/if}
+            </div>
+          {/if}
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Email</label>
+          {#if viewMode === 'edit'}
+            <input type="email" class="form-control" value={selectedAccount?.email || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.email || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Email Confirmed -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Email Confirmed?</label>
+          {#if viewMode === 'edit'}
+            <select class="form-control" value={selectedAccount?.emailConfirmed || ''}>
+              <option value="">-</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.emailConfirmed || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Opt-in -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Opt-in?</label>
+          {#if viewMode === 'edit'}
+            <select class="form-control" value={selectedAccount?.doNotCall || selectedAccount?.emailOptIn || ''}>
+              <option value="">-</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.doNotCall || selectedAccount?.emailOptIn || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Phone -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Phone</label>
+          {#if viewMode === 'edit'}
+            <input type="tel" class="form-control" value={selectedAccount?.phone || selectedAccount?.phoneNumber || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.phone || selectedAccount?.phoneNumber || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Address Line 1 -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Address Line 1</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.address1 || selectedAccount?.addressLine1 || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.address1 || selectedAccount?.addressLine1 || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Address Line 2 -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Address Line 2</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.address2 || selectedAccount?.addressLine2 || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.address2 || selectedAccount?.addressLine2 || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Address Town -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Address Town</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.town || selectedAccount?.addressTown || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.town || selectedAccount?.addressTown || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Address County/City -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Address County / City</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.countyOrCity || selectedAccount?.addressCounty || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.countyOrCity || selectedAccount?.addressCounty || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Postcode -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Postcode</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.postCode || selectedAccount?.zipCode || ''} />
+          {:else}
+            <div class="form-control-plaintext">{selectedAccount?.postCode || selectedAccount?.zipCode || '-'}</div>
+          {/if}
+        </div>
+
+        <!-- Twitter -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Twitter</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.twitter || ''} />
+          {:else}
+            <div class="form-control-plaintext">
+              {#if selectedAccount?.twitter}
+                <a href="https://twitter.com/{selectedAccount.twitter}" target="_blank" rel="noopener noreferrer">{selectedAccount.twitter}</a>
+              {:else}
+                -
+              {/if}
+            </div>
+          {/if}
+        </div>
+
+        <!-- LinkedIn -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">LinkedIn</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.linkedin || ''} />
+          {:else}
+            <div class="form-control-plaintext">
+              {#if selectedAccount?.linkedin}
+                <a href={selectedAccount.linkedin} target="_blank" rel="noopener noreferrer">{selectedAccount.linkedin}</a>
+              {:else}
+                -
+              {/if}
+            </div>
+          {/if}
+        </div>
+
+        <!-- Facebook -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Facebook</label>
+          {#if viewMode === 'edit'}
+            <input type="text" class="form-control" value={selectedAccount?.facebook || ''} />
+          {:else}
+            <div class="form-control-plaintext">
+              {#if selectedAccount?.facebook}
+                <a href={selectedAccount.facebook} target="_blank" rel="noopener noreferrer">{selectedAccount.facebook}</a>
+              {:else}
+                -
+              {/if}
+            </div>
+          {/if}
+        </div>
+      </div>
+    </div>
+
+    {#if viewMode === 'edit'}
+      <div class="mt-3">
+        <button class="btn btn-primary me-2">Save Changes</button>
+        <button class="btn btn-secondary" on:click={backToList}>Cancel</button>
+      </div>
+    {/if}
+  </div>
+  {/if}
+</div>
+
+<!-- Additional Info Panel -->
+<div class="card bg-dark text-light mt-3">
+  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('additionalInfo')}>
+    <h5 class="mb-0">Additional Information</h5>
+    {#if panelStates.additionalInfo}
+      <i class="bi bi-chevron-up"></i>
+    {:else}
+      <i class="bi bi-chevron-down"></i>
+    {/if}
+  </div>
+  {#if panelStates.additionalInfo}
+  <div class="card-body">
+    {#if viewMode === 'edit'}
+      <textarea class="form-control" rows="6" value={selectedAccount?.additionalInformation || ''}></textarea>
+    {:else}
+      <div class="form-control-plaintext" style="white-space: pre-wrap;">{selectedAccount?.additionalInformation || '-'}</div>
+    {/if}
+  </div>
+  {/if}
+</div>
+
+<!-- Custom Fields Panel -->
+<div class="card bg-dark text-light mt-3">
+  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('customFields')}>
+    <h5 class="mb-0">Custom Fields</h5>
+    {#if panelStates.customFields}
+      <i class="bi bi-chevron-up"></i>
+    {:else}
+      <i class="bi bi-chevron-down"></i>
+    {/if}
+  </div>
+  {#if panelStates.customFields}
+  <div class="card-body">
+    {#if selectedAccount?.customFields}
+      <div class="row">
+        {#each Object.entries(selectedAccount.customFields) as [key, value]}
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted text-uppercase small">{key}</label>
+            {#if viewMode === 'edit'}
+              <input type="text" class="form-control" value={value || ''} />
+            {:else}
+              <div class="form-control-plaintext">{value || '-'}</div>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    {:else}
+      <div class="text-muted">No custom fields defined</div>
+    {/if}
+  </div>
+  {/if}
+</div>
+
+<!-- Record History Panel -->
+<div class="card bg-dark text-light mt-3">
+  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('recordHistory')}>
+    <h5 class="mb-0">Record History</h5>
+    {#if panelStates.recordHistory}
+      <i class="bi bi-chevron-up"></i>
+    {:else}
+      <i class="bi bi-chevron-down"></i>
+    {/if}
+  </div>
+  {#if panelStates.recordHistory}
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <!-- Created -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Created</label>
+          <div class="form-control-plaintext">{formatDate(selectedAccount?.created)}</div>
+        </div>
+
+        <!-- Created By -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Created By</label>
+          <div class="form-control-plaintext">{selectedAccount?.createdBy || '-'}</div>
+        </div>
+
+        <!-- First Contact -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">First Contact</label>
+          {#if viewMode === 'edit'}
+            <input type="date" class="form-control" value={selectedAccount?.firstContact || ''} />
+          {:else}
+            <div class="form-control-plaintext">{formatDate(selectedAccount?.firstContact)}</div>
+          {/if}
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <!-- Last Updated -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Last Updated</label>
+          <div class="form-control-plaintext">{formatDate(selectedAccount?.lastUpdated || selectedAccount?.updated)}</div>
+        </div>
+
+        <!-- Updated By -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Updated By</label>
+          <div class="form-control-plaintext">{selectedAccount?.updatedBy || selectedAccount?.lastUpdatedBy || '-'}</div>
+        </div>
+
+        <!-- Last Contact -->
+        <div class="mb-3">
+          <label class="form-label text-muted text-uppercase small">Last Contact</label>
+          {#if viewMode === 'edit'}
+            <input type="date" class="form-control" value={selectedAccount?.lastContact || ''} />
+          {:else}
+            <div class="form-control-plaintext">{formatDate(selectedAccount?.lastContact)}</div>
+          {/if}
+        </div>
+      </div>
+    </div>
+  </div>
+  {/if}
+</div>
+
+<!-- Contacts Panel -->
+<div class="card bg-dark text-light mt-3">
+  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('contacts')}>
+    <h5 class="mb-0">Contacts ({accountContacts.length})</h5>
+    {#if panelStates.contacts}
+      <i class="bi bi-chevron-up"></i>
+    {:else}
+      <i class="bi bi-chevron-down"></i>
+    {/if}
+  </div>
+  {#if panelStates.contacts}
+  <div class="card-body">
+    {#if accountContacts.length > 0}
+      <table class="table table-dark table-striped">
+        <thead>
+          <tr>
+            <th>Main</th>
+            <th>Name</th>
+            <th>Job Title</th>
+            <th>Email</th>
+            <th>Opt-in</th>
+            <th>Phone</th>
+            <th>Twitter</th>
+            <th>LinkedIn</th>
+            <th>Facebook</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each accountContacts as contact}
+            <tr>
+              <td>
+                <input 
+                  type="radio" 
+                  name="mainContact" 
+                  checked={contact.mainContact || contact.isMainContact}
+                  disabled={viewMode !== 'edit'}
+                />
+              </td>
+              <td>{contact.firstName || ''} {contact.lastName || ''}</td>
+              <td>{contact.jobTitle || contact.title || '-'}</td>
+              <td>{contact.email || '-'}</td>
+              <td>{contact.doNotCall || contact.emailOptIn || '-'}</td>
+              <td>{contact.phone || contact.phoneNumber || '-'}</td>
+              <td>
+                {#if contact.twitter}
+                  <a href="https://twitter.com/{contact.twitter}" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-twitter"></i>
+                  </a>
+                {:else}
+                  -
+                {/if}
+              </td>
+              <td>
+                {#if contact.linkedin}
+                  <a href={contact.linkedin} target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-linkedin"></i>
+                  </a>
+                {:else}
+                  -
+                {/if}
+              </td>
+              <td>
+                {#if contact.facebook}
+                  <a href={contact.facebook} target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-facebook"></i>
+                  </a>
+                {:else}
+                  -
+                {/if}
+              </td>
+              <td>
+                <button class="btn btn-sm btn-dark" aria-label="View contact">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-dark" aria-label="Edit contact">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else}
+      <div class="text-muted">No contacts found</div>
+    {/if}
+  </div>
+  {/if}
+</div>
+
+<!-- Orders Panel -->
+<div class="card bg-dark text-light mt-3">
+  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('orders')}>
+    <h5 class="mb-0">Orders ({accountOrders.length})</h5>
+    {#if panelStates.orders}
+      <i class="bi bi-chevron-up"></i>
+    {:else}
+      <i class="bi bi-chevron-down"></i>
+    {/if}
+  </div>
+  {#if panelStates.orders}
+  <div class="card-body">
+    {#if accountOrders.length > 0}
+      <table class="table table-dark table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Contact Name</th>
+            <th>Order Date</th>
+            <th>Delivery Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each accountOrders as order}
+            <tr>
+              <td>{order.id || order.name || '-'}</td>
+              <td>{order.contactName || order.contact || '-'}</td>
+              <td>{formatDate(order.orderDate || order.date || order.created)}</td>
+              <td>{formatDate(order.deliveryDate || order.dueDate)}</td>
+              <td>{order.status || order.stage || '-'}</td>
+              <td>
+                <button class="btn btn-sm btn-dark" aria-label="View order">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-dark" aria-label="Edit order">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else}
+      <div class="text-muted">No orders found</div>
+    {/if}
+  </div>
+  {/if}
+</div>
+
+<!-- Activities Panel -->
+<div class="card bg-dark text-light mt-3">
+  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('activities')}>
+    <h5 class="mb-0">Activities {#if selectedAccount?.activities}({selectedAccount.activities.length}){/if}</h5>
+    {#if panelStates.activities}
+      <i class="bi bi-chevron-up"></i>
+    {:else}
+      <i class="bi bi-chevron-down"></i>
+    {/if}
+  </div>
+  {#if panelStates.activities}
+  <div class="card-body">
+    {#if selectedAccount?.activities && selectedAccount.activities.length > 0}
+      <table class="table table-dark table-striped">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>User</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each [...selectedAccount.activities].sort((a, b) => {
+            const dateA = new Date(a.created || a.date || 0);
+            const dateB = new Date(b.created || b.date || 0);
+            return dateB - dateA;
+          }) as activity}
+            <tr>
+              <td>{formatDate(activity.created || activity.date)}</td>
+              <td>{activity.type || activity.activityType || '-'}</td>
+              <td style="max-width: 40rem;">{activity.description || activity.content || '-'}</td>
+              <td>{activity.user || activity.createdBy || '-'}</td>
+              <td>
+                <button class="btn btn-sm btn-dark" aria-label="View activity">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else}
+      <div class="text-muted">No activities found</div>
+    {/if}
+  </div>
+  {/if}
+</div>
+
+<!-- Notes Panel -->
+<div class="card bg-dark text-light mt-3">
+  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('notes')}>
+    <h5 class="mb-0">Notes {#if selectedAccount?.notes}({selectedAccount.notes.length}){/if}</h5>
+    {#if panelStates.notes}
+      <i class="bi bi-chevron-up"></i>
+    {:else}
+      <i class="bi bi-chevron-down"></i>
+    {/if}
+  </div>
+  {#if panelStates.notes}
+  <div class="card-body">
+    {#if selectedAccount?.notes && selectedAccount.notes.length > 0}
+      <table class="table table-dark table-striped">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Author</th>
+            <th>Content</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each [...selectedAccount.notes].sort((a, b) => {
+            const dateA = new Date(a.created || a.date || 0);
+            const dateB = new Date(b.created || b.date || 0);
+            return dateB - dateA;
+          }) as note}
+            <tr>
+              <td>{formatDate(note.created || note.date)}</td>
+              <td>{note.author || note.createdBy || '-'}</td>
+              <td style="max-width: 40rem; white-space: pre-wrap;">{note.content || note.text || note.note || '-'}</td>
+              <td>
+                <button class="btn btn-sm btn-dark" aria-label="Edit note">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-dark" aria-label="Delete note">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+      {#if viewMode === 'edit'}
+        <button class="btn btn-primary btn-sm mt-2">
+          <i class="bi bi-plus"></i> Add Note
+        </button>
+      {/if}
+    {:else}
+      <div class="text-muted">No notes found</div>
+      {#if viewMode === 'edit'}
+        <button class="btn btn-primary btn-sm mt-2">
+          <i class="bi bi-plus"></i> Add Note
+        </button>
+      {/if}
+    {/if}
+  </div>
+  {/if}
+</div>
+
+<!-- Documents Panel -->
+<div class="card bg-dark text-light mt-3">
+  <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" on:click={() => togglePanel('documents')}>
+    <h5 class="mb-0">Documents {#if selectedAccount?.documents}({selectedAccount.documents.length}){/if}</h5>
+    {#if panelStates.documents}
+      <i class="bi bi-chevron-up"></i>
+    {:else}
+      <i class="bi bi-chevron-down"></i>
+    {/if}
+  </div>
+  {#if panelStates.documents}
+  <div class="card-body">
+    {#if selectedAccount?.documents && selectedAccount.documents.length > 0}
+      <table class="table table-dark table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>Uploaded</th>
+            <th>Uploaded By</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each [...selectedAccount.documents].sort((a, b) => {
+            const dateA = new Date(a.uploaded || a.created || 0);
+            const dateB = new Date(b.uploaded || b.created || 0);
+            return dateB - dateA;
+          }) as doc}
+            <tr>
+              <td>{doc.name || doc.fileName || '-'}</td>
+              <td>{doc.type || doc.mimeType || doc.contentType || '-'}</td>
+              <td>{doc.size || '-'}</td>
+              <td>{formatDate(doc.uploaded || doc.created)}</td>
+              <td>{doc.uploadedBy || doc.createdBy || '-'}</td>
+              <td>
+                <a href={doc.url || doc.link || '#'} class="btn btn-sm btn-dark" target="_blank" rel="noopener noreferrer" aria-label="Download document">
+                  <i class="bi bi-download"></i>
+                </a>
+                <button class="btn btn-sm btn-dark" aria-label="Delete document">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+      {#if viewMode === 'edit'}
+        <button class="btn btn-primary btn-sm mt-2">
+          <i class="bi bi-plus"></i> Upload Document
+        </button>
+      {/if}
+    {:else}
+      <div class="text-muted">No documents found</div>
+      {#if viewMode === 'edit'}
+        <button class="btn btn-primary btn-sm mt-2">
+          <i class="bi bi-plus"></i> Upload Document
+        </button>
+      {/if}
+    {/if}
+  </div>
+  {/if}
+</div>
 {/if}
 
 <style>
