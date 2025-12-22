@@ -10,6 +10,8 @@
   let loading = false;
   let page = 1;
   let allLoaded = false;
+  let sortColumn = 'updated';
+  let sortDirection = 'desc';
 
   // Stale-while-refresh: show what we have, keep loading in background
   async function fetchAccounts(nextPage) {
@@ -28,6 +30,7 @@
         if (Array.isArray(data) && data.length > 0) {
           accounts = [...accounts, ...data];
           filteredAccounts = accounts;
+          applySortToFiltered();
           page = nextPage;
           // Load next page in background
           fetchAccounts(nextPage + 1);
@@ -45,14 +48,63 @@
   function filterAccounts() {
     if (!searchQuery.trim()) {
       filteredAccounts = accounts;
-      return;
+    } else {
+      const query = searchQuery.toLowerCase();
+      filteredAccounts = accounts.filter(account => 
+        (account.name && account.name.toLowerCase().includes(query)) ||
+        (account.email && account.email.toLowerCase().includes(query)) ||
+        (account.created && account.created.toLowerCase().includes(query))
+      );
     }
-    const query = searchQuery.toLowerCase();
-    filteredAccounts = accounts.filter(account => 
-      (account.name && account.name.toLowerCase().includes(query)) ||
-      (account.email && account.email.toLowerCase().includes(query)) ||
-      (account.created && account.created.toLowerCase().includes(query))
-    );
+    // Reapply sort after filtering
+    if (sortColumn) {
+      applySortToFiltered();
+    }
+  }
+
+  function sortBy(column) {
+    if (sortColumn === column) {
+      sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortColumn = column;
+      sortDirection = 'asc';
+    }
+    applySortToFiltered();
+  }
+
+  function applySortToFiltered() {
+    filteredAccounts = [...filteredAccounts].sort((a, b) => {
+      let aVal, bVal;
+      
+      switch(sortColumn) {
+        case 'name':
+          aVal = (a.name || '').toLowerCase();
+          bVal = (b.name || '').toLowerCase();
+          break;
+        case 'status':
+          aVal = (a.stage || a.accountType || '').toLowerCase();
+          bVal = (b.stage || b.accountType || '').toLowerCase();
+          break;
+        case 'type':
+          aVal = (a.type || a.businessType || '').toLowerCase();
+          bVal = (b.type || b.businessType || '').toLowerCase();
+          break;
+        case 'created':
+          aVal = new Date(a.created || 0);
+          bVal = new Date(b.created || 0);
+          break;
+        case 'updated':
+          aVal = new Date(a.lastUpdated || a.updated || 0);
+          bVal = new Date(b.lastUpdated || b.updated || 0);
+          break;
+        default:
+          return 0;
+      }
+      
+      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
   }
 
   function formatDate(dateString) {
@@ -279,12 +331,37 @@
   <table class="table table-striped mt-4">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Status</th>
-        <th>Type</th>
+        <th class="sortable" on:click={() => sortBy('name')}>
+          Name
+          {#if sortColumn === 'name'}
+            <i class="bi bi-arrow-{sortDirection === 'asc' ? 'up' : 'down'}"></i>
+          {/if}
+        </th>
+        <th class="sortable" on:click={() => sortBy('status')}>
+          Status
+          {#if sortColumn === 'status'}
+            <i class="bi bi-arrow-{sortDirection === 'asc' ? 'up' : 'down'}"></i>
+          {/if}
+        </th>
+        <th class="sortable" on:click={() => sortBy('type')}>
+          Type
+          {#if sortColumn === 'type'}
+            <i class="bi bi-arrow-{sortDirection === 'asc' ? 'up' : 'down'}"></i>
+          {/if}
+        </th>
         <th>Owner</th>
-        <th>Created</th>
-        <th>Last Updated</th>
+        <th class="sortable" on:click={() => sortBy('created')}>
+          Created
+          {#if sortColumn === 'created'}
+            <i class="bi bi-arrow-{sortDirection === 'asc' ? 'up' : 'down'}"></i>
+          {/if}
+        </th>
+        <th class="sortable" on:click={() => sortBy('updated')}>
+          Last Updated
+          {#if sortColumn === 'updated'}
+            <i class="bi bi-arrow-{sortDirection === 'asc' ? 'up' : 'down'}"></i>
+          {/if}
+        </th>
         <th>Tags</th>
         <th>Actions</th>
       </tr>
@@ -325,3 +402,13 @@
   </table>
 {/if}
 
+<style>
+  .sortable {
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  .sortable:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+</style>
