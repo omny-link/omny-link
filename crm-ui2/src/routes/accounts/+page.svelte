@@ -389,10 +389,10 @@
             {/each}
           </td>
           <td>
-            <button class="btn btn-sm btn-outline-primary me-1" aria-label="View account">
+            <button class="btn btn-dark ms-auto" aria-label="View account">
               <i class="bi bi-eye"></i>
             </button>
-            <button class="btn btn-sm btn-outline-secondary" aria-label="Edit account">
+            <button class="btn btn-dark ms-auto" aria-label="Edit account">
               <i class="bi bi-pencil"></i>
             </button>
           </td>
