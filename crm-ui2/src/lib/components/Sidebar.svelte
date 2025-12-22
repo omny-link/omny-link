@@ -41,7 +41,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link {currentPath === '/accounts' ? 'active' : ''}" href="/accounts" title="Accounts">
+        <a class="nav-link {currentPath.startsWith('/accounts') ? 'active' : ''}" href="/accounts" title="Accounts">
           <i class="bi bi-people nav-icon"></i> {#if !collapsed}<span>Accounts</span>{/if}
         </a>
       </li>
