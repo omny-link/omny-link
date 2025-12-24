@@ -323,7 +323,7 @@
           <td>{account.accountType || '-'}</td>
           <td>
             <img 
-              src={getGravatarUrl(account.email || account.ownerEmail)} 
+              src={getGravatarUrl(account.owner)} 
               alt={account.owner || 'Owner'} 
               title={account.owner || ''}
               class="rounded-circle"
