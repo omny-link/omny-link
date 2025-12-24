@@ -49,7 +49,6 @@
   #content {
     margin-left: auto;
     margin-right: auto;
-    max-width: 1200px;
   }
 
   @media (min-width: 769px) {

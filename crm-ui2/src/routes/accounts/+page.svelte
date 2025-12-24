@@ -207,8 +207,8 @@
         </th>
         <th>Owner</th>
         <th class="sortable" on:click={() => sortBy('created')}>
-          Created
-          {#if sortColumn === 'created'}
+          First Contact
+          {#if sortColumn === 'firstContact'}
             <i class="bi bi-arrow-{sortDirection === 'asc' ? 'up' : 'down'}"></i>
           {/if}
         </th>
@@ -226,8 +226,8 @@
       {#each filteredAccounts as account}
         <tr>
           <td>{account.name}</td>
-          <td>{account.stage || account.accountType || '-'}</td>
-          <td>{account.type || account.businessType || '-'}</td>
+          <td>{account.stage || '-'}</td>
+          <td>{account.accountType || '-'}</td>
           <td>
             <img 
               src={getGravatarUrl(account.email || account.ownerEmail)} 
@@ -237,8 +237,8 @@
               style="width: 32px; height: 32px;"
             />
           </td>
-          <td>{formatDate(account.created)}</td>
-          <td>{formatDate(account.lastUpdated || account.updated)}</td>
+          <td>{formatDate(account.firstContact)}</td>
+          <td>{formatDate(account.lastUpdated)}</td>
           <td style="max-width: 20rem;">
             {#each formatTags(account.tags) as line, i}
               {line}{#if i < formatTags(account.tags).length - 1}<br />{/if}
