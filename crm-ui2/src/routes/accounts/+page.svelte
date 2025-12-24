@@ -1,16 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import keycloak, { initKeycloak, fetchUserAccount } from '$lib/keycloak';
+  import keycloak, { initKeycloak, fetchUserAccount, keycloakStore } from '$lib/keycloak';
   import { getGravatarUrl } from '$lib/gravatar';
   import { fetchAccounts as fetchAccountsAPI } from '$lib/cust-mgmt';
-  import type { Account, SortDirection } from '$lib/types';
+  import type { Account, SortDirection, UserInfo } from '$lib/types';
 
-  let userInfo: any = null;
+  let userInfo: UserInfo | null = null;
   let tenant: string = 'acme';
   let accounts: Account[] = [];
   let filteredAccounts: Account[] = [];
-  let searchQuery: string = '';
+  let searchQuery: string = "";
   let loading: boolean = false;
   let page: number = 1;
   let allLoaded: boolean = false;

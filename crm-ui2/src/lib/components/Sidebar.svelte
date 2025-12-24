@@ -47,9 +47,9 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#" title="Settings">
+        <button class="nav-link" type="button" title="Settings">
           <i class="bi bi-gear nav-icon"></i> {#if !collapsed}<span>Settings</span>{/if}
-        </a>
+        </button>
       </li>
       <li class="nav-item">
         {#if authenticated}

@@ -44,7 +44,7 @@ This is a Svelte 5 (SvelteKit) based CRM frontend application with Keycloak auth
 
 ### State Management
 
-- Use Svelte stores for shared state (see `$lib/keycloak.js`)
+- Use Svelte stores for shared state (see `$lib/keycloak.ts`)
 - Use `$state` for local state
 - Use `$derived` for computed values
 - Use `$effect` for side effects
@@ -53,7 +53,7 @@ This is a Svelte 5 (SvelteKit) based CRM frontend application with Keycloak auth
 
 ### Authentication (Keycloak)
 
-- Import from `$lib/keycloak.js`: `import keycloak, { initKeycloak, keycloakStore } from '$lib/keycloak'`
+- Import from `$lib/keycloak.ts`: `import keycloak, { initKeycloak, keycloakStore } from '$lib/keycloak'`
 - Initialize with `await initKeycloak()` in `onMount`
 - Check auth status: `keycloak.authenticated`
 - Access user info: `keycloak.tokenParsed.preferred_username`, `keycloak.tokenParsed.email`
@@ -104,7 +104,7 @@ src/
 │   ├── api/         # API client functions
 │   ├── components/  # Reusable components
 │   ├── stores/      # Svelte stores
-│   ├── keycloak.js  # Keycloak configuration
+│   ├── keycloak.ts  # Keycloak configuration
 │   └── theme.js     # Bootstrap theme utilities
 ├── app.css          # Global styles
 └── static/          # Static assets (images, fonts)

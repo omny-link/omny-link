@@ -29,9 +29,9 @@ export interface Account {
   owner?: string;
   businessType?: string;
   type?: string;
+  firstContact?: string;
   created?: string;
   lastUpdated?: string;
-  updated?: string;
   activities?: Activity[];
   notes?: Note[];
   documents?: Document[];
@@ -128,3 +128,24 @@ export type SortDirection = 'asc' | 'desc';
  * View mode type for detail pages
  */
 export type ViewMode = 'view' | 'edit';
+
+/**
+ * User information from Keycloak authentication
+ */
+export interface UserInfo {
+  username?: string;
+  email?: string;
+  tenant?: string;
+  preferred_username?: string;
+  given_name?: string;
+  family_name?: string;
+  name?: string;
+  email_verified?: boolean;
+  sub?: string;
+  realm_access?: {
+    roles?: string[];
+  };
+  resource_access?: Record<string, { roles?: string[] }>;
+  attributes?: Record<string, any>;
+  [key: string]: any;
+}

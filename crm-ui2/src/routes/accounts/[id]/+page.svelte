@@ -222,11 +222,11 @@
         <i class="bi bi-three-dots-vertical"></i> Actions
       </button>
       <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="customActionsDropdown">
-        <li><a class="dropdown-item" href="#" on:click|preventDefault={() => alert('Clone feature coming soon')}>Clone Account</a></li>
-        <li><a class="dropdown-item" href="#" on:click|preventDefault={() => alert('Export feature coming soon')}>Export to PDF</a></li>
-        <li><a class="dropdown-item" href="#" on:click|preventDefault={() => alert('Merge feature coming soon')}>Merge with Another</a></li>
+        <li><button class="dropdown-item" type="button" on:click={() => alert('Clone feature coming soon')}>Clone Account</button></li>
+        <li><button class="dropdown-item" type="button" on:click={() => alert('Export feature coming soon')}>Export to PDF</button></li>
+        <li><button class="dropdown-item" type="button" on:click={() => alert('Merge feature coming soon')}>Merge with Another</button></li>
         <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#" on:click|preventDefault={() => alert('Archive feature coming soon')}>Archive Account</a></li>
+        <li><button class="dropdown-item" type="button" on:click={() => alert('Archive feature coming soon')}>Archive Account</button></li>
       </ul>
     </div>
   </div>

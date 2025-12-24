@@ -1,19 +1,23 @@
 import Keycloak from 'keycloak-js';
 import { writable } from 'svelte/store';
+import type { UserInfo } from './types';
 
 const keycloak = new Keycloak('/keycloak.json');
 
 // Create stores for reactive state
-export const keycloakStore = writable({
+export const keycloakStore = writable<{
+	initialized: boolean;
+	authenticated: boolean;
+	token: string | null;
+	userInfo: UserInfo | null;
+}>({
 	initialized: false,
 	authenticated: false,
 	token: null,
-	tokenParsed: null,
-	tenant: null,
-	userAttributes: null
+	userInfo: null
 });
 
-let initPromise = null;
+let initPromise: Promise<any> | null = null;
 
 // Initialize keycloak once
 export async function initKeycloak() {
@@ -29,11 +33,25 @@ export async function initKeycloak() {
 			flow: 'standard' // Use standard flow instead of implicit
 		})
 		.then(() => {
+			const userInfo: UserInfo | null = keycloak.tokenParsed ? {
+				username: keycloak.tokenParsed.preferred_username,
+				email: keycloak.tokenParsed.email,
+				preferred_username: keycloak.tokenParsed.preferred_username,
+				given_name: keycloak.tokenParsed.given_name,
+				family_name: keycloak.tokenParsed.family_name,
+				name: keycloak.tokenParsed.name,
+				email_verified: keycloak.tokenParsed.email_verified,
+				sub: keycloak.tokenParsed.sub,
+				realm_access: keycloak.tokenParsed.realm_access,
+				resource_access: keycloak.tokenParsed.resource_access,
+				...keycloak.tokenParsed
+			} : null;
+			
 			keycloakStore.set({
 				initialized: true,
-				authenticated: keycloak.authenticated,
-				token: keycloak.token,
-				tokenParsed: keycloak.tokenParsed
+				authenticated: keycloak.authenticated || false,
+				token: keycloak.token || null,
+				userInfo
 			});
 			return keycloak;
 		})
@@ -73,8 +91,11 @@ export async function fetchUserAccount() {
 		// Update store with user account info
 		keycloakStore.update(state => ({
 			...state,
-			tenant,
-			userAttributes: userAccount.attributes
+			userInfo: state.userInfo ? {
+				...state.userInfo,
+				tenant,
+				attributes: userAccount.attributes
+			} : null
 		}));
 
 		return { userAccount, tenant };

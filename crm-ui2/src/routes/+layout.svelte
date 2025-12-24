@@ -2,8 +2,9 @@
   import { onMount } from 'svelte';
   import '../app.css';
   import { applyBootstrapTheme } from '$lib/theme';
-  import keycloak, { initKeycloak } from '$lib/keycloak';
+  import keycloak, { initKeycloak, keycloakStore } from '$lib/keycloak';
   import Sidebar from '$lib/components/Sidebar.svelte';
+  import type { UserInfo } from '$lib/types';
 
   let authenticated: boolean = false;
   let username: string = '';
@@ -23,9 +24,13 @@
 
     try {
       await initKeycloak();
-      authenticated = keycloak.authenticated || false;
-      username = keycloak?.tokenParsed?.preferred_username || '';
-      userEmail = keycloak?.tokenParsed?.email || username;
+      
+      // Subscribe to keycloak store for reactive updates
+      keycloakStore.subscribe(state => {
+        authenticated = state.authenticated;
+        username = state.userInfo?.username || state.userInfo?.preferred_username || '';
+        userEmail = state.userInfo?.email || username;
+      });
     } catch (err) {
       console.error('Keycloak init error:', err);
     }

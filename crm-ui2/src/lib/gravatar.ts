@@ -135,9 +135,11 @@ function rhex(n: number): string {
 }
 
 function hex(x: number[]): string {
-  for (let i = 0; i < x.length; i++)
-    x[i] = rhex(x[i]);
-  return x.join('');
+  const parts: string[] = [];
+  for (let i = 0; i < x.length; i++) {
+    parts.push(rhex(x[i]));
+  }
+  return parts.join('');
 }
 
 /**

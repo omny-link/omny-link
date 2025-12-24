@@ -13,6 +13,6 @@ export function applyBootstrapTheme() {
     link.href = themeUrl;
     document.head.appendChild(link);
   } else {
-    existing.href = themeUrl;
+    existing.setAttribute('href', themeUrl);
   }
 }
