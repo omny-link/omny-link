@@ -4,6 +4,8 @@
   import keycloak from '$lib/keycloak';
   import { getGravatarUrl } from '$lib/gravatar';
   import { colorSchemeStore } from '$lib/colorScheme';
+  import { tenantConfigStore } from '$lib/tenantConfig';
+  import type { TenantConfig } from '$lib/tenantConfig';
 
   export let collapsed: boolean = false;
   export let authenticated: boolean = false;
@@ -11,10 +13,16 @@
   export let userEmail: string = '';
   
   let colorScheme: 'light' | 'dark' = 'dark';
+  let tenantConfig: TenantConfig | null = null;
 
   // Subscribe to color scheme changes
   colorSchemeStore.subscribe(scheme => {
     colorScheme = scheme;
+  });
+
+  // Subscribe to tenant config changes
+  tenantConfigStore.subscribe(config => {
+    tenantConfig = config;
   });
 
   export function toggle(): void {
@@ -38,14 +46,15 @@
       {#if !collapsed}
         <h4 class="{colorScheme === 'dark' ? 'text-white' : 'text-dark'} mb-0">
           <img 
-            src={'https://crm.knowprocess.com/images/icon/omny-link-icon.svg' }
+            src={tenantConfig?.theme?.logoUrl || 'https://crm.knowprocess.com/images/icon/omny-link-icon.svg'} 
             alt="KnowProcess" 
             style="max-width: 75px; max-height: 55px; margin: -0.25rem 0.5rem 0 0 ;" 
           /> 
+          KnowProcess
         </h4>
       {:else}
         <img 
-          src={'https://crm.knowprocess.com/images/icon/omny-link-icon.svg'} 
+          src={tenantConfig?.theme?.iconUrl || tenantConfig?.theme?.logoUrl || 'https://crm.knowprocess.com/images/icon/omny-link-icon.svg'} 
           alt="Icon" 
           style="width: 32px; height: 32px; margin: 0 auto;" 
         />

@@ -5,6 +5,7 @@
   import { getGravatarUrl } from '$lib/gravatar';
   import { fetchAccounts as fetchAccountsAPI } from '$lib/cust-mgmt';
   import { colorSchemeStore } from '$lib/colorScheme';
+  import { tenantConfigStore } from '$lib/tenantConfig';
   import type { Account, SortDirection, UserInfo } from '$lib/types';
 
   let userInfo: UserInfo | null = null;
@@ -240,6 +241,8 @@
     if (keycloak.authenticated) {
       const { tenant: userTenant } = await fetchUserAccount();
       tenant = userTenant;
+      // Load tenant-specific configuration
+      await tenantConfigStore.load(tenant);
       fetchAccounts(1);
     }
   });

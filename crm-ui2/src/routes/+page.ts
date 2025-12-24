@@ -1,10 +1,10 @@
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = ({ params }) => {
+export const load: PageLoad = () => {
 	return {
 		post: {
-			title: `Title for ${params.slug} goes here`,
-			content: `Content for ${params.slug} goes here`
+			title: 'Welcome to KnowProcess CRM',
+			content: 'This is a placeholder home page.'
 		}
 	};
 };
