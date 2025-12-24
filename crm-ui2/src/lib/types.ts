@@ -31,7 +31,9 @@ export interface Account {
   type?: string;
   firstContact?: string;
   created?: string;
+  createdBy?: string;
   lastUpdated?: string;
+  lastUpdatedBy?: string;
   activities?: Activity[];
   notes?: Note[];
   documents?: Document[];

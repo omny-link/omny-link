@@ -12,6 +12,7 @@
   let filteredAccounts: Account[] = [];
   let searchQuery: string = "";
   let loading: boolean = false;
+  let isFiltering: boolean = false;
   let page: number = 1;
   let allLoaded: boolean = false;
   let sortColumn: string = 'updated';
@@ -20,12 +21,13 @@
   async function fetchAccounts(nextPage: number): Promise<void> {
     if (loading || allLoaded) return;
     loading = true;
+    isFiltering = true;
     try {
       const data = await fetchAccountsAPI(tenant, nextPage);
       if (Array.isArray(data) && data.length > 0) {
         accounts = [...accounts, ...data];
-        filteredAccounts = accounts;
-        applySortToFiltered();
+        // Re-filter after each page load to avoid race conditions
+        filterAccounts();
         page = nextPage;
         // Load next page in background
         fetchAccounts(nextPage + 1);
@@ -34,24 +36,85 @@
       }
     } finally {
       loading = false;
+      isFiltering = false;
     }
   }
 
   function filterAccounts(): void {
-    if (!searchQuery.trim()) {
+    isFiltering = true;
+    const queryRaw = searchQuery.trim();
+    if (!queryRaw) {
       filteredAccounts = accounts;
     } else {
-      const query = searchQuery.toLowerCase();
-      filteredAccounts = accounts.filter(account => 
-        (account.name && account.name.toLowerCase().includes(query)) ||
-        (account.email && account.email.toLowerCase().includes(query)) ||
-        (account.created && account.created.toLowerCase().includes(query))
-      );
+      const tokens = queryRaw.toLowerCase().split(/\s+/).filter(Boolean);
+      const requireActive = tokens.includes('active');
+      const requireInactive = tokens.includes('!active');
+
+      filteredAccounts = accounts.filter(account => {
+        const stage = account.stage?.toLowerCase();
+
+        const tokenMatches = (tok: string): boolean => {
+          if (tok === 'active' || tok === '!active') return true;
+
+          if (tok.startsWith('owner:')) {
+            const val = tok.substring(6);
+            return !!(account.owner && account.owner.indexOf(val) !== -1);
+          }
+          if (tok.startsWith('type:')) {
+            const val = tok.substring(5).replace(/ /g, '_');
+            return !!(account.accountType && account.accountType.toLowerCase().replace(/ /g, '_').indexOf(val) === 0);
+          }
+          if (tok.startsWith('enquiry:')) {
+            const val = tok.substring(8).replace(/ /g, '_');
+            return !!(account.enquiryType && account.enquiryType.toLowerCase().replace(/ /g, '_').indexOf(val) === 0);
+          }
+          if (tok.startsWith('stage:')) {
+            const val = tok.substring(6).replace(/ /g, '_');
+            return !!(stage && stage.replace(/ /g, '_').indexOf(val) === 0);
+          }
+          if (tok.startsWith('#')) {
+            const val = tok.substring(1);
+            return !!(account.tags && account.tags.toLowerCase().indexOf(val) !== -1);
+          }
+          if (tok.startsWith('updated>')) {
+            const val = tok.substring(8);
+            return new Date(account.lastUpdated || 0) > new Date(val);
+          }
+          if (tok.startsWith('updated<')) {
+            const val = tok.substring(8);
+            return new Date(account.lastUpdated || 0) < new Date(val);
+          }
+          if (tok.startsWith('created>')) {
+            const val = tok.substring(8);
+            return new Date(account.firstContact || 0) > new Date(val);
+          }
+          if (tok.startsWith('created<')) {
+            const val = tok.substring(8);
+            return new Date(account.firstContact || 0) < new Date(val);
+          }
+
+          // Free text token: OR across common fields
+          return (
+            (account.id && tok.indexOf(account.id) >= 0) ||
+            (account.name && account.name.toLowerCase().includes(tok)) ||
+            (account.email && account.email.toLowerCase().includes(tok)) ||
+            (account.orgCode && account.orgCode.toLowerCase().indexOf(tok) >= 0) ||
+            (account.phone1 && account.phone1.indexOf(tok) >= 0) ||
+            (account.phone2 && account.phone2.indexOf(tok) >= 0)
+          );
+        };
+
+        const allTokensMatch = tokens.every(tokenMatches);
+        const activeOk = !requireActive || !inactiveStage(stage);
+        const inactiveOk = !requireInactive || inactiveStage(stage);
+        return allTokensMatch && activeOk && inactiveOk;
+      });
     }
     // Reapply sort after filtering
     if (sortColumn) {
       applySortToFiltered();
     }
+    isFiltering = false;
   }
 
   function sortBy(column: string): void {
@@ -86,8 +149,8 @@
           bVal = new Date(b.created || 0);
           break;
         case 'updated':
-          aVal = new Date(a.lastUpdated || a.updated || 0);
-          bVal = new Date(b.lastUpdated || b.updated || 0);
+          aVal = new Date(a.lastUpdated || 0);
+          bVal = new Date(b.lastUpdated || 0);
           break;
         default:
           return 0;
@@ -140,6 +203,13 @@
     return lines.length > 0 ? lines : ['-'];
   }
 
+  function onSearchKeydown(e: KeyboardEvent): void {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      filterAccounts();
+    }
+  }
+
   onMount(async () => {
     // Wait for keycloak to initialize first
     await initKeycloak();
@@ -148,15 +218,37 @@
       await keycloak.login({ redirectUri: window.location.href });
     }
     
+    // Subscribe to keycloak store
+    keycloakStore.subscribe(state => {
+      userInfo = state.userInfo;
+      // Update search query when userInfo changes
+      if (userInfo?.username && !searchQuery) {
+        searchQuery = `active owner:${userInfo.username}`;
+        // Re-filter when search query is set programmatically
+        filterAccounts();
+      }
+    });
+    
     // Fetch user account info to get tenant
     if (keycloak.authenticated) {
-      userInfo = keycloak.tokenParsed;
       const { tenant: userTenant } = await fetchUserAccount();
       tenant = userTenant;
       fetchAccounts(1);
     }
   });
+
+
+  function inactiveStage(stage: string | undefined): boolean {
+    const inactiveStages = ['closed', 'deleted', 'archived'];
+    return stage ? inactiveStages.includes(stage) : false;
+  }
 </script>
+
+{#if isFiltering}
+<div class="activity-overlay">
+  <img src="https://crm.knowprocess.com/images/icon/omny-link-icon.svg" alt="Loading" class="activity-spinner" />
+</div>
+{/if}
 
 <div class="d-flex align-items-center mb-3">
   <h2 class="display-5 mb-0 me-3">
@@ -171,6 +263,7 @@
     style="width: 300px;" 
     placeholder="Search accounts..." 
     bind:value={searchQuery}
+    on:keydown={onSearchKeydown}
     on:blur={filterAccounts}
     aria-label="Search accounts"
   />
@@ -266,5 +359,33 @@
   
   .sortable:hover {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .activity-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+  }
+
+  .activity-spinner {
+    width: 128px;
+    height: 128px;
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 </style>

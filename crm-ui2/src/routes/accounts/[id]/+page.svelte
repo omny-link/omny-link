@@ -646,7 +646,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Last Updated</label>
           <div class="col-sm-8">
-            <div class="form-control-plaintext">{formatDate(selectedAccount?.lastUpdated || selectedAccount?.updated)}</div>
+            <div class="form-control-plaintext">{formatDate(selectedAccount?.lastUpdated)}</div>
           </div>
         </div>
 
@@ -654,7 +654,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Updated By</label>
           <div class="col-sm-8">
-            <div class="form-control-plaintext">{selectedAccount?.updatedBy || selectedAccount?.lastUpdatedBy || '-'}</div>
+            <div class="form-control-plaintext">{selectedAccount?.lastUpdatedBy || '-'}</div>
           </div>
         </div>
 
