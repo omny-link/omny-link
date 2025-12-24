@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { colorSchemeStore } from '$lib/colorScheme';
   import type { Note } from '$lib/types';
   import type { ViewMode } from '$lib/types';
   import { getTenant, toggleNoteFavorite } from '$lib/cust-mgmt';
@@ -10,6 +11,13 @@
   export let onToggle: (() => void) | undefined = undefined;
   export let onAdd: (() => void) | undefined = undefined;
   let showFavorite: boolean = false;
+
+  let colorScheme: 'light' | 'dark' = 'dark';
+
+  // Subscribe to color scheme changes
+  colorSchemeStore.subscribe(scheme => {
+    colorScheme = scheme;
+  });
 
   function formatDate(dateString: string | undefined): string {
     if (!dateString || dateString === '-') return '-';
@@ -37,7 +45,7 @@
   }
 </script>
 
-<div class="card bg-dark text-light mt-3" {id}>
+<div class="card {colorScheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'} mt-3" {id}>
   <div 
     class="card-header d-flex align-items-center" 
     style="cursor: pointer;" 
@@ -88,7 +96,7 @@
                 <td style="max-width: 40rem; white-space: pre-wrap;">{note.content || (note as any).text || (note as any).note || '-'}</td>
                 <td>
                   <button 
-                    class="btn btn-sm btn-dark" 
+                    class="btn btn-sm {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
                     aria-label="Toggle favourite"
                     on:click={async () => {
                       const noteId = note.id || (note as any).id;

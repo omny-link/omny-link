@@ -4,6 +4,7 @@
   import keycloak, { initKeycloak, fetchUserAccount, keycloakStore } from '$lib/keycloak';
   import { getGravatarUrl } from '$lib/gravatar';
   import { fetchAccounts as fetchAccountsAPI } from '$lib/cust-mgmt';
+  import { colorSchemeStore } from '$lib/colorScheme';
   import type { Account, SortDirection, UserInfo } from '$lib/types';
 
   let userInfo: UserInfo | null = null;
@@ -17,6 +18,12 @@
   let allLoaded: boolean = false;
   let sortColumn: string = 'updated';
   let sortDirection: SortDirection = 'desc';
+  let colorScheme: 'light' | 'dark' = 'dark';
+
+  // Subscribe to color scheme changes
+  colorSchemeStore.subscribe(scheme => {
+    colorScheme = scheme;
+  });
 
   async function fetchAccounts(nextPage: number): Promise<void> {
     if (loading || allLoaded) return;
@@ -268,7 +275,7 @@
     aria-label="Search accounts"
   />
   {#if !loading}
-    <button class="btn btn-dark ms-auto" aria-label="Refresh accounts" on:click={() => { accounts = []; filteredAccounts = []; searchQuery = ''; page = 1; allLoaded = false; fetchAccounts(1); }}>
+    <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'} ms-auto" aria-label="Refresh accounts" on:click={() => { accounts = []; filteredAccounts = []; searchQuery = ''; page = 1; allLoaded = false; fetchAccounts(1); }}>
       <i class="bi bi-arrow-clockwise"></i>
     </button>
   {/if}
@@ -338,10 +345,10 @@
             {/each}
           </td>
           <td>
-            <button class="btn btn-dark ms-auto" aria-label="View account" on:click={() => goto(`/accounts/${account.id || account.selfRef?.split('/').pop()}`)}>
+            <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'} ms-auto" aria-label="View account" on:click={() => goto(`/accounts/${account.id || account.selfRef?.split('/').pop()}`)}>
               <i class="bi bi-eye"></i>
             </button>
-            <button class="btn btn-dark ms-auto" aria-label="Edit account" on:click={() => goto(`/accounts/${account.id || account.selfRef?.split('/').pop()}`)}>
+            <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'} ms-auto" aria-label="Edit account" on:click={() => goto(`/accounts/${account.id || account.selfRef?.split('/').pop()}`)}>
               <i class="bi bi-pencil"></i>
             </button>
           </td>
@@ -352,13 +359,35 @@
 {/if}
 
 <style>
+  :global(body) {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  :global(body.light-mode) {
+    --bg-color: #ffffff;
+    --text-color: #212529;
+    --border-color: #dee2e6;
+    --hover-bg: rgba(0, 0, 0, 0.05);
+    --overlay-bg: rgba(255, 255, 255, 0.8);
+    --table-stripe: #f8f9fa;
+  }
+
+  :global(body.dark-mode) {
+    --bg-color: #212529;
+    --text-color: #ffffff;
+    --border-color: #495057;
+    --hover-bg: rgba(255, 255, 255, 0.1);
+    --overlay-bg: rgba(0, 0, 0, 0.5);
+    --table-stripe: #2c3034;
+  }
+
   .sortable {
     cursor: pointer;
     user-select: none;
   }
   
   .sortable:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--hover-bg, rgba(255, 255, 255, 0.1));
   }
 
   .activity-overlay {
@@ -370,7 +399,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--overlay-bg, rgba(0, 0, 0, 0.3));
     z-index: 9999;
   }
 

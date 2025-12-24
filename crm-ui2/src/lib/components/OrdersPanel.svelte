@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { colorSchemeStore } from '$lib/colorScheme';
   import type { Order } from '$lib/types';
   import type { ViewMode } from '$lib/types';
 
@@ -8,6 +9,13 @@
   export let onToggle: (() => void) | undefined = undefined;
   export let onView: ((order: Order) => void) | undefined = undefined;
   export let onEdit: ((order: Order) => void) | undefined = undefined;
+
+  let colorScheme: 'light' | 'dark' = 'dark';
+
+  // Subscribe to color scheme changes
+  colorSchemeStore.subscribe(scheme => {
+    colorScheme = scheme;
+  });
 
   function formatDate(dateString: string | undefined): string {
     if (!dateString || dateString === '-') return '-';
@@ -25,7 +33,7 @@
   }
 </script>
 
-<div class="card bg-dark text-light mt-3">
+<div class="card {colorScheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'} mt-3">
   <div 
     class="card-header d-flex align-items-center" 
     style="cursor: pointer;" 
@@ -66,14 +74,14 @@
               <td>{(order as any).status || order.stage || '-'}</td>
               <td>
                 <button 
-                  class="btn btn-sm btn-dark" 
+                  class="btn btn-sm {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
                   aria-label="View order"
                   on:click={() => onView?.(order)}
                 >
                   <i class="bi bi-eye"></i>
                 </button>
                 <button 
-                  class="btn btn-sm btn-dark" 
+                  class="btn btn-sm {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
                   aria-label="Edit order"
                   on:click={() => onEdit?.(order)}
                 >

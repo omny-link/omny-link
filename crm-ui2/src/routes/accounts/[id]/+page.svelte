@@ -4,6 +4,7 @@
   import { get } from 'svelte/store';
   import { goto } from '$app/navigation';
   import keycloak, { initKeycloak, fetchUserAccount } from '$lib/keycloak';
+  import { colorSchemeStore } from '$lib/colorScheme';
   import { 
     fetchAccount,
     fetchContactsByAccount,
@@ -25,6 +26,13 @@
   let accountOrders: Order[] = [];
   let loading: boolean = false;
   let viewMode: ViewMode = 'view';
+  let colorScheme: 'light' | 'dark' = 'dark';
+
+  // Subscribe to color scheme changes
+  colorSchemeStore.subscribe(scheme => {
+    colorScheme = scheme;
+  });
+
   let panelStates: PanelStates = {
     details: true,
     additionalInfo: true,
@@ -202,7 +210,7 @@
 <!-- Detail View -->
 <div class="mb-3 d-flex justify-content-between align-items-center">
   <div>
-    <button class="btn btn-dark" on:click={backToList}>
+    <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" on:click={backToList}>
       <i class="bi bi-arrow-left"></i> Back to List
     </button>
     <span class="ms-3 h4">{viewMode === 'edit' ? 'Edit' : 'View'} Account</span>
@@ -214,11 +222,11 @@
     <button class="btn btn-danger" on:click={deleteAccount} title="Delete account">
       <i class="bi bi-trash"></i> Delete
     </button>
-    <button class="btn btn-dark" on:click={scrollToNotes} title="Jump to notes">
+    <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" on:click={scrollToNotes} title="Jump to notes">
       <i class="bi bi-journal-text"></i> Notes
     </button>
     <div class="dropdown">
-      <button class="btn btn-dark dropdown-toggle" type="button" id="customActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'} dropdown-toggle" type="button" id="customActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-three-dots-vertical"></i> Actions
       </button>
       <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="customActionsDropdown">
@@ -232,7 +240,7 @@
   </div>
 </div>
 
-<div class="card bg-dark text-light">
+<div class="card {colorScheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'}">
   <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('details')}>
     {#if panelStates.details}
       <i class="bi bi-chevron-down me-2"></i>
@@ -566,7 +574,7 @@
 </div>
 
 <!-- Additional Info Panel -->
-<div class="card bg-dark text-light mt-3">
+<div class="card {colorScheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'} mt-3">
   <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('additionalInfo')}>
     {#if panelStates.additionalInfo}
       <i class="bi bi-chevron-down me-2"></i>
@@ -599,7 +607,7 @@
 />
 
 <!-- Record History Panel -->
-<div class="card bg-dark text-light mt-3">
+<div class="card {colorScheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'} mt-3">
   <div class="card-header d-flex align-items-center" style="cursor: pointer;" on:click={() => togglePanel('recordHistory')}>
     {#if panelStates.recordHistory}
       <i class="bi bi-chevron-down me-2"></i>

@@ -3,11 +3,19 @@
   import { get } from 'svelte/store';
   import keycloak from '$lib/keycloak';
   import { getGravatarUrl } from '$lib/gravatar';
+  import { colorSchemeStore } from '$lib/colorScheme';
 
   export let collapsed: boolean = false;
   export let authenticated: boolean = false;
   export let username: string = '';
   export let userEmail: string = '';
+  
+  let colorScheme: 'light' | 'dark' = 'dark';
+
+  // Subscribe to color scheme changes
+  colorSchemeStore.subscribe(scheme => {
+    colorScheme = scheme;
+  });
 
   export function toggle(): void {
     collapsed = !collapsed;
@@ -24,13 +32,25 @@
   $: currentPath = get(page).url.pathname;
 </script>
 
-<nav id="sidebar" class="bg-dark {collapsed ? 'collapsed' : ''}">
+<nav id="sidebar" class="{colorScheme === 'dark' ? 'bg-dark' : 'bg-light'} {collapsed ? 'collapsed' : ''}">
   <div class="p-3">
     <div class="d-flex justify-content-between align-items-center mb-4">
       {#if !collapsed}
-        <h4 class="text-white mb-0"><img src="https://crm.knowprocess.com/images/icon/omny-link-icon.svg" alt="KnowProcess" style="width: 1.75rem; height: 1.75rem; margin: -0.25rem 0.5rem 0 0 ;" /> KnowProcess</h4>
+        <h4 class="{colorScheme === 'dark' ? 'text-white' : 'text-dark'} mb-0">
+          <img 
+            src={'https://crm.knowprocess.com/images/icon/omny-link-icon.svg' }
+            alt="KnowProcess" 
+            style="max-width: 75px; max-height: 55px; margin: -0.25rem 0.5rem 0 0 ;" 
+          /> 
+        </h4>
+      {:else}
+        <img 
+          src={'https://crm.knowprocess.com/images/icon/omny-link-icon.svg'} 
+          alt="Icon" 
+          style="width: 32px; height: 32px; margin: 0 auto;" 
+        />
       {/if}
-      <button class="btn btn-link text-white p-0" on:click={toggle} aria-label="Toggle sidebar">
+      <button class="btn btn-link {colorScheme === 'dark' ? 'text-white' : 'text-dark'} p-0" on:click={toggle} aria-label="Toggle sidebar">
         <i class="bi bi-{collapsed ? 'chevron-right' : 'chevron-left'}" style="font-size: 1.25rem;"></i>
       </button>
     </div>
@@ -83,9 +103,39 @@
     top: 0;
     left: 0;
     min-height: 100vh;
-    background-color: #343a40;
     transition: all 0.3s ease;
     width: 250px;
+  }
+
+  /* Dark mode colors */
+  :global(body.dark-mode) #sidebar {
+    background-color: #343a40;
+  }
+
+  :global(body.dark-mode) #sidebar .nav-link {
+    color: #ccc;
+  }
+
+  :global(body.dark-mode) #sidebar .nav-link:hover,
+  :global(body.dark-mode) #sidebar .nav-link.active {
+    background-color: #495057;
+    color: #fff;
+  }
+
+  /* Light mode colors */
+  :global(body.light-mode) #sidebar {
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+  }
+
+  :global(body.light-mode) #sidebar .nav-link {
+    color: #495057;
+  }
+
+  :global(body.light-mode) #sidebar .nav-link:hover,
+  :global(body.light-mode) #sidebar .nav-link.active {
+    background-color: #e9ecef;
+    color: #212529;
   }
 
   #sidebar.collapsed {
@@ -97,7 +147,6 @@
   }
 
   #sidebar .nav-link {
-    color: #ccc;
     padding-left: 0;
     margin-left: 0;
     white-space: nowrap;
@@ -120,12 +169,6 @@
 
   #sidebar.collapsed .nav-item {
     width: 100%;
-  }
-
-  #sidebar .nav-link:hover,
-  #sidebar .nav-link.active {
-    background-color: #495057;
-    color: #fff;
   }
 
   @media (max-width: 768px) {

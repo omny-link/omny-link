@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { colorSchemeStore } from '$lib/colorScheme';
   import type { Document } from '$lib/types';
   import type { ViewMode } from '$lib/types';
 
@@ -8,6 +9,13 @@
   export let onToggle: (() => void) | undefined = undefined;
   export let onUpload: (() => void) | undefined = undefined;
   export let onDelete: ((doc: Document) => void) | undefined = undefined;
+
+  let colorScheme: 'light' | 'dark' = 'dark';
+
+  // Subscribe to color scheme changes
+  colorSchemeStore.subscribe(scheme => {
+    colorScheme = scheme;
+  });
 
   function formatDate(dateString: string | undefined): string {
     if (!dateString || dateString === '-') return '-';
@@ -33,7 +41,7 @@
   }
 </script>
 
-<div class="card bg-dark text-light mt-3">
+<div class="card {colorScheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'} mt-3">
   <div 
     class="card-header d-flex align-items-center" 
     style="cursor: pointer;" 
@@ -75,7 +83,7 @@
               <td>
                 <a 
                   href={doc.url || (doc as any).link || '#'} 
-                  class="btn btn-sm btn-dark" 
+                  class="btn btn-sm {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   aria-label="Download document"
@@ -83,7 +91,7 @@
                   <i class="bi bi-download"></i>
                 </a>
                 <button 
-                  class="btn btn-sm btn-dark" 
+                  class="btn btn-sm {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
                   aria-label="Delete document"
                   on:click={() => onDelete?.(doc)}
                 >

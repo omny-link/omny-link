@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { colorSchemeStore } from '$lib/colorScheme';
   import type { ViewMode } from '$lib/types';
 
   export let customFields: Record<string, any> | undefined = undefined;
@@ -6,6 +7,13 @@
   export let isOpen: boolean = true;
   export let onToggle: (() => void) | undefined = undefined;
   export let onChange: ((key: string, value: any) => void) | undefined = undefined;
+
+  let colorScheme: 'light' | 'dark' = 'dark';
+
+  // Subscribe to color scheme changes
+  colorSchemeStore.subscribe(scheme => {
+    colorScheme = scheme;
+  });
 
   function toSentenceCase(str: string): string {
     if (!str) return str;
@@ -25,7 +33,7 @@
   }
 </script>
 
-<div class="card bg-dark text-light mt-3">
+<div class="card {colorScheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'} mt-3">
   <div 
     class="card-header d-flex align-items-center" 
     style="cursor: pointer;" 
@@ -55,12 +63,12 @@
               <input 
                 type="text" 
                 id="custom-field-{key}"
-                class="form-control bg-dark text-light border-secondary" 
+                class="form-control {colorScheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'} border-secondary" 
                 value={value || ''} 
                 on:input={(e) => handleChange(key, e)}
               />
             {:else}
-              <div class="form-control-plaintext text-light">{value || '-'}</div>
+              <div class="form-control-plaintext {colorScheme === 'dark' ? 'text-light' : 'text-dark'}">{value || '-'}</div>
             {/if}
           </div>
         </div>

@@ -4,6 +4,7 @@
   import { applyBootstrapTheme } from '$lib/theme';
   import keycloak, { initKeycloak, keycloakStore } from '$lib/keycloak';
   import Sidebar from '$lib/components/Sidebar.svelte';
+  import { colorSchemeStore } from '$lib/colorScheme';
   import type { UserInfo } from '$lib/types';
 
   let authenticated: boolean = false;
@@ -11,6 +12,7 @@
   let userEmail: string = '';
   let sidebarCollapsed: boolean = false;
   let sidebar: any;
+  let colorScheme: 'light' | 'dark' = 'dark';
 
   function toggleSidebar(): void {
     if (sidebar) {
@@ -19,7 +21,17 @@
     }
   }
 
+  // Subscribe to color scheme changes
+  colorSchemeStore.subscribe(scheme => {
+    colorScheme = scheme;
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('light-mode', 'dark-mode');
+      document.body.classList.add(`${colorScheme}-mode`);
+    }
+  });
+
   onMount(async () => {
+    colorSchemeStore.init();
     applyBootstrapTheme();
 
     try {
@@ -45,7 +57,7 @@
   {userEmail}
 />
 
-<main id="content" class="{sidebarCollapsed ? 'sidebar-collapsed' : ''} container mt-4 text-light bg-dark p-4 rounded">
+<main id="content" class="{sidebarCollapsed ? 'sidebar-collapsed' : ''} container mt-4 {colorScheme === 'dark' ? 'text-light bg-dark' : 'text-dark bg-light'} p-4 rounded">
   <slot />
 </main>
 
