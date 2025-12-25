@@ -20,6 +20,8 @@
   let sortColumn: string = 'updated';
   let sortDirection: SortDirection = 'desc';
   let colorScheme: 'light' | 'dark' = 'dark';
+  // Derived: only show loading message when no cached data
+  let showLoading: boolean = false;
 
   // Subscribe to color scheme changes
   colorSchemeStore.subscribe(scheme => {
@@ -33,7 +35,14 @@
     try {
       const data = await fetchAccountsAPI(tenant, nextPage);
       if (Array.isArray(data) && data.length > 0) {
-        accounts = [...accounts, ...data];
+        // Replace cached results on first page to prevent duplicates
+        if (nextPage === 1) {
+          accounts = data;
+        } else {
+          accounts = [...accounts, ...data];
+        }
+        // Save updated accounts to localStorage for SWR behavior
+        saveCachedAccounts(tenant, accounts);
         // Re-filter after each page load to avoid race conditions
         filterAccounts();
         page = nextPage;
@@ -45,6 +54,7 @@
     } finally {
       loading = false;
       isFiltering = false;
+      showLoading = loading && accounts.length === 0;
     }
   }
 
@@ -211,10 +221,136 @@
     return lines.length > 0 ? lines : ['-'];
   }
 
+  // Tag list helper for badge display
+  function getTagList(tags: string | string[] | undefined): string[] {
+    if (!tags || tags === '-') return [];
+    const tagString = Array.isArray(tags) ? tags.join(',') : tags;
+    return tagString.split(',').map((t: string) => t.trim()).filter((t) => t.length > 0);
+  }
+
+  // Compute readable text color (black/white) for a given background color
+  function getTextColorForBg(color: string): string {
+    if (!color) return '#ffffff';
+
+    function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+      const h = hex.replace('#', '').trim();
+      if (h.length === 3) {
+        const r = parseInt(h[0] + h[0], 16);
+        const g = parseInt(h[1] + h[1], 16);
+        const b = parseInt(h[2] + h[2], 16);
+        return { r, g, b };
+      }
+      if (h.length === 6 || h.length === 8) {
+        const r = parseInt(h.substring(0, 2), 16);
+        const g = parseInt(h.substring(2, 4), 16);
+        const b = parseInt(h.substring(4, 6), 16);
+        return { r, g, b };
+      }
+      return null;
+    }
+
+    function parseRgb(str: string): { r: number; g: number; b: number } | null {
+      const m = str.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+      if (!m) return null;
+      return { r: parseInt(m[1], 10), g: parseInt(m[2], 10), b: parseInt(m[3], 10) };
+    }
+
+    function hslToRgb(h: number, s: number, l: number): { r: number; g: number; b: number } {
+      s /= 100; l /= 100;
+      const k = (n: number) => (n + h / 30) % 12;
+      const a = s * Math.min(l, 1 - l);
+      const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+      return { r: Math.round(255 * f(0)), g: Math.round(255 * f(8)), b: Math.round(255 * f(4)) };
+    }
+
+    function parseHsl(str: string): { r: number; g: number; b: number } | null {
+      const m = str.match(/hsla?\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%/i);
+      if (!m) return null;
+      return hslToRgb(parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10));
+    }
+
+    let rgb: { r: number; g: number; b: number } | null = null;
+    const c = color.trim();
+
+    if (c.startsWith('#')) {
+      rgb = hexToRgb(c);
+    } else if (c.toLowerCase().startsWith('rgb')) {
+      rgb = parseRgb(c);
+    } else if (c.toLowerCase().startsWith('hsl')) {
+      rgb = parseHsl(c);
+    } else if (typeof window !== 'undefined') {
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.fillStyle = c;
+          const canonical = ctx.fillStyle as string;
+          if (canonical.startsWith('#')) {
+            rgb = hexToRgb(canonical);
+          } else if (canonical.toLowerCase().startsWith('rgb')) {
+            rgb = parseRgb(canonical);
+          }
+        }
+      } catch (_) {
+        // ignore
+      }
+    }
+
+    if (!rgb) return '#ffffff';
+
+    // Relative luminance
+    const sr = rgb.r / 255, sg = rgb.g / 255, sb = rgb.b / 255;
+    const rLin = sr <= 0.03928 ? sr / 12.92 : Math.pow((sr + 0.055) / 1.055, 2.4);
+    const gLin = sg <= 0.03928 ? sg / 12.92 : Math.pow((sg + 0.055) / 1.055, 2.4);
+    const bLin = sb <= 0.03928 ? sb / 12.92 : Math.pow((sb + 0.055) / 1.055, 2.4);
+    const luminance = 0.2126 * rLin + 0.7152 * gLin + 0.0722 * bLin;
+
+    return luminance > 0.5 ? '#000000' : '#ffffff';
+  }
+
   function onSearchKeydown(e: KeyboardEvent): void {
     if (e.key === 'Enter') {
       e.preventDefault();
       filterAccounts();
+    }
+  }
+
+  // SWR-style manual refresh: keep current list and search
+  function refreshAccountsSWR(): void {
+    // do not clear searchQuery or current accounts
+    allLoaded = false;
+    page = 1;
+    showLoading = false; // keep showing cached data
+    fetchAccounts(1); // background refresh; page 1 will replace to avoid duplicates
+  }
+
+  // localStorage helpers for stale-while-refresh
+  function getCacheKey(tenantId: string): string {
+    return `accounts-cache:${tenantId}`;
+  }
+
+  function loadCachedAccounts(tenantId: string): void {
+    try {
+      const raw = localStorage.getItem(getCacheKey(tenantId));
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as { data: Account[]; timestamp: number };
+      if (Array.isArray(parsed.data)) {
+        accounts = parsed.data;
+        filterAccounts();
+        // Avoid showing loading message since we have cached data
+        showLoading = false;
+      }
+    } catch (e) {
+      // Ignore cache errors silently
+    }
+  }
+
+  function saveCachedAccounts(tenantId: string, data: Account[]): void {
+    try {
+      const payload = JSON.stringify({ data, timestamp: Date.now() });
+      localStorage.setItem(getCacheKey(tenantId), payload);
+    } catch (e) {
+      // Ignore storage errors silently
     }
   }
 
@@ -243,6 +379,9 @@
       tenant = userTenant;
       // Load tenant-specific configuration
       await tenantConfigStore.load(tenant);
+      // Try cached accounts first (stale-while-refresh)
+      loadCachedAccounts(tenant);
+      // Begin background refresh
       fetchAccounts(1);
     }
   });
@@ -260,8 +399,8 @@
 </div>
 {/if}
 
-<div class="d-flex align-items-center mb-3">
-  <h2 class="display-5 mb-0 me-3">
+<div class="d-flex align-items-center flex-nowrap mb-3">
+  <h2 class="display-5 mb-0 me-3 text-nowrap">
     Accounts
     {#if !loading}
       ({filteredAccounts.length})
@@ -269,8 +408,8 @@
   </h2>
   <input 
     type="text" 
-    class="form-control" 
-    style="width: 300px;" 
+    class="form-control flex-grow-1 me-3" 
+    style="min-width: 300px;"
     placeholder="Search accounts..." 
     bind:value={searchQuery}
     on:keydown={onSearchKeydown}
@@ -278,13 +417,13 @@
     aria-label="Search accounts"
   />
   {#if !loading}
-    <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'} ms-auto" aria-label="Refresh accounts" on:click={() => { accounts = []; filteredAccounts = []; searchQuery = ''; page = 1; allLoaded = false; fetchAccounts(1); }}>
+    <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'} ms-auto" aria-label="Refresh accounts" on:click={refreshAccountsSWR}>
       <i class="bi bi-arrow-clockwise"></i>
     </button>
   {/if}
 </div>
 
-{#if loading}
+{#if showLoading}
   <div class="alert alert-info">Loading accounts...</div>
 {:else}
   <table class="table table-striped mt-4">
@@ -343,15 +482,19 @@
           <td>{formatDate(account.firstContact)}</td>
           <td>{formatDate(account.lastUpdated)}</td>
           <td style="max-width: 20rem;">
-            {#each formatTags(account.tags) as line, i}
-              {line}{#if i < formatTags(account.tags).length - 1}<br />{/if}
-            {/each}
+            {#if getTagList(account.tags).length > 0}
+              {#each getTagList(account.tags) as tag}
+                <span class="badge me-1 mb-1" style="background-color: {tag}; color: {getTextColorForBg(tag)}">{tag}</span>
+              {/each}
+            {:else}
+              <span class="text-muted">-</span>
+            {/if}
           </td>
           <td>
             <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'} ms-auto" aria-label="View account" on:click={() => goto(`/accounts/${account.id || account.selfRef?.split('/').pop()}`)}>
               <i class="bi bi-eye"></i>
             </button>
-            <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'} ms-auto" aria-label="Edit account" on:click={() => goto(`/accounts/${account.id || account.selfRef?.split('/').pop()}`)}>
+            <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'} ms-auto" aria-label="Edit account" on:click={() => goto(`/accounts/${account.id || account.selfRef?.split('/').pop()}?mode=edit`)}>
               <i class="bi bi-pencil"></i>
             </button>
           </td>
@@ -404,6 +547,7 @@
     justify-content: center;
     background-color: var(--overlay-bg, rgba(0, 0, 0, 0.3));
     z-index: 9999;
+    pointer-events: none; /* keep UI interactive while showing spinner */
   }
 
   .activity-spinner {

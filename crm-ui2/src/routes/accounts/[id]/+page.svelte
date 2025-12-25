@@ -132,6 +132,86 @@
     }
   }
 
+  // Compute readable text color (black/white) for a given background color
+  function getTextColorForBg(color: string): string {
+    if (!color) return '#ffffff';
+
+    function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+      const h = hex.replace('#', '').trim();
+      if (h.length === 3) {
+        const r = parseInt(h[0] + h[0], 16);
+        const g = parseInt(h[1] + h[1], 16);
+        const b = parseInt(h[2] + h[2], 16);
+        return { r, g, b };
+      }
+      if (h.length === 6 || h.length === 8) {
+        const r = parseInt(h.substring(0, 2), 16);
+        const g = parseInt(h.substring(2, 4), 16);
+        const b = parseInt(h.substring(4, 6), 16);
+        return { r, g, b };
+      }
+      return null;
+    }
+
+    function parseRgb(str: string): { r: number; g: number; b: number } | null {
+      const m = str.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+      if (!m) return null;
+      return { r: parseInt(m[1], 10), g: parseInt(m[2], 10), b: parseInt(m[3], 10) };
+    }
+
+    function hslToRgb(h: number, s: number, l: number): { r: number; g: number; b: number } {
+      s /= 100; l /= 100;
+      const k = (n: number) => (n + h / 30) % 12;
+      const a = s * Math.min(l, 1 - l);
+      const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+      return { r: Math.round(255 * f(0)), g: Math.round(255 * f(8)), b: Math.round(255 * f(4)) };
+    }
+
+    function parseHsl(str: string): { r: number; g: number; b: number } | null {
+      const m = str.match(/hsla?\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%/i);
+      if (!m) return null;
+      return hslToRgb(parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10));
+    }
+
+    let rgb: { r: number; g: number; b: number } | null = null;
+    const c = color.trim();
+
+    if (c.startsWith('#')) {
+      rgb = hexToRgb(c);
+    } else if (c.toLowerCase().startsWith('rgb')) {
+      rgb = parseRgb(c);
+    } else if (c.toLowerCase().startsWith('hsl')) {
+      rgb = parseHsl(c);
+    } else if (typeof window !== 'undefined') {
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.fillStyle = c;
+          const canonical = ctx.fillStyle as string;
+          if (canonical.startsWith('#')) {
+            rgb = hexToRgb(canonical);
+          } else if (canonical.toLowerCase().startsWith('rgb')) {
+            rgb = parseRgb(canonical);
+          }
+        }
+      } catch (_) {
+        // ignore
+      }
+    }
+
+    if (!rgb) return '#ffffff';
+
+    // Relative luminance
+    const sr = rgb.r / 255, sg = rgb.g / 255, sb = rgb.b / 255;
+    const rLin = sr <= 0.03928 ? sr / 12.92 : Math.pow((sr + 0.055) / 1.055, 2.4);
+    const gLin = sg <= 0.03928 ? sg / 12.92 : Math.pow((sg + 0.055) / 1.055, 2.4);
+    const bLin = sb <= 0.03928 ? sb / 12.92 : Math.pow((sb + 0.055) / 1.055, 2.4);
+    const luminance = 0.2126 * rLin + 0.7152 * gLin + 0.0722 * bLin;
+
+    return luminance > 0.5 ? '#000000' : '#ffffff';
+  }
+
   function formatTags(tags: string | string[] | undefined): string[] {
     if (!tags || tags === '-') return ['-'];
     const tagArray = typeof tags === 'string' ? tags.split(',').map(t => t.trim()) : tags;
@@ -234,6 +314,15 @@
     
     // Get account ID from URL
     accountId = get(page).params.id;
+    // Honor edit mode from query string
+    try {
+      const modeParam = get(page).url.searchParams.get('mode');
+      if (modeParam === 'edit') {
+        viewMode = 'edit';
+      }
+    } catch (_) {
+      // ignore
+    }
     
     // Load account data and contacts
     const [account, contacts] = await Promise.all([
@@ -390,7 +479,7 @@
               <!-- Edit mode: show tags with remove buttons and input -->
               <div class="tags-container mb-2">
                 {#each tags as tag}
-                  <span class="badge bg-primary me-1 mb-1">
+                  <span class="badge me-1 mb-1" style="background-color: {tag}; color: {getTextColorForBg(tag)}">
                     {tag}
                     <button 
                       type="button" 
@@ -423,7 +512,7 @@
               <div class="tags-container">
                 {#if tags.length > 0}
                   {#each tags as tag}
-                    <span class="badge bg-secondary me-1 mb-1">{tag}</span>
+                    <span class="badge me-1 mb-1" style="background-color: {tag}; color: {getTextColorForBg(tag)}">{tag}</span>
                   {/each}
                 {:else}
                   <span class="text-muted">-</span>

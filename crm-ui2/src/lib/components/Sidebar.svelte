@@ -47,10 +47,10 @@
         <h4 class="{colorScheme === 'dark' ? 'text-white' : 'text-dark'} mb-0">
           <img 
             src={tenantConfig?.theme?.logoUrl || 'https://crm.knowprocess.com/images/icon/omny-link-icon.svg'} 
-            alt="KnowProcess" 
+            alt="KnowProcess CRM" 
             style="max-width: 75px; max-height: 55px; margin: -0.25rem 0.5rem 0 0 ;" 
           /> 
-          KnowProcess
+          CRM
         </h4>
       {:else}
         <img 
