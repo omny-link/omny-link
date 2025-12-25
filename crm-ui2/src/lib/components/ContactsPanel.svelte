@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { colorSchemeStore } from '$lib/colorScheme';
   import type { Contact } from '$lib/types';
   import type { ViewMode } from '$lib/types';
   import { getGravatarUrl } from '$lib/gravatar';
@@ -10,9 +11,16 @@
   export let onAdd: (() => void) | undefined = undefined;
   export let onView: ((contact: Contact) => void) | undefined = undefined;
   export let onSetMain: ((contact: Contact) => void) | undefined = undefined;
+
+  let colorScheme: 'light' | 'dark' = 'dark';
+
+  // Subscribe to color scheme changes
+  colorSchemeStore.subscribe(scheme => {
+    colorScheme = scheme;
+  });
 </script>
 
-<div class="card bg-dark text-light mt-3">
+<div class="card {colorScheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'} mt-3">
   <div 
     class="card-header d-flex align-items-center" 
     style="cursor: pointer;" 
@@ -32,7 +40,7 @@
   {#if isOpen}
   <div class="card-body">
     {#if contacts && contacts.length > 0}
-      <table class="table table-dark table-striped">
+      <table class="table {colorScheme === 'dark' ? 'table-dark' : ''} table-striped">
         <thead>
           <tr>
             <th>Main</th>

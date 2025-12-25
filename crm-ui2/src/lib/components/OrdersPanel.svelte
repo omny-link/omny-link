@@ -53,7 +53,7 @@
   {#if isOpen}
   <div class="card-body">
     {#if orders && orders.length > 0}
-      <table class="table table-dark table-striped">
+      <table class="table {colorScheme === 'dark' ? 'table-dark' : ''} table-striped">
         <thead>
           <tr>
             <th>ID</th>

@@ -84,6 +84,54 @@
     }
   }
 
+  function toDateInputFormat(dateString: string | undefined): string {
+    if (!dateString || dateString === '-') return '';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '';
+      // Format as YYYY-MM-DD for date input
+      return date.toISOString().split('T')[0];
+    } catch (e) {
+      return '';
+    }
+  }
+
+  // Tag management
+  let tagInput = '';
+  let tags: string[] = [];
+
+  $: if (selectedAccount?.tags) {
+    if (typeof selectedAccount.tags === 'string') {
+      tags = selectedAccount.tags.split(',').map(t => t.trim()).filter(t => t.length > 0);
+    } else if (Array.isArray(selectedAccount.tags)) {
+      tags = selectedAccount.tags;
+    }
+  }
+
+  function addTag(): void {
+    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+      tags = [...tags, tagInput.trim()];
+      tagInput = '';
+      if (selectedAccount) {
+        selectedAccount.tags = tags.join(',');
+      }
+    }
+  }
+
+  function removeTag(tagToRemove: string): void {
+    tags = tags.filter(tag => tag !== tagToRemove);
+    if (selectedAccount) {
+      selectedAccount.tags = tags.join(',');
+    }
+  }
+
+  function handleTagKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      addTag();
+    }
+  }
+
   function formatTags(tags: string | string[] | undefined): string[] {
     if (!tags || tags === '-') return ['-'];
     const tagArray = typeof tags === 'string' ? tags.split(',').map(t => t.trim()) : tags;
@@ -213,17 +261,30 @@
     <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" on:click={backToList}>
       <i class="bi bi-arrow-left"></i> Back to List
     </button>
-    <span class="ms-3 h4">{viewMode === 'edit' ? 'Edit' : 'View'} Account</span>
+    <span class="ms-3 h4">{selectedAccount?.name || 'Account Details'}</span>
   </div>
-  <div class="d-flex gap-2">
-    <button class="btn btn-{viewMode === 'edit' ? 'secondary' : 'primary'}" on:click={toggleEditMode}>
-      <i class="bi bi-{viewMode === 'edit' ? 'eye' : 'pencil'}"></i> {viewMode === 'edit' ? 'View' : 'Edit'}
+  <div class="d-flex gap-2 align-items-center">
+    <!-- Edit Mode Toggle Switch -->
+    <div class="form-check form-switch">
+      <input 
+        class="form-check-input" 
+        type="checkbox" 
+        role="switch" 
+        id="editModeSwitch"
+        checked={viewMode === 'edit'}
+        on:change={toggleEditMode}
+        style="cursor: pointer;"
+      />
+      <label class="form-check-label" for="editModeSwitch" style="cursor: pointer;">
+        {viewMode === 'edit' ? 'Edit' : 'View'}
+      </label>
+    </div>
+    
+    <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" on:click={deleteAccount} title="Delete account" aria-label="Delete account">
+      <i class="bi bi-trash"></i>
     </button>
-    <button class="btn btn-danger" on:click={deleteAccount} title="Delete account">
-      <i class="bi bi-trash"></i> Delete
-    </button>
-    <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" on:click={scrollToNotes} title="Jump to notes">
-      <i class="bi bi-journal-text"></i> Notes
+    <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" on:click={scrollToNotes} title="Jump to notes" aria-label="Jump to notes">
+      <i class="bi bi-journal-text"></i>
     </button>
     <div class="dropdown">
       <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'} dropdown-toggle" type="button" id="customActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -258,11 +319,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">ID</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.id || ''} readonly />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.id || '-'}</div>
-            {/if}
+            <input type="text" class="form-control" value={selectedAccount?.id || ''} readonly disabled />
           </div>
         </div>
 
@@ -270,11 +327,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Parent Org</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.parentOrg || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.parentOrg || '-'}</div>
-            {/if}
+            <input type="text" class="form-control" value={selectedAccount?.parentOrg || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
         </div>
 
@@ -282,11 +335,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Company Number</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.companyNumber || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.companyNumber || '-'}</div>
-            {/if}
+            <input type="text" class="form-control" value={selectedAccount?.companyNumber || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
         </div>
 
@@ -294,11 +343,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Owner</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.owner || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.owner || '-'}</div>
-            {/if}
+            <input type="text" class="form-control" value={selectedAccount?.owner || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
         </div>
 
@@ -306,15 +351,18 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Existing Customer?</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <select class="form-control" value={selectedAccount?.existingCustomer || ''}>
-                <option value="">-</option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </select>
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.existingCustomer || '-'}</div>
-            {/if}
+            <div class="form-check mt-2">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="existingCustomer"
+                checked={selectedAccount?.existingCustomer === true || selectedAccount?.existingCustomer === 'true'}
+                disabled={viewMode === 'view'}
+              />
+              <label class="form-check-label" for="existingCustomer">
+                Yes
+              </label>
+            </div>
           </div>
         </div>
 
@@ -322,11 +370,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Status</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.stage || selectedAccount?.accountType || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.stage || selectedAccount?.accountType || '-'}</div>
-            {/if}
+            <input type="text" class="form-control" value={selectedAccount?.stage || selectedAccount?.accountType || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
         </div>
 
@@ -334,11 +378,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Type</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.type || selectedAccount?.businessType || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.type || selectedAccount?.businessType || '-'}</div>
-            {/if}
+            <input type="text" class="form-control" value={selectedAccount?.type || selectedAccount?.businessType || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
         </div>
 
@@ -347,12 +387,47 @@
           <label class="col-sm-4 col-form-label field-label text-end">Tags</label>
           <div class="col-sm-8">
             {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.tags || ''} />
-            {:else}
-              <div class="form-control-plaintext">
-                {#each formatTags(selectedAccount?.tags) as line}
-                  {line}<br />
+              <!-- Edit mode: show tags with remove buttons and input -->
+              <div class="tags-container mb-2">
+                {#each tags as tag}
+                  <span class="badge bg-primary me-1 mb-1">
+                    {tag}
+                    <button 
+                      type="button" 
+                      class="btn-close btn-close-white ms-1" 
+                      aria-label="Remove tag"
+                      style="font-size: 0.6rem; vertical-align: middle;"
+                      on:click={() => removeTag(tag)}
+                    ></button>
+                  </span>
                 {/each}
+              </div>
+              <div class="input-group">
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="Add tag..."
+                  bind:value={tagInput}
+                  on:keydown={handleTagKeydown}
+                />
+                <button 
+                  class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
+                  type="button"
+                  on:click={addTag}
+                >
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
+            {:else}
+              <!-- View mode: show tags as badges only -->
+              <div class="tags-container">
+                {#if tags.length > 0}
+                  {#each tags as tag}
+                    <span class="badge bg-secondary me-1 mb-1">{tag}</span>
+                  {/each}
+                {:else}
+                  <span class="text-muted">-</span>
+                {/if}
               </div>
             {/if}
           </div>
@@ -362,32 +437,37 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">No of Employees</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="number" class="form-control" value={selectedAccount?.noOfEmployees || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.noOfEmployees || '-'}</div>
-            {/if}
+            <input type="number" class="form-control" value={selectedAccount?.noOfEmployees || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
         </div>
       </div>
 
       <!-- Column 2 -->
       <div class="col-md-6">
-        <!-- Website -->
+        <!-- Business Website -->
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Website</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="url" class="form-control" value={selectedAccount?.website || ''} />
-            {:else}
-              <div class="form-control-plaintext">
-                {#if selectedAccount?.website}
-                  <a href={selectedAccount.website} target="_blank" rel="noopener noreferrer">{selectedAccount.website}</a>
-                {:else}
-                  -
-                {/if}
-              </div>
-            {/if}
+            <div class="input-group">
+              <input 
+                type="url" 
+                class="form-control" 
+                bind:value={selectedAccount.businessWebsite}
+                readonly={viewMode === 'view'} 
+                disabled={viewMode === 'view'} 
+              />
+              {#if selectedAccount?.businessWebsite}
+                <button 
+                  class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
+                  type="button"
+                  on:click={() => window.open(selectedAccount?.businessWebsite, '_blank')}
+                  title="Open website in new tab"
+                  aria-label="Open website in new tab"
+                >
+                  <i class="bi bi-box-arrow-up-right"></i>
+                </button>
+              {/if}
+            </div>
           </div>
         </div>
 
@@ -395,11 +475,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Email</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="email" class="form-control" value={selectedAccount?.email || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.email || '-'}</div>
-            {/if}
+            <input type="email" class="form-control" value={selectedAccount?.email || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
         </div>
 
@@ -407,15 +483,18 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Email Confirmed?</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <select class="form-control" value={selectedAccount?.emailConfirmed || ''}>
-                <option value="">-</option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </select>
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.emailConfirmed || '-'}</div>
-            {/if}
+            <div class="form-check mt-2">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="emailConfirmed"
+                checked={selectedAccount?.emailConfirmed === true || selectedAccount?.emailConfirmed === 'true'}
+                disabled={viewMode === 'view'}
+              />
+              <label class="form-check-label" for="emailConfirmed">
+                Yes
+              </label>
+            </div>
           </div>
         </div>
 
@@ -423,15 +502,18 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Opt-in?</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <select class="form-control" value={selectedAccount?.doNotCall || selectedAccount?.emailOptIn || ''}>
-                <option value="">-</option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </select>
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.doNotCall || selectedAccount?.emailOptIn || '-'}</div>
-            {/if}
+            <div class="form-check mt-2">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="emailOptIn"
+                checked={selectedAccount?.emailOptIn === true || selectedAccount?.emailOptIn === 'true' || (selectedAccount?.doNotCall !== true && selectedAccount?.doNotCall !== 'true')}
+                disabled={viewMode === 'view'}
+              />
+              <label class="form-check-label" for="emailOptIn">
+                Yes
+              </label>
+            </div>
           </div>
         </div>
 
@@ -439,11 +521,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Phone</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="tel" class="form-control" value={selectedAccount?.phone || selectedAccount?.phoneNumber || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.phone || selectedAccount?.phoneNumber || '-'}</div>
-            {/if}
+            <input type="tel" class="form-control" value={selectedAccount?.phone || selectedAccount?.phoneNumber || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
         </div>
 
@@ -451,11 +529,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Address Line 1</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.address1 || selectedAccount?.addressLine1 || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.address1 || selectedAccount?.addressLine1 || '-'}</div>
-            {/if}
+            <input type="text" class="form-control" value={selectedAccount?.address1 || selectedAccount?.addressLine1 || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
         </div>
 
@@ -463,11 +537,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Address Line 2</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.address2 || selectedAccount?.addressLine2 || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.address2 || selectedAccount?.addressLine2 || '-'}</div>
-            {/if}
+            <input type="text" class="form-control" value={selectedAccount?.address2 || selectedAccount?.addressLine2 || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
         </div>
 
@@ -475,11 +545,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Address Town</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.town || selectedAccount?.addressTown || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.town || selectedAccount?.addressTown || '-'}</div>
-            {/if}
+            <input type="text" class="form-control" value={selectedAccount?.town || selectedAccount?.addressTown || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
         </div>
 
@@ -487,11 +553,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Address County / City</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.countyOrCity || selectedAccount?.addressCounty || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.countyOrCity || selectedAccount?.addressCounty || '-'}</div>
-            {/if}
+            <input type="text" class="form-control" value={selectedAccount?.countyOrCity || selectedAccount?.addressCounty || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
         </div>
 
@@ -499,11 +561,26 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Postcode</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.postCode || selectedAccount?.zipCode || ''} />
-            {:else}
-              <div class="form-control-plaintext">{selectedAccount?.postCode || selectedAccount?.zipCode || '-'}</div>
-            {/if}
+            <div class="input-group">
+              <input 
+                type="text" 
+                class="form-control" 
+                bind:value={selectedAccount.postCode}
+                readonly={viewMode === 'view'} 
+                disabled={viewMode === 'view'} 
+              />
+              {#if selectedAccount?.postCode || selectedAccount?.zipCode}
+                <button 
+                  class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
+                  type="button"
+                  on:click={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedAccount?.postCode || selectedAccount?.zipCode || '')}`, '_blank')}
+                  title="Search postcode on Google Maps"
+                  aria-label="Search postcode on Google Maps"
+                >
+                  <i class="bi bi-geo-alt"></i>
+                </button>
+              {/if}
+            </div>
           </div>
         </div>
 
@@ -511,17 +588,26 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Twitter</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.twitter || ''} />
-            {:else}
-              <div class="form-control-plaintext">
-                {#if selectedAccount?.twitter}
-                  <a href="https://twitter.com/{selectedAccount.twitter}" target="_blank" rel="noopener noreferrer">{selectedAccount.twitter}</a>
-                {:else}
-                  -
-                {/if}
-              </div>
-            {/if}
+            <div class="input-group">
+              <input 
+                type="url" 
+                class="form-control" 
+                bind:value={selectedAccount.twitter}
+                readonly={viewMode === 'view'} 
+                disabled={viewMode === 'view'} 
+              />
+              {#if selectedAccount?.twitter}
+                <button 
+                  class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
+                  type="button"
+                  on:click={() => window.open(selectedAccount?.twitter, '_blank')}
+                  title="Open Twitter profile in new tab"
+                  aria-label="Open Twitter profile in new tab"
+                >
+                  <i class="bi bi-box-arrow-up-right"></i>
+                </button>
+              {/if}
+            </div>
           </div>
         </div>
 
@@ -529,17 +615,26 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">LinkedIn</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.linkedin || ''} />
-            {:else}
-              <div class="form-control-plaintext">
-                {#if selectedAccount?.linkedin}
-                  <a href={selectedAccount.linkedin} target="_blank" rel="noopener noreferrer">{selectedAccount.linkedin}</a>
-                {:else}
-                  -
-                {/if}
-              </div>
-            {/if}
+            <div class="input-group">
+              <input 
+                type="url" 
+                class="form-control" 
+                bind:value={selectedAccount.linkedIn}
+                readonly={viewMode === 'view'} 
+                disabled={viewMode === 'view'} 
+              />
+              {#if selectedAccount?.linkedIn}
+                <button 
+                  class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
+                  type="button"
+                  on:click={() => window.open(selectedAccount?.linkedIn, '_blank')}
+                  title="Open LinkedIn profile in new tab"
+                  aria-label="Open LinkedIn profile in new tab"
+                >
+                  <i class="bi bi-box-arrow-up-right"></i>
+                </button>
+              {/if}
+            </div>
           </div>
         </div>
 
@@ -547,17 +642,26 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Facebook</label>
           <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="text" class="form-control" value={selectedAccount?.facebook || ''} />
-            {:else}
-              <div class="form-control-plaintext">
-                {#if selectedAccount?.facebook}
-                  <a href={selectedAccount.facebook} target="_blank" rel="noopener noreferrer">{selectedAccount.facebook}</a>
-                {:else}
-                  -
-                {/if}
-              </div>
-            {/if}
+            <div class="input-group">
+              <input 
+                type="url" 
+                class="form-control" 
+                bind:value={selectedAccount.facebook}
+                readonly={viewMode === 'view'} 
+                disabled={viewMode === 'view'} 
+              />
+              {#if selectedAccount?.facebook}
+                <button 
+                  class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
+                  type="button"
+                  on:click={() => window.open(selectedAccount?.facebook, '_blank')}
+                  title="Open Facebook profile in new tab"
+                  aria-label="Open Facebook profile in new tab"
+                >
+                  <i class="bi bi-box-arrow-up-right"></i>
+                </button>
+              {/if}
+            </div>
           </div>
         </div>
       </div>
@@ -585,11 +689,7 @@
   </div>
   {#if panelStates.additionalInfo}
   <div class="card-body">
-    {#if viewMode === 'edit'}
-      <textarea class="form-control" rows="6" value={selectedAccount?.additionalInformation || ''}></textarea>
-    {:else}
-      <div class="form-control-plaintext" style="white-space: pre-wrap;">{selectedAccount?.additionalInformation || '-'}</div>
-    {/if}
+    <textarea class="form-control" rows="6" value={selectedAccount?.additionalInformation || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'}></textarea>
   </div>
   {/if}
 </div>
@@ -620,11 +720,11 @@
   <div class="card-body">
     <div class="row">
       <div class="col-md-6">
-        <!-- Created -->
+        <!-- First Contact -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Created</label>
+          <label class="col-sm-4 col-form-label field-label text-end">First Contact</label>
           <div class="col-sm-8">
-            <div class="form-control-plaintext">{formatDate(selectedAccount?.created)}</div>
+            <input type="date" class="form-control" value={toDateInputFormat(selectedAccount?.firstContact)} readonly disabled />
           </div>
         </div>
 
@@ -632,21 +732,10 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Created By</label>
           <div class="col-sm-8">
-            <div class="form-control-plaintext">{selectedAccount?.createdBy || '-'}</div>
+            <input type="text" class="form-control" value={selectedAccount?.createdBy || ''} readonly disabled />
           </div>
         </div>
 
-        <!-- First Contact -->
-        <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">First Contact</label>
-          <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="date" class="form-control" value={selectedAccount?.firstContact || ''} />
-            {:else}
-              <div class="form-control-plaintext">{formatDate(selectedAccount?.firstContact)}</div>
-            {/if}
-          </div>
-        </div>
       </div>
 
       <div class="col-md-6">
@@ -654,7 +743,7 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Last Updated</label>
           <div class="col-sm-8">
-            <div class="form-control-plaintext">{formatDate(selectedAccount?.lastUpdated)}</div>
+            <input type="text" class="form-control" value={formatDate(selectedAccount?.lastUpdated)} readonly disabled />
           </div>
         </div>
 
@@ -662,21 +751,10 @@
         <div class="mb-3 row">
           <label class="col-sm-4 col-form-label field-label text-end">Updated By</label>
           <div class="col-sm-8">
-            <div class="form-control-plaintext">{selectedAccount?.lastUpdatedBy || '-'}</div>
+            <input type="text" class="form-control" value={selectedAccount?.lastUpdatedBy || ''} readonly disabled />
           </div>
         </div>
 
-        <!-- Last Contact -->
-        <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Last Contact</label>
-          <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input type="date" class="form-control" value={selectedAccount?.lastContact || ''} />
-            {:else}
-              <div class="form-control-plaintext">{formatDate(selectedAccount?.lastContact)}</div>
-            {/if}
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -733,5 +811,23 @@
   .field-label {
     font-size: 0.875rem;
     color: #6c757d;
+  }
+
+  /* Darker grey for disabled inputs in light mode */
+  :global(body.light-mode) .form-control:disabled,
+  :global(body.light-mode) .form-control[readonly] {
+    background-color: #d6d8db;
+  }
+
+  /* Darker grey for disabled inputs in dark mode */
+  :global(body.dark-mode) .form-control:disabled,
+  :global(body.dark-mode) .form-control[readonly] {
+    background-color: var(--bs-gray-500);
+  }
+
+  /* Editable inputs in dark mode */
+  :global(body.dark-mode) .form-control:not(:disabled):not([readonly]) {
+    background-color: var(--bs-gray-300);
+    color: var(--bs-dark);
   }
 </style>
