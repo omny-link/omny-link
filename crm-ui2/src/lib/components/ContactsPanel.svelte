@@ -52,7 +52,7 @@
             <th>Twitter</th>
             <th>LinkedIn</th>
             <th>Facebook</th>
-            <th>Actions</th>
+            <th style="width: 7rem;">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -108,7 +108,7 @@
                   -
                 {/if}
               </td>
-              <td>
+              <td style="width: 7rem; white-space: nowrap;">
                 <button 
                   class="btn btn-sm btn-dark" 
                   aria-label="View contact"

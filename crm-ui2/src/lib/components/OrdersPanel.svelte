@@ -61,7 +61,7 @@
             <th>Order Date</th>
             <th>Delivery Date</th>
             <th>Status</th>
-            <th>Actions</th>
+            <th style="width: 7rem;">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -72,7 +72,7 @@
               <td>{formatDate((order as any).orderDate || order.date || (order as any).created)}</td>
               <td>{formatDate((order as any).deliveryDate || (order as any).dueDate)}</td>
               <td>{(order as any).status || order.stage || '-'}</td>
-              <td>
+              <td style="width: 7rem; white-space: nowrap;">
                 <button 
                   class="btn btn-sm {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
                   aria-label="View order"

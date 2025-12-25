@@ -2,6 +2,7 @@
   import { colorSchemeStore } from '$lib/colorScheme';
   import type { Document } from '$lib/types';
   import type { ViewMode } from '$lib/types';
+  import { getGravatarUrl } from '$lib/gravatar';
 
   export let documents: Document[] | undefined = undefined;
   export let viewMode: ViewMode = 'view';
@@ -61,59 +62,48 @@
   {#if isOpen}
   <div class="card-body">
     {#if documents && documents.length > 0}
-      <table class="table table-dark table-striped">
+      <table class="table {colorScheme === 'dark' ? 'table-dark' : ''} table-striped">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Size</th>
+            <th style="width: 60%">Name</th>
             <th>Uploaded</th>
             <th>Uploaded By</th>
-            <th>Actions</th>
+            <th style="width: 7rem;">Actions</th>
           </tr>
         </thead>
         <tbody>
           {#each getSortedDocuments(documents) as doc}
             <tr>
-              <td>{doc.name || (doc as any).fileName || '-'}</td>
-              <td>{(doc as any).type || (doc as any).mimeType || (doc as any).contentType || '-'}</td>
-              <td>{(doc as any).size || '-'}</td>
+              <td style="width: 60%">{doc.name || (doc as any).fileName || '-'}</td>
               <td>{formatDate((doc as any).uploaded || doc.created)}</td>
-              <td>{(doc as any).uploadedBy || (doc as any).createdBy || '-'}</td>
               <td>
-                <a 
-                  href={doc.url || (doc as any).link || '#'} 
-                  class="btn btn-sm {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  aria-label="Download document"
-                >
-                  <i class="bi bi-download"></i>
-                </a>
+                <img 
+                  src={getGravatarUrl((doc as any).uploaderEmail || (doc as any).uploadedBy || (doc as any).createdBy || '')}
+                  alt={(doc as any).uploadedBy || (doc as any).createdBy || 'Author'}
+                  title={(doc as any).uploadedBy || (doc as any).createdBy || ''}
+                  class="rounded-circle me-2"
+                  width="24"
+                  height="24"
+                />
+                {(doc as any).uploadedBy || (doc as any).createdBy || '-'}
+              </td>
+               <td style="width: 7rem; white-space: nowrap;">
                 <button 
                   class="btn btn-sm {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" 
-                  aria-label="Delete document"
-                  on:click={() => onDelete?.(doc)}
+                  type="button"
+                  on:click={() => window.open(doc.url || (doc as any).link || '#', '_blank')}
+                  title="Open document in new tab"
+                  aria-label="Open document in new tab"
                 >
-                  <i class="bi bi-trash"></i>
+                  <i class="bi bi-box-arrow-up-right"></i>
                 </button>
               </td>
             </tr>
           {/each}
         </tbody>
       </table>
-      {#if viewMode === 'edit'}
-        <button class="btn btn-primary btn-sm mt-2" on:click={onUpload}>
-          <i class="bi bi-plus"></i> Upload Document
-        </button>
-      {/if}
     {:else}
       <div class="text-muted">No documents found</div>
-      {#if viewMode === 'edit'}
-        <button class="btn btn-primary btn-sm mt-2" on:click={onUpload}>
-          <i class="bi bi-plus"></i> Upload Document
-        </button>
-      {/if}
     {/if}
   </div>
   {/if}
