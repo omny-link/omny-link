@@ -1,18 +1,8 @@
-# sv
+# CRM UI Next
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+**Status: experimental**
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
+This is complete rewrite of the CRM user interface in modern TypeScript, using the Svelte framework.
 
 ## Developing
 
