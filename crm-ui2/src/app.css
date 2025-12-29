@@ -12,3 +12,24 @@ h6,
 .h6 {
 	font-family: 'Signika', sans-serif;
 }
+
+/* System preference defaults to reduce flash before JS runs */
+@media (prefers-color-scheme: dark) {
+	html {
+		color-scheme: dark;
+	}
+	body {
+		background-color: #212529;
+		color: #f8f9fa;
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	html {
+		color-scheme: light;
+	}
+	body {
+		background-color: #ffffff;
+		color: #212529;
+	}
+}

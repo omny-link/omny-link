@@ -117,32 +117,32 @@
   }
 
   /* Dark mode colors */
-  :global(body.dark-mode) #sidebar {
+  :global(html.dark-mode) #sidebar {
     background-color: #343a40;
   }
 
-  :global(body.dark-mode) #sidebar .nav-link {
+  :global(html.dark-mode) #sidebar .nav-link {
     color: #ccc;
   }
 
-  :global(body.dark-mode) #sidebar .nav-link:hover,
-  :global(body.dark-mode) #sidebar .nav-link.active {
+  :global(html.dark-mode) #sidebar .nav-link:hover,
+  :global(html.dark-mode) #sidebar .nav-link.active {
     background-color: #495057;
     color: #fff;
   }
 
   /* Light mode colors */
-  :global(body.light-mode) #sidebar {
+  :global(html.light-mode) #sidebar {
     background-color: #f8f9fa;
     border-right: 1px solid #dee2e6;
   }
 
-  :global(body.light-mode) #sidebar .nav-link {
+  :global(html.light-mode) #sidebar .nav-link {
     color: #495057;
   }
 
-  :global(body.light-mode) #sidebar .nav-link:hover,
-  :global(body.light-mode) #sidebar .nav-link.active {
+  :global(html.light-mode) #sidebar .nav-link:hover,
+  :global(html.light-mode) #sidebar .nav-link.active {
     background-color: #e9ecef;
     color: #212529;
   }

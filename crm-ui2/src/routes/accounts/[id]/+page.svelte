@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
   import { goto } from '$app/navigation';
-  import keycloak, { initKeycloak, fetchUserAccount } from '$lib/keycloak';
+  import { keycloakStore } from '$lib/keycloak';
   import { colorSchemeStore } from '$lib/colorScheme';
   import { 
     fetchAccount,
@@ -300,44 +300,42 @@
     viewMode = viewMode === 'view' ? 'edit' : 'view';
   }
 
-  onMount(async () => {
-    await initKeycloak();
-    
-    if (!keycloak.authenticated) {
-      await keycloak.login({ redirectUri: window.location.href });
-      return;
-    }
-    
-    // Get tenant from user account
-    const { tenant: userTenant } = await fetchUserAccount();
-    tenant = userTenant;
-    
-    // Get account ID from URL
-    accountId = get(page).params.id;
-    // Honor edit mode from query string
-    try {
-      const modeParam = get(page).url.searchParams.get('mode');
-      if (modeParam === 'edit') {
-        viewMode = 'edit';
+  onMount(() => {
+    let initialized = false;
+    const unsubscribe = keycloakStore.subscribe(async (state) => {
+      if (!state.authenticated) return;
+      const userTenant = state.userInfo?.tenant;
+      // Wait for actual tenant from fetchUserAccount, don't default to 'acme'
+      if (initialized || !userTenant || userTenant === 'acme') return;
+      initialized = true;
+      tenant = userTenant;
+
+      // Get account ID from URL
+      accountId = get(page).params.id;
+      // Honor edit mode from query string
+      try {
+        const modeParam = get(page).url.searchParams.get('mode');
+        if (modeParam === 'edit') {
+          viewMode = 'edit';
+        }
+      } catch (_) { /* ignore */ }
+
+      // Load account data and contacts
+      const [account, contacts] = await Promise.all([
+        fetchFullAccount(accountId),
+        fetchAccountContacts(accountId)
+      ]);
+
+      if (account) {
+        selectedAccount = account;
+        accountContacts = contacts;
+        accountOrders = await fetchOrdersByContacts(contacts);
+      } else {
+        alert('Account not found');
+        goto('/accounts');
       }
-    } catch (_) {
-      // ignore
-    }
-    
-    // Load account data and contacts
-    const [account, contacts] = await Promise.all([
-      fetchFullAccount(accountId),
-      fetchAccountContacts(accountId)
-    ]);
-    
-    if (account) {
-      selectedAccount = account;
-      accountContacts = contacts;
-      accountOrders = await fetchOrdersByContacts(contacts);
-    } else {
-      alert('Account not found');
-      goto('/accounts');
-    }
+    });
+    return () => unsubscribe();
   });
 </script>
 
@@ -346,12 +344,12 @@
 {:else if selectedAccount}
 <!-- Detail View -->
 <div class="mb-3 d-flex justify-content-between align-items-center">
-  <div>
+  <h1>
     <button class="btn {colorScheme === 'dark' ? 'btn-dark' : 'btn-light'}" on:click={backToList}>
       <i class="bi bi-arrow-left"></i> Back to List
     </button>
-    <span class="ms-3 h4">{selectedAccount?.name || 'Account Details'}</span>
-  </div>
+    <span class="ms-3 h1">{selectedAccount?.name || 'Account Details'}</span>
+  </h1>
   <div class="d-flex gap-2 align-items-center">
     <!-- Edit Mode Toggle Switch -->
     <div class="form-check form-switch">
@@ -903,19 +901,19 @@
   }
 
   /* Darker grey for disabled inputs in light mode */
-  :global(body.light-mode) .form-control:disabled,
-  :global(body.light-mode) .form-control[readonly] {
+  :global(html.light-mode) .form-control:disabled,
+  :global(html.light-mode) .form-control[readonly] {
     background-color: #d6d8db;
   }
 
   /* Darker grey for disabled inputs in dark mode */
-  :global(body.dark-mode) .form-control:disabled,
-  :global(body.dark-mode) .form-control[readonly] {
+  :global(html.dark-mode) .form-control:disabled,
+  :global(html.dark-mode) .form-control[readonly] {
     background-color: var(--bs-gray-500);
   }
 
   /* Editable inputs in dark mode */
-  :global(body.dark-mode) .form-control:not(:disabled):not([readonly]) {
+  :global(html.dark-mode) .form-control:not(:disabled):not([readonly]) {
     background-color: var(--bs-gray-300);
     color: var(--bs-dark);
   }

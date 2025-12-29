@@ -2,7 +2,8 @@
   import { onMount } from 'svelte';
   import '../app.css';
   import { applyBootstrapTheme } from '$lib/theme';
-  import keycloak, { initKeycloak, keycloakStore } from '$lib/keycloak';
+  import keycloak, { initKeycloak, keycloakStore, fetchUserAccount } from '$lib/keycloak';
+  import { tenantConfigStore } from '$lib/tenantConfig';
   import Sidebar from '$lib/components/Sidebar.svelte';
   import { colorSchemeStore } from '$lib/colorScheme';
   import type { UserInfo } from '$lib/types';
@@ -25,8 +26,8 @@
   colorSchemeStore.subscribe(scheme => {
     colorScheme = scheme;
     if (typeof document !== 'undefined') {
-      document.body.classList.remove('light-mode', 'dark-mode');
-      document.body.classList.add(`${colorScheme}-mode`);
+      document.documentElement.classList.remove('light-mode', 'dark-mode');
+      document.documentElement.classList.add(`${colorScheme}-mode`);
     }
   });
 
@@ -36,15 +37,28 @@
 
     try {
       await initKeycloak();
-      
+
       // Subscribe to keycloak store for reactive updates
       keycloakStore.subscribe(state => {
         authenticated = state.authenticated;
         username = state.userInfo?.username || state.userInfo?.preferred_username || '';
         userEmail = state.userInfo?.email || username;
       });
+
+      // Globally fetch user account and load tenant config
+      if (keycloak.authenticated) {
+        const { tenant } = await fetchUserAccount();
+        await tenantConfigStore.load(tenant);
+      }
+      
+      // Signal that app is fully ready (after tenant config loaded)
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('app:ready'));
+      }, 100);
     } catch (err) {
       console.error('Keycloak init error:', err);
+      // Still signal ready even on error so user isn't stuck
+      window.dispatchEvent(new CustomEvent('app:ready'));
     }
   });
 </script>

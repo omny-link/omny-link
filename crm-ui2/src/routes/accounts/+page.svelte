@@ -1,11 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import keycloak, { initKeycloak, fetchUserAccount, keycloakStore } from '$lib/keycloak';
+  import { keycloakStore } from '$lib/keycloak';
   import { getGravatarUrl } from '$lib/gravatar';
   import { fetchAccounts as fetchAccountsAPI } from '$lib/cust-mgmt';
   import { colorSchemeStore } from '$lib/colorScheme';
-  import { tenantConfigStore } from '$lib/tenantConfig';
   import type { Account, SortDirection, UserInfo } from '$lib/types';
 
   let userInfo: UserInfo | null = null;
@@ -14,7 +13,6 @@
   let filteredAccounts: Account[] = [];
   let searchQuery: string = "";
   let loading: boolean = false;
-  let isFiltering: boolean = false;
   let page: number = 1;
   let allLoaded: boolean = false;
   let sortColumn: string = 'updated';
@@ -31,7 +29,12 @@
   async function fetchAccounts(nextPage: number): Promise<void> {
     if (loading || allLoaded) return;
     loading = true;
-    isFiltering = true;
+    // Only show filter overlay when manually searching/filtering, not during background fetch
+    // isFiltering = true; // Removed - don't show spinner during stale-while-revalidate
+    // Show loading only when we have no cached data and are fetching page 1
+    if (nextPage === 1 && accounts.length === 0) {
+      showLoading = true;
+    }
     try {
       const data = await fetchAccountsAPI(tenant, nextPage);
       if (Array.isArray(data) && data.length > 0) {
@@ -53,13 +56,17 @@
       }
     } finally {
       loading = false;
-      isFiltering = false;
-      showLoading = loading && accounts.length === 0;
+      // isFiltering = false; // Removed
+      // Hide loading once we have any accounts; keep hidden otherwise
+      if (accounts.length > 0) {
+        showLoading = false;
+      }
     }
   }
 
   function filterAccounts(): void {
-    isFiltering = true;
+    // Don't show overlay during filtering - instant client-side operation
+    // isFiltering = true; // Removed
     const queryRaw = searchQuery.trim();
     if (!queryRaw) {
       filteredAccounts = accounts;
@@ -132,7 +139,7 @@
     if (sortColumn) {
       applySortToFiltered();
     }
-    isFiltering = false;
+    // isFiltering = false; // Removed - not needed anymore
   }
 
   function sortBy(column: string): void {
@@ -354,36 +361,25 @@
     }
   }
 
-  onMount(async () => {
-    // Wait for keycloak to initialize first
-    await initKeycloak();
-    
-    if (!keycloak.authenticated) {
-      await keycloak.login({ redirectUri: window.location.href });
-    }
-    
-    // Subscribe to keycloak store
-    keycloakStore.subscribe(state => {
+  onMount(() => {
+    let initialized = false;
+    const unsubscribe = keycloakStore.subscribe(state => {
       userInfo = state.userInfo;
-      // Update search query when userInfo changes
       if (userInfo?.username && !searchQuery) {
         searchQuery = `active owner:${userInfo.username}`;
-        // Re-filter when search query is set programmatically
         filterAccounts();
       }
+      // Once authenticated and tenant available, load accounts (only once)
+      // Wait for actual tenant from fetchUserAccount, don't default to 'acme'
+      const userTenant = state.userInfo?.tenant;
+      if (state.authenticated && !initialized && userTenant && userTenant !== 'acme') {
+        tenant = userTenant;
+        loadCachedAccounts(tenant);
+        fetchAccounts(1);
+        initialized = true;
+      }
     });
-    
-    // Fetch user account info to get tenant
-    if (keycloak.authenticated) {
-      const { tenant: userTenant } = await fetchUserAccount();
-      tenant = userTenant;
-      // Load tenant-specific configuration
-      await tenantConfigStore.load(tenant);
-      // Try cached accounts first (stale-while-refresh)
-      loadCachedAccounts(tenant);
-      // Begin background refresh
-      fetchAccounts(1);
-    }
+    return () => unsubscribe();
   });
 
 
@@ -393,19 +389,13 @@
   }
 </script>
 
-{#if isFiltering}
-<div class="activity-overlay">
-  <img src="https://crm.knowprocess.com/images/icon/omny-link-icon.svg" alt="Loading" class="activity-spinner" />
-</div>
-{/if}
-
 <div class="d-flex align-items-center flex-nowrap mb-3">
-  <h2 class="display-5 mb-0 me-3 text-nowrap">
+  <h1 class="display-5 mb-0 me-3 text-nowrap">
     Accounts
     {#if !loading}
       ({filteredAccounts.length})
     {/if}
-  </h2>
+  </h1>
   <input 
     type="text" 
     class="form-control flex-grow-1 me-3" 
@@ -509,7 +499,7 @@
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  :global(body.light-mode) {
+  :global(html.light-mode) {
     --bg-color: #ffffff;
     --text-color: #212529;
     --border-color: #dee2e6;
@@ -518,7 +508,7 @@
     --table-stripe: #f8f9fa;
   }
 
-  :global(body.dark-mode) {
+  :global(html.dark-mode) {
     --bg-color: #212529;
     --text-color: #ffffff;
     --border-color: #495057;
