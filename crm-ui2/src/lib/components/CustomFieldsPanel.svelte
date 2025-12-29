@@ -3,6 +3,7 @@
   import type { ViewMode } from '$lib/types';
 
   export let customFields: Record<string, any> | undefined = undefined;
+  export let accountFields: any[] | undefined = undefined;
   export let viewMode: ViewMode = 'view';
   export let isOpen: boolean = true;
   export let onToggle: (() => void) | undefined = undefined;
@@ -31,6 +32,14 @@
       onChange(key, target.value);
     }
   }
+
+  function getFieldValue(fieldName: string): string {
+    return customFields?.[fieldName] || '';
+  }
+
+  function getFieldLabel(field: any): string {
+    return field.label || toSentenceCase(field.name);
+  }
 </script>
 
 <div class="card {colorScheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'} mt-3">
@@ -52,27 +61,32 @@
   </div>
   {#if isOpen}
   <div class="card-body">
-    {#if customFields && Object.keys(customFields).length > 0}
-      {#each Object.entries(customFields) as [key, value]}
-        <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end" for="custom-field-{key}">
-            {toSentenceCase(key)}
-          </label>
-          <div class="col-sm-8">
-            {#if viewMode === 'edit'}
-              <input 
-                type="text" 
-                id="custom-field-{key}"
-                class="form-control {colorScheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'} border-secondary" 
-                value={value || ''} 
-                on:input={(e) => handleChange(key, e)}
-              />
-            {:else}
-              <div class="form-control-plaintext {colorScheme === 'dark' ? 'text-light' : 'text-dark'}">{value || '-'}</div>
-            {/if}
+    {#if accountFields && accountFields.length > 0}
+      <div class="row">
+        {#each accountFields as field, index}
+          <div class="col-md-6">
+            <div class="mb-3 row">
+              <label class="col-sm-4 col-form-label form-label text-end" for="custom-field-{field.name}">
+                {getFieldLabel(field)}
+              </label>
+              <div class="col-sm-8">
+                <input 
+                  type="text" 
+                  id="custom-field-{field.name}"
+                  class="form-control" 
+                  value={getFieldValue(field.name)} 
+                  readonly={viewMode === 'view'}
+                  disabled={viewMode === 'view'}
+                  on:input={(e) => handleChange(field.name, e)}
+                />
+                {#if field.hint}
+                  <small class="form-text text-muted d-block mt-1">{field.hint}</small>
+                {/if}
+              </div>
+            </div>
           </div>
-        </div>
-      {/each}
+        {/each}
+      </div>
     {:else}
       <div class="text-muted">No custom fields defined</div>
     {/if}
@@ -80,9 +94,4 @@
   {/if}
 </div>
 
-<style>
-  .field-label {
-    font-size: 0.875rem;
-    color: #adb5bd;
-  }
-</style>
+

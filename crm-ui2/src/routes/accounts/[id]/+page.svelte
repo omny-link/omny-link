@@ -5,6 +5,8 @@
   import { goto } from '$app/navigation';
   import { keycloakStore } from '$lib/keycloak';
   import { colorSchemeStore } from '$lib/colorScheme';
+  import { tenantConfigStore } from '$lib/tenantConfig';
+  import type { TenantConfig } from '$lib/tenantConfig';
   import { 
     fetchAccount,
     fetchContactsByAccount,
@@ -27,10 +29,16 @@
   let loading: boolean = false;
   let viewMode: ViewMode = 'view';
   let colorScheme: 'light' | 'dark' = 'dark';
+  let tenantConfig: TenantConfig | null = null;
 
   // Subscribe to color scheme changes
   colorSchemeStore.subscribe(scheme => {
     colorScheme = scheme;
+  });
+
+  // Subscribe to tenant config changes
+  tenantConfigStore.subscribe(config => {
+    tenantConfig = config;
   });
 
   let panelStates: PanelStates = {
@@ -404,7 +412,7 @@
       <div class="col-md-6">
         <!-- ID -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">ID</label>
+          <label class="col-sm-4 col-form-label form-label text-end">ID</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={selectedAccount?.id || ''} readonly disabled />
           </div>
@@ -412,7 +420,7 @@
 
         <!-- Parent Org -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Parent Org</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Parent Org</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={selectedAccount?.parentOrg || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
@@ -420,7 +428,7 @@
 
         <!-- Company Number -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Company Number</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Company Number</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={selectedAccount?.companyNumber || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
@@ -428,7 +436,7 @@
 
         <!-- Owner -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Owner</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Owner</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={selectedAccount?.owner || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
@@ -436,7 +444,7 @@
 
         <!-- Existing Customer -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Existing Customer?</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Existing Customer?</label>
           <div class="col-sm-8">
             <div class="form-check mt-2">
               <input 
@@ -455,7 +463,7 @@
 
         <!-- Status -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Status</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Status</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={selectedAccount?.stage || selectedAccount?.accountType || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
@@ -463,7 +471,7 @@
 
         <!-- Type -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Type</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Type</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={selectedAccount?.type || selectedAccount?.businessType || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
@@ -471,7 +479,7 @@
 
         <!-- Tags -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Tags</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Tags</label>
           <div class="col-sm-8">
             {#if viewMode === 'edit'}
               <!-- Edit mode: show tags with remove buttons and input -->
@@ -522,7 +530,7 @@
 
         <!-- No of Employees -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">No of Employees</label>
+          <label class="col-sm-4 col-form-label form-label text-end">No of Employees</label>
           <div class="col-sm-8">
             <input type="number" class="form-control" value={selectedAccount?.noOfEmployees || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
@@ -533,7 +541,7 @@
       <div class="col-md-6">
         <!-- Business Website -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Website</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Website</label>
           <div class="col-sm-8">
             <div class="input-group">
               <input 
@@ -560,7 +568,7 @@
 
         <!-- Email -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Email</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Email</label>
           <div class="col-sm-8">
             <input type="email" class="form-control" value={selectedAccount?.email || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
@@ -568,7 +576,7 @@
 
         <!-- Email Confirmed -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Email Confirmed?</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Email Confirmed?</label>
           <div class="col-sm-8">
             <div class="form-check mt-2">
               <input 
@@ -587,7 +595,7 @@
 
         <!-- Opt-in -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Opt-in?</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Opt-in?</label>
           <div class="col-sm-8">
             <div class="form-check mt-2">
               <input 
@@ -606,7 +614,7 @@
 
         <!-- Phone -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Phone</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Phone</label>
           <div class="col-sm-8">
             <input type="tel" class="form-control" value={selectedAccount?.phone || selectedAccount?.phoneNumber || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
@@ -614,7 +622,7 @@
 
         <!-- Address Line 1 -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Address Line 1</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Address Line 1</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={selectedAccount?.address1 || selectedAccount?.addressLine1 || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
@@ -622,7 +630,7 @@
 
         <!-- Address Line 2 -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Address Line 2</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Address Line 2</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={selectedAccount?.address2 || selectedAccount?.addressLine2 || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
@@ -630,7 +638,7 @@
 
         <!-- Address Town -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Address Town</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Address Town</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={selectedAccount?.town || selectedAccount?.addressTown || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
@@ -638,7 +646,7 @@
 
         <!-- Address County/City -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Address County / City</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Address County / City</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={selectedAccount?.countyOrCity || selectedAccount?.addressCounty || ''} readonly={viewMode === 'view'} disabled={viewMode === 'view'} />
           </div>
@@ -646,7 +654,7 @@
 
         <!-- Postcode -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Postcode</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Postcode</label>
           <div class="col-sm-8">
             <div class="input-group">
               <input 
@@ -673,7 +681,7 @@
 
         <!-- Twitter -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Twitter</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Twitter</label>
           <div class="col-sm-8">
             <div class="input-group">
               <input 
@@ -700,7 +708,7 @@
 
         <!-- LinkedIn -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">LinkedIn</label>
+          <label class="col-sm-4 col-form-label form-label text-end">LinkedIn</label>
           <div class="col-sm-8">
             <div class="input-group">
               <input 
@@ -727,7 +735,7 @@
 
         <!-- Facebook -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Facebook</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Facebook</label>
           <div class="col-sm-8">
             <div class="input-group">
               <input 
@@ -783,6 +791,7 @@
 
 <CustomFieldsPanel 
   customFields={selectedAccount?.customFields}
+  accountFields={tenantConfig?.accountFields}
   {viewMode}
   isOpen={panelStates.customFields}
   onToggle={() => togglePanel('customFields')}
@@ -809,7 +818,7 @@
       <div class="col-md-6">
         <!-- First Contact -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">First Contact</label>
+          <label class="col-sm-4 col-form-label form-label text-end">First Contact</label>
           <div class="col-sm-8">
             <input type="date" class="form-control" value={toDateInputFormat(selectedAccount?.firstContact)} readonly disabled />
           </div>
@@ -817,7 +826,7 @@
 
         <!-- Created By -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Created By</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Created By</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={selectedAccount?.createdBy || ''} readonly disabled />
           </div>
@@ -828,7 +837,7 @@
       <div class="col-md-6">
         <!-- Last Updated -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Last Updated</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Last Updated</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={formatDate(selectedAccount?.lastUpdated)} readonly disabled />
           </div>
@@ -836,7 +845,7 @@
 
         <!-- Updated By -->
         <div class="mb-3 row">
-          <label class="col-sm-4 col-form-label field-label text-end">Updated By</label>
+          <label class="col-sm-4 col-form-label form-label text-end">Updated By</label>
           <div class="col-sm-8">
             <input type="text" class="form-control" value={selectedAccount?.lastUpdatedBy || ''} readonly disabled />
           </div>
@@ -894,27 +903,4 @@
 />
 {/if}
 
-<style>
-  .field-label {
-    font-size: 0.875rem;
-    color: #6c757d;
-  }
 
-  /* Darker grey for disabled inputs in light mode */
-  :global(html.light-mode) .form-control:disabled,
-  :global(html.light-mode) .form-control[readonly] {
-    background-color: #d6d8db;
-  }
-
-  /* Darker grey for disabled inputs in dark mode */
-  :global(html.dark-mode) .form-control:disabled,
-  :global(html.dark-mode) .form-control[readonly] {
-    background-color: var(--bs-gray-500);
-  }
-
-  /* Editable inputs in dark mode */
-  :global(html.dark-mode) .form-control:not(:disabled):not([readonly]) {
-    background-color: var(--bs-gray-300);
-    color: var(--bs-dark);
-  }
-</style>
