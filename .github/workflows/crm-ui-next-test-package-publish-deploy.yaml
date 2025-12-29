@@ -1,0 +1,78 @@
+name: Test, package, publish and deploy CRM UI Next
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - .github/workflows/crm-ui-next-*
+      - "crm-ui-next/**"
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/crm-ui-next-*
+      - "crm-ui-next/**"
+
+jobs:
+  test-release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: crm-ui-next
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: crm-ui-next/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prepare static assets
+        run: npm run prepare
+
+      - name: Build project
+        run: npm run build
+
+      - name: Get project name and version
+        id: pkg
+        run: |
+          NAME=$(jq -r .name package.json)
+          VERSION=$(jq -r .version package.json)
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get PR number
+        id: pr
+        if: github.event_name == 'pull_request'
+        run: echo "pr_number=$(echo ${GITHUB_REF} | grep -oP '(?<=refs/pull/)[0-9]+(?=/merge)')" >> $GITHUB_OUTPUT
+
+      - name: Package build directory
+        run: |
+          cd build
+          zip -r ../${{ steps.pkg.outputs.name }}-${{ steps.pkg.outputs.version }}.zip .
+          cd ..
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: ${{ steps.pkg.outputs.name }}-${{ steps.pkg.outputs.version }}${{ github.event_name == 'pull_request' && format('-pr{0}', steps.pr.outputs.pr_number) || '' }}
+          path: crm-ui-next/${{ steps.pkg.outputs.name }}-${{ steps.pkg.outputs.version }}.zip
+
+      - name: Deploy
+        if: github.ref == 'refs/heads/master'
+        uses: nogsantos/scp-deploy@48b9ca0b1adcb229b1568eebda8e16e06436495a # v1.3.0
+        with:
+          src: ./build/*
+          host: ${{ secrets.SSH_HOST }}
+          remote: ${{ secrets.SSH_DIR }}
+          port: ${{ secrets.SSH_PORT }}
+          user: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}

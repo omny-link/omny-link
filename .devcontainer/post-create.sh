@@ -3,10 +3,10 @@ set -e
 
 echo "Setting up CRM development environment..."
 
-# Setup Node.js crm-ui2 project
-if [ -d "crm-ui2" ]; then
-    echo "Setting up crm-ui2..."
-    cd crm-ui2
+# Setup Node.js crm-ui-next project
+if [ -d "crm-ui-next" ]; then
+    echo "Setting up crm-ui-next..."
+    cd crm-ui-next
     npm install
     cd ..
 fi
@@ -16,4 +16,4 @@ echo ""
 echo "Available commands:"
 echo "  - crm-server: mvn install && cd crm-server && mvn spring-boot:run"
 echo "  - crm-ui: cd crm-ui && npm install && gulp server"
-echo "  - crm-ui2: cd crm-ui2 && npm run dev"
+echo "  - crm-ui-next: cd crm-ui-next && npm run dev"

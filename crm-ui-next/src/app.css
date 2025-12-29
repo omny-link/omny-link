@@ -1,0 +1,65 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+	font-family: 'Signika', sans-serif;
+}
+
+/* System preference defaults to reduce flash before JS runs */
+@media (prefers-color-scheme: dark) {
+	html {
+		color-scheme: dark;
+	}
+	body {
+		background-color: #212529;
+		color: #f8f9fa;
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	html {
+		color-scheme: light;
+	}
+	body {
+		background-color: #ffffff;
+		color: #212529;
+	}
+}
+
+/* Form control styling for light mode */
+html.light-mode .form-control:disabled,
+html.light-mode .form-control[readonly] {
+	background-color: #d6d8db;
+}
+
+/* Form control styling for dark mode */
+html.dark-mode .form-control:disabled,
+html.dark-mode .form-control[readonly] {
+	background-color: var(--bs-gray-500);
+}
+
+/* Editable inputs in dark mode */
+html.dark-mode .form-control:not(:disabled):not([readonly]) {
+	background-color: var(--bs-gray-300);
+	color: var(--bs-dark);
+}
+
+/* Bootstrap form-label styling */
+.form-label {
+	font-size: 0.875rem;
+	color: var(--bs-gray-300);
+}
+
+/* Bootstrap form-text (hint) - less prominent than labels */
+.form-text {
+	font-size: 0.75rem;
+	color: var(--bs-gray-600);
+}
