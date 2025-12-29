@@ -70,7 +70,7 @@ jobs:
         if: github.ref == 'refs/heads/master'
         uses: nogsantos/scp-deploy@48b9ca0b1adcb229b1568eebda8e16e06436495a # v1.3.0
         with:
-          src: ./build/*
+          src: ./crm-ui-next/build/*
           host: ${{ secrets.SSH_HOST }}
           remote: ${{ secrets.SSH_DIR }}
           port: ${{ secrets.SSH_PORT }}
