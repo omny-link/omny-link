@@ -68,7 +68,7 @@ public class FeedbackTest {
             assertEquals(1, feedback.getCustomFields().size());
             assertEquals(feedback.getCustomFields().size(), feedback2.getCustomFields().size());
             assertEquals("foo", feedback2.getCustomFieldValue("field1"));
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
         }

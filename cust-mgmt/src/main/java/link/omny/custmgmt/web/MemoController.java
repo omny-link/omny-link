@@ -329,7 +329,7 @@ public class MemoController {
 
         Map<String, Object> parsedParams = new HashMap<String, Object>();
         JsonNode jsonNode = objectMapper.readTree(body);
-        for (Iterator<Entry<String, JsonNode>> it = jsonNode.fields() ; it.hasNext() ; ) {
+        for (Iterator<Entry<String, JsonNode>> it = jsonNode.properties().iterator() ; it.hasNext() ; ) {
             Entry<String, JsonNode> entry = it.next();
             LOGGER.info("  found {} = {}", entry.getKey(), entry.getValue());
             parsedParams.put(entry.getKey(), entry.getValue());

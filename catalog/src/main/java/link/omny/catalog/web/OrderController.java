@@ -184,7 +184,7 @@ public class OrderController {
                 ids = new Long[1];
                 ids[0] = tree.asLong();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage());
             throw new CatalogException(String.format("Unable to parse order ids from %1$s", orderIds));
         }

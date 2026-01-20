@@ -32,10 +32,10 @@ public class CustomBooleanDeserializer extends ValueDeserializer<Boolean> {
     protected static final Class<?> _valueClass = Boolean.class;
 
     @Override
-    public Boolean deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
-            JacksonException {
+    public Boolean deserialize(JsonParser jp, DeserializationContext ctxt)
+            throws JacksonException {
         LOGGER.info("deserialize boolean from json");
-        JsonToken t = jp.getCurrentToken();
+        JsonToken t = jp.currentToken();
         if (t == JsonToken.VALUE_TRUE) {
             return Boolean.TRUE;
         }

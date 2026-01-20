@@ -53,7 +53,7 @@ public class CatalogCsvImporterTest {
             assertEquals("475.000", list.get(0).getSize());
             assertEquals(TENANT_ID, list.get(0).getTenantId());
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             fail("Unexpected IO exception: " + e.getMessage());

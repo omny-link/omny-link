@@ -132,7 +132,7 @@ public class RestApiTest {
     }
     
     private void assertNoFailedExpectations(JsonNode report) {
-        for (Iterator<JsonNode> it = report.get("results").elements() ; it.hasNext() ; ) {
+        for (Iterator<JsonNode> it = report.get("results").iterator() ; it.hasNext() ; ) {
             JsonNode result = (JsonNode) it.next();
             System.out.println(result.get("fullName")+" = "+result);
             assertEquals(0, result.get("failedExpectations").size(),

@@ -196,7 +196,7 @@ public class ContactTest {
             assertEquals("google", contact.getSource());
             assertEquals(true, contact.getEmailOptIn());
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail("Unable to parse JSON");
         }
@@ -218,7 +218,7 @@ public class ContactTest {
             assertEquals("google", contact.getSource());
             assertEquals(false, contact.getEmailOptIn());
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail("Unable to parse JSON");
         }
@@ -240,7 +240,7 @@ public class ContactTest {
             assertEquals("google", contact.getSource());
             assertEquals(null, contact.getEmailOptIn());
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail("Unable to parse JSON");
         }

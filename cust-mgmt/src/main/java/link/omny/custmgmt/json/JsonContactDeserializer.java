@@ -48,7 +48,7 @@ public class JsonContactDeserializer extends ValueDeserializer<Contact> {
 
     @Override
     public Contact deserialize(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JacksonException {
+            throws JacksonException {
         LOGGER.debug("Deserializing: " + jp.toString());
 
         JsonNode node = jp.readValueAsTree();
@@ -96,7 +96,7 @@ public class JsonContactDeserializer extends ValueDeserializer<Contact> {
         contact.setTenantId(node.get("tenantId") == null ? null : node.get(
                 "tenantId").asText());
 
-        for (Iterator<Entry<String, JsonNode>> it = node.fields(); it.hasNext();) {
+        for (Iterator<Entry<String, JsonNode>> it = node.properties().iterator(); it.hasNext();) {
             Entry<String, JsonNode> entry = it.next();
             if (!FIELDS.contains(entry.getKey())) {
                 contact.addCustomField(new CustomContactField(entry.getKey(),

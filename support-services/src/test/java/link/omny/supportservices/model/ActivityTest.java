@@ -58,7 +58,7 @@ public class ActivityTest {
             assertEquals("2022-12-02T03:00:00+0000", isoFormatter.format(activity.getOccurred()));
             assertEquals("A test", activity.getContent());
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail("Unable to parse JSON");
         }

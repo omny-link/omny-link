@@ -21,7 +21,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
-import org.springframework.data.repository.init.Jackson2ResourceReader;
 import org.springframework.data.repository.init.RepositoryPopulator;
 import org.springframework.data.repository.init.ResourceReader;
 import org.springframework.data.repository.init.ResourceReaderRepositoryPopulator;
@@ -116,6 +115,7 @@ public class JsonPopulatorFactoryBean extends
      *      AbstractRepositoryPopulatorFactoryBean#getResourceReader()
      */
     protected ResourceReader getResourceReader() {
-        return new Jackson2ResourceReader(mapper);
+        // Use Jackson 3 native ResourceReader
+        return new Jackson3ResourceReader(mapper);
     }
 }

@@ -405,7 +405,7 @@ public class AccountController {
                         tenantId, accountId, customFields, e);
                 throw new IllegalArgumentException("Unable to read account", e);
             }
-            for (Iterator<String> it = jsonNode.fieldNames() ; it.hasNext() ;) {
+            for (Iterator<String> it = jsonNode.propertyNames().iterator() ; it.hasNext() ;) {
                 String key = it.next();
                 account.addCustomField(
                         new CustomAccountField(key, jsonNode.get(key).asText()));
