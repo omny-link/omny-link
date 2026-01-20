@@ -55,11 +55,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -310,8 +310,8 @@ public class MemoController {
     /**
      * Evaluate a memo template using the provided data.
      * @throws NoSuchMethodException
-     * @throws JsonProcessingException
-     * @throws JsonMappingException
+     * @throws JacksonException
+     * @throws DatabindException
      */
     @PostMapping(value = "/eval/{memoName}",
             consumes= MediaType.APPLICATION_JSON_VALUE,
@@ -321,7 +321,7 @@ public class MemoController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("memoName") String memoName,
             @RequestBody String body)
-            throws JsonMappingException, JsonProcessingException, NoSuchMethodException {
+            throws DatabindException, JacksonException, NoSuchMethodException {
         LOGGER.info("eval memo {} for {} with json payload: {}",
                 memoName, tenantId, body);
         Memo template = memoRepo.findByName(memoName, tenantId)
@@ -376,7 +376,7 @@ public class MemoController {
             LOGGER.info("  found param: {}={}", entry.getKey(), entry.getValue());
             try {
                 parsedParams.put(entry.getKey(), objectMapper.readTree(entry.getValue()));
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 LOGGER.warn("  unable to parse {}, treat as simple type: {}",
                         entry.getKey(), entry.getValue());
                 parsedParams.put(entry.getKey(), entry.getValue());

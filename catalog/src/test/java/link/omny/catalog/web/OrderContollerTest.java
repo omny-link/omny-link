@@ -32,8 +32,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import link.omny.catalog.CatalogTestApplication;
 import link.omny.catalog.model.CustomFeedbackField;
@@ -259,7 +259,7 @@ public class OrderContollerTest {
         String body = svc.findEntityById(TENANT_ID, orderId).getBody();
         try {
             return objectMapper.readValue(body, Order.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             fail("unable to deserialise order", e);
         }
         return null;

@@ -18,7 +18,7 @@ package link.omny.catalog.json;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 import link.omny.catalog.model.CustomOrderField;
 import link.omny.supportservices.json.JsonCustomFieldDeserializer;

@@ -28,7 +28,7 @@ import org.springframework.data.repository.init.ResourceReaderRepositoryPopulato
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.util.Assert;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 public class JsonPopulatorFactoryBean extends
         AbstractFactoryBean<ResourceReaderRepositoryPopulator> implements

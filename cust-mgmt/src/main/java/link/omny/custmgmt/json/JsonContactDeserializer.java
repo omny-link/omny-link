@@ -27,14 +27,13 @@ import link.omny.custmgmt.model.CustomContactField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.JsonNode;
 
-public class JsonContactDeserializer extends JsonDeserializer<Contact> {
+public class JsonContactDeserializer extends ValueDeserializer<Contact> {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(JsonContactDeserializer.class);
@@ -49,11 +48,10 @@ public class JsonContactDeserializer extends JsonDeserializer<Contact> {
 
     @Override
     public Contact deserialize(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
+            throws IOException, JacksonException {
         LOGGER.debug("Deserializing: " + jp.toString());
 
-        ObjectCodec oc = jp.getCodec();
-        JsonNode node = oc.readTree(jp);
+        JsonNode node = jp.readValueAsTree();
 
         // This is standard but must be done explicitly so we can intercept
         // custom field serialisation

@@ -26,9 +26,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import link.omny.catalog.internal.AuditorAwareImpl;
 
@@ -42,47 +43,40 @@ public class CatalogConfig {
     @Autowired
     private Environment env;
 
-    @Autowired
-    private Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @PostConstruct
-    public void init() {
-        // Somewhere between Application construction and here the application
-        // properties have been overridden, set Jackson back to the configured
-        // values.
-        jackson2ObjectMapperBuilder.indentOutput(Boolean.parseBoolean(env
-                .getProperty("spring.jackson.serialization.indent_output")));
-
-        String propertyInclusion = env
-                .getProperty("spring.jackson.default-property-inclusion");
-        if (propertyInclusion != null) {
-            switch (propertyInclusion.toLowerCase()) {
-            case "always":
-                jackson2ObjectMapperBuilder
-                        .serializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS);
-                break;
+    @Bean
+    public JsonMapper objectMapper() {
+        // Configure Jackson 3 JsonMapper for backward compatibility
+        JsonMapper.Builder builder = JsonMapper.builder();
+        
+        // Configure indent output
+        if (Boolean.parseBoolean(env.getProperty("spring.jackson.serialization.indent_output", "false"))) {
+            builder.enable(SerializationFeature.INDENT_OUTPUT);
+        }
+        
+        // Configure property inclusion
+        String propertyInclusion = env.getProperty("spring.jackson.default-property-inclusion", "always");
+        JsonInclude.Include include = JsonInclude.Include.ALWAYS;
+        switch (propertyInclusion.toLowerCase()) {
             case "non_null":
-                jackson2ObjectMapperBuilder
-                        .serializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL);
+                include = JsonInclude.Include.NON_NULL;
                 break;
             case "non_absent":
-                jackson2ObjectMapperBuilder
-                        .serializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT);
+                include = JsonInclude.Include.NON_ABSENT;
                 break;
             case "non_default":
-                jackson2ObjectMapperBuilder
-                        .serializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT);
+                include = JsonInclude.Include.NON_DEFAULT;
                 break;
             case "non_empty":
-                jackson2ObjectMapperBuilder
-                        .serializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY);
+                include = JsonInclude.Include.NON_EMPTY;
                 break;
-            }
+            case "always":
+            default:
+                include = JsonInclude.Include.ALWAYS;
+                break;
         }
-        jackson2ObjectMapperBuilder.configure(objectMapper);
+        builder.serializationInclusion(include);
+        
+        return builder.build();
     }
 
     @Bean

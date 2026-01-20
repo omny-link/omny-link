@@ -55,9 +55,9 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -142,7 +142,7 @@ public class OrderController {
             String json = objectMapper.writeValueAsString(entity);
             LOGGER.info("... found: {}", json);
             return new HttpEntity<String>(json, headers);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             @SuppressWarnings("null")
             Long orderId = entity.getContent().getId();
             LOGGER.error("Unable to serialise account with id {}, cause: {}", orderId, e);

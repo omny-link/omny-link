@@ -57,9 +57,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -380,7 +380,7 @@ public class ContactController {
             json = json.replace("\"account\":null", "\"account\":"+acctJson);
             LOGGER.info("... found: {}", json);
             return new HttpEntity<String>(json);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("Unable to serialise account with id {}, cause: {}", id, e);
             throw new BusinessEntityNotFoundException(Contact.class, id);
         }

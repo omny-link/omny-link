@@ -58,10 +58,10 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -316,7 +316,7 @@ public class AccountController {
             String json = objectMapper.writeValueAsString(entity);
             LOGGER.info("... found: {}", json);
             return new HttpEntity<String>(json);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("Unable to serialise account with id {}, cause: {}", idOrCode, e);
             throw new BusinessEntityNotFoundException(Account.class, idOrCode);
         }
@@ -400,7 +400,7 @@ public class AccountController {
             JsonNode jsonNode;
             try {
                 jsonNode = objectMapper.readTree((String) customFields);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 LOGGER.error("updateCustomFields({}, {}, {}), root cause: {}",
                         tenantId, accountId, customFields, e);
                 throw new IllegalArgumentException("Unable to read account", e);

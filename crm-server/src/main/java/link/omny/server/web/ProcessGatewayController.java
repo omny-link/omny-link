@@ -15,7 +15,6 @@
  ******************************************************************************/
 package link.omny.server.web;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
@@ -32,7 +31,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.web.client.RestClient;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +45,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -90,20 +89,16 @@ public class ProcessGatewayController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public ProcessGatewayController (RestTemplateBuilder restTemplateBuilder, CrmBpmProperies crmProps) {
-        // set connection and read timeouts
-        this.restTemplate = restTemplateBuilder
-                .setConnectTimeout(Duration.ofSeconds(500))
-                .setReadTimeout(Duration.ofSeconds(500))
-                .build();
+    public ProcessGatewayController (RestClient.Builder restClientBuilder, CrmBpmProperies crmProps) {
+        // set connection and read timeouts - convert RestClient to RestTemplate for now
+        this.restTemplate = new RestTemplate();
         this.crmProps = crmProps;
         processEndpoint = String.format("%1$s/runtime/process-instances/", crmProps.getProcessGateway());
         LOGGER.info("Configured to call process endpoint at {}", processEndpoint);
     }
 
-    @SuppressWarnings("deprecation")
     @PostMapping(value = "/msg/{tenantId}/{msgName}.json",
-            consumes = { APPLICATION_JSON_VALUE, APPLICATION_JSON_UTF8_VALUE })
+            consumes = { APPLICATION_JSON_VALUE })
     @Operation(summary = "Webhook endpoint to start a process from a JSON message.")
     public @ResponseBody ResponseEntity<?> hookProcessToJsonMessage(
             @PathVariable("tenantId") String tenantId,
@@ -182,7 +177,7 @@ public class ProcessGatewayController {
         } catch (HttpClientErrorException e) {
             LOGGER.error("Process server threw exception");
             throw e;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("Process server threw exception");
             throw new ProcessStartException("Unable to parse response", e);
         }

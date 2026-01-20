@@ -41,8 +41,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import link.omny.custmgmt.Application;
 import link.omny.custmgmt.model.Account;
@@ -296,7 +296,7 @@ public class ContactAndAccountControllerTest {
         String body = contactController.findEntityById(tenantId, contactId).getBody();
         try {
             return objectMapper.readValue(body, Contact.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("cannot deserialise: {}", body);
             fail("unable to deserialise contact", e);
         }

@@ -27,7 +27,7 @@ import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import link.omny.supportservices.model.ActivityType;
 import link.omny.supportservices.model.Note;

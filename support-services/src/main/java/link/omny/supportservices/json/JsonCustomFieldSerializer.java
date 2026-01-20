@@ -21,22 +21,21 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ValueSerializer;
+import tools.jackson.databind.SerializationContext;
 
 import link.omny.supportservices.model.CustomField;
 
 public class JsonCustomFieldSerializer extends
-        JsonSerializer<Set<CustomField>> {
+        ValueSerializer<Set<CustomField>> {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(JsonCustomFieldSerializer.class);
 
     @Override
     public void serialize(Set<CustomField> fields, JsonGenerator jgen,
-            SerializerProvider serializerProvider) throws IOException,
-            JsonProcessingException {
+            SerializationContext serializerProvider) {
         LOGGER.debug("serialize: {} {} {}", fields, jgen, serializerProvider);
         jgen.writeStartObject();
         // ... here are the custom fields; masquerading as standard fields
@@ -44,7 +43,7 @@ public class JsonCustomFieldSerializer extends
             // TODO, this ends up being ALWAYS, not sure how
             LOGGER.debug("defaultPropertyInclusion: {}", serializerProvider.getConfig().getDefaultPropertyInclusion());
             if (field.getValue() != null) {
-                jgen.writeStringField(field.getName(), field.getValue());
+                jgen.writeStringProperty(field.getName(), field.getValue());
             } 
         }
 

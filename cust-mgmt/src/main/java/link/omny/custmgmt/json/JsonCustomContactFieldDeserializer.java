@@ -22,7 +22,7 @@ import link.omny.custmgmt.model.CustomContactField;
 import link.omny.supportservices.json.JsonCustomFieldDeserializer;
 import link.omny.supportservices.model.CustomField;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 public class JsonCustomContactFieldDeserializer extends
         JsonCustomFieldDeserializer<Set<CustomContactField>> {

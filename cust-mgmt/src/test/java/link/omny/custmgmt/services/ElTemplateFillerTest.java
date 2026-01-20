@@ -24,10 +24,10 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class ElTemplateFillerTest {
 
@@ -80,7 +80,7 @@ public class ElTemplateFillerTest {
     }
 
     private JsonNode getAccountManager()
-            throws JsonMappingException, JsonProcessingException {
+            throws DatabindException, JacksonException {
         String personJsonData = "{"
                 + "  \"firstName\": \"Jack\", "
                 + "  \"phoneNumbers\": [\"011-111-1111\", \"11-111-1111\"] "
