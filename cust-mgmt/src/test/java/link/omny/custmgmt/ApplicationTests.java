@@ -22,7 +22,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = Application.class,
+    properties = {
+        "springdoc.api-docs.enabled=false",
+        "springdoc.swagger-ui.enabled=false"
+    })
 @WebAppConfiguration
 public class ApplicationTests {
 

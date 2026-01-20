@@ -38,7 +38,11 @@ import link.omny.catalog.CatalogTestApplication;
 import link.omny.supportservices.model.Note;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = CatalogTestApplication.class)
+@SpringBootTest(classes = CatalogTestApplication.class,
+    properties = {
+        "springdoc.api-docs.enabled=false",
+        "springdoc.swagger-ui.enabled=false"
+    })
 public class OrderTest {
 
     @Autowired

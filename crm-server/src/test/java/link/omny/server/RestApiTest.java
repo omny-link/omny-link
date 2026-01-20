@@ -42,7 +42,11 @@ import tools.jackson.databind.ObjectMapper;
 
 import link.omny.server.web.JsEnvironmentController;
 
-@SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT,
+    properties = {
+        "springdoc.api-docs.enabled=false",
+        "springdoc.swagger-ui.enabled=false"
+    })
 public class RestApiTest {
 
     @LocalServerPort

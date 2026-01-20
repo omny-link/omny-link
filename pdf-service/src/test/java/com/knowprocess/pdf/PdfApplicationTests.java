@@ -18,7 +18,11 @@ package com.knowprocess.pdf;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = PdfTestApplication.class)
+@SpringBootTest(classes = PdfTestApplication.class,
+    properties = {
+        "springdoc.api-docs.enabled=false",
+        "springdoc.swagger-ui.enabled=false"
+    })
 public class PdfApplicationTests {
 
     @Test

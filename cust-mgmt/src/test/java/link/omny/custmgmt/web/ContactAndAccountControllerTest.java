@@ -55,7 +55,11 @@ import link.omny.supportservices.model.Note;
  * @author Tim Stephenson
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = Application.class,
+    properties = {
+        "springdoc.api-docs.enabled=false",
+        "springdoc.swagger-ui.enabled=false"
+    })
 @WebAppConfiguration
 public class ContactAndAccountControllerTest {
 

@@ -37,7 +37,11 @@ import com.knowprocess.pdf.web.PdfController;
  * @author Tim Stephenson
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = PdfTestApplication.class)
+@SpringBootTest(classes = PdfTestApplication.class,
+    properties = {
+        "springdoc.api-docs.enabled=false",
+        "springdoc.swagger-ui.enabled=false"
+    })
 @WebAppConfiguration
 public class PdfControllerTest {
 

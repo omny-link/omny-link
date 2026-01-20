@@ -47,7 +47,11 @@ import link.omny.catalog.model.OrderItem;
  * @author Tim Stephenson
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = CatalogTestApplication.class)
+@SpringBootTest(classes = CatalogTestApplication.class,
+    properties = {
+        "springdoc.api-docs.enabled=false",
+        "springdoc.swagger-ui.enabled=false"
+    })
 @WebAppConfiguration
 public class OrderContollerTest {
     private static final String CUST_FIELD_COLOUR = "colour";

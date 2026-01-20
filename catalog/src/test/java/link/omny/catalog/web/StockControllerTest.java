@@ -50,7 +50,11 @@ import link.omny.catalog.model.api.ShortStockCategory;
  * @author Tim Stephenson
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = CatalogTestApplication.class)
+@SpringBootTest(classes = CatalogTestApplication.class,
+    properties = {
+        "springdoc.api-docs.enabled=false",
+        "springdoc.swagger-ui.enabled=false"
+    })
 @WebAppConfiguration
 public class StockControllerTest {
 

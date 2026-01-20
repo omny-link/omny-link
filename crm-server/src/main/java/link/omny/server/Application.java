@@ -29,6 +29,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import tools.jackson.databind.ObjectMapper;
 import com.knowprocess.pdf.PdfServiceConfig;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.web.client.RestClient;
 
 import link.omny.catalog.CatalogConfig;
 import link.omny.custmgmt.CustMgmtConfig;
@@ -45,8 +47,9 @@ public class Application {
     protected CrmCorsProperies corsProps;
 
     @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
+    @ConditionalOnMissingBean
+    public RestClient.Builder restClientBuilder() {
+        return RestClient.builder();
     }
 
     @Bean
