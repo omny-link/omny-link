@@ -36,7 +36,7 @@
     <docker.repo>docker.io</docker.repo>
     <docker.publishRegistry.url>hub.docker.com</docker.publishRegistry.url>
     <docker.image.prefix>knowprocess</docker.image.prefix>
-    <postgresql.version>[42.3.3,)</postgresql.version>
+    <postgresql.version>[42.7.4,)</postgresql.version>
   </properties>
 
   <dependencies>

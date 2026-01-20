@@ -18,20 +18,23 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.2</version>
+    <version>4.0.1</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
   <properties>
     <batik.version>1.16</batik.version>
+    <commons-csv.version>1.11.0</commons-csv.version>
+    <commons-io.version>2.14.0</commons-io.version>
     <jasmine-boot.version>1.1.0</jasmine-boot.version>
-    <java.version>17</java.version>
+    <java.version>21</java.version>
+    <jsoup.version>1.18.1</jsoup.version>
     <kp-icons.version>3.1.0</kp-icons.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <omny-link.version>${project.version}</omny-link.version>
     <plantuml.version>8059</plantuml.version>
-    <spring.version>6.1.5</spring.version>
-    <spring-boot.version>3.3.2</spring-boot.version>
+    <spring.version>7.0.0</spring.version>
+    <spring-boot.version>4.0.1</spring-boot.version>
   </properties>
 
   <distributionManagement>
@@ -141,7 +144,7 @@
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-      <version>2.4.0</version>
+      <version>2.6.0</version>
     </dependency>
 
     <dependency>
