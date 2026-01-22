@@ -326,8 +326,15 @@ public class StockItemController {
             @RequestBody StockItem updatedStockItem) {
         StockItem stockItem = findById(tenantId, stockItemId);
 
+        // Avoid copying collection references which can cause shared collection errors
+        // (e.g., documents/notes/customFields). Copy scalars; merge collections explicitly.
         NullAwareBeanUtils.copyNonNullProperties(updatedStockItem, stockItem,
-                "id", "tagsAsList", "stockCategory");
+            "id", "tagsAsList", "stockCategory", "documents", "notes", "customFields");
+
+        // Merge custom fields safely to preserve ownership and avoid shared collection instances
+        if (updatedStockItem.getCustomFields() != null && !updatedStockItem.getCustomFields().isEmpty()) {
+            stockItem.setCustomFields(updatedStockItem.getCustomFields());
+        }
         // Seems stock cat is always null under Spring Boot 2
         if (stockItem.getStockCategory() != null
                 && updatedStockItem.getStockCategory().getId() != null
