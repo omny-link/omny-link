@@ -16,6 +16,11 @@
     "ghcr.io/devcontainers/features/git:1": {}
   },
 
+  "mounts": [
+    "source=${env:HOME}${env:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind",
+    "source=${env:HOME}${env:USERPROFILE}/.gnupg,target=/home/vscode/.gnupg,type=bind"
+  ],
+
   "customizations": {
     "vscode": {
       "extensions": [
@@ -43,12 +48,19 @@
         },
         "[java]": {
           "editor.defaultFormatter": "redhat.java"
+        },
+        "java.format.settings.url": "${workspaceFolder}/.eclipse-formatter.xml",
+        "java.format.settings.profile": "Spaces!",
+        "java.saveActions.organizeImports": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": true
         }
       }
     }
   },
 
   "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash -c 'if [ -f pre-commit-hook.sh ] && [ ! -f .git/hooks/pre-commit ]; then cp pre-commit-hook.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit; echo \"Pre-commit hook installed\"; fi'",
 
   "forwardPorts": [5173, 3000, 3001, 8080],
 
