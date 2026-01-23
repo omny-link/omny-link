@@ -15,6 +15,7 @@
  ******************************************************************************/
 package link.omny.catalog;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -49,10 +50,23 @@ public class CatalogConfig {
             builder.enable(SerializationFeature.INDENT_OUTPUT);
         }
 
-        // Note: Property inclusion configuration in Jackson 3 is done via
-        // @JsonInclude annotations
-        // or via SerializationConfig which requires a different approach
-        // For now, using default behavior (include all non-null values)
+        // Configure property inclusion based on
+        // spring.jackson.default-property-inclusion
+        String propertyInclusion = env
+                .getProperty("spring.jackson.default-property-inclusion");
+        if (propertyInclusion != null) {
+            JsonInclude.Include includeMode = switch (propertyInclusion
+                    .toLowerCase()) {
+            case "always" -> JsonInclude.Include.ALWAYS;
+            case "non_null" -> JsonInclude.Include.NON_NULL;
+            case "non_absent" -> JsonInclude.Include.NON_ABSENT;
+            case "non_default" -> JsonInclude.Include.NON_DEFAULT;
+            case "non_empty" -> JsonInclude.Include.NON_EMPTY;
+            default -> JsonInclude.Include.NON_NULL; // default fallback
+            };
+            builder.changeDefaultPropertyInclusion(
+                    incl -> incl.withValueInclusion(includeMode));
+        }
 
         return builder.build();
     }
