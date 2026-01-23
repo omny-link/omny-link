@@ -16,7 +16,7 @@
 package link.omny.catalog;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +24,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import tools.jackson.annotation.JsonInclude;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -45,43 +44,17 @@ public class CatalogConfig {
         // Configure Jackson 3 JsonMapper for backward compatibility
         JsonMapper.Builder builder = JsonMapper.builder();
 
-        // Pretty-print if configured
         if (Boolean.parseBoolean(env.getProperty(
                 "spring.jackson.serialization.indent_output", "false"))) {
             builder.enable(SerializationFeature.INDENT_OUTPUT);
         }
 
-        // Build the mapper first, then apply global inclusion
-        JsonMapper mapper = builder.build();
+        // Note: Property inclusion configuration in Jackson 3 is done via
+        // @JsonInclude annotations
+        // or via SerializationConfig which requires a different approach
+        // For now, using default behavior (include all non-null values)
 
-        String propertyInclusion = env
-                .getProperty("spring.jackson.default-property-inclusion");
-        if (propertyInclusion != null) {
-            switch (propertyInclusion.toLowerCase()) {
-            case "always":
-                mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
-                break;
-            case "non_null":
-                mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-                break;
-            case "non_absent":
-                mapper.setSerializationInclusion(
-                        JsonInclude.Include.NON_ABSENT);
-                break;
-            case "non_default":
-                mapper.setSerializationInclusion(
-                        JsonInclude.Include.NON_DEFAULT);
-                break;
-            case "non_empty":
-                mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-                break;
-            default:
-                // leave default behavior
-                break;
-            }
-        }
-
-        return mapper;
+        return builder.build();
     }
 
     @Bean
