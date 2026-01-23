@@ -38,5 +38,4 @@ public class CatalogObjectNotFoundException extends CatalogException {
         this.type = type;
         this.id = id;
     }
-
 }

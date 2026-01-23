@@ -34,5 +34,4 @@ public class CustMgmtException extends RuntimeException {
     public CustMgmtException(Throwable cause) {
         super(cause);
     }
-
 }

@@ -15,20 +15,20 @@
  ******************************************************************************/
 package link.omny.custmgmt.json;
 
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
+
+import tools.jackson.databind.JsonNode;
 
 import link.omny.custmgmt.model.CustomAccountField;
 import link.omny.supportservices.json.JsonCustomFieldDeserializer;
 import link.omny.supportservices.model.CustomField;
 
-import tools.jackson.databind.JsonNode;
-
-public class JsonCustomAccountFieldDeserializer extends
-        JsonCustomFieldDeserializer<Set<CustomAccountField>> {
+public class JsonCustomAccountFieldDeserializer
+        extends JsonCustomFieldDeserializer<Set<CustomAccountField>> {
 
     protected CustomField newInstance(Entry<String, JsonNode> entry) {
-        return new CustomAccountField(entry.getKey(), entry.getValue().asText());
+        return new CustomAccountField(entry.getKey(),
+                entry.getValue().asText());
     }
-
 }

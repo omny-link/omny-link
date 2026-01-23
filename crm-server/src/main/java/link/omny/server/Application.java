@@ -15,30 +15,29 @@
  ******************************************************************************/
 package link.omny.server;
 
+import com.knowprocess.pdf.PdfServiceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.config.annotation.CorsRegistration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import tools.jackson.databind.ObjectMapper;
-import com.knowprocess.pdf.PdfServiceConfig;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.web.client.RestClient;
-
 import link.omny.catalog.CatalogConfig;
 import link.omny.custmgmt.CustMgmtConfig;
 import link.omny.supportservices.SupportServicesConfig;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+    org.springdoc.core.configuration.SpringDocHateoasConfiguration.class })
 @Import({ CustMgmtConfig.class, CatalogConfig.class, PdfServiceConfig.class,
-        SupportServicesConfig.class })
+    SupportServicesConfig.class })
 public class Application {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(Application.class);
@@ -60,9 +59,12 @@ public class Application {
                 LOGGER.info("CORS configuration:");
                 LOGGER.info("  allowed origins: {}", corsProps.getOrigins());
                 LOGGER.info("  allowed methods: {}", corsProps.getMethods());
-                LOGGER.info("  allowed headers: {}", corsProps.getAllowedHeaders());
-                LOGGER.info("  exposed headers: {}", corsProps.getAllowedHeaders());
-                LOGGER.info("  allow credentials: {}", corsProps.isAllowCredentials());
+                LOGGER.info("  allowed headers: {}",
+                        corsProps.getAllowedHeaders());
+                LOGGER.info("  exposed headers: {}",
+                        corsProps.getAllowedHeaders());
+                LOGGER.info("  allow credentials: {}",
+                        corsProps.isAllowCredentials());
                 CorsRegistration reg = registry.addMapping("/**");
                 reg.allowedOrigins(corsProps.getOrigins().split(","));
                 reg.allowedMethods(corsProps.getMethods().split(","));
@@ -76,8 +78,10 @@ public class Application {
                 // String clientContext = systemConfig().getClientContext();
                 String clientContext = "";
                 LOGGER.debug("client context set to: " + clientContext);
-                // Allegedly sets welcome page though does not appear to be working
-                registry.addViewController(clientContext + "/").setViewName("index");
+                // Allegedly sets welcome page though does not appear to be
+                // working
+                registry.addViewController(clientContext + "/")
+                        .setViewName("index");
                 registry.addViewController("/").setViewName("index.html");
             }
         };
@@ -86,5 +90,4 @@ public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
-
 }

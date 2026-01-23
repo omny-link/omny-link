@@ -58,14 +58,15 @@ public interface OrderWithSubEntities extends ShortOrder, Serializable {
     Long getContactId();
 
     void setContactId(Long contactId);
-//
-//    Date getCreated();
-//
-//    void setCreated(Date created);
-//
-//    Date getLastUpdated();
-//
-//    void setLastUpdated(Date lastUpdated);
+
+    //
+    // Date getCreated();
+    //
+    // void setCreated(Date created);
+    //
+    // Date getLastUpdated();
+    //
+    // void setLastUpdated(Date lastUpdated);
 
     String getTenantId();
 

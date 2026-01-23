@@ -29,8 +29,6 @@ public interface NumberSequenceRepository
         extends CrudRepository<NumberSequence, Long> {
 
     @Query("SELECT o FROM NumberSequence o WHERE o.name = :name AND o.tenantId = :tenantId")
-    List<NumberSequence> findByEntityNameForTenant(
-            @Param("name") String name,
+    List<NumberSequence> findByEntityNameForTenant(@Param("name") String name,
             @Param("tenantId") String tenantId);
-
 }

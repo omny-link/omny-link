@@ -21,11 +21,6 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.Scanner;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -41,6 +36,10 @@ import com.itextpdf.tool.xml.pipeline.end.PdfWriterPipeline;
 import com.itextpdf.tool.xml.pipeline.html.HtmlPipeline;
 import com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext;
 import com.itextpdf.tool.xml.pipeline.html.LinkProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 public class Html2PdfService {
@@ -57,7 +56,7 @@ public class Html2PdfService {
     private String bootstrapCss;
 
     private String css;
-    
+
     public Html2PdfService() {
         this.cssResource = "/css/base.css";
     }
@@ -105,11 +104,14 @@ public class Html2PdfService {
 
             XMLParser p = new XMLParser(worker);
             htmlIn = htmlIn.replaceAll("<br>", "<br/>");
-            StringBuilder sb = new StringBuilder().append("<html><head>")
+            // spotless:off
+            StringBuilder sb = new StringBuilder()
+                    .append("<html><head>")
                     .append("</head><body>")
                     .append(htmlIn)
                     .append("</body></html>")
                     .append(Character.LINE_SEPARATOR);
+            // spotless:on
             p.parse(new StringReader(sb.toString()));
 
             document.close();

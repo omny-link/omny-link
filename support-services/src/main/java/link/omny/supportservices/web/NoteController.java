@@ -18,6 +18,8 @@ package link.omny.supportservices.web;
 import java.io.IOException;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +30,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.model.Note;
 import link.omny.supportservices.repositories.NoteRepository;
@@ -41,7 +40,7 @@ import link.omny.supportservices.repositories.NoteRepository;
 /**
  * REST web service for uploading and accessing a file of JSON Notes (over and
  * above the CRUD offered by spring data).
- * 
+ *
  * @author Tim Stephenson
  */
 @Controller
@@ -59,17 +58,16 @@ public class NoteController {
     private ObjectMapper objectMapper;
 
     protected Note findById(final String tenantId, final Long id) {
-        return noteRepo.findById(id)
-                .orElseThrow(() -> new BusinessEntityNotFoundException(
-                        Note.class, id));
+        return noteRepo.findById(id).orElseThrow(
+                () -> new BusinessEntityNotFoundException(Note.class, id));
     }
 
     /**
      * Imports JSON representation of accounts.
-     * 
+     *
      * <p>
      * This is a handy link: http://shancarter.github.io/mr-data-converter/
-     * 
+     *
      * @param file
      *            A file posted in a multi-part request
      * @return The meta data of the added model
@@ -95,10 +93,8 @@ public class NoteController {
 
         return result;
     }
-    
-    /**
-     * Favorite an existing note.
-     */
+
+    /** Favorite an existing note. */
     @RequestMapping(value = "/{noteId}/favorite", method = RequestMethod.POST)
     @Operation(summary = "Favorite/Unfavorite the specified note.")
     public @ResponseBody void favoriteNote(
@@ -110,9 +106,7 @@ public class NoteController {
         noteRepo.save(note);
     }
 
-    /**
-     * Mark an existing note as confidential.
-     */
+    /** Mark an existing note as confidential. */
     @RequestMapping(value = "/{noteId}/confidential", method = RequestMethod.POST)
     @Operation(summary = "Mark/unmark the specified note as confidential.")
     public @ResponseBody void markNoteConfidential(

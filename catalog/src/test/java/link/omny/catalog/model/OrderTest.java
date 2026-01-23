@@ -31,18 +31,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import tools.jackson.databind.ObjectMapper;
 
 import link.omny.catalog.CatalogTestApplication;
 import link.omny.supportservices.model.Note;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = CatalogTestApplication.class,
-    properties = {
-        "springdoc.api-docs.enabled=false",
-        "springdoc.swagger-ui.enabled=false"
-    })
+@SpringBootTest(classes = CatalogTestApplication.class, properties = {
+    "springdoc.api-docs.enabled=false", "springdoc.swagger-ui.enabled=false" })
 public class OrderTest {
 
     @Autowired
@@ -75,19 +71,20 @@ public class OrderTest {
         assertNull(field2.getId());
         order.setCustomFields(Collections.singleton(field2));
 
-        orderItem1.addCustomField(
-                new CustomOrderItemField("colour", "Blue"));
+        orderItem1.addCustomField(new CustomOrderItemField("colour", "Blue"));
 
         assertEquals(1, order.getCustomFields().size());
         assertEquals(1, order.getOrderItems().size());
-        assertEquals(1, order.getOrderItems().iterator().next().getCustomFields().size());
-        assertEquals(field1.getId(), order.getCustomFields().iterator().next().getId());
+        assertEquals(1, order.getOrderItems().iterator().next()
+                .getCustomFields().size());
+        assertEquals(field1.getId(),
+                order.getCustomFields().iterator().next().getId());
     }
 
     @Test
     public void testDeserializeOrderWithItems() throws IOException {
-        try (InputStream is = getClass().getResourceAsStream(
-                "/testDeserializeOrderWithItems.json")){
+        try (InputStream is = getClass()
+                .getResourceAsStream("/testDeserializeOrderWithItems.json")) {
             Order order = objectMapper.readValue(is, Order.class);
             assertNotNull(order);
             assertNotNull(order.getOrderItems());
@@ -117,19 +114,18 @@ public class OrderTest {
     public void testToCsv() throws IOException {
         Date now = new Date();
         Order order = new Order(1l, 1l, "My first order",
-                "A description including\nseveral\nline breaks",
-                "order", now, now, "confirmed",
-                new BigDecimal("100"),new BigDecimal("20"));
-        order.addNote(new Note(1l, "tim@knowprocess.com",
-                "A single-line note", true, false));
+                "A description including\nseveral\nline breaks", "order", now,
+                now, "confirmed", new BigDecimal("100"), new BigDecimal("20"));
+        order.addNote(new Note(1l, "tim@knowprocess.com", "A single-line note",
+                true, false));
         order.addNote(new Note(2l, "tim@knowprocess.com",
                 "A note\nthat spans multiple lines", true, false));
-        assertEquals(2,  order.getNotes().size());
+        assertEquals(2, order.getNotes().size());
 
         String csv = order.toCsv();
         assertTrue(csv.startsWith(
                 "1,My first order,1,order,\"A description including\n"
-                + "several\nline breaks\",,,New enquiry,100,20,,,,,null,"));
+                        + "several\nline breaks\",,,New enquiry,100,20,,,,,null,"));
         assertTrue(csv.contains("tim@knowprocess.com: A single-line note"));
         assertTrue(csv.contains("tim@knowprocess.com: A note\n"
                 + "that spans multiple lines;"));

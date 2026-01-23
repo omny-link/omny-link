@@ -15,13 +15,13 @@
  ******************************************************************************/
 package link.omny.catalog.repositories;
 
-import link.omny.catalog.model.OrderItem;
-
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import link.omny.catalog.model.OrderItem;
 
 @RepositoryRestResource(exported = false)
 public interface OrderItemRepository extends CrudRepository<OrderItem, Long> {
@@ -30,5 +30,4 @@ public interface OrderItemRepository extends CrudRepository<OrderItem, Long> {
     @Query("UPDATE #{#entityName} x set x.status = 'deleted', lastUpdated = CURRENT_TIMESTAMP where x.id = :id")
     @Modifying(clearAutomatically = true)
     public void deleteById(@Param("id") Long orderItemId);
-
 }

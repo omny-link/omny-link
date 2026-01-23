@@ -24,7 +24,7 @@ public class CrmBpmProperies {
     private String corsExposedHeaders = "*";
 
     private boolean corsAllowCredentials;
-    
+
     private String processGateway;
 
     public boolean isTomcatAjpEnabled() {
@@ -98,7 +98,7 @@ public class CrmBpmProperies {
     public void setCorsAllowCredentials(boolean corsAllowCredentials) {
         this.corsAllowCredentials = corsAllowCredentials;
     }
-    
+
     public String getProcessGateway() {
         return processGateway;
     }
@@ -106,6 +106,4 @@ public class CrmBpmProperies {
     public void setProcessGateway(String processGateway) {
         this.processGateway = processGateway;
     }
-    
-    
 }

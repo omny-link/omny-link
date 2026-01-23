@@ -44,8 +44,7 @@ public interface ContactRepository extends JpaRepository<Contact, Long>,
             + " AND (c.stage IS NULL OR c.stage != 'deleted')"
             + " ORDER BY c.lastUpdated DESC";
     String FIND_ALL_BY_TENANT_AND_IDS = "SELECT DISTINCT(c) FROM Contact c"
-            + " WHERE c.tenantId = :tenantId"
-            + " AND c.id IN (:ids)"
+            + " WHERE c.tenantId = :tenantId" + " AND c.id IN (:ids)"
             + " ORDER BY c.lastUpdated DESC";
     String FIND_ID_FOR_TENANT = "SELECT c.id FROM Contact c"
             + " WHERE c.tenantId = :tenantId"
@@ -53,11 +52,13 @@ public interface ContactRepository extends JpaRepository<Contact, Long>,
 
     @Override
     @EntityGraph("contactWithAccount")
-    @NonNull Optional<Contact> findById(@NonNull Long id);
+    @NonNull
+    Optional<Contact> findById(@NonNull Long id);
 
     @Override
     @EntityGraph("contactWithAccount")
-    @NonNull List<Contact> findAll(@Nullable Specification<Contact> spec);
+    @NonNull
+    List<Contact> findAll(@Nullable Specification<Contact> spec);
 
     @Query(FIND_ALL_FOR_TENANT)
     @EntityGraph("contactWithAccount")
@@ -137,5 +138,4 @@ public interface ContactRepository extends JpaRepository<Contact, Long>,
     @Query("UPDATE #{#entityName} x SET x.stage = 'deleted', lastUpdated = CURRENT_TIMESTAMP WHERE x.id = :id")
     @Modifying(clearAutomatically = true)
     void deleteById(@Param("id") Long id);
-
 }

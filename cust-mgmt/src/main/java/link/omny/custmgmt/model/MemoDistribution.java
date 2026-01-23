@@ -46,11 +46,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import link.omny.supportservices.model.Auditable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import link.omny.supportservices.model.Auditable;
 
 /**
  * Relates a Memo Template to its recipients.
@@ -62,7 +62,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-public class MemoDistribution extends Auditable<String> implements Serializable {
+public class MemoDistribution extends Auditable<String>
+        implements Serializable {
 
     private static final long serialVersionUID = 1237181996013717501L;
 
@@ -308,5 +309,4 @@ public class MemoDistribution extends Auditable<String> implements Serializable 
         return String.format("%1$d,%2$s,%3$s,%4$s,%5$s,%6$s", id, name, status,
                 owner, memoRef, recipients);
     }
-
 }

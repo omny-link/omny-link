@@ -56,5 +56,4 @@ public class CrmCorsProperies {
     public void setAllowCredentials(boolean allowCredentials) {
         this.allowCredentials = allowCredentials;
     }
-    
 }

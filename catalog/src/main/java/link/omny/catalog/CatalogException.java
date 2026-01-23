@@ -34,5 +34,4 @@ public class CatalogException extends RuntimeException {
     public CatalogException(Throwable cause) {
         super(cause);
     }
-
 }

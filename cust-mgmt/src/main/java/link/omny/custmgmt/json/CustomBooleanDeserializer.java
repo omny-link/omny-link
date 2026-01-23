@@ -15,13 +15,10 @@
  ******************************************************************************/
 package link.omny.custmgmt.json;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tools.jackson.core.JsonParser;
 import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
 import tools.jackson.core.JsonToken;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.ValueDeserializer;
@@ -56,11 +53,11 @@ public class CustomBooleanDeserializer extends ValueDeserializer<Boolean> {
             if ("false".equals(text) || text.length() == 0) {
                 return Boolean.FALSE;
             }
-        
+
             if ("N".equalsIgnoreCase(text) || text.length() == 0) {
                 return Boolean.FALSE;
             }
-        
+
             if ("Y".equalsIgnoreCase(text)) {
                 return Boolean.TRUE;
             }
@@ -77,5 +74,4 @@ public class CustomBooleanDeserializer extends ValueDeserializer<Boolean> {
         ctxt.handleUnexpectedToken(_valueClass, jp);
         return Boolean.FALSE;
     }
-
 }

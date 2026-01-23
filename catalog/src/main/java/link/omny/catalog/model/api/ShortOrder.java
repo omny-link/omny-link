@@ -73,5 +73,4 @@ public interface ShortOrder extends Serializable {
     void setCustomFields(Set<CustomOrderField> fields);
 
     void addCustomField(CustomOrderField customField);
-
 }

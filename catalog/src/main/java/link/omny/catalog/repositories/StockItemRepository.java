@@ -66,7 +66,8 @@ public interface StockItemRepository extends CrudRepository<StockItem, Long> {
 
     @Query(value = "UPDATE OL_STOCK_ITEM i SET stock_cat_id = :categoryId WHERE id = :itemId", nativeQuery = true)
     @Modifying(clearAutomatically = true)
-    public void setStockCategory(@Param("itemId") Long itemId, @Param("categoryId") Long categoryId);
+    public void setStockCategory(@Param("itemId") Long itemId,
+            @Param("categoryId") Long categoryId);
 
     @Override
     @Query("UPDATE #{#entityName} x set x.status = 'deleted', lastUpdated = CURRENT_TIMESTAMP where x.id = :id")

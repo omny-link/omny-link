@@ -24,6 +24,9 @@ import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import jakarta.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,10 +34,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.supportservices.model.NumberSequence;
 import link.omny.supportservices.repositories.NumberSequenceRepository;
 import link.omny.supportservices.views.NumberSequenceViews;
@@ -59,9 +58,8 @@ public class NumberSequenceController {
             List<NumberSequence> last = nfRepo.findByEntityNameForTenant(name,
                     tenantId);
             if (last == null || last.size() == 0) {
-                throw new NoSuchElementException(String
-                        .format("Cannot find sequence %1$s for %2$s", name,
-                                tenantId));
+                throw new NoSuchElementException(String.format(
+                        "Cannot find sequence %1$s for %2$s", name, tenantId));
             } else if (last.size() > 1) {
                 // just in case someone's been messing with the database
                 Collections.sort(last, new Comparator<NumberSequence>() {
@@ -92,11 +90,11 @@ public class NumberSequenceController {
     }
 
     private NumberSequence addLinks(String tenantId, NumberSequence seq) {
-        // TODO 
-//        List<Link> links = new ArrayList<Link>();
-//        links.add(new Link(String.format("/%1$s/sequences/%2$s", tenantId,
-//                seq.getId())));
-//        seq.setLinks(links);
+        // TODO
+        // List<Link> links = new ArrayList<Link>();
+        // links.add(new Link(String.format("/%1$s/sequences/%2$s", tenantId,
+        // seq.getId())));
+        // seq.setLinks(links);
         return seq;
     }
 }

@@ -22,5 +22,4 @@ import link.omny.supportservices.model.Document;
 
 @RepositoryRestResource(exported = false)
 public interface DocumentRepository extends CrudRepository<Document, Long> {
-
 }

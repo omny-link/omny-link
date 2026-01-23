@@ -24,11 +24,12 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import link.omny.catalog.model.MediaResource;
 
 @RepositoryRestResource(exported = false)
-public interface MediaResourceRepository extends
-        CrudRepository<MediaResource, Long> {
+public interface MediaResourceRepository
+        extends CrudRepository<MediaResource, Long> {
 
-    List<MediaResource> findByStockItemId(@Param("stockItemId") Long stockItemId);
+    List<MediaResource> findByStockItemId(
+            @Param("stockItemId") Long stockItemId);
 
-    List<MediaResource> findByStockCategoryId(@Param("stockCategoryId") Long stockCategoryId);
-
+    List<MediaResource> findByStockCategoryId(
+            @Param("stockCategoryId") Long stockCategoryId);
 }

@@ -34,24 +34,30 @@ public class DateFormatterTest {
 
     @Test
     public void testNullDate() {
-        assertEquals("dd-mm-yyyy", dateFormatter.toString((Date) null, "dd-MM-yyyy"));
-        assertEquals("dd/mm/yyyy", dateFormatter.toString((Date) null, "dd/MM/yyyy"));
-        assertEquals("mm/dd/yyyy", dateFormatter.toString((Date) null, "MM/dd/yyyy"));
+        assertEquals("dd-mm-yyyy",
+                dateFormatter.toString((Date) null, "dd-MM-yyyy"));
+        assertEquals("dd/mm/yyyy",
+                dateFormatter.toString((Date) null, "dd/MM/yyyy"));
+        assertEquals("mm/dd/yyyy",
+                dateFormatter.toString((Date) null, "MM/dd/yyyy"));
     }
 
     @Test
     public void testReformatDate() {
-        assertEquals("31-12-2016", dateFormatter.toString("2016-12-31", "dd-MM-yyyy"));
+        assertEquals("31-12-2016",
+                dateFormatter.toString("2016-12-31", "dd-MM-yyyy"));
     }
 
     @Test
     public void testBigDecimalToDateString() {
         BigDecimal millis = new BigDecimal(1519121436000l);
-        assertEquals("20-02-2018", dateFormatter.toString(millis, "dd-MM-yyyy"));
+        assertEquals("20-02-2018",
+                dateFormatter.toString(millis, "dd-MM-yyyy"));
     }
 
     @Test
     public void testMillisToDateString() {
-        assertEquals("20-02-2018", dateFormatter.toString(1519121436000l, "dd-MM-yyyy"));
+        assertEquals("20-02-2018",
+                dateFormatter.toString(1519121436000l, "dd-MM-yyyy"));
     }
 }

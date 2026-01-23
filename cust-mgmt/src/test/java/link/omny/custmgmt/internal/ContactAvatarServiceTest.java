@@ -44,7 +44,7 @@ public class ContactAvatarServiceTest {
     @Test
     public void testNullInput() throws Exception {
         File file = avatarSvc.create(null);
-        System.out.println("Generated: "+file.getAbsolutePath());
+        System.out.println("Generated: " + file.getAbsolutePath());
         assertTrue(file.exists());
     }
 }

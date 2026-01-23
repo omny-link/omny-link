@@ -31,6 +31,9 @@ import java.util.Set;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -56,10 +59,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.catalog.model.CustomStockCategoryField;
 import link.omny.catalog.model.MediaResource;
 import link.omny.catalog.model.StockCategory;
@@ -135,13 +134,13 @@ public class StockCategoryController {
         // new StringReader(
         // content), content.substring(0, content.indexOf('\n'))
         // .split(","));
-        // LOGGER.info("  found {} stockCategorys", list.size());
+        // LOGGER.info(" found {} stockCategorys", list.size());
         // for (StockCategory stockCategory : list) {
         // stockCategory.setTenantId(tenantId);
         // }
         //
         // Iterable<StockCategory> result = stockCategoryRepo.saveAll(list);
-        // LOGGER.info("  saved.");
+        // LOGGER.info(" saved.");
         // return result;
     }
 
@@ -161,8 +160,8 @@ public class StockCategoryController {
         return addLinks(tenantId, listForTenant(tenantId, page, limit));
     }
 
-    protected List<StockCategory> listForTenant(String tenantId,
-            Integer page, Integer limit) {
+    protected List<StockCategory> listForTenant(String tenantId, Integer page,
+            Integer limit) {
         LOGGER.info("List stockCategories for tenant {}", tenantId);
 
         List<StockCategory> list;
@@ -193,8 +192,10 @@ public class StockCategoryController {
                         + "videoCode,status,productSheetUrl,offerStatus,"
                         + "offerTitle,offerDescription,offerCallToAction,"
                         + "offerUrl,tenantId,created,lastUpdated,");
-        List<String> customFieldNames = stockCategoryRepo.findCustomFieldNames(tenantId);
-        LOGGER.info("Found {} custom field names while exporting orders for {}: {}",
+        List<String> customFieldNames = stockCategoryRepo
+                .findCustomFieldNames(tenantId);
+        LOGGER.info(
+                "Found {} custom field names while exporting orders for {}: {}",
                 customFieldNames.size(), tenantId, customFieldNames);
         for (String fieldName : customFieldNames) {
             sb.append(fieldName).append(",");
@@ -210,8 +211,8 @@ public class StockCategoryController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentLength(sb.length());
-        return new ResponseEntity<String>(
-                sb.toString(), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<String>(sb.toString(), httpHeaders,
+                HttpStatus.OK);
     }
 
     /**
@@ -223,14 +224,15 @@ public class StockCategoryController {
     public @ResponseBody List<EntityModel<MediaResource>> listImages(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockCategoryId") Long stockCategoryId) {
-         List<MediaResource> resources = mediaResourceRepo.findByStockCategoryId(stockCategoryId);
-         return mediaResourceSvc.addLinks(tenantId, resources);
+        List<MediaResource> resources = mediaResourceRepo
+                .findByStockCategoryId(stockCategoryId);
+        return mediaResourceSvc.addLinks(tenantId, resources);
     }
 
     protected StockCategory findById(final String tenantId, final Long id) {
-        return stockCategoryRepo.findById(id)
-                .orElseThrow(() -> new BusinessEntityNotFoundException(
-                        StockCategory.class, id));
+        return stockCategoryRepo.findById(id).orElseThrow(
+                () -> new BusinessEntityNotFoundException(StockCategory.class,
+                        id));
     }
 
     /**
@@ -254,7 +256,7 @@ public class StockCategoryController {
         return new ResponseEntity<StockCategory>(category, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/findByName", params = { "type"})
+    @GetMapping(value = "/findByName", params = { "type" })
     @Transactional(readOnly = true)
     @JsonView(StockCategoryViews.Detailed.class)
     @Operation(hidden = true)
@@ -262,8 +264,7 @@ public class StockCategoryController {
     public @ResponseBody StockCategory findByNameAndType(
             @PathVariable("tenantId") String tenantId,
             @RequestParam("name") String name,
-            @RequestParam(value = "type") String type)
-            throws IOException {
+            @RequestParam(value = "type") String type) throws IOException {
         return findByName(tenantId, name, type).getBody();
     }
 
@@ -280,8 +281,8 @@ public class StockCategoryController {
 
         StockCategory category = stockCategoryRepo.findByName(name, tenantId);
         if (category == null) {
-            throw new EntityNotFoundException(String.format(
-                    "No Stock Category with name %1$s", name));
+            throw new EntityNotFoundException(
+                    String.format("No Stock Category with name %1$s", name));
         }
 
         return new ResponseEntity<StockCategory>(
@@ -355,34 +356,34 @@ public class StockCategoryController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    /**
-     * Add a document to the specified stockCategory.
-     */
+    /** Add a document to the specified stockCategory. */
     @RequestMapping(value = "/{stockCategoryId}/documents", method = RequestMethod.POST)
     @Transactional
     @Operation(summary = "Add a document to the specified stock category.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("stockCategoryId") Long stockCategoryId, @RequestBody Document doc) {
-         StockCategory stockCategory = findById(tenantId, stockCategoryId);
-         stockCategory.getDocuments().add(doc);
-         stockCategory.setLastUpdated(new Date());
-         stockCategory = stockCategoryRepo.save(stockCategory);
-         doc = stockCategory.getDocuments().stream()
-                 .reduce((first, second) -> second).orElse(null);
+            @PathVariable("stockCategoryId") Long stockCategoryId,
+            @RequestBody Document doc) {
+        StockCategory stockCategory = findById(tenantId, stockCategoryId);
+        stockCategory.getDocuments().add(doc);
+        stockCategory.setLastUpdated(new Date());
+        stockCategory = stockCategoryRepo.save(stockCategory);
+        doc = stockCategory.getDocuments().stream()
+                .reduce((first, second) -> second).orElse(null);
 
-         HttpHeaders headers = new HttpHeaders();
-         URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                 .path("/{id}/documents/{docId}")
-                 .buildAndExpand(tenantId, stockCategory.getId(), doc.getId())
-                 .toUri();
-         headers.setLocation(uri);
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                .path("/{id}/documents/{docId}")
+                .buildAndExpand(tenantId, stockCategory.getId(), doc.getId())
+                .toUri();
+        headers.setLocation(uri);
 
-         return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
+        return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
     }
 
     /**
      * Add a note to the specified stockCategory.
+     *
      * @return the created note.
      */
     @RequestMapping(value = "/{stockCategoryId}/notes", method = RequestMethod.POST)
@@ -390,7 +391,8 @@ public class StockCategoryController {
     @Operation(summary = "Add a note to the specified stock category.")
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("stockCategoryId") Long stockCategoryId, @RequestBody Note note) {
+            @PathVariable("stockCategoryId") Long stockCategoryId,
+            @RequestBody Note note) {
         StockCategory stockCategory = findById(tenantId, stockCategoryId);
         stockCategory.getNotes().add(note);
         stockCategory.setLastUpdated(new Date());
@@ -408,9 +410,7 @@ public class StockCategoryController {
         return new ResponseEntity<Note>(note, headers, HttpStatus.CREATED);
     }
 
-    /**
-     * Add a media resource to the specified category.
-     */
+    /** Add a media resource to the specified category. */
     @RequestMapping(value = "/{stockCategoryId}/images", method = RequestMethod.POST)
     @Operation(summary = "Add an image to the specified stock category.")
     public @ResponseBody void addImage(
@@ -418,12 +418,11 @@ public class StockCategoryController {
             @PathVariable("stockCategoryId") Long stockCategoryId,
             @RequestParam("author") String author,
             @RequestParam("url") String url) {
-        addMediaResource(tenantId, stockCategoryId, new MediaResource(author, url));
+        addMediaResource(tenantId, stockCategoryId,
+                new MediaResource(author, url));
     }
 
-    /**
-     * Add a media resource to the specified stock category.
-     */
+    /** Add a media resource to the specified stock category. */
     public void addMediaResource(String tenantId, Long stockCategoryId,
             MediaResource mediaResource) {
         StockCategory stockCategory = findById(tenantId, stockCategoryId);
@@ -434,11 +433,10 @@ public class StockCategoryController {
         stockCategory = stockCategoryRepo.save(stockCategory);
     }
 
-    /**
-     * Update an existing stockCategory.
-     */
+    /** Update an existing stockCategory. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = {
+        "application/json" })
     @Operation(summary = "Update an existing stock category.")
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long stockCategoryId,
@@ -451,28 +449,24 @@ public class StockCategoryController {
         stockCategoryRepo.save(stockCategory);
     }
 
-    /**
-     * Update a media resource to the specified category.
-     */
-    @RequestMapping(value = "/{stockCategoryId}/images/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    /** Update a media resource to the specified category. */
+    @RequestMapping(value = "/{stockCategoryId}/images/{id}", method = RequestMethod.PUT, consumes = {
+        "application/json" })
     @Operation(summary = "Update an image linked to the specified stock category.")
     public @ResponseBody void updateImage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockCategoryId") Long stockCategoryId,
             @PathVariable("id") Long resourceId,
             @RequestBody MediaResource updatedResource) {
-        MediaResource resource = mediaResourceRepo
-                .findById(resourceId)
+        MediaResource resource = mediaResourceRepo.findById(resourceId)
                 .orElseThrow(() -> new BusinessEntityNotFoundException(
                         StockCategory.class, resourceId));
-        BeanUtils.copyProperties(updatedResource, resource, "id", "stockCategory");
+        BeanUtils.copyProperties(updatedResource, resource, "id",
+                "stockCategory");
         mediaResourceRepo.save(resource);
     }
 
-
-    /**
-     * Delete an existing stockCategory.
-     */
+    /** Delete an existing stockCategory. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @Operation(summary = "Delete the specified stock category.")
@@ -481,19 +475,19 @@ public class StockCategoryController {
         stockCategoryRepo.deleteById(stockCategoryId);
     }
 
-    /**
-     * Delete a stock category's image.
-     */
+    /** Delete a stock category's image. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{stockCategoryId}/images/{id}", method = RequestMethod.DELETE)
     @Operation(summary = "Delete an image of the specified stock category.")
-    public @ResponseBody void deleteImage(@PathVariable("tenantId") String tenantId,
+    public @ResponseBody void deleteImage(
+            @PathVariable("tenantId") String tenantId,
             @PathVariable("stockCategoryId") Long stockCategoryId,
             @PathVariable("id") Long imageId) {
         mediaResourceRepo.deleteById(imageId);
     }
 
-    protected List<EntityModel<StockCategory>> addLinks(final String tenantId, final List<StockCategory> list) {
+    protected List<EntityModel<StockCategory>> addLinks(final String tenantId,
+            final List<StockCategory> list) {
         ArrayList<EntityModel<StockCategory>> entities = new ArrayList<EntityModel<StockCategory>>();
         for (StockCategory account : list) {
             entities.add(addLinks(tenantId, account));
@@ -501,10 +495,11 @@ public class StockCategoryController {
         return entities;
     }
 
-    protected EntityModel<StockCategory> addLinks(final String tenantId, final StockCategory account) {
+    protected EntityModel<StockCategory> addLinks(final String tenantId,
+            final StockCategory account) {
         return EntityModel.of(account,
                 linkTo(methodOn(StockCategoryController.class)
                         .findEntityById(tenantId, account.getId().toString()))
-                                .withSelfRel());
+                        .withSelfRel());
     }
 }

@@ -52,13 +52,12 @@ public class OrderItemTest {
         assertNull(field2.getId());
         orderItem.addCustomField(field2);
 
-        orderItem.addCustomField(
-                new CustomOrderItemField("colour", "Blue"));
-        
+        orderItem.addCustomField(new CustomOrderItemField("colour", "Blue"));
+
         assertEquals(2, orderItem.getCustomFields().size());
         assertEquals("bar", orderItem.getCustomFieldValue("field1"));
         assertEquals("Blue", orderItem.getCustomFieldValue("colour"));
-        assertEquals(field1.getId(), orderItem.getCustomFields().iterator().next().getId());
+        assertEquals(field1.getId(),
+                orderItem.getCustomFields().iterator().next().getId());
     }
-
 }

@@ -43,10 +43,11 @@ public class StockItemTest {
 
         CustomStockItemField field2 = new CustomStockItemField("field1", "foo");
         assertNull(field2.getId());
-        
+
         stockItem.setCustomFields(Collections.singleton(field2));
-        
+
         assertEquals(1, stockItem.getCustomFields().size());
-        assertEquals(field1.getId(), stockItem.getCustomFields().iterator().next().getId());
+        assertEquals(field1.getId(),
+                stockItem.getCustomFields().iterator().next().getId());
     }
 }

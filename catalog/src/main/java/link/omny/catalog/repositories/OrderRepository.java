@@ -97,5 +97,4 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     @Query("UPDATE #{#entityName} x set x.stage = 'deleted', lastUpdated = CURRENT_TIMESTAMP where x.id = :id")
     @Modifying(clearAutomatically = true)
     public void deleteById(@Param("id") Long id);
-
 }

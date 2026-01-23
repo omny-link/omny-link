@@ -18,12 +18,6 @@ package link.omny.supportservices.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.CreatedDate;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,10 +28,16 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
-import link.omny.supportservices.internal.CsvUtils;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.CreatedDate;
+
+import link.omny.supportservices.internal.CsvUtils;
 
 @Entity
 @Table(name = "OL_ACTIVITY")
@@ -66,11 +66,11 @@ public class Activity extends Auditable<String> implements Serializable {
     @JsonProperty
     @Column(name = "content")
     private String content;
-    
+
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     // Since this is SQL 92 it should be portable
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name="occurred", updatable = false)
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "occurred", updatable = false)
     @JsonProperty
     private Date occurred;
 
@@ -110,13 +110,9 @@ public class Activity extends Auditable<String> implements Serializable {
     }
 
     public String toCsv() {
-        StringBuilder sb = new StringBuilder() ;
-        sb.append(String.format(
-                "%1$d,%2$s,%3$s",
-                getId(),
-                getType(),
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%1$d,%2$s,%3$s", getId(), getType(),
                 content == null ? "" : CsvUtils.quoteIfNeeded(content)));
         return sb.toString();
     }
-
 }

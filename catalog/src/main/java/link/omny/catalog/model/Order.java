@@ -45,14 +45,18 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonSerialize;
 
@@ -64,52 +68,30 @@ import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
-@NamedEntityGraph(name = "orderWithAll",
-    attributeNodes = {
-        @NamedAttributeNode("customFields"),
-        @NamedAttributeNode(value = "feedback", subgraph = "feedback-subgraph"),
-        @NamedAttributeNode(value = "orderItems", subgraph = "item-subgraph"),
-        @NamedAttributeNode("notes"),
-        @NamedAttributeNode("documents")
-    },
-    subgraphs = {
-        @NamedSubgraph(
-                name = "feedback-subgraph",
-                attributeNodes = { @NamedAttributeNode("customFields") }
-        ),
-        @NamedSubgraph(
-                name = "item-subgraph",
-                attributeNodes = { @NamedAttributeNode("customFields") }
-        )
-    }
-)
-@NamedEntityGraph(name = "orderWithItems",
-    attributeNodes = {
-        @NamedAttributeNode(value = "orderItems", subgraph = "order-item-subgraph"),
-        @NamedAttributeNode("customFields")
-    },
-    subgraphs = {
-        @NamedSubgraph(
-                name = "item-subgraph",
-                attributeNodes = {
-                        @NamedAttributeNode("customFields")
-                })
-        }
-)
-@NamedEntityGraph(name = "orderOnly",
-  attributeNodes = { @NamedAttributeNode("customFields") }
-)
+@NamedEntityGraph(name = "orderWithAll", attributeNodes = {
+    @NamedAttributeNode("customFields"),
+    @NamedAttributeNode(value = "feedback", subgraph = "feedback-subgraph"),
+    @NamedAttributeNode(value = "orderItems", subgraph = "item-subgraph"),
+    @NamedAttributeNode("notes"),
+    @NamedAttributeNode("documents") }, subgraphs = {
+        @NamedSubgraph(name = "feedback-subgraph", attributeNodes = {
+            @NamedAttributeNode("customFields") }),
+        @NamedSubgraph(name = "item-subgraph", attributeNodes = {
+            @NamedAttributeNode("customFields") }) })
+@NamedEntityGraph(name = "orderWithItems", attributeNodes = {
+    @NamedAttributeNode(value = "orderItems", subgraph = "order-item-subgraph"),
+    @NamedAttributeNode("customFields") }, subgraphs = {
+        @NamedSubgraph(name = "item-subgraph", attributeNodes = {
+            @NamedAttributeNode("customFields") }) })
+@NamedEntityGraph(name = "orderOnly", attributeNodes = {
+    @NamedAttributeNode("customFields") })
 @Table(name = "OL_ORDER")
 @Data
 @ToString(exclude = { "documents", "notes", "orderItems" })
-@EqualsAndHashCode(callSuper = true, exclude = { "documents", "notes", "orderItems" })
+@EqualsAndHashCode(callSuper = true, exclude = { "documents", "notes",
+    "orderItems" })
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = true)
@@ -117,8 +99,7 @@ public class Order extends Auditable<String> implements Serializable {
 
     private static final long serialVersionUID = -2334761729349848501L;
 
-    protected static final Logger LOGGER = LoggerFactory
-            .getLogger(Order.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(Order.class);
 
     @Id
     @Column(name = "id")
@@ -225,7 +206,7 @@ public class Order extends Auditable<String> implements Serializable {
     private Set<OrderItem> orderItems;
 
     @OneToOne
-    @JsonView( { OrderViews.Detailed.class } )
+    @JsonView({ OrderViews.Detailed.class })
     @JsonManagedReference
     private Feedback feedback;
 
@@ -248,7 +229,8 @@ public class Order extends Auditable<String> implements Serializable {
     }
 
     public Order(Long id, Long ref, String name, String desc, String type,
-            Date date, Date dueDate, String stage, BigDecimal price, BigDecimal tax) {
+            Date date, Date dueDate, String stage, BigDecimal price,
+            BigDecimal tax) {
         this(name);
         setId(id);
         setRef(ref);
@@ -297,8 +279,8 @@ public class Order extends Auditable<String> implements Serializable {
         boolean found = false;
         for (CustomOrderField field : getCustomFields()) {
             if (field.getName().equals(newField.getName())) {
-                field.setValue(newField.getValue() == null ? null : newField
-                        .getValue().toString());
+                field.setValue(newField.getValue() == null ? null
+                        : newField.getValue().toString());
                 found = true;
             }
         }
@@ -310,8 +292,8 @@ public class Order extends Auditable<String> implements Serializable {
 
     public void setOrderItems(Set<OrderItem> newItems) {
         orderItems = newItems;
-        if (newItems == null ) {
-            return ;
+        if (newItems == null) {
+            return;
         }
         for (OrderItem item : newItems) {
             item.setOrder(this);
@@ -363,33 +345,31 @@ public class Order extends Auditable<String> implements Serializable {
     }
 
     public String toCsv() {
-        StringBuilder sb = new StringBuilder()
-                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
-                        + "%s,%s,%s,%s,%s,%s",
-                        id,
-                        name,
-                        ref == null ? "" : ref,
-                        type == null ? "" : type,
-                        description == null ? "" : CsvUtils.quoteIfNeeded(description),
-                        date == null ? "" : date,
-                        dueDate == null ? "" : dueDate,
-                        stage == null ? "" : "New enquiry",
-                        price == null ? "" : price,
-                        tax == null ? "" : tax,
-                        invoiceRef == null ? "" : invoiceRef,
-                        owner == null ? "" : owner,
-                        contactId == null ? "" : contactId,
-//                        stockItem == null ? "" : stockItem.getId(),
-                        stockItemId  == null ? "" : stockItemId,
-                        tenantId, created, lastUpdated,
-                        getConsolidatedNotes(),
-                        getConsolidatedDocuments()));
+        StringBuilder sb = new StringBuilder().append(String.format(
+                "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s," + "%s,%s,%s,%s,%s,%s",
+                id, name, ref == null ? "" : ref, type == null ? "" : type,
+                description == null ? "" : CsvUtils.quoteIfNeeded(description),
+                date == null ? "" : date, dueDate == null ? "" : dueDate,
+                stage == null ? "" : "New enquiry", price == null ? "" : price,
+                tax == null ? "" : tax, invoiceRef == null ? "" : invoiceRef,
+                owner == null ? "" : owner, contactId == null ? "" : contactId,
+                // stockItem
+                // ==
+                // null
+                // ? ""
+                // :
+                // stockItem.getId(),
+                stockItemId == null ? "" : stockItemId, tenantId, created,
+                lastUpdated, getConsolidatedNotes(),
+                getConsolidatedDocuments()));
         if (customHeadings == null) {
-            LOGGER.warn("No custom headings specified, so only standard fields can be included");
+            LOGGER.warn(
+                    "No custom headings specified, so only standard fields can be included");
         } else {
             for (String fieldName : customHeadings) {
                 String val = getCustomFieldValue(fieldName);
-                sb.append(',').append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
+                sb.append(',')
+                        .append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
             }
         }
         return sb.toString();
@@ -399,9 +379,8 @@ public class Order extends Auditable<String> implements Serializable {
         StringBuffer sb = new StringBuffer();
         for (Note note : getNotes()) {
             if (note.getContent() != null) {
-                sb.append(String.format("%s %s: %s;",
-                        note.getCreated(), note.getAuthor(),
-                        note.getContent()));
+                sb.append(String.format("%s %s: %s;", note.getCreated(),
+                        note.getAuthor(), note.getContent()));
             }
         }
         return CsvUtils.quoteIfNeeded(sb.toString());
@@ -410,10 +389,9 @@ public class Order extends Auditable<String> implements Serializable {
     private String getConsolidatedDocuments() {
         StringBuffer sb = new StringBuffer();
         for (Document doc : getDocuments()) {
-            sb.append(String.format("%s %s: %s %s;",
-                    doc.getCreated(), doc.getAuthor(), doc.getName(), doc.getUrl()));
+            sb.append(String.format("%s %s: %s %s;", doc.getCreated(),
+                    doc.getAuthor(), doc.getName(), doc.getUrl()));
         }
         return CsvUtils.quoteIfNeeded(sb.toString());
     }
-
 }

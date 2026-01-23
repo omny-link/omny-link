@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
-
 import tools.jackson.databind.ObjectMapper;
 
 import link.omny.supportservices.model.ActivityType;
@@ -129,11 +128,13 @@ public class ContactTest {
 
         contact.setCustomFields(Collections.singleton(field2));
         assertEquals(1, contact.getCustomFields().size());
-        assertEquals(field1.getId(), contact.getCustomFields().iterator().next().getId());
+        assertEquals(field1.getId(),
+                contact.getCustomFields().iterator().next().getId());
 
         contact.addCustomField(field2);
         assertEquals(1, contact.getCustomFields().size());
-        assertEquals(field1.getId(), contact.getCustomFields().iterator().next().getId());
+        assertEquals(field1.getId(),
+                contact.getCustomFields().iterator().next().getId());
     }
 
     @Test
@@ -226,7 +227,8 @@ public class ContactTest {
 
     @Test
     public void testParseJsonContactWithoutOptIn() {
-        String jsonInString = readFromClasspath("/omny.enquiry-without-opt-in.json");
+        String jsonInString = readFromClasspath(
+                "/omny.enquiry-without-opt-in.json");
         assertNotNull(jsonInString);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -257,7 +259,7 @@ public class ContactTest {
                 "A single-line note", true, false));
         contact.addNote(new Note(2l, "tim@knowprocess.com",
                 "A note\nthat spans multiple lines", true, false));
-        assertEquals(2,  contact.getNotes().size());
+        assertEquals(2, contact.getNotes().size());
         System.out.println(contact.toCsv());
         String csv = contact.toCsv();
         assertTrue(csv.startsWith("1,1,Fred,Flintstone,"));
@@ -267,7 +269,8 @@ public class ContactTest {
     }
 
     private static String readFromClasspath(String resourceName) {
-        try (Scanner scanner = new Scanner(ContactTest.class.getResourceAsStream(resourceName))) {
+        try (Scanner scanner = new Scanner(
+                ContactTest.class.getResourceAsStream(resourceName))) {
             return scanner.useDelimiter("\\A").next();
         } catch (Exception e) {
             throw e;

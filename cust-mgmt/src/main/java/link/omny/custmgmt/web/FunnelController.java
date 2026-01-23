@@ -19,6 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,18 +32,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.custmgmt.repositories.AccountRepository;
 import link.omny.custmgmt.repositories.ContactRepository;
-import lombok.Data;
 
 /**
  * REST web service for fetching contacts aggregated in a way convenient for
  * reporting.
- * 
+ *
  * @author Tim Stephenson
  */
 @Controller
@@ -63,7 +62,8 @@ public class FunnelController {
     @Operation(summary = "Metrics about the number of accounts a tenant has.")
     public @ResponseBody FunnelReport reportTenantByAccount(
             @PathVariable("tenantId") String tenantId) {
-        LOGGER.info(String.format("List account funnel for tenant %1$s", tenantId));
+        LOGGER.info(
+                String.format("List account funnel for tenant %1$s", tenantId));
 
         FunnelReport rpt = new FunnelReport();
         List<Object[]> list = accountRepo
@@ -76,7 +76,7 @@ public class FunnelController {
 
         return rpt;
     }
-    
+
     /**
      * @return Funnel report based on contact stage for the specified tenant.
      */
@@ -84,7 +84,8 @@ public class FunnelController {
     @Operation(summary = "Metrics about the number of contacts a tenant has.")
     public @ResponseBody FunnelReport reportTenantByContact(
             @PathVariable("tenantId") String tenantId) {
-        LOGGER.info(String.format("List contact funnel for tenant %1$s", tenantId));
+        LOGGER.info(
+                String.format("List contact funnel for tenant %1$s", tenantId));
 
         FunnelReport rpt = new FunnelReport();
         List<Object[]> list = contactRepo
@@ -112,8 +113,8 @@ public class FunnelController {
 
         public void addStage(String stage, Number count) {
             getStages().put(
-                    (stage == null || stage.length() == 0)
-                    ? "N/A" : stage, count == null ? 0 : count);
+                    (stage == null || stage.length() == 0) ? "N/A" : stage,
+                    count == null ? 0 : count);
         }
-      }
+    }
 }

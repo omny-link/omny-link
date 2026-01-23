@@ -25,5 +25,4 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan({ "link.omny.supportservices.model" })
 @EnableJpaRepositories({ "link.omny.supportservices.repositories" })
 public class SupportServicesConfig {
-
 }

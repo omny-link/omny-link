@@ -15,23 +15,21 @@
  ******************************************************************************/
 package link.omny.custmgmt.json;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.CustomContactField;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tools.jackson.core.JsonParser;
 import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
 import tools.jackson.databind.DeserializationContext;
-import tools.jackson.databind.ValueDeserializer;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ValueDeserializer;
+
+import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.CustomContactField;
 
 public class JsonContactDeserializer extends ValueDeserializer<Contact> {
 
@@ -39,12 +37,11 @@ public class JsonContactDeserializer extends ValueDeserializer<Contact> {
             .getLogger(JsonContactDeserializer.class);
 
     private static final List<String> FIELDS = Arrays.asList(new String[] {
-            "firstName", "lastName", "title", "email", "landLine", "mobile",
-            "address1", "address2", "town", "countyOrCity", "postCode",
-            "country", "enquiryType", "stage", "enquiryType", "owner",
-            "source", "medium", "campaign", "keyword",
-            "doNotCall", "doNotEmail", "firstContact",
-            "lastUpdated", "tenantId" });
+        "firstName", "lastName", "title", "email", "landLine", "mobile",
+        "address1", "address2", "town", "countyOrCity", "postCode", "country",
+        "enquiryType", "stage", "enquiryType", "owner", "source", "medium",
+        "campaign", "keyword", "doNotCall", "doNotEmail", "firstContact",
+        "lastUpdated", "tenantId" });
 
     @Override
     public Contact deserialize(JsonParser jp, DeserializationContext ctxt)
@@ -58,45 +55,46 @@ public class JsonContactDeserializer extends ValueDeserializer<Contact> {
         Contact contact = new Contact();
         contact.setFirstName(node.get("firstName").asText());
         contact.setLastName(node.get("lastName").asText());
-        contact.setTitle(node.get("title") == null ? null : node.get("title")
-                .asText());
-        contact.setEmail(node.get("email") == null ? null : node.get("email")
-                .asText());
-        contact.setPhone1(node.get("phone1") == null ? null : node
-                .get("phone1").asText());
-        contact.setPhone2(node.get("phone2") == null ? null : node
-                .get("phone2").asText());
-        contact.setAddress1(node.get("address1") == null ? null : node.get(
-                "address1").asText());
-        contact.setAddress2(node.get("address2") == null ? null : node.get(
-                "address2").asText());
-        contact.setTown(node.get("town") == null ? null : node.get("town")
-                .asText());
-        contact.setCountyOrCity(node.get("countyOrCity") == null ? null : node
-                .get("countyOrCity").asText());
-        contact.setPostCode(node.get("postCode") == null ? null : node.get(
-                "postCode").asText());
-        contact.setCountry(node.get("country") == null ? null : node.get(
-                "country").asText());
-        contact.setEnquiryType(node.get("enquiryType") == null ? null : node
-                .get("enquiryType").asText());
-        contact.setAccountType(node.get("accountType") == null ? null : node
-                .get("accountType").asText());
-        contact.setStage(node.get("stage") == null ? null : node.get("stage")
-                .asText());
-        contact.setOwner(node.get("owner") == null ? null : node.get("owner")
-                .asText());
-        contact.setSource(node.get("source") == null ? null : node
-                .get("source").asText());
-        contact.setMedium(node.get("medium") == null ? null : node
-                .get("medium").asText());
+        contact.setTitle(
+                node.get("title") == null ? null : node.get("title").asText());
+        contact.setEmail(
+                node.get("email") == null ? null : node.get("email").asText());
+        contact.setPhone1(node.get("phone1") == null ? null
+                : node.get("phone1").asText());
+        contact.setPhone2(node.get("phone2") == null ? null
+                : node.get("phone2").asText());
+        contact.setAddress1(node.get("address1") == null ? null
+                : node.get("address1").asText());
+        contact.setAddress2(node.get("address2") == null ? null
+                : node.get("address2").asText());
+        contact.setTown(
+                node.get("town") == null ? null : node.get("town").asText());
+        contact.setCountyOrCity(node.get("countyOrCity") == null ? null
+                : node.get("countyOrCity").asText());
+        contact.setPostCode(node.get("postCode") == null ? null
+                : node.get("postCode").asText());
+        contact.setCountry(node.get("country") == null ? null
+                : node.get("country").asText());
+        contact.setEnquiryType(node.get("enquiryType") == null ? null
+                : node.get("enquiryType").asText());
+        contact.setAccountType(node.get("accountType") == null ? null
+                : node.get("accountType").asText());
+        contact.setStage(
+                node.get("stage") == null ? null : node.get("stage").asText());
+        contact.setOwner(
+                node.get("owner") == null ? null : node.get("owner").asText());
+        contact.setSource(node.get("source") == null ? null
+                : node.get("source").asText());
+        contact.setMedium(node.get("medium") == null ? null
+                : node.get("medium").asText());
         // TODO
         // contact.setFirstContact(node.get("firstContact").asText());
         // contact.setLastUpdated((Date) node.get("lastUpdated").asObject());
-        contact.setTenantId(node.get("tenantId") == null ? null : node.get(
-                "tenantId").asText());
+        contact.setTenantId(node.get("tenantId") == null ? null
+                : node.get("tenantId").asText());
 
-        for (Iterator<Entry<String, JsonNode>> it = node.properties().iterator(); it.hasNext();) {
+        for (Iterator<Entry<String, JsonNode>> it = node.properties()
+                .iterator(); it.hasNext();) {
             Entry<String, JsonNode> entry = it.next();
             if (!FIELDS.contains(entry.getKey())) {
                 contact.addCustomField(new CustomContactField(entry.getKey(),
@@ -106,5 +104,4 @@ public class JsonContactDeserializer extends ValueDeserializer<Contact> {
         LOGGER.debug("Found: " + contact);
         return contact;
     }
-
 }

@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.test.context.web.WebAppConfiguration;
-
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
@@ -45,16 +44,16 @@ import link.omny.catalog.model.OrderItem;
  * @author Tim Stephenson
  */
 @SpringBootTest(classes = CatalogTestApplication.class, properties = {
-        "springdoc.api-docs.enabled=false",
-        "springdoc.swagger-ui.enabled=false"
-})
+    "springdoc.api-docs.enabled=false", "springdoc.swagger-ui.enabled=false" })
 @WebAppConfiguration
 public class OrderContollerTest {
     private static final String CUST_FIELD_COLOUR = "colour";
 
-    private static final CustomOrderField CUSTOM_FIELD_2 = new CustomOrderField("field2", "bar");
+    private static final CustomOrderField CUSTOM_FIELD_2 = new CustomOrderField(
+            "field2", "bar");
 
-    private static final CustomOrderField CUSTOM_FIELD_1 = new CustomOrderField("field1", "foo");
+    private static final CustomOrderField CUSTOM_FIELD_1 = new CustomOrderField(
+            "field1", "foo");
 
     private static final String FEEDBACK = "5 stars";
 
@@ -127,19 +126,21 @@ public class OrderContollerTest {
         Feedback feedback3 = retrieveFeedback(order.getId());
         assertNotNull(feedback3);
         assertEquals(1, feedback3.getCustomFields().size());
-        assertEquals(FEEDBACK_CUSTOM_KEY, feedback3.getCustomFields().iterator().next()
-                .getName());
-        assertEquals(FEEDBACK_CUSTOM_VALUE, feedback3.getCustomFields().iterator().next()
-                .getValue());
+        assertEquals(FEEDBACK_CUSTOM_KEY,
+                feedback3.getCustomFields().iterator().next().getName());
+        assertEquals(FEEDBACK_CUSTOM_VALUE,
+                feedback3.getCustomFields().iterator().next().getValue());
 
         // check equivalence of readOrder and readOrders API
-        List<EntityModel<Order>> orders = svc.readOrders(TENANT_ID, order.getId().toString());
+        List<EntityModel<Order>> orders = svc.readOrders(TENANT_ID,
+                order.getId().toString());
         Order order4 = orders.get(0).getContent();
         assertNotNull(order4);
         assertEquals(order.getId(), order4.getId());
         assertEquals(order.getName(), order4.getName());
         assertEquals(order.getType(), order4.getType());
-        assertEquals(order.getOrderItems().size(), order4.getOrderItems().size());
+        assertEquals(order.getOrderItems().size(),
+                order4.getOrderItems().size());
 
         deleteOrder(order.getId());
 
@@ -154,8 +155,8 @@ public class OrderContollerTest {
         assertNotNull(order.getId());
         assertEquals(2, order.getOrderItems().size());
         assertTrue(order.getOrderItems().stream()
-                .filter(x -> (x.getCustomFieldValue(CUST_FIELD_COLOUR).equals("Avocado")
-                        && x.getPrice().equals(PRICE)))
+                .filter(x -> (x.getCustomFieldValue(CUST_FIELD_COLOUR)
+                        .equals("Avocado") && x.getPrice().equals(PRICE)))
                 .findFirst().isPresent());
 
         Order order2a = retrieveOrder(order.getId());
@@ -205,7 +206,6 @@ public class OrderContollerTest {
 
     @Test
     public void testCreateOrderWithItemsIncCustomFieldsInOne() {
-
     }
 
     private Order createOrder() {
@@ -248,8 +248,8 @@ public class OrderContollerTest {
     private OrderItem getOrderItem(String type, String colour) {
         OrderItem orderItem2 = new OrderItem(type);
         orderItem2.setPrice(PRICE);
-        orderItem2
-                .addCustomField(new CustomOrderItemField(CUST_FIELD_COLOUR, colour));
+        orderItem2.addCustomField(
+                new CustomOrderItemField(CUST_FIELD_COLOUR, colour));
         return orderItem2;
     }
 

@@ -26,6 +26,9 @@ import java.util.Map;
 
 import jakarta.transaction.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +44,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-
-import com.fasterxml.jackson.annotation.JsonView;
 import tools.jackson.databind.ObjectMapper;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.catalog.model.MediaResource;
 import link.omny.catalog.repositories.MediaResourceRepository;
 import link.omny.catalog.views.MediaResourceViews;
@@ -89,9 +88,9 @@ public class MediaResourceController {
     }
 
     protected MediaResource findById(final String tenantId, final Long id) {
-        return mediaResourceRepo.findById(id)
-                .orElseThrow(() -> new BusinessEntityNotFoundException(
-                        MediaResource.class, id));
+        return mediaResourceRepo.findById(id).orElseThrow(
+                () -> new BusinessEntityNotFoundException(MediaResource.class,
+                        id));
     }
 
     /**
@@ -113,18 +112,19 @@ public class MediaResourceController {
         return getCreatedResponseEntity("/{id}", vars);
     }
 
-    protected ResponseEntity<Object> getCreatedResponseEntity(String path, Map<String, String> vars) {
-        URI location = MvcUriComponentsBuilder.fromController(getClass()).path(path).buildAndExpand(vars).toUri();
+    protected ResponseEntity<Object> getCreatedResponseEntity(String path,
+            Map<String, String> vars) {
+        URI location = MvcUriComponentsBuilder.fromController(getClass())
+                .path(path).buildAndExpand(vars).toUri();
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(location);
         return new ResponseEntity<Object>(headers, HttpStatus.CREATED);
     }
 
-    /**
-     * Update an existing mediaResource.
-     */
+    /** Update an existing mediaResource. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = {
+        "application/json" })
     @Transactional
     @Operation(summary = "Update the specified media resource.")
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
@@ -132,13 +132,12 @@ public class MediaResourceController {
             @RequestBody MediaResource updatedMediaResource) {
         MediaResource mediaResource = findById(tenantId, mediaResourceId);
 
-        NullAwareBeanUtils.copyNonNullProperties(updatedMediaResource, mediaResource, "id", "documents", "notes", "stockItem");
+        NullAwareBeanUtils.copyNonNullProperties(updatedMediaResource,
+                mediaResource, "id", "documents", "notes", "stockItem");
         mediaResourceRepo.save(mediaResource);
     }
 
-    /**
-     * Delete an existing mediaResource.
-     */
+    /** Delete an existing mediaResource. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{mediaResourceId}", method = RequestMethod.DELETE)
     @Transactional
@@ -148,7 +147,8 @@ public class MediaResourceController {
         mediaResourceRepo.deleteById(mediaResourceId);
     }
 
-    protected List<EntityModel<MediaResource>> addLinks(final String tenantId, final List<MediaResource> list) {
+    protected List<EntityModel<MediaResource>> addLinks(final String tenantId,
+            final List<MediaResource> list) {
         ArrayList<EntityModel<MediaResource>> entities = new ArrayList<EntityModel<MediaResource>>();
         for (MediaResource mediaResource : list) {
             entities.add(addLinks(tenantId, mediaResource));
@@ -156,9 +156,11 @@ public class MediaResourceController {
         return entities;
     }
 
-    protected EntityModel<MediaResource> addLinks(final String tenantId, final MediaResource mediaResource) {
-        return EntityModel.of(mediaResource, linkTo(methodOn(MediaResourceController.class)
-                .findById(tenantId, mediaResource.getId()))
-                .withSelfRel());
+    protected EntityModel<MediaResource> addLinks(final String tenantId,
+            final MediaResource mediaResource) {
+        return EntityModel.of(mediaResource,
+                linkTo(methodOn(MediaResourceController.class)
+                        .findById(tenantId, mediaResource.getId()))
+                        .withSelfRel());
     }
 }

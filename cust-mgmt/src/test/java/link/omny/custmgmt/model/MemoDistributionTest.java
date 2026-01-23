@@ -36,8 +36,8 @@ public class MemoDistributionTest {
     @Test
     public void testSetRecipientList() {
         MemoDistribution dist = new MemoDistribution();
-        dist.setRecipientList(Arrays.asList(new String[] { "john", "paul",
-                "george", "ringo" }));
+        dist.setRecipientList(Arrays
+                .asList(new String[] { "john", "paul", "george", "ringo" }));
         assertEquals(4, dist.getRecipientList().size());
         assertEquals("john,paul,george,ringo", dist.getRecipients());
     }
@@ -55,8 +55,8 @@ public class MemoDistributionTest {
     @Test
     public void testGetRecipientList() {
         MemoDistribution dist = new MemoDistribution();
-        dist.setRecipientList(Arrays.asList(new String[] { "john", "paul",
-                "\"george\"", "ringo" }));
+        dist.setRecipientList(Arrays.asList(
+                new String[] { "john", "paul", "\"george\"", "ringo" }));
         assertEquals(4, dist.getRecipientList().size());
         assertEquals("john,paul,george,ringo", dist.getRecipients());
     }
@@ -86,4 +86,3 @@ public class MemoDistributionTest {
         assertEquals(null, dist.getSendAt());
     }
 }
-

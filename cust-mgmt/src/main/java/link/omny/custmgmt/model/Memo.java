@@ -39,21 +39,19 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import org.jsoup.Jsoup;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import link.omny.supportservices.model.Auditable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jsoup.Jsoup;
+
+import link.omny.supportservices.model.Auditable;
 
 @Entity
 @NamedEntityGraph(name = "memoWithAll", attributeNodes = {
-        @NamedAttributeNode("signatories")
-})
+    @NamedAttributeNode("signatories") })
 @Table(name = "OL_MEMO")
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -123,7 +121,7 @@ public class Memo extends Auditable<String> implements Serializable {
 
     @JsonIgnore
     public void setRequiredVarList(List<String> vars) {
-        if (vars == null || vars.size()==0) {
+        if (vars == null || vars.size() == 0) {
             requiredVars = null;
         } else {
             requiredVars = vars.toString();
@@ -132,7 +130,7 @@ public class Memo extends Auditable<String> implements Serializable {
 
     @JsonIgnore
     public List<String> getRequiredVarList() {
-        if (requiredVars == null || requiredVars.length()==0) {
+        if (requiredVars == null || requiredVars.length() == 0) {
             return Collections.emptyList();
         } else {
             return Arrays.asList(requiredVars.split(","));
@@ -181,17 +179,14 @@ public class Memo extends Auditable<String> implements Serializable {
 
     private void cleanHtml() {
         if (richContent != null) {
-          setRichContent(richContent.replace("&#39;", "\'"));
+            setRichContent(richContent.replace("&#39;", "\'"));
         }
     }
 
     public String toCsv() {
         return String.format("%1$s,%2$s,%3$s,%4$s,%5$s,%6$s,%7$s",
-                id == null ? "" : id.toString(),
-                name,
-                title,
-                status == null ? "Draft" : status,
-                owner == null ? "" : owner,
+                id == null ? "" : id.toString(), name, title,
+                status == null ? "Draft" : status, owner == null ? "" : owner,
                 richContent == null ? "" : richContent.replaceAll("\\n", ""),
                 getPlainContent());
     }
@@ -200,14 +195,14 @@ public class Memo extends Auditable<String> implements Serializable {
         StringBuilder sb = new StringBuilder("{\"signers\":[");
         for (int i = 0; i < getSignatories().size(); i++) {
             MemoSignatory sig = getSignatories().get(i);
-            sb.append(sig.formatForDocuSign()
-                    .replaceAll("\"recipientId\": \"\"", "\"recipientId\": \""+(i+1)+"\""));
-            if ((i+1) < getSignatories().size()) {
+            sb.append(
+                    sig.formatForDocuSign().replaceAll("\"recipientId\": \"\"",
+                            "\"recipientId\": \"" + (i + 1) + "\""));
+            if ((i + 1) < getSignatories().size()) {
                 sb.append(",");
             }
         }
         sb.append("]}");
         return sb.toString();
     }
-
 }

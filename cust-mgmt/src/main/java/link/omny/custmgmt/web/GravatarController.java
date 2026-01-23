@@ -19,6 +19,7 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import link.omny.custmgmt.internal.ContactAvatarService;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.repositories.ContactRepository;

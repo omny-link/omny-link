@@ -21,8 +21,8 @@ import link.omny.catalog.model.StockCategory;
 public class GeoLocationService {
 
     public double distance(GeoPoint target, StockCategory stockCategory) {
-        stockCategory.setDistance(Haversine.distance(
-                stockCategory.getGeoPoint(), target));
+        stockCategory.setDistance(
+                Haversine.distance(stockCategory.getGeoPoint(), target));
         return stockCategory.getDistance();
     }
 
@@ -44,8 +44,8 @@ public class GeoLocationService {
             double fromLat = Math.toRadians(from.getLat());
             double toLat = Math.toRadians(to.getLat());
 
-            double a = haversine(dLat) + Math.cos(fromLat) * Math.cos(toLat)
-                    * haversine(dLong);
+            double a = haversine(dLat)
+                    + Math.cos(fromLat) * Math.cos(toLat) * haversine(dLong);
             double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
             return EARTH_RADIUS * c;

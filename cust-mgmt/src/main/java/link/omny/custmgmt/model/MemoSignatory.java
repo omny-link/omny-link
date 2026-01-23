@@ -32,11 +32,11 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import link.omny.supportservices.model.Auditable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import link.omny.supportservices.model.Auditable;
 
 @Entity
 @Table(name = "OL_MEMO_SIG")
@@ -62,7 +62,7 @@ public class MemoSignatory extends Auditable<String> implements Serializable {
     @JsonProperty
     @Column(name = "name")
     private String name;
-    
+
     @Size(max = 1000)
     @Column(name = "tabs")
     private String tabs;
@@ -75,7 +75,7 @@ public class MemoSignatory extends Auditable<String> implements Serializable {
         setEmail(email);
         setSignHereTab(new SignHereTab(x, y, page));
     }
-    
+
     @JsonProperty
     @Transient
     protected List<SignHereTab> getSignHereTabs() {
@@ -90,35 +90,35 @@ public class MemoSignatory extends Auditable<String> implements Serializable {
     }
 
     protected void setSignHereTabs(List<SignHereTab> signHereTabs) {
-        tabs = getSignHereTabs().stream()
-                .map(SignHereTab::toString)
+        tabs = getSignHereTabs().stream().map(SignHereTab::toString)
                 .collect(Collectors.joining(";"));
     }
-    
+
     @JsonProperty
     @Transient
     public SignHereTab getSignHereTab() {
         try {
             return getSignHereTabs().get(0);
         } catch (NullPointerException e) {
-            return new SignHereTab(0,0,1);
+            return new SignHereTab(0, 0, 1);
         }
     }
-    
+
     public void setSignHereTab(SignHereTab tab) {
-        tabs = tab.toString();   
+        tabs = tab.toString();
     }
-    
+
     public String formatForDocuSign() {
         if (getSignHereTabs().size() > 1) {
-            throw new IllegalStateException("Only one sign here tab is currently supported");
+            throw new IllegalStateException(
+                    "Only one sign here tab is currently supported");
         }
-        return String.format("{" 
-        + "\"name\": \"%1$s\","  
-        + "\"email\": \"%2$s\","  
-        + "\"recipientId\": \"%3$s\"," 
-        + "\"tabs\": { \"signHereTabs\": [{ \"xPosition\": \"%4$d\", \"yPosition\": \"%5$d\", \"documentId\": \"1\", \"pageNumber\": \"%6$d\" }]}}",
-        name, email, "", getSignHereTabs().get(0).getX(), getSignHereTabs().get(0).getY(), getSignHereTabs().get(0).getPage());
+        return String.format("{" + "\"name\": \"%1$s\","
+                + "\"email\": \"%2$s\"," + "\"recipientId\": \"%3$s\","
+                + "\"tabs\": { \"signHereTabs\": [{ \"xPosition\": \"%4$d\", \"yPosition\": \"%5$d\", \"documentId\": \"1\", \"pageNumber\": \"%6$d\" }]}}",
+                name, email, "", getSignHereTabs().get(0).getX(),
+                getSignHereTabs().get(0).getY(),
+                getSignHereTabs().get(0).getPage());
     }
 
     @Data
@@ -131,12 +131,11 @@ public class MemoSignatory extends Auditable<String> implements Serializable {
         @JsonProperty
         private int page;
 
-
         public SignHereTab(String tab) {
             String[] args = tab.split(",");
             try {
                 x = Integer.parseInt(args[0]);
-            } catch (NumberFormatException| ArrayIndexOutOfBoundsException  e) {
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 x = 0;
             }
             try {
@@ -146,11 +145,11 @@ public class MemoSignatory extends Auditable<String> implements Serializable {
             }
             try {
                 page = Integer.parseInt(args[2]);
-            } catch (NumberFormatException| ArrayIndexOutOfBoundsException  e) {
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 page = 1;
             }
         }
-        
+
         public SignHereTab(int x, int y, int page) {
             this.x = x;
             this.y = y;
@@ -165,11 +164,9 @@ public class MemoSignatory extends Auditable<String> implements Serializable {
             this.y = ((SignHereTab) toCopy).getY();
             this.page = ((SignHereTab) toCopy).getPage();
         }
-        
+
         public String toString() {
             return String.format("%1$d,%2$d,%3$d", x, y, page);
         }
-
     }
-    
 }

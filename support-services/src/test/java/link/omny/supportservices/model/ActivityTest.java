@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
-
 import tools.jackson.databind.ObjectMapper;
 
 public class ActivityTest {
@@ -48,14 +47,16 @@ public class ActivityTest {
         assertNotNull(jsonInString);
 
         ObjectMapper mapper = new ObjectMapper();
-        SimpleDateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        SimpleDateFormat isoFormatter = new SimpleDateFormat(
+                "yyyy-MM-dd'T'HH:mm:ssZ");
 
         try {
             Activity activity = mapper.readValue(jsonInString, Activity.class);
 
             assertNotNull(activity);
             assertEquals(ActivityType.EMAIL.name(), activity.getType());
-            assertEquals("2022-12-02T03:00:00+0000", isoFormatter.format(activity.getOccurred()));
+            assertEquals("2022-12-02T03:00:00+0000",
+                    isoFormatter.format(activity.getOccurred()));
             assertEquals("A test", activity.getContent());
 
         } catch (Exception e) {
@@ -73,11 +74,13 @@ public class ActivityTest {
 
         System.out.println(activity.toCsv());
         String csv = activity.toCsv();
-        assertTrue(csv.startsWith("1,EMAIL,\"Content\nthat\nspans\nmultiple\nlines\""));
+        assertTrue(csv.startsWith(
+                "1,EMAIL,\"Content\nthat\nspans\nmultiple\nlines\""));
     }
 
     private static String readFromClasspath(String resourceName) {
-        try (Scanner scanner = new Scanner(ActivityTest.class.getResourceAsStream(resourceName))) {
+        try (Scanner scanner = new Scanner(
+                ActivityTest.class.getResourceAsStream(resourceName))) {
             return scanner.useDelimiter("\\A").next();
         } catch (Exception e) {
             throw e;

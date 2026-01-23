@@ -33,13 +33,17 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.rest.core.annotation.RestResource;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.rest.core.annotation.RestResource;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonSerialize;
 
@@ -48,11 +52,6 @@ import link.omny.catalog.views.OrderViews;
 import link.omny.supportservices.json.JsonCustomFieldSerializer;
 import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = { "order" })
@@ -86,7 +85,7 @@ public class Feedback extends Auditable<String> implements Serializable {
     @JsonView(OrderViews.Detailed.class)
     private String type;
 
-    @Column(name="tenant_id")
+    @Column(name = "tenant_id")
     @JsonProperty
     @JsonView(OrderViews.Detailed.class)
     private String tenantId;
@@ -137,12 +136,12 @@ public class Feedback extends Auditable<String> implements Serializable {
     }
 
     protected void setCustomField(CustomFeedbackField newField) {
-        boolean found = false; 
+        boolean found = false;
         for (CustomFeedbackField field : getCustomFields()) {
             if (field.getName().equals(newField.getName())) {
-                field.setValue(newField.getValue() == null ? null : newField
-                        .getValue().toString());
-                found= true;
+                field.setValue(newField.getValue() == null ? null
+                        : newField.getValue().toString());
+                found = true;
             }
         }
         if (!found) {

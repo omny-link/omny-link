@@ -32,5 +32,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
 
+    - name: Check code formatting
+      run: mvn spotless:check --file pom.xml
+
     - name: Build with Maven
       run: mvn -B package --file pom.xml

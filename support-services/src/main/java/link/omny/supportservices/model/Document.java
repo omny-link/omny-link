@@ -26,15 +26,13 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 @Data
@@ -90,8 +88,6 @@ public class Document extends Auditable<String> implements Serializable {
     }
 
     public String toCsv() {
-        return String.format(
-                "%s,%s,%s,%s,%s]", id,
-                author, created, name, url);
+        return String.format("%s,%s,%s,%s,%s]", id, author, created, name, url);
     }
 }

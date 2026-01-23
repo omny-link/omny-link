@@ -27,14 +27,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
-import org.springframework.data.rest.core.annotation.RestResource;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import link.omny.supportservices.model.CustomField;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.rest.core.annotation.RestResource;
+
+import link.omny.supportservices.model.CustomField;
 
 @Entity
 @Table(name = "OL_ORDER_ITEM_CUSTOM")
@@ -64,19 +63,18 @@ public class CustomOrderItemField extends CustomField {
 
     @Override
     public String toString() {
-        return String
-                .format("CustomOrderItemField [id=%s, name=%s, value=%s, orderItemId=%s]",
-                        getId(), getName(), getValue(),
-                        orderItem == null ? null : orderItem.getId());
+        return String.format(
+                "CustomOrderItemField [id=%s, name=%s, value=%s, orderItemId=%s]",
+                getId(), getName(), getValue(),
+                orderItem == null ? null : orderItem.getId());
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result
-                + ((orderItem == null) ? 0 : orderItem.getId() == null ? 0
-                        : orderItem.getId().hashCode());
+        result = prime * result + ((orderItem == null) ? 0
+                : orderItem.getId() == null ? 0 : orderItem.getId().hashCode());
         return result;
     }
 
@@ -96,5 +94,4 @@ public class CustomOrderItemField extends CustomField {
             return false;
         return true;
     }
-
 }

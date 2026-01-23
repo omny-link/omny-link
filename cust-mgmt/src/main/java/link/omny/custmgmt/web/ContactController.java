@@ -32,6 +32,9 @@ import java.util.Optional;
 
 import jakarta.transaction.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,14 +58,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-
-import com.fasterxml.jackson.annotation.JsonView;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.custmgmt.internal.CsvImporter;
 import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.model.Account;
@@ -135,7 +134,8 @@ public class ContactController {
         String content = new String(file.getBytes());
 
         List<Contact> list = objectMapper.readValue(content,
-                new TypeReference<List<Contact>>() { });
+                new TypeReference<List<Contact>>() {
+                });
         LOGGER.info("  found {} contacts", list.size());
         for (Contact contact : list) {
             contact.setTenantId(tenantId);
@@ -166,9 +166,9 @@ public class ContactController {
             throws IOException {
         LOGGER.info("Uploading CSV contacts for: {}", tenantId);
         String content = new String(file.getBytes());
-        List<Contact> list = new CsvImporter().readContacts(new StringReader(
-                content), content.substring(0, content.indexOf('\n'))
-                .split(","));
+        List<Contact> list = new CsvImporter().readContacts(
+                new StringReader(content),
+                content.substring(0, content.indexOf('\n')).split(","));
         LOGGER.info("  found {} contacts", list.size());
         for (Contact contact : list) {
             contact.setTenantId(tenantId);
@@ -201,13 +201,13 @@ public class ContactController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "before", required = false) String before,
             @RequestParam(value = "stage", required = false) String stage) {
-        Date beforeDate = before == null
-                ? DateUtils.oneMonthAgo() : DateUtils.parseDate(before);
+        Date beforeDate = before == null ? DateUtils.oneMonthAgo()
+                : DateUtils.parseDate(before);
         if (stage == null || stage.length() == 0) {
             stage = "On hold";
         }
-        LOGGER.info("Set contacts of {} older than {} to '{}'",
-                tenantId, beforeDate.toString(), stage);
+        LOGGER.info("Set contacts of {} older than {} to '{}'", tenantId,
+                beforeDate.toString(), stage);
 
         return contactRepo.updateStage(stage, beforeDate, tenantId);
     }
@@ -223,7 +223,8 @@ public class ContactController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "limit", defaultValue = DEFAULT_PAGE_SIZE) Integer limit) {
-        LOGGER.info("listForTenantAsCsv({},{page},{limit})", tenantId, page, limit);
+        LOGGER.info("listForTenantAsCsv({},{page},{limit})", tenantId, page,
+                limit);
         StringBuilder sb = new StringBuilder().append("id,accountId,"
                 + "firstName,lastName,title,"
                 + "isMainContact,address1,address2,town,countyOrCity,country,"
@@ -233,8 +234,10 @@ public class ContactController {
                 + "isDoNotCall,isDoNotEmail,tags,uuid,twitter,linkedIn,"
                 + "facebook,tenantId,firstContact,lastUpdated,timeSinceLogin,"
                 + "timeSinceFirstLogin,timeSinceRegistered,timeSinceEmail,notes,documents,");
-        List<String> customFieldNames = contactRepo.findCustomFieldNames(tenantId);
-        LOGGER.info("Found {} custom field names while exporting contacts for {}: {}",
+        List<String> customFieldNames = contactRepo
+                .findCustomFieldNames(tenantId);
+        LOGGER.info(
+                "Found {} custom field names while exporting contacts for {}: {}",
                 customFieldNames.size(), tenantId, customFieldNames);
         for (String fieldName : customFieldNames) {
             sb.append(fieldName).append(",");
@@ -251,8 +254,8 @@ public class ContactController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentLength(sb.length());
-        return new ResponseEntity<String>(
-                sb.toString(), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<String>(sb.toString(), httpHeaders,
+                HttpStatus.OK);
     }
 
     /**
@@ -288,8 +291,9 @@ public class ContactController {
         LOGGER.debug("List contacts for account and name {}, {} {}",
                 accountName, lastName, firstName);
 
-        List<Contact> list = contactRepo.findByFirstNameLastNameAndAccountNameForTenant(
-                tenantId, firstName, lastName, accountName);
+        List<Contact> list = contactRepo
+                .findByFirstNameLastNameAndAccountNameForTenant(tenantId,
+                        firstName, lastName, accountName);
         LOGGER.info("Found {} contacts", list.size());
 
         return addLinks(tenantId, list);
@@ -316,8 +320,9 @@ public class ContactController {
         LOGGER.info("Found {} contacts", list.size());
 
         if (list.size() > 10) {
-            LOGGER.warn("Loading activities for {} contacts, this may be a bottleneck",
-                            list.size());
+            LOGGER.warn(
+                    "Loading activities for {} contacts, this may be a bottleneck",
+                    list.size());
         }
         // force load of custom fields
         for (Contact contact : list) {
@@ -361,27 +366,37 @@ public class ContactController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long id) {
         LOGGER.debug("Find contact for id {} with id {}", tenantId, id);
-        EntityModel<Contact> contactEntity = addLinks(tenantId, findById(tenantId, id));
+        EntityModel<Contact> contactEntity = addLinks(tenantId,
+                findById(tenantId, id));
         // Work around issue with Jackson serialisation:
         // If return EntityModel<Account> result is:
-        // Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JS
-        // ON: Cannot override _serializer: had a `link.omny.supportservices.json.JsonCustomFieldSerializer`
-        // , trying to set to `org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$Nest
+        // Resolved
+        // [org.springframework.http.converter.HttpMessageNotWritableException:
+        // Could not
+        // write JS
+        // ON: Cannot override _serializer: had a
+        // `link.omny.supportservices.json.JsonCustomFieldSerializer`
+        // , trying to set to
+        // `org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$Nest
         // edEntitySerializer`]
         try {
             Account acct = contactEntity.getContent().getAccount();
-            // focus on contact, should not have children of account and if do, fetch separately
-            acct.setActivities(emptySet()).setDocuments(emptySet()).setNotes(emptySet());
+            // focus on contact, should not have children of account and if do,
+            // fetch
+            // separately
+            acct.setActivities(emptySet()).setDocuments(emptySet())
+                    .setNotes(emptySet());
             String acctJson = objectMapper.writeValueAsString(acct);
             if (acct != null) {
-               contactEntity.getContent().setAccount(null);
+                contactEntity.getContent().setAccount(null);
             }
             String json = objectMapper.writeValueAsString(contactEntity);
-            json = json.replace("\"account\":null", "\"account\":"+acctJson);
+            json = json.replace("\"account\":null", "\"account\":" + acctJson);
             LOGGER.info("... found: {}", json);
             return new HttpEntity<String>(json);
         } catch (JacksonException e) {
-            LOGGER.error("Unable to serialise account with id {}, cause: {}", id, e);
+            LOGGER.error("Unable to serialise account with id {}, cause: {}",
+                    id, e);
             throw new BusinessEntityNotFoundException(Contact.class, id);
         }
     }
@@ -412,7 +427,8 @@ public class ContactController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam("accountType") String accountType) {
         LOGGER.info("Find contact for account {}", accountType);
-        return addLinks(tenantId, contactRepo.findByAccountType(accountType, tenantId));
+        return addLinks(tenantId,
+                contactRepo.findByAccountType(accountType, tenantId));
     }
 
     /**
@@ -428,7 +444,8 @@ public class ContactController {
             @PathVariable("value") String value) {
         LOGGER.debug("List contacts for custom field {}={}", key, value);
 
-        List<Contact> list = contactRepo.findByCustomField(key, value, tenantId);
+        List<Contact> list = contactRepo.findByCustomField(key, value,
+                tenantId);
         LOGGER.info("Found {} contacts", list.size());
 
         return addLinks(tenantId, list);
@@ -455,7 +472,6 @@ public class ContactController {
      *
      * <p>
      * TODO 'Currently' can be defined per tenant.
-     * </p>
      *
      * @return contacts for that tenant with the matching tag.
      */
@@ -468,7 +484,8 @@ public class ContactController {
         GregorianCalendar cal = new GregorianCalendar();
         cal.add(Calendar.MINUTE, minsConsideredActive);
         Date sinceDate = cal.getTime();
-        return addLinks(tenantId, contactRepo.findActiveForTenant(sinceDate, tenantId));
+        return addLinks(tenantId,
+                contactRepo.findActiveForTenant(sinceDate, tenantId));
     }
 
     protected synchronized Contact consolidateContactsWithUuid(String uuid,
@@ -485,8 +502,8 @@ public class ContactController {
             return contact;
         default:
             // TODO should we attempt a cleanup?
-            LOGGER.warn("Found {} contacts with uuid: {}...", 
-                    contacts.size(), uuid);
+            LOGGER.warn("Found {} contacts with uuid: {}...", contacts.size(),
+                    uuid);
             contact = contacts.get(0);
             return contact;
         }
@@ -528,9 +545,7 @@ public class ContactController {
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
-    /**
-     * Update an existing contact.
-     */
+    /** Update an existing contact. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PutMapping(value = "/{id}", consumes = { "application/json" })
     @Operation(summary = "Update an existing contact.")
@@ -548,7 +563,9 @@ public class ContactController {
         NullAwareBeanUtils.copyNonNullProperties(updatedContact, contact, "id",
                 "account", "activities", "notes", "documents");
         for (CustomContactField field : updatedContact.getCustomFields()) {
-            Optional<CustomContactField> trgtField = contact.getCustomFields().stream().filter(f -> f.getName().equals(field.getName())).findAny();
+            Optional<CustomContactField> trgtField = contact.getCustomFields()
+                    .stream().filter(f -> f.getName().equals(field.getName()))
+                    .findAny();
             if (trgtField.isPresent()) {
                 trgtField.get().setValue(field.getValue());
             } else {
@@ -572,9 +589,7 @@ public class ContactController {
         }
     }
 
-    /**
-     * Delete an existing contact.
-     */
+    /** Delete an existing contact. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/{id}")
     @Operation(summary = "Deletes the specified contact.")
@@ -583,33 +598,32 @@ public class ContactController {
         contactRepo.deleteById(contactId);
     }
 
-    /**
-     * Add a document to the specified contact.
-     */
+    /** Add a document to the specified contact. */
     @RequestMapping(value = "/{contactId}/documents", method = RequestMethod.POST)
     @Operation(summary = "Add a document to the specified contact.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("contactId") Long contactId, @RequestBody Document doc) {
-         Contact contact = findById(tenantId, contactId);
-         contact.getDocuments().add(doc);
-         contact.setLastUpdated(new Date());
-         contact = contactRepo.save(contact);
-         doc = contact.getDocuments().stream()
-                 .reduce((first, second) -> second).orElse(null);
+            @PathVariable("contactId") Long contactId,
+            @RequestBody Document doc) {
+        Contact contact = findById(tenantId, contactId);
+        contact.getDocuments().add(doc);
+        contact.setLastUpdated(new Date());
+        contact = contactRepo.save(contact);
+        doc = contact.getDocuments().stream().reduce((first, second) -> second)
+                .orElse(null);
 
-         HttpHeaders headers = new HttpHeaders();
-         URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                 .path("/{id}/documents/{docId}")
-                 .buildAndExpand(tenantId, contact.getId(), doc.getId())
-                 .toUri();
-         headers.setLocation(uri);
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                .path("/{id}/documents/{docId}")
+                .buildAndExpand(tenantId, contact.getId(), doc.getId()).toUri();
+        headers.setLocation(uri);
 
-         return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
+        return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
     }
 
     /**
      * Add a note to the specified contact.
+     *
      * @return the created note.
      */
     @PostMapping(value = "/{contactId}/notes")
@@ -621,9 +635,8 @@ public class ContactController {
         contact.getNotes().add(note);
         contact.setLastUpdated(new Date());
         contact = contactRepo.save(contact);
-        note = contact.getNotes().stream()
-                .reduce((first, second) -> second).orElse(null);
-
+        note = contact.getNotes().stream().reduce((first, second) -> second)
+                .orElse(null);
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -635,9 +648,7 @@ public class ContactController {
         return new ResponseEntity<Note>(note, headers, HttpStatus.CREATED);
     }
 
-    /**
-     * Change the sale stage the contact is at.
-     */
+    /** Change the sale stage the contact is at. */
     @PostMapping(value = "/{contactId}/stage/{stage}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Sets the stage for the specified contact.")
@@ -654,14 +665,13 @@ public class ContactController {
             contactRepo.save(contact);
 
             // TODO move to independent entity
-            addActivity(tenantId, contactId, ActivityType.TRANSITION_TO_STAGE.name(),
+            addActivity(tenantId, contactId,
+                    ActivityType.TRANSITION_TO_STAGE.name(),
                     String.format("From %1$s to %2$s", oldStage, stage));
         }
     }
 
-    /**
-     * Set the account this contact belongs to.
-     */
+    /** Set the account this contact belongs to. */
     @PutMapping(value = "/{contactId}/account", consumes = "text/uri-list")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     @Transactional
@@ -672,8 +682,8 @@ public class ContactController {
             @RequestBody String accountUri) {
         LOGGER.info("Linking account {} to contact {}", contactId, accountUri);
 
-        Long acctId = Long.parseLong(accountUri.substring(accountUri
-                .lastIndexOf('/') + 1));
+        Long acctId = Long.parseLong(
+                accountUri.substring(accountUri.lastIndexOf('/') + 1));
 
         setAccount(tenantId, contactId, acctId);
     }
@@ -682,14 +692,12 @@ public class ContactController {
         contactRepo.setAccount(contactId, acctId);
 
         addActivity(tenantId, contactId,
-                new Activity(ActivityType.LINK_ACCOUNT_TO_CONTACT,
-                new Date(), String.format("Linked account %1$d to contact %2$d", 
-                        acctId, contactId)));
+                new Activity(ActivityType.LINK_ACCOUNT_TO_CONTACT, new Date(),
+                        String.format("Linked account %1$d to contact %2$d",
+                                acctId, contactId)));
     }
 
-    /**
-     * Add an activity to the specified contact.
-     */
+    /** Add an activity to the specified contact. */
     @PostMapping(value = "/{contactId}/activities")
     @Operation(summary = "Add an activity to the specified contact.")
     public @ResponseBody ResponseEntity<Activity> addActivity(
@@ -702,7 +710,6 @@ public class ContactController {
         contact = contactRepo.save(contact);
         activity = contact.getActivities().stream()
                 .reduce((first, second) -> second).orElse(null);
-
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -720,12 +727,14 @@ public class ContactController {
 
     /**
      * Add an activity to the specified contact.
+     *
      * @return the created activity.
      */
     protected Activity addActivity(String tenantId, Long contactId, String type,
             String content) {
-        return addActivity(tenantId, contactId, new Activity(
-                ActivityType.valueOf(type), new Date(), content)).getBody();
+        return addActivity(tenantId, contactId,
+                new Activity(ActivityType.valueOf(type), new Date(), content))
+                .getBody();
     }
 
     /**
@@ -743,7 +752,8 @@ public class ContactController {
         return value.toString();
     }
 
-    protected List<EntityModel<Contact>> addLinks(final String tenantId, final Iterable<Contact> result) {
+    protected List<EntityModel<Contact>> addLinks(final String tenantId,
+            final Iterable<Contact> result) {
         ArrayList<EntityModel<Contact>> entities = new ArrayList<EntityModel<Contact>>();
         for (Contact contact : result) {
             entities.add(addLinks(tenantId, contact));
@@ -751,17 +761,21 @@ public class ContactController {
         return entities;
     }
 
-    protected EntityModel<Contact> addLinks(final String tenantId, final Contact contact) {
+    protected EntityModel<Contact> addLinks(final String tenantId,
+            final Contact contact) {
         LOGGER.info("addLinks({}, {})", tenantId, contact.getId());
         EntityModel<Contact> model = EntityModel.of(contact,
-                linkTo(methodOn(ContactController.class).findEntityById(tenantId, contact.getId()))
+                linkTo(methodOn(ContactController.class)
+                        .findEntityById(tenantId, contact.getId()))
                         .withSelfRel());
         if (contact.getAccountId() != null) {
-            LOGGER.debug("addLinks({}, {}) for account {}", tenantId, contact.getId(), contact.getAccountId());
+            LOGGER.debug("addLinks({}, {}) for account {}", tenantId,
+                    contact.getId(), contact.getAccountId());
             try {
-                model.add(linkTo(methodOn(AccountController.class).findEntityById(
-                        tenantId, String.valueOf(contact.getAccountId())))
-                                .withRel("account"));
+                model.add(linkTo(methodOn(AccountController.class)
+                        .findEntityById(tenantId,
+                                String.valueOf(contact.getAccountId())))
+                        .withRel("account"));
             } catch (Exception ex) {
                 LOGGER.error("XXXX {}", ex.getMessage(), ex);
             }

@@ -31,6 +31,9 @@ import java.util.Set;
 
 import jakarta.transaction.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -56,15 +59,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.fasterxml.jackson.annotation.JsonView;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.custmgmt.internal.DateUtils;
 import link.omny.custmgmt.model.Account;
 import link.omny.custmgmt.model.Contact;
@@ -107,13 +106,15 @@ public class AccountController {
 
     /**
      * Add activity to the specified account.
+     *
      * @return the created activity.
      */
     @PostMapping(value = "/accounts/{accountId}/activities")
     @Operation(summary = "Add an activity to the specified account.")
     public @ResponseBody ResponseEntity<Activity> addActivity(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("accountId") Long accountId, @RequestBody Activity activity) {
+            @PathVariable("accountId") Long accountId,
+            @RequestBody Activity activity) {
         Account account = findById(tenantId, accountId);
         account.getActivities().add(activity);
         account.setLastUpdated(new Date());
@@ -128,7 +129,8 @@ public class AccountController {
                 .toUri();
         headers.setLocation(uri);
 
-        return new ResponseEntity<Activity>(activity, headers, HttpStatus.CREATED);
+        return new ResponseEntity<Activity>(activity, headers,
+                HttpStatus.CREATED);
     }
 
     /**
@@ -172,11 +174,11 @@ public class AccountController {
     public @ResponseBody Integer archiveAccounts(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "before", required = false) String before) {
-        Date beforeDate = before == null
-                ? DateUtils.oneMonthAgo() : DateUtils.parseDate(before);
-        LOGGER.info(String.format(
-                "Place on hold accounts of %1$s older than %2$s", tenantId,
-                beforeDate.toString()));
+        Date beforeDate = before == null ? DateUtils.oneMonthAgo()
+                : DateUtils.parseDate(before);
+        LOGGER.info(
+                String.format("Place on hold accounts of %1$s older than %2$s",
+                        tenantId, beforeDate.toString()));
 
         return accountRepo.updateStage("On hold", beforeDate, tenantId);
     }
@@ -191,7 +193,8 @@ public class AccountController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        return addLinks(tenantId, accountSvc.listForTenant(tenantId, page, limit));
+        return addLinks(tenantId,
+                accountSvc.listForTenant(tenantId, page, limit));
     }
 
     /**
@@ -213,15 +216,18 @@ public class AccountController {
                         + "isExistingCustomer,tags,twitter,linkedIn,facebook,"
                         + "shortDesc,description,incorporationYear,noOfEmployees,"
                         + "tenantId,firstContact,lastUpdated,notes,documents,");
-        List<String> customFieldNames = accountRepo.findCustomFieldNames(tenantId);
-        LOGGER.info("Found {} custom field names while exporting accounts for {}: {}",
+        List<String> customFieldNames = accountRepo
+                .findCustomFieldNames(tenantId);
+        LOGGER.info(
+                "Found {} custom field names while exporting accounts for {}: {}",
                 customFieldNames.size(), tenantId, customFieldNames);
         for (String fieldName : customFieldNames) {
             sb.append(fieldName).append(",");
         }
         sb.append("\r\n");
 
-        for (Account account : accountSvc.listForTenant(tenantId, page, limit)) {
+        for (Account account : accountSvc.listForTenant(tenantId, page,
+                limit)) {
             account.setCustomHeadings(customFieldNames);
             sb.append(account.toCsv()).append("\r\n");
         }
@@ -230,8 +236,8 @@ public class AccountController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentLength(sb.length());
-        return new ResponseEntity<String>(
-                sb.toString(), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<String>(sb.toString(), httpHeaders,
+                HttpStatus.OK);
     }
 
     /**
@@ -271,15 +277,14 @@ public class AccountController {
         vars.put("id", account.getId().toString());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(builder2.path("/accounts/{id}")
-                .buildAndExpand(vars).toUri());
+        headers.setLocation(
+                builder2.path("/accounts/{id}").buildAndExpand(vars).toUri());
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
     protected Account findById(final String tenantId, @NonNull final Long id) {
-        return accountRepo.findById(id)
-                .orElseThrow(() -> new BusinessEntityNotFoundException(
-                        Account.class, id));
+        return accountRepo.findById(id).orElseThrow(
+                () -> new BusinessEntityNotFoundException(Account.class, id));
     }
 
     /**
@@ -308,16 +313,22 @@ public class AccountController {
         EntityModel<Account> entity = addLinks(tenantId, account);
         // Work around issue with Jackson serialisation:
         // If return EntityModel<Account> result is:
-        // Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JS
-        // ON: Cannot override _serializer: had a `link.omny.supportservices.json.JsonCustomFieldSerializer`
-        // , trying to set to `org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$Nest
+        // Resolved
+        // [org.springframework.http.converter.HttpMessageNotWritableException:
+        // Could not
+        // write JS
+        // ON: Cannot override _serializer: had a
+        // `link.omny.supportservices.json.JsonCustomFieldSerializer`
+        // , trying to set to
+        // `org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$Nest
         // edEntitySerializer`]
         try {
             String json = objectMapper.writeValueAsString(entity);
             LOGGER.info("... found: {}", json);
             return new HttpEntity<String>(json);
         } catch (JacksonException e) {
-            LOGGER.error("Unable to serialise account with id {}, cause: {}", idOrCode, e);
+            LOGGER.error("Unable to serialise account with id {}, cause: {}",
+                    idOrCode, e);
             throw new BusinessEntityNotFoundException(Account.class, idOrCode);
         }
     }
@@ -362,15 +373,13 @@ public class AccountController {
             throws BusinessEntityNotFoundException {
         LOGGER.debug("Find account with custom field {}={}", name, value);
 
-        List<Account> accounts = accountRepo
-                .findByCustomFieldForTenant(name, value, tenantId);
+        List<Account> accounts = accountRepo.findByCustomFieldForTenant(name,
+                value, tenantId);
 
         return addLinks(tenantId, accounts);
     }
 
-    /**
-     * Update an existing account.
-     */
+    /** Update an existing account. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PutMapping(value = "/accounts/{id}", consumes = "application/json")
     @Operation(summary = "Update an existing account.")
@@ -378,20 +387,24 @@ public class AccountController {
             @PathVariable("id") Long accountId,
             @RequestBody Account updatedAccount) {
         Account account = findById(tenantId, accountId);
-        BeanUtils.copyProperties(updatedAccount, account, "id", "activities", "documents", "notes");
+        BeanUtils.copyProperties(updatedAccount, account, "id", "activities",
+                "documents", "notes");
         account.setTenantId(tenantId);
         account = accountRepo.save(account);
-        updateCustomFields(tenantId, accountId, updatedAccount.getCustomFields());
+        updateCustomFields(tenantId, accountId,
+                updatedAccount.getCustomFields());
     }
 
     /**
      * Update an existing account's custom fields.
+     *
      * @throws IOException
      */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{id}/customFields/", consumes = "application/json")
     @Operation(hidden = true)
-    public @ResponseBody void updateCustomFields(@PathVariable("tenantId") String tenantId,
+    public @ResponseBody void updateCustomFields(
+            @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId,
             @RequestBody Object customFields) {
         Account account = findById(tenantId, accountId);
@@ -405,24 +418,27 @@ public class AccountController {
                         tenantId, accountId, customFields, e);
                 throw new IllegalArgumentException("Unable to read account", e);
             }
-            for (Iterator<String> it = jsonNode.propertyNames().iterator() ; it.hasNext() ;) {
+            for (Iterator<String> it = jsonNode.propertyNames().iterator(); it
+                    .hasNext();) {
                 String key = it.next();
-                account.addCustomField(
-                        new CustomAccountField(key, jsonNode.get(key).asText()));
+                account.addCustomField(new CustomAccountField(key,
+                        jsonNode.get(key).asText()));
             }
         } else if (customFields instanceof Set<?>) {
             @SuppressWarnings("unchecked")
             Set<CustomAccountField> set = (Set<CustomAccountField>) customFields;
             set.forEach((field) -> {
-                LOGGER.warn("About to try to store {}={}",
-                        field.getName(), field.getValue());
+                LOGGER.warn("About to try to store {}={}", field.getName(),
+                        field.getValue());
                 account.addCustomField(field);
             });
         } else if (customFields instanceof HashMap) {
-            for (Map.Entry<?,?> entry : ((HashMap<?,?>) customFields).entrySet()) {
-                LOGGER.warn("About to try to store {}={}", entry.getKey(), entry.getValue());
-                account.addCustomField(
-                        new CustomAccountField((String)entry.getKey(), entry.getValue().toString()));
+            for (Map.Entry<?, ?> entry : ((HashMap<?, ?>) customFields)
+                    .entrySet()) {
+                LOGGER.warn("About to try to store {}={}", entry.getKey(),
+                        entry.getValue());
+                account.addCustomField(new CustomAccountField(
+                        (String) entry.getKey(), entry.getValue().toString()));
             }
         } else {
             String msg = String.format(
@@ -443,7 +459,8 @@ public class AccountController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{accountId}/alerts/")
     @Operation(hidden = true)
-    public @ResponseBody void setAlerts(@PathVariable("tenantId") String tenantId,
+    public @ResponseBody void setAlerts(
+            @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestBody String alerts) {
         Account account = findById(tenantId, accountId);
@@ -452,9 +469,7 @@ public class AccountController {
         accountRepo.save(account);
     }
 
-    /**
-     * Change the sale stage the account is at.
-     */
+    /** Change the sale stage the account is at. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PostMapping(value = "/accounts/{accountId}/stage/{stage}")
     @Operation(summary = "Sets the stage for the specified account.")
@@ -471,7 +486,8 @@ public class AccountController {
             accountRepo.save(account);
 
             Activity activity = new Activity(ActivityType.TRANSITION_TO_STAGE,
-                    new Date(), String.format("From %1$s to %2$s", oldStage, stage));
+                    new Date(),
+                    String.format("From %1$s to %2$s", oldStage, stage));
             addActivity(tenantId, accountId, activity);
         }
     }
@@ -493,53 +509,55 @@ public class AccountController {
         accountRepo.save(account);
     }
 
-    /**
-     * Add a document to the specified account.
-     */
+    /** Add a document to the specified account. */
     @PostMapping(value = "/accounts/{accountId}/documents", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Add a document to the specified account.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("accountId") Long accountId, @RequestBody Document doc) {
-         Account account = findById(tenantId, accountId);
-         account.getDocuments().add(doc);
-         account.setLastUpdated(new Date());
-         account = accountRepo.save(account);
-         doc = account.getDocuments().stream()
-                 .reduce((first, second) -> second).orElse(null);
+            @PathVariable("accountId") Long accountId,
+            @RequestBody Document doc) {
+        Account account = findById(tenantId, accountId);
+        account.getDocuments().add(doc);
+        account.setLastUpdated(new Date());
+        account = accountRepo.save(account);
+        doc = account.getDocuments().stream().reduce((first, second) -> second)
+                .orElse(null);
 
-         HttpHeaders headers = new HttpHeaders();
-         URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                 .path("/accounts/{id}/documents/{docId}")
-                 .buildAndExpand(tenantId, account.getId(), doc.getId())
-                 .toUri();
-         headers.setLocation(uri);
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                .path("/accounts/{id}/documents/{docId}")
+                .buildAndExpand(tenantId, account.getId(), doc.getId()).toUri();
+        headers.setLocation(uri);
 
-         return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
+        return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
     }
 
     /**
      * Add a document to the specified account.
      *
-     * <p>This is just a convenience method, see {@link #addDocument(String, Long, Document)}
-     * @return
+     * <p>
+     * This is just a convenience method, see
+     * {@link #addDocument(String, Long, Document)}
      *
+     * @return
      * @return The document created.
      */
-    @PostMapping(value = "/accounts/{accountId}/documents",
-            consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-                    "application/x-www-form-urlencoded; charset=UTF-8" })
+    @PostMapping(value = "/accounts/{accountId}/documents", consumes = {
+        MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+        "application/x-www-form-urlencoded; charset=UTF-8" })
     public @ResponseBody Document addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestParam("author") String author,
             @RequestParam("name") String name,
             @RequestParam("url") String url) {
-        return addDocument(tenantId, accountId, new Document(author, name, url)).getBody();
+        return addDocument(tenantId, accountId, new Document(author, name, url))
+                .getBody();
     }
 
     /**
      * Add a note to the specified account.
+     *
      * @return the created note.
      */
     @PostMapping(value = "/accounts/{accountId}/notes", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -568,32 +586,33 @@ public class AccountController {
     /**
      * Add a note to the specified account from its parts.
      *
-     * <p>This is just a convenience method, see {@link #addNote(String, Long, Note)}
+     * <p>
+     * This is just a convenience method, see
+     * {@link #addNote(String, Long, Note)}
      *
      * @return The note created.
      */
-    @PostMapping(value = "/accounts/{accountId}/notes",
-            consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-                         "application/x-www-form-urlencoded; charset=UTF-8" })
-    public @ResponseBody Note addNote(
-            @PathVariable("tenantId") String tenantId,
+    @PostMapping(value = "/accounts/{accountId}/notes", consumes = {
+        MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+        "application/x-www-form-urlencoded; charset=UTF-8" })
+    public @ResponseBody Note addNote(@PathVariable("tenantId") String tenantId,
             @PathVariable("accountId") Long accountId,
             @RequestParam("author") String author,
             @RequestParam("favorite") boolean favorite,
             @RequestParam("content") String content) {
-        return addNote(tenantId, accountId, new Note(author, content, favorite)).getBody();
+        return addNote(tenantId, accountId, new Note(author, content, favorite))
+                .getBody();
     }
 
-    /**
-     * Delete an existing account.
-     */
+    /** Delete an existing account. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/accounts/{id}", method = RequestMethod.DELETE)
     @Operation(summary = "Delete the specified account.")
     public @ResponseBody void delete(@PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long accountId) {
 
-        List<Contact> contacts = contactRepo.findByAccountId(accountId, tenantId);
+        List<Contact> contacts = contactRepo.findByAccountId(accountId,
+                tenantId);
         for (Contact contact : contacts) {
             contactRepo.deleteById(contact.getId());
         }
@@ -601,7 +620,8 @@ public class AccountController {
         accountRepo.deleteById(accountId);
     }
 
-    protected List<EntityModel<Account>> addLinks(final String tenantId, final List<Account> list) {
+    protected List<EntityModel<Account>> addLinks(final String tenantId,
+            final List<Account> list) {
         ArrayList<EntityModel<Account>> entities = new ArrayList<EntityModel<Account>>();
         for (Account account : list) {
             entities.add(addLinks(tenantId, account));
@@ -609,11 +629,11 @@ public class AccountController {
         return entities;
     }
 
-    protected EntityModel<Account> addLinks(final String tenantId, final Account account) {
+    protected EntityModel<Account> addLinks(final String tenantId,
+            final Account account) {
         return EntityModel.of(account,
                 linkTo(methodOn(AccountController.class)
                         .findEntityById(tenantId, account.getId().toString()))
-                                .withSelfRel());
+                        .withSelfRel());
     }
 }
-

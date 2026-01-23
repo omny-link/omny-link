@@ -23,17 +23,17 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import link.omny.custmgmt.model.Account;
-import link.omny.custmgmt.model.Contact;
-import link.omny.custmgmt.model.CustomAccountField;
-import link.omny.custmgmt.model.CustomContactField;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+
+import link.omny.custmgmt.model.Account;
+import link.omny.custmgmt.model.Contact;
+import link.omny.custmgmt.model.CustomAccountField;
+import link.omny.custmgmt.model.CustomContactField;
 
 public class CsvImporter {
 
@@ -52,12 +52,12 @@ public class CsvImporter {
         // code and safely reference columns, by using withHeader(String...)
         // with no arguments:
         // CSVFormat.EXCEL.withHeader();
-        
+
         final CSVParser parser = new CSVParser(in,
                 CSVFormat.EXCEL.withHeader(headers));
         Iterable<CSVRecord> records = parser.getRecords();
-//        Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader(headers)
-//                .parse(in);
+        // Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader(headers)
+        // .parse(in);
 
         for (CSVRecord record : records) {
             // skip header
@@ -73,8 +73,8 @@ public class CsvImporter {
                 for (PropertyDescriptor pd : acctPropertyDescriptors) {
                     String name = "account." + pd.getName();
                     if (record.isMapped(name)) {
-                        setField(contact.getAccount(), pd, record.get(name)
-                                .trim());
+                        setField(contact.getAccount(), pd,
+                                record.get(name).trim());
                     }
                 }
                 for (String hdr : headers) {
@@ -82,16 +82,16 @@ public class CsvImporter {
                         String atomicHdr = hdr.substring("account.".length());
                         if (BeanUtils.getPropertyDescriptor(Account.class,
                                 atomicHdr) == null) {
-                            contact.getAccount()
-                                    .getCustomFields()
+                            contact.getAccount().getCustomFields()
                                     .add(new CustomAccountField(atomicHdr,
                                             record.get(hdr)));
                         }
                     } else {
-                        if (BeanUtils.getPropertyDescriptor(Contact.class, hdr) == null) {
+                        if (BeanUtils.getPropertyDescriptor(Contact.class,
+                                hdr) == null) {
                             contact.getCustomFields()
-                                    .add(new CustomContactField(hdr, record
-                                            .get(hdr)));
+                                    .add(new CustomContactField(hdr,
+                                            record.get(hdr)));
                         }
                     }
                 }
@@ -116,9 +116,8 @@ public class CsvImporter {
 
         } catch (IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
-            LOGGER.error(String.format("Error parsing CSV into %1$s", bean
-                    .getClass().getName()));
+            LOGGER.error(String.format("Error parsing CSV into %1$s",
+                    bean.getClass().getName()));
         }
     }
-
 }

@@ -53,14 +53,16 @@ public class AccountTest {
 
         CustomAccountField field2 = new CustomAccountField("field1", "foo");
         assertNull(field2.getId());
-        
+
         account.setCustomFields(Collections.singleton(field2));
         assertEquals(1, account.getCustomFields().size());
-        assertEquals(field1.getId(), account.getCustomFields().iterator().next().getId());
-        
+        assertEquals(field1.getId(),
+                account.getCustomFields().iterator().next().getId());
+
         account.addCustomField(field2);
         assertEquals(1, account.getCustomFields().size());
-        assertEquals(field1.getId(), account.getCustomFields().iterator().next().getId());
+        assertEquals(field1.getId(),
+                account.getCustomFields().iterator().next().getId());
     }
 
     @Test
@@ -74,8 +76,8 @@ public class AccountTest {
         Account.setCustomFields(Collections.singleton(field1));
 
         assertEquals(1, Account.getCustomFields().size());
-        assertEquals("11241500.00", Account.getCustomFields().iterator().next()
-                .getValue());
+        assertEquals("11241500.00",
+                Account.getCustomFields().iterator().next().getValue());
     }
 
     @Test
@@ -89,7 +91,8 @@ public class AccountTest {
         Account.setCustomFields(Collections.singleton(field1));
 
         assertEquals(1, Account.getCustomFields().size());
-        assertEquals("N/A", Account.getCustomFields().iterator().next().getValue());
+        assertEquals("N/A",
+                Account.getCustomFields().iterator().next().getValue());
     }
 
     @Test
@@ -155,14 +158,14 @@ public class AccountTest {
         acct.setName("ACME Inc.");
         acct.setDescription("test description containing newline\n"
                 + "and a quotation \"quotation 1\"\n");
-        acct.addNote(new Note(1l, "tim@knowprocess.com",
-                "A single-line note", true, false));
+        acct.addNote(new Note(1l, "tim@knowprocess.com", "A single-line note",
+                true, false));
         acct.addNote(new Note(2l, "tim@knowprocess.com",
                 "A note\nthat spans multiple lines", true, false));
         acct.addNote(new Note(2l, "tim@knowprocess.com",
-                "\"quotation 1\"\n\"quotation 2\"",
-                true, false));
-        acct.addDocument(new Document("tim@knowprocess.com", "http://acme.com/document1/"));
+                "\"quotation 1\"\n\"quotation 2\"", true, false));
+        acct.addDocument(new Document("tim@knowprocess.com",
+                "http://acme.com/document1/"));
         assertEquals(3, acct.getNotes().size());
         System.out.println(acct.toCsv());
         String csv = acct.toCsv();

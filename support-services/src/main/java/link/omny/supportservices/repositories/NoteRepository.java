@@ -23,6 +23,6 @@ import link.omny.supportservices.model.Note;
 @RepositoryRestResource(exported = false)
 public interface NoteRepository extends CrudRepository<Note, Long> {
 
-//    List<Note> findByContactId(@Param("contactId") Long contactId);
+    // List<Note> findByContactId(@Param("contactId") Long contactId);
 
 }

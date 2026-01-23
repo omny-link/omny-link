@@ -31,6 +31,8 @@ import java.util.Map.Entry;
 
 import jakarta.transaction.Transactional;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -54,15 +56,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.DatabindException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.custmgmt.model.Memo;
 import link.omny.custmgmt.repositories.MemoRepository;
 import link.omny.custmgmt.repositories.MemoSignatoryRepository;
@@ -71,8 +70,8 @@ import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.internal.NullAwareBeanUtils;
 
 /**
- * REST web service for uploading and accessing a file of JSON memos (over
- * and above the CRUD offered by spring data).
+ * REST web service for uploading and accessing a file of JSON memos (over and
+ * above the CRUD offered by spring data).
  *
  * @author Tim Stephenson
  */
@@ -130,15 +129,12 @@ public class MemoController {
         return result;
     }
 
-    /**
-     * Create a new memo.
-     */
+    /** Create a new memo. */
     @ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping(value = "/")
     @Operation(summary = "Create a new memo.")
     public @ResponseBody ResponseEntity<Void> create(
-            @PathVariable("tenantId") String tenantId,
-            @RequestBody Memo memo) {
+            @PathVariable("tenantId") String tenantId, @RequestBody Memo memo) {
         memo.setTenantId(tenantId);
 
         EntityModel<Memo> entity = addLinks(tenantId, memoRepo.save(memo));
@@ -155,7 +151,7 @@ public class MemoController {
      *
      * @return memos for that tenant.
      */
-    @GetMapping(value = "/",  produces = { "application/json" })
+    @GetMapping(value = "/", produces = { "application/json" })
     @Operation(summary = "List a tenant's memos.")
     public @ResponseBody List<EntityModel<Memo>> listForTenant(
             @PathVariable("tenantId") String tenantId,
@@ -175,7 +171,8 @@ public class MemoController {
             @PathVariable("status") String status,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info("List memos with status {} for tenant {}", status, tenantId);
+        LOGGER.info("List memos with status {} for tenant {}", status,
+                tenantId);
 
         List<Memo> list;
         if (limit == null) {
@@ -183,17 +180,16 @@ public class MemoController {
                     tenantId);
         } else {
             Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
-            list = memoRepo.findPageByStatusForTenant(
-                    status.toLowerCase(), tenantId, pageable);
+            list = memoRepo.findPageByStatusForTenant(status.toLowerCase(),
+                    tenantId, pageable);
         }
         LOGGER.info("Found {} memos", list.size());
         return addLinks(tenantId, list);
     }
 
     protected Memo findById(final String tenantId, final Long id) {
-        return memoRepo.findById(id)
-                .orElseThrow(() -> new BusinessEntityNotFoundException(
-                        Memo.class, id));
+        return memoRepo.findById(id).orElseThrow(
+                () -> new BusinessEntityNotFoundException(Memo.class, id));
     }
 
     /**
@@ -212,11 +208,13 @@ public class MemoController {
         LOGGER.debug("Find memo {}", idOrName);
 
         try {
-            return addLinks(tenantId, findById(tenantId, Long.parseLong(idOrName)));
+            return addLinks(tenantId,
+                    findById(tenantId, Long.parseLong(idOrName)));
         } catch (NumberFormatException e) {
-            return addLinks(tenantId, memoRepo.findByName(idOrName, tenantId)
-                    .orElseThrow(() -> new BusinessEntityNotFoundException(
-                            Memo.class, idOrName)));
+            return addLinks(tenantId,
+                    memoRepo.findByName(idOrName, tenantId).orElseThrow(
+                            () -> new BusinessEntityNotFoundException(
+                                    Memo.class, idOrName)));
         }
     }
 
@@ -241,9 +239,9 @@ public class MemoController {
         try {
             memo = findById(tenantId, Long.parseLong(idOrName));
         } catch (NumberFormatException e) {
-            memo = memoRepo.findByName(idOrName, tenantId)
-                    .orElseThrow(() -> new BusinessEntityNotFoundException(
-                            Memo.class, idOrName));
+            memo = memoRepo.findByName(idOrName, tenantId).orElseThrow(
+                    () -> new BusinessEntityNotFoundException(Memo.class,
+                            idOrName));
         }
         Memo resource = new Memo();
         BeanUtils.copyProperties(memo, resource, "id");
@@ -253,7 +251,8 @@ public class MemoController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(entity.getLink("self").get().toUri());
 
-        return new ResponseEntity<EntityModel<Memo>>(entity, headers, HttpStatus.CREATED);
+        return new ResponseEntity<EntityModel<Memo>>(entity, headers,
+                HttpStatus.CREATED);
     }
 
     /**
@@ -278,27 +277,23 @@ public class MemoController {
         return list;
     }
 
-    /**
-     * Update an existing memo.
-     */
+    /** Update an existing memo. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PutMapping(value = "/{id}", consumes = { "application/json" })
     @Transactional
     @Operation(summary = "Update an existing memo.")
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
-            @PathVariable("id") Long memoId,
-            @RequestBody Memo updatedMemo) {
+            @PathVariable("id") Long memoId, @RequestBody Memo updatedMemo) {
         memoSignatoryRepo.deleteAllForMemo(updatedMemo.getId());
         Memo memo = findById(tenantId, memoId);
-        NullAwareBeanUtils.copyNonNullProperties(updatedMemo, memo, "id", "signatories");
+        NullAwareBeanUtils.copyNonNullProperties(updatedMemo, memo, "id",
+                "signatories");
         memo.addAllSignatories(updatedMemo.getSignatories());
         memo.setTenantId(tenantId);
         memo = memoRepo.save(memo);
     }
 
-    /**
-     * Delete an existing memo.
-     */
+    /** Delete an existing memo. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/{id}")
     @Operation(summary = "Delete the specified memo.")
@@ -309,59 +304,61 @@ public class MemoController {
 
     /**
      * Evaluate a memo template using the provided data.
+     *
      * @throws NoSuchMethodException
      * @throws JacksonException
      * @throws DatabindException
      */
-    @PostMapping(value = "/eval/{memoName}",
-            consumes= MediaType.APPLICATION_JSON_VALUE,
-            produces = "text/html")
+    @PostMapping(value = "/eval/{memoName}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = "text/html")
     @Operation(summary = "Evaluate a memo template.")
     public @ResponseBody ResponseEntity<String> evalJson(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("memoName") String memoName,
-            @RequestBody String body)
+            @PathVariable("memoName") String memoName, @RequestBody String body)
             throws DatabindException, JacksonException, NoSuchMethodException {
-        LOGGER.info("eval memo {} for {} with json payload: {}",
-                memoName, tenantId, body);
-        Memo template = memoRepo.findByName(memoName, tenantId)
-                .orElseThrow(() -> new BusinessEntityNotFoundException(Memo.class, memoName));
+        LOGGER.info("eval memo {} for {} with json payload: {}", memoName,
+                tenantId, body);
+        Memo template = memoRepo.findByName(memoName, tenantId).orElseThrow(
+                () -> new BusinessEntityNotFoundException(Memo.class,
+                        memoName));
 
         Map<String, Object> parsedParams = new HashMap<String, Object>();
         JsonNode jsonNode = objectMapper.readTree(body);
-        for (Iterator<Entry<String, JsonNode>> it = jsonNode.properties().iterator() ; it.hasNext() ; ) {
+        for (Iterator<Entry<String, JsonNode>> it = jsonNode.properties()
+                .iterator(); it.hasNext();) {
             Entry<String, JsonNode> entry = it.next();
             LOGGER.info("  found {} = {}", entry.getKey(), entry.getValue());
             parsedParams.put(entry.getKey(), entry.getValue());
         }
 
-        String result = templateSvc.evaluateTemplate(
-                template.getRichContent(), parsedParams);
+        String result = templateSvc.evaluateTemplate(template.getRichContent(),
+                parsedParams);
         return new ResponseEntity<String>(result, HttpStatus.OK);
     }
 
     /**
      * Evaluate a memo template using the provided data.
+     *
      * @throws NoSuchMethodException
      */
-    @PostMapping(value = "/eval/{memoName}",
-            consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-            produces = "text/html")
+    @PostMapping(value = "/eval/{memoName}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = "text/html")
     @Operation(summary = "Evaluate a memo template.")
     public @ResponseBody ResponseEntity<String> evalUrlEncoded(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("memoName") String memoName,
-            @RequestParam Map<String, String> params,
-            @RequestBody String body) throws NoSuchMethodException {
-        LOGGER.info("eval memo {} for {} with {} params",
-                memoName, tenantId, params.size());
-        Memo template = memoRepo.findByName(memoName, tenantId)
-                .orElseThrow(() -> new BusinessEntityNotFoundException(Memo.class, memoName));
+            @RequestParam Map<String, String> params, @RequestBody String body)
+            throws NoSuchMethodException {
+        LOGGER.info("eval memo {} for {} with {} params", memoName, tenantId,
+                params.size());
+        Memo template = memoRepo.findByName(memoName, tenantId).orElseThrow(
+                () -> new BusinessEntityNotFoundException(Memo.class,
+                        memoName));
         LOGGER.info("found params in body {}", body);
         for (String pair : Arrays.asList(body.split("&"))) {
             try {
-                String k = URLDecoder.decode(pair.substring(0, pair.indexOf('=')), "UTF-8");
-                String v = URLDecoder.decode(pair.substring(pair.indexOf('=')+1), "UTF-8");
+                String k = URLDecoder
+                        .decode(pair.substring(0, pair.indexOf('=')), "UTF-8");
+                String v = URLDecoder
+                        .decode(pair.substring(pair.indexOf('=') + 1), "UTF-8");
 
                 LOGGER.info(" extracted param {}={}", k, v);
                 params.put(k, v);
@@ -373,22 +370,25 @@ public class MemoController {
         }
         Map<String, Object> parsedParams = new HashMap<String, Object>();
         for (Entry<String, String> entry : params.entrySet()) {
-            LOGGER.info("  found param: {}={}", entry.getKey(), entry.getValue());
+            LOGGER.info("  found param: {}={}", entry.getKey(),
+                    entry.getValue());
             try {
-                parsedParams.put(entry.getKey(), objectMapper.readTree(entry.getValue()));
+                parsedParams.put(entry.getKey(),
+                        objectMapper.readTree(entry.getValue()));
             } catch (JacksonException e) {
                 LOGGER.warn("  unable to parse {}, treat as simple type: {}",
                         entry.getKey(), entry.getValue());
                 parsedParams.put(entry.getKey(), entry.getValue());
             }
         }
-        String result = templateSvc.evaluateTemplate(
-                template.getRichContent(), parsedParams);
+        String result = templateSvc.evaluateTemplate(template.getRichContent(),
+                parsedParams);
 
         return new ResponseEntity<String>(result, HttpStatus.OK);
     }
 
-    protected List<EntityModel<Memo>> addLinks(final String tenantId, final List<Memo> list) {
+    protected List<EntityModel<Memo>> addLinks(final String tenantId,
+            final List<Memo> list) {
         ArrayList<EntityModel<Memo>> entities = new ArrayList<EntityModel<Memo>>();
         for (Memo memo : list) {
             entities.add(addLinks(tenantId, memo));
@@ -396,9 +396,12 @@ public class MemoController {
         return entities;
     }
 
-    protected EntityModel<Memo> addLinks(final String tenantId, final Memo memo) {
-        return EntityModel.of(memo,
-                linkTo(methodOn(MemoController.class).findEntityById(tenantId, memo.getId().toString()))
-                        .withSelfRel());
+    protected EntityModel<Memo> addLinks(final String tenantId,
+            final Memo memo) {
+        return EntityModel
+                .of(memo,
+                        linkTo(methodOn(MemoController.class).findEntityById(
+                                tenantId, memo.getId().toString()))
+                                .withSelfRel());
     }
 }

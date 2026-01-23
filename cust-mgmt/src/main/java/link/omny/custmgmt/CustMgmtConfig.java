@@ -46,15 +46,14 @@ public class CustMgmtConfig {
         // Set a custom ObjectMapper if Jackson customization is needed
         // factory.setObjectMapper(…);
         if (skipPopulator) {
-            LOGGER.warn("Configured to skip repository population, change this by setting populator.skip=false in application.properties");
+            LOGGER.warn(
+                    "Configured to skip repository population, change this by setting populator.skip=false in application.properties");
             factory.setResources(new Resource[0]);
         } else {
-            factory.setResources(new Resource[] { new ClassPathResource(
-                    "data.json") });
+            factory.setResources(
+                    new Resource[] { new ClassPathResource("data.json") });
         }
 
         return factory;
     }
-
 }
-

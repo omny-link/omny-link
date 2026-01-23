@@ -15,24 +15,20 @@
  ******************************************************************************/
 package link.omny.supportservices.json;
 
-import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import tools.jackson.core.JsonParser;
-import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationContext;
-import tools.jackson.databind.ValueDeserializer;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ValueDeserializer;
 
 import link.omny.supportservices.model.CustomField;
 
-/**
- */
-public class JsonCustomFieldDeserializer<T> extends
-        ValueDeserializer<Set<? extends CustomField>> {
+/** */
+public class JsonCustomFieldDeserializer<T>
+        extends ValueDeserializer<Set<? extends CustomField>> {
 
     @Override
     public Set<? extends CustomField> deserialize(JsonParser jp,

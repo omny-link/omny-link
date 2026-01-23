@@ -25,7 +25,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import link.omny.supportservices.SupportServicesConfig;
 
-@SpringBootTest@SpringBootApplication
+@SpringBootTest
+@SpringBootApplication
 @Import({ CatalogConfig.class, SupportServicesConfig.class })
 @ComponentScan(basePackages = { "link.omny.catalog" })
 public class CatalogTestApplication implements WebMvcConfigurer {
