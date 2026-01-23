@@ -31,10 +31,17 @@ public class JsEnvironmentController {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(JsEnvironmentController.class);
 
+    // spotless:off
     public static final String ENV = "var $env = (function () {\n"
-            + "  var me = {\n" + "    appName: '%1$s',\n"
-            + "    server: '%2$s',\n" + "    tagLine: '%3$s'\n" + "  };\n"
-            + "\n" + "  return me;\n" + "}());\n";
+            + "  var me = {\n"
+            + "    appName: '%1$s',\n"
+            + "    server: '%2$s',\n"
+            + "    tagLine: '%3$s'\n"
+            + "  };\n"
+            + "\n"
+            + "  return me;\n"
+            + "}());\n";
+    // spotless:on
 
     @Value("${spring.application.name:CRM}")
     protected String appName;

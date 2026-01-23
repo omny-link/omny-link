@@ -1,0 +1,13 @@
+# Local Development Overrides
+# Copy this file to application-local.properties and customize for your environment
+
+# Disable security for local development (uncomment if needed)
+# security.enabled=false
+
+# Use local Keycloak instance (uncomment and adjust if needed)
+# spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8180/auth/realms/knowprocess
+# spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:8180/auth/realms/knowprocess/protocol/openid-connect/certs
+
+# Enable security debug logging
+# logging.level.org.springframework.security=DEBUG
+# logging.level.org.springframework.security.oauth2=DEBUG

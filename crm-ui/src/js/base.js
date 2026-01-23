@@ -1009,6 +1009,34 @@ var BaseRactive = Ractive.extend({ // jshint ignore:line
 });
 
 $(document).ready(function() {
+  // Global AJAX error handler for JWT authentication
+  $(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
+    if (jqXHR.status === 401) {
+      console.warn('Authentication failed (401). Attempting to refresh token...');
+      try {
+        // Try to update token and retry the request
+        if (ractive.keycloak && ractive.keycloak.updateToken) {
+          ractive.keycloak.updateToken(30).then(function(refreshed) {
+            if (refreshed) {
+              console.info('Token refreshed successfully, retrying request');
+              // Retry the failed request with new token
+              $.ajax(ajaxSettings);
+            } else {
+              console.info('Token is still valid');
+            }
+          }).catch(function() {
+            console.error('Token refresh failed, redirecting to login');
+            ractive.keycloak.login();
+          });
+        } else {
+          console.error('Keycloak not available, cannot refresh token');
+        }
+      } catch (e) {
+        console.error('Error handling 401:', e);
+      }
+    }
+  });
+
   try {
     ractive.keycloak = Keycloak('/keycloak.json');
     ractive.keycloak.init({ onLoad: 'login-required' })
